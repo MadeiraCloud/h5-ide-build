@@ -4,5 +4,5 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "\r\n<div class=\"box-loading box-wrapper\">\r\n	<div class=\"loading-spinner\"></div>\r\n</div>";
+  return "\n<div class=\"box-loading box-wrapper\">\n	<div class=\"loading-spinner\"></div>\n</div>";
   }; return Handlebars.template(TEMPLATE); });

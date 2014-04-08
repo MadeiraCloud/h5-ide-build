@@ -108,7 +108,7 @@
         if (!common_handle.cookie.getCookieByName('usercode')) {
           return;
         }
-        if ((_ref = MC.common.other.canvasData.data().platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC) {
+        if (MC.common.other.canvasData.data() && ((_ref = MC.common.other.canvasData.data().platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC)) {
           return;
         }
         has_refresh = true;

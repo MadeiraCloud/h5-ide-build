@@ -637,7 +637,7 @@
         return paraObj;
       },
       onDictInputChange: function(event, noBindEvent) {
-        var $currentDictItemContainer, $currentDictItemElem, $currentInputElem, $dictItemElem, $keyInput, $paraDictItem, $paraValueAry, $valueInput, currentValue, keyInputValue, newDictItemHTML, nextDictItemElemAry, paraObj, that, valueInputValue;
+        var $currentDictItemContainer, $currentDictItemElem, $currentInputElem, $dictItemElem, $keyInput, $paraItem, $paraValueAry, $valueInput, currentValue, keyInputValue, newDictItemHTML, nextDictItemElemAry, paraObj, that, valueInputValue;
         that = this;
         if (that.readOnlyMode) {
           return;
@@ -666,11 +666,11 @@
               ]
             }));
             $dictItemElem = $(newDictItemHTML).appendTo($currentDictItemContainer);
-            $paraDictItem = $dictItemElem.nextAll('.parameter-dict-item');
-            $paraValueAry = $paraDictItem.find('.parameter-value');
+            $paraValueAry = $dictItemElem.find('.parameter-value');
             $paraValueAry.addClass('disabled');
+            $paraItem = $dictItemElem.parents('.parameter-item');
             if (!noBindEvent) {
-              return that.bindParaItemEvent($paraDictItem, paraObj);
+              return that.bindParaItemEvent($paraItem, paraObj);
             }
           }
         }
@@ -706,7 +706,7 @@
         }
       },
       onArrayInputChange: function(event, noBindEvent) {
-        var $arrayItemElem, $currentArrayInputContainer, $currentInputElem, currentInput, currentValue, newArrayItemHTML, nextInputElemAry, paraObj, that;
+        var $arrayItemElem, $currentArrayInputContainer, $currentInputElem, $paraItem, currentInput, currentValue, newArrayItemHTML, nextInputElemAry, paraObj, that;
         that = this;
         $currentInputElem = $(event.currentTarget);
         currentValue = that.getPlainText($currentInputElem);
@@ -724,8 +724,9 @@
             }));
             $arrayItemElem = $(newArrayItemHTML).appendTo($currentArrayInputContainer);
             $arrayItemElem.addClass('disabled');
+            $paraItem = $arrayItemElem.parents('.parameter-item');
             if (!noBindEvent) {
-              return that.bindParaItemEvent($arrayItemElem, paraObj);
+              return that.bindParaItemEvent($paraItem, paraObj);
             }
           }
         }

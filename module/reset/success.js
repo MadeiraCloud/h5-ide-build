@@ -4,12 +4,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div id=\"reset-form-wrap\" class=\"box-wrapper\">\r\n	<div class=\"box-header\">\r\n		<h2>"
+  buffer += "<div id=\"reset-form-wrap\" class=\"box-wrapper\">\n	<div class=\"box-header\">\n		<h2>"
     + escapeExpression(helpers.i18n.call(depth0, "reset", {hash:{},data:data}))
-    + "</h2>\r\n	</div>\r\n	<p class=\"account-instruction-major\">"
+    + "</h2>\n	</div>\n	<p class=\"account-instruction-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "reset-success-info", {hash:{},data:data}))
-    + "</p>\r\n	<p class=\"account-instruction\"><a href=\"/login\">"
+    + "</p>\n	<p class=\"account-instruction\"><a href=\"/login\">"
     + escapeExpression(helpers.i18n.call(depth0, "reset-relogin", {hash:{},data:data}))
-    + "</a></p>\r\n</div>\r\n";
+    + "</a></p>\n</div>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });

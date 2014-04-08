@@ -1,6 +1,5 @@
 (function() {
   define(['MC', 'event', 'handlebars', 'i18n!nls/lang.js', './view', 'canvas_layout', 'header', 'navigation', 'tabbar', 'dashboard', 'design_module', 'process', 'WS', 'constant', 'base_model', 'common_handle', 'validation', 'aws_handle'], function(MC, ide_event, Handlebars, lang, view, canvas_layout, header, navigation, tabbar, dashboard, design, process, WS, constant, base_model, common_handle, validation) {
-    console.info(canvas_layout);
     return {
       initialize: function() {
         var displaySystemNotice, initialize, listenImportList, listenRequestList, r, relogin, status, subRequestReady, subScoket, subScriptionError, websocket, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;

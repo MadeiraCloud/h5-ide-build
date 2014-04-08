@@ -4,24 +4,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav class=\"header-menu\">\r\n  <section class=\"dropdown\">\r\n    <div id=\"header--notification\" class=\"js-toggle-dropdown\">\r\n      <i class=\"icon-notification\"></i>\r\n      <span id=\"notification-counter\"></span>\r\n    </div>\r\n\r\n    <div class=\"dropdown-menu\">\r\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\r\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n        <ul class=\"scroll-content\"></ul>\r\n\r\n        <div class=\"notification-empty\">\r\n          <div class=\"title\">"
+  buffer += "<nav class=\"header-menu\">\n  <section class=\"dropdown\">\n    <div id=\"header--notification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"notification-counter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
-    + "</div>\r\n          <div class=\"description\">"
+    + "</div>\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
-    + "</div>\r\n        </div>\r\n      </div>\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"header--user\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
+    + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"header--user\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
     + escapeExpression(((stack1 = (depth0 && depth0.user_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n      <span class=\"truncate\" style=\"max-width:100px;\">"
+    + "\">\n      <span class=\"truncate\" style=\"max-width:100px;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\r\n      <span class=\"no-credential\" style=\"display:none;\"></span>\r\n      <i class=\"icon-caret-down\"></i>\r\n    </div>\r\n\r\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\" role=\"menu\">\r\n      <li id=\"guide-tutorial\">"
+    + "</span>\n      <span class=\"no-credential\" style=\"display:none;\"></span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\" role=\"menu\">\n      <li id=\"guide-tutorial\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_USER_TOUR", {hash:{},data:data}))
-    + "</li>\r\n      <li id=\"keyboard-shortcuts\" class=\"modal\" data-modal-template=\"shortkey\">"
+    + "</li>\n      <li id=\"keyboard-shortcuts\" class=\"modal\" data-modal-template=\"shortkey\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
-    + "</li>\r\n\r\n      <li><a href=\"http://visualops.readthedocs.org/\" target=\"_blank\" >"
+    + "</li>\n\n      <li><a href=\"http://visualops.readthedocs.org/\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
-    + "</a></li>\r\n\r\n      <li>\r\n        <span class=\"no-credential\" style=\"display:none;\"></span>\r\n        <a href=\"javascript:void(0);\" id=\"awscredential-modal\">"
+    + "</a></li>\n\n      <li>\n        <span class=\"no-credential\" style=\"display:none;\"></span>\n        <a href=\"javascript:void(0);\" id=\"awscredential-modal\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
-    + "</a>\r\n      </li>\r\n\r\n      <li id=\"btn-logout\">"
+    + "</a>\n      </li>\n\n      <li id=\"btn-logout\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
-    + "</li>\r\n\r\n    </ul>\r\n  </section>\r\n</nav>\r\n";
+    + "</li>\n\n    </ul>\n  </section>\n</nav>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
