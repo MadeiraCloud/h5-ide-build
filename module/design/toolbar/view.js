@@ -100,6 +100,10 @@
       clickRunIcon: function(event) {
         var cost, me;
         console.log('clickRunIcon');
+        if ($('#toolbar-run').hasClass('disabled')) {
+          modal.close();
+          return;
+        }
         me = this;
         event.preventDefault();
         if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {

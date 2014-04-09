@@ -4153,7 +4153,7 @@
       }).apply(this), function() {
         return '0';
       });
-      return str = strAry.join('') + str;
+      return strAry.join('') + str;
     };
 
     /*
@@ -9403,7 +9403,7 @@
       }).apply(this), function() {
         return '0';
       });
-      return str = strAry.join('') + str;
+      return strAry.join('') + str;
     };
     _addZeroToRightStr = function(str, n) {
       var count, strAry, _i, _results;
@@ -9415,7 +9415,7 @@
       }).apply(this), function() {
         return '0';
       });
-      return str = str + strAry.join('');
+      return str + strAry.join('');
     };
     _getCidrBinStr = function(ipCidr) {
       var cutAry, ipAddr, ipAddrAry, ipAddrBinAry, prefix, suffix;

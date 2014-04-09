@@ -14,7 +14,6 @@
       },
       initialize: function() {
         this.listenTo(ide_event, 'SWITCH_TAB', this.hideNavigation);
-        null;
         $("#off-canvas-menu").click(function() {
           if ($("#wrapper").hasClass("off-canvas")) {
             return $("wrapper").removeClass("off-canvas");

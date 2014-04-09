@@ -32,7 +32,7 @@
         this.set('notice_list', notice_list);
         this.set('warning_list', warning_list);
         this.set('error_list', error_list);
-        return MC.ta.state_list = {
+        MC.ta.state_list = {
           'notice_list': notice_list,
           'warning_list': warning_list,
           'error_list': error_list

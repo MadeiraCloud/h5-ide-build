@@ -55,7 +55,7 @@
         return;
       }
       model.off();
-      return model = null;
+      model = null;
     };
     return {
       loadModule: loadModule,

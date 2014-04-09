@@ -241,14 +241,14 @@
                           return _results;
                         })();
                       } else if (type === 'AWS.CloudWatch.CloudWatch' && 'AWS.AutoScaling.ScalingPolicy' in vpc_obj) {
-                        resources['id'] = (function() {
+                        resources.id = (function() {
                           var _i, _len, _ref, _results;
                           _ref = _.keys(vpc_obj['AWS.AutoScaling.ScalingPolicy']);
                           _results = [];
                           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                             sg_name = _ref[_i];
                             if ('AlarmName' in vpc_obj['AWS.AutoScaling.ScalingPolicy'][sg_name]) {
-                              _results.push(vpc_obj['AWS.AutoScaling.ScalingPolicy'][sg_name]['AlarmName']);
+                              _results.push(vpc_obj['AWS.AutoScaling.ScalingPolicy'][sg_name].AlarmName);
                             }
                           }
                           return _results;

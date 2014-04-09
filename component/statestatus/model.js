@@ -4,7 +4,7 @@
     StateStatusModel = Backbone.Model.extend({
       initialize: function() {
         var stateList;
-        this.collection = new (this.__customCollection());
+        this.collection = new (this.__customCollection())();
         stateList = MC.data.websocket.collection.status.find().fetch();
         this.collection.set(this.__dispose(stateList).models, {
           silent: true
@@ -104,7 +104,9 @@
         for (_i = 0, _len = stateIds.length; _i < _len; _i++) {
           stateId = stateIds[_i];
           id = this.__genId(resId, stateId);
-          this.collection.get(id) && this.collection.get(id).set('updated', true);
+          if (this.collection.get(id)) {
+            this.collection.get(id).set('updated', true);
+          }
         }
         return null;
       },

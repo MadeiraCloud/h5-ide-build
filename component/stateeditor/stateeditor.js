@@ -4153,7 +4153,7 @@ return TEMPLATE; });
                   var stateNum;
                   stateNum = stateIdNumMap[logObj.id];
                   if (_.isNumber(stateNum)) {
-                    return originStatusDataAry[stateNum] = logObj;
+                    originStatusDataAry[stateNum] = logObj;
                   }
                 });
               }
@@ -4209,7 +4209,6 @@ return TEMPLATE; });
               });
             }
           }
-          null;
           if (compType === 'AWS.AutoScaling.Group' && compData.type === 'AWS.AutoScaling.LaunchConfiguration') {
             asgName = compObj.resource.AutoScalingGroupName;
             lsgUID = MC.extractID(compObj.resource.LaunchConfigurationName);
