@@ -9,7 +9,7 @@ body {
 #body {
 	background-color: #000;
 	color           : #222;
-	background-image: url('../images/login/bg.jpeg');
+	background-image: url('../images/login/bg.jpeg?v=6baa80c3');
 	background-size : cover;
 }
 
@@ -31,7 +31,7 @@ header {
 }
 
 #logo-link {
-	background: url('../images/login/logo.svg') center no-repeat;
+	background: url('../images/login/logo.svg?v=d99f5c3f') center no-repeat;
 	background-size: 240px auto;
 	height: 80px;
 	width: 240px;
