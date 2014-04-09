@@ -1,5 +1,5 @@
 (function() {
-  define(['i18n!nls/lang.js', 'constant', 'stateeditor', 'Design', './module/design/framework/DesignBundle'], function(lang, constant, stateeditor, Design) {
+  define(['i18n!nls/lang.js', 'constant', 'component/stateeditor/stateeditor', './module/design/framework/DesignBundle'], function(lang, constant, stateeditor, Design) {
     var loadModule, unLoadModule, wrap;
     loadModule = function() {
       return require(['design_view', 'design_model', 'property', 'event'], function(View, model, property_main, ide_event) {

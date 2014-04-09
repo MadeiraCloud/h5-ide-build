@@ -1,7 +1,873 @@
+define('component/stateeditor/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n	<li class=\"state-item view ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.cmd_value), "#", {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-command=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.cmd_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n		<div class=\"state-toolbar\">\n			<div class=\"state-action-wrap\">\n				<div class=\"state-remove icon-delete tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_DELETE_STATE", {hash:{},data:data}))
+    + "\"></div>\n				<div class=\"state-check tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SELECT_STATE", {hash:{},data:data}))
+    + "\">\n					<div class=\"checkbox\">\n						<input id=\"state-check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" name=\"state-check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						<label for=\"state-check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n					</div>\n				</div>\n			</div>\n			<i class=\"state-status-icon status status-yellow\"></i>\n			<i class=\"state-drag\"></i>\n			<div class=\"state-view\">\n				<div class=\"command-view-value\"></div>\n				<div class=\"parameter-view-list\">\n					";
+  stack1 = self.invokePartial(partials.paraViewListTpl, 'paraViewListTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n				</div>\n			</div>\n		</div>\n		<div class=\"state-edit clearfix\">\n			<div class=\"command-value editable-area line\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.cmd_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-list\">\n				";
+  stack1 = self.invokePartial(partials.paraListTpl, 'paraListTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n		</div>\n	</li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "comment";
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.state_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  };
+TEMPLATE.stateListTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_line), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_dict), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_array), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_bool), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_text), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_state), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item line ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.required), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_disabled), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">\n				"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-value editable-area line\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			</div>\n		</div>\n	";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  return "required";
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "optional";
+  }
+
+function program7(depth0,data) {
+  
+  
+  return "disabled";
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item dict ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.required), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_disabled), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">\n				"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				";
+  stack1 = self.invokePartial(partials.paraDictListTpl, 'paraDictListTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item array ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.required), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_disabled), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">\n				"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				";
+  stack1 = self.invokePartial(partials.paraArrayListTpl, 'paraArrayListTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item bool ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.required), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_disabled), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">\n				"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-value editable-area line\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program15(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item text ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.required), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_disabled), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">\n				"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-value editable-area text\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program17(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item state ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.required), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_disabled), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">\n				"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				";
+  stack1 = self.invokePartial(partials.paraArrayListTpl, 'paraArrayListTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n		</div>\n	";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.parameter_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  };
+TEMPLATE.paraListTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_line), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_dict), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_array), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_bool), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_text), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_state), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item line ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_no_visible), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n	";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  return "no-visible";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item dict ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_no_visible), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item array ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_no_visible), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item bool ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_no_visible), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item text ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_no_visible), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n	";
+  return buffer;
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<div class=\"parameter-item state ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.para_no_visible), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-para-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n			<div class=\"parameter-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n			<div class=\"parameter-value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n	";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.parameter_view_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  };
+TEMPLATE.paraViewListTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n	<div class=\"parameter-dict-item\">\n		<div class=\"parameter-value editable-area line key\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		<div class=\"parameter-value editable-area line value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n	</div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.para_value), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  };
+TEMPLATE.paraDictListTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<div class=\"parameter-value editable-area line\">"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</div>";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.para_value), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  };
+TEMPLATE.paraArrayListTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"state-empty\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.tip)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n\n";
+  return buffer;
+  };
+TEMPLATE.stateEmptyTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<div class=\"state-warning\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_UNKNOWN_DISTRO_LBL", {hash:{},data:data}))
+    + "</div>";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n						<div class=\"state-item-add-btn btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_NO_STATE_ADD_BTN", {hash:{},data:data}))
+    + "</div>\n					";
+  return buffer;
+  }
+
+  buffer += "<div id=\"state-editor-model\" class=\"se-model-"
+    + escapeExpression(((stack1 = (depth0 && depth0.current_state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n	<div class=\"selectbox state-editor-res-select\" data-res-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.res_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n		";
+  stack1 = self.invokePartial(partials.stateResSelectTpl, 'stateResSelectTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</div>\n\n	<div id=\"state-editor-wrap\">\n		<div id=\"state-editor-body\">\n			<div id=\"state-editor\" spellcheck=\"false\" class=\"font-mono\">\n				";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.supported_platform), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n				<div class=\"state-no-state-container font-normal\">\n					<div class=\"state-no-data-tip\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_NO_STATE_LBL", {hash:{},data:data}))
+    + "</div>\n					";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.allow_add_state), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n				</div>\n\n				<div class=\"state-have-state-container\">\n					<div class=\"state-editor-toolbar clearfix font-normal\">\n						<a class=\"tooltip state-desc-toggle icon-desc\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_DESCRIPTION", {hash:{},data:data}))
+    + "\"></a>\n						<a class=\"tooltip state-log-toggle icon-log\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_STATE_LOG", {hash:{},data:data}))
+    + "\"></a>\n						<a class=\"tooltip state-log-refresh icon-refresh\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_REFRESH_STATE_LOG", {hash:{},data:data}))
+    + "\"></a>\n						<a class=\"tooltip state-sys-log-btn icon-syslog\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SYSTEM_LOG", {hash:{},data:data}))
+    + "\"></a>\n\n						<div class=\"state-operate\">\n							<a id=\"state-toolbar-add\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_ADD_STATE", {hash:{},data:data}))
+    + "</a>\n							<a id=\"state-toolbar-copy-all\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_COPY_ALL", {hash:{},data:data}))
+    + "</a>\n							<a id=\"state-toolbar-copy\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_COPY_SELECTED", {hash:{},data:data}))
+    + "(<span id=\"state-toolbar-copy-count\"></span>)</a>\n							<a id=\"state-toolbar-delete\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_DELETE", {hash:{},data:data}))
+    + "(<span id=\"state-toolbar-delete-count\"></span>)</a>\n							<a id=\"state-toolbar-paste\" class=\"disabled\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_PASTE", {hash:{},data:data}))
+    + "</a>\n							<a id=\"state-toolbar-undo\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_UNDO", {hash:{},data:data}))
+    + "</a>\n							<a id=\"state-toolbar-redo\" href=\"javascript:void(0)\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_REDO", {hash:{},data:data}))
+    + "</a>\n\n							<div id=\"state-toolbar-selectAll\" class=\"checkbox tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SELECT_ALL_STATES", {hash:{},data:data}))
+    + "\">\n								<input type=\"checkbox\" name=\"state-toolbar-selectAll\">\n								<label for=\"state-toolbar-selectAll\"></label>\n							</div>\n						</div>\n					</div>\n\n					<ol class=\"state-list\"></ol>\n\n				</div>\n			</div>\n		</div>\n	</div>\n\n	<div id=\"state-description\" data-command=\"\" class=\"state-sidebar\"></div>\n	<div id=\"state-log\" data-state-id=\"\" class=\"state-sidebar\">\n		<div class=\"state-log-header\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_TIT", {hash:{},data:data}))
+    + "<span class=\"state-log-loading\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_LOADING_LBL", {hash:{},data:data}))
+    + "</span></div>\n		<ul class=\"state-log-list\">\n			";
+  stack1 = self.invokePartial(partials.stateLogInstanceItemTpl, 'stateLogInstanceItemTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  stack1 = self.invokePartial(partials.stateLogItemTpl, 'stateLogItemTpl', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n	</div>\n</div>\n\n";
+  return buffer;
+  };
+TEMPLATE.editorModalTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n		<li class=\"item ";
+  stack1 = helpers.unless.call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.res_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.res_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n	";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "selected";
+  }
+
+  buffer += "<div class=\"selection\">"
+    + escapeExpression(((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.res_selects)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.res_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n<ul class=\"dropdown\" tabindex=\"-1\">\n	";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.res_selects), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</ul>\n\n";
+  return buffer;
+  };
+TEMPLATE.stateResSelectTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n	<li class=\"state-log-item "
+    + escapeExpression(((stack1 = (depth0 && depth0.state_status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.view), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.is_state_log), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-state-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n		<div class=\"state-log-item-header\">\n			<div class=\"state-log-item-name\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.state_num), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n			";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.log_time), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			<div class=\"state-log-item-status\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.state_status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n		</div>\n		<div class=\"state-log-item-content\">\n			";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.comment), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stdout), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</div>\n	</li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "view";
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "state-log";
+  }
+
+function program6(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.state_num)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program8(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<div class=\"state-log-item-time\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.log_time)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>";
+  return buffer;
+  }
+
+function program10(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<div class=\"state-log-item-detail comment\">"
+    + escapeExpression(helpers.breaklines.call(depth0, (depth0 && depth0.comment), {hash:{},data:data}))
+    + "</div>";
+  return buffer;
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n				";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.long_stdout), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  return buffer;
+  }
+function program13(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n					<a class=\"state-log-item-view-detail\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_VIEW_DETAIL", {hash:{},data:data}))
+    + "</a>\n				";
+  return buffer;
+  }
+
+function program15(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n					<div class=\"state-log-item-detail stdout\">"
+    + escapeExpression(helpers.breaklines.call(depth0, (depth0 && depth0.stdout), {hash:{},data:data}))
+    + "</div>\n				";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.state_logs), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n";
+  return buffer;
+  };
+TEMPLATE.stateLogItemTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.res_status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_ITEM_UNKNOWN", {hash:{},data:data}));
+  }
+
+  buffer += "<li class=\"state-log-item\">\n	<div class=\"state-log-item-header\">\n		<div class=\"state-log-item-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_ITEM_INSTANCE", {hash:{},data:data}))
+    + "</div>\n		<div class=\"state-log-item-status\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.res_status), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n	</div>\n</li>\n\n";
+  return buffer;
+  };
+TEMPLATE.stateLogInstanceItemTpl=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<div id=\"modal-state-log-detail\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_DETAIL_MOD_TIT", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<textarea class=\"state-log-detail-content\" readonly=\"readonly\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.content)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n	</div>\n	<div class=\"modal-footer\">\n		<button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_DETAIL_MOD_CLOSE_BTN", {hash:{},data:data}))
+    + "</button>\n	</div>\n</div>\n";
+  return buffer;
+  };
+TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['event', 'i18n!nls/lang.js', './component/stateeditor/template', './component/stateeditor/validate', 'constant', 'instance_model', 'UI.errortip'], function(ide_event, lang, template, validate, constant, instance_model) {
+  define('component/stateeditor/validate',['Design', 'validation', 'constant', 'i18n!nls/lang.js', 'jquery', 'underscore', 'MC', 'UI.errortip'], function(Design, validationTA, constant, lang) {
+    var Action, Helper, Message, Setup, TA, Validator, validate;
+    TA = validationTA.state;
+    Message = {};
+    Setup = {
+      before: function() {},
+      after: function() {}
+    };
+    Validator = {
+      command: function(val, param, elem, represent) {
+        var map;
+        val = Helper.trim(val);
+        map = param.dataMap;
+        if (!this.required(val)) {
+          return 'Command name is required.';
+        }
+        if (!this.stateAllowed(val, map)) {
+          return "Command \"" + val + "\" is not supported.";
+        }
+        return null;
+      },
+      parameter: function(val, param, elem, represent) {
+        var result, validateList;
+        validateList = ['required', 'type'];
+        result = null;
+        if (this[param.constraint.type]) {
+          result = this[param.constraint.type](val, param, elem, represent);
+        }
+        if (!result) {
+          result = this.componentExist(val);
+        }
+        return result;
+      },
+      dict: function(val, param, elem, represent) {
+        var result, subType;
+        subType = param.subType;
+        result = null;
+        if (param.constraint.required && subType === 'key' && !this.required(val)) {
+          result = 'dict key is required';
+        }
+        return result;
+      },
+      array: function(val, param, elem, represent) {
+        var result;
+        result = null;
+        if (param.constraint.required && !this.required(val)) {
+          result = 'array value is required';
+        }
+        return result;
+      },
+      line: function(val, param, elem, represent) {
+        var result;
+        result = null;
+        if (param.constraint.required && !this.required(val)) {
+          result = 'line value is required';
+        }
+        return result;
+      },
+      text: function(val, param, elem, represent) {
+        var result;
+        result = null;
+        if (param.constraint.required && !this.required(val)) {
+          result = 'text value is required';
+        } else {
+          result = this.componentExist(val);
+        }
+        return result;
+      },
+      bool: function(val, param, elem, represent) {
+        var result;
+        result = null;
+        if (param.constraint.required && !this.required(val)) {
+          result = 'line value is required';
+        } else if (!(this.isBool(val) || this.isStringBool(val, true))) {
+          result = "invalid boolean value: \"" + val + "\"";
+        }
+        return result;
+      },
+      componentExist: function(val) {
+        var inexsitCount, ref, refs, _i, _len;
+        refs = Helper.getRefName(val);
+        inexsitCount = 0;
+        for (_i = 0, _len = refs.length; _i < _len; _i++) {
+          ref = refs[_i];
+          if (!Helper.nameExist(ref.name)) {
+            inexsitCount++;
+          }
+        }
+        if (inexsitCount) {
+          return "Reference 'unknown' doesn't exist.";
+        }
+        return null;
+      },
+      required: function(val) {
+        return this.notnull(val) && this.notblank(val);
+      },
+      notnull: function(val) {
+        return val.length > 0;
+      },
+      notblank: function(val) {
+        return 'string' === typeof val && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+      },
+      isBool: function(val) {
+        return _.isBoolean(val);
+      },
+      isStringBool: function(val, allowEmpty) {
+        return /^(true|false)$/i.test(val || allowEmpty && val === '');
+      },
+      stateAllowed: function(val, map) {
+        return __indexOf.call(Helper.getAllowCommands(map), val) >= 0;
+      }
+    };
+    Helper = {
+      getAllowCommands: function(map) {
+        return _.keys(map);
+      },
+      trim: function(val) {
+        return $.trim(val);
+      },
+      nameExist: function(name) {
+        var allCompData, component, uid;
+        allCompData = Design.instance().serialize().component;
+        for (uid in allCompData) {
+          component = allCompData[uid];
+          if (component.name === name) {
+            return true;
+          }
+        }
+        return false;
+      },
+      getRefName: function(val) {
+        var reg, resArr, ret;
+        reg = constant.REGEXP.stateEditorOriginReference;
+        ret = [];
+        while ((resArr = reg.exec(val)) !== null) {
+          ret.push({
+            name: resArr[1],
+            ref: resArr[0]
+          });
+        }
+        return ret;
+      }
+    };
+    Action = {
+      displayError: function(msg, elem, represent) {
+        if (!errortip.hasError(elem)) {
+          errortip.createError(msg, elem);
+          return errortip.createError(msg, represent);
+        } else {
+          errortip.changeError(msg, elem);
+          return errortip.changeError(msg, represent);
+        }
+      },
+      clearError: function(elem, represent) {
+        if (errortip.hasError(elem)) {
+          errortip.removeError(elem);
+          return errortip.removeError(represent);
+        }
+      }
+    };
+    validate = function(value, param, elem, represent) {
+      var res;
+      res = Validator[param.type](value, param, elem, represent);
+      if (res) {
+        Action.displayError(res, elem, represent);
+      } else {
+        Action.clearError(elem, represent);
+      }
+      return res;
+    };
+    _.extend(validate, Setup);
+    return validate;
+  });
+
+}).call(this);
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('component/stateeditor/view',['event', 'i18n!nls/lang.js', './template', './validate', 'constant', 'instance_model', './lib/markdown', 'UI.errortip'], function(ide_event, lang, template, validate, constant, instance_model, Markdown) {
     var StateEditorView, id, tpl;
     for (id in template) {
       tpl = template[id];
@@ -2728,3 +3594,704 @@
   });
 
 }).call(this);
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('component/stateeditor/model',['MC', 'constant', 'state_model', 'backbone', 'jquery', 'underscore'], function(MC, constant, state_model) {
+    var StateEditorModel;
+    StateEditorModel = Backbone.Model.extend({
+      defaults: {
+        compData: null,
+        allCompData: null,
+        stateLogDataAry: []
+      },
+      initialize: function() {
+        var agentData, allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, currentCompData, currentState, groupResSelectData, modRepo, modTag, modVersion, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, that;
+        that = this;
+        agentData = Design.instance().get('agent');
+        modRepo = agentData.module.repo;
+        modTag = agentData.module.tag;
+        modVersion = modRepo + ':' + modTag;
+        moduleDataObj = MC.data.state.module[modVersion];
+        platformInfo = that.getResPlatformInfo();
+        osPlatform = platformInfo.osPlatform;
+        osPlatformDistro = platformInfo.osPlatformDistro;
+        if (osPlatform === 'windows') {
+          that.set('isWindowsPlatform', true);
+        } else {
+          that.set('isWindowsPlatform', false);
+        }
+        if (osPlatformDistro) {
+          that.set('supportedPlatform', true);
+        } else {
+          that.set('supportedPlatform', false);
+        }
+        moduleData = {};
+        if (osPlatform === 'linux') {
+          if (moduleDataObj.linux) {
+            moduleData = _.extend(moduleData, moduleDataObj.linux);
+          }
+        } else if (osPlatform === 'windows') {
+          if (moduleDataObj.windows) {
+            moduleData = _.extend(moduleData, moduleDataObj.windows);
+          }
+        }
+        if (moduleDataObj.common) {
+          moduleData = _.extend(moduleData, moduleDataObj.common);
+        }
+        if (moduleDataObj.meta) {
+          moduleData = _.extend(moduleData, moduleDataObj.meta);
+        }
+        cmdAry = [];
+        cmdParaMap = {};
+        cmdParaObjMap = {};
+        cmdModuleMap = {};
+        moduleCMDMap = {};
+        _.each(moduleData, function(cmdObj, cmdName) {
+          var cmdAllParaAry, cmdDistroAry, paraAryObj, supportCMD;
+          cmdDistroAry = cmdObj.distro;
+          supportCMD = false;
+          if (((!cmdDistroAry) || (cmdDistroAry && __indexOf.call(cmdDistroAry, osPlatformDistro) >= 0)) && osPlatform === 'linux') {
+            supportCMD = true;
+          }
+          cmdObj.support = supportCMD;
+          cmdAry.push({
+            name: cmdName,
+            support: supportCMD
+          });
+          paraAryObj = cmdObj.parameter;
+          cmdParaMap[cmdName] = [];
+          cmdParaObjMap[cmdName] = {};
+          cmdModuleMap[cmdName] = cmdObj;
+          moduleCMDMap[cmdObj.module] = cmdName;
+          _.each(paraAryObj, function(paraObj, paraName) {
+            var paraBuildObj;
+            paraBuildObj = _.extend(paraObj, {});
+            paraBuildObj.name = paraName;
+            paraBuildObj['type_' + paraBuildObj.type] = true;
+            cmdParaMap[cmdName].push(paraBuildObj);
+            cmdParaObjMap[cmdName][paraName] = paraBuildObj;
+            return null;
+          });
+          cmdAllParaAry = cmdParaMap[cmdName];
+          cmdParaMap[cmdName] = that.sortParaList(cmdAllParaAry, 'name');
+          return null;
+        });
+        cmdNameAry = cmdAry.sort(function(val1, val2) {
+          if (val1.support === val2.support) {
+            if (val1.name > val2.name) {
+              return 1;
+            } else if (val1.name < val2.name) {
+              return -1;
+            } else {
+              return 0;
+            }
+          } else {
+            if (val1.support === true) {
+              return -1;
+            }
+            if (val2.support === true) {
+              return 1;
+            }
+          }
+        });
+        allCompData = that.get('allCompData');
+        that.set('cmdNameAry', cmdNameAry);
+        that.set('cmdParaMap', cmdParaMap);
+        that.set('cmdParaObjMap', cmdParaObjMap);
+        that.set('cmdModuleMap', cmdModuleMap);
+        that.set('moduleCMDMap', moduleCMDMap);
+        that.genStateRefList(allCompData);
+        currentCompData = that.get('compData');
+        resAttrDataAry = MC.aws.aws.genAttrRefList(currentCompData, allCompData);
+        that.set('resAttrDataAry', resAttrDataAry);
+        that.genAttrRefRegexList();
+        groupResSelectData = that.getGroupResSelectData();
+        that.set('groupResSelectData', groupResSelectData);
+        currentState = MC.canvas.getState();
+        if (currentState === 'stack') {
+          that.set('currentState', 'stack');
+        } else if (currentState === 'app') {
+          that.set('currentState', 'app');
+        } else if (currentState === 'appedit') {
+          that.set('currentState', 'appedit');
+        }
+        if (MC.canvas_data.state === 'Stoped') {
+          return that.set('currentAppState', 'stoped');
+        }
+      },
+      sortParaList: function(cmdAllParaAry, paraName) {
+        var newCMDAllParaAry;
+        newCMDAllParaAry = cmdAllParaAry.sort(function(paraObj1, paraObj2) {
+          if (paraObj1.required === paraObj2.required) {
+            if (paraObj1[paraName] < paraObj2[paraName]) {
+              return -1;
+            } else {
+              return 1;
+            }
+          }
+          if (paraObj1.required) {
+            return -1;
+          }
+          if (paraObj2.required) {
+            return 1;
+          }
+        });
+        return newCMDAllParaAry;
+      },
+      getResPlatformInfo: function() {
+        var compData, imageId, imageObj, linuxDistroRange, osFamily, osPlatform, osPlatformDistro, osType, that;
+        that = this;
+        compData = that.get('compData');
+        imageId = compData.resource.ImageId;
+        imageObj = MC.data.dict_ami[imageId];
+        osPlatform = null;
+        osPlatformDistro = null;
+        if (imageObj) {
+          osFamily = imageObj.osFamily;
+          osType = imageObj.osType;
+          linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz', 'linux-other'];
+          if (osType === 'windows') {
+            osPlatform = 'windows';
+          } else if (__indexOf.call(linuxDistroRange, osType) >= 0) {
+            osPlatform = 'linux';
+            osPlatformDistro = osType;
+          }
+        }
+        return {
+          osPlatform: osPlatform,
+          osPlatformDistro: osPlatformDistro
+        };
+      },
+      updateAllStateRef: function(newOldStateIdMap) {
+        var allInstanceModel, allLCModel, cmdParaObjMap, dealFunc, moduleCMDMap, newOldStateIdRefMap, that;
+        that = this;
+        allInstanceModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).allObjects();
+        allLCModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration).allObjects();
+        newOldStateIdRefMap = {};
+        _.each(newOldStateIdMap, function(value, key) {
+          var newKey, newValue;
+          newKey = that.replaceParaNameToUID(key);
+          newValue = that.replaceParaNameToUID(value);
+          newOldStateIdRefMap[newKey] = newValue;
+          return null;
+        });
+        moduleCMDMap = that.get('moduleCMDMap');
+        cmdParaObjMap = that.get('cmdParaObjMap');
+        dealFunc = function(resModel) {
+          var compUID, stateObj;
+          stateObj = resModel.getStateData();
+          compUID = resModel.id;
+          if (stateObj && stateObj.length > 0) {
+            _.each(stateObj, function(stateItemObj) {
+              var cmdName, moduleName, paraModelObj, paraObj;
+              paraObj = stateItemObj.parameter;
+              moduleName = stateItemObj.module;
+              cmdName = moduleCMDMap[moduleName];
+              if (!cmdName) {
+                return;
+              }
+              paraModelObj = cmdParaObjMap[cmdName];
+              if (!paraModelObj) {
+                return;
+              }
+              _.each(paraObj, function(paraValue, paraName) {
+                var newParaValue, paraType;
+                paraType = paraModelObj[paraName].type;
+                if (paraType === 'state') {
+                  newParaValue = _.map(paraValue, function(stateRef) {
+                    if (newOldStateIdRefMap[stateRef]) {
+                      return newOldStateIdRefMap[stateRef];
+                    }
+                    return stateRef;
+                  });
+                  paraObj[paraName] = newParaValue;
+                }
+                return null;
+              });
+              return null;
+            });
+            resModel.setStateData(stateObj);
+          }
+          return null;
+        };
+        _.each(allInstanceModel, dealFunc);
+        _.each(allLCModel, dealFunc);
+        return null;
+      },
+      setStateData: function(stateData) {
+        var compData, resModel, that;
+        that = this;
+        compData = that.get('compData');
+        resModel = that.get('resModel');
+        return resModel.setStateData(stateData);
+      },
+      getStateData: function() {
+        var compData, resModel, stateData, that;
+        that = this;
+        compData = that.get('compData');
+        resModel = that.get('resModel');
+        if (compData) {
+          stateData = resModel.getStateData();
+          if (_.isArray(stateData)) {
+            return stateData;
+          }
+        }
+        return null;
+      },
+      getResName: function() {
+        var compData, resName, that;
+        that = this;
+        resName = '';
+        compData = that.get('compData');
+        if (compData && compData.name) {
+          resName = compData.name;
+        }
+        if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+          if (compData.serverGroupUid === compData.uid) {
+            if (compData.serverGroupName) {
+              resName = compData.serverGroupName;
+            }
+          }
+        }
+        return resName;
+      },
+      genStateRefList: function(allCompData) {
+        var compData, compList, currentCompUID, moduleCMDMap, resStateDataAry, that;
+        that = this;
+        compList = _.values(allCompData);
+        resStateDataAry = [];
+        compData = that.get('compData');
+        currentCompUID = compData.uid;
+        moduleCMDMap = that.get('moduleCMDMap');
+        if (compList && !_.isEmpty(compList) && _.isArray(compList)) {
+          _.each(compList, function(compObj) {
+            var compName, compType, compUID, stateAry;
+            compUID = compObj.uid;
+            compType = compObj.type;
+            compName = compObj.name;
+            if (currentCompUID === compUID) {
+              return;
+            }
+            if (compType === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+              if (compObj.index !== 0) {
+                return;
+              }
+              compName = compObj.serverGroupName;
+            }
+            if (compType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+              compName = Design.instance().component(compUID).parent().get('name');
+            }
+            stateAry = compObj.state;
+            if (stateAry && _.isArray(stateAry)) {
+              _.each(stateAry, function(stateObj, idx) {
+                var stateMeta, stateNumStr, stateRefStr;
+                if (stateObj.module !== 'meta.comment') {
+                  stateNumStr = String(idx + 1);
+                  stateRefStr = '{' + compName + '.state.' + stateNumStr + '}';
+                  stateMeta = moduleCMDMap[stateObj.module];
+                  return resStateDataAry.push({
+                    name: stateRefStr,
+                    value: stateRefStr,
+                    meta: stateMeta
+                  });
+                }
+              });
+            }
+            return null;
+          });
+        }
+        resStateDataAry = resStateDataAry.sort(function(val1, val2) {
+          if (val1.name > val2.name) {
+            return 1;
+          } else if (val1.name < val2.name) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        return that.set('resStateDataAry', resStateDataAry);
+      },
+      genAttrRefRegexList: function() {
+        var attrRefRegexList, resAttrDataAry, resAttrRegexStr, resStateDataAry, stateRefRegexList, that;
+        that = this;
+        attrRefRegexList = [];
+        resAttrDataAry = that.get('resAttrDataAry');
+        resStateDataAry = that.get('resStateDataAry');
+        if (!resAttrDataAry) {
+          resAttrDataAry = [];
+        }
+        attrRefRegexList = _.map(resAttrDataAry, function(refObj) {
+          var regStr;
+          regStr = refObj.name.replace('{', '\\{').replace('}', '\\}').replace('.', '\\.').replace('[', '\\[').replace(']', '\\]');
+          return '@' + '{' + regStr + '}';
+        });
+        stateRefRegexList = _.map(resStateDataAry, function(refObj) {
+          var regStr;
+          regStr = refObj.name.replace('{', '\\{').replace('}', '\\}').replace('.', '\\.').replace('[', '\\[').replace(']', '\\]');
+          return '@' + regStr;
+        });
+        attrRefRegexList = attrRefRegexList.concat(stateRefRegexList);
+        resAttrRegexStr = attrRefRegexList.join('|');
+        return that.set('resAttrRegexStr', resAttrRegexStr);
+      },
+      replaceStateUIDToName: function(paraValue) {
+        var allCompData, compData, newParaValue, newRefStr, refMatchAry, refMatchStr, refRegex, resName, resUID, stateNum, stateNumMap, stateUID, that, uidMatchAry, uidRegex;
+        that = this;
+        allCompData = that.get('allCompData');
+        refRegex = /@\{([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})\.state\.state-([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})\}/g;
+        uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/g;
+        refMatchAry = paraValue.match(refRegex);
+        newParaValue = paraValue;
+        if (refMatchAry && refMatchAry.length) {
+          refMatchStr = refMatchAry[0];
+          uidMatchAry = refMatchStr.match(uidRegex);
+          resUID = uidMatchAry[0];
+          stateUID = 'state-' + uidMatchAry[1];
+          compData = allCompData[resUID];
+          resName = 'unknown';
+          stateNum = 'unknown';
+          if (compData) {
+            stateNumMap = {};
+            resName = compData.name;
+            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+              if (compData.number && compData.number > 1) {
+                resName = compData.serverGroupName;
+              }
+            }
+            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+              _.each(allCompData, function(asgCompData) {
+                var lcUID, lcUIDRef;
+                if (asgCompData.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+                  lcUIDRef = asgCompData.resource.LaunchConfigurationName;
+                  if (lcUIDRef) {
+                    lcUID = MC.extractID(lcUIDRef);
+                    if (lcUID === resUID) {
+                      resName = asgCompData.name;
+                    }
+                  }
+                }
+                return null;
+              });
+            }
+            if (compData.state && _.isArray(compData.state)) {
+              _.each(compData.state, function(stateObj, idx) {
+                if (stateObj.id === stateUID) {
+                  stateNum = idx + 1;
+                }
+                return null;
+              });
+            }
+          }
+          newRefStr = refMatchStr.replace(resUID, resName).replace(stateUID, stateNum);
+          newParaValue = newParaValue.replace(refMatchStr, newRefStr);
+        }
+        return newParaValue;
+      },
+      replaceStateNameToUID: function(paraValue) {
+        var allCompData, compData, lcCompData, lcUID, lcUIDRef, newParaValue, newUIDStr, refMatchAry, refMatchStr, refRegex, resName, resUID, stateNum, stateUID, that;
+        that = this;
+        allCompData = that.get('allCompData');
+        refRegex = /@\{([\w-]+)\.state\.\d+\}/g;
+        refMatchAry = paraValue.match(refRegex);
+        newParaValue = paraValue;
+        if (refMatchAry && refMatchAry.length) {
+          refMatchStr = refMatchAry[0];
+          resName = refMatchStr.replace('@{', '').split('.')[0];
+          resUID = that.getUIDByResName(resName);
+          stateNum = Number(refMatchStr.replace('}', '').split('.')[2]);
+          stateUID = '';
+          lcCompData = null;
+          if (resUID && _.isNumber(stateNum)) {
+            compData = allCompData[resUID];
+            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+              lcUIDRef = compData.resource.LaunchConfigurationName;
+              if (lcUIDRef) {
+                lcUID = MC.extractID(lcUIDRef);
+                resUID = lcUID;
+                lcCompData = allCompData[lcUID];
+              }
+            }
+            if (lcCompData) {
+              compData = lcCompData;
+            }
+            if (compData.state && _.isArray(compData.state) && compData.state[stateNum - 1]) {
+              stateUID = compData.state[stateNum - 1].id;
+            }
+          }
+          if (resUID && stateUID) {
+            newUIDStr = refMatchStr.replace(resName, resUID).replace('.state.' + stateNum, '.state.' + stateUID);
+            newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
+          }
+        }
+        return newParaValue;
+      },
+      replaceParaUIDToName: function(paraValue) {
+        var allCompData, currentCompData, currentCompUID, newParaValue, refMatchAry, refRegex, that, uidRegex;
+        that = this;
+        currentCompData = that.get('compData');
+        currentCompUID = currentCompData.uid;
+        allCompData = that.get('allCompData');
+        refRegex = /@\{([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})(\.(\w+(\[\d+\])*))+\}/g;
+        uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/;
+        refMatchAry = paraValue.match(refRegex);
+        newParaValue = paraValue;
+        _.each(refMatchAry, function(refMatchStr) {
+          var compData, newRefStr, resName, resUID, uidMatchAry;
+          uidMatchAry = refMatchStr.match(uidRegex);
+          resUID = uidMatchAry[0];
+          compData = allCompData[resUID];
+          if (compData) {
+            resName = compData.name;
+            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+              if (compData.number && compData.number > 1) {
+                resName = compData.serverGroupName;
+              }
+            }
+          } else {
+            resName = 'unknown';
+          }
+          newRefStr = refMatchStr.replace(resUID, resName);
+          newParaValue = newParaValue.replace(refMatchStr, newRefStr);
+          return null;
+        });
+        return newParaValue;
+      },
+      replaceParaNameToUID: function(paraValue) {
+        var allCompData, newParaValue, refMatchAry, refRegex, that;
+        that = this;
+        allCompData = that.get('allCompData');
+        refRegex = constant.REGEXP.stateEditorOriginReference;
+        refMatchAry = paraValue.match(refRegex);
+        newParaValue = paraValue;
+        _.each(refMatchAry, function(refMatchStr) {
+          var newUIDStr, resName, resUID;
+          resName = refMatchStr.replace('@{', '').split('.')[0];
+          if (resName !== 'self') {
+            resUID = that.getUIDByResName(resName);
+            if (resUID) {
+              newUIDStr = refMatchStr.replace(resName, resUID);
+              newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
+            }
+          }
+          return null;
+        });
+        return newParaValue;
+      },
+      getUIDByResName: function(resName) {
+        var allCompData, currentCompData, currentCompUID, resultUID, that;
+        that = this;
+        currentCompData = that.get('compData');
+        currentCompUID = currentCompData.uid;
+        allCompData = that.get('allCompData');
+        resultUID = '';
+        $.each(allCompData, function(uid, resObj) {
+          if (resObj.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+            if (resObj.number && resObj.number > 1) {
+              if (resObj.serverGroupName === resName) {
+                resultUID = uid;
+                return false;
+              }
+            }
+          }
+          if (resObj.name === resName) {
+            resultUID = uid;
+          }
+          return null;
+        });
+        return resultUID;
+      },
+      getResState: function(resId) {
+        var currentRegion, resObj, resState, that;
+        that = this;
+        currentRegion = MC.canvas_data.region;
+        resObj = MC.data.resource_list[currentRegion][resId];
+        resState = 'unknown';
+        if (resObj && resObj.instanceState && resObj.instanceState.name) {
+          resState = resObj.instanceState.name;
+        }
+        that.set('resState', resState);
+        return null;
+      },
+      genStateLogData: function(resId, callback) {
+        var agentStatus, appId, originStatusDataAry, resModel, stateDataAry, stateIdNumMap, that;
+        that = this;
+        appId = MC.canvas_data.id;
+        if (!(appId && resId)) {
+          that.set('stateLogDataAry', []);
+          callback();
+          return;
+        }
+        resModel = that.get('resModel');
+        stateDataAry = resModel.getStateData();
+        stateIdNumMap = {};
+        originStatusDataAry = _.map(stateDataAry, function(stateObj, idx) {
+          stateIdNumMap[stateObj.id] = idx;
+          return {
+            id: stateObj.id,
+            result: 'pending'
+          };
+        });
+        agentStatus = 'pending';
+        state_model.log({
+          sender: that
+        }, $.cookie('usercode'), $.cookie('session_id'), appId, resId);
+        that.off('STATE_LOG_RETURN');
+        return that.on('STATE_LOG_RETURN', function(result) {
+          var logAry, statusDataAry, statusObj;
+          if (!result.is_error) {
+            statusDataAry = result.resolved_data;
+            if (statusDataAry && statusDataAry[0]) {
+              statusObj = statusDataAry[0];
+              if (statusObj.agent_status) {
+                agentStatus = statusObj.agent_status;
+              }
+              logAry = statusObj.status;
+              if (logAry && _.isArray(logAry)) {
+                _.each(logAry, function(logObj) {
+                  var stateNum;
+                  stateNum = stateIdNumMap[logObj.id];
+                  if (_.isNumber(stateNum)) {
+                    return originStatusDataAry[stateNum] = logObj;
+                  }
+                });
+              }
+            }
+            originStatusDataAry.unshift({
+              id: 'Agent',
+              result: agentStatus
+            });
+            that.set('stateLogDataAry', originStatusDataAry);
+            that.set('agentStatus', agentStatus);
+            if (callback) {
+              return callback();
+            }
+          }
+        });
+      },
+      getCurrentResUID: function() {
+        var compData, currentCompUID, that;
+        that = this;
+        compData = that.get('compData');
+        currentCompUID = compData.uid;
+        return currentCompUID;
+      },
+      getGroupResSelectData: function() {
+        var allCompData, compData, dataAry, originCompUID, originGroupUID, that;
+        that = this;
+        compData = that.get('compData');
+        allCompData = that.get('allCompData');
+        originGroupUID = '';
+        originCompUID = compData.uid;
+        if (compData.type === 'AWS.EC2.Instance') {
+          originGroupUID = compData.serverGroupUid;
+        }
+        dataAry = [];
+        _.each(allCompData, function(compObj) {
+          var asgName, compType, compUID, currentGroupUID, lsgUID, resId, resName;
+          compType = compObj.type;
+          compUID = compObj.uid;
+          if (compType === 'AWS.EC2.Instance' && compData.type === compType) {
+            currentGroupUID = compObj.serverGroupUid;
+            if (compUID === originCompUID) {
+              resId = compObj.resource.InstanceId;
+              resName = compObj.name;
+              dataAry.push({
+                res_id: resId,
+                res_name: resName
+              });
+            } else if (originGroupUID && currentGroupUID && compUID !== originGroupUID && currentGroupUID === originGroupUID) {
+              resId = compObj.resource.InstanceId;
+              dataAry.push({
+                res_id: resId,
+                res_name: compObj.name
+              });
+            }
+          }
+          null;
+          if (compType === 'AWS.AutoScaling.Group' && compData.type === 'AWS.AutoScaling.LaunchConfiguration') {
+            asgName = compObj.resource.AutoScalingGroupName;
+            lsgUID = MC.extractID(compObj.resource.LaunchConfigurationName);
+            if (lsgUID === originCompUID) {
+              $.each(MC.data.resource_list[MC.canvas_data.region], function(idx, resObj) {
+                if (resObj && resObj.AutoScalingGroupName && resObj.Instances) {
+                  if (resObj.AutoScalingGroupName === asgName) {
+                    return $.each(resObj.Instances.member, function(idx, instanceObj) {
+                      var instanceId;
+                      instanceId = instanceObj.InstanceId;
+                      return dataAry.push({
+                        res_id: instanceId,
+                        res_name: instanceId
+                      });
+                    });
+                  }
+                }
+              });
+            }
+          }
+          return null;
+        });
+        return dataAry;
+      }
+    });
+    return StateEditorModel;
+  });
+
+}).call(this);
+
+(function() {
+  define('component/stateeditor/stateeditor',['event', './view', './model', './lib/ace', 'UI.modal', 'jquerysort'], function(ide_event, View, Model) {
+    var loadModule, unLoadModule;
+    loadModule = function(allCompData, uid, resId) {
+      var compData, model, resModel, view;
+      compData = allCompData[uid];
+      resModel = Design.instance().component(uid);
+      if (compData) {
+        model = new Model({
+          compData: compData,
+          resModel: resModel,
+          resId: resId,
+          allCompData: allCompData
+        });
+      } else {
+        model = new Backbone.Model();
+      }
+      view = new View({
+        model: model
+      });
+      view.model = model;
+      ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR);
+      ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, function(newStateUpdateResIdAry) {
+        return view.onStateStatusUpdate(newStateUpdateResIdAry);
+      });
+      ide_event.offListen(ide_event.STATE_EDITOR_SAVE_DATA);
+      ide_event.onLongListen(ide_event.STATE_EDITOR_SAVE_DATA, function(event) {
+        return view.onMouseDownSaveFromOther(event);
+      });
+      $('#property-panel').addClass('state');
+      return $('#property-panel .sub-stateeditor').html(view.render().el);
+    };
+    unLoadModule = function(view, model) {
+      var err;
+      console.log('state editor unLoadModule');
+      try {
+        view.off();
+        model.off();
+        view.undelegateEvents();
+        modal.close();
+        view = null;
+        model = null;
+        ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR);
+      } catch (_error) {
+        err = _error;
+      }
+    };
+    return {
+      loadModule: loadModule,
+      unLoadModule: unLoadModule
+    };
+  });
+
+}).call(this);
+

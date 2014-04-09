@@ -12090,7 +12090,7 @@
 
     /* env:dev                                                                             env:dev:end */
     window.Design = Design;
-    return null;
+    return Design;
   });
 
 }).call(this);
