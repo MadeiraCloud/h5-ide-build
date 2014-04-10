@@ -1,0 +1,1 @@
+define(["handlebars"],function(e){var t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<div class="modal-header">\n	<h3>Validation</h3>\n	<i class="modal-close">×</i>\n</div>\n<div class="modal-body">\n	<div id="modal-validation-statusbar">\n	</div>\n</div>'};return e.template(t)});

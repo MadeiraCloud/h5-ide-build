@@ -1,0 +1,1 @@
+(function(){define(["backbone","jquery","underscore","MC"],function(){var e;return e=Backbone.Model.extend({defaults:{set_xxx:null,get_xxx:null},initialize:function(){}}),e})}).call(this);
