@@ -4142,23 +4142,11 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('module/design/framework/resource/EniModel',["../ComplexResModel", "Design", "../connection/SgAsso", "../connection/EniAttachment", "constant", 'i18n!nls/lang.js'], function(ComplexResModel, Design, SgAsso, EniAttachment, constant, lang) {
-    var IpObject, Model, _addZeroToLeftStr;
-    _addZeroToLeftStr = function(str, n) {
-      var count, strAry, _i, _results;
-      count = n - str.length + 1;
-      strAry = _.map((function() {
-        _results = [];
-        for (var _i = 1; 1 <= count ? _i < count : _i > count; 1 <= count ? _i++ : _i--){ _results.push(_i); }
-        return _results;
-      }).apply(this), function() {
-        return '0';
-      });
-      return strAry.join('') + str;
-    };
 
     /*
     IpObject is used to represent an ip in Eni
      */
+    var IpObject, Model;
     IpObject = function(attr) {
       if (!attr) {
         attr = {};
@@ -4705,8 +4693,8 @@
         suffix = Number(cutAry[1]);
         prefix = 32 - suffix;
         ipAddrAry = ipAddr.split('.');
-        ipAddrBinAry = _.map(ipAddrAry, function(value) {
-          return _addZeroToLeftStr(parseInt(value).toString(2), 8);
+        ipAddrBinAry = ipAddrAry.map(function(value) {
+          return MC.leftPadString(parseInt(value).toString(2), 8, "0");
         });
         ipAddrBinStr = ipAddrBinAry.join('');
         ipAddrBinPrefixStr = ipAddrBinStr.slice(0, suffix);
@@ -4724,7 +4712,7 @@
         readyAssignAryLength = readyAssignAry.length;
         $.each(readyAssignAry, function(idx, value) {
           var isAvailableIP, newIPAry, newIPBinStr, newIPObj, newIPStr;
-          newIPBinStr = ipAddrBinPrefixStr + _addZeroToLeftStr(value.toString(2), prefix);
+          newIPBinStr = ipAddrBinPrefixStr + MC.leftPadString(value.toString(2), prefix, "0");
           isAvailableIP = true;
           if (idx === 0 || idx === 1 || idx === 2 || idx === 3) {
             isAvailableIP = false;
@@ -4764,8 +4752,8 @@
         suffix = Number(cutAry[1]);
         prefix = 32 - suffix;
         ipAddrAry = ipAddr.split('.');
-        ipAddrBinAry = _.map(ipAddrAry, function(value) {
-          return _addZeroToLeftStr(parseInt(value).toString(2), 8);
+        ipAddrBinAry = ipAddrAry.map(function(value) {
+          return MC.leftPadString(parseInt(value).toString(2), 8, "0");
         });
         ipAddrBinStr = ipAddrBinAry.join('');
         ipAddrBinPrefixStr = ipAddrBinStr.slice(0, suffix);
@@ -6455,8 +6443,9 @@
         return null;
       },
       setCidr: function(cidr) {
-        var SubnetModel, idx, sb, shouldUpdateSubnetCidr, subnetCidrAry, _i, _len;
-        SubnetModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).subnets = SubnetModel.allObjects();
+        var SubnetModel, idx, sb, shouldUpdateSubnetCidr, subnetCidrAry, subnets, _i, _len;
+        SubnetModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        subnets = SubnetModel.allObjects();
         shouldUpdateSubnetCidr = false;
         subnetCidrAry = _.map(subnets, function(sb) {
           var subnetCidr;
@@ -9392,31 +9381,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('module/design/framework/resource/SubnetModel',["constant", "Design", "../GroupModel", "../connection/RtbAsso", "i18n!nls/lang.js"], function(constant, Design, GroupModel, RtbAsso, lang) {
-    var Model, _addZeroToLeftStr, _addZeroToRightStr, _getCidrBinStr;
-    _addZeroToLeftStr = function(str, n) {
-      var count, strAry, _i, _results;
-      count = n - str.length + 1;
-      strAry = _.map((function() {
-        _results = [];
-        for (var _i = 1; 1 <= count ? _i < count : _i > count; 1 <= count ? _i++ : _i--){ _results.push(_i); }
-        return _results;
-      }).apply(this), function() {
-        return '0';
-      });
-      return strAry.join('') + str;
-    };
-    _addZeroToRightStr = function(str, n) {
-      var count, strAry, _i, _results;
-      count = n - str.length + 1;
-      strAry = _.map((function() {
-        _results = [];
-        for (var _i = 1; 1 <= count ? _i < count : _i > count; 1 <= count ? _i++ : _i--){ _results.push(_i); }
-        return _results;
-      }).apply(this), function() {
-        return '0';
-      });
-      return str + strAry.join('');
-    };
+    var Model, _getCidrBinStr;
     _getCidrBinStr = function(ipCidr) {
       var cutAry, ipAddr, ipAddrAry, ipAddrBinAry, prefix, suffix;
       cutAry = ipCidr.split('/');
@@ -9424,8 +9389,8 @@
       suffix = Number(cutAry[1]);
       prefix = 32 - suffix;
       ipAddrAry = ipAddr.split('.');
-      ipAddrBinAry = _.map(ipAddrAry, function(value) {
-        return _addZeroToLeftStr(parseInt(value).toString(2), 8);
+      ipAddrBinAry = ipAddrAry.map(function(value) {
+        return MC.leftPadString(parseInt(value).toString(2), 8, "0");
       });
       return ipAddrBinAry.join('');
     };
@@ -9697,7 +9662,7 @@
         filterAry = [];
         _.each(readyAssignAry, function(value, idx) {
           var newIPBinStr;
-          newIPBinStr = _addZeroToLeftStr(value.toString(2), suffixLength);
+          newIPBinStr = MC.leftPadString(value.toString(2), suffixLength, "0");
           if (idx === 0 || idx === 1 || idx === 2 || idx === 3 || idx === (readyAssignAryLength - 1)) {
             filterAry.push(newIPBinStr);
           }
@@ -9734,29 +9699,25 @@
         return Number(subnetCIDR.split('/')[1]) >= Number(vpcCIDR.split('/')[1]);
       },
       autoAssignAllCIDR: function(vpcCIDR, subnetCount) {
-        var needBinNum, newSubnetAry, newSubnetSuffix, vpcIPBinLeftStr, vpcIPBinStr, vpcIPSuffix, _i, _results;
+        var binSeq, i, needBinNum, newIPAry, newIPStr, newSubnetAry, newSubnetBinStr, newSubnetStr, newSubnetSuffix, vpcIPBinLeftStr, vpcIPBinStr, vpcIPSuffix;
         needBinNum = Math.ceil((Math.log(subnetCount)) / (Math.log(2)));
         vpcIPSuffix = Number(vpcCIDR.split('/')[1]);
         vpcIPBinStr = _getCidrBinStr(vpcCIDR);
         vpcIPBinLeftStr = vpcIPBinStr.slice(0, vpcIPSuffix);
         newSubnetSuffix = vpcIPSuffix + needBinNum;
         newSubnetAry = [];
-        _.each((function() {
-          _results = [];
-          for (var _i = 0; 0 <= subnetCount ? _i < subnetCount : _i > subnetCount; 0 <= subnetCount ? _i++ : _i--){ _results.push(_i); }
-          return _results;
-        }).apply(this), function(i) {
-          var binSeq, newIPAry, newIPStr, newSubnetBinStr, newSubnetStr;
-          binSeq = _addZeroToLeftStr(i.toString(2), needBinNum);
-          newSubnetBinStr = _addZeroToRightStr(vpcIPBinLeftStr + binSeq, 32);
+        i = 0;
+        while (i < subnetCount) {
+          binSeq = MC.leftPadString(i.toString(2), needBinNum, "0");
+          newSubnetBinStr = MC.rightPadString(vpcIPBinLeftStr + binSeq, 32, "0");
           newIPAry = _.map([0, 8, 16, 24], function(value) {
             return parseInt(newSubnetBinStr.slice(value, value + 8), 2);
           });
           newIPStr = newIPAry.join('.');
           newSubnetStr = newIPStr + '/' + newSubnetSuffix;
           newSubnetAry.push(newSubnetStr);
-          return null;
-        });
+          ++i;
+        }
         return newSubnetAry;
       },
       autoAssignSimpleCIDR: function(newVPCCIDR, oldSubnetAry, oldVPCCIDR) {

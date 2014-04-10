@@ -12,8 +12,6 @@
 define('UI.tooltip',["jquery"], function(){
 
 
-(function ()
-{
 	var tooltip = function (event)
 	{
 		var target = $(this),
@@ -97,7 +95,6 @@ define('UI.tooltip',["jquery"], function(){
 	{
 		$(document.body).on('mouseenter', '.tooltip', tooltip);
 	});
-})();
 
 });
 
@@ -114,8 +111,6 @@ define('UI.tooltip',["jquery"], function(){
 
 define('UI.scrollbar',["jquery"], function(){
 
-
-(function (document) {
 
 var style = document.documentElement.style,
 	isTransform = false,
@@ -593,8 +588,6 @@ $(document).ready(function ()
 	scrollbar.init();
 });
 
-})(document);
-
 });
 
 /*
@@ -871,8 +864,6 @@ $(document).ready(function ()
 
 define('UI.bubble',["jquery"], function(){
 
-(function ()
-{
 	var bubble = function (event)
 	{
 		if (event.type === 'mouseleave')
@@ -949,7 +940,6 @@ define('UI.bubble',["jquery"], function(){
 	{
 		$(document.body).on('mouseenter mouseleave', '.bubble', bubble);
 	});
-})();
 
 });
 
@@ -1278,8 +1268,6 @@ $(document).ready(function ()
 define('UI.table',["jquery"], function(){
 
 
-(function ()
-{
 	var table = {
 		edit: function (event)
 		{
@@ -1419,7 +1407,6 @@ define('UI.table',["jquery"], function(){
 			.on('click', '.table .sortable, .table-head .sortable', table.sort)
 			.on('blur', '.table-input', table.update);
 	});
-})();
 
 });
 
@@ -1925,7 +1912,6 @@ $(document).ready(function () {
 define('UI.notification',["jquery"], function(){
 
 
-(function(){
     var NOTIFICATION_TYPES = {
         "error"   : true,
         "warning" : true,
@@ -1989,7 +1975,6 @@ define('UI.notification',["jquery"], function(){
         var to = setTimeout(function () { target_dom.trigger('CLOSE_ITEM'); }, stay_time);
         target_dom.data( "close_to", to );
     };
-})();
 
 });
 
@@ -2008,12 +1993,10 @@ define('UI.notification',["jquery"], function(){
 // 2. Options are set via data-*, possible options are :
 //    data-max-row : number
 
-define('UI.multiinputbox',["jquery"], function(){
+define('UI.multiinputbox',["jquery"], function($){
 
 
-var multiinputbox;
-(function(){
-   multiinputbox = {
+var multiinputbox = {
     init : function( baseParent ) {
       $( baseParent )
         .on("click", ".multi-input .icon-add", add)
@@ -2065,7 +2048,6 @@ var multiinputbox;
 
     return false;
   }
-})();
 
 $(function(){ multiinputbox.init( document.body ); });
 
@@ -2081,9 +2063,8 @@ window.multiinputbox = multiinputbox;
  *
  */
 
-define('UI.canvg',["jquery"], function(){
+define('UI.canvg',[], function(){
 
-(function(){
 /**
  * A class to parse color values
  * @author Stoyan Stefanov <sstoo@gmail.com>
@@ -4868,7 +4849,6 @@ function RGBColor(color_string)
 
     return svg;
   }
-})();
 
 });
 
@@ -4879,9 +4859,8 @@ function RGBColor(color_string)
  * Copyright 2012, Ali Farhadi
  * Released under the MIT license.
  */
-define('UI.sortable',["jquery"], function(){
+define('UI.sortable',["jquery"], function($){
 
-(function($) {
 var dragging, placeholders = $();
 $.fn.sortable = function(options) {
   var method = String(options);
@@ -4958,7 +4937,6 @@ $.fn.sortable = function(options) {
     });
   });
 };
-})(jQuery);
 
 });
 
@@ -6868,9 +6846,8 @@ $(document.body).on( globalBindList, bindElements, bindFiled );
 # (c) Copyright 2013 Madeiracloud  All Rights Reserved
 # **********************************************************
 */
-define('UI.errortip',["jquery"], function(){
+define('UI.errortip',["jquery"], function($){
 
-+ function() {
   var errortip = function (event)
   {
     var target = $(this),
@@ -7097,7 +7074,6 @@ define('UI.errortip',["jquery"], function(){
     $(document.body).on('mouseenter', '.parsley-error', enter);
     $(document.body).on('mouseleave', '.parsley-error', leave);
   });
-}();
 
 });
 
@@ -7124,9 +7100,8 @@ define('UI.errortip',["jquery"], function(){
  *
  */
 
- define('jqpagination',["jquery"], function(){
+ define('jqpagination',["jquery"], function($){
 
-(function ($) {
 	
 
 	$.jqPagination = function (el, options) {
@@ -7505,34 +7480,6 @@ define('UI.errortip',["jquery"], function(){
 
 	};
 
-})(jQuery);
-
-// polyfill, provide a fallback if the console doesn't exist
-if (!console) {
-
-	var console	= {},
-		func	= function () { return false; };
-
-	console.log		= func;
-	console.info	= func;
-	console.warn	= func;
-	console.error	= func;
-
-}
-
-});
-
-/*!
- * hoverIntent r7 // 2013.03.11 // jQuery 1.9.1+
- * http://cherne.net/brian/resources/jquery.hoverIntent.html
- *
- * You may use hoverIntent under the terms of the MIT license.
- * Copyright 2007, 2013 Brian Cherne
- */
-define('hoverIntent',["jquery"], function(){
-
-(function(e){e.fn.hoverIntent=function(t,n,r){var i={interval:100,sensitivity:7,timeout:0};if(typeof t==="object"){i=e.extend(i,t)}else if(e.isFunction(n)){i=e.extend(i,{over:t,out:n,selector:r})}else{i=e.extend(i,{over:t,out:t,selector:n})}var s,o,u,a;var f=function(e){s=e.pageX;o=e.pageY};var l=function(t,n){n.hoverIntent_t=clearTimeout(n.hoverIntent_t);if(Math.abs(u-s)+Math.abs(a-o)<i.sensitivity){e(n).off("mousemove.hoverIntent",f);n.hoverIntent_s=1;return i.over.apply(n,[t])}else{u=s;a=o;n.hoverIntent_t=setTimeout(function(){l(t,n)},i.interval)}};var c=function(e,t){t.hoverIntent_t=clearTimeout(t.hoverIntent_t);t.hoverIntent_s=0;return i.out.apply(t,[e])};var h=function(t){var n=jQuery.extend({},t);var r=this;if(r.hoverIntent_t){r.hoverIntent_t=clearTimeout(r.hoverIntent_t)}if(t.type=="mouseenter"){u=n.pageX;a=n.pageY;e(r).on("mousemove.hoverIntent",f);if(r.hoverIntent_s!=1){r.hoverIntent_t=setTimeout(function(){l(n,r)},i.interval)}}else{e(r).off("mousemove.hoverIntent",f);if(r.hoverIntent_s==1){r.hoverIntent_t=setTimeout(function(){c(n,r)},i.timeout)}}};return this.on({"mouseenter.hoverIntent":h,"mouseleave.hoverIntent":h},i.selector)}})(jQuery)
-
 });
 
 /* ==========================================================
@@ -7883,7 +7830,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // For controling Youtube player
 var youtube_player = [];
 
-function onYouTubePlayerAPIReady()
+window.onYouTubePlayerAPIReady = function ()
 {
 	if (youtube_player.length !== 0)
 	{

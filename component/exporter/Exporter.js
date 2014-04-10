@@ -1,6 +1,5 @@
 define( 'component/exporter/Download',[], function(){
 
-
 /* Blob.js
  * A Blob implementation.
  * 2013-06-20
@@ -19,7 +18,7 @@ define( 'component/exporter/Download',[], function(){
 if (!(typeof Blob === "function" || typeof Blob === "object") || typeof URL === "undefined")
 if ((typeof Blob === "function" || typeof Blob === "object") && typeof webkitURL !== "undefined") (self || window).URL = webkitURL;
 else var Blob = (function (view) {
-
+  
 
   var BlobBuilder = view.BlobBuilder || view.WebKitBlobBuilder || view.MozBlobBuilder || view.MSBlobBuilder || (function(view) {
     var
@@ -292,7 +291,7 @@ if (HTMLCanvasElement && !HTMLCanvasElement.prototype.toBlob) {
 
 var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && navigator.msSaveOrOpenBlob.bind(navigator))
   || (function(view) {
-
+  
   var
       doc = view.document
       // only get URL when necessary in case BlobBuilder.js hasn't overridden it yet

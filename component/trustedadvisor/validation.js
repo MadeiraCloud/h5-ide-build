@@ -135,7 +135,24 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'stack_service', 'ami_service', '../result_vo'], function(constant, $, MC, lang, stackService, amiService) {
-    var generateComponentForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
+    var generateComponentForDefaultVPC, getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
+    getAZAryForDefaultVPC = function(elbUID) {
+      var azNameAry, elbComp, elbInstances;
+      elbComp = MC.canvas_data.component[elbUID];
+      elbInstances = elbComp.resource.Instances;
+      azNameAry = [];
+      _.each(elbInstances, function(instanceRefObj) {
+        var instanceAZName, instanceRef, instanceUID;
+        instanceRef = instanceRefObj.InstanceId;
+        instanceUID = MC.extractID(instanceRef);
+        instanceAZName = MC.canvas_data.component[instanceUID].resource.Placement.AvailabilityZone;
+        if (!(__indexOf.call(azNameAry, instanceAZName) >= 0)) {
+          azNameAry.push(instanceAZName);
+        }
+        return null;
+      });
+      return azNameAry;
+    };
     generateComponentForDefaultVPC = function() {
       var azObjAry, azSubnetIdMap, currentComps, defaultVPCId, originComps, resType;
       resType = constant.AWS_RESOURCE_TYPE;
@@ -2074,8 +2091,9 @@
         var currentRouteDes;
         currentRouteDes = route.DestinationCidrBlock;
         _.each(routeDesAry, function(routeDes) {
-          var tipInfo;
-          if (MC.aws.subnet.isSubnetConflict(currentRouteDes, routeDes)) {
+          var SubnetModel, tipInfo;
+          SubnetModel = Design.modelClassForType(CONST.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+          if (SubnetModel.isCidrConflict(currentRouteDes, routeDes)) {
             tipInfo = sprintf(i18n.TA_MSG_ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
             return notices.push({
               level: CONST.TA.ERROR,

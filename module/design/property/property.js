@@ -891,8 +891,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var PropertyView;
     PropertyView = Backbone.View.extend({
       setTitle: function(title) {
-        $(this._isSub ? "#property-second-title" : "#property-title").html(title);
-        return null;
+        $(this._isSub ? "#property-second-title" : "#property-title").text(title);
+      },
+      prependTitle: function(additionalTitle) {
+        $(this._isSub ? "#property-second-title" : "#property-title").prepend(additionalTitle);
       },
       forceShow: function() {
         PropertyView.event.trigger(PropertyView.event.FORCE_SHOW);
@@ -5363,7 +5365,8 @@ function program1(depth0,data) {
         tpl = this.model.isReadOnly ? app_template : template;
         this.$el.html(tpl(this.model.toJSON()));
         this.refreshSgruleList();
-        $('#property-second-title').html('<span class="sg-color" style="background-color:' + this.model.get("color") + '" ></span>' + this.model.get("name"));
+        this.setTitle(this.model.get("name"));
+        this.prependTitle('<span class="sg-color" style="background-color:' + this.model.get("color") + '" ></span>');
         this.forceShow();
         setTimeout(function() {
           return $('#securitygroup-name').focus();
@@ -5422,14 +5425,14 @@ function program1(depth0,data) {
         return null;
       },
       setSGName: function(event) {
-        var name, oldName, target, title;
+        var name, oldName, target;
         target = $(event.currentTarget);
         name = target.val();
         if (this.checkResName(target, "SG")) {
           oldName = this.model.get("name");
           this.model.setName(name);
-          title = '<span class="sg-color" style="background-color:' + this.model.get("color") + '" ></span>' + this.model.get("name");
-          this.setTitle(title);
+          this.setTitle(this.model.get("name"));
+          this.prependTitle('<span class="sg-color" style="background-color:' + this.model.get("color") + '" ></span>');
           $("#sg-rule-list").children().find(".rule-reference").each(function() {
             if ($(this).text() === oldName) {
               $(this).html(title);

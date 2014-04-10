@@ -10015,6 +10015,8 @@ define("underscore", (function (global) {
 //     For all details and documentation:
 //     http://backbonejs.org
 
+define('backbone',['underscore', 'jquery'], function(){
+
 (function(){
 
   // Initial Setup
@@ -11578,14 +11580,10 @@ define("underscore", (function (global) {
     };
   };
 
-}).call(this);
+}).call(window);
 
-define("backbone", ["underscore","jquery"], (function (global) {
-    return function () {
-        var ret, fn;
-        return ret || global.Backbone;
-    };
-}(this)));
+return window.Backbone;
+});
 
 
 

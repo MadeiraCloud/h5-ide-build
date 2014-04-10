@@ -2,8 +2,8 @@
   font-family: 'MCIcon';
   font-weight: normal;
   font-style: normal;
-  src: url('../fonts/icon.eot?v=66b54ca2');
-  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff?v=dd0749d5") format("woff"), url("../fonts/icon.ttf?v=f9b6855f") format("truetype"); }
+  src: url('../fonts/icon.eot');
+  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff") format("woff"), url("../fonts/icon.ttf") format("truetype"); }
 
 .icon-play:before,
 .icon-stop:before,
@@ -168,10 +168,10 @@
 .icon-deny:before {
   content: "\F12E"; }
 
-.icon-inbound:before {
+.icon-outbound:before {
   content: "\F12F"; }
 
-.icon-outbound:before {
+.icon-inbound:before {
   content: "\F130"; }
 
 .icon-refresh:before {
