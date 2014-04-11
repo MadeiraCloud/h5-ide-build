@@ -529,7 +529,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
           } else if (Design.instance().modeIsApp()) {
             resId = uid;
-            effective = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).getEffectiveId(resId);
+            effective = Design.modelClassForType(CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance).getEffectiveId(resId);
             uid = effective.uid;
           }
         }

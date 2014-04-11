@@ -1527,52 +1527,63 @@
       return true;
     };
     DesignImpl.prototype.serialize = function() {
-      var c, comp, component_data, connections, data, j, json, layout_data, mockArray, p1, p2, uid, version, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, version, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      currentDesignObj = Design.instance();
+      this.use();
       console.debug("Design is serializing.");
       component_data = {};
       layout_data = {};
       connections = [];
       mockArray = [];
-      _ref = this.__componentMap;
-      for (uid in _ref) {
-        comp = _ref[uid];
-        if (comp.isRemoved()) {
-          console.warn("Resource has been removed, yet it remains in cache when serializing :", comp);
-          continue;
-        }
-        if (comp.node_line) {
-          connections.push(comp);
-          continue;
-        }
-        json = comp.serialize();
-        if (!json) {
-          continue;
-        }
-        if (!_.isArray(json)) {
-          mockArray[0] = json;
-          json = mockArray;
-        }
-        for (_i = 0, _len = json.length; _i < _len; _i++) {
-          j = json[_i];
-          if (j.component) {
-            console.assert(j.component.uid, "Serialized JSON data has no uid.");
-            console.assert(!component_data[j.component.uid], "ResourceModel cannot modify existing JSON data.");
-            component_data[j.component.uid] = j.component;
+      try {
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.isRemoved()) {
+            console.warn("Resource has been removed, yet it remains in cache when serializing :", comp);
+            continue;
           }
-          if (j.layout) {
-            layout_data[j.layout.uid] = j.layout;
+          if (comp.node_line) {
+            connections.push(comp);
+            continue;
+          }
+          json = comp.serialize();
+          if (!json) {
+            continue;
+          }
+          if (!_.isArray(json)) {
+            mockArray[0] = json;
+            json = mockArray;
+          }
+          for (_i = 0, _len = json.length; _i < _len; _i++) {
+            j = json[_i];
+            if (j.component) {
+              console.assert(j.component.uid, "Serialized JSON data has no uid.");
+              console.assert(!component_data[j.component.uid], "ResourceModel cannot modify existing JSON data.");
+              component_data[j.component.uid] = j.component;
+            }
+            if (j.layout) {
+              layout_data[j.layout.uid] = j.layout;
+            }
           }
         }
-      }
-      for (_j = 0, _len1 = connections.length; _j < _len1; _j++) {
-        c = connections[_j];
-        p1 = c.port1Comp();
-        p2 = c.port2Comp();
-        if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
-          c.serialize(component_data, layout_data);
-        } else {
-          console.error("Serializing an connection while one of the port is isRemoved() or null");
+        for (_j = 0, _len1 = connections.length; _j < _len1; _j++) {
+          c = connections[_j];
+          p1 = c.port1Comp();
+          p2 = c.port2Comp();
+          if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
+            c.serialize(component_data, layout_data);
+          } else {
+            console.error("Serializing an connection while one of the port is isRemoved() or null");
+          }
+
+          /* env:prod */
         }
+      } catch (_error) {
+        error = _error;
+        console.error("Error occur while serializing", error);
+
+        /* env:prod:end */
       }
       data = $.extend(true, {}, this.attributes);
       data.component = component_data;
@@ -1588,6 +1599,7 @@
         stoppable: this.isStoppable()
       }, PropertyDefination);
       data.version = "2014-02-17";
+      currentDesignObj.use();
       return data;
     };
     DesignImpl.prototype.getCost = function() {
