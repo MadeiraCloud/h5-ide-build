@@ -16,7 +16,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_USER_TOUR", {hash:{},data:data}))
     + "</li>\n      <li id=\"keyboard-shortcuts\" class=\"modal\" data-modal-template=\"shortkey\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
-    + "</li>\n\n      <li><a href=\"http://visualops.readthedocs.org/\" target=\"_blank\" >"
+    + "</li>\n\n      <li><a href=\"http://docs.visualops.io\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
     + "</a></li>\n\n      <li>\n        <span class=\"no-credential\" style=\"display:none;\"></span>\n        <a href=\"javascript:void(0);\" id=\"awscredential-modal\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
