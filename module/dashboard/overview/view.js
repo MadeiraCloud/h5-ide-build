@@ -263,7 +263,7 @@
         return this.$el.find('#region-resource-wrap').html(template_data.demo_region());
       },
       enableCreateStack: function(platforms) {
-        var $middleButton, $topButton, is_invitated;
+        var $middleButton, $topButton;
         $middleButton = $("#btn-create-stack");
         $topButton = $("#global-create-stack");
         $middleButton.removeAttr('disabled');
@@ -272,12 +272,7 @@
         if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
           $('#global-region-visualize-VPC').removeAttr('disabled');
         }
-        is_invitated = "" + MC.common.cookie.getCookieByName('is_invitated');
-        if (is_invitated === "true" || is_invitated === "2") {
-          $('#global-region-visualize-VPC').show();
-        } else {
-          $('#global-region-visualize-VPC').hide();
-        }
+        $('#global-region-visualize-VPC').show();
         return null;
       },
       enableSwitchRegion: function() {
@@ -514,9 +509,8 @@
         return null;
       },
       unmanagedVPCClick: function() {
-        var _ref;
         console.log('unmanagedVPCClick');
-        if (((_ref = MC.common.cookie.getCookieByName('is_invitated')) === 'true' || _ref === true || _ref === 2 || _ref === '2') && MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
+        if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
           unmanagedvpc.loadModule();
         }
         return null;

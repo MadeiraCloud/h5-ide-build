@@ -96,7 +96,7 @@
         }
         element = $(element);
         if (!attr) {
-          return element.text(value);
+          return element.text(MC.truncate(value, 17));
         } else if (attr === "href" || attr === "image") {
           value = MC.IMG_URL + value;
           href = element[0].getAttributeNS("http://www.w3.org/1999/xlink", "href");
@@ -659,7 +659,7 @@
         }));
       }
       if (option.label) {
-        node.append(Canvon.text(width / 2, height - 4, MC.canvasName(option.label)).attr({
+        node.append(Canvon.text(width / 2, height - 4, MC.truncate(option.label, 17)).attr({
           'class': 'node-label' + (option.labelBg ? ' node-label-name' : '')
         }));
       }
@@ -826,13 +826,9 @@
     };
     $canvas.lineStyle = function(ls) {
       if (ls === void 0) {
-        if (Design.__instance) {
-          return Design.__instance.canvas.lineStyle;
-        } else {
-          return 0;
-        }
+        return parseInt(localStorage.getItem("canvas/lineStyle"), 10) || 2;
       }
-      Design.__instance.canvas.lineStyle = ls;
+      localStorage.setItem("canvas/lineStyle", ls);
       if (Design.__instance.shouldDraw()) {
         _.each(Design.modelClassForType("SgRuleLine").allObjects(), function(cn) {
           return cn.draw();
@@ -1038,7 +1034,6 @@
       this.sizeAry = size || [240, 240];
       this.offsetAry = [0, 0];
       this.scaleAry = 1;
-      this.lineStyle = 2;
       this.selectedNode = [];
       attr = {
         'width': this.sizeAry[0] * MC.canvas.GRID_WIDTH,
@@ -2914,53 +2909,6 @@
           v.draw.apply(v, args);
         }
         return null;
-      },
-      createNode: function(option) {
-        var height, node, sggroup, width, x, y;
-        x = this.x();
-        y = this.y();
-        width = this.width() * MC.canvas.GRID_WIDTH;
-        height = this.height() * MC.canvas.GRID_HEIGHT;
-        node = Canvon.group().append(Canvon.rectangle(0, 0, width, height).attr({
-          'class': 'node-background',
-          'rx': 5,
-          'ry': 5
-        }), Canvon.image(MC.IMG_URL + option.image, option.imageX, option.imageY, option.imageW, option.imageH)).attr({
-          'id': this.id,
-          'class': 'dragable node ' + this.type.replace(/\./g, "-"),
-          'data-type': 'node',
-          'data-class': this.type
-        });
-        if (option.labelBg) {
-          node.append(Canvon.rectangle(2, 76, 86, 13).attr({
-            'class': 'node-label-name-bg',
-            'rx': 3,
-            'ry': 3
-          }));
-        }
-        if (option.label) {
-          node.append(Canvon.text(width / 2, height - 4, MC.canvasName(option.label)).attr({
-            'class': 'node-label' + (option.labelBg ? ' node-label-name' : '')
-          }));
-        }
-        if (option.sg) {
-          sggroup = Canvon.group().append(Canvon.rectangle(10, 6, 7, 5).attr({
-            'class': 'node-sg-color-border tooltip'
-          }), Canvon.rectangle(20, 6, 7, 5).attr({
-            'class': 'node-sg-color-border tooltip'
-          }), Canvon.rectangle(30, 6, 7, 5).attr({
-            'class': 'node-sg-color-border tooltip'
-          }), Canvon.rectangle(40, 6, 7, 5).attr({
-            'class': 'node-sg-color-border tooltip'
-          }), Canvon.rectangle(50, 6, 7, 5).attr({
-            'class': 'node-sg-color-border tooltip'
-          })).attr({
-            'class': 'node-sg-color-group',
-            'transform': 'translate(8, 62)'
-          });
-          node.append(sggroup);
-        }
-        return node;
       },
 
       /*
@@ -10232,6 +10180,7 @@
           asg = Design.instance().component(MC.extractID(asgId));
           if (asg) {
             return {
+              id: asgId,
               type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group,
               name: asg.get("name"),
               change: "Update"
@@ -10962,7 +10911,7 @@
           'data-position': 'left',
           'data-type': 'vpn',
           'data-direction': 'in'
-        }), Canvon.text(100, 95, MC.canvasName(m.get("name"))).attr({
+        }), Canvon.text(100, 95, MC.truncate(m.get("name"), 17)).attr({
           'class': 'node-label'
         }));
         this.getLayer("node_layer").append(node);
@@ -11300,7 +11249,7 @@
         }
         node.append(Canvon.group().append(Canvon.text(25, 45, 'Drop AMI from'), Canvon.text(20, 65, 'resource panel to'), Canvon.text(30, 85, 'create launch'), Canvon.text(30, 105, 'configuration')).attr({
           'class': 'prompt_text'
-        }), Canvon.text(4, 14, MC.asgName(m.get("name"))).attr({
+        }), Canvon.text(4, 14, MC.truncate(m.get("name"), 15)).attr({
           'class': 'group-label'
         })).attr({
           'id': this.id,
@@ -11312,7 +11261,7 @@
         CanvasManager.position(node, m.x(), m.y());
       } else {
         node = this.$element();
-        CanvasManager.update(node.children(".group-label"), MC.asgName(m.get("name")));
+        CanvasManager.update(node.children(".group-label"), MC.truncate(m.get("name"), 15));
         this.__drawExpandedAsg();
       }
       hasLC = !!m.get("lc");

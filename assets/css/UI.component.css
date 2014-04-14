@@ -1713,6 +1713,10 @@ textarea {
 	border-bottom : 1px solid rgba(0,0,0,.5);
 }
 
+.selectbox .dropdown .item.selected:last-child {
+	border-bottom : none;
+}
+
 /* Radio Buttons */
 
 .radiobuttons {
@@ -1755,7 +1759,7 @@ textarea {
 	right: 5px;
 	width: 16px;
 	height: 16px;
-	background: url('../images/ide/btn-fav-ami-unfaved-normal.png?v=906b4a87');
+	background: url('../images/ide/btn-fav-ami-unfaved-normal.png');
 }
 
 .toggle-fav:hover {
@@ -1763,15 +1767,15 @@ textarea {
 	right: 3px;
 	width: 20px;
 	height: 20px;
-	background: url('../images/ide/btn-fav-ami-unfaved-hover.png?v=6093bd2a');
+	background: url('../images/ide/btn-fav-ami-unfaved-hover.png');
 }
 
 .toggle-fav.faved {
-	background: url('../images/ide/btn-fav-ami-faved-normal.png?v=24c08ed2');
+	background: url('../images/ide/btn-fav-ami-faved-normal.png');
 }
 
 .toggle-fav.faved:hover {
-	background: url('../images/ide/btn-fav-ami-faved-hover.png?v=f2a87dfd');
+	background: url('../images/ide/btn-fav-ami-faved-hover.png');
 }
 
 /* searchbar */

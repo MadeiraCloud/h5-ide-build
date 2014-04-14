@@ -1839,14 +1839,15 @@
       routeAry = vpnComp.resource.Routes;
       invalidRouteCIDRAry = [];
       _.each(routeAry, function(routeObj) {
-        var isInAnyPriIPRange, isInAnyPubIPRange, routeCIDR, routeIP;
+        var isInAnyPriIPRange, isInAnyPubIPRange, routeCIDR, routeIP, routeIPCIDR;
         routeCIDR = routeObj.DestinationCidrBlock;
         if (routeCIDR) {
           routeIP = routeCIDR.split('/')[0];
+          routeIPCIDR = routeCIDR.split('/')[1];
           isInAnyPubIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'public');
           isInAnyPriIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'private');
         }
-        if (isInAnyPubIPRange && !isInAnyPriIPRange) {
+        if ((isInAnyPubIPRange && !isInAnyPriIPRange) || Number(routeIPCIDR) === 0) {
           return invalidRouteCIDRAry.push(routeCIDR);
         }
       });

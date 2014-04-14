@@ -27,8 +27,7 @@
         'click #toolbar-edit-app': 'clickEditApp',
         'click #toolbar-save-edit-app': 'clickSaveEditApp',
         'click #toolbar-cancel-edit-app': 'clickCancelEditApp',
-        'click .toolbar-visual-ops-switch': 'opsOptionChanged',
-        'click #apply-visops': 'openExperimentalVisops'
+        'click .toolbar-visual-ops-switch': 'opsOptionChanged'
       },
       render: function(type, flag) {
         var data, lines, _ref, _ref1;
@@ -79,11 +78,7 @@
       listen: function() {
         $(document.body).on('click', '#confirm-update-app', this, this.appUpdating);
         $(document.body).on('click', '#return-app-confirm', this, this.appedit2App);
-        $(document.body).on('click', '.modal-footer #btn-confirm', this, function() {
-          return modal.close();
-        });
-        $(document.body).on('click', '#experimental-visops-confirm', this, this.experimentalVisopsConfirm);
-        return $(document.body).on('click', '#experimental-visops-cancel', this, function() {
+        return $(document.body).on('click', '.modal-footer #btn-confirm', this, function() {
           return modal.close();
         });
       },
@@ -508,7 +503,7 @@
         return null;
       },
       opsState: function() {
-        var $applyVisops, $switchCheckbox, agentData, _ref, _ref1;
+        var $applyVisops, $switchCheckbox, agentData;
         console.log('opsState');
         $switchCheckbox = $('#main-toolbar .toolbar-visual-ops-switch');
         $applyVisops = $('#apply-visops');
@@ -521,18 +516,10 @@
         if (Design && Design.instance()) {
           agentData = Design.instance().get('agent');
           if (agentData.enabled) {
-            $switchCheckbox.addClass('on');
+            return $switchCheckbox.addClass('on');
           } else {
-            $switchCheckbox.removeClass('on');
+            return $switchCheckbox.removeClass('on');
           }
-        }
-        if ((_ref = MC.common.cookie.getCookieByName('is_invitated')) === 'true' || _ref === true || _ref === 2 || _ref === '2') {
-          $applyVisops.hide();
-          return $switchCheckbox.show();
-        } else if ((_ref1 = MC.common.cookie.getCookieByName('is_invitated')) === 'false' || _ref1 === false || _ref1 === 0 || _ref1 === '0' || _ref1 === 1 || _ref1 === '1') {
-          $applyVisops.show();
-          $switchCheckbox.hide();
-          return this.model.setAgentEnable(false);
         }
       },
       opsOptionChanged: function(event) {
@@ -559,25 +546,6 @@
           thatModel.setAgentEnable(false);
         }
         return ide_event.trigger(ide_event.REFRESH_PROPERTY);
-      },
-      openExperimentalVisops: function() {
-        var _ref;
-        console.log('openExperimentalVisops');
-        modal(MC.template.experimentalVisops());
-        if ((_ref = MC.common.cookie.getCookieByName('is_invitated')) === 1 || _ref === '1') {
-          $('.modal-body').html(MC.template.experimentalVisopsTrail());
-          $('#experimental-visops-cancel').html(lang.ide.INVITE_MOD_BTN_DONE);
-          return $('#experimental-visops-confirm').hide();
-        }
-      },
-      experimentalVisopsConfirm: function(event) {
-        console.log('experimentalVisopsConfirm', event);
-        event.data.trigger('APPLAY_TRIAL', $('#experimental-message').val());
-        $('.modal-body').html(MC.template.experimentalVisopsTrail());
-        $('#experimental-visops-cancel').html(lang.ide.INVITE_MOD_BTN_DONE);
-        $('#experimental-visops-confirm').hide();
-        MC.common.cookie.setCookieByName('is_invitated', 1);
-        return null;
       }
     });
     return ToolbarView;

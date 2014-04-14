@@ -15,7 +15,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.cmd_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n		<div class=\"state-toolbar\">\n			<div class=\"state-action-wrap\">\n				<div class=\"state-remove icon-delete tooltip\" data-tooltip=\""
+    + "\">\n		<div class=\"state-toolbar\">\n			<div class=\"state-action-wrap\">\n				<div class=\"state-remove icon-del tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_DELETE_STATE", {hash:{},data:data}))
     + "\"></div>\n				<div class=\"state-check tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SELECT_STATE", {hash:{},data:data}))

@@ -84,9 +84,6 @@
             return console.log('current is not object, data is ' + data);
           }
         });
-        view.on('APPLAY_TRIAL', function(value) {
-          return model.getApplayTrial(value);
-        });
         ide_event.onLongListen('STOP_APP', function(region, app_id, app_name) {
           console.log('design_toolbar STOP_APP region:' + region + ', app_id:' + app_id + ', app_name:' + app_name);
           return model.stopApp(region, app_id, app_name);

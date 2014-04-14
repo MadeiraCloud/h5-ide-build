@@ -148,11 +148,11 @@ function program13(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'><i class=\"icon-bezier-qt\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
-    + "</span></li>\n	</ul>\n</div>\n\n<!-- env:dev                                                                                                                                                                                                                                                                                              env:dev:end -->\n\n<section class=\"toolbar-btn-group\">\n	<a href=\"javascript:void(0);\" id=\"apply-visops\" style=\"display: none;\">"
+    + "</span></li>\n	</ul>\n</div>\n\n<!-- env:dev                                                                                                                                                                                                                                                                                              env:dev:end -->\n\n<!--\n<section class=\"toolbar-btn-group\">\n	<a href=\"javascript:void(0);\" id=\"apply-visops\" style=\"display: none;\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPERIMENT", {hash:{},data:data}))
-    + "</a>\n</section>\n\n<label class=\"switch toolbar-visual-ops-switch tooltip\" data-tooltip=\""
+    + "</a>\n</section>\n-->\n\n<label class=\"switch toolbar-visual-ops-switch tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_CUSTOM_USER_DATA", {hash:{},data:data}))
-    + "\" style=\"display: none;\">\n  <span class=\"switch-label\" data-on=\""
+    + "\">\n  <span class=\"switch-label\" data-on=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TOGGLE_VISUALOPS_ON", {hash:{},data:data}))
     + "\" data-off=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TOGGLE_VISUALOPS_OFF", {hash:{},data:data}))

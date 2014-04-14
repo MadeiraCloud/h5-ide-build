@@ -199,7 +199,7 @@
           return $('#account-passowrd-info').text(lang.ide.HEAD_MSG_ERR_INVALID_PASSWORD);
         } else if (flag === 'error_password') {
           $('#account-passowrd-info').show();
-          return $('#account-passowrd-info').html(lang.ide.HEAD_MSG_ERR_WRONG_PASSWORD + ' <a href="/reset" target="_blank">' + lang.ide.HEAD_MSG_INFO_FORGET_PASSWORD + '</a>');
+          return $('#account-passowrd-info').html(lang.ide.HEAD_MSG_ERR_WRONG_PASSWORD + ' <a href="/reset/" target="_blank">' + lang.ide.HEAD_MSG_INFO_FORGET_PASSWORD + '</a>');
         } else {
           $('#account-passowrd-info').hide();
           return me.trigger('UPDATE_ACCOUNT_PASSWORD', password, new_password);

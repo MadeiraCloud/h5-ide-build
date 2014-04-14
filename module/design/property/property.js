@@ -13822,27 +13822,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "\n								<li data-id=\"StatusCheckFailed\" class=\"item\">Status Check Failed (Any)</li>\n								<li data-id=\"StatusCheckFailed_Instance\" class=\"item\">Status Check Failed (Instance)</li>\n								<li data-id=\"StatusCheckFailed_System\" class=\"item\">Status Check Failed (System)</li>\n								";
+  return "readonly";
   }
 
 function program3(depth0,data) {
   
   
-  return "checked=\"checked\"";
+  return "\n								<li data-id=\"StatusCheckFailed\" class=\"item\">Status Check Failed (Any)</li>\n								<li data-id=\"StatusCheckFailed_Instance\" class=\"item\">Status Check Failed (Instance)</li>\n								<li data-id=\"StatusCheckFailed_System\" class=\"item\">Status Check Failed (System)</li>\n								";
   }
 
 function program5(depth0,data) {
   
+  
+  return "checked=\"checked\"";
+  }
+
+function program7(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n						<p class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.sendNotification), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.sendNotification), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " property-warning\" id=\"asg-policy-no-sns\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_MSG_SNS_WARN", {hash:{},data:data}))
     + "</p>\n						";
   return buffer;
   }
-function program6(depth0,data) {
+function program8(depth0,data) {
   
   
   return "hide";
@@ -13858,12 +13864,15 @@ function program6(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY_TLT_NAME", {hash:{},data:data}))
     + "</label>\n			<input type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"asg-policy-name\" data-required-rollback=\"true\" data-ignore=\"true\" maxlength=\"255\" data-required=\"true\">\n\n\n				<section class=\"modal-control-group\">\n					<h5>"
+    + "\" id=\"asg-policy-name\" data-required-rollback=\"true\" data-ignore=\"true\" maxlength=\"255\" data-required=\"true\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOld), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n\n\n				<section class=\"modal-control-group\">\n					<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ALARM", {hash:{},data:data}))
     + "</h5>\n					<div class=\"control-sentence\">\n						<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_WHEN", {hash:{},data:data}))
     + "</span>\n\n						<div class=\"selectbox\" id=\"asg-policy-metric\">\n							<div class=\"selection\">CPU Utillization</div>\n							<ul class=\"dropdown\" tabindex=\"-1\">\n								<li data-id=\"CPUUtilization\" class=\"item selected\">CPU Utilization</li>\n								<li data-id=\"DiskReadBytes\" class=\"item\">Disk Reads</li>\n								<li data-id=\"DiskReadOps\" class=\"item\">Disk Read Operations</li>\n								<li data-id=\"DiskWriteBytes\" class=\"item\">Disk Writes</li>\n								<li data-id=\"DiskWriteOps\" class=\"item\">Disk Write Operations</li>\n								<li data-id=\"NetworkIn\" class=\"item\">Network In</li>\n								<li data-id=\"NetworkOut\" class=\"item\">Network Out</li>\n								";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.detail_monitor), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.detail_monitor), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n							</ul>\n						</div>\n\n						<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_IS", {hash:{},data:data}))
@@ -13934,12 +13943,12 @@ function program6(depth0,data) {
     + "\" data-ignore=\"true\" maxlength=\"5\" data-type=\"digits\">\n						</div>\n					</section>\n\n					<section class=\"modal-control-group\">\n						<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_NOTIFICATION", {hash:{},data:data}))
     + "</h5>\n						<div class=\"checkbox\">\n							<input id=\"asg-policy-notify\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotification), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotification), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n							<label for=\"asg-policy-notify\"></label>\n						</div>\n						<label id=\"asg-policy-notify-label\" for=\"asg-policy-notify\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SEND_NOTIFICATION_D", {hash:{},data:data}))
     + "</label>\n\n						";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSNS), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSNS), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n					</section>\n				</div>\n		 </div>\n		</div>\n	 </div>\n	 <div class=\"modal-footer\">\n			<button id=\"property-asg-policy-done\" class=\"btn btn-blue\">Done</button>\n			<button class=\"btn modal-close btn-silver\">Cancel</button>\n	 </div>\n</div>\n";
   return buffer;
@@ -15057,7 +15066,7 @@ function program28(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n        <li class=\"pos-r\" data-uid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n          <h5 class=\"property-asg-policy-name name\" title=\""
+    + "\" data-old=\"true\">\n          <h5 class=\"property-asg-policy-name name\" title=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY_TLT_NAME", {hash:{},data:data}))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15437,11 +15446,14 @@ function program50(depth0,data) {
         return $li.find(".asg-p-adjust").html(data.adjustment + " " + data.adjustmentType);
       },
       editScalingPolicy: function(event) {
-        var $item, $selectbox, $selected, data, item, key, selectMap, uid, value, _i, _len, _ref;
-        uid = $(event.currentTarget).closest("li").data("uid");
+        var $item, $itemLi, $selectbox, $selected, data, isOld, item, key, selectMap, uid, value, _i, _len, _ref;
+        $itemLi = $(event.currentTarget).closest("li");
+        uid = $itemLi.data('uid');
+        isOld = $itemLi.data('old');
         data = this.model.getPolicy(uid);
         data.uid = uid;
         data.title = lang.ide.PROP_ASG_ADD_POLICY_TITLE_EDIT;
+        data.isOld = isOld;
         this.showScalingPolicy(data);
         selectMap = {
           metric: data.alarmData.metricName,

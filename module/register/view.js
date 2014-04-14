@@ -38,6 +38,7 @@
               status.addClass('error-status').removeClass('verification-status').show().text(lang.register.username_maxlength);
               return false;
             } else {
+              status.removeClass('error-status').removeClass('verification-status').show().text('');
               this.trigger('CHECK_REPEAT', value, null);
               return true;
             }
@@ -57,6 +58,7 @@
         status = $('#email-verification-status');
         reg_str = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (value !== '' && reg_str.test(value)) {
+          status.removeClass('error-status').removeClass('verification-status').show().text('');
           this.trigger('CHECK_REPEAT', null, value);
           return true;
         } else if (value.trim() === '') {

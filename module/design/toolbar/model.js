@@ -189,24 +189,13 @@
             return ide_event.trigger(ide_event.UPDATE_REGION_RESOURCE, region);
           }
         });
-        me.on('APP_UPDATE_RETURN', function(result) {
+        return me.on('APP_UPDATE_RETURN', function(result) {
           var id, name, region;
           console.log('APP_UPDATE_RETURN');
           region = result.param[3];
           id = result.param[5];
           name = item_state_map[id].name;
           me.handleRequest(result, 'UPDATE_APP', region, id, name);
-          return null;
-        });
-        return me.on('USER_APPLY__TRIAL_RETURN', function(result) {
-          console.log('USER_APPLY__TRIAL_RETURN', result);
-          if (result && result.return_code === 0) {
-            console.log('apply trial succcess');
-            MC.common.cookie.setCookieByName('is_invitated', 1);
-          } else {
-            console.log('apply trial succcess');
-            MC.common.cookie.setCookieByName('is_invitated', 0);
-          }
           return null;
         });
 
@@ -1031,12 +1020,6 @@
           });
         }
         return MC.aws.aws.enableStackAgent(isEnable);
-      },
-      getApplayTrial: function(value) {
-        console.log('getApplayTrial', value);
-        return account_model.apply_trial({
-          sender: this
-        }, $.cookie('usercode'), $.cookie('session_id'), value);
       }
     });
     model = new ToolbarModel();

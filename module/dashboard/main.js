@@ -97,6 +97,7 @@
               ide_event.trigger(ide_event.ACCOUNT_DEMONSTRATE);
               view.hideLoadTime();
               $('#global-region-visualize-VPC').addClass('disabled');
+              $('#global-region-visualize-VPC').attr('disabled', true);
             } else {
               view.clearDemo();
               view.enableSwitchRegion();
@@ -105,6 +106,7 @@
               }
               view.displayLoadTime();
               $('#global-region-visualize-VPC').removeClass('disabled');
+              $('#global-region-visualize-VPC').removeAttr('disabled');
             }
             MC.data.config = {};
             _ref = constant.REGION_KEYS;

@@ -8,7 +8,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "register", {hash:{},data:data}))
     + "</h2>\n		<div class=\"title-link\">\n			"
     + escapeExpression(helpers.i18n.call(depth0, "register-login", {hash:{},data:data}))
-    + " <a href=\"/login\">"
+    + " <a href=\"/login/\">"
     + escapeExpression(helpers.i18n.call(depth0, "link-login", {hash:{},data:data}))
     + "</a>.\n		</div>\n	</div>\n	<form id=\"register-form\" method=\"post\" action=\"\" class=\"box-body\">\n		<div class=\"control-group\">\n			<label for=\"register-username\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "register-username", {hash:{},data:data}))

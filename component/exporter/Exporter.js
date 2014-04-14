@@ -545,7 +545,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       return null;
     };
     exportPNG = function($svg_canvas_element, data) {
-      var $wrap, beforeRender, canvas, ch, children, clone, head, line, name, removeArray, replaceEl, size, svg, time, _i, _j, _len, _len1;
+      var $wrap, bbox, beforeRender, canvas, ch, children, clone, head, line, name, origin, removeArray, replaceEl, size, svg, time, _i, _j, _k, _len, _len1, _len2, _ref;
       if (!data.onFinish) {
         return;
       }
@@ -596,10 +596,34 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
           ch.parentNode.removeChild(ch);
         }
       }
+      origin = {
+        x: 0,
+        y: 0
+      };
       if (data.isExport) {
+        origin = {
+          x: size.width,
+          y: size.height
+        };
+        _ref = $svg_canvas_element[0].children || $svg_canvas_element[0].childNodes;
+        for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+          ch = _ref[_k];
+          if (ch.tagName.toLowerCase() !== "g") {
+            continue;
+          }
+          bbox = ch.getBBox();
+          if (bbox.x < origin.x) {
+            origin.x = bbox.x;
+          }
+          if (bbox.y < origin.y) {
+            origin.y = bbox.y;
+          }
+        }
+        origin.x -= 5;
+        origin.y -= 30;
         replaceEl = document.createElementNS("http://www.w3.org/2000/svg", "g");
         replaceEl.textContent = "PLACEHOLDER";
-        replaceEl.setAttribute("transform", "translate(0 54)");
+        replaceEl.setAttribute("transform", "translate(" + (-origin.x) + " " + (54 - origin.y) + ")");
         clone.insertBefore(replaceEl, line);
       }
       clone.removeChild(line);
@@ -614,12 +638,12 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
           time = MC.dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss");
           name = data.name;
         }
-        head = "<rect fill='#ad5992' width='100%' height='4' y='-54'></rect><rect fill='#252526' width='100%' height='50' y='-50'></rect><image " + Href + "='./assets/images/ide/logo-t.png' x='10' y='-42' width='160' height='34'></image><text x='100%' y='-27' fill='#fff' text-anchor='end' transform='translate(-10 0)'>" + time + "</text><text fill='#fff' x='100%' y='-13' text-anchor='end' transform='translate(-10 0)'>" + name + "</text>";
+        head = "<g transform='translate(" + origin.x + " " + (origin.y - 54) + ")'><rect fill='#3b1252' width='100%' height='4'></rect><rect fill='#723197' width='100%' height='50' y='4'></rect><image " + Href + "='./assets/images/ide/logo-t.png?v=2' x='10' y='11' width='116' height='35'></image><text x='100%' y='40' fill='#fff' text-anchor='end' transform='translate(-10 0)'>" + time + "</text><text fill='#fff' x='100%' y='24' text-anchor='end' transform='translate(-10 0)'>" + name + "</text></g>";
         svg = svg.replace("PLACEHOLDER</g>", head).replace("</svg>", "</g></svg>");
       }
       size = {
-        width: size.width + 50,
-        height: size.height + 30
+        width: size.width + 50 - origin.x,
+        height: size.height + 30 - origin.y
       };
       if (data.isExport) {
         size.height += 54;
