@@ -8,8 +8,7 @@
         'click #btn-logout': 'clickLogout',
         'click #awscredential-modal': 'clickOpenAWSCredential',
         'DROPDOWN_CLOSE #header--notification': 'dropdownClosed',
-        'click .dropdown-app-name': 'clickAppName',
-        'click #guide-tutorial': 'openTutorial'
+        'click .dropdown-app-name': 'clickAppName'
       },
       render: function() {
         console.log('header render');
@@ -55,12 +54,6 @@
       setAlertCount: function(count) {
         $('#header--notification').find('span').text(count || "");
         return null;
-      },
-      openTutorial: function() {
-        console.log('openTutorial');
-        return require(['component/tutorial/main'], function(tutorial_main) {
-          return tutorial_main.loadModule();
-        });
       }
     });
     return HeaderView;

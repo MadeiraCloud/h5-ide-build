@@ -7481,7 +7481,7 @@ function program31(depth0,data) {
         'id': null
       },
       init: function(uid) {
-        var allSubnet, appData, elb, myElbComponent, port, splitIndex, subnet, subnetMap, target, _i, _len;
+        var appData, elb, elbDistrMap, instanceStateObj, myElbComponent, port, splitIndex, target;
         this.set('id', uid);
         this.set('uid', uid);
         myElbComponent = Design.instance().component(uid);
@@ -7526,52 +7526,61 @@ function program31(depth0,data) {
         elb.isClassic = Design.instance().typeIsClassic();
         elb.defaultVPC = Design.instance().typeIsDefaultVpc();
         elb.distribution = [];
-        subnetMap = {};
-        allSubnet = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).allObjects();
-        for (_i = 0, _len = allSubnet.length; _i < _len; _i++) {
-          subnet = allSubnet[_i];
-          subnetMap[subnet.id] = subnet.get('name');
-        }
-        $.each(elb.AvailabilityZones.member, function(i, zone_name) {
-          var tmp;
-          tmp = {};
-          tmp.zone = zone_name;
-          tmp.health_instance = 0;
-          tmp.total_instance = 0;
-          if (!elb.isClassic) {
-            if (elb.Subnets.member && elb.Subnets.member.constructor === Array) {
-              $.each(elb.Subnets.member, function(j, subnet_id) {
-                subnet = MC.data.resource_list[Design.instance().region()][subnet_id];
-                if (subnet && subnet.availabilityZone === zone_name) {
-                  tmp.subnet = subnetMap[subnet_id];
-                  return false;
+        elbDistrMap = {};
+        instanceStateObj = elb.InstanceState;
+        _.each(instanceStateObj, function(stateObj) {
+          var err, instanceComp, instanceCompObj, instanceId, instanceState, instanceStateCode, instanceStateDescription, instanceUID, regionComp, regionName, showStateObj;
+          try {
+            instanceId = stateObj.InstanceId;
+            instanceStateCode = stateObj.ReasonCode;
+            instanceState = stateObj.State;
+            instanceStateDescription = stateObj.Description;
+            instanceCompObj = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).getEffectiveId(instanceId);
+            instanceUID = instanceCompObj.uid;
+            instanceComp = Design.instance().component(instanceUID);
+            regionName = '';
+            if (instanceComp) {
+              showStateObj = {
+                instance_name: instanceComp.get('name'),
+                instance_id: instanceId,
+                instance_state: instanceState === 'InService',
+                instance_state_desc: instanceStateDescription
+              };
+              regionComp = null;
+              if (instanceComp.parent() && regionComp.parent().parent()) {
+                regionComp = instanceComp.parent().parent();
+                if (instanceComp.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+                  regionComp = instanceComp.parent().parent().parent();
                 }
-              });
-            } else if (elb.Subnets.member) {
-              tmp.subnet = elb.Subnets.member;
+              }
+              if (regionComp) {
+                regionName = regionComp.get('name');
+              }
             }
-          } else {
-            tmp.subnet = null;
+            elbDistrMap[regionName] = elbDistrMap[regionName] || [];
+            return elbDistrMap[regionName].push(showStateObj);
+          } catch (_error) {
+            err = _error;
+            return console.log('Error: ELB Instance State Parse Failed');
           }
-          $.each(MC.data.config[Design.instance().region()].zone.item, function(i, zone) {
-            if (zone.zoneName === zone_name && zone.zoneState === 'available') {
-              tmp.health = true;
+        });
+        _.each(elbDistrMap, function(instanceAry, azName) {
+          var isHealth;
+          isHealth = true;
+          _.each(instanceAry, function(instanceObj) {
+            if (!instanceObj.instance_state) {
+              isHealth = false;
             }
             return null;
           });
-          return elb.distribution.push(tmp);
-        });
-        elb.instance_state = elb.instance_state || [];
-        $.each(elb.instance_state, function(i, instance) {
-          var zone;
-          zone = MC.data.resource_list[Design.instance().region()][instance.InstanceId].placement.availabilityZone;
-          return $.each(elb.distribution, function(j, az_detail) {
-            if (az_detail.zone === zone && instance.State === 'InService') {
-              az_detail.health_instance += 1;
-            }
-            az_detail.total_instance += 1;
-            return false;
+          return elb.distribution.push({
+            zone: azName,
+            instance: instanceAry,
+            health: isHealth
           });
+        });
+        elb.distribution = elb.distribution.sort(function(azObj1, azObj2) {
+          return azObj1.zone > azObj2.zone;
         });
         this.set(elb);
         return this.set("componentUid", myElbComponent.id);
@@ -7641,34 +7650,10 @@ function program9(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " icon-label\"></i>\n            <span class=\"app-panel-li-main\">"
     + escapeExpression(((stack1 = (depth0 && depth0.zone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.subnet), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+    + "</span>\n        </div>\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " </span>\n        </div>\n<!--         <div class=\"list-row\">\n          <p class=\"app-panel-li-sub\"> "
-    + escapeExpression(((stack1 = (depth0 && depth0.health_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "/"
-    + escapeExpression(((stack1 = (depth0 && depth0.total_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " instances are healthy </p>\n        </div> -->\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
-    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
-    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n          </ul>\n        </div>\n      </li>\n      <li>\n        <div class=\"list-row\">\n            <i class=\"status status-";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " icon-label\"></i>\n            <span class=\"app-panel-li-main\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.zone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.subnet), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " </span>\n        </div>\n<!--         <div class=\"list-row\">\n          <p class=\"app-panel-li-sub\"> "
-    + escapeExpression(((stack1 = (depth0 && depth0.health_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "/"
-    + escapeExpression(((stack1 = (depth0 && depth0.total_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " instances are healthy </p>\n        </div> -->\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
-    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
-    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n          </ul>\n        </div>\n      </li>\n    ";
+  buffer += "\n          </ul>\n        </div>\n      </li>\n    ";
   return buffer;
   }
 function program10(depth0,data) {
@@ -7686,13 +7671,41 @@ function program12(depth0,data) {
 function program14(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<span class=\"sub\">- "
-    + escapeExpression(((stack1 = (depth0 && depth0.subnet)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>";
+  buffer += "\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.instance_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n                  <div class=\"instance-id\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.instance_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</div>\n                </div>\n                <div class=\"instance-state\">\n                  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                  ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                </div>\n              </li>\n            ";
+  return buffer;
+  }
+function program15(depth0,data) {
+  
+  
+  return "InService";
+  }
+
+function program17(depth0,data) {
+  
+  
+  return "OutOfService";
+  }
+
+function program19(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<a class=\"elb-info-icon tooltip icon-info\" data-tooltip=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.instance_state_desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></a>";
   return buffer;
   }
 
-function program16(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "";
   buffer += "\n  <div class=\"option-group-head\">"
@@ -7782,7 +7795,7 @@ function program16(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </ul>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>\n";
   return buffer;

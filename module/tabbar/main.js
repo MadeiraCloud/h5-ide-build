@@ -51,11 +51,6 @@
           console.log('region_name       = ' + view.temp_region_name);
           model.set('stack_region_name', view.temp_region_name);
           model.set('current_platform', platform);
-          if (MC.data.untitled === 0 && MC.common.cookie.getCookieByName('state') === '3') {
-            require(['component/tutorial/main'], function(tutorial_main) {
-              return tutorial_main.loadModule();
-            });
-          }
           MC.common.other.checkRepeatStackName();
           Tabbar.add('new-' + MC.data.untitled + '-' + view.temp_region_name, 'untitled-' + MC.data.untitled + ' - stack');
           return modal.close();
@@ -173,11 +168,6 @@
           console.log('OPEN_STACK_TAB ' + ' tab_name = ' + tab_name + ', region_name = ' + region_name + ', stack_id = ' + stack_id);
           model.set('stack_region_name', region_name);
           Tabbar.open(stack_id.toLowerCase(), tab_name + ' - stack');
-          if (_.contains(MC.data.demo_stack_list, tab_name) && MC.common.cookie.getCookieByName('state') === '3') {
-            require(['component/tutorial/main'], function(tutorial_main) {
-              return tutorial_main.loadModule();
-            });
-          }
           return null;
         };
         openAppTab = function(tab_name, region_name, app_id) {

@@ -12,9 +12,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.user_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n      <span class=\"truncate\" style=\"max-width:100px;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n      <span class=\"no-credential\" style=\"display:none;\"></span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\" role=\"menu\">\n      <li id=\"guide-tutorial\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_USER_TOUR", {hash:{},data:data}))
-    + "</li>\n      <li id=\"keyboard-shortcuts\" class=\"modal\" data-modal-template=\"shortkey\">"
+    + "</span>\n      <span class=\"no-credential\" style=\"display:none;\"></span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\" role=\"menu\">\n      <li id=\"keyboard-shortcuts\" class=\"modal\" data-modal-template=\"shortkey\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
     + "</li>\n\n      <li><a href=\"http://docs.visualops.io\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))

@@ -4534,7 +4534,7 @@
       return forge_result;
     };
     resourceMap = function(result) {
-      var action_name, data, dict, dict_name, node, responses, _i, _len;
+      var action_name, dict, dict_name, elbAttrData, elbHealthData, node, responses, _i, _len;
       responses = {
         "DescribeImagesResponse": ami_service.resolveDescribeImagesResult,
         "DescribeAvailabilityZonesResponse": ec2_service.resolveDescribeAvailabilityZonesResult,
@@ -4579,9 +4579,23 @@
           }
           dict[dict_name] = responses[action_name]([null, node]);
         } else if ($.type(node) === "object") {
-          data = node["DescribeLoadBalancerAttributes"];
-          if (data) {
-            _.each(data, function(node, elb_name) {
+          elbAttrData = node["DescribeLoadBalancerAttributes"];
+          if (elbAttrData) {
+            _.each(elbAttrData, function(node, elb_name) {
+              var elb_data;
+              action_name = ($.parseXML(node)).documentElement.localName;
+              dict_name = action_name.replace(/Response/i, "");
+              if (!dict[dict_name]) {
+                dict[dict_name] = [];
+              }
+              elb_data = responses[action_name]([null, node]);
+              elb_data.LoadBalancerName = elb_name;
+              return dict[dict_name].push(elb_data);
+            });
+          }
+          elbHealthData = node["DescribeInstanceHealth"];
+          if (elbHealthData) {
+            _.each(elbHealthData, function(node, elb_name) {
               var elb_data;
               action_name = ($.parseXML(node)).documentElement.localName;
               dict_name = action_name.replace(/Response/i, "");

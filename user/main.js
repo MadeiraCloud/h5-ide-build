@@ -272,10 +272,7 @@
         });
       },
       'register': function(pathArray, hashArray) {
-        var $email, $form, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkPassword, checkUsername, resetRegForm, timeOutToClear;
-        if (checkAllCookie()) {
-          window.location = '/';
-        }
+        var $email, $form, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
         deepth = 'register';
         console.log(pathArray, hashArray);
         if (hashArray[0] === 'success') {
@@ -286,13 +283,17 @@
           });
           return false;
         }
+        if (checkAllCookie()) {
+          window.location = '/';
+        }
         render('#register-template');
         $form = $("#register-form");
         $form.find('input').eq(0).focus();
         $username = $('#register-username');
         $email = $('#register-email');
         $password = $('#register-password');
-        timeOutToClear = void 0;
+        usernameTimeout = void 0;
+        emailTimeout = void 0;
         $('#register-btn').attr('disabled', false);
         checkUsername = function(e, cb) {
           var status, username;
@@ -399,9 +400,9 @@
           if (xhr != null) {
             xhr.abort();
           }
-          window.clearTimeout(timeOutToClear);
-          console.log('aborted!', timeOutToClear);
-          timeOutToClear = window.setTimeout(function() {
+          window.clearTimeout(usernameTimeout);
+          console.log('aborted!', usernameTimeout);
+          usernameTimeout = window.setTimeout(function() {
             return checkUserExist([username, null], function(statusCode) {
               if (!statusCode) {
                 if (!checkUsername()) {
@@ -423,8 +424,8 @@
           if (xhr != null) {
             xhr.abort();
           }
-          window.clearTimeout(timeOutToClear);
-          timeOutToClear = window.setTimeout(function() {
+          window.clearTimeout(emailTimeout);
+          emailTimeout = window.setTimeout(function() {
             return checkUserExist([null, email], function(statusCode) {
               if (!statusCode) {
                 if (!checkEmail()) {
