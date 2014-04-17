@@ -465,7 +465,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_REFRESH_STATE_LOG", {hash:{},data:data}))
     + "\"></a>\n						<a class=\"tooltip state-sys-log-btn icon-syslog\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SYSTEM_LOG", {hash:{},data:data}))
-    + "\"></a>\n\n						<div class=\"state-operate\">\n							<a id=\"state-toolbar-add\" href=\"javascript:void(0)\">"
+    + "\"></a>\n\n						<div class=\"state-operate\">\n							<a id=\"state-toolbar-add\" href=\"javascript:void(0)\"><i class=\"icon-add icon-label\"></i>"
     + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_ADD_STATE", {hash:{},data:data}))
     + "</a>\n							<a id=\"state-toolbar-copy-all\" href=\"javascript:void(0)\">"
     + escapeExpression(helpers.i18n.call(depth0, "STATE_TOOL_COPY_ALL", {hash:{},data:data}))
@@ -2865,7 +2865,7 @@ return TEMPLATE; });
             $logItem = $(logItem);
             stateId = $logItem.attr('data-state-id');
             stateNum = stateIdNumMap[stateId];
-            stateNumStr = 'unknown';
+            stateNumStr = 'deleted';
             if (stateNum) {
               stateNumStr = stateNum;
             }

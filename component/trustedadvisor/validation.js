@@ -1839,16 +1839,21 @@
       routeAry = vpnComp.resource.Routes;
       invalidRouteCIDRAry = [];
       _.each(routeAry, function(routeObj) {
-        var isInAnyPriIPRange, isInAnyPubIPRange, routeCIDR, routeIP, routeIPCIDR;
+        var isInAnyPriIPRange, isInAnyPubIPRange, routeCIDR, routeIP, routeIPCIDR, validSubnetCIDR;
         routeCIDR = routeObj.DestinationCidrBlock;
         if (routeCIDR) {
-          routeIP = routeCIDR.split('/')[0];
-          routeIPCIDR = routeCIDR.split('/')[1];
-          isInAnyPubIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'public');
-          isInAnyPriIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'private');
-        }
-        if ((isInAnyPubIPRange && !isInAnyPriIPRange) || Number(routeIPCIDR) === 0) {
-          return invalidRouteCIDRAry.push(routeCIDR);
+          validSubnetCIDR = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).isValidSubnetCIDR(routeCIDR);
+          if (!validSubnetCIDR) {
+            return invalidRouteCIDRAry.push(routeCIDR);
+          } else {
+            routeIP = routeCIDR.split('/')[0];
+            routeIPCIDR = routeCIDR.split('/')[1];
+            isInAnyPubIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'public');
+            isInAnyPriIPRange = MC.aws.aws.isValidInIPRange(routeIP, 'private');
+            if ((isInAnyPubIPRange && !isInAnyPriIPRange) || Number(routeIPCIDR) === 0) {
+              return invalidRouteCIDRAry.push(routeCIDR);
+            }
+          }
         }
       });
       if (invalidRouteCIDRAry.length) {

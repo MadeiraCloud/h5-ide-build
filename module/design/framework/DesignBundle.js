@@ -8220,7 +8220,8 @@
           ConnectionDraining: {
             Enabled: true,
             Timeout: 300
-          }
+          },
+          otherPoliciesMap: {}
         };
       },
       type: constant.AWS_RESOURCE_TYPE.AWS_ELB,
@@ -8387,8 +8388,25 @@
           return _.uniq(azs.concat(this.get("AvailabilityZones")));
         }
       },
+      setPolicyProxyProtocol: function(enable, portAry) {
+        var otherPoliciesMap;
+        otherPoliciesMap = this.get('otherPoliciesMap');
+        if (enable) {
+          otherPoliciesMap.EnableProxyProtocol = {
+            'PolicyName': 'EnableProxyProtocol',
+            'PolicyTypeName': 'ProxyProtocolPolicyType',
+            'PolicyAttributes': {
+              'ProxyProtocol': true
+            },
+            'InstancePort': portAry
+          };
+        } else {
+          delete otherPoliciesMap.EnableProxyProtocol;
+        }
+        return this.set('otherPoliciesMap', otherPoliciesMap);
+      },
       serialize: function() {
-        var component, hcTarget, id, l, listeners, sgs, ssl, sslcertId, subnets, _i, _len, _ref;
+        var component, hcTarget, id, l, listeners, otherPoliciesAry, otherPoliciesMap, sgs, ssl, sslcertId, subnets, _i, _len, _ref;
         hcTarget = this.get("healthCheckTarget");
         if (hcTarget.indexOf("TCP") !== -1 || hcTarget.indexOf("SSL") !== -1) {
           hcTarget = hcTarget.split("/")[0];
@@ -8434,6 +8452,13 @@
             return sb.createRef("SubnetId");
           });
         }
+        otherPoliciesMap = this.get('otherPoliciesMap');
+        otherPoliciesAry = _.map(otherPoliciesMap, function(policyObj) {
+          return policyObj;
+        });
+        if (!otherPoliciesAry) {
+          otherPoliciesAry = [];
+        }
         component = {
           type: this.type,
           uid: this.id,
@@ -8470,7 +8495,7 @@
                   CookieName: ""
                 }
               ],
-              OtherPolicies: []
+              OtherPolicies: otherPoliciesAry
             },
             BackendServerDescriptions: [
               {
@@ -8509,8 +8534,17 @@
           healthCheckInterval: data.resource.HealthCheck.Interval,
           healthCheckTimeout: data.resource.HealthCheck.Timeout,
           x: layout_data.coordinate[0],
-          y: layout_data.coordinate[1]
+          y: layout_data.coordinate[1],
+          otherPoliciesMap: {}
         };
+        if (data.resource.Policies) {
+          if (data.resource.Policies.OtherPolicies) {
+            _.each(data.resource.Policies.OtherPolicies, function(policyObj) {
+              attr.otherPoliciesMap[policyObj.PolicyName] = policyObj;
+              return null;
+            });
+          }
+        }
         attr.AvailabilityZones = _.map(data.resource.AvailabilityZones || [], function(azRef) {
           if (azRef[0] === "@") {
             return resolve(MC.extractID(azRef)).get("name");
@@ -9657,6 +9691,17 @@
           return false;
         }
         return Number(subnetCIDR.split('/')[1]) >= Number(vpcCIDR.split('/')[1]);
+      },
+      isValidSubnetCIDR: function(subnetCIDR) {
+        var subnetCidrBinStr, subnetCidrSuffix, suffixIPBinStr, suffixNum;
+        subnetCidrBinStr = _getCidrBinStr(subnetCIDR);
+        subnetCidrSuffix = Number(subnetCIDR.split('/')[1]);
+        suffixIPBinStr = subnetCidrBinStr.slice(subnetCidrSuffix);
+        suffixNum = parseInt(suffixIPBinStr);
+        if ((suffixNum === 0) || (suffixIPBinStr === '')) {
+          return true;
+        }
+        return false;
       },
       autoAssignAllCIDR: function(vpcCIDR, subnetCount) {
         var binSeq, i, needBinNum, newIPAry, newIPStr, newSubnetAry, newSubnetBinStr, newSubnetStr, newSubnetSuffix, vpcIPBinLeftStr, vpcIPBinStr, vpcIPSuffix;

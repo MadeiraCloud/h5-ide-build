@@ -5049,9 +5049,9 @@ function program10(depth0,data) {
     var MissingModule, MissingView, m, model, view;
     MissingView = PropertyView.extend({
       render: function() {
-        var comp;
+        var comp, _ref;
         comp = Design.instance().component(this.model.get('uid'));
-        if (Design.instance().get('state') === 'Stopped' && comp.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+        if (((_ref = Design.instance().get('state')) === 'Stopped' || _ref === "Stopping") && comp.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
           this.$el.html(MC.template.missingAsgWhenStop({
             asgName: comp.get('name')
           }));
@@ -6513,6 +6513,11 @@ function program3(depth0,data) {
           Enabled: enabled,
           Timeout: timeout
         });
+      },
+      setAdvancedProxyProtocol: function(enable, portAry) {
+        var elbModel;
+        elbModel = Design.instance().component(this.get("uid"));
+        return elbModel.setPolicyProxyProtocol(enable, portAry);
       }
     });
     return new ElbModel();
@@ -6781,7 +6786,13 @@ function program31(depth0,data) {
   buffer += "\">\n				<label for=\"elb-connection-draining-input\" class=\"left\">Timeout</label>\n				<input id=\"elb-connection-draining-input\" class=\"input parsley-validated\" type=\"text\" value=\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.connectionDrainingTimeout), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-ignore=\"true\" data-required=\"true\" data-type=\"number\">\n				<label for=\"elb-connection-draining-input\">seconds</label>\n			</div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\"> "
+  buffer += "\" data-ignore=\"true\" data-required=\"true\" data-type=\"number\">\n				<label for=\"elb-connection-draining-input\">seconds</label>\n			</div>\n		</section>\n	</div>\n\n	<!--\n	<div class=\"option-group-head\">Advanced Configuration</div>\n	<div class=\"option-group\" data-bind=\"true\"> <ul id=\"elb-property-listener-list\" class=\"property-list\">\n		<section class=\"property-control-group\">\n			<label>Proxy Protocol</label>\n			<div class=\"mgt5\">\n				<div class=\"checkbox\">\n					<input id=\"elb-advanced-proxy-protocol-select\" type=\"checkbox\" ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.otherPoliciesMap)),stack1 == null || stack1 === false ? stack1 : stack1.EnableProxyProtocol), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n					<label for=\"elb-advanced-proxy-protocol-select\"></label>\n				</div>\n				<label for=\"elb-advanced-proxy-protocol-select\">Enable Proxy Protocol</label>\n				<div id=\"elb-advanced-proxy-protocol-select-tip\" class=\"property-info ";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.otherPoliciesMap)),stack1 == null || stack1 === false ? stack1 : stack1.EnableProxyProtocol), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">If you have a Proxy Protocol enabled proxy server in front of your load balancer, then you must not enable Proxy Protocol on your load balancer.</div>\n			</div>\n		</section>\n	</div>\n	-->\n\n	<div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LISTENER_DETAIL", {hash:{},data:data}))
     + " </div>\n	<div class=\"option-group\" data-bind=\"true\"> <ul id=\"elb-property-listener-list\" class=\"property-list\">\n		";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.listeners), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
@@ -6903,7 +6914,8 @@ function program31(depth0,data) {
         'click #sslcert-select .item .icon-edit': 'elbSSLCertEdit',
         'click #sslcert-select .item .icon-remove': 'elbSSLCertRemove',
         'click #elb-connection-draining-select': 'elbConnectionDrainSelectChange',
-        'change #elb-connection-draining-input': 'elbConnectionDrainTimeoutChange'
+        'change #elb-connection-draining-input': 'elbConnectionDrainTimeoutChange',
+        'click #elb-advanced-proxy-protocol-select': 'elbAdvancedProxyProtocolSelectChange'
       },
       render: function() {
         this.$el.html(template(this.model.attributes));
@@ -7320,16 +7332,24 @@ function program31(depth0,data) {
         return false;
       },
       elbSSLCertRemove: function(event) {
-        var $certEditItem, $certItem, certUID, that;
+        var $certEditItem, $certItem, certModel, certName, certUID, that;
         that = this;
         $certEditItem = $(event.currentTarget);
         $certItem = $certEditItem.parents('.item');
         certUID = $certItem.attr('data-id');
-        if (certUID) {
-          that.model.removeCert(certUID);
-          ide_event.trigger(ide_event.REFRESH_PROPERTY);
-          return false;
+        certModel = Design.instance().component(certUID);
+        if (certModel) {
+          certName = certModel.get('name');
+          modal(MC.template.modalDeleteELBCert({
+            cert_name: certName
+          }, true));
+          $("#modal-confirm-elb-cert-delete").one('click', function() {
+            that.model.removeCert(certUID);
+            ide_event.trigger(ide_event.REFRESH_PROPERTY);
+            return modal.close();
+          });
         }
+        return false;
       },
       changeSSLCert: function(event) {
         var $certItem, certUID, that;
@@ -7433,6 +7453,19 @@ function program31(depth0,data) {
         if (selectValue && timeoutValue) {
           return that.model.setConnectionDraining(true, timeoutValue);
         }
+      },
+      elbAdvancedProxyProtocolSelectChange: function(event) {
+        var $selectbox, $tipBox, selectValue, that;
+        that = this;
+        $selectbox = that.$('#elb-advanced-proxy-protocol-select');
+        $tipBox = $('#elb-advanced-proxy-protocol-select-tip');
+        selectValue = $selectbox.prop('checked');
+        if (selectValue) {
+          $tipBox.removeClass('hide');
+        } else {
+          $tipBox.addClass('hide');
+        }
+        return that.model.setAdvancedProxyProtocol(selectValue, [80]);
       }
     });
     return new ElbView();
@@ -7603,19 +7636,39 @@ function program7(depth0,data) {
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <li>\n      <div class=\"list-row\">\n          <i class=\"status status-";
+  buffer += "\n      <li>\n        <div class=\"list-row\">\n            <i class=\"status status-";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " icon-label\"></i>\n          <span class=\"app-panel-li-main\">"
+  buffer += " icon-label\"></i>\n            <span class=\"app-panel-li-main\">"
     + escapeExpression(((stack1 = (depth0 && depth0.zone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.subnet), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " </span>\n      </div>\n      <div class=\"list-row\">\n        <p class=\"app-panel-li-sub\"> "
+  buffer += " </span>\n        </div>\n<!--         <div class=\"list-row\">\n          <p class=\"app-panel-li-sub\"> "
     + escapeExpression(((stack1 = (depth0 && depth0.health_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "/"
     + escapeExpression(((stack1 = (depth0 && depth0.total_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " instances are healthy </p>\n      </div>\n    </li>\n    ";
+    + " instances are healthy </p>\n        </div> -->\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n          </ul>\n        </div>\n      </li>\n      <li>\n        <div class=\"list-row\">\n            <i class=\"status status-";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " icon-label\"></i>\n            <span class=\"app-panel-li-main\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.zone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.subnet), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " </span>\n        </div>\n<!--         <div class=\"list-row\">\n          <p class=\"app-panel-li-sub\"> "
+    + escapeExpression(((stack1 = (depth0 && depth0.health_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "/"
+    + escapeExpression(((stack1 = (depth0 && depth0.total_instance)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " instances are healthy </p>\n        </div> -->\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">instance-name</div>\n                  <div class=\"instance-id\">i-89122189</div>\n                </div>\n                <div class=\"instance-state\">\n                  InService\n                  <a class=\"elb-info-icon tooltip icon-info\" href=\"https://aws.amazon.com/about-aws/whats-new/2013/11/06/elastic-load-balancing-adds-cross-zone-load-balancing/\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_READ_RELATED_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n                </div>\n              </li>\n          </ul>\n        </div>\n      </li>\n    ";
   return buffer;
   }
 function program10(depth0,data) {
@@ -7723,12 +7776,12 @@ function program16(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_THRESHOLD", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.HealthCheck)),stack1 == null || stack1 === false ? stack1 : stack1.HealthyThreshold)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      </dl>\n  </div>\n\n  <!--<div class=\"option-group-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_DISTRIBUTION", {hash:{},data:data}))
+    + "</dd>\n      </dl>\n  </div>\n\n  <div class=\"option-group-head\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_INSTANCES", {hash:{},data:data}))
     + "</div>\n  <ul class=\"option-group property-list\">\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </ul>\n  -->\n  ";
+  buffer += "\n  </ul>\n\n  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>\n";

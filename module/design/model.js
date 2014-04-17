@@ -45,6 +45,7 @@
             if (MC.data.running_app_list && MC.data.running_app_list[app_id] && MC.data.running_app_list[app_id].state === 'stopped') {
               MC.common.other.canvasData.save(MC.common.other.canvasData.data(true));
             }
+            MC.common.other.canvasData.set('state', MC.common.other.canvasData.data('origin').state);
           } else {
             this.updateAppTabDate(result.resolved_data[0], app_id);
             this.updateAppTabOriginDate(result.resolved_data[0], app_id);
@@ -100,6 +101,7 @@
         if (MC.tab[tab_id]) {
           MC.tab[tab_id].data = $.extend(true, {}, data);
           MC.tab[tab_id].design_model.save(data);
+          MC.tab[tab_id].design_model.set('state', data.state);
         }
         return null;
       },

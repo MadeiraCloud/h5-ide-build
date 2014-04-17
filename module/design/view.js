@@ -124,13 +124,13 @@
         $stateBar.find('.state-success b').text(succeed);
         return $stateBar.find('.state-failed b').text(failed);
       },
-      loadStateStatusBar: function() {
+      loadStateStatusBar: function(state) {
         var $btnState, appStoped, stateList, _ref;
         ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA, this.updateStateBar);
         ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA, this.updateStateBar, this);
         ide_event.offListen(ide_event.UPDATE_APP_STATE, this.updateStateBarWhenStateChanged);
         ide_event.onLongListen(ide_event.UPDATE_APP_STATE, this.updateStateBarWhenStateChanged, this);
-        appStoped = MC.common.other.canvasData.data('origin').state === 'Stopped';
+        appStoped = (state || MC.canvas_data.state) === 'Stopped';
         $btnState = $('#main-statusbar .btn-state');
         if ((_ref = Tabbar.current) === 'app' || _ref === 'appedit') {
           if (appStoped) {
@@ -152,10 +152,12 @@
         var stateList;
         if (state === 'Stopped') {
           stateList = [];
-        } else {
+          return this.unloadStateStatusBar();
+        } else if (state === 'Running') {
+          this.loadStateStatusBar(state);
           stateList = MC.data.websocket.collection.status.find().fetch();
+          return this.renderStateBar(stateList);
         }
-        return this.renderStateBar(stateList);
       },
       updateStateBar: function(type, idx, statusData) {
         var stateList;

@@ -9,7 +9,7 @@ body {
 #body {
 	background-color: #000;
 	color           : #222;
-	background-image: url('../images/login/bg.jpeg?v=5e70e91c');
+	background-image: url('../images/login/bg.jpeg');
 	background-size : cover;
 }
 
@@ -31,7 +31,7 @@ header {
 }
 
 #logo-link {
-	background: url('../images/login/logo.svg?v=d99f5c3f') center no-repeat;
+	background: url('../images/login/logo.svg') center no-repeat;
 	background-size: 240px auto;
 	height: 80px;
 	width: 240px;
@@ -293,10 +293,10 @@ header {
 /* Unsupported Browser Notice */
 #unsupported-browser {
 	position: relative;
-	top: 60px;
+	top: 100px;
 	padding: 15px 0 5px;
 	text-align: center;
-	background: #fff9d7;
+	background: #DFCC60;
 	width: 100%;
 	color: #666;
 	font-size: 14px;

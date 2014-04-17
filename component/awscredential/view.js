@@ -20,6 +20,12 @@
         'click #account-email-cancel': 'clickCancelEmail',
         'click #account-password-update': 'clickUpdatePassword',
         'click #account-password-cancel': 'clickCancelPassword',
+        'input #aws-credential-account-id': 'verificationKey',
+        'input #aws-credential-access-key': 'verificationKey',
+        'input #aws-credential-secret-key': 'verificationKey',
+        'keyup #aws-credential-account-id': 'verificationKey',
+        'keyup #aws-credential-access-key': 'verificationKey',
+        'keyup #aws-credential-secret-key': 'verificationKey',
         'change #aws-credential-account-id': 'verificationKey',
         'change #aws-credential-access-key': 'verificationKey',
         'change #aws-credential-secret-key': 'verificationKey',
@@ -309,9 +315,9 @@
           if (!flag) {
             $('#AWSCredentials-submiting').hide();
             $('#AWSCredentials-update').hide();
-            $('#aws-credential-account-id').val(' ');
-            $('#aws-credential-access-key').val(' ');
-            $('#aws-credential-secret-key').val(' ');
+            $('#aws-credential-account-id').val('');
+            $('#aws-credential-access-key').val('');
+            $('#aws-credential-secret-key').val('');
             if (this.state === 'credential') {
               $('#AWSCredential-info').find('p').text(lang.ide.HEAD_INFO_PROVIDE_CREDENTIAL3);
             } else if (this.state === 'welcome') {
@@ -370,8 +376,8 @@
             $('#AWSCredential-info').find('p').text(lang.ide.HEAD_CHANGE_CREDENTIAL);
             $('#aws-credential-account-id').val(me.model.attributes.account_id);
             $('#awscredentials-remove').removeClass("btn btn-red");
-            $('#aws-credential-access-key').val(' ');
-            $('#aws-credential-secret-key').val(' ');
+            $('#aws-credential-access-key').val('');
+            $('#aws-credential-secret-key').val('');
             num = 0;
             _ref = constant.REGION_KEYS;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -390,7 +396,7 @@
               $('#awscredentials-remove').show();
             }
             if (me.model.attributes.account_id === 'demo_account') {
-              $('#aws-credential-account-id').val(' ');
+              $('#aws-credential-account-id').val('');
               $('#aws-credential-account-id').attr('disabled', false);
             }
           } else if (flag === 'on_submit') {
@@ -413,6 +419,11 @@
             $('#AWSCredential-form').find('ul').hide();
             $('#awscredentials-remove').addClass("btn btn-red");
           }
+        }
+        if (MC.common.cookie.getCookieByName('account_id') === 'demo_account') {
+          $('#awscredentials-remove').hide();
+        } else {
+          $('#awscredentials-remove').show();
         }
         return null;
       }

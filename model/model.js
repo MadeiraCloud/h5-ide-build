@@ -5947,6 +5947,7 @@
         "DescribeKeyPairsResponse": keypair_service.resolveDescribeKeyPairsResult,
         "DescribeSecurityGroupsResponse": securitygroup_service.resolveDescribeSecurityGroupsResult,
         "DescribeLoadBalancersResponse": elb_service.resolveDescribeLoadBalancersResult,
+        "DescribeInstanceHealthResponse": elb_service.resolveDescribeInstanceHealthResult,
         "DescribeNetworkAclsResponse": acl_service.resolveDescribeNetworkAclsResult,
         "DescribeCustomerGatewaysResponse": customergateway_service.resolveDescribeCustomerGatewaysResult,
         "DescribeDhcpOptionsResponse": dhcp_service.resolveDescribeDhcpOptionsResult,
