@@ -17,7 +17,6 @@
             me.trigger('UPDATE_ACCOUNT_ATTRIBUTES_SUCCESS', attributes);
             if (attributes.state === '3') {
               MC.common.cookie.setCookieByName('state', attributes.state);
-              MC.common.cookie.setIDECookie($.cookie());
             }
           } else {
             me.trigger('UPDATE_ACCOUNT_ATTRIBUTES_FAILED', attributes);
@@ -42,7 +41,6 @@
               me.set('account_id', result.resolved_data);
               MC.common.cookie.setCookieByName('account_id', result.resolved_data);
               MC.common.cookie.setCookieByName('has_cred', true);
-              MC.common.cookie.setIDECookie($.cookie());
               me.trigger('REFRESH_AWS_CREDENTIAL');
             }
           } else {
@@ -88,7 +86,6 @@
                 me.set('is_authenticated', true);
                 MC.common.cookie.setCookieByName('has_cred', true);
                 MC.common.cookie.setCookieByName('account_id', account_id);
-                MC.common.cookie.setIDECookie($.cookie());
                 regionAttrSet = result.resolved_data;
                 _.map(constant.REGION_KEYS, function(value) {
                   var default_vpc, support_platform;

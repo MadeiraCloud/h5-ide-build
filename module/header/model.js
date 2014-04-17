@@ -17,9 +17,6 @@
             result = forge_result.resolved_data;
           }
           common_handle.cookie.deleteCookie();
-          $.cookie('madeiracloud_ide_session_id', null, {
-            expires: 0
-          });
           window.location.href = "/login";
           return false;
         });

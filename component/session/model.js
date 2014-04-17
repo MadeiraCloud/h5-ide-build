@@ -11,7 +11,6 @@
           if (!forge_result.is_error) {
             result = forge_result.resolved_data;
             common_handle.cookie.setCookie(result);
-            common_handle.cookie.setIDECookie(result);
             me.trigger('RE_LOGIN_SCUCCCESS');
           } else {
             console.log('Authentication failed.');

@@ -12,7 +12,6 @@
           if (!result.is_error) {
             if (attributes.state === '2') {
               MC.common.cookie.setCookieByName('state', attributes.state);
-              MC.common.cookie.setIDECookie($.cookie());
             }
           } else {
 

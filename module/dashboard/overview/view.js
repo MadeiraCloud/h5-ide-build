@@ -272,7 +272,6 @@
         if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
           $('#global-region-visualize-VPC').removeAttr('disabled');
         }
-        $('#global-region-visualize-VPC').show();
         return null;
       },
       enableSwitchRegion: function() {

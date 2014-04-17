@@ -198,29 +198,6 @@
           me.handleRequest(result, 'UPDATE_APP', region, id, name);
           return null;
         });
-
-        /*me.on 'APP_GET_KEY_RETURN', (result) ->
-            console.log 'APP_GET_KEY_RETURN'
-        
-            region = result.param[3]
-            app_id = result.param[4]
-            app_name = result.param[5]
-        
-            idx = 'process-' + region + '-' + app_name
-            data = $.extend(true, {}, process_data_map[idx])
-            delete process_data_map[idx]
-        
-            if !result.is_error
-                 * trigger toolbar save png event
-                console.log 'app key:' + result.resolved_data
-        
-                data.key = result.resolved_data
-                data.id  = app_id
-        
-                 *me.savePNG app_id, 'new'
-        
-                null
-         */
       },
       createStackCallback: function(result, old_id, name, region) {
         var data, new_id;

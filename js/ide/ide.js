@@ -10,9 +10,6 @@
             return notification('error', lang.ide.IDE_MSG_ERR_CONNECTION, true);
           }
         }, 50 * 1000);
-        if (!common_handle.cookie.checkAllCookie()) {
-          window.location.href = "/login";
-        }
         MC.data.current_tab_id = 'dashboard';
         MC.data.config = {};
         _ref = constant.REGION_KEYS;
