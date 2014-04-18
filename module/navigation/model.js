@@ -106,7 +106,7 @@
             });
           }
           console.log(app_list);
-          me.set('app_list', app_list);
+          me.set('app_list', $.extend(true, [], app_list));
           return null;
         });
         me.on('STACK_LST_RETURN', function(result) {
@@ -201,7 +201,7 @@
             });
           }
           console.log(stack_list);
-          me.set('stack_list', stack_list);
+          me.set('stack_list', $.extend(true, [], stack_list));
           stack_region_list = [];
           _.each(stack_list, function(item) {
             return stack_region_list.push(item.region_name_group[0].region);
@@ -237,7 +237,7 @@
             });
           }
           console.log(region_list);
-          me.set('region_list', region_list);
+          me.set('region_list', $.extend(true, [], region_list));
           return null;
         });
         return null;
@@ -262,7 +262,7 @@
           return constant.REGION_SHORT_LABEL[val];
         });
         console.log(region_empty_list);
-        this.set('region_empty_list', region_empty_list);
+        this.set('region_empty_list', $.extend(true, [], region_empty_list));
         return null;
       },
       describeRegionsService: function() {

@@ -10,16 +10,6 @@
           var dd, options;
           console.log('canvas:CREATE_DESIGN_OBJ', region_name, type, current_platform, tab_name, result);
           view.reRender();
-          if (type === 'OPEN_STACK' || type === 'OPEN_APP') {
-            if (MC.common.other.canvasData.get('bad')) {
-              notification('error', lang.ide.IDE_MSG_ERR_OPEN_OLD_STACK_APP_TAB, true);
-              ide_event.trigger(ide_event.SWITCH_MAIN);
-              if (tab_name) {
-                ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, tab_name);
-              }
-              return;
-            }
-          }
           options = {
             mode: Tabbar.current === 'new' ? Design.MODE.Stack : Tabbar.current
           };

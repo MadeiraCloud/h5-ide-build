@@ -4010,6 +4010,18 @@
       isVisual: function() {
         return false;
       },
+      assignCompsToPorts: function(p1Comp, p2Comp) {
+        if (p1Comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+          this.__port1Comp = p1Comp;
+          this.__port2Comp = p2Comp;
+        } else if (p2Comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+          this.__port1Comp = p2Comp;
+          this.__port2Comp = p1Comp;
+        } else {
+          return false;
+        }
+        return true;
+      },
       remove: function() {
         var defaultSg, resource;
         ConnectionModel.prototype.remove.apply(this, arguments);
@@ -4293,7 +4305,7 @@
             cidr = defaultSubnet.cidrBlock;
           }
         }
-        return cidr;
+        return cidr || "10.0.0.1";
       },
       getIpArray: function() {
         var cidr, idx, ip, ipAry, ips, isServergroup, obj, prefixSuffixAry, _i, _len, _ref;
@@ -5359,7 +5371,7 @@
           action: r.RuleAction,
           port: ""
         };
-        if (r.Protocol === "1" && r.IcmpTypeCode && r.IcmpTypeCode.Code && r.IcmpTypeCode.Type) {
+        if (rule.protocol === 1 && r.IcmpTypeCode && r.IcmpTypeCode.Code && r.IcmpTypeCode.Type) {
           rule.port = r.IcmpTypeCode.Type + "/" + r.IcmpTypeCode.Code;
         } else if (r.PortRange.From && r.PortRange.To) {
           if (r.PortRange.From === r.PortRange.To) {
@@ -5488,7 +5500,7 @@
             IcmpTypeCode: __emptyIcmp,
             PortRange: __emptyPortRange
           };
-          if (rule.protocol === "1") {
+          if (rule.protocol === 1) {
             port = rule.port.split("/");
             r.IcmpTypeCode = {
               Code: port[1],
