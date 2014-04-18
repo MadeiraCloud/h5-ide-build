@@ -1424,6 +1424,7 @@
       },
       updateMap: function(me, app_list, stack_list) {
         var r, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        console.log('updateMap', me, app_list, stack_list);
         total_app = 0;
         total_stack = 0;
         total_aws = 0;
@@ -1518,7 +1519,8 @@
         result_list.plural_app = total_app > 1 ? 's' : '';
         result_list.plural_aws = total_aws > 1 ? 's' : '';
         result_list.plural_stack = total_stack > 1 ? 's' : '';
-        me.set('result_list', result_list);
+        console.log('sfsfasfffffffffffffff ', result_list);
+        me.set('result_list', $.extend(true, {}, result_list));
         return null;
       },
       getItemList: function(flag, region, result) {

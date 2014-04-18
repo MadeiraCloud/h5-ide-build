@@ -331,7 +331,7 @@
       },
       renderMapResult: function() {
         var cur_tmpl;
-        console.log('dashboard overview-result render');
+        console.log('dashboard overview-result render', this.model.attributes);
         cur_tmpl = template_data.overview_result(this.model.attributes);
         $(this.el).find('#global-region-spot').html(cur_tmpl);
         return null;

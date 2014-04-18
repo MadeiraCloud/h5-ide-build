@@ -4123,6 +4123,10 @@
       if (!attr) {
         attr = {};
       }
+      attr.ip = attr.ip || "";
+      if (attr.ip.split(".").length !== 4 || attr.ip[attr.ip.length - 1] === ".") {
+        attr.ip = "";
+      }
       this.hasEip = attr.hasEip || false;
       this.autoAssign = attr.autoAssign !== void 0 ? attr.autoAssign : true;
       this.ip = attr.ip || "x.x.x.x";
@@ -7918,6 +7922,9 @@
           } else {
             ruleTarget = new SgTargetModel(rule.IpRanges);
           }
+          if (!ruleTarget) {
+            continue;
+          }
           attr = {
             fromPort: rule.FromPort,
             toPort: rule.ToPort,
@@ -10286,16 +10293,18 @@
               continue;
             }
             if (i.indexOf("PolicyARN") !== -1) {
-              policy = resolve(MC.extractID(i));
+              policy = resolve(MC.extractID(i)) || new Backbone.Model();
             } else if (i.indexOf("TopicArn") !== -1) {
               sendNotification = true;
             }
           }
-          policy.set({
-            "alarmData": alarmData,
-            "sendNotification": sendNotification,
-            "state": state
-          });
+          if (policy) {
+            policy.set({
+              "alarmData": alarmData,
+              "sendNotification": sendNotification,
+              "state": state
+            });
+          }
         } else {
           policy = new Model({
             id: data.uid,
@@ -10307,7 +10316,9 @@
             adjustmentType: data.resource.AdjustmentType
           });
           asg = resolve(MC.extractID(data.resource.AutoScalingGroupName));
-          asg.addScalingPolicy(policy);
+          if (asg) {
+            asg.addScalingPolicy(policy);
+          }
         }
         return null;
       }

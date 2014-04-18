@@ -1030,7 +1030,7 @@ define({
         "STATE_LOG_ITEM_UNKNOWN": "unknown",
         "STATE_LOG_DETAIL_MOD_TIT": "State Log Detail",
         "STATE_LOG_DETAIL_MOD_CLOSE_BTN": "Close",
-        "STATE_HELP_INTRO_LBL": "<p>Select or input a command to see a related help document here. Read detailed <a href='http://visualops.readthedocs.org/' target='_blank'>documentation</a>.</p>",
+        "STATE_HELP_INTRO_LBL": "<p>Select or input a command to see a related help document here. Read detailed <a href='http://docs.visualops.io/source/reference/mod.html' target='_blank'>documentation</a>.</p>",
         "INVITE_MOD_TIT": "Request invitation to experimental new feature",
         "INVITE_MOD_INTRO": "Introduce <b>Instance State</b>,<br>a new way to devOps your infrastructure!",
         "INVITE_MOD_INTRO_MORE": "<b>Instance State</b> enables you to manage the software layer of your instances. Software packages, configuration files, services, all are there in a very easy, intuitive and functional way.",
