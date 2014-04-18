@@ -450,7 +450,7 @@
           }
           return $('#register-btn').attr('disabled', false).val(langsrc.register['register-btn']);
         };
-        $username.on('keyup', function(e) {
+        $username.on('keyup blur change', function(e) {
           return checkUsername(e, function(a) {
             if (!a) {
               resetRegForm();
@@ -458,7 +458,7 @@
             return a;
           });
         });
-        $email.on('keyup', function(e) {
+        $email.on('keyup blur change', function(e) {
           return checkEmail(e, function(a) {
             if (!a) {
               resetRegForm();
@@ -466,7 +466,7 @@
             return a;
           });
         });
-        $password.on('keyup', function(e) {
+        $password.on('keyup blur change', function(e) {
           return checkPassword(e, function(a) {
             if (!a) {
               resetRegForm();
