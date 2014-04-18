@@ -170,7 +170,7 @@
         browser[2] = safari[1];
       }
     }
-    if (!((parseInt(browser[2], 10) || 0) >= support[browser[1]])) {
+    if ((parseInt(browser[2], 10) || 0) < support[browser[1]]) {
       $("header").after('<div id="unsupported-browser"><p>MadeiraCloud IDE does not support the browser you are using.</p> <p>For a better experience, we suggest you use the latest version of <a href="https://www.google.com/intl/en/chrome/browser/" target="_blank">Chrome</a>, <a href="http://www.mozilla.org/en-US/firefox/all/" target="_blank">Firefox</a> or <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie" target="_blank">IE</a>.</p></div>');
     }
     return userRoute({
@@ -578,7 +578,15 @@
   };
 
   setCredit = function(result) {
-    var key, session_info, value, _results;
+    var cValue, ckey, domain, key, session_info, value, _ref;
+    domain = {
+      "domain": window.location.hostname.replace("ide", "")
+    };
+    _ref = $.cookie();
+    for (ckey in _ref) {
+      cValue = _ref[ckey];
+      $.removeCookie(ckey, domain);
+    }
     session_info = {
       usercode: result[0],
       username: base64Decode(result[0]),
@@ -591,12 +599,15 @@
       state: result[7],
       has_cred: result[8]
     };
-    _results = [];
     for (key in session_info) {
       value = session_info[key];
-      _results.push($.cookie(key, value, COOKIE_OPTION));
+      $.cookie(key, value, COOKIE_OPTION);
     }
-    return _results;
+    return $.cookie("has_session", !!session_info.session_id, {
+      domain: window.location.hostname.replace("ide", ""),
+      path: "/",
+      expires: 30
+    });
   };
 
   ajaxRegister = function(params, errorCB) {

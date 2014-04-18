@@ -7529,7 +7529,7 @@ function program31(depth0,data) {
         elbDistrMap = {};
         instanceStateObj = elb.InstanceState;
         _.each(instanceStateObj, function(stateObj) {
-          var err, instanceComp, instanceCompObj, instanceId, instanceState, instanceStateCode, instanceStateDescription, instanceUID, regionComp, regionName, showStateObj;
+          var err, instanceComp, instanceCompObj, instanceId, instanceName, instanceState, instanceStateCode, instanceStateDescription, instanceUID, regionComp, regionName, showStateObj;
           try {
             instanceId = stateObj.InstanceId;
             instanceStateCode = stateObj.ReasonCode;
@@ -7540,14 +7540,18 @@ function program31(depth0,data) {
             instanceComp = Design.instance().component(instanceUID);
             regionName = '';
             if (instanceComp) {
+              instanceName = instanceComp.get('name');
+              if (instanceName === instanceId) {
+                instanceName = null;
+              }
               showStateObj = {
-                instance_name: instanceComp.get('name'),
+                instance_name: instanceName,
                 instance_id: instanceId,
                 instance_state: instanceState === 'InService',
                 instance_state_desc: instanceStateDescription
               };
               regionComp = null;
-              if (instanceComp.parent() && regionComp.parent().parent()) {
+              if (instanceComp.parent() && instanceComp.parent().parent()) {
                 regionComp = instanceComp.parent().parent();
                 if (instanceComp.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
                   regionComp = instanceComp.parent().parent().parent();
@@ -7671,32 +7675,51 @@ function program12(depth0,data) {
 function program14(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n              <li>\n                <div class=\"instance-info\">\n                  <div class=\"instance-name\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.instance_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n                  <div class=\"instance-id\">("
+  buffer += "\n              <li>\n                <div class=\"instance-info\">\n                  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                  <div class=\"instance-id ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">("
     + escapeExpression(((stack1 = (depth0 && depth0.instance_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</div>\n                </div>\n                <div class=\"instance-state\">\n                  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </div>\n              </li>\n            ";
   return buffer;
   }
 function program15(depth0,data) {
   
-  
-  return "InService";
+  var buffer = "", stack1;
+  buffer += "<div class=\"instance-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.instance_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>";
+  return buffer;
   }
 
 function program17(depth0,data) {
   
   
-  return "OutOfService";
+  return "instance-id-down";
   }
 
 function program19(depth0,data) {
+  
+  
+  return "InService";
+  }
+
+function program21(depth0,data) {
+  
+  
+  return "OutOfService";
+  }
+
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<a class=\"elb-info-icon tooltip icon-info\" data-tooltip=\""
@@ -7705,7 +7728,7 @@ function program19(depth0,data) {
   return buffer;
   }
 
-function program21(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "";
   buffer += "\n  <div class=\"option-group-head\">"
@@ -7795,7 +7818,7 @@ function program21(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </ul>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>\n";
   return buffer;

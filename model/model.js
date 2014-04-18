@@ -4603,8 +4603,10 @@
                 dict[dict_name] = [];
               }
               elb_data = responses[action_name]([null, node]);
-              elb_data.LoadBalancerName = elb_name;
-              return dict[dict_name].push(elb_data);
+              if (elb_data) {
+                elb_data.LoadBalancerName = elb_name;
+                return dict[dict_name].push(elb_data);
+              }
             });
           }
         }
@@ -5950,7 +5952,7 @@
       return aws_result;
     };
     resourceMap = function(result) {
-      var action_name, dict, dict_name, node, responses, _i, _len;
+      var action_name, dict, dict_name, elbHealthData, node, parseResult, responses, _i, _len;
       responses = {
         "DescribeImagesResponse": ami_service.resolveDescribeImagesResult,
         "DescribeAvailabilityZonesResponse": ec2_service.resolveDescribeAvailabilityZonesResult,
@@ -5985,15 +5987,37 @@
       dict = {};
       for (_i = 0, _len = result.length; _i < _len; _i++) {
         node = result[_i];
-        action_name = ($.parseXML(node)).documentElement.localName;
-        dict_name = action_name.replace(/Response/i, "");
-        if (dict[dict_name] != null) {
-          dict[dict_name] = [];
+        if (node) {
+          if ($.type(node) === "string") {
+            action_name = ($.parseXML(node)).documentElement.localName;
+            dict_name = action_name.replace(/Response/i, "");
+            if (dict[dict_name] != null) {
+              dict[dict_name] = [];
+            }
+            if (!(action_name in responses)) {
+              continue;
+            }
+            parseResult = responses[action_name]([null, node]);
+            dict[dict_name] = parseResult;
+          } else if ($.type(node) === "object") {
+            elbHealthData = node["DescribeInstanceHealth"];
+            if (elbHealthData) {
+              _.each(elbHealthData, function(node, elb_name) {
+                var elb_data;
+                action_name = ($.parseXML(node)).documentElement.localName;
+                dict_name = action_name.replace(/Response/i, "");
+                if (!dict[dict_name]) {
+                  dict[dict_name] = [];
+                }
+                elb_data = responses[action_name]([null, node]);
+                if (elb_data) {
+                  elb_data.LoadBalancerName = elb_name;
+                  return dict[dict_name].push(elb_data);
+                }
+              });
+            }
+          }
         }
-        if (!(action_name in responses)) {
-          continue;
-        }
-        dict[dict_name] = responses[action_name]([null, node]);
       }
       return dict;
     };
@@ -6111,6 +6135,9 @@
         app_json.region = region;
         for (resource_type in nodes) {
           resource_comp = nodes[resource_type];
+          if (resource_type === 'DescribeInstanceHealth') {
+            continue;
+          }
           if (resource_comp) {
             if (resource_type === 'DescribeAvailabilityZones') {
               _ref = resource_comp.item;
