@@ -1,1 +1,0 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'\n<div class="box-loading box-wrapper">\n	<div class="loading-spinner"></div>\n</div>'};return e.template(t)});
