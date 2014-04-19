@@ -1,0 +1,1 @@
+(function(){define(["backbone","register"],function(e,t){var n,r;return n=e.Router.extend({routes:{success:"success","*actions":"defaultRouter"}}),r=function(){var r;return r=new n,r.on("route:defaultRouter",function(){return t.loadModule("normal")}),r.on("route:success",function(){return t.loadModule("success")}),e.history.start()},{initialize:r}})}).call(this);
