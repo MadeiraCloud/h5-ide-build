@@ -1945,6 +1945,9 @@
         if (!this.attributes.appId) {
           this.attributes.appId = "";
         }
+        if (!this.attributes.description) {
+          this.attributes.description = "";
+        }
         Design.trigger(Design.EVENT.AddResource, this);
         return this;
       },

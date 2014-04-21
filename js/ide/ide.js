@@ -246,7 +246,9 @@
           return $('#system-notice-close').on('click', function() {
             $('#system-notice').remove();
             $("#resource-panel").find(".accordion-group.expanded").removeClass("expanded").children(".fixedaccordion-head").trigger("click", true);
-            return $.cookie('notice-sn', '1');
+            return $.cookie('notice-sn', '1', {
+              expires: 365 * 2
+            });
           });
         };
         displaySystemNotice();

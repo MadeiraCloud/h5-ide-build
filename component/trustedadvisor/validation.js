@@ -2673,7 +2673,7 @@ This file use for validate component about state.
     __getSubnetRtb = function(component) {
       var subnet;
       subnet = component.parent();
-      if (subnet.type !== CONST.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+      if (subnet.type !== CONST.RESTYPE.SUBNET) {
         subnet = subnet.parent();
       }
       return subnet.connectionTargets('RTB_Asso')[0];
@@ -2690,12 +2690,12 @@ This file use for validate component about state.
       return igw.length > 0;
     };
     __natOut = function(component) {
-      var instances, rtb;
-      if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+      var instances, rtb, _ref;
+      if ((_ref = component.type) === CONST.RESTYPE.INSTANCE || _ref === CONST.RESTYPE.LC) {
         rtb = __getSubnetRtb(component);
         if (rtb) {
           instances = _.where(rtb.connectionTargets('RTB_Route'), {
-            type: CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: CONST.RESTYPE.INSTANCE
           });
           return _.some(instances, function(instance) {
             return __isInstanceNat(instance);
@@ -2736,7 +2736,7 @@ This file use for validate component about state.
       return Helper.message.error(uid, i18n.TA_MSG_ERROR_NOT_CONNECT_OUT, subnetName);
     };
     __isLcConnectedOut = function(uid) {
-      var asg, expandedAsgs, lc, lcOld, result, subnet, subnetId, subnetName, _i, _len;
+      var asg, expandedAsgs, isLcNatOut, lc, lcOld, result, subnet, subnetId, subnetName, _i, _len;
       lc = __getComp(uid, true);
       lcOld = __getComp(uid);
       result = [];
@@ -2745,12 +2745,13 @@ This file use for validate component about state.
       subnet = lc.parent().parent();
       subnetName = subnet.get('name');
       subnetId = subnet.id;
-      if (!__selfOut(lc, result, subnetName)) {
+      isLcNatOut = __natOut(lc);
+      if (!(isLcNatOut || __selfOut(lc, result, subnetName))) {
         result.push(__genConnectedError(subnetName, subnetId));
       }
       for (_i = 0, _len = expandedAsgs.length; _i < _len; _i++) {
         asg = expandedAsgs[_i];
-        if (!__selfOut(asg, result, subnetName)) {
+        if (!(isLcNatOut || __selfOut(asg, result, subnetName))) {
           subnetName = asg.parent().get('name');
           result.push(__genConnectedError(subnetName, subnetId));
         }

@@ -585,7 +585,9 @@
     _ref = $.cookie();
     for (ckey in _ref) {
       cValue = _ref[ckey];
-      $.removeCookie(ckey, domain);
+      if (ckey !== "notice-sn") {
+        $.removeCookie(ckey, domain);
+      }
     }
     session_info = {
       usercode: result[0],

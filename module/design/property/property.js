@@ -1086,6 +1086,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           name: design.get("name").replace(/\s+/g, ''),
           id: design.get("id"),
           usage: design.get("usage"),
+          description: design.get('description'),
           type: typeMap[design.type()],
           region: constant.REGION_SHORT_LABEL[design.region()],
           isApp: this.isApp,
@@ -1290,7 +1291,11 @@ function program1(depth0,data) {
     + "</dd>\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </dl>\n  ";
+  buffer += "\n    <dt><label>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_LBL_DESC", {hash:{},data:data}))
+    + "</label></dt>\n    <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n  </dl>\n  ";
   return buffer;
   }
 function program2(depth0,data) {
@@ -1311,7 +1316,11 @@ function program4(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_LBL_NAME", {hash:{},data:data}))
     + "</label>\n		<input class=\"input\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-stack-name\">\n	</section>\n	<dl class=\"dl-horizontal dl-region-type property-control-group\">\n		<dt><label>"
+    + "\" id=\"property-stack-name\">\n	</section>\n    <section class=\"property-control-group\" data-bind=\"true\">\n        <label for=\"property-stack-description\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_LBL_DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n        <textarea name=\"\" id=\"property-stack-description\" cols=\"30\" rows=\"7\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n	<dl class=\"dl-horizontal dl-region-type property-control-group\">\n		<dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_LBL_REGION", {hash:{},data:data}))
     + "</label></dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1606,6 +1615,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     StackView = PropertyView.extend({
       events: {
         'change #property-stack-name': 'stackNameChanged',
+        'change #property-stack-description': 'stackDescriptionChanged',
         'click #stack-property-new-acl': 'createAcl',
         'click #stack-property-acl-list .edit': 'openAcl',
         'click .sg-list-delete-btn': 'deleteAcl',
@@ -1626,6 +1636,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         } else {
           title = "Stack - " + (this.model.get('name'));
         }
+        console.log(this.model.attributes);
         this.$el.html(template(this.model.attributes));
         if (title) {
           this.setTitle(title);
@@ -1635,6 +1646,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.updateSNSList(this.model.get("subscription"), true);
         }
         return null;
+      },
+      stackDescriptionChanged: function() {
+        var description, stackDescTextarea, stackId;
+        stackDescTextarea = $("#property-stack-description");
+        stackId = this.model.get('id');
+        description = stackDescTextarea.val();
+        if (stackDescTextarea.parsley('validate')) {
+          return this.trigger('STACK_DESC_CHANGED', description);
+        }
       },
       stackNameChanged: function() {
         var name, stackId, stackNameInput;
@@ -2248,6 +2268,12 @@ function program9(depth0,data) {
       design = Design.instance();
       design.set("name", name);
       ide_event.trigger(ide_event.UPDATE_DESIGN_TAB, design.get("id"), name + ' - stack');
+      return null;
+    });
+    view.on('STACK_DESC_CHANGED', function(description) {
+      var design;
+      design = Design.instance();
+      design.set('description', description);
       return null;
     });
     view.on('OPEN_ACL', function(uid) {

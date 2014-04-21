@@ -57,7 +57,8 @@
         model.on('change:result_list', function() {
           console.log('dashboard_change:result_list');
           should_update_overview = true;
-          return view.renderMapResult();
+          view.renderMapResult();
+          return view.renderRecent();
         });
         model.on('change:region_classic_list', function() {
           console.log('dashboard_region_classic_list');

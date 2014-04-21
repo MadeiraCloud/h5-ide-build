@@ -343,6 +343,8 @@ define({
         "PROP_STACK_SQS": "sqs",
         "PROP_STACK_PENDING_CONFIRM": "pendingConfirm",
         "PROP_STACK_LBL_NAME": "Stack Name",
+        "PROP_STACK_LBL_DESCRIPTION": "Stack Description",
+        "PROP_STACK_LBL_DESC": "Description",
         "PROP_STACK_LBL_REGION": "Region",
         "PROP_STACK_LBL_TYPE": "Type",
         "PROP_STACK_LBL_USAGE": "Usage",
