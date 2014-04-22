@@ -462,7 +462,12 @@
         } else {
           ami_model.DescribeImages({
             sender: me
-          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, ["self"], null, null);
+          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, ["self"], null, [
+            {
+              Name: 'is-public',
+              Value: false
+            }
+          ]);
         }
         return null;
       },
