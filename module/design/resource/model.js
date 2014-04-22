@@ -172,7 +172,8 @@
           var ami_list, my_ami_list, region_name;
           region_name = result.param[3];
           console.log('EC2_AMI_DESC_IMAGES_RETURN: ' + region_name);
-          if (!result.is_error && result.param[5] && result.param[5][0] && result.param[5][0] === 'self') {
+          console.log(result, '++++++++++++++++++++++');
+          if (!result.is_error && result.param[6] && result.param[6][0] && result.param[6][0] === 'self') {
             console.log('EC2_AMI_DESC_IMAGES_RETURN: My AMI');
             my_ami_list = [];
             MC.data.config[region_name].my_ami = [];
@@ -181,7 +182,7 @@
               _.map(result.resolved_data, function(value) {
                 var err, instanceTypeAry;
                 try {
-                  if (value.imageState === "available") {
+                  if (value.imageState === "available" && !value.isPublic) {
                     value.osType = MC.aws.ami.getOSType(value);
                     if (!value.osFamily) {
                       value.osFamily = MC.aws.aws.getOSFamily(value.osType);
@@ -462,7 +463,7 @@
         } else {
           ami_model.DescribeImages({
             sender: me
-          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, ["self"], null, [
+          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, null, ['self'], [
             {
               Name: 'is-public',
               Value: false
