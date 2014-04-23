@@ -4869,7 +4869,7 @@ function program4(depth0,data) {
 define('module/design/property/staticsub/template/stack',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
   
@@ -4894,8 +4894,11 @@ function program2(depth0,data) {
   }
 function program3(depth0,data) {
   
-  
-  return "\n    <div class=\"property-control-group property-ami-info\">\n        <p>This AMI's infomation is unavailable</p>\n    </div>\n    ";
+  var buffer = "";
+  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_AMI_APP_NOT_AVAILABLE", {hash:{},data:data}))
+    + "</p>\n    </div>\n    ";
+  return buffer;
   }
 
 function program5(depth0,data) {
@@ -4909,8 +4912,11 @@ function program5(depth0,data) {
   }
 function program6(depth0,data) {
   
-  
-  return "\n    <div class=\"property-control-group property-ami-info\">\n        <p>This AMI is deleted by its owner and not available any more.</p>\n        <p>Please change to another AMI.</p>\n    </div>\n    ";
+  var buffer = "";
+  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_AMI_STACK_NOT_AVAILABLE", {hash:{},data:data}))
+    + "\n    </div>\n    ";
+  return buffer;
   }
 
 function program8(depth0,data) {

@@ -427,7 +427,7 @@ helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partial
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "<div class=\"state-warning\">"
+  buffer += "<div class=\"state-warning font-normal\">"
     + escapeExpression(helpers.i18n.call(depth0, "STATE_UNKNOWN_DISTRO_LBL", {hash:{},data:data}))
     + "</div>";
   return buffer;
@@ -3628,7 +3628,7 @@ return TEMPLATE; });
           that.set('supportedPlatform', false);
         }
         moduleData = {};
-        if (osPlatform === 'linux') {
+        if (osPlatform === 'linux' || !osPlatformDistro) {
           if (moduleDataObj.linux) {
             moduleData = _.extend(moduleData, moduleDataObj.linux);
           }
@@ -3653,6 +3653,9 @@ return TEMPLATE; });
           cmdDistroAry = cmdObj.distro;
           supportCMD = false;
           if (((!cmdDistroAry) || (cmdDistroAry && __indexOf.call(cmdDistroAry, osPlatformDistro) >= 0)) && osPlatform === 'linux') {
+            supportCMD = true;
+          }
+          if (!osPlatformDistro) {
             supportCMD = true;
           }
           cmdObj.support = supportCMD;
