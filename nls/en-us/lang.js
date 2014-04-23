@@ -927,6 +927,8 @@ define({
         "DASH_BUB_DESCRIPTION": "Description",
         "DASH_BUB_ARCHITECTURE": "Architecture",
         "DASH_BUB_IMAGELOCATION": "Image Location",
+        "DASH_BUB_IMAGEOWNERALIAS": "Image Owner Alias",
+        "DASH_BUB_IMAGEOWNERID": "Image Owner ID",
         "DASH_BUB_ISPUBLIC": "Public",
         "DASH_BUB_KERNELID": "KernelId",
         "DASH_BUB_ROOTDEVICENAME": "Root Device Name",

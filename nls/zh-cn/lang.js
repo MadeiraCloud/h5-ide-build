@@ -927,6 +927,8 @@ define({
         "DASH_BUB_DESCRIPTION": "描述",
         "DASH_BUB_ARCHITECTURE": "架构",
         "DASH_BUB_IMAGELOCATION": "映像位置",
+        "DASH_BUB_IMAGEOWNERALIAS": "映像所有者别名",
+        "DASH_BUB_IMAGEOWNERID": "映像所有者ID",
         "DASH_BUB_ISPUBLIC": "是否公用",
         "DASH_BUB_KERNELID": "内核ID",
         "DASH_BUB_ROOTDEVICENAME": "根设备名",

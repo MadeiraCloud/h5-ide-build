@@ -124,9 +124,10 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"imageLocation\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageLocation)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\",\"isPublic\":\""
-    + escapeExpression(((stack1 = (depth0 && depth0.isPublic)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\",\"kernelId\":\""
+    + "\",\"isPublic\":\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPublic), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"kernelId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.kernelId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"rootDeviceName\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.rootDeviceName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -155,6 +156,17 @@ function program1(depth0,data) {
     + "</div>\n</li>\n";
   return buffer;
   }
+function program2(depth0,data) {
+  
+  
+  return "true";
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "false";
+  }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.quickstart_ami), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -182,9 +194,14 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"imageLocation\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageLocation)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\",\"isPublic\":\""
-    + escapeExpression(((stack1 = (depth0 && depth0.isPublic)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\",\"kernelId\":\""
+    + "\",\"imageOwnerAlias\":\""
+    + escapeExpression(((stack1 = (depth0 && depth0.imageOwnerAlias)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\",\"imageOwnerId\":\""
+    + escapeExpression(((stack1 = (depth0 && depth0.imageOwnerId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\",\"isPublic\":\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPublic), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"kernelId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.kernelId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"rootDeviceName\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.rootDeviceName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -210,6 +227,17 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n</li>\n";
   return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "true";
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "false";
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.my_ami), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -241,9 +269,14 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"imageLocation\":\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.imageLocation)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\",\"isPublic\":\""
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.isPublic)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\",\"kernelId\":\""
+    + "\",\"imageOwnerAlias\":\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.imageOwnerAlias)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\",\"imageOwnerId\":\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.imageOwnerId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\",\"isPublic\":\"";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.isPublic), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"kernelId\":\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.kernelId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"rootDeviceName\":\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.rootDeviceName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -268,10 +301,10 @@ function program1(depth0,data) {
     + ".png\" width='39' height='27' />\n		</div>\n		<div class=\"resource-label instance-label\" >"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource_info)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n	</div>\n	<div class=\"btn-fav-ami ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0['delete']), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0['delete']), {hash:{},inverse:self.program(8, program8, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " tooltip\" data-tooltip=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0['delete']), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0['delete']), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.resource_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -289,10 +322,22 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "faved";
+  return "true";
   }
 
 function program6(depth0,data) {
+  
+  
+  return "false";
+  }
+
+function program8(depth0,data) {
+  
+  
+  return "faved";
+  }
+
+function program10(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "RES_TIT_ADD_TO_FAVORITE", {hash:{},data:data}));

@@ -169,13 +169,17 @@
           return null;
         });
         me.on('EC2_AMI_DESC_IMAGES_RETURN', function(result) {
-          var ami_list, my_ami_list, region_name;
+          var ami_list, my_ami_list, region_name, _ref, _ref1;
           region_name = result.param[3];
           console.log('EC2_AMI_DESC_IMAGES_RETURN: ' + region_name);
-          if (!result.is_error && result.param[5] && result.param[5][0] && result.param[5][0] === 'self') {
+          if (!result.is_error && ((result.param[6] && result.param[6][0] && result.param[6][0] === 'self') || (result.param[5] && result.param[5][0] === 'self'))) {
+            if (((_ref = result.param[6]) != null ? _ref[0] : void 0) === 'self') {
+              MC.data.config[region_name].exec = true;
+            } else if (((_ref1 = result.param[5]) != null ? _ref1[0] : void 0) === 'self') {
+              MC.data.config[region_name].owner = true;
+            }
             console.log('EC2_AMI_DESC_IMAGES_RETURN: My AMI');
             my_ami_list = [];
-            MC.data.config[region_name].my_ami = [];
             if (result.resolved_data) {
               ami_list = [];
               _.map(result.resolved_data, function(value) {
@@ -202,11 +206,11 @@
                 return null;
               });
               my_ami_list = ami_list;
-              MC.data.config[region_name].my_ami = ami_list;
+              MC.data.config[region_name].my_ami = MC.data.config[region_name].my_ami.concat(ami_list);
             }
             console.log('get my ami: -> data region: ' + region_name + ', stack region: ' + MC.canvas_data.region);
-            if (region_name === MC.canvas_data.region) {
-              me.set('my_ami', my_ami_list);
+            if (region_name === MC.canvas_data.region && MC.data.config[region_name].owner && MC.data.config[region_name].exec) {
+              me.set('my_ami', MC.data.config[region_name].my_ami);
             }
           } else {
             console.log('EC2_AMI_DESC_IMAGES_RETURN:describeStackAmiService');
@@ -460,9 +464,18 @@
         if (MC.data.config[region_name] && MC.data.config[region_name].my_ami) {
           me.set('my_ami', MC.data.config[region_name].my_ami);
         } else {
+          MC.data.config[region_name].my_ami = [];
           ami_model.DescribeImages({
             sender: me
-          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, ["self"], null, null);
+          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, null, ['self'], [
+            {
+              Name: 'is-public',
+              Value: false
+            }
+          ]);
+          ami_model.DescribeImages({
+            sender: me
+          }, $.cookie('usercode'), $.cookie('session_id'), region_name, null, ['self'], null, null);
         }
         return null;
       },
