@@ -1165,6 +1165,7 @@ define({
         "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": "<span class='validation-tag tag-instance'>%s</span> has configured states. Suggest to set its outbound rule on <span class='validation-tag tag-port'>80</span> and <span class='validation-tag tag-port'>443</span> to <span class='validation-tag tag-ip'>0.0.0.0/0</span>. Otherwise, agent may not be able to work properly, install packages or check out source codes lacking route to VisualOps's monitoring systems or required repositories."
     },
     "service": {
+        "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",
         "ERROR_CODE_-1_MESSAGE_AWS_RESOURCE": "Sorry, we are suffering from some technical issues, please click the refresh icon at top right corner of Global tab again.",
         "ERROR_CODE_-1_MESSAGE": "Sorry, we are suffering from some technical issues, please try again later.",
         "ERROR_CODE_0_MESSAGE": "",

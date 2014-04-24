@@ -1165,6 +1165,7 @@ define({
         "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": ""
     },
     "service": {
+        "NETWORK_ERROR": "服务暂时不可用, 请稍后重试",
         "ERROR_CODE_-1_MESSAGE_AWS_RESOURCE": "对不起,我们有一些技术问题,请点击'我的资源'页上右上角的刷新图标",
         "ERROR_CODE_-1_MESSAGE": "对不起,我们有一些技术问题,请稍后再试",
         "ERROR_CODE_0_MESSAGE": "",

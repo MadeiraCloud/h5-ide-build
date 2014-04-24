@@ -411,7 +411,9 @@
                 status.removeClass('error-status').addClass('verification-status').show().text(langsrc.register.username_available);
                 return typeof cb === "function" ? cb(1) : void 0;
               } else if (statusCode === 'error') {
-                return console.log('Net Work Error while');
+                console.log('NetWork Error while checking username');
+                $('.error-msg').eq(0).text(langsrc.service['NETWORK_ERROR']).show();
+                return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
               } else {
                 status.removeClass('verification-status').addClass('error-status').text(langsrc.register.username_taken);
                 return typeof cb === "function" ? cb(0) : void 0;
@@ -434,7 +436,9 @@
                 status.removeClass('error-status').addClass('verification-status').show().text(langsrc.register.email_available);
                 return typeof cb === "function" ? cb(1) : void 0;
               } else if (statusCode === 'error') {
-                return console.log("NetWork Error");
+                console.log('NetWork Error while checking username');
+                $('.error-msg').eq(0).text(langsrc.service['NETWORK_ERROR']).show();
+                return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
               } else {
                 status.removeClass('verification-status').addClass('error-status').text(langsrc.register.email_used);
                 return typeof cb === "function" ? cb(0) : void 0;
@@ -544,7 +548,7 @@
     console.log('showErrorMessage');
     $('#reset-pw-email').attr('disabled', false);
     $("#reset-btn").attr('disabled', false).val(window.langsrc.reset.reset_btn);
-    $("#email-verification-status").removeClass('verification-status').addClass("error-msg").show().text(langsrc.reset.reset_error_state);
+    $("#reset-status").removeClass('verification-status').addClass("error-msg").show().text(langsrc.reset.reset_error_state);
     return false;
   };
 
@@ -553,8 +557,15 @@
   };
 
   handleNetError = function(status) {
-    window.location = '/500';
-    return console.error(status, "Net Work Error, Redirecting...");
+    var error_message;
+    error_message = langsrc.service['NETWORK_ERROR'];
+    $("#error-msg-3").first().text(error_message).show();
+    $("#login-btn").attr('disabled', false).val(langsrc.login['login-btn']);
+    $('#reset-status').removeClass('verification-status').addClass('error-msg').text(error_message).show();
+    $("#reset-btn").attr('disabled', false).val(langsrc.reset['reset-btn']);
+    $("#reset-pw-email").attr('disabled', false);
+    $(".box-loading").size() > 0 && render("#expire-template");
+    return $(".account-instruction-major").text(error_message);
   };
 
   checkPassKey = function(keyToValid, fn) {
@@ -572,7 +583,8 @@
         }
       },
       error: function(status) {
-        return handleNetError(status);
+        handleNetError(status);
+        return false;
       }
     });
   };
