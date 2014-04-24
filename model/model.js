@@ -6151,6 +6151,9 @@
                 keypair_name = [];
                 for (_j = 0, _len1 = resource_comp.length; _j < _len1; _j++) {
                   comp = resource_comp[_j];
+                  if (!comp.keyName) {
+                    comp.keyName = "DefaultKP";
+                  }
                   if (_ref1 = comp.keyName, __indexOf.call(keypair_name, _ref1) < 0) {
                     keypair_name.push(comp.keyName);
                     key_obj = {};

@@ -1123,7 +1123,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
 
     /*
       -------------------------------
@@ -1530,55 +1530,68 @@
       layout_data = {};
       connections = [];
       mockArray = [];
-      try {
-        _ref = this.__componentMap;
-        for (uid in _ref) {
-          comp = _ref[uid];
-          if (comp.isRemoved()) {
-            console.warn("Resource has been removed, yet it remains in cache when serializing :", comp);
-            continue;
-          }
-          if (comp.node_line) {
-            connections.push(comp);
-            continue;
-          }
-          json = comp.serialize();
-          if (!json) {
-            continue;
-          }
-          if (!_.isArray(json)) {
-            mockArray[0] = json;
-            json = mockArray;
-          }
-          for (_i = 0, _len = json.length; _i < _len; _i++) {
-            j = json[_i];
-            if (j.component) {
-              console.assert(j.component.uid, "Serialized JSON data has no uid.");
-              console.assert(!component_data[j.component.uid], "ResourceModel cannot modify existing JSON data.");
-              component_data[j.component.uid] = j.component;
-            }
-            if (j.layout) {
-              layout_data[j.layout.uid] = j.layout;
-            }
-          }
+      _ref = this.__componentMap;
+      for (uid in _ref) {
+        comp = _ref[uid];
+        if (comp.isRemoved()) {
+          console.warn("Resource has been removed, yet it remains in cache when serializing :", comp);
+          continue;
         }
-        for (_j = 0, _len1 = connections.length; _j < _len1; _j++) {
-          c = connections[_j];
-          p1 = c.port1Comp();
-          p2 = c.port2Comp();
-          if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
-            c.serialize(component_data, layout_data);
-          } else {
-            console.error("Serializing an connection while one of the port is isRemoved() or null");
-          }
+        if (comp.node_line) {
+          connections.push(comp);
+          continue;
+        }
+        try {
+          json = comp.serialize();
 
           /* env:prod */
-        }
-      } catch (_error) {
-        error = _error;
-        console.error("Error occur while serializing", error);
+        } catch (_error) {
+          error = _error;
+          console.error("Error occur while serializing", error);
 
-        /* env:prod:end */
+          /* env:prod:end */
+        } finally {
+
+        }
+        if (!json) {
+          continue;
+        }
+        if (!_.isArray(json)) {
+          mockArray[0] = json;
+          json = mockArray;
+        }
+        for (_i = 0, _len = json.length; _i < _len; _i++) {
+          j = json[_i];
+          if (j.component) {
+            console.assert(j.component.uid, "Serialized JSON data has no uid.");
+            console.assert(!component_data[j.component.uid], "ResourceModel cannot modify existing JSON data.");
+            component_data[j.component.uid] = j.component;
+          }
+          if (j.layout) {
+            layout_data[j.layout.uid] = j.layout;
+          }
+        }
+      }
+      for (_j = 0, _len1 = connections.length; _j < _len1; _j++) {
+        c = connections[_j];
+        p1 = c.port1Comp();
+        p2 = c.port2Comp();
+        if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
+          try {
+            c.serialize(component_data, layout_data);
+
+            /* env:prod */
+          } catch (_error) {
+            error = _error;
+            console.error("Error occur while serializing", error);
+
+            /* env:prod:end */
+          } finally {
+
+          }
+        } else {
+          console.error("Serializing an connection while one of the port is isRemoved() or null");
+        }
       }
       data = $.extend(true, {}, this.attributes);
       data.component = component_data;
@@ -1817,7 +1830,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
 
     /*
       -------------------------------
@@ -1938,7 +1951,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                             env:dev:end */
+        /* env:dev                                                                               env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2015,7 +2028,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                          env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2220,7 +2233,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                           env:dev:end */
+        /* env:dev                                                                                              env:dev:end */
 
         /* jshint -W083 */
 
@@ -2309,7 +2322,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                           env:dev:end */
+        /* env:dev                                                                                                                                                                                                             env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -2890,7 +2903,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this);
 
-          /* env:dev                                                                                                                                                             env:dev:end */
+          /* env:dev                                                                                                                                                                env:dev:end */
         }
         return this.__view;
       },
@@ -3351,7 +3364,7 @@
         return null;
       },
       setAmi: function(amiId) {
-        var ami, cached, minRdSize, rootDevice;
+        var ami, cached, minRdSize, rdEbs, rdName;
         this.set("imageId", amiId);
         ami = this.getAmi();
         cached = this.get("cachedAmi");
@@ -3361,8 +3374,17 @@
           cached.rootDeviceType = ami.rootDeviceType;
         }
         if (ami.blockDeviceMapping) {
-          rootDevice = ami.blockDeviceMapping[ami.rootDeviceName];
-          minRdSize = rootDevice ? parseInt(rootDevice.volumeSize, 10) : 10;
+          rdName = ami.rootDeviceName;
+          rdEbs = ami.blockDeviceMapping[rdName];
+          if (!rdEbs) {
+            _.each(ami.blockDeviceMapping, function(value, key) {
+              if (rdName.indexOf(key) !== -1 && !rdEbs) {
+                rdEbs = value;
+              }
+              return null;
+            });
+          }
+          minRdSize = rdEbs ? parseInt(rdEbs.volumeSize, 10) : 10;
           if (this.get("rdSize") < minRdSize) {
             this.set("rdSize", minRdSize);
           }
@@ -3374,15 +3396,26 @@
         return MC.data.dict_ami[this.get("imageId")];
       },
       getBlockDeviceMapping: function() {
-        var ami, blockDeviceMapping;
+        var ami, blockDeviceMapping, rdEbs, rdName;
         ami = this.getAmi() || this.get("cachedAmi");
         if (ami && ami.rootDeviceType === "ebs" && ami.blockDeviceMapping) {
+          rdName = ami.rootDeviceName;
+          rdEbs = ami.blockDeviceMapping[rdName];
+          if (!rdEbs) {
+            _.each(ami.blockDeviceMapping, function(value, key) {
+              if (rdName.indexOf(key) !== -1 && !rdEbs) {
+                rdEbs = value;
+                rdName = key;
+              }
+              return null;
+            });
+          }
           blockDeviceMapping = [
             {
-              DeviceName: ami.rootDeviceName,
+              DeviceName: rdName,
               Ebs: {
-                SnapshotId: ami.blockDeviceMapping[ami.rootDeviceName].snapshotId,
-                VolumeSize: this.get("rdSize") || ami.blockDeviceMapping[ami.rootDeviceName].volumeSize,
+                SnapshotId: rdEbs.snapshotId,
+                VolumeSize: this.get("rdSize") || rdEbs.volumeSize,
                 VolumeType: "standard"
               }
             }
@@ -3401,6 +3434,15 @@
         if (amiInfo && amiInfo.rootDeviceType === "ebs" && amiInfo.blockDeviceMapping) {
           rdName = amiInfo.rootDeviceName;
           rdEbs = amiInfo.blockDeviceMapping[rdName];
+          if (rdName && !rdEbs) {
+            _.each(amiInfo.blockDeviceMapping, function(value, key) {
+              if (rdName.indexOf(key) !== -1 && !rdEbs) {
+                rdEbs = value;
+                rdName = key;
+              }
+              return null;
+            });
+          }
           if (rdName && rdEbs) {
             rd = {
               "DeviceName": rdName,
@@ -11674,7 +11716,7 @@
         _ref = data.blockDeviceMapping.item;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           v = _ref[_i];
-          if (data.rootDeviceName === v.deviceName) {
+          if (data.rootDeviceName.indexOf(v.deviceName) !== -1) {
             continue;
           }
           volume = resource_list[v.ebs.volumeId];
@@ -12081,7 +12123,7 @@
 (function() {
   define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                             env:dev:end */
+    /* env:dev                                                                               env:dev:end */
 
     /* env:debug */
     require(["./module/design/framework/util/DesignDebugger"], function() {});
