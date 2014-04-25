@@ -25,40 +25,40 @@ function program5(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
     + "' id=\"toolbar-export-png\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
-    + "</button>\r\n\r\n<button class=\"btn-toolbar icon-zoom-in ";
+    + "</button>\n\n<button class=\"btn-toolbar icon-zoom-in ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_zoomin), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_ZOOM_IN", {hash:{},data:data}))
-    + "'></button>\r\n<button class=\"btn-toolbar  icon-zoom-out seperator ";
+    + "'></button>\n<button class=\"btn-toolbar  icon-zoom-out seperator ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_zoomout), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_ZOOM_OUT", {hash:{},data:data}))
-    + "'></button>\r\n\r\n<!-- line style -->\r\n<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\r\n  <button class=\"selection tooltip\" data-tooltip=\""
+    + "'></button>\n\n<!-- line style -->\n<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\n  <button class=\"selection tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_LINESTYLE", {hash:{},data:data}))
     + "\" id=\"toolbar-line-style\"><i class=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.lines)),stack1 == null || stack1 === false ? stack1 : stack1.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></button>\r\n  <ul class=\"dropdown\">\r\n    <li id=\"toolbar-straight\" class='item ";
+    + "\"></i></button>\n  <ul class=\"dropdown\">\n    <li id=\"toolbar-straight\" class='item ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lines)),stack1 == null || stack1 === false ? stack1 : stack1.is_style0), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'> <i class=\"icon-straight\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_STRAIGHT", {hash:{},data:data}))
-    + "</span></li>\r\n    <li id=\"toolbar-elbow\" class='item ";
+    + "</span></li>\n    <li id=\"toolbar-elbow\" class='item ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lines)),stack1 == null || stack1 === false ? stack1 : stack1.is_style1), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'> <i class=\"icon-elbow\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_ELBOW", {hash:{},data:data}))
-    + "</span></li>\r\n    <li id=\"toolbar-bezier-q\" class='item ";
+    + "</span></li>\n    <li id=\"toolbar-bezier-q\" class='item ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lines)),stack1 == null || stack1 === false ? stack1 : stack1.is_style2), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'> <i class=\"icon-bezier-q\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_QUADRATIC_BELZIER", {hash:{},data:data}))
-    + "</span></li>\r\n    <li id=\"toolbar-bezier-qt\" class='item ";
+    + "</span></li>\n    <li id=\"toolbar-bezier-qt\" class='item ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lines)),stack1 == null || stack1 === false ? stack1 : stack1.is_style3), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'><i class=\"icon-bezier-qt\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
-    + "</span></li>\r\n  </ul>\r\n</div>\r\n";
+    + "</span></li>\n  </ul>\n</div>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });

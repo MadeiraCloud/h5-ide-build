@@ -1123,7 +1123,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
 
     /*
       -------------------------------
@@ -1830,7 +1830,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
 
     /*
       -------------------------------
@@ -1951,7 +1951,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                               env:dev:end */
+        /* env:dev                                                                             env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2028,7 +2028,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                          env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2233,7 +2233,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                              env:dev:end */
+        /* env:dev                                                                                           env:dev:end */
 
         /* jshint -W083 */
 
@@ -2322,7 +2322,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                             env:dev:end */
+        /* env:dev                                                                                                                                                                                                           env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -2903,7 +2903,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this);
 
-          /* env:dev                                                                                                                                                                env:dev:end */
+          /* env:dev                                                                                                                                                             env:dev:end */
         }
         return this.__view;
       },
@@ -10909,7 +10909,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeSubnet, ChildElementProto;
     CeSubnet = function() {
       return CanvasElement.apply(this, arguments);
@@ -10937,18 +10937,20 @@
       if (isCreate) {
         node = this.createGroup(label);
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-gray port-subnet-assoc-in',
+          'class': 'port port-gray port-subnet-assoc-in tooltip',
           'data-name': 'subnet-assoc-in',
           'data-position': 'left',
           'data-type': 'association',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_L
         }));
         node.append(Canvon.path("M2 0.5l-6 -5.5l-2 0 l0 11 l2 0z").attr({
-          'class': 'port port-gray port-subnet-assoc-out',
+          'class': 'port port-gray port-subnet-assoc-out tooltip',
           'data-name': 'subnet-assoc-out',
           'data-position': 'right',
           'data-type': 'association',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_M
         }));
         this.getLayer("subnet_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -10993,7 +10995,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeCgw, ChildElementProto;
     CeCgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11019,11 +11021,12 @@
           imageH: 76
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-cgw-vpn',
+          'class': 'port port-purple port-cgw-vpn tooltip',
           'data-name': 'cgw-vpn',
           'data-position': 'left',
           'data-type': 'vpn',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_I
         }), Canvon.text(100, 95, MC.truncate(m.get("name"), 17)).attr({
           'class': 'node-label'
         }));
@@ -11041,7 +11044,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeIgw',["./CanvasElement", "constant"], function(CanvasElement, constant) {
+  define('module/design/framework/canvasview/CeIgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
     var CeIgw, ChildElementProto;
     CeIgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11068,11 +11071,12 @@
           label: m.get("name")
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-igw-tgt',
+          'class': 'port port-blue port-igw-tgt tooltip',
           'data-name': 'igw-tgt',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11086,7 +11090,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeVgw',["./CanvasElement", "constant"], function(CanvasElement, constant) {
+  define('module/design/framework/canvasview/CeVgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
     var CeVgw, ChildElementProto;
     CeVgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11114,17 +11118,19 @@
           label: m.get("name")
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-vgw-tgt',
+          'class': 'port port-blue port-vgw-tgt tooltip',
           'data-name': 'vgw-tgt',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
         }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-vgw-vpn',
+          'class': 'port port-purple port-vgw-vpn tooltip',
           'data-name': 'vgw-vpn',
           'data-position': 'right',
           'data-type': 'vpn',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_H
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11138,7 +11144,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeRtb, ChildElementProto;
     CeRtb = function() {
       return CanvasElement.apply(this, arguments);
@@ -11178,33 +11184,37 @@
           imageH: 57
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left',
+          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left tooltip',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_B
         }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right',
+          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right tooltip',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_B
         }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-top',
+          'class': 'port port-gray port-rtb-src port-rtb-src-top tooltip',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-top',
           'data-position': 'top',
           'data-type': 'association',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_A
         }), Canvon.path(MC.canvas.PATH_PORT_TOP).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-bottom',
+          'class': 'port port-gray port-rtb-src port-rtb-src-bottom tooltip',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-bottom',
           'data-position': 'bottom',
           'data-type': 'association',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_A
         }), Canvon.text(41, 27, m.get("name")).attr({
           'class': 'node-label node-label-rtb-name'
         }));
@@ -11224,7 +11234,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeElb, ChildElementProto;
     CeElb = function() {
       return CanvasElement.apply(this, arguments);
@@ -11271,25 +11281,28 @@
         });
         if (!design.typeIsClassic()) {
           node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-blue port-elb-sg-in',
+            'class': 'port port-blue port-elb-sg-in tooltip',
             'data-name': 'elb-sg-in',
             'data-position': 'left',
             'data-type': 'sg',
-            'data-direction': "in"
+            'data-direction': "in",
+            'data-tooltip': lang.ide.PORT_TIP_D
           }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-gray port-elb-assoc',
+            'class': 'port port-gray port-elb-assoc tooltip',
             'data-name': 'elb-assoc',
             'data-position': 'right',
             'data-type': 'association',
-            'data-direction': 'out'
+            'data-direction': 'out',
+            'data-tooltip': lang.ide.PORT_TIP_K
           }));
         }
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-elb-sg-out',
+          'class': 'port port-blue port-elb-sg-out tooltip',
           'data-name': 'elb-sg-out',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_J
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11565,33 +11578,37 @@
           'class': 'instance-number-group',
           "display": "none"
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-left',
+          'class': 'port port-blue port-instance-sg port-instance-sg-left tooltip',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-right',
+          'class': 'port port-blue port-instance-sg port-instance-sg-right tooltip',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_D
         }));
         if (!this.model.design().typeIsClassic()) {
           node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-green port-instance-attach',
+            'class': 'port port-green port-instance-attach tooltip',
             'data-name': 'instance-attach',
             'data-position': 'right',
             'data-type': 'attachment',
-            'data-direction': 'out'
+            'data-direction': 'out',
+            'data-tooltip': lang.ide.PORT_TIP_E
           }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-            'class': 'port port-blue port-instance-rtb',
+            'class': 'port port-blue port-instance-rtb tooltip',
             'data-name': 'instance-rtb',
             'data-position': 'top',
             'data-type': 'sg',
-            'data-direction': 'in'
+            'data-direction': 'in',
+            'data-tooltip': lang.ide.PORT_TIP_C
           }));
         }
         if (!this.model.design().modeIsStack() && m.get("appId")) {
@@ -11850,7 +11867,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeEni, ChildElementProto;
     CeEni = function() {
       return CanvasElement.apply(this, arguments);
@@ -11898,31 +11915,35 @@
           'id': "" + this.id + "_eip_status",
           'class': 'eip-status tooltip'
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-left',
+          'class': 'port port-blue port-eni-sg port-eni-sg-left tooltip',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': "in"
+          'data-direction': "in",
+          'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-green port-eni-attach',
+          'class': 'port port-green port-eni-attach tooltip',
           'data-name': 'eni-attach',
           'data-position': 'left',
           'data-type': 'attachment',
-          'data-direction': "in"
+          'data-direction': "in",
+          'data-tooltip': lang.ide.PORT_TIP_G
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-right',
+          'class': 'port port-blue port-eni-sg port-eni-sg-right tooltip',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_F
         }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-blue port-eni-rtb',
+          'class': 'port port-blue port-eni-rtb tooltip',
           'data-name': 'eni-rtb',
           'data-position': 'top',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
         }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
           'class': 'server-number-bg',
           'rx': 4,
@@ -12123,7 +12144,7 @@
 (function() {
   define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                               env:dev:end */
+    /* env:dev                                                                             env:dev:end */
 
     /* env:debug */
     require(["./module/design/framework/util/DesignDebugger"], function() {});
