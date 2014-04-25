@@ -4582,9 +4582,10 @@
         return null;
       },
       generateJSON: function(index, servergroupOption, eniIndex) {
-        var autoAssign, az, component, eip, hasEip, idx, instanceId, ipObj, ips, memberData, parent, resources, securitygroups, sgTarget, subnetId, vpcId, _i, _len, _ref;
+        var autoAssign, az, component, eip, eniName, hasEip, idx, instanceId, ipObj, ips, memberData, parent, resources, securitygroups, sgTarget, subnetId, vpcId, _i, _len, _ref;
         resources = [{}];
         this.ensureEnoughMember();
+        eniName = (servergroupOption.instanceName || "") + this.get("name");
         ips = [];
         if (index === 0) {
           memberData = {
@@ -4617,7 +4618,7 @@
             resources.push({
               uid: eip.id || MC.guid(),
               type: constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP,
-              name: "EIP",
+              name: "" + eniName + "-eip" + idx,
               index: index,
               resource: {
                 Domain: Design.instance().typeIsVpc() ? "vpc" : "standard",
@@ -4660,7 +4661,7 @@
           index: index,
           uid: memberData.id,
           type: this.type,
-          name: (servergroupOption.instanceName || "") + this.get("name"),
+          name: eniName,
           serverGroupUid: this.id,
           serverGroupName: this.get("name"),
           number: servergroupOption.number || 1,
@@ -10909,7 +10910,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('module/design/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
     var CeSubnet, ChildElementProto;
     CeSubnet = function() {
       return CanvasElement.apply(this, arguments);
@@ -10937,20 +10938,18 @@
       if (isCreate) {
         node = this.createGroup(label);
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-gray port-subnet-assoc-in tooltip',
+          'class': 'port port-gray port-subnet-assoc-in',
           'data-name': 'subnet-assoc-in',
           'data-position': 'left',
           'data-type': 'association',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_L
+          'data-direction': 'in'
         }));
         node.append(Canvon.path("M2 0.5l-6 -5.5l-2 0 l0 11 l2 0z").attr({
-          'class': 'port port-gray port-subnet-assoc-out tooltip',
+          'class': 'port port-gray port-subnet-assoc-out',
           'data-name': 'subnet-assoc-out',
           'data-position': 'right',
           'data-type': 'association',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_M
+          'data-direction': 'out'
         }));
         this.getLayer("subnet_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -10995,7 +10994,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('module/design/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
     var CeCgw, ChildElementProto;
     CeCgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11021,12 +11020,11 @@
           imageH: 76
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-cgw-vpn tooltip',
+          'class': 'port port-purple port-cgw-vpn',
           'data-name': 'cgw-vpn',
           'data-position': 'left',
           'data-type': 'vpn',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_I
+          'data-direction': 'in'
         }), Canvon.text(100, 95, MC.truncate(m.get("name"), 17)).attr({
           'class': 'node-label'
         }));
@@ -11044,7 +11042,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeIgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
+  define('module/design/framework/canvasview/CeIgw',["./CanvasElement", "constant"], function(CanvasElement, constant) {
     var CeIgw, ChildElementProto;
     CeIgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11071,12 +11069,11 @@
           label: m.get("name")
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-igw-tgt tooltip',
+          'class': 'port port-blue port-igw-tgt',
           'data-name': 'igw-tgt',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
+          'data-direction': 'in'
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11090,7 +11087,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeVgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
+  define('module/design/framework/canvasview/CeVgw',["./CanvasElement", "constant"], function(CanvasElement, constant) {
     var CeVgw, ChildElementProto;
     CeVgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11118,19 +11115,17 @@
           label: m.get("name")
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-vgw-tgt tooltip',
+          'class': 'port port-blue port-vgw-tgt',
           'data-name': 'vgw-tgt',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
+          'data-direction': 'in'
         }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-vgw-vpn tooltip',
+          'class': 'port port-purple port-vgw-vpn',
           'data-name': 'vgw-vpn',
           'data-position': 'right',
           'data-type': 'vpn',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_H
+          'data-direction': 'out'
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11144,7 +11139,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('module/design/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
     var CeRtb, ChildElementProto;
     CeRtb = function() {
       return CanvasElement.apply(this, arguments);
@@ -11184,37 +11179,33 @@
           imageH: 57
         });
         node.append(Canvon.path(MC.canvas.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left tooltip',
+          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_B
+          'data-direction': 'out'
         }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right tooltip',
+          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_B
+          'data-direction': 'out'
         }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-top tooltip',
+          'class': 'port port-gray port-rtb-src port-rtb-src-top',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-top',
           'data-position': 'top',
           'data-type': 'association',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_A
+          'data-direction': 'in'
         }), Canvon.path(MC.canvas.PATH_PORT_TOP).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-bottom tooltip',
+          'class': 'port port-gray port-rtb-src port-rtb-src-bottom',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-bottom',
           'data-position': 'bottom',
           'data-type': 'association',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_A
+          'data-direction': 'in'
         }), Canvon.text(41, 27, m.get("name")).attr({
           'class': 'node-label node-label-rtb-name'
         }));
@@ -11234,7 +11225,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('module/design/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
     var CeElb, ChildElementProto;
     CeElb = function() {
       return CanvasElement.apply(this, arguments);
@@ -11281,28 +11272,25 @@
         });
         if (!design.typeIsClassic()) {
           node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-blue port-elb-sg-in tooltip',
+            'class': 'port port-blue port-elb-sg-in',
             'data-name': 'elb-sg-in',
             'data-position': 'left',
             'data-type': 'sg',
-            'data-direction': "in",
-            'data-tooltip': lang.ide.PORT_TIP_D
+            'data-direction': "in"
           }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-gray port-elb-assoc tooltip',
+            'class': 'port port-gray port-elb-assoc',
             'data-name': 'elb-assoc',
             'data-position': 'right',
             'data-type': 'association',
-            'data-direction': 'out',
-            'data-tooltip': lang.ide.PORT_TIP_K
+            'data-direction': 'out'
           }));
         }
         node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-elb-sg-out tooltip',
+          'class': 'port port-blue port-elb-sg-out',
           'data-name': 'elb-sg-out',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_J
+          'data-direction': 'out'
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11578,37 +11566,33 @@
           'class': 'instance-number-group',
           "display": "none"
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-left tooltip',
+          'class': 'port port-blue port-instance-sg port-instance-sg-left',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_D
+          'data-direction': 'in'
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-right tooltip',
+          'class': 'port port-blue port-instance-sg port-instance-sg-right',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_D
+          'data-direction': 'out'
         }));
         if (!this.model.design().typeIsClassic()) {
           node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-green port-instance-attach tooltip',
+            'class': 'port port-green port-instance-attach',
             'data-name': 'instance-attach',
             'data-position': 'right',
             'data-type': 'attachment',
-            'data-direction': 'out',
-            'data-tooltip': lang.ide.PORT_TIP_E
+            'data-direction': 'out'
           }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-            'class': 'port port-blue port-instance-rtb tooltip',
+            'class': 'port port-blue port-instance-rtb',
             'data-name': 'instance-rtb',
             'data-position': 'top',
             'data-type': 'sg',
-            'data-direction': 'in',
-            'data-tooltip': lang.ide.PORT_TIP_C
+            'data-direction': 'in'
           }));
         }
         if (!this.model.design().modeIsStack() && m.get("appId")) {
@@ -11867,7 +11851,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('module/design/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
     var CeEni, ChildElementProto;
     CeEni = function() {
       return CanvasElement.apply(this, arguments);
@@ -11915,35 +11899,31 @@
           'id': "" + this.id + "_eip_status",
           'class': 'eip-status tooltip'
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-left tooltip',
+          'class': 'port port-blue port-eni-sg port-eni-sg-left',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': "in",
-          'data-tooltip': lang.ide.PORT_TIP_D
+          'data-direction': "in"
         }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-          'class': 'port port-green port-eni-attach tooltip',
+          'class': 'port port-green port-eni-attach',
           'data-name': 'eni-attach',
           'data-position': 'left',
           'data-type': 'attachment',
-          'data-direction': "in",
-          'data-tooltip': lang.ide.PORT_TIP_G
+          'data-direction': "in"
         }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-right tooltip',
+          'class': 'port port-blue port-eni-sg port-eni-sg-right',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_F
+          'data-direction': 'out'
         }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-blue port-eni-rtb tooltip',
+          'class': 'port port-blue port-eni-rtb',
           'data-name': 'eni-rtb',
           'data-position': 'top',
           'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
+          'data-direction': 'in'
         }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
           'class': 'server-number-bg',
           'rx': 4,
