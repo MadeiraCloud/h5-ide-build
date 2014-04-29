@@ -334,17 +334,8 @@ function program11(depth0,data) {
       initialize: function() {
         var design, map, port1, port2;
         design = Design.instance();
-        this.set("isClassic", design.typeIsClassic());
         port1 = this.get("port1");
         port2 = this.get("port2");
-        if (this.get("isClassic")) {
-          if (port1.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
-            port1 = port1.get("name");
-          } else if (port2.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
-            port1 = port2.get("name");
-            port2 = this.get("port1");
-          }
-        }
         map = function(sg) {
           return {
             uid: sg.id,
@@ -374,21 +365,13 @@ function program11(depth0,data) {
         return null;
       },
       addRule: function(data) {
-        var SgModel, SgRuleSetModel, count, relationComp, sgRuleSet, targetComp;
+        var SgRuleSetModel, count, relationComp, sgRuleSet, targetComp;
         targetComp = Design.instance().component(data.target);
         relationComp = Design.instance().component(data.relation);
-        if (targetComp.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
-          SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
-          targetComp = SgModel.getClassicElbSg();
-        }
         SgRuleSetModel = Design.modelClassForType("SgRuleSet");
         sgRuleSet = new SgRuleSetModel(targetComp, relationComp);
-        count = this.get("isClassic") ? 1 : 2;
-        if (this.get("isClassic")) {
-          sgRuleSet.addRawRule(data.relation, "inbound", data);
-        } else {
-          sgRuleSet.addRule(data.target, data.direction, data);
-        }
+        count = 2;
+        sgRuleSet.addRule(data.target, data.direction, data);
         if (data.direction === "biway") {
           count *= 2;
         }

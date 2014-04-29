@@ -187,7 +187,7 @@ function program15(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n			<div class=\"parameter-name\">\n				"
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-value editable-area text\">"
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-pending\"></div>\n				<div class=\"parameter-value editable-area text\">"
     + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n			</div>\n		</div>\n	";
   return buffer;
@@ -678,10 +678,28 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.content)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</textarea>\n	</div>\n	<div class=\"modal-footer\">\n		<button class=\"btn modal-close btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_DETAIL_MOD_CLOSE_BTN", {hash:{},data:data}))
-    + "</button>\n	</div>\n</div>\n";
+    + "</button>\n	</div>\n</div>\n\n";
   return buffer;
   };
 TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div id=\"modal-state-text-expand\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>Edit "
+    + escapeExpression(((stack1 = (depth0 && depth0.cmd_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " > "
+    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<div class=\"editable-area text-code-editor text\"></div>\n	</div>\n	<div class=\"modal-footer\">\n		<button id=\"modal-state-text-expand-save\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_EXPAND_MODAL_SAVE_BTN", {hash:{},data:data}))
+    + "</button>\n	</div>\n</div>\n";
+  return buffer;
+  };
+TEMPLATE.stateTextExpandModal=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
@@ -916,6 +934,7 @@ return TEMPLATE; });
         'keyup .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
         'paste .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
         'click .parameter-item .parameter-name': 'onParaNameClick',
+        'click .parameter-item.text .parameter-text-expand': 'onTextParaExpandClick',
         'SWITCH_STATE': 'onSwitchState',
         'EXPAND_STATE': 'onExpandState',
         'COLLAPSE_STATE': 'onCollapseState',
@@ -946,7 +965,7 @@ return TEMPLATE; });
           return that;
         }
         if (Design.instance().get('agent').enabled) {
-          if (compData && ((_ref = compData.type) === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance || _ref === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration)) {
+          if (compData && ((_ref = compData.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC)) {
             this.__renderState();
           } else {
             this.__renderEmpty();
@@ -1071,6 +1090,7 @@ return TEMPLATE; });
         that.originCompStateData = that.model.getStateData();
         that.resName = that.model.getResName();
         that.supportedPlatform = that.model.get('supportedPlatform');
+        that.amiExist = that.model.get('amiExist');
         that.isWindowsPlatform = that.model.get('isWindowsPlatform');
         that.currentResId = that.model.get('resId');
         that.currentState = that.model.get('currentState');
@@ -2240,7 +2260,7 @@ return TEMPLATE; });
           }
         }
       },
-      initCodeEditor: function(editorElem, hintObj) {
+      initCodeEditor: function(editorElem, hintObj, option) {
         var $editorElem, that, _initEditor;
         that = this;
         if (!editorElem) {
@@ -2250,12 +2270,14 @@ return TEMPLATE; });
         if ($editorElem.data('editor')) {
           return;
         }
+        if (!option) {
+          option = {};
+        }
         _initEditor = function() {
-          var editColumn, editRow, editSession, editor, editorSingleLine, maxLines, tk;
+          var editColumn, editRow, editSession, editor, editorSingleLine, maxLines, resRefModeAry, tk;
           editor = ace.edit(editorElem);
           $editorElem.data('editor', editor);
           editor.hintObj = hintObj;
-          editor.getSession().setMode(that.resRefHighLight);
           editor.renderer.setPadding(4);
           editor.setBehavioursEnabled(false);
           editorSingleLine = false;
@@ -2267,29 +2289,38 @@ return TEMPLATE; });
           editor.setOptions({
             enableBasicAutocompletion: true,
             maxLines: maxLines,
-            showGutter: false,
-            highlightGutterLine: false,
+            showGutter: option.showGutter || false,
+            highlightGutterLine: true,
             showPrintMargin: false,
             highlightActiveLine: false,
             highlightSelectedWord: false,
             enableSnippets: false,
             singleLine: editorSingleLine
           });
-          tk = new that.Tokenizer({
-            'start': [
-              {
-                token: 'res_ref_correct',
-                regex: that.resAttrRegexStr
-              }, {
-                token: 'res_ref',
-                regex: '@\\{(\\w|\\-)+(\\.(\\w+(\\[\\d+\\])*))+\\}'
-              }
-            ]
-          });
-          editor.session.$mode.$tokenizer = tk;
-          editor.session.bgTokenizer.setTokenizer(tk);
-          editor.renderer.updateText();
+          resRefModeAry = [
+            {
+              token: 'res_ref_correct',
+              regex: that.resAttrRegexStr
+            }, {
+              token: 'res_ref',
+              regex: '@\\{(\\w|\\-)+(\\.(\\w+(\\[\\d+\\])*))+\\}'
+            }
+          ];
           editSession = editor.getSession();
+          if (option.isCodeEditor) {
+            ace.modeResRefRule = resRefModeAry;
+            if (option.extName === 'js') {
+              editSession.setMode('ace/mode/javascript');
+            }
+            editor.setTheme('ace/theme/tomorrow_night');
+          } else {
+            tk = new that.Tokenizer({
+              'start': resRefModeAry
+            });
+            editSession.$mode.$tokenizer = tk;
+            editSession.bgTokenizer.setTokenizer(tk);
+            editor.renderer.updateText();
+          }
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;
           editor.gotoLine(editRow, editColumn);
@@ -2365,6 +2396,9 @@ return TEMPLATE; });
                 } else if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
                   $paraItem.removeClass('disabled');
                 }
+              } else if ($editorElem.hasClass('text-code-editor')) {
+                cursorPos = thatEditor.getCursorPosition();
+                thatEditor.moveCursorTo(cursorPos.row, cursorPos.column + 1);
               }
             }
             if (e.command.name === "autocomplete_match") {
@@ -3078,6 +3112,9 @@ return TEMPLATE; });
         if ($('.sub-stateeditor').css('display') === "none") {
           return true;
         }
+        if ($('#modal-state-text-expand').is(':visible')) {
+          return true;
+        }
         target = event.data.target;
         status = target.currentState;
         is_editable = status === 'appedit' || status === 'stack';
@@ -3588,6 +3625,57 @@ return TEMPLATE; });
             })), true);
           }
         }
+      },
+      onTextParaExpandClick: function(event) {
+        var $expandBtn, $paraItem, $paraValue, $stateItem, cmdName, extName, filePath, filePathAry, paraEditor, paraName, stateData, that;
+        that = this;
+        $expandBtn = $(event.currentTarget);
+        $paraValue = $expandBtn.parents('.parameter-container').find('.parameter-value');
+        paraEditor = $paraValue.data('editor');
+        if (paraEditor) {
+          $paraItem = $paraValue.parents('.parameter-item');
+          paraName = $paraItem.attr('data-para-name');
+          $stateItem = $paraItem.parents('.state-item');
+          extName = '';
+          stateData = that.getStateItemByData($stateItem);
+          if (stateData && stateData.parameter && stateData.parameter.path) {
+            filePath = stateData.parameter.path;
+            filePathAry = filePath.split('.');
+            extName = filePathAry[filePathAry.length - 1];
+          }
+          cmdName = $stateItem.attr('data-command');
+          return that.openStateTextEditor(cmdName, paraName, extName, paraEditor);
+        }
+      },
+      openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
+        var $codeArea, codeEditor, textContent, that;
+        that = this;
+        textContent = originEditor.getValue();
+        modal($.trim(template.stateTextExpandModal({
+          cmd_name: cmdName,
+          para_name: paraName
+        })), false);
+        $codeArea = $('#modal-state-text-expand .editable-area');
+        that.initCodeEditor($codeArea[0], {
+          at: that.resAttrDataAry
+        }, {
+          showGutter: true,
+          isCodeEditor: true,
+          extName: extName
+        });
+        codeEditor = $codeArea.data('editor');
+        if (codeEditor) {
+          codeEditor.setValue(textContent);
+          codeEditor.focus();
+          codeEditor.clearSelection();
+        }
+        return $('#modal-state-text-expand-save').off('click').on('click', function() {
+          var codeEditorValue;
+          codeEditorValue = codeEditor.getValue();
+          originEditor.setValue(codeEditorValue);
+          originEditor.clearSelection();
+          return modal.close();
+        });
       }
     });
     return StateEditorView;
@@ -3622,6 +3710,7 @@ return TEMPLATE; });
         } else {
           that.set('isWindowsPlatform', false);
         }
+        that.set('amiExist', platformInfo.amiExist);
         if (osPlatformDistro) {
           that.set('supportedPlatform', true);
         } else {
@@ -3744,13 +3833,14 @@ return TEMPLATE; });
         return newCMDAllParaAry;
       },
       getResPlatformInfo: function() {
-        var compData, imageId, imageObj, linuxDistroRange, osFamily, osPlatform, osPlatformDistro, osType, that;
+        var amiExist, compData, imageId, imageObj, linuxDistroRange, osFamily, osPlatform, osPlatformDistro, osType, that;
         that = this;
         compData = that.get('compData');
         imageId = compData.resource.ImageId;
         imageObj = MC.data.dict_ami[imageId];
         osPlatform = null;
         osPlatformDistro = null;
+        amiExist = true;
         if (imageObj) {
           osFamily = imageObj.osFamily;
           osType = imageObj.osType;
@@ -3761,17 +3851,20 @@ return TEMPLATE; });
             osPlatform = 'linux';
             osPlatformDistro = osType;
           }
+        } else {
+          amiExist = false;
         }
         return {
           osPlatform: osPlatform,
-          osPlatformDistro: osPlatformDistro
+          osPlatformDistro: osPlatformDistro,
+          amiExist: amiExist
         };
       },
       updateAllStateRef: function(newOldStateIdMap) {
         var allInstanceModel, allLCModel, cmdParaObjMap, dealFunc, moduleCMDMap, newOldStateIdRefMap, that;
         that = this;
-        allInstanceModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).allObjects();
-        allLCModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration).allObjects();
+        allInstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
+        allLCModel = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
         newOldStateIdRefMap = {};
         _.each(newOldStateIdMap, function(value, key) {
           var newKey, newValue;
@@ -3851,7 +3944,7 @@ return TEMPLATE; });
         if (compData && compData.name) {
           resName = compData.name;
         }
-        if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+        if (compData.type === constant.RESTYPE.INSTANCE) {
           if (compData.serverGroupUid === compData.uid) {
             if (compData.serverGroupName) {
               resName = compData.serverGroupName;
@@ -3877,13 +3970,13 @@ return TEMPLATE; });
             if (currentCompUID === compUID) {
               return;
             }
-            if (compType === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+            if (compType === constant.RESTYPE.INSTANCE) {
               if (compObj.index !== 0) {
                 return;
               }
               compName = compObj.serverGroupName;
             }
-            if (compType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+            if (compType === constant.RESTYPE.LC) {
               compName = Design.instance().component(compUID).parent().get('name');
             }
             stateAry = compObj.state;
@@ -3958,15 +4051,15 @@ return TEMPLATE; });
           if (compData) {
             stateNumMap = {};
             resName = compData.name;
-            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+            if (compData.type === constant.RESTYPE.INSTANCE) {
               if (compData.number && compData.number > 1) {
                 resName = compData.serverGroupName;
               }
             }
-            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+            if (compData.type === constant.RESTYPE.LC) {
               _.each(allCompData, function(asgCompData) {
                 var lcUID, lcUIDRef;
-                if (asgCompData.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+                if (asgCompData.type === constant.RESTYPE.ASG) {
                   lcUIDRef = asgCompData.resource.LaunchConfigurationName;
                   if (lcUIDRef) {
                     lcUID = MC.extractID(lcUIDRef);
@@ -4008,7 +4101,7 @@ return TEMPLATE; });
           lcCompData = null;
           if (resUID && _.isNumber(stateNum)) {
             compData = allCompData[resUID];
-            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+            if (compData.type === constant.RESTYPE.ASG) {
               lcUIDRef = compData.resource.LaunchConfigurationName;
               if (lcUIDRef) {
                 lcUID = MC.extractID(lcUIDRef);
@@ -4047,7 +4140,7 @@ return TEMPLATE; });
           compData = allCompData[resUID];
           if (compData) {
             resName = compData.name;
-            if (compData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+            if (compData.type === constant.RESTYPE.INSTANCE) {
               if (compData.number && compData.number > 1) {
                 resName = compData.serverGroupName;
               }
@@ -4090,7 +4183,7 @@ return TEMPLATE; });
         allCompData = that.get('allCompData');
         resultUID = '';
         $.each(allCompData, function(uid, resObj) {
-          if (resObj.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+          if (resObj.type === constant.RESTYPE.INSTANCE) {
             if (resObj.number && resObj.number > 1) {
               if (resObj.serverGroupName === resName) {
                 resultUID = uid;

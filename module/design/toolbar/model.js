@@ -3,22 +3,22 @@
 
   define(["component/exporter/Thumbnail", 'MC', 'backbone', 'jquery', 'underscore', 'event', 'stack_service', 'stack_model', 'app_model', 'constant', 'account_model'], function(ThumbUtil, MC, Backbone, $, _, ide_event, stack_service, stack_model, app_model, constant, account_model) {
     var AWSRes, AwsTypeConvertMap, ToolbarModel, is_tab, item_state_map, model, process_data_map, req_map, ws;
-    AWSRes = constant.AWS_RESOURCE_TYPE;
+    AWSRes = constant.RESTYPE;
     AwsTypeConvertMap = {};
-    AwsTypeConvertMap[AWSRes.AWS_VPC_NetworkAcl] = "Network ACL";
-    AwsTypeConvertMap[AWSRes.AWS_AutoScaling_Group] = "Auto Scaling Group";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_CustomerGateway] = "Customer Gateway";
-    AwsTypeConvertMap[AWSRes.AWS_ELB] = "Load Balancer";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_NetworkInterface] = "Network Interface";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_InternetGateway] = "Internet Gateway";
-    AwsTypeConvertMap[AWSRes.AWS_EC2_Instance] = "Instance";
-    AwsTypeConvertMap[AWSRes.AWS_AutoScaling_LaunchConfiguration] = "Launch Configuration";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_RouteTable] = "Route Table";
-    AwsTypeConvertMap[AWSRes.AWS_EC2_SecurityGroup] = "Security Group";
-    AwsTypeConvertMap[AWSRes.AWS_SNS_Subscription] = "SNS Subscription";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_VPNGateway] = "VPN Gateway";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_VPC] = "VPC";
-    AwsTypeConvertMap[AWSRes.AWS_VPC_VPNConnection] = "VPN";
+    AwsTypeConvertMap[AWSRes.ACL] = "Network ACL";
+    AwsTypeConvertMap[AWSRes.ASG] = "Auto Scaling Group";
+    AwsTypeConvertMap[AWSRes.CGW] = "Customer Gateway";
+    AwsTypeConvertMap[AWSRes.ELB] = "Load Balancer";
+    AwsTypeConvertMap[AWSRes.ENI] = "Network Interface";
+    AwsTypeConvertMap[AWSRes.IGW] = "Internet Gateway";
+    AwsTypeConvertMap[AWSRes.INSTANCE] = "Instance";
+    AwsTypeConvertMap[AWSRes.LC] = "Launch Configuration";
+    AwsTypeConvertMap[AWSRes.RT] = "Route Table";
+    AwsTypeConvertMap[AWSRes.SG] = "Security Group";
+    AwsTypeConvertMap[AWSRes.SUBSCRIPTION] = "SNS Subscription";
+    AwsTypeConvertMap[AWSRes.VGW] = "VPN Gateway";
+    AwsTypeConvertMap[AWSRes.VPC] = "VPC";
+    AwsTypeConvertMap[AWSRes.VPN] = "VPN";
     item_state_map = {};
     process_data_map = {};
     req_map = {};
@@ -493,15 +493,9 @@
         region = data.region;
         app_name = data.name;
         usage = data.usage;
-        if (MC.aws.aws.checkDefaultVPC()) {
-          stack_model.run({
-            sender: me
-          }, $.cookie('usercode'), $.cookie('session_id'), region, id, app_name, null, MC.aws.vpc.generateComponentForDefaultVPC(), null, null, null, usage);
-        } else {
-          stack_model.run({
-            sender: me
-          }, $.cookie('usercode'), $.cookie('session_id'), region, id, app_name, null, null, null, null, null, usage);
-        }
+        stack_model.run({
+          sender: me
+        }, $.cookie('usercode'), $.cookie('session_id'), region, id, app_name, null, null, null, null, null, usage);
         idx = 'process-' + region + '-' + app_name;
         process_data_map[idx] = data;
         MC.common.other.addCacheThumb(idx, $("#canvas_body").html(), $("#svg_canvas")[0].getBBox());
@@ -958,7 +952,7 @@
       isAllInstanceNotHaveUserData: function() {
         var InstanceModel, LCModel, instanceModels, lcModels, result;
         result = true;
-        InstanceModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+        InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
         instanceModels = InstanceModel.allObjects();
         _.each(instanceModels, function(instanceModel) {
           var userData;
@@ -968,7 +962,7 @@
           }
           return null;
         });
-        LCModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration);
+        LCModel = Design.modelClassForType(constant.RESTYPE.LC);
         lcModels = LCModel.allObjects();
         _.each(lcModels, function(lcModel) {
           var userData;
@@ -983,13 +977,13 @@
       setAgentEnable: function(isEnable) {
         var InstanceModel, LCModel, instanceModels, lcModels;
         if (isEnable === true) {
-          InstanceModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+          InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
           instanceModels = InstanceModel.allObjects();
           _.each(instanceModels, function(instanceModel) {
             instanceModel.set('userData', '');
             return null;
           });
-          LCModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration);
+          LCModel = Design.modelClassForType(constant.RESTYPE.LC);
           lcModels = LCModel.allObjects();
           _.each(lcModels, function(lcModel) {
             lcModel.set('userData', '');

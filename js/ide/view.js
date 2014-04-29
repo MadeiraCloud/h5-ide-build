@@ -1,5 +1,5 @@
 (function() {
-  define(['event', 'i18n!nls/lang.js', 'common_handle', 'UI.notification', 'backbone', 'jquery', 'handlebars', 'underscore'], function(ide_event, lang, common_handle) {
+  define(['event', 'i18n!nls/lang.js', 'common_handle', 'UI.notification', 'UI.tour', 'backbone', 'jquery', 'handlebars', 'underscore'], function(ide_event, lang, common_handle) {
     var MainView, view;
     MainView = Backbone.View.extend({
       el: $('#main'),
@@ -96,24 +96,39 @@
         $('#tab-content-design').removeClass('active');
         return this.hideStatubar();
       },
-      disconnectedMessage: function(type) {
-        $(".disconnected-notification").toggle(type === 'show');
-        return null;
+      showDisconnected: function() {
+        if ($(".disconnected-msg").show().length > 0) {
+          return;
+        }
+        return $(MC.template.disconnectedMsg()).appendTo("body").on("mouseover", function() {
+          $(".disconnected-msg").addClass("hovered");
+          $("body").on("mousemove.disconnectedmsg", function(e) {
+            var msg, pos, x, y;
+            msg = $(".disconnected-msg");
+            pos = msg.offset();
+            x = e.pageX;
+            y = e.pageY;
+            if (x < pos.left || y < pos.top || x >= pos.left + msg.outerWidth() || y >= pos.top + msg.outerHeight()) {
+              $("body").off("mousemove.disconnectedmsg");
+              msg.removeClass("hovered");
+            }
+          });
+        });
+      },
+      hideDisconnected: function() {
+        return $(".disconnected-msg").remove();
       },
       beforeunloadEvent: function() {
-        var checked_tab_id, has_refresh, _ref, _ref1;
+        var checked_tab_id, has_refresh, _ref;
         if (MC.browser === 'msie' && MC.browserVersion === 10) {
           return;
         }
         if (!common_handle.cookie.getCookieByName('usercode')) {
           return;
         }
-        if (MC.common.other.canvasData.data() && ((_ref = MC.common.other.canvasData.data().platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC)) {
-          return;
-        }
         has_refresh = true;
         checked_tab_id = null;
-        if (!_.isEmpty(MC.common.other.canvasData.data()) && !_.isEmpty(MC.common.other.canvasData.origin()) && ((_ref1 = Tabbar.current) !== 'dashboard' && _ref1 !== 'appview' && _ref1 !== 'process')) {
+        if (!_.isEmpty(MC.common.other.canvasData.data()) && !_.isEmpty(MC.common.other.canvasData.origin()) && ((_ref = Tabbar.current) !== 'dashboard' && _ref !== 'appview' && _ref !== 'process')) {
           if (!MC.common.other.canvasData.isModified()) {
             console.log('current equal #1');
           } else {

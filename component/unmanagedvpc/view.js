@@ -46,7 +46,7 @@
           try {
             _.each(value.origin, function(item, type) {
               var vpc_ids;
-              if (type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+              if (type === constant.RESTYPE.ENI) {
                 vpc_ids = _.keys(item);
                 if (_.isArray(vpc_ids) && vpc_ids.length > 299) {
                   return is_true = true;
@@ -77,16 +77,16 @@
               count = _.keys(value).length;
               type = '';
               switch (key) {
-                case constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet:
+                case constant.RESTYPE.SUBNET:
                   type = ' subnet';
                   break;
-                case constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP:
+                case constant.RESTYPE.EIP:
                   type = ' elastic ip';
                   break;
-                case constant.AWS_RESOURCE_TYPE.AWS_ELB:
+                case constant.RESTYPE.ELB:
                   type = ' load balancer';
                   break;
-                case constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance:
+                case constant.RESTYPE.INSTANCE:
                   running = 0;
                   stopped = 0;
                   type = ' instance';
@@ -129,7 +129,7 @@
               switch (key) {
                 case type:
                   return new_count = _.keys(value).length;
-                case constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance:
+                case constant.RESTYPE.INSTANCE:
                   return _.each(_.values(value), function(item) {
                     if (item.instanceState.name === type) {
                       return new_count += 1;

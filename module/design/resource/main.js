@@ -56,8 +56,8 @@
         });
         Design.on(Design.EVENT.AddResource, function(comp) {
           var filter, name, res_type, _ref;
-          res_type = constant.AWS_RESOURCE_TYPE;
-          if (comp && ((_ref = comp.type) === res_type.AWS_EC2_AvailabilityZone || _ref === res_type.AWS_VPC_InternetGateway || _ref === res_type.AWS_VPC_VPNGateway)) {
+          res_type = constant.RESTYPE;
+          if (comp && ((_ref = comp.type) === res_type.AZ || _ref === res_type.IGW || _ref === res_type.VGW)) {
             name = comp.get("name");
             filter = function(data) {
               return data && data.option && data.option.name === name;
@@ -69,8 +69,8 @@
         });
         Design.on(Design.EVENT.RemoveResource, function(comp) {
           var filter, name, res_type, _ref;
-          res_type = constant.AWS_RESOURCE_TYPE;
-          if (comp && ((_ref = comp.type) === res_type.AWS_EC2_AvailabilityZone || _ref === res_type.AWS_VPC_InternetGateway || _ref === res_type.AWS_VPC_VPNGateway)) {
+          res_type = constant.RESTYPE;
+          if (comp && ((_ref = comp.type) === res_type.AZ || _ref === res_type.IGW || _ref === res_type.VGW)) {
             name = comp.get("name");
             filter = function(data) {
               return data && data.option && data.option.name === name;

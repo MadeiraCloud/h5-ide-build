@@ -342,22 +342,9 @@
       resourceVpcRender: function(current_platform, type) {
         var $list, data;
         data = {};
-        if (!current_platform) {
-          current_platform = MC.common.other.canvasData.get('platform');
-        }
-        if (current_platform === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC) {
-          data.isntClassic = false;
-        } else {
-          data.isntClassic = true;
-          if (current_platform === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC) {
-            data.isntDefaultVPC = false;
-          } else {
-            data.isntDefaultVPC = true;
-            if (type !== 'NEW_STACK') {
-              data.igwIsUsed = this.model.getIgwStatus();
-              data.vgwIsUsed = this.model.getVgwStatus();
-            }
-          }
+        if (type !== 'NEW_STACK') {
+          data.igwIsUsed = this.model.getIgwStatus();
+          data.vgwIsUsed = this.model.getVgwStatus();
         }
         $list = $('.resource-vpc-list').html(template_data.resource_vpc_select_list(data));
         return $list.toggle($list.children().length > 0);
@@ -447,7 +434,7 @@
         return null;
       }
     });
-    res_type = constant.AWS_RESOURCE_TYPE;
+    res_type = constant.RESTYPE;
     itemDisableToolTip = {};
     itemEnableToolTip = {};
 

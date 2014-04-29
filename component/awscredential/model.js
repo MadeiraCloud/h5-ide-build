@@ -1,5 +1,5 @@
 (function() {
-  define(['backbone', 'jquery', 'underscore', 'MC', 'session_model', 'vpc_model', 'account_model', 'i18n!nls/lang.js', 'event', 'constant', 'UI.notification'], function(Backbone, $, _, MC, session_model, vpc_model, account_model, lang, ide_event, constant) {
+  define(['backbone', 'jquery', 'underscore', 'MC', 'vpc_model', 'account_model', 'i18n!nls/lang.js', 'event', 'constant', 'ApiRequest', 'UI.notification'], function(Backbone, $, _, MC, vpc_model, account_model, lang, ide_event, constant, ApiRequest) {
     var AWSCredentialModel;
     AWSCredentialModel = Backbone.Model.extend({
       defaults: {
@@ -20,13 +20,6 @@
             }
           } else {
             me.trigger('UPDATE_ACCOUNT_ATTRIBUTES_FAILED', attributes);
-          }
-          return null;
-        });
-        me.on('SESSION_SYNC__REDIS_RETURN', function(result) {
-          console.log('SESSION_SYNC__REDIS_RETURN');
-          if (!result.is_error) {
-            ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
           }
           return null;
         });
@@ -58,66 +51,57 @@
         }
       },
       awsAuthenticate: function(access_key, secret_key, account_id) {
-        var me, option;
+        var me;
         me = this;
-        option = {
-          expires: 1,
-          path: '/'
-        };
-        session_model.set_credential({
-          sender: this
-        }, $.cookie('usercode'), $.cookie('session_id'), access_key, secret_key, account_id);
-        me.once('SESSION_SET__CREDENTIAL_RETURN', function(result1) {
+        ApiRequest("updateCred", {
+          access_key: access_key,
+          secret_key: secret_key,
+          account_id: account_id
+        }).then(function(result) {
           var name;
-          console.log('SESSION_SET__CREDENTIAL_RETURN');
-          console.log(result1);
-          if (!result1.is_error) {
-            name = 'DescribeAccountAttributes' + '_' + $.cookie('usercode') + '__' + 'supported-platforms,default-vpc';
-            if (MC.session.get(name)) {
-              MC.session.remove(name);
-            }
-            vpc_model.DescribeAccountAttributes({
-              sender: vpc_model
-            }, $.cookie('usercode'), $.cookie('session_id'), '', ["supported-platforms", "default-vpc"]);
-            return vpc_model.once('VPC_VPC_DESC_ACCOUNT_ATTRS_RETURN', function(result) {
-              var regionAttrSet;
-              console.log('VPC_VPC_DESC_ACCOUNT_ATTRS_RETURN');
-              if (!result.is_error) {
-                me.set('is_authenticated', true);
-                MC.common.cookie.setCookieByName('has_cred', true);
-                MC.common.cookie.setCookieByName('account_id', account_id);
-                regionAttrSet = result.resolved_data;
-                _.map(constant.REGION_KEYS, function(value) {
-                  var default_vpc, support_platform;
-                  if (regionAttrSet[value] && regionAttrSet[value].accountAttributeSet) {
-                    support_platform = regionAttrSet[value].accountAttributeSet.item[0].attributeValueSet.item;
-                    if (support_platform && $.type(support_platform) === "array") {
-                      if (support_platform.length === 2) {
-                        MC.data.account_attribute[value].support_platform = support_platform[0].attributeValue + ',' + support_platform[1].attributeValue;
-                      } else if (support_platform.length === 1) {
-                        MC.data.account_attribute[value].support_platform = support_platform[0].attributeValue;
-                      }
-                    }
-                    default_vpc = regionAttrSet[value].accountAttributeSet.item[1].attributeValueSet.item;
-                    if (default_vpc && $.type(default_vpc) === "array" && default_vpc.length === 1) {
-                      MC.data.account_attribute[value].default_vpc = default_vpc[0].attributeValue;
+          name = 'DescribeAccountAttributes' + '_' + $.cookie('usercode') + '__' + 'supported-platforms,default-vpc';
+          if (MC.session.get(name)) {
+            MC.session.remove(name);
+          }
+          vpc_model.DescribeAccountAttributes({
+            sender: vpc_model
+          }, $.cookie('usercode'), $.cookie('session_id'), '', ["supported-platforms", "default-vpc"]);
+          return vpc_model.once('VPC_VPC_DESC_ACCOUNT_ATTRS_RETURN', function(result) {
+            var regionAttrSet;
+            console.log('VPC_VPC_DESC_ACCOUNT_ATTRS_RETURN');
+            if (!result.is_error) {
+              me.set('is_authenticated', true);
+              MC.common.cookie.setCookieByName('has_cred', true);
+              MC.common.cookie.setCookieByName('account_id', account_id);
+              regionAttrSet = result.resolved_data;
+              return _.map(constant.REGION_KEYS, function(value) {
+                var default_vpc, support_platform;
+                if (regionAttrSet[value] && regionAttrSet[value].accountAttributeSet) {
+                  support_platform = regionAttrSet[value].accountAttributeSet.item[0].attributeValueSet.item;
+                  if (support_platform && $.type(support_platform) === "array") {
+                    if (support_platform.length === 2) {
+                      MC.data.account_attribute[value].support_platform = support_platform[0].attributeValue + ',' + support_platform[1].attributeValue;
+                    } else if (support_platform.length === 1) {
+                      MC.data.account_attribute[value].support_platform = support_platform[0].attributeValue;
                     }
                   }
-                  return null;
-                });
-              } else {
-                me.set('is_authenticated', false);
-              }
-              me.set('account_id', account_id);
-              return me.trigger('REFRESH_AWS_CREDENTIAL');
-            });
-          } else {
-            me.set('is_authenticated', false);
+                  default_vpc = regionAttrSet[value].accountAttributeSet.item[1].attributeValueSet.item;
+                  if (default_vpc && $.type(default_vpc) === "array" && default_vpc.length === 1) {
+                    MC.data.account_attribute[value].default_vpc = default_vpc[0].attributeValue;
+                  }
+                }
+                return null;
+              });
+            }
+          });
+        }, (function(_this) {
+          return function(error) {
+            _this.set('is_authenticated', false);
             MC.common.cookie.setCookieByName('has_cred', false);
-            me.set('account_id', account_id);
-            return me.trigger('REFRESH_AWS_CREDENTIAL');
-          }
-        });
+            _this.set('account_id', account_id);
+            return _this.trigger('REFRESH_AWS_CREDENTIAL');
+          };
+        })(this));
         return null;
       },
       updateAccountEmail: function(new_email) {
@@ -157,11 +141,9 @@
         return null;
       },
       sync_redis: function() {
-        var me;
-        me = this;
-        session_model.sync_redis({
-          sender: me
-        }, $.cookie('usercode'), $.cookie('session_id'));
+        ApiRequest("syncRedis").then(function() {
+          return ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
+        });
         return null;
       },
       resetKey: function(flag) {

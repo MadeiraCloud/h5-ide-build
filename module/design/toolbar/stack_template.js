@@ -118,11 +118,11 @@ function program13(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'></button>\n\n<div class=\"selectbox btn-toolbar seperator\">\n	<button class=\"selection tooltip icon-send\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT", {hash:{},data:data}))
-    + "' id=\"toolbar-export\"></button>\n\n	<ul class=\"dropdown\">\n		<li id=\"toolbar-export-png\" class=\"icon-export-png\">"
+    + "' id=\"toolbar-export\"></button>\n\n	<ul class=\"dropdown\">\n		<li id=\"toolbar-export-png\"  data-analytics-plus=\"export_png\" class=\"icon-export-png\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
-    + "</li>\n		<li id=\"toolbar-export-json\" class=\"icon-export-json\">"
+    + "</li>\n		<li id=\"toolbar-export-json\" data-analytics-plus=\"export_json\" class=\"icon-export-json\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_JSON", {hash:{},data:data}))
-    + "</li>\n		<li id=\"toolbar-convert-cf\"  class=\"icon-toolbar-cloudformation\">"
+    + "</li>\n		<li id=\"toolbar-convert-cf\"  data-analytics-plus=\"cloudformation\" class=\"icon-toolbar-cloudformation\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_CF", {hash:{},data:data}))
     + "</li>\n	</ul>\n</div>\n\n<!-- line style -->\n<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\n	<button class=\"selection tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_LINESTYLE", {hash:{},data:data}))

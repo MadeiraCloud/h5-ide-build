@@ -119,9 +119,9 @@
         return null;
       },
       closeTabRestrictionEvent: function(event, target, tab_name, tab_id) {
-        var is_changed, _ref, _ref1;
+        var is_changed, _ref;
         console.log('closeTabRestrictionEvent', tab_name, tab_id);
-        if (((_ref = tab_id.split('-')[0]) === 'process' || _ref === 'appview') || (tab_id === MC.data.current_tab_id && Tabbar.current === 'app') || ((_ref1 = MC.common.other.canvasData.data().platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref1 === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC)) {
+        if (((_ref = tab_id.split('-')[0]) === 'process' || _ref === 'appview') || (tab_id === MC.data.current_tab_id && Tabbar.current === 'app')) {
           this.directCloseTab(tab_id);
           return;
         }

@@ -258,6 +258,19 @@
       }
       return new CEC(m || model);
     };
+    CanvasElement.prototype.constant = {
+      PATH_PORT_LEFT: "M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z",
+      PATH_PORT_TOP: "M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z",
+      PATH_PORT_RIGHT: "M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z",
+      PATH_PORT_BOTTOM: "M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z",
+      PATH_PORT_DIAMOND: "M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z"
+    };
+    CanvasElement.constant = {
+      PORT_RIGHT_ANGLE: 0,
+      PORT_UP_ANGLE: 90,
+      PORT_LEFT_ANGLE: 180,
+      PORT_DOWN_ANGLE: 270
+    };
 
     /*
      * CanvasElement Interface
@@ -460,7 +473,7 @@
       toggle = !this.model.hasPrimaryEip();
       this.model.setPrimaryEip(toggle);
       if (toggle) {
-        Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway).tryCreateIgw();
+        Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
       }
       ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
       return null;
@@ -553,8 +566,8 @@
       /*
        * Quick hack for Lc
        */
-      if (this.type !== constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
-        if (this.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+      if (this.type !== constant.RESTYPE.LC) {
+        if (this.type === constant.RESTYPE.INSTANCE) {
           instance_data = resource_list[this.model.get("appId")];
           state = instance_data ? instance_data.instanceState.name : "unknown";
         }
@@ -578,7 +591,7 @@
       for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
         member = _ref[idx];
         state = "";
-        if (this.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance || this.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if (this.type === constant.RESTYPE.INSTANCE || this.type === constant.RESTYPE.LC) {
           instance_data = resource_list[member.appId];
           state = instance_data ? instance_data.instanceState.name : "unknown";
         }
@@ -591,6 +604,9 @@
         });
       }
       return list;
+    };
+    CanvasElement.prototype.connectionData = function(portName) {
+      return Design.modelClassForType("Framework_CN").connectionData(this.type, portName);
     };
 
     /*
@@ -688,7 +704,12 @@
       y = m.y();
       width = m.width() * MC.canvas.GRID_WIDTH;
       height = m.height() * MC.canvas.GRID_HEIGHT;
-      text_pos = MC.canvas.GROUP_LABEL_COORDINATE[m.type];
+      text_pos = {
+        'AWS.VPC.VPC': [6, 16],
+        'AWS.EC2.AvailabilityZone': [4, 14],
+        'AWS.VPC.Subnet': [4, 14],
+        'AWS.AutoScaling.Group': [4, 14]
+      }[m.type];
       pad = 10;
       return Canvon.group().append(Canvon.rectangle(0, 0, width, height).attr({
         'class': 'group',
@@ -801,9 +822,6 @@
       }
       return view;
     };
-    $canvas.platform = function() {
-      return Design.instance().type();
-    };
     $canvas.size = function(w, h) {
       if (Design.__instance) {
         return Design.__instance.canvas.size(w, h);
@@ -878,10 +896,10 @@
         delete attributes.groupUId;
       }
       if (parent) {
-        if (parent.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+        if (parent.type === constant.RESTYPE.ASG) {
           attributes.x = parent.x() + 2;
           attributes.y = parent.y() + 3;
-          type = constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration;
+          type = constant.RESTYPE.LC;
         } else if (parent.type === "ExpandedAsg") {
           return false;
         }
@@ -957,7 +975,7 @@
       }
     };
     $canvas.hasVPC = function() {
-      return !!Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC();
+      return !!Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
     };
     CanvasEvent = {
       CANVAS_NODE_SELECTED: function() {
@@ -986,36 +1004,32 @@
       },
       CANVAS_PLACE_NOT_MATCH: function(param) {
         var info, l, res_type;
-        res_type = constant.AWS_RESOURCE_TYPE;
+        res_type = constant.RESTYPE;
         l = lang.ide;
         switch (param.type) {
-          case res_type.AWS_EBS_Volume:
+          case res_type.VOL:
             info = l.CVS_MSG_WARN_NOTMATCH_VOLUME;
             break;
-          case res_type.AWS_VPC_Subnet:
+          case res_type.SUBNET:
             info = l.CVS_MSG_WARN_NOTMATCH_SUBNET;
             break;
-          case res_type.AWS_EC2_Instance:
-            if (Design.instance().typeIsVpc()) {
-              info = l.CVS_MSG_WARN_NOTMATCH_INSTANCE_SUBNET;
-            } else {
-              info = l.CVS_MSG_WARN_NOTMATCH_INSTANCE_AZ;
-            }
+          case res_type.INSTANCE:
+            info = l.CVS_MSG_WARN_NOTMATCH_INSTANCE_SUBNET;
             break;
-          case res_type.AWS_VPC_NetworkInterface:
+          case res_type.ENI:
             info = l.CVS_MSG_WARN_NOTMATCH_ENI;
             break;
-          case res_type.AWS_VPC_RouteTable:
+          case res_type.RT:
             info = l.CVS_MSG_WARN_NOTMATCH_RTB;
             break;
-          case res_type.AWS_ELB:
+          case res_type.ELB:
             info = l.CVS_MSG_WARN_NOTMATCH_ELB;
             break;
-          case res_type.AWS_VPC_CustomerGateway:
+          case res_type.CGW:
             info = l.CVS_MSG_WARN_NOTMATCH_CGW;
             break;
-          case res_type.AWS_AutoScaling_Group:
-            info = "Asg must be dragged to a subnet.";
+          case res_type.ASG:
+            info = l.CVS_MSG_WARN_NOTMATCH_ASG;
         }
         if (info) {
           notification('warning', info, false);
@@ -1245,7 +1259,7 @@
     };
     DesignImpl.prototype.refreshAppUpdate = function() {
       var needRefresh;
-      needRefresh = [constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group];
+      needRefresh = [constant.RESTYPE.ASG];
       this.eachComponent(function(component) {
         var _ref;
         if (_ref = component.type, __indexOf.call(needRefresh, _ref) >= 0) {
@@ -1417,6 +1431,21 @@
       }
       return this.__modelClassMap[type];
     };
+    Design.lineModelClasses = function() {
+      var cs, modelClass, type, _ref;
+      if (this.__lineModelClasses) {
+        return this.__lineModelClasses;
+      }
+      this.__lineModelClasses = cs = [];
+      _ref = this.__modelClassMap;
+      for (type in _ref) {
+        modelClass = _ref[type];
+        if (modelClass.__isLineClass && type.indexOf(">") === -1) {
+          cs.push(modelClass);
+        }
+      }
+      return this.__lineModelClasses;
+    };
     DesignImpl.prototype.reclaimGuid = function(guid) {
       return delete this.__usedUidCache[guid];
     };
@@ -1500,7 +1529,7 @@
     };
     DesignImpl.prototype.isModified = function(newData) {
       var key, value, _i, _len, _ref;
-      if (Design.instance().modeIsApp()) {
+      if (this.modeIsApp()) {
         return false;
       }
       this.__backingStore.id = (newData || this.attributes).id;
@@ -1712,9 +1741,9 @@
     };
     DesignImpl.prototype.isStoppable = function() {
       var InstanceModel, LcModel, allObjects, ami, comp, _i, _len;
-      InstanceModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
-      LcModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration);
-      allObjects = InstanceModel.allObjects().concat(LcModel.allObjects());
+      InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
+      LcModel = Design.modelClassForType(constant.RESTYPE.LC);
+      allObjects = InstanceModel.allObjects(this).concat(LcModel.allObjects(this));
       for (_i = 0, _len = allObjects.length; _i < _len; _i++) {
         comp = allObjects[_i];
         ami = comp.getAmi() || comp.get("cachedAmi");
@@ -1769,7 +1798,7 @@
       subList = resource_list.Subscriptions;
       idx = 0;
       while (subList && idx < subList.length) {
-        if (subList[idx].TopicArn.indexOf(Design.instance().get("id")) > 0) {
+        if (subList[idx].TopicArn.indexOf(this.get("id")) > 0) {
           subList.splice(idx, 1);
         } else {
           idx++;
@@ -1778,7 +1807,7 @@
       lcList = resource_list.NotificationConfigurations;
       idx = 0;
       while (lcList && idx < lcList.length) {
-        if (lcList[idx].TopicARN.indexOf(Design.instance().get("id")) > 0) {
+        if (lcList[idx].TopicARN.indexOf(this.get("id")) > 0) {
           lcList.splice(idx, 1);
         } else {
           idx++;
@@ -1795,6 +1824,13 @@
       return Backbone.Events.on.apply(this, arguments);
     };
     CanvasAdaptor.setDesign(Design);
+
+    /* env:dev                                            env:dev:end */
+
+    /* env:debug */
+    Design.DesignImpl = DesignImpl;
+
+    /* env:debug:end */
     return Design;
   });
 
@@ -2005,10 +2041,7 @@
         return this.__design;
       },
       getAllObjects: function(awsType) {
-        if (!awsType) {
-          awsType = this.type;
-        }
-        return this.design().classCacheForCid(this.prototype.classId).slice(0);
+        return this.design().classCacheForCid(Design.modelClassForType(awsType || this.type).prototype.classId).slice(0);
       },
       markAsRemoved: function(isRemoved) {
         if (isRemoved === void 0) {
@@ -2216,8 +2249,13 @@
         return null;
       }
     }, {
-      allObjects: function() {
-        return Design.instance().classCacheForCid(this.prototype.classId).slice(0);
+      allObjects: function(design) {
+        var d;
+        d = Design.instance();
+        if (design && design.prototype === d.prototype) {
+          d = design;
+        }
+        return d.classCacheForCid(this.prototype.classId).slice(0);
       },
       deserialize: function() {
         console.error("Class '" + this.prototype.type + "' doesn't implement deserialize");
@@ -2554,10 +2592,40 @@
           Design.registerModelClass(t, child);
         }
         Design.registerModelClass(protoProps.type, child);
+        child.__isLineClass = true;
         return child;
       },
       isConnectable: function(comp1, comp2) {
         return true;
+      },
+      connectionData: function(type, portName) {
+        var LineModel, allLinePortMap, arr, def, op, p, _i, _j, _len, _len1, _ref, _ref1;
+        allLinePortMap = {};
+        _ref = Design.lineModelClasses();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          LineModel = _ref[_i];
+          if (!LineModel.prototype.portDefs) {
+            continue;
+          }
+          _ref1 = LineModel.prototype.portDefs;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            def = _ref1[_j];
+            if (def.port1.type === type) {
+              p = def.port1;
+              op = def.port2;
+            } else if (def.port2.type === type) {
+              p = def.port2;
+              op = def.port1;
+            } else {
+              continue;
+            }
+            if (!portName || portName === p.name) {
+              arr = allLinePortMap[op.type] || (allLinePortMap[op.type] = []);
+              arr.push(op.name);
+            }
+          }
+        }
+        return allLinePortMap;
       }
     });
     return ConnectionModel;
@@ -2576,7 +2644,7 @@
       },
       initialize: function(attributes) {
         var ami;
-        ami = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+        ami = this.getTarget(constant.RESTYPE.INSTANCE);
         if (attributes && attributes.index) {
           this.ensureAttachmentOrder();
         } else {
@@ -2586,7 +2654,7 @@
       },
       ensureAttachmentOrder: function() {
         var ami, amiConnections, attach, attachments, cnn, idx, newArray, _i, _j, _k, _len, _len1, _len2, _ref;
-        ami = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+        ami = this.getTarget(constant.RESTYPE.INSTANCE);
         attachments = ami.connections("EniAttachment");
         for (_i = 0, _len = attachments.length; _i < _len; _i++) {
           attach = attachments[_i];
@@ -2618,8 +2686,8 @@
       remove: function() {
         var SgModel, ami, attach, attachments, eni, startIdx;
         ConnectionModel.prototype.remove.apply(this, arguments);
-        ami = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
-        eni = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface);
+        ami = this.getTarget(constant.RESTYPE.INSTANCE);
+        eni = this.getTarget(constant.RESTYPE.ENI);
         if (!ami.isRemoved()) {
           attachments = ami.connections("EniAttachment");
           startIdx = 1;
@@ -2627,13 +2695,13 @@
             attach = attachments[startIdx - 1];
             if (attach.attributes.index !== startIdx) {
               attach.attributes.index = startIdx;
-              attach.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface).updateName();
+              attach.getTarget(constant.RESTYPE.ENI).updateName();
             }
             ++startIdx;
           }
         }
         if (!ami.isRemoved() && !eni.isRemoved()) {
-          SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+          SgModel = Design.modelClassForType(constant.RESTYPE.SG);
           SgModel.tryDrawLine(ami, eni);
         }
         return null;
@@ -2641,11 +2709,11 @@
       portDefs: {
         port1: {
           name: "instance-attach",
-          type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+          type: constant.RESTYPE.INSTANCE
         },
         port2: {
           name: "eni-attach",
-          type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+          type: constant.RESTYPE.ENI
         }
       }
     }, {
@@ -2653,14 +2721,14 @@
         var eni, instance, maxEniCount, p1p, p2p;
         p1p = p1Comp.parent();
         p2p = p2Comp.parent();
-        if (p1p.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (p1p.type === constant.RESTYPE.SUBNET) {
           p1p = p1p.parent();
           p2p = p2p.parent();
         }
         if (p1p !== p2p) {
           return false;
         }
-        if (p1Comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+        if (p1Comp.type === constant.RESTYPE.INSTANCE) {
           instance = p1Comp;
           eni = p2Comp;
         } else {
@@ -2695,7 +2763,7 @@
   define('module/design/framework/connection/VPNConnection',["constant", "../ConnectionModel"], function(constant, ConnectionModel) {
     var C;
     C = ConnectionModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNConnection,
+      type: constant.RESTYPE.VPN,
       defaults: function() {
         return {
           lineType: "vpn",
@@ -2705,17 +2773,17 @@
       portDefs: {
         port1: {
           name: "vgw-vpn",
-          type: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway
+          type: constant.RESTYPE.VGW
         },
         port2: {
           name: "cgw-vpn",
-          type: constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway
+          type: constant.RESTYPE.CGW
         }
       },
       serialize: function(component_data) {
         var cgw, routes, vgw;
-        vgw = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway);
-        cgw = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway);
+        vgw = this.getTarget(constant.RESTYPE.VGW);
+        cgw = this.getTarget(constant.RESTYPE.CGW);
         if (cgw.isDynamic()) {
           routes = [];
         } else {
@@ -2743,7 +2811,7 @@
         return null;
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNConnection,
+      handleTypes: constant.RESTYPE.VPN,
       deserialize: function(data, layout_data, resolve) {
         var cgw, vpn;
         cgw = resolve(MC.extractID(data.resource.CustomerGatewayId));
@@ -2955,29 +3023,10 @@
         return targets;
       },
       getSubnetRef: function() {
-        var defautSubnet, p;
-        if (Design.instance().typeIsClassic()) {
-          return "";
-        }
-        if (Design.instance().typeIsDefaultVpc()) {
-          p = this;
-          while (p) {
-            if (p.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
-              break;
-            }
-            p = p.parent();
-          }
-          if (p) {
-            defautSubnet = MC.data.account_attribute[Design.instance().region()].default_subnet[p.get("name")];
-            if (defautSubnet) {
-              return defautSubnet.subnetId || "";
-            }
-          }
-          return "";
-        }
+        var p;
         p = this;
         while (p) {
-          if (p.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+          if (p.type === constant.RESTYPE.SUBNET) {
             break;
           }
           p = p.parent();
@@ -2989,43 +3038,16 @@
         }
       },
       getVpcRef: function() {
-        var VpcModel, defautSubnet, obj, p, uid, _ref;
-        if (Design.instance().typeIsClassic()) {
-          return "";
-        }
-        if (Design.instance().typeIsDefaultVpc()) {
-          p = this;
-          while (p) {
-            if (p.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
-              break;
-            }
-            p = p.parent();
-          }
-          if (p) {
-            defautSubnet = MC.data.account_attribute[Design.instance().region()].default_subnet[p.get("name")];
-            if (defautSubnet) {
-              return defautSubnet.vpcId || "";
-            }
-          } else {
-            _ref = MC.data.account_attribute[Design.instance().region()].default_subnet;
-            for (uid in _ref) {
-              obj = _ref[uid];
-              if (obj.vpcId) {
-                return obj.vpcId;
-              }
-            }
-          }
-          return "";
-        }
+        var VpcModel, p;
         p = this;
         while (p) {
-          if (p.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC) {
+          if (p.type === constant.RESTYPE.VPC) {
             break;
           }
           p = p.parent();
         }
         if (!p) {
-          VpcModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC);
+          VpcModel = Design.modelClassForType(constant.RESTYPE.VPC);
           p = VpcModel.theVPC();
         }
         if (p) {
@@ -3088,7 +3110,7 @@
     var Model, emptyArray;
     emptyArray = [];
     Model = ComplexResModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance,
+      type: constant.RESTYPE.INSTANCE,
       newNameTmpl: "host-",
       defaults: {
         x: 2,
@@ -3110,11 +3132,11 @@
       initialize: function(attr, option) {
         var EniModel, KpModel, SgAsso, SgModel, defaultKp, defaultSg, tenancy, volSize, vpc;
         option = option || {};
-        if (option.createByUser && !Design.instance().typeIsClassic()) {
-          EniModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface);
+        if (option.createByUser) {
+          EniModel = Design.modelClassForType(constant.RESTYPE.ENI);
           this.setEmbedEni(new EniModel({
             name: "eni0",
-            assoPublicIp: Design.instance().typeIsDefaultVpc()
+            assoPublicIp: false
           }, {
             instance: this
           }));
@@ -3132,14 +3154,14 @@
         }
         this.draw(true);
         if (option.createByUser && !option.cloneSource) {
-          KpModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair);
+          KpModel = Design.modelClassForType(constant.RESTYPE.KP);
           defaultKp = KpModel.getDefaultKP();
           if (defaultKp) {
             defaultKp.assignTo(this);
           } else {
             console.error("No DefaultKP found when initialize InstanceModel");
           }
-          SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+          SgModel = Design.modelClassForType(constant.RESTYPE.SG);
           defaultSg = SgModel.getDefaultSg();
           if (defaultSg) {
             SgAsso = Design.modelClassForType("SgAsso");
@@ -3149,7 +3171,7 @@
           }
         }
         tenancy = this.get("tenancy");
-        vpc = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC();
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         if (vpc && !vpc.isDefaultTenancy()) {
           tenancy = "dedicated";
         }
@@ -3165,7 +3187,7 @@
       getAvailabilityZone: function() {
         var p;
         p = this.parent();
-        if (p.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (p.type === constant.RESTYPE.SUBNET) {
           return p.parent();
         } else {
           return p;
@@ -3274,10 +3296,10 @@
       },
       isReparentable: function(newParent) {
         var check;
-        if (newParent.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+        if (newParent.type === constant.RESTYPE.ASG) {
           return false;
         }
-        if (newParent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (newParent.type === constant.RESTYPE.SUBNET) {
           if (newParent.parent() !== this.parent().parent()) {
             check = true;
           }
@@ -3354,7 +3376,7 @@
       },
       isDefaultTenancy: function() {
         var VpcModel, vpc;
-        VpcModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC);
+        VpcModel = Design.modelClassForType(constant.RESTYPE.VPC);
         vpc = VpcModel.allObjects()[0];
         if (vpc && !vpc.isDefaultTenancy()) {
           return false;
@@ -3554,7 +3576,7 @@
         if (!this.isEbsOptimizedEnabled()) {
           this.set("ebsOptimized", false);
         }
-        if (this.getEmbedEni && !Design.instance().typeIsClassic()) {
+        if (this.getEmbedEni) {
           enis = this.connectionTargets("EniAttachment");
           enis.push(this.getEmbedEni());
           for (_i = 0, _len = enis.length; _i < _len; _i++) {
@@ -3632,7 +3654,7 @@
           state = _ref[_i];
           state.id = "state-" + this.design().guid();
         }
-        Volume = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume);
+        Volume = Design.modelClassForType(constant.RESTYPE.VOL);
         _ref1 = srcTarget.get("volumeList") || [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           v = _ref1[_j];
@@ -3682,10 +3704,10 @@
         return null;
       },
       generateJSON: function() {
-        var blockDeviceMapping, component, kp, name, p, securitygroups, securitygroupsId, sg, tenancy, volume, vpc, _i, _j, _len, _len1, _ref, _ref1;
+        var blockDeviceMapping, component, kp, name, p, tenancy, volume, vpc, _i, _len, _ref;
         tenancy = this.get("tenancy");
         p = this.parent();
-        if (p.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (p.type === constant.RESTYPE.SUBNET) {
           vpc = p.parent().parent();
           if (!vpc.isDefaultTenancy()) {
             tenancy = "dedicated";
@@ -3697,20 +3719,10 @@
         if (this.get("count") > 1) {
           name += "-0";
         }
-        securitygroups = [];
-        securitygroupsId = [];
-        if (Design.instance().typeIsClassic()) {
-          _ref = this.connectionTargets("SgAsso");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            sg = _ref[_i];
-            securitygroups.push(sg.createRef("GroupName"));
-            securitygroupsId.push(sg.createRef("GroupId"));
-          }
-        }
         blockDeviceMapping = this.getBlockDeviceMapping();
-        _ref1 = this.get("volumeList") || [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          volume = _ref1[_j];
+        _ref = this.get("volumeList") || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          volume = _ref[_i];
           blockDeviceMapping.push("#" + volume.id);
         }
         component = {
@@ -3743,8 +3755,8 @@
             InstanceType: this.get("instanceType"),
             DisableApiTermination: false,
             ShutdownBehavior: "terminate",
-            SecurityGroup: securitygroups,
-            SecurityGroupId: securitygroupsId,
+            SecurityGroup: [],
+            SecurityGroupId: [],
             PrivateIpAddress: ""
           }
         };
@@ -3754,7 +3766,7 @@
         instanceId = instanceId || this.id;
         return {
           uid: eipData.id,
-          type: constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP,
+          type: constant.RESTYPE.EIP,
           index: 0,
           name: "EIP",
           resource: {
@@ -3774,7 +3786,7 @@
         return this.set("state", stateAryData);
       },
       serialize: function() {
-        var allResourceArray, ami, attach, eip, eni, eniIndex, eniModels, enis, i, idx, instance, instances, layout, member, memberObj, res, serverGroupOption, v, volume, volumeModels, volumes, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
+        var allResourceArray, ami, attach, eni, eniIndex, eniModels, enis, i, idx, instance, instances, layout, member, memberObj, res, serverGroupOption, v, volume, volumeModels, volumes, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
         allResourceArray = [];
         ami = this.getAmi() || this.get("cachedAmi");
         layout = this.generateLayout();
@@ -3789,11 +3801,6 @@
         instances = [this.generateJSON()];
         i = instances.length;
         this.ensureEnoughMember();
-        if (this.get("hasEip") && !Design.instance().typeIsVpc()) {
-          allResourceArray.push({
-            component: this.createEipJson(this.get("eipData"))
-          });
-        }
         while (i < this.get("count")) {
           member = $.extend(true, {}, instances[0]);
           member.name = this.get("name") + "-" + i;
@@ -3801,13 +3808,6 @@
           memberObj = this.groupMembers()[instances.length - 1];
           member.uid = memberObj.id;
           member.resource.InstanceId = memberObj.appId;
-          if (this.get("hasEip") && !Design.instance().typeIsVpc()) {
-            eip = this.createEipJson(memberObj.eipData, memberObj.id);
-            eip.index = i;
-            allResourceArray.push({
-              component: eip
-            });
-          }
           ++i;
           instances.push(member);
         }
@@ -3851,7 +3851,7 @@
         return allResourceArray;
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance,
+      handleTypes: constant.RESTYPE.INSTANCE,
       getEffectiveId: function(instance_id) {
         var asg, data, design, index, instance, member, obj, resource_list, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         design = Design.instance();
@@ -3883,7 +3883,7 @@
           }
         }
         resource_list = MC.data.resource_list[design.region()];
-        _ref2 = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group).allObjects();
+        _ref2 = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
         for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
           asg = _ref2[_k];
           data = resource_list[asg.get("appId")];
@@ -3951,7 +3951,7 @@
         }
       },
       deserialize: function(data, layout_data, resolve) {
-        var SgAsso, attr, eipData, groupId, m, members, model, rootDevice, _i, _j, _len, _len1, _ref;
+        var attr, eipData, m, members, model, rootDevice, _i, _len;
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
           members = resolve(data.serverGroupUid).groupMembers();
           for (_i = 0, _len = members.length; _i < _len; _i++) {
@@ -4023,14 +4023,6 @@
         }
         model = new Model(attr);
         resolve(MC.extractID(data.resource.KeyName)).assignTo(model);
-        if (Design.instance().typeIsClassic() && data.resource.SecurityGroup) {
-          SgAsso = Design.modelClassForType("SgAsso");
-          _ref = data.resource.SecurityGroup;
-          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-            groupId = _ref[_j];
-            new SgAsso(model, resolve(MC.extractID(groupId)));
-          }
-        }
         return null;
       }
     });
@@ -4048,7 +4040,7 @@
         if (Design.instance().shouldDraw()) {
           this.draw = this.updateLabel;
         }
-        this.listenTo(this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup), "change:name", this.updateLabel);
+        this.listenTo(this.getTarget(constant.RESTYPE.SG), "change:name", this.updateLabel);
         this.on("destroy", this.updateLabel);
         return null;
       },
@@ -4056,10 +4048,10 @@
         return false;
       },
       assignCompsToPorts: function(p1Comp, p2Comp) {
-        if (p1Comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+        if (p1Comp.type === constant.RESTYPE.SG) {
           this.__port1Comp = p1Comp;
           this.__port2Comp = p2Comp;
-        } else if (p2Comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+        } else if (p2Comp.type === constant.RESTYPE.SG) {
           this.__port1Comp = p2Comp;
           this.__port2Comp = p1Comp;
         } else {
@@ -4070,13 +4062,13 @@
       remove: function() {
         var defaultSg, resource;
         ConnectionModel.prototype.remove.apply(this, arguments);
-        resource = this.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+        resource = this.getOtherTarget(constant.RESTYPE.SG);
         if (resource.isRemoved()) {
           return;
         }
-        resource = this.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+        resource = this.getOtherTarget(constant.RESTYPE.SG);
         if (resource.connections("SgAsso").length === 0) {
-          defaultSg = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup).getDefaultSg();
+          defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
           if (defaultSg) {
             new SgAsso(resource, defaultSg);
           }
@@ -4085,10 +4077,10 @@
       },
       sortedSgList: function() {
         var resource, sgAssos, sgs;
-        resource = this.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+        resource = this.getOtherTarget(constant.RESTYPE.SG);
         sgAssos = resource.connections("SgAsso");
         sgs = _.map(sgAssos, function(a) {
-          return a.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+          return a.getTarget(constant.RESTYPE.SG);
         });
         return sgs.sort(function(a_sg, b_sg) {
           var a_nm, b_nm;
@@ -4116,7 +4108,7 @@
         if (!Design.instance().shouldDraw()) {
           return;
         }
-        resource = this.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+        resource = this.getOtherTarget(constant.RESTYPE.SG);
         res_node = document.getElementById(resource.id);
         if (!res_node) {
           return;
@@ -4142,7 +4134,7 @@
       _ref = SgAsso.allObjects();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         asso = _ref[_i];
-        updateMap[asso.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup).id] = asso;
+        updateMap[asso.getOtherTarget(constant.RESTYPE.SG).id] = asso;
       }
       for (resId in updateMap) {
         asso = updateMap[resId];
@@ -4199,7 +4191,7 @@
           height: 9
         };
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface,
+      type: constant.RESTYPE.ENI,
       constructor: function(attributes, option) {
         if (option && option.instance) {
           this.__embedInstance = option.instance;
@@ -4217,7 +4209,7 @@
         option = option || {};
         this.draw(true);
         if (option.createByUser && !option.instance) {
-          defaultSg = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup).getDefaultSg();
+          defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
           SgAsso = Design.modelClassForType("SgAsso");
           new SgAsso(defaultSg, this);
         }
@@ -4265,7 +4257,7 @@
       },
       isReparentable: function(newParent) {
         var check;
-        if (newParent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (newParent.type === constant.RESTYPE.SUBNET) {
           if (newParent.parent() !== this.parent().parent()) {
             check = true;
           }
@@ -4346,7 +4338,7 @@
       subnetCidr: function() {
         var cidr, defaultSubnet, parent;
         parent = this.parent() || this.__embedInstance.parent();
-        if (parent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (parent.type === constant.RESTYPE.SUBNET) {
           cidr = parent.get("cidr");
         } else {
           defaultSubnet = parent.getSubnetOfDefaultVPC();
@@ -4360,7 +4352,7 @@
         var cidr, idx, ip, ipAry, ips, isServergroup, obj, prefixSuffixAry, _i, _len, _ref;
         cidr = this.subnetCidr();
         isServergroup = this.serverGroupCount() > 1;
-        prefixSuffixAry = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).genCIDRPrefixSuffix(cidr);
+        prefixSuffixAry = Design.modelClassForType(constant.RESTYPE.SUBNET).genCIDRPrefixSuffix(cidr);
         ips = [];
         _ref = this.get("ips");
         for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
@@ -4397,7 +4389,7 @@
         if (!cidr) {
           return ip;
         }
-        prefixSuffixAry = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).genCIDRPrefixSuffix(cidr);
+        prefixSuffixAry = Design.modelClassForType(constant.RESTYPE.SUBNET).genCIDRPrefixSuffix(cidr);
         ipAry = ip.split(".");
         if (prefixSuffixAry[1] === "x.x") {
           realIp = prefixSuffixAry[0] + ipAry[2] + "." + ipAry[3];
@@ -4412,7 +4404,7 @@
           return true;
         }
         cidr = this.subnetCidr();
-        if (!Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).isIPInSubnet(ip, cidr)) {
+        if (!Design.modelClassForType(constant.RESTYPE.SUBNET).isIPInSubnet(ip, cidr)) {
           return 'This IP address conflicts with subnet’s IP range';
         }
         realNewIp = this.getRealIp(ip, cidr);
@@ -4518,7 +4510,7 @@
         this.limitIpAddress();
         this.updateName();
         this.draw();
-        SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+        SgModel = Design.modelClassForType(constant.RESTYPE.SG);
         SgModel.tryDrawLine(this);
         return null;
       },
@@ -4617,11 +4609,11 @@
             eip = ipObj.eipData;
             resources.push({
               uid: eip.id || MC.guid(),
-              type: constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP,
+              type: constant.RESTYPE.EIP,
               name: "" + eniName + "-eip" + idx,
               index: index,
               resource: {
-                Domain: Design.instance().typeIsVpc() ? "vpc" : "standard",
+                Domain: "vpc",
                 InstanceId: "",
                 AllocationId: eip.allocationId || "",
                 NetworkInterfaceId: this.createRef("NetworkInterfaceId", memberData.id),
@@ -4650,7 +4642,7 @@
         } else {
           parent = this.parent();
         }
-        if (parent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (parent.type === constant.RESTYPE.SUBNET) {
           subnetId = parent.createRef("SubnetId");
           vpcId = parent.parent().parent().createRef("VpcId");
           az = parent.parent();
@@ -4707,7 +4699,7 @@
         return res;
       }
     }, {
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface, constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP],
+      handleTypes: [constant.RESTYPE.ENI, constant.RESTYPE.EIP],
       getAvailableIPInCIDR: function(ipCidr, filter, maxNeedIPCount) {
         var allIPAry, availableIPCount, cutAry, ipAddr, ipAddrAry, ipAddrBinAry, ipAddrBinPrefixStr, ipAddrBinStr, ipAddrBinStrSuffixMax, ipAddrBinStrSuffixMin, ipAddrNumSuffixMax, ipAddrNumSuffixMin, prefix, readyAssignAry, readyAssignAryLength, suffix, _i, _ref, _results;
         cutAry = ipCidr.split('/');
@@ -4851,7 +4843,7 @@
       diffJson: function(newData, oldData, newComponents, oldComponents) {
         var attachment, change, changeData, instance, newCount, oldCount;
         changeData = newData || oldData;
-        if (changeData.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP) {
+        if (changeData.type === constant.RESTYPE.EIP) {
           return this.diffEipJson(newData, oldData, newComponents, oldComponents);
         }
         if (changeData.index !== 0) {
@@ -4885,7 +4877,7 @@
         }
         change = {
           id: changeData.uid,
-          type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface,
+          type: constant.RESTYPE.ENI,
           name: instance.serverGroupName + "-" + changeData.serverGroupName,
           changes: []
         };
@@ -4915,7 +4907,7 @@
       },
       deserialize: function(data, layout_data, resolve) {
         var attachment, attr, autoAssign, embed, eni, eniIndex, group, instance, ip, ipObj, m, members, option, sgTarget, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-        if (data.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP) {
+        if (data.type === constant.RESTYPE.EIP) {
           return;
         }
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
@@ -5013,7 +5005,7 @@
         console.debug("Found embed eni which doesn't belong to visible instance, it might be embed eni of an servergroup member", eni);
         eni.remove();
         eniMember = this.createServerGroupMember(data);
-        _ref = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).allObjects();
+        _ref = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           instance = _ref[_i];
           _ref1 = instance.groupMembers();
@@ -5051,7 +5043,7 @@
         volumeType: 'standard',
         iops: ''
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume,
+      type: constant.RESTYPE.VOL,
       constructor: function(attributes, options) {
         var owner;
         owner = attributes.owner;
@@ -5096,7 +5088,7 @@
           if (newParent.get("count") > 1) {
             return lang.ide.CVS_MSG_ERR_SERVERGROUP_VOLUME2;
           }
-          while (parent && parent.type !== constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
+          while (parent && parent.type !== constant.RESTYPE.AZ) {
             parent = parent.parent();
             newParent = newParent.parent();
           }
@@ -5137,7 +5129,7 @@
           console.warn("This volume has not attached to any ami, found when calc-ing cost :", this);
           return;
         }
-        if (!force && this.get("owner").type !== constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+        if (!force && this.get("owner").type !== constant.RESTYPE.INSTANCE) {
           return;
         }
         standardType = this.get("volumeType") === "standard";
@@ -5318,7 +5310,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume,
+      handleTypes: constant.RESTYPE.VOL,
       diffJson: function(newData, oldData, newComponent, oldComponent) {
         var changeData, instance;
         if (!(newData && oldData && _.isEqual(newData, oldData))) {
@@ -5391,14 +5383,14 @@
     };
     AclAsso = ConnectionModel.extend({
       type: "AclAsso",
-      oneToMany: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl,
+      oneToMany: constant.RESTYPE.ACL,
       defaults: {
         associationId: ""
       },
       serialize: function(components) {
         var acl, sb;
-        sb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
-        acl = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl);
+        sb = this.getTarget(constant.RESTYPE.SUBNET);
+        acl = this.getTarget(constant.RESTYPE.ACL);
         components[acl.id].resource.AssociationSet.push({
           NetworkAclAssociationId: this.get("associationId"),
           SubnetId: sb.createRef("SubnetId")
@@ -5434,7 +5426,7 @@
       });
     };
     Model = ComplexResModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl,
+      type: constant.RESTYPE.ACL,
       newNameTmpl: "CustomACL-",
       defaults: function() {
         return {
@@ -5524,7 +5516,7 @@
       },
       serialize: function() {
         var component, port, r, rule, ruleSet, vpc, _i, _len, _ref;
-        vpc = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC();
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         ruleSet = [];
         component = {
           name: this.get("name"),
@@ -5570,7 +5562,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl,
+      handleTypes: constant.RESTYPE.ACL,
       resolveFirst: true,
       getDefaultAcl: function() {
         return _.find(Model.allObjects(), function(obj) {
@@ -5691,12 +5683,12 @@
   define('module/design/framework/resource/AsgModel',["../ResourceModel", "../ComplexResModel", "../GroupModel", "Design", "constant", "i18n!nls/lang.js"], function(ResourceModel, ComplexResModel, GroupModel, Design, constant, lang) {
     var ExpandedAsgModel, Model, NotificationModel;
     NotificationModel = ResourceModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_NotificationConfiguration,
+      type: constant.RESTYPE.NC,
       isUsed: function() {
         return this.get("instanceLaunch") || this.get("instanceLaunchError") || this.get("instanceTerminate") || this.get("instanceTerminateError") || this.get("test");
       },
       initialize: function() {
-        Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic).ensureExistence();
+        Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
         return null;
       },
       serialize: function() {
@@ -5704,7 +5696,7 @@
         if (!this.isUsed() || !this.get("asg")) {
           return;
         }
-        topic = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic).ensureExistence();
+        topic = Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
         notifies = [];
         _ref = NotificationModel.typeMap;
         for (key in _ref) {
@@ -5727,7 +5719,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_NotificationConfiguration,
+      handleTypes: constant.RESTYPE.NC,
       diffJson: function() {},
       typeMap: {
         "autoscaling:EC2_INSTANCE_LAUNCH": "instanceLaunch",
@@ -5771,7 +5763,7 @@
         list = [attributes.originalAsg].concat(attributes.originalAsg.get("expandedList"));
         for (_i = 0, _len = list.length; _i < _len; _i++) {
           expanded = list[_i];
-          if (attributes.parent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+          if (attributes.parent.type === constant.RESTYPE.SUBNET) {
             if (attributes.parent.parent() === expanded.parent().parent()) {
               return;
             }
@@ -5793,7 +5785,7 @@
           if (expanded === this) {
             continue;
           }
-          if (newParent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+          if (newParent.type === constant.RESTYPE.SUBNET) {
             if (newParent.parent() === expanded.parent().parent()) {
               return false;
             }
@@ -5862,14 +5854,14 @@
           policies: []
         };
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group,
+      type: constant.RESTYPE.ASG,
       newNameTmpl: "asg",
       isReparentable: function(newParent) {
         var expand, _i, _len, _ref;
         _ref = this.get("expandedList");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           expand = _ref[_i];
-          if (newParent.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+          if (newParent.type === constant.RESTYPE.SUBNET) {
             if (newParent.parent() === expand.parent().parent()) {
               return sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, this.get("name"), newParent.parent().get("name"));
             }
@@ -5887,7 +5879,7 @@
         if (!lc) {
           return null;
         }
-        InstanceModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+        InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
         lcPrice = InstanceModel.prototype.getCost.call(lc, priceMap, currency);
         if (!lcPrice) {
           return null;
@@ -6106,7 +6098,7 @@
       },
       getExpandSubnets: function() {
         var expand, subnets, _i, _len, _ref;
-        if (this.parent().type !== constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (this.parent().type !== constant.RESTYPE.SUBNET) {
           return [];
         }
         subnets = [this.parent()];
@@ -6126,7 +6118,7 @@
           subnets.push(expand.parent());
         }
         subnets = _.uniq(subnets);
-        if (this.parent().type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (this.parent().type === constant.RESTYPE.SUBNET) {
           azs = _.uniq(_.map(subnets, function(sb) {
             return sb.parent();
           }));
@@ -6144,7 +6136,7 @@
           subnets.push(expand.parent());
         }
         subnets = _.uniq(subnets);
-        if (this.parent().type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+        if (this.parent().type === constant.RESTYPE.SUBNET) {
           azs = _.uniq(_.map(subnets, function(sb) {
             return sb.parent().createRef();
           }));
@@ -6206,7 +6198,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group,
+      handleTypes: constant.RESTYPE.ASG,
       deserialize: function(data, layout_data, resolve) {
         var ElbAsso, asg, elb, elbName, lc, _i, _len, _ref;
         asg = new Model({
@@ -6293,7 +6285,7 @@
       return config;
     };
     Model = ResourceModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_DhcpOptions,
+      type: constant.RESTYPE.DHCP,
       defaults: function() {
         return {
           dhcpType: "",
@@ -6340,7 +6332,7 @@
         if (!this.isCustom()) {
           return;
         }
-        vpc = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC();
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         configs = [];
         attr = this.attributes;
         if (this.__newIdForAppEdit) {
@@ -6409,7 +6401,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_DhcpOptions,
+      handleTypes: constant.RESTYPE.DHCP,
       deserialize: function(data, layout_data) {
         var attr;
         attr = data.resource.DhcpConfigurationSet ? formatConfigSet(data.resource.DhcpConfigurationSet) : {};
@@ -6428,7 +6420,7 @@
   define('module/design/framework/resource/VpcModel',["constant", "../GroupModel", "./DhcpModel"], function(constant, GroupModel, DhcpModel) {
     var Model;
     Model = GroupModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC,
+      type: constant.RESTYPE.VPC,
       defaults: {
         dnsSupport: true,
         dnsHostnames: false,
@@ -6456,7 +6448,7 @@
         var instance, _i, _len, _ref;
         this.set("tenancy", tenancy);
         if (tenancy === "dedicated") {
-          _ref = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).allObjects();
+          _ref = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             instance = _ref[_i];
             instance.setTenancy(tenancy);
@@ -6466,7 +6458,7 @@
       },
       setCidr: function(cidr) {
         var SubnetModel, idx, sb, shouldUpdateSubnetCidr, subnetCidrAry, subnets, _i, _len;
-        SubnetModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        SubnetModel = Design.modelClassForType(constant.RESTYPE.SUBNET);
         subnets = SubnetModel.allObjects();
         shouldUpdateSubnetCidr = false;
         subnetCidrAry = _.map(subnets, function(sb) {
@@ -6493,7 +6485,7 @@
       },
       generateSubnetCidr: function(newCidr, subnetCidrAry) {
         var SubnetModel, subnets;
-        SubnetModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        SubnetModel = Design.modelClassForType(constant.RESTYPE.SUBNET);
         subnets = SubnetModel.allObjects();
         subnetCidrAry = SubnetModel.autoAssignSimpleCIDR(newCidr, subnetCidrAry, this.get("cidr"));
         if (!subnetCidrAry.length) {
@@ -6534,7 +6526,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC,
+      handleTypes: constant.RESTYPE.VPC,
       resolveFirst: true,
       theVPC: function() {
         return Design.instance().classCacheForCid(this.prototype.classId)[0];
@@ -6584,7 +6576,7 @@
   define('module/design/framework/resource/AzModel',["../GroupModel", "./VpcModel", "constant", "i18n!nls/lang.js"], function(GroupModel, VpcModel, constant, lang) {
     var Model;
     Model = GroupModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone,
+      type: constant.RESTYPE.AZ,
       defaults: {
         x: 2,
         y: 2,
@@ -6593,8 +6585,8 @@
       },
       initialize: function(attribute, option) {
         var SubnetModel, m;
-        if (option.createByUser && Design.instance().typeIsVpc()) {
-          SubnetModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        if (option.createByUser) {
+          SubnetModel = Design.modelClassForType(constant.RESTYPE.SUBNET);
           m = new SubnetModel({
             x: this.x() + 2,
             y: this.y() + 2,
@@ -6631,16 +6623,16 @@
         _ref = this.children();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
-          if (child.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+          if (child.type === constant.RESTYPE.INSTANCE) {
             eni = child.getEmbedEni();
-          } else if (child.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+          } else if (child.type === constant.RESTYPE.ENI) {
             eni = child;
           } else {
             continue;
           }
           ipCount += eni.get("ips").length;
         }
-        maxIpCount = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface).getAvailableIPCountInCIDR(cidr);
+        maxIpCount = Design.modelClassForType(constant.RESTYPE.ENI).getAvailableIPCountInCIDR(cidr);
         return maxIpCount >= ipCount;
       },
       serialize: function() {
@@ -6661,7 +6653,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone,
+      handleTypes: constant.RESTYPE.AZ,
       diffJson: function() {},
       getSubnetOfDefaultVPC: function(azName) {
         return MC.data.account_attribute[Design.instance().region()].default_subnet[azName];
@@ -6735,7 +6727,7 @@
         bgpAsn: ""
       },
       newNameTmpl: "customer-gateway-",
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway,
+      type: constant.RESTYPE.CGW,
       isDynamic: function() {
         return !!this.get("bgpAsn");
       },
@@ -6758,7 +6750,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway,
+      handleTypes: constant.RESTYPE.CGW,
       deserialize: function(data, layout_data, resolve) {
         return new Model({
           id: data.uid,
@@ -6901,10 +6893,6 @@
         console.assert(ruleOwner === this.port1Comp().id || ruleOwner === this.port2Comp().id || ruleOwner === this.port1Comp().get("name") || ruleOwner === this.port2Comp().get("name"), "Invalid ruleOwner, when adding a raw rule to SgRuleSet : ", ruleOwner);
         console.assert(direction === SgRuleSet.DIRECTION.BIWAY || direction === SgRuleSet.DIRECTION.IN || direction === SgRuleSet.DIRECTION.OUT, "Invalid direction, when adding a raw rule to SgRuleSet : ", rawRule);
         console.assert((("" + rawRule.protocol) === "-1" || rawRule.protocol === "all" || parseInt(rawRule.protocol, 10) + "" === rawRule.protocol) || rawRule.fromPort || rawRule.toPort, "Invalid rule, when adding a raw rule to SgRuleSet : ", rawRule);
-        if (Design.instance().typeIsClassic() && direction === SgRuleSet.DIRECTION.OUT) {
-          console.warn("Ignoring setting outbound rule in Classic Mode ");
-          return;
-        }
         shouldInitSgLine = this.get("in1").length + this.get("in2").length + this.get("out1").length + this.get("out2").length === 0;
         oldPort1InRuleCout = this.get("in1").length;
         oldPort2InRuleCout = this.get("in2").length;
@@ -6965,12 +6953,12 @@
             p1.vlineAddBatch(p2);
           }
         } else {
-          SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+          SgModel = Design.modelClassForType(constant.RESTYPE.SG);
           if ((oldPort1InRuleCout + oldPort2OutRuleCout === 0) && (this.get("in1").length + this.get("out2").length > 0)) {
             _ref = this.port1Comp().connectionTargets("SgAsso");
             for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
               elb = _ref[_k];
-              if (elb.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
+              if (elb.type === constant.RESTYPE.ELB) {
                 SgModel.tryDrawLine(elb);
               }
             }
@@ -6979,7 +6967,7 @@
             _ref1 = this.port2Comp().connectionTargets("SgAsso");
             for (_l = 0, _len3 = _ref1.length; _l < _len3; _l++) {
               elb = _ref1[_l];
-              if (elb.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
+              if (elb.type === constant.RESTYPE.ELB) {
                 SgModel.tryDrawLine(elb);
               }
             }
@@ -7011,10 +6999,6 @@
         console.assert(ruleOwner === this.port1Comp().id || ruleOwner === this.port2Comp().id || ruleOwner === this.port1Comp().get("name") || ruleOwner === this.port2Comp().get("name"), "Invalid ruleOwner, when removing a raw rule from SgRuleSet : ", ruleOwner);
         console.assert(direction === SgRuleSet.DIRECTION.BIWAY || direction === SgRuleSet.DIRECTION.IN || direction === SgRuleSet.DIRECTION.OUT, "Invalid direction, when removing a raw rule from SgRuleSet : ", rule);
         console.assert(rule.fromPort !== void 0 && rule.toPort !== void 0 && rule.protocol !== void 0, "Invalid rule, when removing a raw rule from SgRuleSet : ", rule);
-        if (Design.instance().typeIsClassic() && direction === SgRuleSet.DIRECTION.OUT) {
-          console.warn("Ignoring removing outbound rule in Classic Mode ");
-          return;
-        }
         oldPort1InRuleCout = this.get("in1").length;
         oldPort2InRuleCout = this.get("in2").length;
         oldPort1OutRuleCout = this.get("out1").length;
@@ -7054,12 +7038,12 @@
         if (this.get("in1").length + this.get("in2").length + this.get("out1").length + this.get("out2").length === 0) {
           this.remove();
         } else {
-          SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+          SgModel = Design.modelClassForType(constant.RESTYPE.SG);
           if ((this.get("in1").length + this.get("out2").length === 0) && (oldPort1InRuleCout + oldPort2OutRuleCout > 0)) {
             _ref = this.port1Comp().connectionTargets("SgAsso");
             for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
               elb = _ref[_k];
-              if (elb.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
+              if (elb.type === constant.RESTYPE.ELB) {
                 _ref1 = elb.connections("SgRuleLine");
                 for (_l = 0, _len3 = _ref1.length; _l < _len3; _l++) {
                   sgline = _ref1[_l];
@@ -7072,7 +7056,7 @@
             _ref2 = this.port2Comp().connectionTargets("SgAsso");
             for (_m = 0, _len4 = _ref2.length; _m < _len4; _m++) {
               elb = _ref2[_m];
-              if (elb.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
+              if (elb.type === constant.RESTYPE.ELB) {
                 _ref3 = elb.connections("SgRuleLine");
                 for (_n = 0, _len5 = _ref3.length; _n < _len5; _n++) {
                   sgline = _ref3[_n];
@@ -7171,20 +7155,8 @@
         return sgRuleAry;
       },
       getRelatedSgRuleSets: function(res1, res2) {
-        var SgModel, amazon_elb_sg, foundRuleSet, res1SgMap, ruleset, sg, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        var foundRuleSet, res1SgMap, ruleset, sg, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         res1SgMap = {};
-        if (Design.instance().typeIsClassic()) {
-          if (res2.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
-            res1 = temp;
-            res1 = res2;
-            res2 = temp;
-          }
-          if (res1.type === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
-            SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
-            amazon_elb_sg = SgModel.getClassicElbSg();
-            res1SgMap[amazon_elb_sg.id] = true;
-          }
-        }
         _ref = res1.connectionTargets("SgAsso");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sg = _ref[_i];
@@ -7307,12 +7279,12 @@
         var TYPE, ami, attachs, elb, elbSgMap, eni, expandAsg, hasInRule, lc, p1Comp, p2Comp, ruleset, sg, target, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         p1Comp = this.port1Comp();
         p2Comp = this.port2Comp();
-        TYPE = constant.AWS_RESOURCE_TYPE;
+        TYPE = constant.RESTYPE;
         if (p1Comp.type === p2Comp.type && p1Comp.type === TYPE.AWS_ELB) {
           return false;
         }
-        ami = this.getTarget(TYPE.AWS_EC2_Instance);
-        eni = this.getTarget(TYPE.AWS_VPC_NetworkInterface);
+        ami = this.getTarget(TYPE.INSTANCE);
+        eni = this.getTarget(TYPE.ENI);
         if (eni) {
           attachs = eni.connectionTargets("EniAttachment");
           if (attachs.length === 0) {
@@ -7323,11 +7295,11 @@
           }
         }
         expandAsg = this.getTarget("ExpandedAsg");
-        lc = this.getTarget(TYPE.AWS_AutoScaling_LaunchConfiguration);
+        lc = this.getTarget(TYPE.LC);
         if (expandAsg && lc && expandAsg.get("originalAsg").get("lc") === lc) {
           return false;
         }
-        elb = this.getTarget(TYPE.AWS_ELB);
+        elb = this.getTarget(TYPE.ELB);
         if (elb) {
           if (!elb.get("internal")) {
             return false;
@@ -7418,34 +7390,34 @@
         {
           port1: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           },
           port2: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           }
         }, {
           port1: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           },
           port2: {
             name: "eni-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           }
         }, {
           port1: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           },
           port2: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           }
         }, {
           port1: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           },
           port2: {
             name: "launchconfig-sg",
@@ -7454,29 +7426,29 @@
         }, {
           port1: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           },
           port2: {
             name: "elb-sg-in",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           }
         }, {
           port1: {
             name: "eni-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           },
           port2: {
             name: "eni-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           }
         }, {
           port1: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           },
           port2: {
             name: "eni-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           }
         }, {
           port1: {
@@ -7485,30 +7457,30 @@
           },
           port2: {
             name: "eni-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           }
         }, {
           port1: {
             name: "elb-sg-in",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           },
           port2: {
             name: "eni-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           }
         }, {
           port1: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           },
           port2: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           }
         }, {
           port1: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           },
           port2: {
             name: "launchconfig-sg",
@@ -7517,20 +7489,20 @@
         }, {
           port1: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           },
           port2: {
             name: "elb-sg-in",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           }
         }, {
           port1: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           },
           port2: {
             name: "elb-sg-in",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           }
         }, {
           port1: {
@@ -7539,7 +7511,7 @@
           },
           port2: {
             name: "elb-sg-in",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           }
         }
       ]
@@ -7547,7 +7519,7 @@
       isConnectable: function(p1Comp, p2Comp) {
         var attach, tag, _i, _len, _ref;
         tag = p1Comp.type + ">" + p2Comp.type;
-        if (tag.indexOf(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) !== -1 && tag.indexOf(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) !== -1) {
+        if (tag.indexOf(constant.RESTYPE.INSTANCE) !== -1 && tag.indexOf(constant.RESTYPE.ENI) !== -1) {
           _ref = p1Comp.connectionTargets("EniAttachment");
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             attach = _ref[_i];
@@ -7566,7 +7538,8 @@
 
 (function() {
   define('module/design/framework/resource/SgModel',["../ComplexResModel", "../ResourceModel", "../connection/SgRuleSet", "../connection/SgLine", "Design", "constant"], function(ComplexResModel, ResourceModel, SgRuleSet, SgLine, Design, constant) {
-    var Model, SgTargetModel;
+    var Model, PREDEF_SG_COLORS, SgTargetModel;
+    PREDEF_SG_COLORS = ['#f26c4f', '#7dc476', '#00bef2', '#615ca8', '#fcec00', '#ff9900', '#ffcc00', '#ffcc99', '#ff99ff', '#00cccc', '#99cc99', '#9999ff', '#ffff99', '#ff00ff', '#663300', '#336600', '#660066', '#003300', '#0000ff', '#666600'];
     SgTargetModel = ComplexResModel.extend({
       type: "SgIpTarget",
       constructor: function(ip) {
@@ -7593,7 +7566,7 @@
       }
     });
     Model = ComplexResModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup,
+      type: constant.RESTYPE.SG,
       newNameTmpl: "custom-sg-",
       color: "#f26c4f",
       defaults: {
@@ -7791,7 +7764,7 @@
       generateColor: function() {
         var c, color, i, sg, usedColor, _i, _len, _ref;
         if (this.isDefault()) {
-          return "#" + MC.canvas.SG_COLORS[0];
+          return PREDEF_SG_COLORS[0];
         }
         usedColor = {};
         _ref = Model.allObjects();
@@ -7800,8 +7773,8 @@
           usedColor[sg.color] = true;
         }
         i = 1;
-        while (i < MC.canvas.SG_COLORS.length) {
-          c = "#" + MC.canvas.SG_COLORS[i];
+        while (i < PREDEF_SG_COLORS.length) {
+          c = PREDEF_SG_COLORS[i];
           if (!usedColor[c]) {
             color = c;
             break;
@@ -7838,9 +7811,6 @@
         };
       }
     }, {
-      getClassicElbSg: function() {
-        return new SgTargetModel("amazon-elb/amazon-elb-sg");
-      },
       getDefaultSg: function() {
         return _.find(Model.allObjects(), function(obj) {
           return obj.isDefault();
@@ -7928,7 +7898,7 @@
         }
         return null;
       },
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup,
+      handleTypes: constant.RESTYPE.SG,
       deserialize: function(data, layout_data, resolve) {
         var attr, dir, group, rule, ruleObj, ruleTarget, rules, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         group = new Model({
@@ -7993,10 +7963,10 @@
     var SslCertModel, SslCertUsage;
     SslCertUsage = ConnectionModel.extend({
       type: "SslCertUsage",
-      oneToMany: constant.AWS_RESOURCE_TYPE.AWS_IAM_ServerCertificate
+      oneToMany: constant.RESTYPE.IAM
     });
     SslCertModel = ComplexResModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_IAM_ServerCertificate,
+      type: constant.RESTYPE.IAM,
       defaults: {
         name: "v",
         body: "",
@@ -8039,7 +8009,7 @@
         return null;
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_IAM_ServerCertificate,
+      handleTypes: constant.RESTYPE.IAM,
       deserialize: function(data) {
         new SslCertModel({
           id: data.uid,
@@ -8072,22 +8042,22 @@
         {
           port1: {
             name: "elb-assoc",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           },
           port2: {
             name: "subnet-assoc-in",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet
+            type: constant.RESTYPE.SUBNET
           }
         }
       ],
       initialize: function() {
         var az, cn, newSubnet, _i, _len, _ref;
-        newSubnet = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        newSubnet = this.getTarget(constant.RESTYPE.SUBNET);
         az = newSubnet.parent();
-        _ref = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB).connections("ElbSubnetAsso");
+        _ref = this.getTarget(constant.RESTYPE.ELB).connections("ElbSubnetAsso");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cn = _ref[_i];
-          if (cn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).parent() === az) {
+          if (cn.getTarget(constant.RESTYPE.SUBNET).parent() === az) {
             if (cn.hasAppUpdateRestriction()) {
               this.setDestroyAfterInit();
             } else {
@@ -8099,7 +8069,7 @@
       },
       hasAppUpdateRestriction: function() {
         var asso, elb, _i, _len, _ref;
-        elb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+        elb = this.getTarget(constant.RESTYPE.ELB);
         if (this.design().modeIsAppEdit()) {
           _ref = elb.connections("ElbSubnetAsso");
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -8121,7 +8091,7 @@
             };
           }
         } else {
-          elb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+          elb = this.getTarget(constant.RESTYPE.ELB);
           if (elb.connections("ElbAmiAsso").length > 0 && elb.connections("ElbSubnetAsso").length <= 1) {
             return {
               error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_1
@@ -8133,7 +8103,7 @@
     }, {
       isConnectable: function(comp1, comp2) {
         var subnet;
-        subnet = comp1.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet ? comp1 : comp2;
+        subnet = comp1.type === constant.RESTYPE.SUBNET ? comp1 : comp2;
         if (parseInt(subnet.get("cidr").split("/")[1], 10) <= 27) {
           return true;
         }
@@ -8151,25 +8121,25 @@
         {
           port1: {
             name: "elb-sg-out",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           },
           port2: {
             name: "instance-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           }
         }, {
           port1: {
             name: "elb-sg-out",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           },
           port2: {
             name: "launchconfig-sg",
-            type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration
+            type: constant.RESTYPE.LC
           }
         }, {
           port1: {
             name: "elb-sg-out",
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB
+            type: constant.RESTYPE.ELB
           },
           port2: {
             name: "launchconfig-sg",
@@ -8179,24 +8149,21 @@
       ],
       initialize: function(attibutes, option) {
         var ami, asg, elb, subnet, _i, _len, _ref;
-        if (!Design.instance().typeIsVpc()) {
-          return;
-        }
         if (option && option.createByUser) {
           new SGRulePopup(this.id);
         }
-        ami = this.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
-        elb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+        ami = this.getOtherTarget(constant.RESTYPE.ELB);
+        elb = this.getTarget(constant.RESTYPE.ELB);
         if (elb.connections("ElbSubnetAsso").length === 0) {
           subnet = ami.parent();
-          while (subnet.type !== constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+          while (subnet.type !== constant.RESTYPE.SUBNET) {
             subnet = subnet.parent();
           }
           if (subnet) {
             new ElbSubnetAsso(elb, subnet);
           }
         }
-        if (ami.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if (ami.type === constant.RESTYPE.LC) {
           _ref = ami.parent().get("expandedList");
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             asg = _ref[_i];
@@ -8207,20 +8174,20 @@
       },
       remove: function(option) {
         var asg, elb, expAsg, lc, reason, _i, _len, _ref;
-        if (option && option.reason.type !== constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if (option && option.reason.type !== constant.RESTYPE.LC) {
           ConnectionModel.prototype.remove.apply(this, arguments);
           return;
         }
         expAsg = this.getTarget("ExpandedAsg");
         if (expAsg && !expAsg.isRemoved()) {
-          elb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+          elb = this.getTarget(constant.RESTYPE.ELB);
           lc = expAsg.getLc();
           (new ElbAmiAsso(elb, lc)).remove();
           return;
         }
-        lc = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration);
+        lc = this.getTarget(constant.RESTYPE.LC);
         if (lc) {
-          elb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+          elb = this.getTarget(constant.RESTYPE.ELB);
           reason = {
             reason: this
           };
@@ -8235,11 +8202,11 @@
       },
       serialize: function(components) {
         var elb, i, instance, instanceArray, _i, _len, _ref;
-        instance = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+        instance = this.getTarget(constant.RESTYPE.INSTANCE);
         if (!instance) {
           return;
         }
-        elb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+        elb = this.getTarget(constant.RESTYPE.ELB);
         instanceArray = components[elb.id].resource.Instances;
         _ref = instance.getRealGroupMemberIds();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -8266,7 +8233,7 @@
           y: 0,
           width: 9,
           height: 9,
-          internal: Design.instance().typeIsClassic() ? false : true,
+          internal: true,
           crossZone: true,
           healthyThreshold: "9",
           unHealthyThreshold: "4",
@@ -8289,12 +8256,12 @@
           otherPoliciesMap: {}
         };
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_ELB,
+      type: constant.RESTYPE.ELB,
       newNameTmpl: "load-balancer-",
       initialize: function(attr, option) {
         var SgAssoModel, sg;
         this.draw(true);
-        if (option.createByUser && !Design.instance().typeIsClassic()) {
+        if (option.createByUser) {
           sg = new SgModel({
             name: this.getElbSgName(),
             isElbSg: true,
@@ -8402,7 +8369,7 @@
         this.set("internal", !!isInternal);
         this.draw();
         if (isInternal) {
-          SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+          SgModel = Design.modelClassForType(constant.RESTYPE.SG);
           SgModel.tryDrawLine(this);
         } else {
           _ref = this.connections("SgRuleLine");
@@ -8429,7 +8396,7 @@
         if (fee) {
           return {
             resource: this.get("name"),
-            type: constant.AWS_RESOURCE_TYPE.AWS_ELB,
+            type: constant.RESTYPE.ELB,
             fee: fee * 24 * 30,
             formatedFee: fee + "/hr"
           };
@@ -8437,21 +8404,10 @@
       },
       getAvailabilityZones: function() {
         var azs;
-        if (Design.instance().typeIsVpc()) {
-          azs = _.map(this.connectionTargets("ElbSubnetAsso"), function(subnet) {
-            return subnet.parent().createRef();
-          });
-          return _.uniq(azs);
-        } else {
-          azs = _.map(this.connectionTargets("ElbAmiAsso"), function(ami) {
-            if (ami.parent().type === constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
-              return ami.parent().get("name");
-            } else {
-              return ami.parent().parent().get("name");
-            }
-          });
-          return _.uniq(azs.concat(this.get("AvailabilityZones")));
-        }
+        azs = _.map(this.connectionTargets("ElbSubnetAsso"), function(subnet) {
+          return subnet.parent().createRef();
+        });
+        return _.uniq(azs);
       },
       setPolicyProxyProtocol: function(enable, portAry) {
         var otherPoliciesMap;
@@ -8505,18 +8461,9 @@
         sgs = _.map(this.connectionTargets("SgAsso"), function(sg) {
           return sg.createRef("GroupId");
         });
-        if (Design.instance().typeIsClassic()) {
-          subnets = [];
-        } else if (Design.instance().typeIsDefaultVpc()) {
-          subnets = _.map(this.connectionTargets("ElbAmiAsso"), function(ami) {
-            return ami.getSubnetRef();
-          });
-          subnets = _.uniq(subnets);
-        } else {
-          subnets = _.map(this.connectionTargets("ElbSubnetAsso"), function(sb) {
-            return sb.createRef("SubnetId");
-          });
-        }
+        subnets = _.map(this.connectionTargets("ElbSubnetAsso"), function(sb) {
+          return sb.createRef("SubnetId");
+        });
         otherPoliciesMap = this.get('otherPoliciesMap');
         otherPoliciesAry = _.map(otherPoliciesMap, function(policyObj) {
           return policyObj;
@@ -8576,7 +8523,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_ELB,
+      handleTypes: constant.RESTYPE.ELB,
       deserialize: function(data, layout_data, resolve) {
         var ElbAmiAsso, ElbSubnetAsso, ami, attr, elb, instance, l, sb, sg, sslCert, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         attr = {
@@ -8643,14 +8590,12 @@
           sg = _ref1[_j];
           new SgAsso(elb, resolve(MC.extractID(sg)));
         }
-        if (Design.instance().typeIsVpc()) {
-          _ref2 = data.resource.Subnets || [];
-          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-            sb = _ref2[_k];
-            new ElbSubnetAsso(elb, resolve(MC.extractID(sb)), {
-              deserialized: true
-            });
-          }
+        _ref2 = data.resource.Subnets || [];
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          sb = _ref2[_k];
+          new ElbSubnetAsso(elb, resolve(MC.extractID(sb)), {
+            deserialized: true
+          });
         }
         _ref3 = data.resource.Instances || [];
         for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
@@ -8698,13 +8643,13 @@
           instanceType: "m1.small",
           monitoring: false,
           userData: "",
-          publicIp: Design.instance().typeIsDefaultVpc(),
+          publicIp: false,
           state: void 0,
           rdSize: 0,
           rdIops: ""
         };
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration,
+      type: constant.RESTYPE.LC,
       newNameTmpl: "launch-config-",
       constructor: function(attr, option) {
         if (option && option.createByUser && attr.parent.get("lc")) {
@@ -8717,9 +8662,9 @@
         this.draw(true);
         if (option && option.createByUser) {
           this.initInstanceType();
-          KpModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair);
+          KpModel = Design.modelClassForType(constant.RESTYPE.KP);
           KpModel.getDefaultKP().assignTo(this);
-          defaultSg = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup).getDefaultSg();
+          defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
           SgAsso = Design.modelClassForType("SgAsso");
           new SgAsso(defaultSg, this);
         }
@@ -8901,7 +8846,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration,
+      handleTypes: constant.RESTYPE.LC,
       deserialize: function(data, layout_data, resolve) {
         var SgAsso, attr, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1;
         attr = {
@@ -8967,17 +8912,17 @@
     var KeypairModel, KeypairUsage;
     KeypairUsage = ConnectionModel.extend({
       type: "KeypairUsage",
-      oneToMany: constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair,
+      oneToMany: constant.RESTYPE.KP,
       serialize: function(components) {
         var kp, otherTarget;
-        kp = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair);
+        kp = this.getTarget(constant.RESTYPE.KP);
         otherTarget = this.getOtherTarget(kp);
         components[otherTarget.id].resource.KeyName = kp.createRef("KeyName");
         return null;
       }
     });
     KeypairModel = ComplexResModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair,
+      type: constant.RESTYPE.KP,
       defaults: {
         fingerprint: ""
       },
@@ -9049,7 +8994,7 @@
         });
       },
       diffJson: function() {},
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair,
+      handleTypes: constant.RESTYPE.KP,
       deserialize: function(data, layout_data, resolve) {
         new KeypairModel({
           id: data.uid,
@@ -9079,7 +9024,7 @@
       },
       initialize: function(attr, option) {
         var igw;
-        igw = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway);
+        igw = this.getTarget(constant.RESTYPE.IGW);
         if (igw && !attr.routes) {
           this.get("routes").push("0.0.0.0/0");
         }
@@ -9108,12 +9053,12 @@
         return true;
       },
       setPropagate: function(propagate) {
-        console.assert((this.port1Comp().type === constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway) || (this.port2Comp().type === constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway), "Propagation can only be set to VPN<==>RTB connection.");
+        console.assert((this.port1Comp().type === constant.RESTYPE.VGW) || (this.port2Comp().type === constant.RESTYPE.VGW), "Propagation can only be set to VPN<==>RTB connection.");
         return this.set("propagate", propagate);
       },
       serialize: function(components) {
         var TYPE, d, otherTarget, r, r_temp, rtb, rtb_data, _i, _len, _ref;
-        rtb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
+        rtb = this.getTarget(constant.RESTYPE.RT);
         otherTarget = this.getOtherTarget(rtb);
         rtb_data = components[rtb.id];
         if (this.get("propagate")) {
@@ -9125,18 +9070,18 @@
           NetworkInterfaceId: "",
           GatewayId: ""
         };
-        TYPE = constant.AWS_RESOURCE_TYPE;
+        TYPE = constant.RESTYPE;
         switch (otherTarget.type) {
-          case TYPE.AWS_VPC_NetworkInterface:
+          case TYPE.ENI:
             r_temp.NetworkInterfaceId = otherTarget.createRef("NetworkInterfaceId");
             break;
-          case TYPE.AWS_VPC_InternetGateway:
+          case TYPE.IGW:
             r_temp.GatewayId = otherTarget.createRef("InternetGatewayId");
             break;
-          case TYPE.AWS_VPC_VPNGateway:
+          case TYPE.VGW:
             r_temp.GatewayId = otherTarget.createRef("VpnGatewayId");
             break;
-          case TYPE.AWS_EC2_Instance:
+          case TYPE.INSTANCE:
             r_temp.NetworkInterfaceId = otherTarget.getEmbedEni().createRef("NetworkInterfaceId");
         }
         _ref = this.get("routes");
@@ -9153,38 +9098,38 @@
         {
           port1: {
             name: "igw-tgt",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway
+            type: constant.RESTYPE.IGW
           },
           port2: {
             name: "rtb-tgt",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable
+            type: constant.RESTYPE.RT
           }
         }, {
           port1: {
             name: "instance-rtb",
-            type: constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance
+            type: constant.RESTYPE.INSTANCE
           },
           port2: {
             name: "rtb-tgt",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable
+            type: constant.RESTYPE.RT
           }
         }, {
           port1: {
             name: "eni-rtb",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface
+            type: constant.RESTYPE.ENI
           },
           port2: {
             name: "rtb-tgt",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable
+            type: constant.RESTYPE.RT
           }
         }, {
           port1: {
             name: "vgw-tgt",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway
+            type: constant.RESTYPE.VGW
           },
           port2: {
             name: "rtb-tgt",
-            type: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable
+            type: constant.RESTYPE.RT
           }
         }
       ]
@@ -9199,7 +9144,7 @@
     var C;
     C = ConnectionModel.extend({
       type: "RTB_Asso",
-      oneToMany: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable,
+      oneToMany: constant.RESTYPE.RT,
       defaults: {
         lineType: "association",
         implicit: false
@@ -9207,11 +9152,11 @@
       portDefs: {
         port1: {
           name: "subnet-assoc-out",
-          type: constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet
+          type: constant.RESTYPE.SUBNET
         },
         port2: {
           name: "rtb-src",
-          type: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable
+          type: constant.RESTYPE.RT
         }
       },
       serialize: function(components) {
@@ -9219,8 +9164,8 @@
         if (this.get("implicit")) {
           return;
         }
-        sb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
-        rtb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
+        sb = this.getTarget(constant.RESTYPE.SUBNET);
+        rtb = this.getTarget(constant.RESTYPE.RT);
         rtb_data = components[rtb.id];
         rtb_data.resource.AssociationSet.push({
           SubnetId: sb.createRef("SubnetId"),
@@ -9231,17 +9176,17 @@
       },
       remove: function() {
         var RtbModel, newRtb, oldRtb, subnet, subnetRtbAsso;
-        subnet = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        subnet = this.getTarget(constant.RESTYPE.SUBNET);
         if (!subnet.isRemoved()) {
           subnetRtbAsso = subnet.connections("RTB_Asso");
           if (subnetRtbAsso.length === 0 || (subnetRtbAsso.length === 1 && subnetRtbAsso[0] === this)) {
-            oldRtb = this.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
+            oldRtb = this.getTarget(constant.RESTYPE.RT);
             if (oldRtb.get("main")) {
               this.set("implicit", true);
               return;
             }
             ConnectionModel.prototype.remove.apply(this, arguments);
-            RtbModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
+            RtbModel = Design.modelClassForType(constant.RESTYPE.RT);
             newRtb = RtbModel.getMainRouteTable();
             new C(subnet, newRtb, {
               implicit: true
@@ -9270,7 +9215,7 @@
         height: 8,
         implicit: false
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable,
+      type: constant.RESTYPE.RT,
       newNameTmpl: "RT-",
       initialize: function() {
         this.draw(true);
@@ -9294,7 +9239,7 @@
         old_main_rtb.draw();
         this.set("main", true);
         this.draw();
-        subnets = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).allObjects();
+        subnets = Design.modelClassForType(constant.RESTYPE.SUBNET).allObjects();
         _results = [];
         for (_i = 0, _len = subnets.length; _i < _len; _i++) {
           sb = subnets[_i];
@@ -9316,7 +9261,7 @@
         if (!component) {
           return;
         }
-        if (component.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface && component.embedInstance()) {
+        if (component.type === constant.RESTYPE.ENI && component.embedInstance()) {
           component = component.embedInstance();
         }
         connection = new Route(this, component);
@@ -9366,7 +9311,7 @@
           return obj.get("main");
         });
       },
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable,
+      handleTypes: constant.RESTYPE.RT,
       resolveFirst: true,
       preDeserialize: function(data, layout_data) {
         var asso_main, rtb;
@@ -9454,7 +9399,7 @@
       return ipAddrBinAry.join('');
     };
     Model = GroupModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet,
+      type: constant.RESTYPE.SUBNET,
       newNameTmpl: "subnet",
       defaults: {
         x: 2,
@@ -9469,11 +9414,11 @@
           this.attributes.cidr = this.generateCidr();
         }
         this.draw(true);
-        RtbModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
+        RtbModel = Design.modelClassForType(constant.RESTYPE.RT);
         new RtbAsso(this, RtbModel.getMainRouteTable(), {
           implicit: true
         });
-        Acl = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl);
+        Acl = Design.modelClassForType(constant.RESTYPE.ACL);
         defaultAcl = Acl.getDefaultAcl();
         if (defaultAcl) {
           AclAsso = Design.modelClassForType("AclAsso");
@@ -9497,7 +9442,7 @@
         _ref = this.children();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
-          if (child.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance || child.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+          if (child.type === constant.RESTYPE.INSTANCE || child.type === constant.RESTYPE.ENI) {
             _ref1 = child.connectionTargets("EniAttachment");
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               attach = _ref1[_j];
@@ -9506,7 +9451,7 @@
               }
             }
           }
-          if (child.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group || child.type === "ExpandedAsg") {
+          if (child.type === constant.RESTYPE.ASG || child.type === "ExpandedAsg") {
             if (child.type === "ExpandedAsg") {
               child = child.get("originalAsg");
             }
@@ -9550,7 +9495,7 @@
         if (!elbAsso) {
           return;
         }
-        _ref = elbAsso.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB).connectionTargets("ElbSubnetAsso");
+        _ref = elbAsso.getTarget(constant.RESTYPE.ELB).connectionTargets("ElbSubnetAsso");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sb = _ref[_i];
           if (sb.parent() === this.parent()) {
@@ -9608,16 +9553,16 @@
         _ref = this.children();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
-          if (child.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+          if (child.type === constant.RESTYPE.INSTANCE) {
             eni = child.getEmbedEni();
-          } else if (child.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+          } else if (child.type === constant.RESTYPE.ENI) {
             eni = child;
           } else {
             continue;
           }
           ipCount += eni.get("ips").length;
         }
-        maxIpCount = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface).getAvailableIPCountInCIDR(cidr);
+        maxIpCount = Design.modelClassForType(constant.RESTYPE.ENI).getAvailableIPCountInCIDR(cidr);
         return maxIpCount >= ipCount;
       },
       generateCidr: function() {
@@ -9670,7 +9615,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet,
+      handleTypes: constant.RESTYPE.SUBNET,
       diffJson: function() {},
       genCIDRPrefixSuffix: function(subnetCIDR) {
         var cutAry, ipAddr, ipAddrAry, resultPrefix, resultSuffix, suffix;
@@ -9851,25 +9796,25 @@
         height: 8,
         name: "Internet-gateway"
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway,
+      type: constant.RESTYPE.IGW,
       initialize: function() {
         this.draw(true);
         return null;
       },
       isRemovable: function() {
         var ElbModel, EniModel, LcModel, cannotDel;
-        ElbModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_ELB);
+        ElbModel = Design.modelClassForType(constant.RESTYPE.ELB);
         cannotDel = ElbModel.allObjects().some(function(elb) {
           return !elb.get("internal");
         });
         if (!cannotDel) {
-          EniModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface);
+          EniModel = Design.modelClassForType(constant.RESTYPE.ENI);
           cannotDel = EniModel.allObjects().some(function(eni) {
             return eni.hasEip() || eni.get("assoPublicIp");
           });
         }
         if (!cannotDel) {
-          LcModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration);
+          LcModel = Design.modelClassForType(constant.RESTYPE.LC);
           cannotDel = LcModel.allObjects().some(function(lc) {
             return lc.get("publicIp");
           });
@@ -9903,16 +9848,12 @@
       }
     }, {
       tryCreateIgw: function() {
-        var igwH, igwW, resource_type, vpc, vpcH, vpcX, vpcY;
-        if (!Design.instance().typeIsVpc()) {
-          return;
-        }
+        var igwH, igwW, vpc, vpcH, vpcX, vpcY;
         if (Model.allObjects().length > 0) {
           return;
         }
         notification('info', lang.ide.CVS_CFM_ADD_IGW_MSG);
-        resource_type = constant.AWS_RESOURCE_TYPE;
-        vpc = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC();
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         igwW = Model.prototype.defaults.width;
         igwH = Model.prototype.defaults.height;
         vpcX = vpc.x();
@@ -9925,7 +9866,7 @@
         });
         return null;
       },
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway,
+      handleTypes: constant.RESTYPE.IGW,
       deserialize: function(data, layout_data, resolve) {
         return new Model({
           id: data.uid,
@@ -9953,7 +9894,7 @@
         height: 8,
         name: "VPN-gateway"
       },
-      type: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway,
+      type: constant.RESTYPE.VGW,
       initialize: function() {
         this.draw(true);
         return null;
@@ -9980,7 +9921,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway,
+      handleTypes: constant.RESTYPE.VGW,
       deserialize: function(data, layout_data, resolve) {
         new Model({
           id: data.uid,
@@ -10002,7 +9943,7 @@
   define('module/design/framework/resource/SnsSubscription',["../ResourceModel", "constant"], function(ResourceModel, constant) {
     var SubscriptionModel, TopicModel;
     TopicModel = ResourceModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic,
+      type: constant.RESTYPE.TOPIC,
       serialize: function() {
         var name, useTopic;
         useTopic = TopicModel.isTopicNeeded();
@@ -10031,12 +9972,12 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic,
+      handleTypes: constant.RESTYPE.TOPIC,
       resolveFirst: true,
       diffJson: function() {},
       isTopicNeeded: function() {
         var ScalingPolicyModel, n, sp, useTopic, _i, _j, _len, _len1, _ref, _ref1;
-        ScalingPolicyModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_ScalingPolicy);
+        ScalingPolicyModel = Design.modelClassForType(constant.RESTYPE.SP);
         _ref = ScalingPolicyModel.allObjects();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sp = _ref[_i];
@@ -10046,7 +9987,7 @@
           }
         }
         if (!useTopic) {
-          _ref1 = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_NotificationConfiguration).allObjects();
+          _ref1 = Design.modelClassForType(constant.RESTYPE.NC).allObjects();
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             n = _ref1[_j];
             if (n.isUsed()) {
@@ -10076,7 +10017,7 @@
       }
     });
     SubscriptionModel = ResourceModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_SNS_Subscription,
+      type: constant.RESTYPE.SUBSCRIPTION,
       initialize: function() {
         TopicModel.ensureExistence();
         return null;
@@ -10099,7 +10040,7 @@
         };
       }
     }, {
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_SNS_Subscription,
+      handleTypes: constant.RESTYPE.SUBSCRIPTION,
       deserialize: function(data, layout_data, resolve) {
         new SubscriptionModel({
           id: data.uid,
@@ -10145,7 +10086,7 @@
   define('module/design/framework/resource/ScalingPolicyModel',["../ResourceModel", "constant"], function(ResourceModel, constant) {
     var Model;
     Model = ResourceModel.extend({
-      type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_ScalingPolicy,
+      type: constant.RESTYPE.SP,
       defaults: function() {
         return {
           cooldown: "",
@@ -10236,7 +10177,7 @@
         act_alarm = act_insuffi = act_ok = [];
         action_arry = [this.createRef("PolicyARN")];
         if (this.get("sendNotification")) {
-          TopicModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic);
+          TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
           action_arry.push(TopicModel.ensureExistence().createRef("TopicArn"));
         }
         if (this.get("state") === "ALARM") {
@@ -10248,7 +10189,7 @@
         }
         alarm = {
           name: this.get("name") + "-alarm",
-          type: constant.AWS_RESOURCE_TYPE.AWS_CloudWatch_CloudWatch,
+          type: constant.RESTYPE.CW,
           uid: alarmData.id,
           resource: {
             AlarmArn: alarmData.appId,
@@ -10281,7 +10222,7 @@
         ];
       }
     }, {
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_ScalingPolicy, constant.AWS_RESOURCE_TYPE.AWS_CloudWatch_CloudWatch],
+      handleTypes: [constant.RESTYPE.SP, constant.RESTYPE.CW],
       diffJson: function(newData, oldData) {
         var asg, asgId;
         if (!(newData && oldData && _.isEqual(newData, oldData))) {
@@ -10291,7 +10232,7 @@
           if (asg) {
             return {
               id: asgId,
-              type: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group,
+              type: constant.RESTYPE.ASG,
               name: asg.get("name"),
               change: "Update"
             };
@@ -10301,7 +10242,7 @@
       },
       deserialize: function(data, layout_data, resolve) {
         var alarmData, asg, i, policy, refArray, sendNotification, state, _i, _len;
-        if (data.type === constant.AWS_RESOURCE_TYPE.AWS_CloudWatch_CloudWatch) {
+        if (data.type === constant.RESTYPE.CW) {
           alarmData = {
             id: data.uid,
             name: data.name,
@@ -10498,14 +10439,14 @@
       }
       for (uid in data) {
         comp = data[uid];
-        if (comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair) {
+        if (comp.type === constant.RESTYPE.KP) {
           if (comp.name === "DefaultKP") {
             foundKP = true;
             if (foundSG) {
               break;
             }
           }
-        } else if (comp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+        } else if (comp.type === constant.RESTYPE.SG) {
           if (comp.name === "DefaultSG") {
             foundSG = true;
             if (foundKP) {
@@ -10518,7 +10459,7 @@
         uid = MC.guid();
         data[uid] = {
           uid: uid,
-          type: constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair,
+          type: constant.RESTYPE.KP,
           name: "DefaultKP",
           resource: {
             KeyName: "DefaultKP"
@@ -10529,7 +10470,7 @@
         uid = MC.guid();
         data[uid] = {
           uid: uid,
-          type: constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup,
+          type: constant.RESTYPE.SG,
           name: "DefaultSG",
           resource: {
             IpPermissions: [
@@ -10594,14 +10535,14 @@
       if (version >= "2014-02-11") {
         return;
       }
-      TYPE = constant.AWS_RESOURCE_TYPE;
+      TYPE = constant.RESTYPE;
       elbs = [];
       sgs = [];
       for (uid in data) {
         comp = data[uid];
-        if (comp.type === TYPE.AWS_ELB) {
+        if (comp.type === TYPE.ELB) {
           elbs.push(comp);
-        } else if (comp.type === TYPE.AWS_EC2_SecurityGroup) {
+        } else if (comp.type === TYPE.SG) {
           sgs.push(comp);
         }
       }
@@ -10632,7 +10573,7 @@
     prepareEniData = function(uid, eniArray) {
       var AzModel, defaultSubnet, eni, ip, ipSet, reserveIpSet, subnet, subnetCid, _i, _j, _len, _len1, _ref;
       subnet = Design.instance().component(uid);
-      AzModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone);
+      AzModel = Design.modelClassForType(constant.RESTYPE.AZ);
       if (subnet) {
         subnetCid = subnet.get("cidr");
       } else {
@@ -10667,7 +10608,7 @@
     };
     generateIpForEnis = function(data) {
       var idx, ip, validIpSet, _i, _len, _ref;
-      validIpSet = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface).getAvailableIPInCIDR(data.subnetCid, data.reserveIpSet, data.ipSet.length);
+      validIpSet = Design.modelClassForType(constant.RESTYPE.ENI).getAvailableIPInCIDR(data.subnetCid, data.reserveIpSet, data.ipSet.length);
       validIpSet = _.filter(validIpSet, function(ip) {
         return ip.available;
       });
@@ -10690,7 +10631,7 @@
       subnetEnisMap = {};
       for (uid in components) {
         comp = components[uid];
-        if (comp.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+        if (comp.type === constant.RESTYPE.ENI) {
           if (comp.resource.SubnetId && comp.resource.SubnetId[0] === "@") {
             key = comp.resource.SubnetId;
           } else {
@@ -10738,7 +10679,7 @@
     };
     ChildElementProto.select = function() {
       if (this.type === "RTB_Route") {
-        this.doSelect(this.type, this.model.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable).id, this.id);
+        this.doSelect(this.type, this.model.getTarget(constant.RESTYPE.RT).id, this.id);
       } else {
         this.doSelect(this.type, this.id, this.id);
       }
@@ -10878,7 +10819,7 @@
     CeAz = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeAz, constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone);
+    CanvasElement.extend(CeAz, constant.RESTYPE.AZ);
     ChildElementProto = CeAz.prototype;
 
     /*
@@ -10910,12 +10851,12 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeSubnet, ChildElementProto;
     CeSubnet = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeSubnet, constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+    CanvasElement.extend(CeSubnet, constant.RESTYPE.SUBNET);
     ChildElementProto = CeSubnet.prototype;
 
     /*
@@ -10926,9 +10867,9 @@
       m = this.model;
       portY = m.height() * MC.canvas.GRID_HEIGHT / 2 - 5;
       if (portName === "subnet-assoc-in") {
-        return [-12, portY, MC.canvas.PORT_LEFT_ANGLE];
+        return [-12, portY, CanvasElement.constant.PORT_LEFT_ANGLE];
       } else {
-        return [m.width() * MC.canvas.GRID_WIDTH + 10, portY, MC.canvas.PORT_RIGHT_ANGLE];
+        return [m.width() * MC.canvas.GRID_WIDTH + 10, portY, CanvasElement.constant.PORT_RIGHT_ANGLE];
       }
     };
     ChildElementProto.draw = function(isCreate) {
@@ -10937,19 +10878,21 @@
       label = "" + (m.get('name')) + " (" + (m.get('cidr')) + ")";
       if (isCreate) {
         node = this.createGroup(label);
-        node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-gray port-subnet-assoc-in',
           'data-name': 'subnet-assoc-in',
           'data-position': 'left',
           'data-type': 'association',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_L
         }));
         node.append(Canvon.path("M2 0.5l-6 -5.5l-2 0 l0 11 l2 0z").attr({
-          'class': 'port port-gray port-subnet-assoc-out',
+          'class': 'port port-gray port-subnet-assoc-out tooltip',
           'data-name': 'subnet-assoc-out',
           'data-position': 'right',
           'data-type': 'association',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_M
         }));
         this.getLayer("subnet_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -10969,7 +10912,7 @@
     CeVpc = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeVpc, constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC);
+    CanvasElement.extend(CeVpc, constant.RESTYPE.VPC);
     ChildElementProto = CeVpc.prototype;
 
     /*
@@ -10994,19 +10937,19 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeCgw, ChildElementProto;
     CeCgw = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeCgw, constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway);
+    CanvasElement.extend(CeCgw, constant.RESTYPE.CGW);
     ChildElementProto = CeCgw.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "cgw-vpn": [6, 45, MC.canvas.PORT_LEFT_ANGLE]
+      "cgw-vpn": [6, 45, CanvasElement.constant.PORT_LEFT_ANGLE]
     };
     ChildElementProto.draw = function(isCreate) {
       var m, node;
@@ -11019,12 +10962,13 @@
           imageW: 151,
           imageH: 76
         });
-        node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-purple port-cgw-vpn',
           'data-name': 'cgw-vpn',
           'data-position': 'left',
           'data-type': 'vpn',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_I
         }), Canvon.text(100, 95, MC.truncate(m.get("name"), 17)).attr({
           'class': 'node-label'
         }));
@@ -11042,19 +10986,19 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeIgw',["./CanvasElement", "constant"], function(CanvasElement, constant) {
+  define('module/design/framework/canvasview/CeIgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
     var CeIgw, ChildElementProto;
     CeIgw = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeIgw, constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway);
+    CanvasElement.extend(CeIgw, constant.RESTYPE.IGW);
     ChildElementProto = CeIgw.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "igw-tgt": [78, 35, MC.canvas.PORT_RIGHT_ANGLE]
+      "igw-tgt": [78, 35, CanvasElement.constant.PORT_RIGHT_ANGLE]
     };
     ChildElementProto.draw = function(isCreate) {
       var m, node;
@@ -11068,12 +11012,13 @@
           imageH: 46,
           label: m.get("name")
         });
-        node.append(Canvon.path(MC.canvas.PATH_PORT_LEFT).attr({
+        node.append(Canvon.path(this.constant.PATH_PORT_LEFT).attr({
           'class': 'port port-blue port-igw-tgt',
           'data-name': 'igw-tgt',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11087,20 +11032,20 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeVgw',["./CanvasElement", "constant"], function(CanvasElement, constant) {
+  define('module/design/framework/canvasview/CeVgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
     var CeVgw, ChildElementProto;
     CeVgw = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeVgw, constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway);
+    CanvasElement.extend(CeVgw, constant.RESTYPE.VGW);
     ChildElementProto = CeVgw.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "vgw-tgt": [3, 35, MC.canvas.PORT_LEFT_ANGLE],
-      "vgw-vpn": [70, 35, MC.canvas.PORT_RIGHT_ANGLE]
+      "vgw-tgt": [3, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "vgw-vpn": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE]
     };
     ChildElementProto.draw = function(isCreate) {
       var m, node;
@@ -11114,18 +11059,20 @@
           imageH: 46,
           label: m.get("name")
         });
-        node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-blue port-vgw-tgt',
           'data-name': 'vgw-tgt',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in'
-        }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
+        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-purple port-vgw-vpn',
           'data-name': 'vgw-vpn',
           'data-position': 'right',
           'data-type': 'vpn',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_H
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11139,22 +11086,22 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeRtb, ChildElementProto;
     CeRtb = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeRtb, constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
+    CanvasElement.extend(CeRtb, constant.RESTYPE.RT);
     ChildElementProto = CeRtb.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "rtb-tgt-left": [10, 35, MC.canvas.PORT_LEFT_ANGLE],
-      "rtb-tgt-right": [70, 35, MC.canvas.PORT_RIGHT_ANGLE],
-      "rtb-src-top": [40, 3, MC.canvas.PORT_UP_ANGLE],
-      "rtb-src-bottom": [40, 77, MC.canvas.PORT_DOWN_ANGLE]
+      "rtb-tgt-left": [10, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "rtb-tgt-right": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE],
+      "rtb-src-top": [40, 3, CanvasElement.constant.PORT_UP_ANGLE],
+      "rtb-src-bottom": [40, 77, CanvasElement.constant.PORT_DOWN_ANGLE]
     };
     ChildElementProto.portDirMap = {
       "rtb-tgt": "horizontal",
@@ -11178,34 +11125,38 @@
           imageW: 60,
           imageH: 57
         });
-        node.append(Canvon.path(MC.canvas.PATH_PORT_LEFT).attr({
+        node.append(Canvon.path(this.constant.PATH_PORT_LEFT).attr({
           'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'out'
-        }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_B
+        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
-        }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_B
+        }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
           'class': 'port port-gray port-rtb-src port-rtb-src-top',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-top',
           'data-position': 'top',
           'data-type': 'association',
-          'data-direction': 'in'
-        }), Canvon.path(MC.canvas.PATH_PORT_TOP).attr({
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_A
+        }), Canvon.path(this.constant.PATH_PORT_TOP).attr({
           'class': 'port port-gray port-rtb-src port-rtb-src-bottom',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-bottom',
           'data-position': 'bottom',
           'data-type': 'association',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_A
         }), Canvon.text(41, 27, m.get("name")).attr({
           'class': 'node-label node-label-rtb-name'
         }));
@@ -11225,29 +11176,21 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeElb, ChildElementProto;
     CeElb = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeElb, constant.AWS_RESOURCE_TYPE.AWS_ELB);
+    CanvasElement.extend(CeElb, constant.RESTYPE.ELB);
     ChildElementProto = CeElb.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "elb-sg-in": [2, 35, MC.canvas.PORT_LEFT_ANGLE],
-      "elb-assoc": [79, 50, MC.canvas.PORT_RIGHT_ANGLE],
-      "elb-sg-out": [79, 20, MC.canvas.PORT_RIGHT_ANGLE]
-    };
-    ChildElementProto.portPosition = function(portName) {
-      var pos;
-      pos = this.portPosMap[portName];
-      if (portName === "elb-sg-out" && this.model.design().typeIsClassic()) {
-        pos[1] = 35;
-      }
-      return pos;
+      "elb-sg-in": [2, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "elb-assoc": [79, 50, CanvasElement.constant.PORT_RIGHT_ANGLE],
+      "elb-sg-out": [79, 20, CanvasElement.constant.PORT_RIGHT_ANGLE]
     };
     ChildElementProto.iconUrl = function() {
       if (this.model.get("internal")) {
@@ -11268,29 +11211,27 @@
           imageW: 70,
           imageH: 53,
           label: m.get("name"),
-          sg: !design.typeIsClassic()
+          sg: true
         });
-        if (!design.typeIsClassic()) {
-          node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-blue port-elb-sg-in',
-            'data-name': 'elb-sg-in',
-            'data-position': 'left',
-            'data-type': 'sg',
-            'data-direction': "in"
-          }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-gray port-elb-assoc',
-            'data-name': 'elb-assoc',
-            'data-position': 'right',
-            'data-type': 'association',
-            'data-direction': 'out'
-          }));
-        }
-        node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
+          'class': 'port port-blue port-elb-sg-in',
+          'data-name': 'elb-sg-in',
+          'data-position': 'left',
+          'data-type': 'sg',
+          'data-direction': "in"
+        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
+          'class': 'port port-gray port-elb-assoc',
+          'data-name': 'elb-assoc',
+          'data-position': 'right',
+          'data-type': 'association',
+          'data-direction': 'out'
+        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-blue port-elb-sg-out',
           'data-name': 'elb-sg-out',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_J
         }));
         this.getLayer("node_layer").append(node);
         this.initNode(node, m.x(), m.y());
@@ -11314,8 +11255,9 @@
     CeAsg = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeAsg, constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group);
+    CanvasElement.extend(CeAsg, constant.RESTYPE.ASG);
     CeAsgProto = CeAsg.prototype;
+    CeAsgProto.PATH_ASG_TITLE = "M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z";
     CeAsgProto.isRemovable = function() {
       return this.model.isRemovable();
     };
@@ -11352,7 +11294,7 @@
           'class': 'group group-asg',
           'rx': 5,
           'ry': 5
-        }), Canvon.path(MC.canvas.PATH_ASG_TITLE).attr({
+        }), Canvon.path(this.PATH_ASG_TITLE).attr({
           'class': 'asg-title'
         }));
         if (!this.model.design().modeIsAppView()) {
@@ -11392,17 +11334,17 @@
       }
       return null;
     };
-    return null;
+    return CeAsg;
   });
 
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager", "./CeAsg"], function(CanvasElement, constant, CanvasManager, CeAsg) {
     var CeExpandedAsg, ChildElementProto;
     CeExpandedAsg = function() {
       CanvasElement.apply(this, arguments);
-      this.type = constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group;
+      this.type = constant.RESTYPE.ASG;
       return null;
     };
     CanvasElement.extend(CeExpandedAsg, "ExpandedAsg");
@@ -11412,8 +11354,8 @@
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "launchconfig-sg-left": [30, 50, MC.canvas.PORT_LEFT_ANGLE],
-      "launchconfig-sg-right": [100, 50, MC.canvas.PORT_RIGHT_ANGLE]
+      "launchconfig-sg-left": [30, 50, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "launchconfig-sg-right": [100, 50, CanvasElement.constant.PORT_RIGHT_ANGLE]
     };
     ChildElementProto.portDirMap = {
       "launchconfig-sg": "horizontal"
@@ -11449,7 +11391,7 @@
           'class': 'group group-asg',
           'rx': 5,
           'ry': 5
-        }), Canvon.path(MC.canvas.PATH_ASG_TITLE).attr({
+        }), Canvon.path(CeAsg.prototype.PATH_ASG_TITLE).attr({
           'class': 'asg-title'
         }), Canvon.text(4, 14, label).attr({
           'class': 'group-label'
@@ -11462,20 +11404,22 @@
             "class": 'ami-icon'
           }), Canvon.text(65, 116, lcLabel).attr({
             'class': 'node-label'
-          }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+          }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
             'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left',
             'data-name': 'launchconfig-sg',
             'data-alias': 'launchconfig-sg-left',
             'data-position': 'left',
             'data-type': 'sg',
-            'data-direction': 'in'
-          }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+            'data-direction': 'in',
+            'data-tooltip': lang.ide.PORT_TIP_D
+          }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
             'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right',
             'data-name': 'launchconfig-sg',
             'data-alias': 'launchconfig-sg-right',
             'data-position': 'right',
             'data-type': 'sg',
-            'data-direction': 'out'
+            'data-direction': 'out',
+            'data-tooltip': lang.ide.PORT_TIP_D
           })
         ]);
       }
@@ -11499,17 +11443,17 @@
     CeInstance = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeInstance, constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance);
+    CanvasElement.extend(CeInstance, constant.RESTYPE.INSTANCE);
     ChildElementProto = CeInstance.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "instance-sg-left": [10, 20, MC.canvas.PORT_LEFT_ANGLE],
-      "instance-sg-right": [80, 20, MC.canvas.PORT_RIGHT_ANGLE],
-      "instance-attach": [78, 50, MC.canvas.PORT_RIGHT_ANGLE],
-      "instance-rtb": [45, 0, MC.canvas.PORT_UP_ANGLE]
+      "instance-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "instance-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE],
+      "instance-attach": [78, 50, CanvasElement.constant.PORT_RIGHT_ANGLE],
+      "instance-rtb": [45, 0, CanvasElement.constant.PORT_UP_ANGLE]
     };
     ChildElementProto.portDirMap = {
       "instance-sg": "horizontal"
@@ -11565,36 +11509,35 @@
           'id': "" + this.id + "_instance-number-group",
           'class': 'instance-number-group',
           "display": "none"
-        }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
           'class': 'port port-blue port-instance-sg port-instance-sg-left',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in'
-        }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_D
+        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
           'class': 'port port-blue port-instance-sg port-instance-sg-right',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_D
+        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
+          'class': 'port port-green port-instance-attach',
+          'data-name': 'instance-attach',
+          'data-position': 'right',
+          'data-type': 'attachment',
           'data-direction': 'out'
+        }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
+          'class': 'port port-blue port-instance-rtb',
+          'data-name': 'instance-rtb',
+          'data-position': 'top',
+          'data-type': 'sg',
+          'data-direction': 'in'
         }));
-        if (!this.model.design().typeIsClassic()) {
-          node.append(Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
-            'class': 'port port-green port-instance-attach',
-            'data-name': 'instance-attach',
-            'data-position': 'right',
-            'data-type': 'attachment',
-            'data-direction': 'out'
-          }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
-            'class': 'port port-blue port-instance-rtb',
-            'data-name': 'instance-rtb',
-            'data-position': 'top',
-            'data-type': 'sg',
-            'data-direction': 'in'
-          }));
-        }
         if (!this.model.design().modeIsStack() && m.get("appId")) {
           node.append(Canvon.circle(68, 15, 5, {}).attr({
             'id': "" + this.id + "_instance-state",
@@ -11729,7 +11672,7 @@
               id: volume.volumeId
             });
           } else {
-            if (this.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+            if (this.type === constant.RESTYPE.LC) {
               vl.push({
                 name: v.deviceName,
                 snapshotId: v.ebs.snapshotId || "",
@@ -11764,13 +11707,13 @@
         Do not allow adding volume to existing LC in appUpdate
        */
       var VolumeModel, v;
-      if (Design.instance().modeIsAppEdit() && this.model.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration && this.model.get("appId")) {
+      if (Design.instance().modeIsAppEdit() && this.model.type === constant.RESTYPE.LC && this.model.get("appId")) {
         notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
         return false;
       }
       attribute = $.extend({}, attribute);
       attribute.owner = this.model;
-      VolumeModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume);
+      VolumeModel = Design.modelClassForType(constant.RESTYPE.VOL);
       v = new VolumeModel(attribute);
       if (v.id) {
         return {
@@ -11819,13 +11762,13 @@
       if (_.isString(component)) {
         this.id = component;
         this.nodeType = "node";
-        this.type = constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume;
+        this.type = constant.RESTYPE.VOL;
       } else {
         CanvasElement.apply(this, arguments);
       }
       return null;
     };
-    CanvasElement.extend(CeVolume, constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume);
+    CanvasElement.extend(CeVolume, constant.RESTYPE.VOL);
     ChildElementProto = CeVolume.prototype;
 
     /*
@@ -11833,7 +11776,7 @@
      */
     ChildElementProto.remove = function() {
       if (this.model.design().modeIsAppEdit()) {
-        if ((this.model.get("owner") || {}).type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if ((this.model.get("owner") || {}).type === constant.RESTYPE.LC) {
           notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
           return false;
         }
@@ -11851,22 +11794,22 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeEni, ChildElementProto;
     CeEni = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend(CeEni, constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface);
+    CanvasElement.extend(CeEni, constant.RESTYPE.ENI);
     ChildElementProto = CeEni.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "eni-sg-left": [10, 20, MC.canvas.PORT_LEFT_ANGLE],
-      "eni-attach": [8, 50, MC.canvas.PORT_LEFT_ANGLE],
-      "eni-sg-right": [80, 20, MC.canvas.PORT_RIGHT_ANGLE],
-      "eni-rtb": [45, 0, MC.canvas.PORT_UP_ANGLE]
+      "eni-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "eni-attach": [8, 50, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "eni-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE],
+      "eni-rtb": [45, 0, CanvasElement.constant.PORT_UP_ANGLE]
     };
     ChildElementProto.portDirMap = {
       "eni-sg": "horizontal"
@@ -11898,32 +11841,36 @@
         node.append(Canvon.image("", 44, 37, 12, 14).attr({
           'id': "" + this.id + "_eip_status",
           'class': 'eip-status tooltip'
-        }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
           'class': 'port port-blue port-eni-sg port-eni-sg-left',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': "in"
-        }), Canvon.path(MC.canvas.PATH_PORT_RIGHT).attr({
+          'data-direction': "in",
+          'data-tooltip': lang.ide.PORT_TIP_D
+        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
           'class': 'port port-green port-eni-attach',
           'data-name': 'eni-attach',
           'data-position': 'left',
           'data-type': 'attachment',
-          'data-direction': "in"
-        }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+          'data-direction': "in",
+          'data-tooltip': lang.ide.PORT_TIP_G
+        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
           'class': 'port port-blue port-eni-sg port-eni-sg-right',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
-        }), Canvon.path(MC.canvas.PATH_PORT_BOTTOM).attr({
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_F
+        }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
           'class': 'port port-blue port-eni-rtb',
           'data-name': 'eni-rtb',
           'data-position': 'top',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
         }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
           'class': 'server-number-bg',
           'rx': 4,
@@ -11979,20 +11926,20 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeLc',["./CanvasElement", "./CeInstance", "constant", "CanvasManager"], function(CanvasElement, CeInstance, constant, CanvasManager) {
+  define('module/design/framework/canvasview/CeLc',["./CanvasElement", "./CeInstance", "constant", "CanvasManager", 'i18n!nls/lang.js'], function(CanvasElement, CeInstance, constant, CanvasManager, lang) {
     var CeLc, ChildElementProto;
     CeLc = function() {
       return CanvasElement.apply(this, arguments);
     };
-    CanvasElement.extend.call(CeInstance, CeLc, constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration);
+    CanvasElement.extend.call(CeInstance, CeLc, constant.RESTYPE.LC);
     ChildElementProto = CeLc.prototype;
 
     /*
      * Child Element's interface.
      */
     ChildElementProto.portPosMap = {
-      "launchconfig-sg-left": [10, 20, MC.canvas.PORT_LEFT_ANGLE],
-      "launchconfig-sg-right": [80, 20, MC.canvas.PORT_RIGHT_ANGLE]
+      "launchconfig-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
+      "launchconfig-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE]
     };
     ChildElementProto.portDirMap = {
       "launchconfig-sg": "horizontal"
@@ -12055,20 +12002,22 @@
           'data-target-id': this.id,
           'class': 'instance-volume',
           'fill': 'none'
-        }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
           'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left',
           'data-name': 'launchconfig-sg',
           'data-alias': 'launchconfig-sg-left',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': 'in'
-        }), Canvon.path(MC.canvas.PATH_PORT_DIAMOND).attr({
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_D
+        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
           'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right',
           'data-name': 'launchconfig-sg',
           'data-alias': 'launchconfig-sg-right',
           'data-position': 'right',
           'data-type': 'sg',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
           'class': 'server-number-bg',
           'rx': 4,
@@ -12110,7 +12059,7 @@
     ChildElementProto.select = function(subId) {
       var type;
       if (subId) {
-        type = constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance;
+        type = constant.RESTYPE.INSTANCE;
       } else {
         type = this.model.type;
       }

@@ -135,7 +135,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'stack_service', 'ami_service', '../result_vo'], function(constant, $, MC, lang, stackService, amiService) {
-    var generateComponentForDefaultVPC, getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
+    var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
       elbComp = MC.canvas_data.component[elbUID];
@@ -152,61 +152,6 @@
         return null;
       });
       return azNameAry;
-    };
-    generateComponentForDefaultVPC = function() {
-      var azObjAry, azSubnetIdMap, currentComps, defaultVPCId, originComps, resType;
-      resType = constant.AWS_RESOURCE_TYPE;
-      originComps = MC.canvas_data.component;
-      currentComps = _.extend(originComps, {});
-      defaultVPCId = MC.aws.aws.checkDefaultVPC();
-      azObjAry = MC.data.config[MC.canvas_data.region].zone.item;
-      azSubnetIdMap = {};
-      _.each(azObjAry, function(azObj) {
-        var azName, resultObj, subnetId, subnetObj;
-        azName = azObj.zoneName;
-        resultObj = {};
-        subnetObj = Design.modelClassForType(resType.AWS_EC2_AvailabilityZone).getSubnetOfDefaultVPC(azName);
-        subnetId = null;
-        if (subnetObj) {
-          subnetId = subnetObj.subnetId;
-        } else {
-          subnetId = '';
-        }
-        azSubnetIdMap[azName] = subnetId;
-        return null;
-      });
-      _.each(currentComps, function(compObj) {
-        var asgAZAry, asgSubnetIdAry, asgSubnetIdStr, azNameAry, compType, compUID, eniAZName, instanceAZName, subnetIdAry;
-        compType = compObj.type;
-        compUID = compObj.uid;
-        if (compType === resType.AWS_EC2_Instance) {
-          instanceAZName = compObj.resource.Placement.AvailabilityZone;
-          currentComps[compUID].resource.VpcId = defaultVPCId;
-          currentComps[compUID].resource.SubnetId = azSubnetIdMap[instanceAZName];
-        } else if (compType === resType.AWS_VPC_NetworkInterface) {
-          eniAZName = compObj.resource.AvailabilityZone;
-          currentComps[compUID].resource.VpcId = defaultVPCId;
-          currentComps[compUID].resource.SubnetId = azSubnetIdMap[eniAZName];
-        } else if (compType === resType.AWS_ELB) {
-          currentComps[compUID].resource.VpcId = defaultVPCId;
-          azNameAry = getAZAryForDefaultVPC(compUID);
-          subnetIdAry = _.map(azNameAry, function(azName) {
-            return azSubnetIdMap[azName];
-          });
-          currentComps[compUID].resource.Subnets = subnetIdAry;
-        } else if (compType === resType.AWS_EC2_SecurityGroup) {
-          currentComps[compUID].resource.VpcId = defaultVPCId;
-        } else if (compType === resType.AWS_AutoScaling_Group) {
-          asgAZAry = compObj.resource.AvailabilityZones;
-          asgSubnetIdAry = _.map(asgAZAry, function(azName) {
-            return azSubnetIdMap[azName];
-          });
-          asgSubnetIdStr = asgSubnetIdAry.join(' , ');
-          currentComps[compUID].resource.VPCZoneIdentifier = asgSubnetIdStr;
-        }
-        return null;
-      });
-      return currentComps;
     };
     _getCompName = function(compUID) {
       var compName, compObj;
@@ -233,9 +178,6 @@
           callback = function() {};
         }
         validData = MC.canvas_data;
-        if (MC.aws.aws.checkDefaultVPC()) {
-          validData.component = generateComponentForDefaultVPC();
-        }
         stackService.verify({
           sender: this
         }, $.cookie('usercode'), $.cookie('session_id'), validData, function(result) {
@@ -309,7 +251,7 @@
         instanceAMIMap = {};
         _.each(MC.canvas_data.component, function(compObj) {
           var imageId;
-          if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance || compObj.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+          if (compObj.type === constant.RESTYPE.INSTANCE || compObj.type === constant.RESTYPE.LC) {
             imageId = compObj.resource.ImageId;
             if (imageId) {
               if (!instanceAMIMap[imageId]) {
@@ -350,7 +292,7 @@
                     instanceName = instanceObj.name;
                     infoObjType = 'Instance';
                     infoTagType = 'instance';
-                    if (instanceType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+                    if (instanceType === constant.RESTYPE.LC) {
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
                     }
@@ -385,7 +327,7 @@
                     instanceName = instanceObj.name;
                     infoObjType = 'Instance';
                     infoTagType = 'instance';
-                    if (instanceType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+                    if (instanceType === constant.RESTYPE.LC) {
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
                     }
@@ -423,7 +365,7 @@
       instanceAMIMap = {};
       _.each(MC.canvas_data.component, function(compObj) {
         var imageId;
-        if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance || compObj.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if (compObj.type === constant.RESTYPE.INSTANCE || compObj.type === constant.RESTYPE.LC) {
           imageId = compObj.resource.ImageId;
           if (imageId) {
             if (!instanceAMIMap[imageId]) {
@@ -454,7 +396,7 @@
             instanceName = instanceObj.name;
             infoObjType = 'Instance';
             infoTagType = 'instance';
-            if (instanceType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+            if (instanceType === constant.RESTYPE.LC) {
               infoObjType = 'Launch Configuration';
               infoTagType = 'lc';
             }
@@ -550,7 +492,7 @@
       eni: {
         getByInstance: function(instance) {
           return _.filter(MC.canvas_data.component, function(component) {
-            if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+            if (component.type === CONST.RESTYPE.ENI) {
               if (MC.extractID(component.resource.Attachment.InstanceId) === instance.uid) {
                 return true;
               }
@@ -562,13 +504,13 @@
         get: function(component) {
           var eni, enis, sg, sgId, sgs, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
           sgs = [];
-          if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+          if (component.type === CONST.RESTYPE.LC) {
             _ref = component.resource.SecurityGroups;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               sgId = _ref[_i];
               sgs.push(Helper.component.get(MC.extractID(sgId)));
             }
-          } else if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+          } else if (component.type === CONST.RESTYPE.INSTANCE) {
             enis = Helper.eni.getByInstance(component);
             for (_j = 0, _len1 = enis.length; _j < _len1; _j++) {
               eni = enis[_j];
@@ -578,7 +520,7 @@
                 sgs.push(Helper.component.get(MC.extractID(sg.GroupId)));
               }
             }
-          } else if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_ELB) {
+          } else if (component.type === CONST.RESTYPE.ELB) {
             _ref2 = component.resource.SecurityGroups;
             for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
               sgId = _ref2[_l];
@@ -664,7 +606,7 @@
       var amiId, haveProvisionedVolume, instanceComp, instanceName, instanceType, instanceUIDRef, isInstanceComp, lsgName, tipInfo, _ref;
       instanceComp = MC.canvas_data.component[instanceUID];
       instanceType = instanceComp.type;
-      isInstanceComp = instanceType === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance;
+      isInstanceComp = instanceType === constant.RESTYPE.INSTANCE;
       haveProvisionedVolume = false;
       instanceUIDRef = lsgName = amiId = null;
       if (instanceComp) {
@@ -674,7 +616,7 @@
         amiId = instanceComp.resource.ImageId;
       }
       _.each(MC.canvas_data.component, function(compObj) {
-        if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume) {
+        if (compObj.type === constant.RESTYPE.VOL) {
           if (compObj.resource.VolumeType !== 'standard') {
             if (isInstanceComp && (compObj.resource.AttachmentSet.InstanceId === instanceUIDRef)) {
               haveProvisionedVolume = true;
@@ -712,45 +654,32 @@
       return sgTotalRuleNum;
     };
     isAssociatedSGRuleExceedFitNum = function(instanceUID) {
-      var instanceComp, instanceName, instanceSGAry, instanceType, isInstanceComp, lsgSGAry, platformType, sgUIDAry, tipInfo, totalSGRuleNum;
+      var instanceComp, instanceName, instanceSGAry, instanceType, isInstanceComp, sgUIDAry, tipInfo, totalSGRuleNum;
       instanceComp = MC.canvas_data.component[instanceUID];
       instanceType = instanceComp.type;
-      isInstanceComp = instanceType === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance;
-      platformType = MC.canvas_data.platform;
-      if (platformType !== MC.canvas.PLATFORM_TYPE.EC2_CLASSIC) {
-        sgUIDAry = [];
-        if (isInstanceComp) {
-          _.each(MC.canvas_data.component, function(compObj) {
-            var associatedInstanceRef, associatedInstanceUID, eniSGAry;
-            if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
-              associatedInstanceRef = compObj.resource.Attachment.InstanceId;
-              associatedInstanceUID = MC.extractID(associatedInstanceRef);
-              if (associatedInstanceUID === instanceUID) {
-                eniSGAry = compObj.resource.GroupSet;
-                _.each(eniSGAry, function(sgObj) {
-                  var eniSGUID, eniSGUIDRef;
-                  eniSGUIDRef = sgObj.GroupId;
-                  eniSGUID = MC.extractID(eniSGUIDRef);
-                  if (!(__indexOf.call(sgUIDAry, eniSGUID) >= 0)) {
-                    sgUIDAry.push(eniSGUID);
-                  }
-                  return null;
-                });
-              }
+      isInstanceComp = instanceType === constant.RESTYPE.INSTANCE;
+      sgUIDAry = [];
+      if (isInstanceComp) {
+        _.each(MC.canvas_data.component, function(compObj) {
+          var associatedInstanceRef, associatedInstanceUID, eniSGAry;
+          if (compObj.type === constant.RESTYPE.ENI) {
+            associatedInstanceRef = compObj.resource.Attachment.InstanceId;
+            associatedInstanceUID = MC.extractID(associatedInstanceRef);
+            if (associatedInstanceUID === instanceUID) {
+              eniSGAry = compObj.resource.GroupSet;
+              _.each(eniSGAry, function(sgObj) {
+                var eniSGUID, eniSGUIDRef;
+                eniSGUIDRef = sgObj.GroupId;
+                eniSGUID = MC.extractID(eniSGUIDRef);
+                if (!(__indexOf.call(sgUIDAry, eniSGUID) >= 0)) {
+                  sgUIDAry.push(eniSGUID);
+                }
+                return null;
+              });
             }
-            return null;
-          });
-        } else {
-          lsgSGAry = instanceComp.resource.SecurityGroups;
-          _.each(lsgSGAry, function(sgRef) {
-            var sgUID;
-            sgUID = MC.extractID(sgRef);
-            if (!(__indexOf.call(sgUIDAry, sgUID) >= 0)) {
-              sgUIDAry.push(sgUID);
-            }
-            return null;
-          });
-        }
+          }
+          return null;
+        });
         totalSGRuleNum = 0;
         _.each(sgUIDAry, function(sgUID) {
           totalSGRuleNum += _getSGCompRuleLength(sgUID);
@@ -804,7 +733,7 @@
       instanceId = MC.aws.aws.genResRef(uid, 'resource.InstanceId');
       RTB = '';
       isConnectRTB = _.some(components, function(component) {
-        if (component.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable) {
+        if (component.type === constant.RESTYPE.RT) {
           return _.some(component.resource.RouteSet, function(rt) {
             if (rt.InstanceId === instanceId) {
               RTB = component;
@@ -814,7 +743,7 @@
         }
       });
       hasEIP = _.some(components, function(component) {
-        if (component.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP && component.resource.InstanceId === instanceId) {
+        if (component.type === constant.RESTYPE.EIP && component.resource.InstanceId === instanceId) {
           return true;
         }
       });
@@ -857,57 +786,10 @@
 
 (function() {
   define('component/trustedadvisor/validation/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'eni_service', '../result_vo'], function(constant, $, MC, lang, eniService) {
-    var getAllAWSENIForAppEditAndDefaultVPC;
-    getAllAWSENIForAppEditAndDefaultVPC = function(callback) {
-      var currentRegion, currentState, currentVPCComp, currentVPCId, currentVPCUID, defaultVPCId, err;
-      try {
-        if (!callback) {
-          callback = function() {};
-        }
-        currentState = MC.canvas.getState();
-        defaultVPCId = MC.aws.aws.checkDefaultVPC();
-        if (currentState !== 'appedit' && !MC.aws.aws.checkDefaultVPC()) {
-          callback(null);
-          return null;
-        }
-        if (defaultVPCId) {
-          currentVPCId = defaultVPCId;
-        } else {
-          currentVPCUID = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC().id;
-          currentVPCComp = MC.canvas_data.component[currentVPCUID];
-          currentVPCId = currentVPCComp.resource.VpcId;
-        }
-        currentRegion = MC.canvas_data.region;
-        eniService.DescribeNetworkInterfaces({
-          sender: this
-        }, $.cookie('usercode'), $.cookie('session_id'), currentRegion, null, [
-          {
-            "Name": "vpc-id",
-            "Value": [currentVPCId]
-          }
-        ], function(result) {
-          var checkResult, conflictInfo, eniObjAry;
-          checkResult = true;
-          conflictInfo = null;
-          if (!result.is_error) {
-            eniObjAry = result.resolved_data;
-            _.each(eniObjAry, function(eniObj) {
-              MC.data.resource_list[currentRegion][eniObj.networkInterfaceId] = eniObj;
-              return null;
-            });
-            return callback(null);
-          } else {
-            return callback(null);
-          }
-        });
-        return null;
-      } catch (_error) {
-        err = _error;
+    return {
+      getAllAWSENIForAppEditAndDefaultVPC: function(callback) {
         return callback(null);
       }
-    };
-    return {
-      getAllAWSENIForAppEditAndDefaultVPC: getAllAWSENIForAppEditAndDefaultVPC
     };
   });
 
@@ -917,30 +799,27 @@
   define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang) {
     var isVPCAbleConnectToOutside;
     isVPCAbleConnectToOutside = function() {
-      var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo, _ref;
-      if (((_ref = MC.canvas_data.platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC)) {
-        return null;
-      }
+      var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo;
       isHaveVPN = false;
       isHaveEIP = false;
       isHavePubIP = false;
       _.each(MC.canvas_data.component, function(compObj) {
         var compType;
         compType = compObj.type;
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNConnection) {
+        if (compType === constant.RESTYPE.VPN) {
           isHaveVPN = true;
         }
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP) {
+        if (compType === constant.RESTYPE.EIP) {
           isHaveEIP = true;
         }
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+        if (compType === constant.RESTYPE.ENI) {
           if (compObj.index === 0) {
             if (compObj.resource.AssociatePublicIpAddress) {
               isHavePubIP = true;
             }
           }
         }
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if (compType === constant.RESTYPE.LC) {
           if (compObj.resource.AssociatePublicIpAddress) {
             isHavePubIP = true;
           }
@@ -969,17 +848,14 @@
   define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!nls/lang.js', '../../helper'], function(constant, MC, lang, taHelper) {
     var isAttachELBToMultiAZ, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleOutboundToInstanceListener;
     isHaveIGWForInternetELB = function(elbUID) {
-      var elbComp, elbName, haveIGW, isInternetELB, tipInfo, _ref;
-      if (!((_ref = MC.canvas_data.platform) === MC.canvas.PLATFORM_TYPE.CUSTOM_VPC || _ref === MC.canvas.PLATFORM_TYPE.EC2_VPC)) {
-        return null;
-      }
+      var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
       elbComp = MC.canvas_data.component[elbUID];
       isInternetELB = elbComp.resource.Scheme === 'internet-facing';
       haveIGW = false;
       _.each(MC.canvas_data.component, function(compObj) {
         var compType;
         compType = compObj.type;
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway) {
+        if (compType === constant.RESTYPE.IGW) {
           haveIGW = true;
         }
         return null;
@@ -1005,7 +881,7 @@
       _.each(MC.canvas_data.component, function(compObj) {
         var attachedELBAry, compType;
         compType = compObj.type;
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+        if (compType === constant.RESTYPE.ASG) {
           attachedELBAry = compObj.resource.LoadBalancerNames;
           if (__indexOf.call(attachedELBAry, elbNameRef) >= 0) {
             attachedASGNum++;
@@ -1230,7 +1106,7 @@
       asgUIDAry = [];
       _.each(MC.canvas_data.component, function(compObj) {
         var elbRefAry;
-        if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+        if (compObj.type === constant.RESTYPE.ASG) {
           elbRefAry = compObj.resource.LoadBalancerNames;
           _.each(elbRefAry, function(elbRef) {
             var currentELBUID;
@@ -1356,7 +1232,7 @@
       return component && component.name.indexOf("elbsg-") === 0;
     };
     isSGRuleExceedFitNum = function(sgUID) {
-      var platformType, sgComp, sgInboundRuleAry, sgName, sgOutboundRuleAry, sgTotalRuleNum, tipInfo;
+      var sgComp, sgInboundRuleAry, sgName, sgOutboundRuleAry, sgTotalRuleNum, tipInfo;
       sgComp = MC.canvas_data.component[sgUID];
       sgInboundRuleAry = sgComp.resource.IpPermissions;
       sgOutboundRuleAry = sgComp.resource.IpPermissionsEgress;
@@ -1367,27 +1243,14 @@
       if (sgOutboundRuleAry) {
         sgTotalRuleNum += sgOutboundRuleAry.length;
       }
-      platformType = MC.canvas_data.platform;
-      if (platformType !== MC.canvas.PLATFORM_TYPE.EC2_CLASSIC) {
-        if (sgTotalRuleNum > 50) {
-          sgName = sgComp.name;
-          tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_RULE_EXCEED_FIT_NUM, sgName, 50);
-          return {
-            level: constant.TA.WARNING,
-            info: tipInfo,
-            uid: sgUID
-          };
-        }
-      } else {
-        if (sgTotalRuleNum > 100) {
-          sgName = sgComp.name;
-          tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_RULE_EXCEED_FIT_NUM, sgName, 100);
-          return {
-            level: constant.TA.WARNING,
-            info: tipInfo,
-            uid: sgUID
-          };
-        }
+      if (sgTotalRuleNum > 50) {
+        sgName = sgComp.name;
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_RULE_EXCEED_FIT_NUM, sgName, 50);
+        return {
+          level: constant.TA.WARNING,
+          info: tipInfo,
+          uid: sgUID
+        };
       }
       return null;
     };
@@ -1396,7 +1259,7 @@
       refSGNum = 0;
       _.each(MC.canvas_data.component, function(compObj) {
         var allRefComp, sgUID;
-        if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+        if (compObj.type === constant.RESTYPE.SG) {
           sgUID = compObj.uid;
           allRefComp = getAllRefComp(sgUID);
           if (allRefComp.length > 0) {
@@ -1553,12 +1416,8 @@
       return null;
     };
     isAssociatedSGNumExceedLimit = function() {
-      var maxSGNumLimit, platformType, taResultAry;
+      var maxSGNumLimit, taResultAry;
       maxSGNumLimit = 5;
-      platformType = MC.canvas_data.platform;
-      if (platformType === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC) {
-        maxSGNumLimit = 500;
-      }
       taResultAry = [];
       _.each(MC.canvas_data.component, function(comp) {
         var compName, compType, compUID, instanceComp, instanceName, instanceUID, instanceUIDRef, isExceedLimit, resTypeName, sgAry, taObj, tagName, tipInfo, _ref;
@@ -1569,20 +1428,20 @@
         sgAry = [];
         resTypeName = '';
         tagName = '';
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_ELB) {
+        if (compType === constant.RESTYPE.ELB) {
           sgAry = comp.resource.SecurityGroups;
           resTypeName = 'Load Balancer';
           tagName = 'elb';
         }
-        if (compType === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if (compType === constant.RESTYPE.LC) {
           sgAry = comp.resource.SecurityGroups;
           resTypeName = 'Launch Configuration';
           tagName = 'lc';
-        } else if (compType === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+        } else if (compType === constant.RESTYPE.INSTANCE) {
           sgAry = comp.resource.SecurityGroupId;
           resTypeName = 'Instance';
           tagName = 'instance';
-        } else if (compType === constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+        } else if (compType === constant.RESTYPE.ENI) {
           _.each(comp.resource.GroupSet, function(sgObj) {
             sgAry.push(sgObj.GroupId);
             return null;
@@ -1674,11 +1533,8 @@
   define('component/trustedadvisor/validation/ec2/eip',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isHasIGW, _hasType;
     isHasIGW = function() {
-      var tipInfo, _ref;
-      if (((_ref = MC.canvas_data.platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC)) {
-        return null;
-      }
-      if (!_hasType(constant.AWS_RESOURCE_TYPE.AWS_EC2_EIP) || _hasType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway)) {
+      var tipInfo;
+      if (!_hasType(constant.RESTYPE.EIP) || _hasType(constant.RESTYPE.IGW)) {
         return null;
       }
       tipInfo = lang.ide.TA_MSG_ERROR_HAS_EIP_NOT_HAS_IGW;
@@ -1708,7 +1564,7 @@
       var count, instanceCount, tipInfo;
       instanceCount = _.countBy(MC.canvas_data.component, function(compObj) {
         var _ref;
-        if ((_ref = compObj.type) === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance || _ref === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+        if ((_ref = compObj.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC) {
           return 'instance';
         } else {
           return 'others';
@@ -1718,7 +1574,7 @@
         return null;
       }
       count = _.countBy(MC.canvas_data.component, function(component) {
-        if (component.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
+        if (component.type === constant.RESTYPE.AZ) {
           return 'az';
         } else {
           return 'others';
@@ -1749,7 +1605,7 @@
       vpn = components[uid];
       vpnId = MC.aws.aws.genResRef(uid, 'resource.VpnGatewayId');
       isConnectRTB = _.some(components, function(component) {
-        if (component.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable) {
+        if (component.type === constant.RESTYPE.RT) {
           return _.some(component.resource.RouteSet, function(rt) {
             var RTB;
             if (rt.GatewayId === vpnId) {
@@ -1842,7 +1698,7 @@
         var isInAnyPriIPRange, isInAnyPubIPRange, routeCIDR, routeIP, routeIPCIDR, validSubnetCIDR;
         routeCIDR = routeObj.DestinationCidrBlock;
         if (routeCIDR) {
-          validSubnetCIDR = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).isValidSubnetCIDR(routeCIDR);
+          validSubnetCIDR = Design.modelClassForType(constant.RESTYPE.SUBNET).isValidSubnetCIDR(routeCIDR);
           if (!validSubnetCIDR) {
             return invalidRouteCIDRAry.push(routeCIDR);
           } else {
@@ -1883,7 +1739,7 @@
       igw = components[uid];
       igwId = MC.aws.aws.genResRef(uid, 'resource.InternetGatewayId');
       isConnectRTB = _.some(components, function(component) {
-        if (component.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable) {
+        if (component.type === constant.RESTYPE.RT) {
           return _.some(component.resource.RouteSet, function(rt) {
             var RTB;
             if (rt.GatewayId === igwId) {
@@ -1954,7 +1810,7 @@
         stackCGWIP = stackCGWName = stackCGWUID = null;
         _.each(MC.canvas_data.component, function(compObj) {
           var stackCGWId;
-          if (compObj.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway) {
+          if (compObj.type === constant.RESTYPE.CGW) {
             stackCGWId = compObj.resource.CustomerGatewayId;
             stackCGWIP = compObj.resource.IpAddress;
             stackCGWName = compObj.name;
@@ -2098,7 +1954,7 @@
         currentRouteDes = route.DestinationCidrBlock;
         _.each(routeDesAry, function(routeDes) {
           var SubnetModel, tipInfo;
-          SubnetModel = Design.modelClassForType(CONST.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+          SubnetModel = Design.modelClassForType(CONST.RESTYPE.SUBNET);
           if (SubnetModel.isCidrConflict(currentRouteDes, routeDes)) {
             tipInfo = sprintf(i18n.TA_MSG_ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
             return notices.push({
@@ -2591,7 +2447,7 @@ This file use for validate component about state.
     };
     __getEniByInstance = function(instance) {
       return _.filter(MC.canvas_data.component, function(component) {
-        if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface) {
+        if (component.type === CONST.RESTYPE.ENI) {
           if (MC.extractID(component.resource.Attachment.InstanceId) === instance.uid) {
             return true;
           }
@@ -2601,13 +2457,13 @@ This file use for validate component about state.
     __getSg = function(component) {
       var eni, enis, sg, sgId, sgs, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       sgs = [];
-      if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+      if (component.type === CONST.RESTYPE.LC) {
         _ref = component.resource.SecurityGroups;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sgId = _ref[_i];
           sgs.push(__getComp(MC.extractID(sgId)));
         }
-      } else if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+      } else if (component.type === CONST.RESTYPE.INSTANCE) {
         enis = __getEniByInstance(component);
         for (_j = 0, _len1 = enis.length; _j < _len1; _j++) {
           eni = enis[_j];
@@ -2659,9 +2515,9 @@ This file use for validate component about state.
       if (component.type === "ExpandedAsg") {
         lc = component.get('originalAsg').get('lc');
         return lc.get('publicIp') === true;
-      } else if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+      } else if (component.type === CONST.RESTYPE.LC) {
         return component.get('publicIp') === true;
-      } else if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+      } else if (component.type === CONST.RESTYPE.INSTANCE) {
         enis = component.connectionTargets('EniAttachment');
         enis.push(component.getEmbedEni());
         hasEip = _.some(enis, function(eni) {
@@ -2685,7 +2541,7 @@ This file use for validate component about state.
       rtb = __getSubnetRtb(component);
       rtbConn = rtb.connectionTargets('RTB_Route');
       igw = _.where(rtbConn, {
-        type: CONST.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway
+        type: CONST.RESTYPE.IGW
       });
       return igw.length > 0;
     };
@@ -2774,7 +2630,7 @@ This file use for validate component about state.
 
     /* Public */
     isHasIgw = function(uid) {
-      if (__hasType(CONST.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway)) {
+      if (__hasType(CONST.RESTYPE.IGW)) {
         return null;
       }
       return Helper.message.error(uid, i18n.TA_MSG_ERROR_NO_CGW);
@@ -2801,7 +2657,7 @@ This file use for validate component about state.
       var component, result;
       result = [];
       component = __getComp(uid);
-      if (component.type === CONST.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+      if (component.type === CONST.RESTYPE.LC) {
         return __isLcConnectedOut(uid);
       } else {
         return __isInstanceConnectedOut(uid);

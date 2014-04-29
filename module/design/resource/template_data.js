@@ -374,72 +374,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n	<div class=\"fixedaccordion-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_VPC", {hash:{},data:data}))
-    + "</div>\n	<div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"item-wrap scroll-content\">\n			<ul class=\"resource-list\">\n				";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isntDefaultVPC), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n				<li class=\"tooltip resource-item\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ENI", {hash:{},data:data}))
-    + "' data-component-type=\"node\" data-type=\"AWS.VPC.NetworkInterface\">\n					<div class=\"resource-icon resource-icon-eni\"></div>\n					<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_ENI", {hash:{},data:data}))
-    + "</div>\n				</li>\n			</ul>\n		</div>\n	</div>\n";
-  return buffer;
-  }
-function program2(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n				<li class=\"tooltip resource-item\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_SUBNET", {hash:{},data:data}))
-    + "' data-component-type=\"group\" data-type=\"AWS.VPC.Subnet\">\n					<div class=\"resource-icon resource-icon-subnet\"></div>\n					<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_SUBNET", {hash:{},data:data}))
-    + "</div>\n				</li>\n				<li class=\"tooltip resource-item\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_RTB", {hash:{},data:data}))
-    + "' data-component-type=\"node\" data-type=\"AWS.VPC.RouteTable\">\n					<div class=\"resource-icon resource-icon-rt\"></div>\n					<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RTB", {hash:{},data:data}))
-    + "</div>\n				</li>\n				<li class=\"tooltip resource-item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.igwIsUsed), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.igwIsUsed), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "data-tooltip='";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.igwIsUsed), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' data-component-type=\"node\" data-type=\"AWS.VPC.InternetGateway\" data-option='{\"name\":\"Internet-gateway\"}'>\n					<div class=\"resource-icon resource-icon-igw\"></div>\n					<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_IGW", {hash:{},data:data}))
-    + "</div>\n				</li>\n				<li class=\"tooltip resource-item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vgwIsUsed), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vgwIsUsed), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " data-tooltip='";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vgwIsUsed), {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' data-component-type=\"node\" data-type=\"AWS.VPC.VPNGateway\" data-option='{\"name\":\"VPN-gateway\"}'>\n					<div class=\"resource-icon resource-icon-vgw\"></div>\n					<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VGW", {hash:{},data:data}))
-    + "</div>\n				</li>\n				<li class=\"tooltip resource-item\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_CGW", {hash:{},data:data}))
-    + "' data-component-type=\"node\" data-type=\"AWS.VPC.CustomerGateway\">\n					<div class=\"resource-icon resource-icon-cgw\"></div>\n					<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_CGW", {hash:{},data:data}))
-    + "</div>\n				</li>\n				";
-  return buffer;
-  }
-function program3(depth0,data) {
-  
   
   return "resource-disabled";
   }
 
-function program5(depth0,data) {
+function program3(depth0,data) {
   
   
   return "data-enable=\"false\"";
   }
 
-function program7(depth0,data) {
+function program5(depth0,data) {
   
   var buffer = "";
   buffer += " "
@@ -448,7 +393,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "";
   buffer += " "
@@ -457,7 +402,7 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program9(depth0,data) {
   
   var buffer = "";
   buffer += " "
@@ -466,7 +411,7 @@ function program11(depth0,data) {
   return buffer;
   }
 
-function program13(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "";
   buffer += " "
@@ -475,9 +420,47 @@ function program13(depth0,data) {
   return buffer;
   }
 
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isntClassic), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  buffer += "<div class=\"fixedaccordion-head\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_VPC", {hash:{},data:data}))
+    + "</div>\n<div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"item-wrap scroll-content\">\n		<ul class=\"resource-list\">\n			<li class=\"tooltip resource-item\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_SUBNET", {hash:{},data:data}))
+    + "' data-component-type=\"group\" data-type=\"AWS.VPC.Subnet\">\n				<div class=\"resource-icon resource-icon-subnet\"></div>\n				<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_SUBNET", {hash:{},data:data}))
+    + "</div>\n			</li>\n			<li class=\"tooltip resource-item\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_RTB", {hash:{},data:data}))
+    + "' data-component-type=\"node\" data-type=\"AWS.VPC.RouteTable\">\n				<div class=\"resource-icon resource-icon-rt\"></div>\n				<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RTB", {hash:{},data:data}))
+    + "</div>\n			</li>\n			<li class=\"tooltip resource-item ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.igwIsUsed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.igwIsUsed), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "data-tooltip='";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.igwIsUsed), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "' data-component-type=\"node\" data-type=\"AWS.VPC.InternetGateway\" data-option='{\"name\":\"Internet-gateway\"}'>\n				<div class=\"resource-icon resource-icon-igw\"></div>\n				<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_IGW", {hash:{},data:data}))
+    + "</div>\n			</li>\n			<li class=\"tooltip resource-item ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vgwIsUsed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vgwIsUsed), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " data-tooltip='";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vgwIsUsed), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "' data-component-type=\"node\" data-type=\"AWS.VPC.VPNGateway\" data-option='{\"name\":\"VPN-gateway\"}'>\n				<div class=\"resource-icon resource-icon-vgw\"></div>\n				<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VGW", {hash:{},data:data}))
+    + "</div>\n			</li>\n			<li class=\"tooltip resource-item\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_CGW", {hash:{},data:data}))
+    + "' data-component-type=\"node\" data-type=\"AWS.VPC.CustomerGateway\">\n				<div class=\"resource-icon resource-icon-cgw\"></div>\n				<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_CGW", {hash:{},data:data}))
+    + "</div>\n			</li>\n			<li class=\"tooltip resource-item\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ENI", {hash:{},data:data}))
+    + "' data-component-type=\"node\" data-type=\"AWS.VPC.NetworkInterface\">\n				<div class=\"resource-icon resource-icon-eni\"></div>\n				<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_ENI", {hash:{},data:data}))
+    + "</div>\n			</li>\n		</ul>\n	</div>\n</div>\n";
   return buffer;
   };
 TEMPLATE.resource_vpc_select_list=Handlebars.template(__TEMPLATE__);

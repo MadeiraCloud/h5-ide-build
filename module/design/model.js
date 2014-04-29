@@ -177,7 +177,7 @@
         console.log('describeInstancesOfASG', region);
         instance_ids = [];
         try {
-          asg_list = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group).allObjects();
+          asg_list = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
           for (_i = 0, _len = asg_list.length; _i < _len; _i++) {
             asg = asg_list[_i];
             asg_arn = asg.get("appId");

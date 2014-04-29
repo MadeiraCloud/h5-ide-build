@@ -75,7 +75,7 @@
     
      * handleTypes : String | Array(of string, regex)
                   ( Defined by user )
-        description : This attribute is used to determine which Property should be shown. The String can be one of constant.AWS_RESOURCE_TYPE.
+        description : This attribute is used to determine which Property should be shown. The String can be one of constant.RESTYPE.
         Examples :
             "AWS.EC2.Instance",
             "App:AWS.EC2.Instance"   ( `App:` means it only open when it's app mode )
@@ -529,7 +529,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
           } else if (Design.instance().modeIsApp()) {
             resId = uid;
-            effective = Design.modelClassForType(CONST.AWS_RESOURCE_TYPE.AWS_EC2_Instance).getEffectiveId(resId);
+            effective = Design.modelClassForType(CONST.RESTYPE.INSTANCE).getEffectiveId(resId);
             uid = effective.uid;
           }
         }
@@ -973,7 +973,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           resUID = this.model.get('uid');
           if (resUID) {
             resComp = Design.instance().component(resUID);
-            if (resComp && resComp.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup) {
+            if (resComp && resComp.type === constant.RESTYPE.SG) {
               return null;
             }
           }
@@ -1095,7 +1095,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           isImport: design.modeIsAppView(),
           opsEnable: agentData.enabled
         });
-        vpc = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC();
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         if (vpc) {
           this.set("vpcid", vpc.get("appId"));
         }
@@ -1113,7 +1113,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       addSubscription: function(data) {
         var SubscriptionModel, idx, sub, sub_comp, subs, _i, _len;
-        SubscriptionModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Subscription);
+        SubscriptionModel = Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION);
         subs = this.get("subscription");
         if (!data.uid) {
           sub_comp = new SubscriptionModel(data);
@@ -1151,8 +1151,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       getSubscription: function() {
         var SubscriptionModel, TopicModel, sub, subState, subs, _i, _len;
-        SubscriptionModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Subscription);
-        TopicModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic);
+        SubscriptionModel = Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION);
+        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
         subs = _.map(SubscriptionModel.allObjects(), function(sub) {
           return sub.toJSON();
         });
@@ -1171,7 +1171,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       getSubState: function() {
         var TopicModel, sub, subRes, subState, topic, topic_arn, _i, _len;
-        TopicModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic);
+        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
         topic = TopicModel.allObjects()[0];
         if (topic) {
           topic_arn = topic.get("appId");
@@ -1190,7 +1190,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       getAppSubscription: function() {
         var TopicModel, sub, subs, subscription, topic, topic_arn, _i, _len;
-        TopicModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic);
+        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
         topic = TopicModel.allObjects()[0];
         if (topic) {
           topic_arn = topic.get("appId");
@@ -1218,15 +1218,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       createAcl: function() {
         var ACLModel;
-        ACLModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl);
+        ACLModel = Design.modelClassForType(constant.RESTYPE.ACL);
         return (new ACLModel()).id;
       },
       getNetworkACL: function() {
         var ACLModel, defaultACL, networkAcls;
-        if (!Design.instance().typeIsVpc()) {
-          return;
-        }
-        ACLModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl);
+        ACLModel = Design.modelClassForType(constant.RESTYPE.ACL);
         networkAcls = [];
         defaultACL = null;
         _.each(ACLModel.allObjects(), (function(_this) {
@@ -1890,7 +1887,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         resource_id = parent_model.get("uid");
         resource = design.component(resource_id);
         if (resource) {
-          isELBParent = resource.type === constant.AWS_RESOURCE_TYPE.AWS_ELB;
+          isELBParent = resource.type === constant.RESTYPE.ELB;
           isStackParent = false;
           resource_id = resource.id;
         } else {
@@ -1902,7 +1899,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         enabledSG = {};
         enabledSGArr = [];
         SgAssoModel = Design.modelClassForType("SgAsso");
-        _ref = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup).allObjects();
+        _ref = Design.modelClassForType(constant.RESTYPE.SG).allObjects();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sg = _ref[_i];
           if (sg.isElbSg() && !(isELBParent || isStackParent)) {
@@ -2010,7 +2007,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         var elb, sg, _i, _len, _ref;
         sg = Design.instance().component(sgUID);
         if (sg.isElbSg()) {
-          _ref = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_ELB).allObjects();
+          _ref = Design.modelClassForType(constant.RESTYPE.ELB).allObjects();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             elb = _ref[_i];
             if (elb.getElbSg() === sg) {
@@ -2022,7 +2019,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       createNewSG: function() {
         var SgAsso, SgModel, component, model;
-        SgModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup);
+        SgModel = Design.modelClassForType(constant.RESTYPE.SG);
         model = new SgModel();
         component = Design.instance().component(this.parent_model.get("uid"));
         if (component) {
@@ -2357,14 +2354,14 @@ function program9(depth0,data) {
         component = Design.instance().component(uid);
         attr = component.toJSON();
         attr.uid = uid;
-        attr.classic_stack = !Design.instance().typeIsVpc();
+        attr.classic_stack = false;
         attr.can_set_ebs = component.isEbsOptimizedEnabled();
         attr.instance_type = component.getInstanceTypeList();
         attr.tenancy = component.isDefaultTenancy();
         attr.displayCount = attr.count - 1;
         eni = component.getEmbedEni();
         attr.number_disable = eni && eni.connections('RTB_Route').length > 0;
-        vpc = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).allObjects()[0];
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).allObjects()[0];
         attr.force_tenacy = vpc && !vpc.isDefaultTenancy();
         design = Design.instance();
         agentData = design.get('agent');
@@ -2383,7 +2380,7 @@ function program9(depth0,data) {
       },
       addKP: function(kp_name) {
         var KpModel, kp, _i, _len, _ref;
-        KpModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair);
+        KpModel = Design.modelClassForType(constant.RESTYPE.KP);
         _ref = KpModel.allObjects();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           kp = _ref[_i];
@@ -2431,7 +2428,7 @@ function program9(depth0,data) {
       setPublicIp: function(value) {
         Design.instance().component(this.get("uid")).getEmbedEni().set("assoPublicIp", value);
         if (value) {
-          return Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway).tryCreateIgw();
+          return Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
         }
       },
       getAmi: function() {
@@ -2514,7 +2511,7 @@ function program9(depth0,data) {
         Design.instance().component(this.get("uid")).getEmbedEni().setIp(eip_index, null, null, attach);
         this.attributes.eni.ips[eip_index].hasEip = attach;
         if (attach) {
-          Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway).tryCreateIgw();
+          Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
         }
         return null;
       },
@@ -3055,9 +3052,7 @@ function program58(depth0,data) {
       render: function() {
         var me;
         this.$el.html(template(this.model.attributes));
-        if (!Design.instance().typeIsClassic()) {
-          this.refreshIPList();
-        }
+        this.refreshIPList();
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
           val = +val;
@@ -3462,7 +3457,7 @@ function program58(depth0,data) {
         if (myInstanceComponent) {
           instance_id = myInstanceComponent.get('appId');
         } else {
-          effective = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).getEffectiveId(instance_id);
+          effective = Design.modelClassForType(constant.RESTYPE.INSTANCE).getEffectiveId(instance_id);
           myInstanceComponent = Design.instance().component(effective.uid);
           this.set('uid', effective.uid);
           this.set('mid', effective.mid);
@@ -3520,7 +3515,7 @@ function program58(depth0,data) {
             break;
           }
         }
-        TYPE_ENI = constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface;
+        TYPE_ENI = constant.RESTYPE.ENI;
         if (!id) {
           return null;
         }
@@ -4059,7 +4054,7 @@ function program26(depth0,data) {
     };
     InstanceModule = PropertyModule.extend({
       ideEvents: ideEvents,
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance, 'component_asg_instance'],
+      handleTypes: [constant.RESTYPE.INSTANCE, 'component_asg_instance'],
       onUnloadSubPanel: function(id) {
         sglist_main.onUnloadSubPanel(id);
         return null;
@@ -4687,16 +4682,16 @@ function program12(depth0,data) {
           attr = {
             name: "Instance-ENI Attachment",
             eniAsso: {
-              instance: cn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).get("name"),
-              eni: cn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface).get("name")
+              instance: cn.getTarget(constant.RESTYPE.INSTANCE).get("name"),
+              eni: cn.getTarget(constant.RESTYPE.ENI).get("name")
             }
           };
         } else if (cn.type === "ElbSubnetAsso") {
           attr = {
             name: "Load Balancer-Subnet Association",
             subnetAsso: {
-              elb: cn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_ELB).get("name"),
-              subnet: cn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).get("name")
+              elb: cn.getTarget(constant.RESTYPE.ELB).get("name"),
+              subnet: cn.getTarget(constant.RESTYPE.SUBNET).get("name")
             }
           };
         }
@@ -5093,7 +5088,7 @@ function program10(depth0,data) {
       render: function() {
         var comp, _ref;
         comp = Design.instance().component(this.model.get('uid'));
-        if (((_ref = Design.instance().get('state')) === 'Stopped' || _ref === "Stopping") && comp.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+        if (((_ref = Design.instance().get('state')) === 'Stopped' || _ref === "Stopping") && comp.type === constant.RESTYPE.ASG) {
           this.$el.html(MC.template.missingAsgWhenStop({
             asgName: comp.get('name')
           }));
@@ -5209,7 +5204,7 @@ function program10(depth0,data) {
       },
       createSGRuleData: function() {
         var sgList;
-        sgList = _.map(Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_SecurityGroup).allObjects(), function(sg) {
+        sgList = _.map(Design.modelClassForType(constant.RESTYPE.SG).allObjects(), function(sg) {
           return {
             id: sg.id,
             color: sg.color,
@@ -5217,7 +5212,7 @@ function program10(depth0,data) {
           };
         });
         return {
-          isClassic: Design.instance().typeIsClassic(),
+          isClassic: false,
           sgList: sgList
         };
       },
@@ -5824,7 +5819,7 @@ function program3(depth0,data) {
           device_name = realuid[2];
           lcUid = realuid[0];
           lc = Design.instance().component(lcUid);
-          volumeModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume);
+          volumeModel = Design.modelClassForType(constant.RESTYPE.VOL);
           allVolume = volumeModel && volumeModel.allObjects() || [];
           for (_i = 0, _len = allVolume.length; _i < _len; _i++) {
             v = allVolume[_i];
@@ -5859,7 +5854,7 @@ function program3(depth0,data) {
           device_name = realuid[2];
           lcUid = realuid[0];
           lc = Design.instance().component(lcUid);
-          volumeModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume);
+          volumeModel = Design.modelClassForType(constant.RESTYPE.VOL);
           allVolume = volumeModel && volumeModel.allObjects() || [];
           for (_i = 0, _len = allVolume.length; _i < _len; _i++) {
             v = allVolume[_i];
@@ -5912,7 +5907,7 @@ function program3(depth0,data) {
         var allVolume, device_name, lc, lcUid, realuid, uid, v, volume, volumeModel, _i, _len;
         uid = this.get("uid");
         volume = Design.instance().component(uid);
-        volumeModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume);
+        volumeModel = Design.modelClassForType(constant.RESTYPE.VOL);
         allVolume = volumeModel && volumeModel.allObjects() || [];
         if (!volume) {
           realuid = uid.split('_');
@@ -6304,7 +6299,7 @@ function program3(depth0,data) {
   define('module/design/property/volume/main',["../base/main", "./model", "./view", "./app_model", "./app_view", "constant"], function(PropertyModule, model, view, app_model, app_view, constant) {
     var VolumeModule;
     VolumeModule = PropertyModule.extend({
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_EBS_Volume, "component_asg_volume"],
+      handleTypes: [constant.RESTYPE.VOL, "component_asg_volume"],
       setupStack: function() {
         var me;
         me = this;
@@ -6352,7 +6347,7 @@ function program3(depth0,data) {
         this.getAppData(uid);
         attr = component.toJSON();
         attr.uid = uid;
-        attr.isVpc = !Design.instance().typeIsClassic();
+        attr.isVpc = true;
         pingArr = component.getHealthCheckTarget();
         attr.pingProtocol = pingArr[0];
         attr.pingPort = pingArr[1];
@@ -6369,12 +6364,12 @@ function program3(depth0,data) {
           }
         }
         if (!attr.isVpc) {
-          AzModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone);
+          AzModel = Design.modelClassForType(constant.RESTYPE.AZ);
           connectedAzMap = {};
           _ref1 = component.connectionTargets("ElbAmiAsso");
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             ami = _ref1[_j];
-            if (ami.parent().type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group) {
+            if (ami.parent().type === constant.RESTYPE.ASG) {
               az = ami.parent().parent();
             } else {
               az = ami.parent();
@@ -6386,7 +6381,7 @@ function program3(depth0,data) {
             return " " + g[1].toUpperCase();
           };
           filterFunc = function(ch) {
-            return ch.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance;
+            return ch.type === constant.RESTYPE.INSTANCE;
           };
           azArr = AzModel.allPossibleAZ();
           for (_k = 0, _len2 = azArr.length; _k < _len2; _k++) {
@@ -6408,7 +6403,7 @@ function program3(depth0,data) {
           attr.azArray = azArr;
         }
         currentSSLCert = component.connectionTargets("SslCertUsage")[0];
-        allCertModelAry = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_IAM_ServerCertificate).allObjects();
+        allCertModelAry = Design.modelClassForType(constant.RESTYPE.IAM).allObjects();
         attr.noSSLCert = true;
         attr.sslCertItem = _.map(allCertModelAry, function(sslCertModel) {
           if (currentSSLCert === sslCertModel) {
@@ -6451,8 +6446,8 @@ function program3(depth0,data) {
       setScheme: function(value) {
         value = value === "internal";
         Design.instance().component(this.get("uid")).setInternal(value);
-        if (!value && Design.instance().typeIsVpc()) {
-          Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway).tryCreateIgw();
+        if (!value) {
+          Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
         }
         return null;
       },
@@ -6502,7 +6497,7 @@ function program3(depth0,data) {
       },
       addCert: function(value) {
         var SslCertModel;
-        SslCertModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_IAM_ServerCertificate);
+        SslCertModel = Design.modelClassForType(constant.RESTYPE.IAM);
         (new SslCertModel(value)).assignTo(Design.instance().component(this.get("uid")));
         return null;
       },
@@ -6534,7 +6529,7 @@ function program3(depth0,data) {
       },
       getOtherCertName: function(currentName) {
         var allCertModelAry, otherCertNameAry;
-        allCertModelAry = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_IAM_ServerCertificate).allObjects();
+        allCertModelAry = Design.modelClassForType(constant.RESTYPE.IAM).allObjects();
         otherCertNameAry = [];
         _.each(allCertModelAry, function(sslCertModel) {
           var sslCertName;
@@ -7565,8 +7560,8 @@ function program31(depth0,data) {
             }
           });
         }
-        elb.isClassic = Design.instance().typeIsClassic();
-        elb.defaultVPC = Design.instance().typeIsDefaultVpc();
+        elb.isClassic = false;
+        elb.defaultVPC = false;
         elb.distribution = [];
         elbDistrMap = {};
         instanceStateObj = elb.InstanceState;
@@ -7577,7 +7572,7 @@ function program31(depth0,data) {
             instanceStateCode = stateObj.ReasonCode;
             instanceState = stateObj.State;
             instanceStateDescription = stateObj.Description;
-            instanceCompObj = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance).getEffectiveId(instanceId);
+            instanceCompObj = Design.modelClassForType(constant.RESTYPE.INSTANCE).getEffectiveId(instanceId);
             instanceUID = instanceCompObj.uid;
             instanceComp = Design.instance().component(instanceUID);
             regionName = '';
@@ -7595,7 +7590,7 @@ function program31(depth0,data) {
               regionComp = null;
               if (instanceComp.parent() && instanceComp.parent().parent()) {
                 regionComp = instanceComp.parent().parent();
-                if (instanceComp.type === constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration) {
+                if (instanceComp.type === constant.RESTYPE.LC) {
                   regionComp = instanceComp.parent().parent().parent();
                 }
               }
@@ -7883,7 +7878,7 @@ function program25(depth0,data) {
   define('module/design/property/elb/main',['../base/main', './model', './view', './app_model', './app_view', "../sglist/main", 'constant', 'event'], function(PropertyModule, model, view, app_model, app_view, sglist_main, constant, ide_event) {
     var ElbModule;
     ElbModule = PropertyModule.extend({
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_ELB,
+      handleTypes: constant.RESTYPE.ELB,
       onUnloadSubPanel: function(id) {
         sglist_main.onUnloadSubPanel(id);
         return null;
@@ -7960,7 +7955,7 @@ function program25(depth0,data) {
           return;
         }
         used_list = {};
-        AZClass = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone);
+        AZClass = Design.modelClassForType(constant.RESTYPE.AZ);
         _.each(AZClass.allObjects(), function(element) {
           used_list[element.get("name")] = true;
           return null;
@@ -8055,7 +8050,7 @@ function program2(depth0,data) {
     };
     AZModule = PropertyModule.extend({
       ideEvents: ideEvents,
-      handleTypes: "Stack:" + constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone,
+      handleTypes: "Stack:" + constant.RESTYPE.AZ,
       setupStack: function() {
         var me;
         me = this;
@@ -8063,7 +8058,7 @@ function program2(depth0,data) {
           var filter, name, oldZone, res_type;
           oldZone = me.model.get("name");
           me.model.setName(newZone);
-          res_type = constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone;
+          res_type = constant.RESTYPE.AZ;
           filter = function(data) {
             return data.option.name === name;
           };
@@ -8101,7 +8096,7 @@ function program2(depth0,data) {
         if (!subnet_component) {
           return false;
         }
-        ACLModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl);
+        ACLModel = Design.modelClassForType(constant.RESTYPE.ACL);
         subnet_acl = subnet_component.connectionTargets("AclAsso")[0];
         defaultACL = null;
         networkACLs = [];
@@ -8175,7 +8170,7 @@ function program2(depth0,data) {
       },
       createAcl: function() {
         var ACLModel, acl;
-        ACLModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl);
+        ACLModel = Design.modelClassForType(constant.RESTYPE.ACL);
         acl = new ACLModel();
         this.setACL(acl.id);
         return acl.id;
@@ -8605,7 +8600,7 @@ function program1(depth0,data) {
       return null;
     });
     SubnetModule = PropertyModule.extend({
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet,
+      handleTypes: constant.RESTYPE.SUBNET,
       onUnloadSubPanel: function(id) {
         if (id === "ACL" && this.view.refreshACLList) {
           return this.view.refreshACLList();
@@ -8664,8 +8659,8 @@ function program1(depth0,data) {
           appData = MC.data.resource_list[Design.instance().region()];
           vpc = appData[myVPCComponent.get('appId')];
           vpc = $.extend(true, {}, vpc);
-          TYPE_RTB = constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable;
-          TYPE_ACL = constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl;
+          TYPE_RTB = constant.RESTYPE.RT;
+          TYPE_ACL = constant.RESTYPE.ACL;
           RtbModel = Design.modelClassForType(TYPE_RTB);
           AclModel = Design.modelClassForType(TYPE_ACL);
           vpc.mainRTB = RtbModel.getMainRouteTable();
@@ -9250,8 +9245,8 @@ function program41(depth0,data) {
         }
         vpc = $.extend(true, {}, vpc);
         vpc.name = myVPCComponent.get('name');
-        TYPE_RTB = constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable;
-        TYPE_ACL = constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkAcl;
+        TYPE_RTB = constant.RESTYPE.RT;
+        TYPE_ACL = constant.RESTYPE.ACL;
         RtbModel = Design.modelClassForType(TYPE_RTB);
         AclModel = Design.modelClassForType(TYPE_ACL);
         vpc.mainRTB = RtbModel.getMainRouteTable();
@@ -9473,7 +9468,7 @@ function program16(depth0,data) {
   define('module/design/property/vpc/main',['../base/main', './model', './view', './app_model', './app_view', 'constant'], function(PropertyModule, model, view, app_model, app_view, constant) {
     var VPCModule;
     VPCModule = PropertyModule.extend({
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC,
+      handleTypes: constant.RESTYPE.VPC,
       initStack: function() {
         this.model = model;
         this.model.isAppEdit = false;
@@ -9520,10 +9515,10 @@ function program16(depth0,data) {
         var VPCModel, cn, component, data, design, res_type, routes, subnet, theOtherPort, _i, _len, _ref;
         design = Design.instance();
         component = design.component(uid);
-        res_type = constant.AWS_RESOURCE_TYPE;
+        res_type = constant.RESTYPE;
         if (component.node_line) {
-          subnet = component.getTarget(res_type.AWS_VPC_Subnet);
-          component = component.getTarget(res_type.AWS_VPC_RouteTable);
+          subnet = component.getTarget(res_type.SUBNET);
+          component = component.getTarget(res_type.RT);
           if (subnet) {
             this.set({
               title: 'Subnet-RT Association',
@@ -9535,7 +9530,7 @@ function program16(depth0,data) {
             return;
           }
         }
-        VPCModel = Design.modelClassForType(res_type.AWS_VPC_VPC);
+        VPCModel = Design.modelClassForType(res_type.VPC);
         routes = [];
         data = {
           uid: component.id,
@@ -9551,12 +9546,12 @@ function program16(depth0,data) {
           if (cn.type !== "RTB_Route") {
             continue;
           }
-          theOtherPort = cn.getOtherTarget(res_type.AWS_VPC_RouteTable);
+          theOtherPort = cn.getOtherTarget(res_type.RT);
           routes.push({
             name: theOtherPort.get("name"),
             type: theOtherPort.type,
             ref: cn.id,
-            isVgw: theOtherPort.type === res_type.AWS_VPC_VPNGateway,
+            isVgw: theOtherPort.type === res_type.VGW,
             isProp: cn.get("propagate"),
             cidr_set: cn.get("routes")
           });
@@ -9585,7 +9580,7 @@ function program16(depth0,data) {
             }
           }
         }
-        now_main_rtb = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable).getMainRouteTable();
+        now_main_rtb = Design.modelClassForType(constant.RESTYPE.RT).getMainRouteTable();
         if (aws_rt_is_main && now_main_rtb.id !== component.id) {
           return this.set('main', 'Yes (Set as No after applying updates)');
         } else if (aws_rt_is_main && now_main_rtb.id === component.id) {
@@ -9600,7 +9595,7 @@ function program16(depth0,data) {
         var cn, component;
         component = Design.instance().component(this.get("uid"));
         cn = _.find(component.connections(), function(cn) {
-          return cn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway) !== null;
+          return cn.getTarget(constant.RESTYPE.VGW) !== null;
         });
         cn.setPropagate(propagate);
         return null;
@@ -9610,7 +9605,7 @@ function program16(depth0,data) {
         return null;
       },
       isCidrConflict: function(inputValue, cidr) {
-        return Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).isCidrConflict(inputValue, cidr);
+        return Design.modelClassForType(constant.RESTYPE.SUBNET).isCidrConflict(inputValue, cidr);
       }
     });
     return new RTBModel();
@@ -9973,13 +9968,13 @@ function program20(depth0,data) {
       init: function(rtb_uid) {
         var appData, asso, connectedTo, data, has_main, has_subnet, i, key, propagate, routeTable, rtb, rtbOrConn, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         rtbOrConn = Design.instance().component(rtb_uid);
-        if (rtbOrConn.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable) {
+        if (rtbOrConn.type === constant.RESTYPE.RT) {
           routeTable = rtbOrConn;
         } else {
           data = {};
-          connectedTo = rtbOrConn.getOtherTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
-          routeTable = rtbOrConn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable);
-          if (connectedTo.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet) {
+          connectedTo = rtbOrConn.getOtherTarget(constant.RESTYPE.RT);
+          routeTable = rtbOrConn.getTarget(constant.RESTYPE.RT);
+          if (connectedTo.type === constant.RESTYPE.SUBNET) {
             data.subnet = connectedTo.get('name');
             has_subnet = true;
           }
@@ -10173,7 +10168,7 @@ function program11(depth0,data) {
       return this.view.render();
     };
     RTBModule = PropertyModule.extend({
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_VPC_RouteTable, "RTB_Route", "RTB_Asso"],
+      handleTypes: [constant.RESTYPE.RT, "RTB_Route", "RTB_Asso"],
       initStack: function() {
         this.model = model;
         this.model.isAppEdit = false;
@@ -10204,7 +10199,7 @@ function program11(depth0,data) {
       init: function(id) {
         var appData, appId, component, data, isIGW, item, vpc, vpcId;
         component = Design.instance().component(id);
-        isIGW = component.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway;
+        isIGW = component.type === constant.RESTYPE.IGW;
         this.set("isIGW", isIGW);
         if (this.isApp) {
           this.set("readOnly", true);
@@ -10373,7 +10368,7 @@ function program15(depth0,data) {
   define('module/design/property/static/main',['../base/main', './model', './view', 'constant'], function(PropertyModule, model, view, constant) {
     var StaticModule;
     StaticModule = PropertyModule.extend({
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway, constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway],
+      handleTypes: [constant.RESTYPE.VGW, constant.RESTYPE.IGW],
       initStack: function() {
         this.model = model;
         this.view = view;
@@ -10666,7 +10661,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   define('module/design/property/cgw/main',['../base/main', './model', './view', './app_model', './app_view', 'constant'], function(PropertyModule, model, view, app_model, app_view, constant) {
     var CGWModule;
     CGWModule = PropertyModule.extend({
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway,
+      handleTypes: constant.RESTYPE.CGW,
       setupStack: function() {
         var me;
         me = this;
@@ -10765,8 +10760,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       init: function(uid) {
         var cgw, vgw, vpn;
         vpn = Design.instance().component(uid);
-        vgw = vpn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway);
-        cgw = vpn.getTarget(constant.AWS_RESOURCE_TYPE.AWS_VPC_CustomerGateway);
+        vgw = vpn.getTarget(constant.RESTYPE.VGW);
+        cgw = vpn.getTarget(constant.RESTYPE.CGW);
         if (this.isApp || this.isAppEdit) {
           this.getAppData(vpn.get("appId"));
         }
@@ -10809,7 +10804,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.set(vpn);
       },
       isCidrConflict: function(inputValue, cidr) {
-        return Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet).isCidrConflict(inputValue, cidr);
+        return Design.modelClassForType(constant.RESTYPE.SUBNET).isCidrConflict(inputValue, cidr);
       }
     });
     return new VPNModel();
@@ -11176,7 +11171,7 @@ function program29(depth0,data) {
   define('module/design/property/vpn/main',['../base/main', './model', './view', 'constant', 'event'], function(PropertyModule, model, view, constant, ide_event) {
     var VPNModule;
     VPNModule = PropertyModule.extend({
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNConnection,
+      handleTypes: constant.RESTYPE.VPN,
       initStack: function() {
         this.view = view;
         this.model = model;
@@ -11253,7 +11248,7 @@ function program29(depth0,data) {
         Design.instance().component(this.get("uid")).setIp(eip_index, null, null, attach);
         this.attributes.ips[eip_index].hasEip = attach;
         if (attach) {
-          Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway).tryCreateIgw();
+          Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
         }
         return null;
       },
@@ -11955,7 +11950,7 @@ function program17(depth0,data) {
     };
     EniModule = PropertyModule.extend({
       ideEvents: ideEvents,
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_VPC_NetworkInterface, "component_eni_group"],
+      handleTypes: [constant.RESTYPE.ENI, "component_eni_group"],
       onUnloadSubPanel: function(id) {
         sglist_main.onUnloadSubPanel(id);
         return null;
@@ -12085,7 +12080,7 @@ function program17(depth0,data) {
           isDefault: aclObj.isDefault(),
           appId: aclObj.get("appId"),
           name: aclObj.get("name"),
-          vpcId: Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC).theVPC().get("appId"),
+          vpcId: Design.modelClassForType(constant.RESTYPE.VPC).theVPC().get("appId"),
           rules: null,
           isApp: this.isApp,
           associations: _.sortBy(assos, name)
@@ -12544,9 +12539,9 @@ function program3(depth0,data) {
       },
       showCreateRuleModal: function() {
         var SubnetModel, data;
-        SubnetModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_Subnet);
+        SubnetModel = Design.modelClassForType(constant.RESTYPE.SUBNET);
         data = {
-          classic: Design.instance().typeIsClassic(),
+          classic: false,
           subnets: _.map(SubnetModel.allObjects(), function(subnet) {
             return {
               name: subnet.get("name"),
@@ -12833,7 +12828,7 @@ function program3(depth0,data) {
         data.isEditable = this.isAppEdit;
         data.app_view = Design.instance().modeIsAppView();
         this.set(data);
-        this.set("displayAssociatePublicIp", !Design.instance().typeIsClassic());
+        this.set("displayAssociatePublicIp", true);
         this.set("monitorEnabled", this.isMonitoringEnabled());
         this.set("can_set_ebs", this.lc.isEbsOptimizedEnabled());
         this.getInstanceType();
@@ -12895,7 +12890,7 @@ function program3(depth0,data) {
       setPublicIp: function(value) {
         this.lc.set("publicIp", value);
         if (value) {
-          return Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway).tryCreateIgw();
+          return Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
         }
       },
       setInstanceType: function(value) {
@@ -12954,7 +12949,7 @@ function program3(depth0,data) {
       },
       addKP: function(kp_name) {
         var KpModel, kp, _i, _len, _ref;
-        KpModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_EC2_KeyPair);
+        KpModel = Design.modelClassForType(constant.RESTYPE.KP);
         _ref = KpModel.allObjects();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           kp = _ref[_i];
@@ -13645,7 +13640,7 @@ function program8(depth0,data) {
       return PropertyModule.loadSubPanel("STATIC", id);
     });
     LCModule = PropertyModule.extend({
-      handleTypes: constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_LaunchConfiguration,
+      handleTypes: constant.RESTYPE.LC,
       onUnloadSubPanel: function(id) {
         sglist_main.onUnloadSubPanel(id);
         return null;
@@ -13712,7 +13707,7 @@ function program8(depth0,data) {
         n = component.getNotification();
         this.set("notification", n);
         this.set("has_notification", n.instanceLaunch || n.instanceLaunchError || n.instanceTerminate || n.instanceTerminateError || n.test);
-        this.set("has_sns_sub", !!(Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Subscription).allObjects().length));
+        this.set("has_sns_sub", !!(Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION).allObjects().length));
         this.set("policies", _.map(data.policies, function(p) {
           data = $.extend(true, {}, p.attributes);
           data.cooldown = Math.round(data.cooldown / 60);
@@ -13789,10 +13784,10 @@ function program8(depth0,data) {
           asg = asg.get('originalAsg');
         }
         if (policy_detail.sendNotification) {
-          Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic).ensureExistence();
+          Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
         }
         if (!policy_detail.uid) {
-          PolicyModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_ScalingPolicy);
+          PolicyModel = Design.modelClassForType(constant.RESTYPE.SP);
           policy = new PolicyModel(policy_detail);
           asg.addScalingPolicy(policy);
           policy_detail.uid = policy.id;
@@ -14774,7 +14769,7 @@ function program4(depth0,data) {
           n = component.getNotification();
           this.set("notification", n);
           this.set("has_notification", n.instanceLaunch || n.instanceLaunchError || n.instanceTerminate || n.instanceTerminateError || n.test);
-          this.set("has_sns_sub", !!(Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Subscription).allObjects().length));
+          this.set("has_sns_sub", !!(Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION).allObjects().length));
           this.set("policies", _.map(data.policies, function(p) {
             data = $.extend(true, {}, p.attributes);
             data.cooldown = Math.round(data.cooldown / 60);
@@ -14975,10 +14970,10 @@ function program4(depth0,data) {
           asg = asg.get('originalAsg');
         }
         if (policy_detail.sendNotification) {
-          Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_SNS_Topic).ensureExistence();
+          Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
         }
         if (!policy_detail.uid) {
-          PolicyModel = Design.modelClassForType(constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_ScalingPolicy);
+          PolicyModel = Design.modelClassForType(constant.RESTYPE.SP);
           policy = new PolicyModel(policy_detail);
           asg.addScalingPolicy(policy);
           policy_detail.uid = policy.id;
@@ -15976,7 +15971,7 @@ function program50(depth0,data) {
   define('module/design/property/asg/main',['../base/main', './model', './view', 'constant', './app_model', './app_view'], function(PropertyModule, model, view, constant, app_model, app_view) {
     var AsgModule;
     AsgModule = PropertyModule.extend({
-      handleTypes: [constant.AWS_RESOURCE_TYPE.AWS_AutoScaling_Group, "ExpandedAsg"],
+      handleTypes: [constant.RESTYPE.ASG, "ExpandedAsg"],
       initStack: function() {
         this.model = model;
         this.view = view;

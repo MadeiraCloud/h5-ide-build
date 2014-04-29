@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './stack_classic_template', './app_template', './app_classic_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, stack_classic_tmpl, app_tmpl, app_classic_tmpl, appview_tmpl, JsonExporter, download, constant) {
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, download, constant) {
     var ToolbarView;
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -30,7 +30,7 @@
         'click .toolbar-visual-ops-switch': 'opsOptionChanged'
       },
       render: function(type, flag) {
-        var data, lines, _ref, _ref1;
+        var data, lines;
         console.log('toolbar render');
         lines = {
           icon: '',
@@ -58,11 +58,7 @@
         }
         this.model.attributes.lines = lines;
         data = MC.common.other.canvasData.data(true);
-        if (Tabbar.current === 'stack' && data && ((_ref = data.platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC)) {
-          $('#main-toolbar').html(stack_classic_tmpl(this.model.attributes));
-        } else if (Tabbar.current === 'app' && data && ((_ref1 = data.platform) === MC.canvas.PLATFORM_TYPE.EC2_CLASSIC || _ref1 === MC.canvas.PLATFORM_TYPE.DEFAULT_VPC)) {
-          $('#main-toolbar').html(app_classic_tmpl(this.model.attributes));
-        } else if (Tabbar.current === 'appview') {
+        if (Tabbar.current === 'appview') {
           $('#main-toolbar').html(appview_tmpl(this.model.attributes));
         } else if (type === 'app' || type === 'OPEN_APP') {
           $('#main-toolbar').html(app_tmpl(this.model.attributes));

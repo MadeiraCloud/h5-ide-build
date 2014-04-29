@@ -17,7 +17,7 @@
           var ami_ids, error_message, obj, vpc_id;
           console.log('AWS_RESOURCE_RETURN', result);
           if (result && !result.is_error && result.resolved_data && result.resolved_data.length > 0) {
-            vpc_id = result.param[4][constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC].id[0];
+            vpc_id = result.param[4][constant.RESTYPE.VPC].id[0];
             obj = MC.common.other.setCacheMap(vpc_id, result, null, null);
             ami_ids = MC.forge.app.getAmis(result.resolved_data[0]);
             if (_.isEmpty(ami_ids)) {
@@ -28,7 +28,7 @@
             }
             return null;
           } else if (result) {
-            vpc_id = result.param[4][constant.AWS_RESOURCE_TYPE.AWS_VPC_VPC].id[0];
+            vpc_id = result.param[4][constant.RESTYPE.VPC].id[0];
             obj = MC.common.other.setCacheMap(vpc_id, null, 'ERROR', null, null);
             if (!result.is_error && _.isEmpty(result.resolved_data)) {
               MC.common.other.delUnmanaged(vpc_id);

@@ -33,7 +33,7 @@
           return null;
         });
         me.on('AWS_QUICKSTART_RETURN', function(result) {
-          var ami_list, i, instanceTypeData, instanceTypeMap, quickstart_amis, region_ami_instance_type, region_name, _i, _j, _len, _len1, _ref;
+          var ami_list, i, instanceTypeData, instanceTypeMap, quickstart_amis, region_ami_instance_type, region_name, _i, _len, _ref;
           region_name = result.param[3];
           console.log('AWS_QUICKSTART_RETURN: ' + region_name);
           if (!result.is_error) {
@@ -116,17 +116,7 @@
                 }
               }
             });
-            quickstart_amis = [];
-            if (MC.canvas_data.platform === 'ec2-classic') {
-              for (_i = 0, _len = ami_list.length; _i < _len; _i++) {
-                i = ami_list[_i];
-                if (i.name.indexOf('ami-vpc-nat') < 0) {
-                  quickstart_amis.push(i);
-                }
-              }
-            } else {
-              quickstart_amis = ami_list;
-            }
+            quickstart_amis = ami_list;
             console.log('get quistart ami: -> data region: ' + region_name + ', stack region: ' + MC.canvas_data.region);
             if (region_name === MC.canvas_data.region) {
               me.set('quickstart_ami', quickstart_amis);
@@ -146,8 +136,8 @@
                 'item': []
               };
               _ref = result.resolved_data.zone;
-              for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-                i = _ref[_j];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                i = _ref[_i];
                 MC.data.config[region_name].zone.item.push({
                   'regionName': region_name,
                   'zoneName': i,
@@ -360,7 +350,7 @@
           if (MC.data.current_tab_type !== 'NEW_STACK') {
             $.each(res.item, function(idx, value) {
               return $.each(MC.canvas_data.component, function(i, zone) {
-                if (zone.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
+                if (zone.type === constant.RESTYPE.AZ) {
                   if (zone.resource.ZoneName === value.zoneName) {
                     res.item[idx].isUsed = true;
                     return null;
@@ -386,7 +376,7 @@
               if (MC.data.current_tab_type !== 'NEW_STACK') {
                 $.each(res.item, function(idx, value) {
                   return $.each(MC.canvas_data.component, function(i, zone) {
-                    if (zone.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_AvailabilityZone) {
+                    if (zone.type === constant.RESTYPE.AZ) {
                       if (zone.resource.ZoneName === value.zoneName) {
                         res.item[idx].isUsed = true;
                         return null;
@@ -424,22 +414,12 @@
         }
       },
       quickstartService: function(region_name) {
-        var ami_list, i, me, quickstart_amis, _i, _len;
+        var ami_list, me, quickstart_amis;
         me = this;
         me.set('quickstart_ami', null);
         if (MC.data.config[region_name] && MC.data.config[region_name].ami_list) {
           ami_list = MC.data.config[region_name].ami_list;
-          quickstart_amis = [];
-          if (MC.canvas_data.platform === 'ec2-classic') {
-            for (_i = 0, _len = ami_list.length; _i < _len; _i++) {
-              i = ami_list[_i];
-              if (i.name.indexOf('ami-vpc-nat') < 0) {
-                quickstart_amis.push(i);
-              }
-            }
-          } else {
-            quickstart_amis = ami_list;
-          }
+          quickstart_amis = ami_list;
           me.set('quickstart_ami', quickstart_amis);
           me.myAmiService(region_name);
           me.favoriteAmiService(region_name);
@@ -490,7 +470,7 @@
         }
         _.map(MC.canvas_data.component, function(value) {
           var _ref;
-          if (value.type === constant.AWS_RESOURCE_TYPE.AWS_EC2_Instance) {
+          if (value.type === constant.RESTYPE.INSTANCE) {
             if (MC.data.dict_ami) {
               if (!MC.data.dict_ami[value.resource.ImageId]) {
                 if (_ref = value.resource.ImageId, __indexOf.call(stack_ami_list, _ref) < 0) {
@@ -605,7 +585,7 @@
         var isUsed;
         isUsed = false;
         $.each(MC.canvas_data.component, function(key, comp) {
-          if (comp.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_InternetGateway) {
+          if (comp.type === constant.RESTYPE.IGW) {
             isUsed = true;
             return false;
           }
@@ -616,7 +596,7 @@
         var isUsed;
         isUsed = false;
         $.each(MC.canvas_data.component, function(key, comp) {
-          if (comp.type === constant.AWS_RESOURCE_TYPE.AWS_VPC_VPNGateway) {
+          if (comp.type === constant.RESTYPE.VGW) {
             isUsed = true;
             return false;
           }

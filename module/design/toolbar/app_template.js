@@ -268,7 +268,7 @@ function program36(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_ZOOM_OUT", {hash:{},data:data}))
-    + "'></button>\n\n<button class=\"btn-toolbar icon-export-png tooltip seperator\" id=\"toolbar-export-png\" data-tooltip='"
+    + "'></button>\n\n<button class=\"btn-toolbar icon-export-png tooltip seperator\" data-analytics-plus=\"export_png\" id=\"toolbar-export-png\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
     + "'></button>\n\n<!-- line style -->\n<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\n  <button class=\"selection tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_LINESTYLE", {hash:{},data:data}))

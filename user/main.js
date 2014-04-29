@@ -1,5 +1,5 @@
 (function() {
-  var API_HOST, API_PROTO, COOKIE_OPTION, ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, guid, handleErrorCode, handleNetError, i18n, ideHttps, init, l, langType, loadLang, render, sendEmail, setCredit, shouldIdeHttps, showErrorMessage, userRoute, validPassword, xhr;
+  var API_HOST, API_PROTO, ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, goto500, guid, handleErrorCode, handleNetError, i18n, ideHttps, init, l, langType, loadLang, render, sendEmail, setCredit, shouldIdeHttps, showErrorMessage, userRoute, validPassword, xhr;
 
   API_HOST = "api.visualops.io";
 
@@ -41,9 +41,15 @@
     return;
   }
 
-  COOKIE_OPTION = {
-    expires: 30,
-    path: '/'
+  goto500 = function() {
+    var hash;
+    hash = window.location.pathname;
+    if (hash.length === 1) {
+      hash = "";
+    } else {
+      hash = hash.replace("/", "#");
+    }
+    window.location = '/500/' + hash;
   };
 
   xhr = null;
@@ -75,7 +81,6 @@
     hashArray = window.location.hash.split('#').pop().split('/');
     pathArray = window.location.pathname.split('/');
     pathArray.shift();
-    console.log(pathArray, hashArray);
     return typeof routes[_name = pathArray[0]] === "function" ? routes[_name](pathArray, hashArray) : void 0;
   };
 
@@ -89,7 +94,7 @@
   };
 
   api = function(option) {
-    xhr = $.ajax({
+    return xhr = $.ajax({
       url: API_PROTO + API_HOST + option.url,
       dataType: 'json',
       type: 'POST',
@@ -103,11 +108,11 @@
         return option.success(res.result[1], res.result[0]);
       },
       error: function(xhr, status, error) {
-        console.log(error);
-        return option.error(status, -1);
+        if (status !== 'abort') {
+          return option.error(status, -1);
+        }
       }
     });
-    return console.log('Sending Ajax Request');
   };
 
   Handlebars.registerHelper('i18n', function(str) {
@@ -126,15 +131,13 @@
         return $("#main-body").html(template());
       },
       success: function(data) {
-        window.langsrc = data;
-        return console.log('Success', data);
+        return window.langsrc = data;
       },
       error: function(error) {
-        window.location = "/500";
+        goto500();
         return console.log(error, "error");
       }
     }).done(function() {
-      console.log('Loaded!', langsrc);
       return cb();
     });
   };
@@ -181,7 +184,6 @@
         if (hashTarget === 'password') {
           return checkPassKey(hashArray[1], function(result) {
             if (result) {
-              console.log('Right Verify Code!');
               render("#password-template");
               $('form.box-body').find('input').eq(0).focus();
               return $('#reset-form').on('submit', function(e) {
@@ -189,13 +191,11 @@
                 if (validPassword()) {
                   $("#reset-password").attr('disabled', true).val(langsrc.reset.reset_waiting);
                   ajaxChangePassword(hashArray, $("#reset-pw").val());
-                  console.log('jump...');
                 }
                 return false;
               });
             } else {
-              window.location.hash = "expire";
-              return console.log("Error Verify Code!");
+              return window.location.hash = "expire";
             }
           });
         } else if (hashTarget === "expire") {
@@ -216,7 +216,6 @@
             }
           });
           return $('#reset-form').on('submit', function() {
-            console.log('sendding....');
             $('#reset-pw-email').off('keyup');
             $("#reset-btn").attr('disabled', true);
             $("#reset-pw-email").attr('disabled', true);
@@ -232,7 +231,6 @@
           window.location = '/';
         }
         deepth = 'login';
-        console.log(pathArray, hashArray);
         render("#login-template");
         $user = $("#login-user");
         $password = $("#login-password");
@@ -274,12 +272,10 @@
       'register': function(pathArray, hashArray) {
         var $email, $form, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
         deepth = 'register';
-        console.log(pathArray, hashArray);
         if (hashArray[0] === 'success') {
           render("#success-template");
           $('#register-get-start').click(function() {
-            window.location = "/";
-            return console.log('Getting start...');
+            return window.location = "/";
           });
           return false;
         }
@@ -401,8 +397,7 @@
             xhr.abort();
           }
           window.clearTimeout(usernameTimeout);
-          console.log('aborted!', usernameTimeout);
-          usernameTimeout = window.setTimeout(function() {
+          return usernameTimeout = window.setTimeout(function() {
             return checkUserExist([username, null], function(statusCode) {
               if (!statusCode) {
                 if (!checkUsername()) {
@@ -411,7 +406,6 @@
                 status.removeClass('error-status').addClass('verification-status').show().text(langsrc.register.username_available);
                 return typeof cb === "function" ? cb(1) : void 0;
               } else if (statusCode === 'error') {
-                console.log('NetWork Error while checking username');
                 $('.error-msg').eq(0).text(langsrc.service['NETWORK_ERROR']).show();
                 return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
               } else {
@@ -420,14 +414,13 @@
               }
             });
           }, 500);
-          return console.log('Setup a new validation request');
         };
         ajaxCheckEmail = function(email, status, cb) {
           if (xhr != null) {
             xhr.abort();
           }
           window.clearTimeout(emailTimeout);
-          emailTimeout = window.setTimeout(function() {
+          return emailTimeout = window.setTimeout(function() {
             return checkUserExist([null, email], function(statusCode) {
               if (!statusCode) {
                 if (!checkEmail()) {
@@ -436,7 +429,6 @@
                 status.removeClass('error-status').addClass('verification-status').show().text(langsrc.register.email_available);
                 return typeof cb === "function" ? cb(1) : void 0;
               } else if (statusCode === 'error') {
-                console.log('NetWork Error while checking username');
                 $('.error-msg').eq(0).text(langsrc.service['NETWORK_ERROR']).show();
                 return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
               } else {
@@ -445,7 +437,6 @@
               }
             });
           }, 500);
-          return console.log('Set up a new validation request');
         };
         resetRegForm = function(force) {
           if (force) {
@@ -483,7 +474,6 @@
           e.preventDefault();
           $('.error-msg').removeAttr('style');
           if ($username.next().hasClass('error-status') || $email.next().hasClass('error-status')) {
-            console.log("Error Message Exist");
             return false;
           }
           userResult = checkUsername();
@@ -493,7 +483,6 @@
             return false;
           }
           $('#register-btn').attr('disabled', true).val(langsrc.register.reginster_waiting);
-          console.log('check user input here.');
           return checkUsername(e, function(usernameAvl) {
             if (!usernameAvl) {
               resetRegForm();
@@ -510,7 +499,6 @@
                   return false;
                 }
                 if (usernameAvl && emailAvl && passwordAvl) {
-                  console.log('Success!!!!!');
                   return ajaxRegister([$username.val(), $password.val(), $email.val()], function(statusCode) {
                     resetRegForm(true);
                     $("#register-status").show().text(langsrc.service['ERROR_CODE_' + statusCode + '_MESSAGE']);
@@ -545,7 +533,6 @@
   };
 
   showErrorMessage = function() {
-    console.log('showErrorMessage');
     $('#reset-pw-email').attr('disabled', false);
     $("#reset-btn").attr('disabled', false).val(window.langsrc.reset.reset_btn);
     $("#reset-status").removeClass('verification-status').addClass("error-msg").show().text(langsrc.reset.reset_error_state);
@@ -557,15 +544,8 @@
   };
 
   handleNetError = function(status) {
-    var error_message;
-    error_message = langsrc.service['NETWORK_ERROR'];
-    $("#error-msg-3").first().text(error_message).show();
-    $("#login-btn").attr('disabled', false).val(langsrc.login['login-btn']);
-    $('#reset-status').removeClass('verification-status').addClass('error-msg').text(error_message).show();
-    $("#reset-btn").attr('disabled', false).val(langsrc.reset['reset-btn']);
-    $("#reset-pw-email").attr('disabled', false);
-    $(".box-loading").size() > 0 && render("#expire-template");
-    return $(".account-instruction-major").text(error_message);
+    goto500();
+    return console.error(status, "Net Work Error, Redirecting...");
   };
 
   checkPassKey = function(keyToValid, fn) {
@@ -575,7 +555,6 @@
       data: [keyToValid, 'reset'],
       success: function(result, statusCode) {
         if (!statusCode) {
-          console.log(result);
           return fn(true);
         } else {
           handleErrorCode(statusCode);
@@ -590,16 +569,14 @@
   };
 
   setCredit = function(result) {
-    var cValue, ckey, domain, key, session_info, value, _ref;
+    var COOKIE_OPTION, cValue, ckey, domain, key, session_info, value, _ref;
     domain = {
       "domain": window.location.hostname.replace("ide", "")
     };
     _ref = $.cookie();
     for (ckey in _ref) {
       cValue = _ref[ckey];
-      if (ckey !== "notice-sn") {
-        $.removeCookie(ckey, domain);
-      }
+      $.removeCookie(ckey, domain);
     }
     session_info = {
       usercode: result[0],
@@ -613,6 +590,10 @@
       state: result[7],
       has_cred: result[8]
     };
+    COOKIE_OPTION = {
+      expires: 30,
+      path: '/'
+    };
     for (key in session_info) {
       value = session_info[key];
       $.cookie(key, value, COOKIE_OPTION);
@@ -625,7 +606,6 @@
   };
 
   ajaxRegister = function(params, errorCB) {
-    console.log(params);
     return api({
       url: '/account/',
       method: 'register',
@@ -633,8 +613,7 @@
       success: function(result, statusCode) {
         if (!statusCode) {
           setCredit(result);
-          window.location.hash = "success";
-          return console.log('registered successfully');
+          return window.location.hash = "success";
         } else {
           return errorCB(statusCode);
         }
@@ -653,8 +632,7 @@
       success: function(result, statusCode) {
         if (!statusCode) {
           setCredit(result);
-          window.location = '/';
-          return console.log('Login Now!');
+          return window.location = '/';
         } else {
           return errorCB(statusCode);
         }
@@ -677,7 +655,6 @@
         data: [params],
         success: function(result, statusCode) {
           if (!statusCode) {
-            console.log(result, statusCode);
             window.location.hash = 'email';
             return true;
           } else {
@@ -699,26 +676,22 @@
       method: 'check_repeat',
       data: params,
       success: function(result, statusCode) {
-        console.log(result, statusCode);
         return fn(statusCode);
       },
       error: function(status) {
-        console.log('Net Work Error');
         return fn('error');
       }
     });
   };
 
   ajaxChangePassword = function(hashArray, newPw) {
-    api({
+    return api({
       url: "/account/",
       method: "update_password",
       data: [hashArray[1], newPw],
       success: function(result, statusCode) {
-        console.log(result, statusCode);
         if (!statusCode) {
-          window.location.hash = 'success';
-          return console.log('Password Updated Successfully');
+          return window.location.hash = 'success';
         } else {
           return handleErrorCode(statusCode);
         }
@@ -727,7 +700,6 @@
         return handleNetError(status);
       }
     });
-    return console.log('Updating Password...');
   };
 
   loadLang(init);

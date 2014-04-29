@@ -1,5 +1,5 @@
 (function() {
-  define(['backbone', 'jquery', 'underscore', 'session_model', 'constant', 'event', 'common_handle'], function(Backbone, $, _, session_model, constant, ide_event, common_handle) {
+  define(['backbone', 'jquery', 'underscore', 'constant', 'event', 'common_handle', "ApiRequest"], function(Backbone, $, _, constant, ide_event, common_handle, ApiRequest) {
     var HeaderModel;
     HeaderModel = Backbone.Model.extend({
       defaults: {
@@ -9,17 +9,6 @@
         'has_cred': true,
         'user_name': null,
         'user_email': null
-      },
-      initialize: function() {
-        return this.on('SESSION_LOGOUT_RETURN', function(forge_result) {
-          var result;
-          if (!forge_result.is_error) {
-            result = forge_result.resolved_data;
-          }
-          common_handle.cookie.deleteCookie();
-          window.location.href = "/login";
-          return false;
-        });
       },
       init: function() {
         this.set({
@@ -148,9 +137,12 @@
         return null;
       },
       logout: function() {
-        return session_model.logout({
-          sender: this
-        }, $.cookie('usercode'), $.cookie('session_id'));
+        return ApiRequest("logout").then(function() {
+          common_handle.cookie.deleteCookie();
+          return window.location.href = "/login/";
+        }, function() {
+          return window.location.href = "/login/";
+        });
       }
     });
     return new HeaderModel();

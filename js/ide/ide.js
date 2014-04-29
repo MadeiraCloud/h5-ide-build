@@ -2,7 +2,7 @@
   define(['MC', 'event', 'handlebars', 'i18n!nls/lang.js', './view', 'canvas_layout', 'header', 'navigation', 'tabbar', 'dashboard', 'design_module', 'process', 'WS', 'constant', 'base_model', 'common_handle', 'validation', 'aws_handle'], function(MC, ide_event, Handlebars, lang, view, canvas_layout, header, navigation, tabbar, dashboard, design, process, WS, constant, base_model, common_handle, validation) {
     return {
       initialize: function() {
-        var displaySystemNotice, initialize, listenImportList, listenRequestList, r, relogin, status, subRequestReady, subScoket, subScriptionError, websocket, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+        var initialize, listenImportList, listenRequestList, r, relogin, status, subRequestReady, subScoket, subScriptionError, websocket, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
         _.delay(function() {
           console.log('---------- check network ----------');
           if (!MC.data.is_loading_complete && $('#loading-bar-wrapper').html().trim() !== '') {
@@ -66,7 +66,6 @@
         MC.ta.state_list = {};
         MC.data.state = {};
         MC.data.stateClipboard = [];
-        MC.ide_event = ide_event;
         MC.data.running_app_list = {};
         MC.data.open_tab_data = {};
         WS.websocketInit();
@@ -75,18 +74,16 @@
         relogin = function() {
           console.log('relogin');
           ide_event.trigger(ide_event.SWITCH_MAIN);
-          return require(['component/session/main'], function(session_main) {
-            return session_main.loadModule();
+          return require(['component/session/SessionDialog'], function(SessionDialog) {
+            return new SessionDialog();
           });
         };
         status = function() {
           websocket.status(false, function() {
-            console.log('---------- connection failed ----------');
-            return view.disconnectedMessage('show');
+            return view.showDisconnected();
           });
           return websocket.status(true, function() {
-            console.log('connection succeed');
-            return view.disconnectedMessage('hide');
+            return view.hideDisconnected();
           });
         };
         setTimeout(status, 15000);
@@ -237,21 +234,6 @@
           return null;
         };
         listenImportList();
-        displaySystemNotice = function() {
-          var isDisplayed;
-          isDisplayed = $.cookie('notice-sn');
-          if (isDisplayed === void 0) {
-            $("#wrapper").before(MC.template.systemNotice);
-          }
-          return $('#system-notice-close').on('click', function() {
-            $('#system-notice').remove();
-            $("#resource-panel").find(".accordion-group.expanded").removeClass("expanded").children(".fixedaccordion-head").trigger("click", true);
-            return $.cookie('notice-sn', '1', {
-              expires: 365 * 2
-            });
-          });
-        };
-        displaySystemNotice();
         return null;
       }
     };
