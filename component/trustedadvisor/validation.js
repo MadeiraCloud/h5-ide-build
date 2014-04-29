@@ -2216,7 +2216,7 @@ This file use for validate state.
         if (comp) {
           refName = "" + (comp.serverGroupName || comp.name) + "." + ref.attr;
         } else if (__isUid(ref.uid)) {
-          refName = "unknown." + r.attr;
+          refName = "unknown." + ref.attr;
         } else {
           refName = ref.ref;
         }
