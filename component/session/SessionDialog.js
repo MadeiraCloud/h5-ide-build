@@ -37,6 +37,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           $("#SessionConnect").removeAttr("disabled");
           notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
           $("#SessionPassword").toggleClass("parsley-error", true);
+          return console.log(error);
         });
       },
       passwordChanged: function(evt) {

@@ -1181,9 +1181,6 @@
        * serialize() : Object
           description : returns a Plain JS Object that is indentical to JSON data.
     
-       * serializeAsStack() : Object
-          description : same as serialize(), but it ensure that the JSON will be a stack JSON.
-    
        * getCost() : Array
           description : return an array of cost object to represent the cost of the stack.
      */
@@ -1553,8 +1550,8 @@
       }
       return true;
     };
-    DesignImpl.prototype.serialize = function(options) {
-      var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    DesignImpl.prototype.serialize = function() {
+      var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, version, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       currentDesignObj = Design.instance();
       this.use();
       console.debug("Design is serializing.");
@@ -1628,10 +1625,11 @@
       data = $.extend(true, {}, this.attributes);
       data.component = component_data;
       data.layout = layout_data;
+      version = data.version;
       _ref1 = Design.__serializeVisitors;
       for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
         visitor = _ref1[_k];
-        visitor(component_data, layout_data, options);
+        visitor(component_data, layout_data, version);
       }
       data.layout.size = this.canvas.sizeAry;
       data.property = $.extend({
@@ -1640,11 +1638,6 @@
       data.version = "2014-02-17";
       currentDesignObj.use();
       return data;
-    };
-    DesignImpl.prototype.serializeAsStack = function() {
-      return this.serialize({
-        toStack: true
-      });
     };
     DesignImpl.prototype.getCost = function() {
       var c, comp, cost, costList, currency, feeMap, priceMap, totalFee, uid, _i, _len, _ref;

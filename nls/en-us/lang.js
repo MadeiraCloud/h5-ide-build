@@ -1204,6 +1204,9 @@ define({
         "ERROR_CODE_18_MESSAGE": "Sorry, AWS is suffering from some technical issues, please try again later.",
         "ERROR_CODE_19_MESSAGE": "Sorry, your session has expired, please login again.",
         "ERROR_CODE_20_MESSAGE": "Sorry, this invitation has finished.",
-        "ERROR_CODE_21_MESSAGE": "User has been blocked."
+        "ERROR_CODE_21_MESSAGE": "User has been blocked.",
+        "RESET_PASSWORD_ERROR_2": "Sorry, but your url is invalid. Please Check your url and try again.",
+        "RESET_PASSWORD_ERROR_12": "Sorry, password reset URL is invalid or has expired.",
+        "RESET_PASSWORD_ERROR_18": "Sorry, but your params is invalid. Please check your url and try again."
     }
 });

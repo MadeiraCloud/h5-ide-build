@@ -1204,6 +1204,9 @@ define({
         "ERROR_CODE_18_MESSAGE": "对不起,AWS有一些技术问题,请稍后再试",
         "ERROR_CODE_19_MESSAGE": "对不起，你的会话已过期，请重新登录",
         "ERROR_CODE_20_MESSAGE": "对不起，邀请已经结束",
-        "ERROR_CODE_21_MESSAGE": "对不起，此账号已被锁住"
+        "ERROR_CODE_21_MESSAGE": "对不起，此账号已被锁住",
+        "RESET_PASSWORD_ERROR_2": "对不起, 您的链接地址不正确, 请检查后重试",
+        "RESET_PASSWORD_ERROR_12": "对不起, 您的链接地址不正确或已经失效",
+        "RESET_PASSWORD_ERROR_18": "对不起, 您的参数不正确, 请检查后重试"
     }
 });
