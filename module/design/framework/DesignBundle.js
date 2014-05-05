@@ -11340,7 +11340,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager", "./CeAsg"], function(CanvasElement, constant, CanvasManager, CeAsg) {
+  define('module/design/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager", "./CeAsg", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, CeAsg, lang) {
     var CeExpandedAsg, ChildElementProto;
     CeExpandedAsg = function() {
       CanvasElement.apply(this, arguments);
