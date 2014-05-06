@@ -687,16 +687,40 @@ TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
+function program1(depth0,data) {
+  
+  
+  return "View";
+  }
 
-  buffer += "<div id=\"modal-state-text-expand\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>Edit "
+function program3(depth0,data) {
+  
+  
+  return "Edit";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<button id=\"modal-state-text-expand-save\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_EXPAND_MODAL_SAVE_BTN", {hash:{},data:data}))
+    + "</button>";
+  return buffer;
+  }
+
+  buffer += "<div id=\"modal-state-text-expand\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " "
     + escapeExpression(((stack1 = (depth0 && depth0.cmd_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " > "
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<div class=\"editable-area text-code-editor text\"></div>\n	</div>\n	<div class=\"modal-footer\">\n		<button id=\"modal-state-text-expand-save\" class=\"btn btn-blue\">"
-    + escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_EXPAND_MODAL_SAVE_BTN", {hash:{},data:data}))
-    + "</button>\n	</div>\n</div>\n";
+    + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<div class=\"editable-area text-code-editor text\"></div>\n	</div>\n	<div class=\"modal-footer\">\n		";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</div>\n</div>\n";
   return buffer;
   };
 TEMPLATE.stateTextExpandModal=Handlebars.template(__TEMPLATE__);
@@ -2274,7 +2298,7 @@ return TEMPLATE; });
           option = {};
         }
         _initEditor = function() {
-          var editColumn, editRow, editSession, editor, editorSingleLine, maxLines, resRefModeAry, tk;
+          var editColumn, editRow, editSession, editor, editorSingleLine, enableTab, maxLines, resRefModeAry, tk;
           editor = ace.edit(editorElem);
           $editorElem.data('editor', editor);
           editor.hintObj = hintObj;
@@ -2286,17 +2310,6 @@ return TEMPLATE; });
             maxLines = 1;
             editorSingleLine = true;
           }
-          editor.setOptions({
-            enableBasicAutocompletion: true,
-            maxLines: maxLines,
-            showGutter: option.showGutter || false,
-            highlightGutterLine: true,
-            showPrintMargin: false,
-            highlightActiveLine: false,
-            highlightSelectedWord: false,
-            enableSnippets: false,
-            singleLine: editorSingleLine
-          });
           resRefModeAry = [
             {
               token: 'res_ref_correct',
@@ -2307,12 +2320,20 @@ return TEMPLATE; });
             }
           ];
           editSession = editor.getSession();
+          enableTab = false;
           if (option.isCodeEditor) {
             ace.modeResRefRule = resRefModeAry;
             if (option.extName === 'js') {
               editSession.setMode('ace/mode/javascript');
+            } else if (option.extName === 'sh') {
+              editSession.setMode('ace/mode/sh');
+            } else if (option.extName === 'rb') {
+              editSession.setMode('ace/mode/ruby');
+            } else if (option.extName === 'py') {
+              editSession.setMode('ace/mode/python');
             }
             editor.setTheme('ace/theme/tomorrow_night');
+            enableTab = true;
           } else {
             tk = new that.Tokenizer({
               'start': resRefModeAry
@@ -2321,6 +2342,18 @@ return TEMPLATE; });
             editSession.bgTokenizer.setTokenizer(tk);
             editor.renderer.updateText();
           }
+          editor.setOptions({
+            enableBasicAutocompletion: true,
+            maxLines: maxLines,
+            showGutter: option.showGutter || false,
+            highlightGutterLine: true,
+            showPrintMargin: false,
+            highlightActiveLine: false,
+            highlightSelectedWord: false,
+            enableSnippets: false,
+            singleLine: editorSingleLine,
+            enableTab: enableTab
+          });
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;
           editor.gotoLine(editRow, editColumn);
@@ -3112,9 +3145,6 @@ return TEMPLATE; });
         if ($('.sub-stateeditor').css('display') === "none") {
           return true;
         }
-        if ($('#modal-state-text-expand').is(':visible')) {
-          return true;
-        }
         target = event.data.target;
         status = target.currentState;
         is_editable = status === 'appedit' || status === 'stack';
@@ -3139,6 +3169,10 @@ return TEMPLATE; });
         if (metaKey && shiftKey === false && altKey === false && keyCode === 86 && is_editable && is_input === false) {
           target.pasteState.call(target, event);
         }
+        if (metaKey && shiftKey === false && altKey === false && keyCode === 69) {
+          target.onTextParaExpandClick.call(target, event);
+          return false;
+        }
         if (metaKey && (keyCode === 46 || keyCode === 8) && shiftKey === false && altKey === false && is_editable) {
           target.removeState.call(target, event);
           return false;
@@ -3157,6 +3191,10 @@ return TEMPLATE; });
         }
         if (metaKey === false && shiftKey === false && altKey === false && keyCode === 27) {
           target.collapseItem.call(target, $('.state-list .focused'));
+          if ($('#modal-state-text-expand').is(':visible')) {
+            target.saveStateTextEditorContent();
+            return false;
+          }
           return false;
         }
         if (metaKey && shiftKey === false && altKey === false && keyCode === 73) {
@@ -3627,24 +3665,26 @@ return TEMPLATE; });
         }
       },
       onTextParaExpandClick: function(event) {
-        var $expandBtn, $paraItem, $paraValue, $stateItem, cmdName, extName, filePath, filePathAry, paraEditor, paraName, stateData, that;
+        var $focusElem, $paraItem, $paraValue, $stateItem, cmdName, extName, filePath, filePathAry, paraEditor, paraName, stateData, that;
         that = this;
-        $expandBtn = $(event.currentTarget);
-        $paraValue = $expandBtn.parents('.parameter-container').find('.parameter-value');
+        $focusElem = $(event.target);
+        $paraValue = $focusElem.parents('.parameter-container').find('.parameter-value');
         paraEditor = $paraValue.data('editor');
         if (paraEditor) {
           $paraItem = $paraValue.parents('.parameter-item');
-          paraName = $paraItem.attr('data-para-name');
-          $stateItem = $paraItem.parents('.state-item');
-          extName = '';
-          stateData = that.getStateItemByData($stateItem);
-          if (stateData && stateData.parameter && stateData.parameter.path) {
-            filePath = stateData.parameter.path;
-            filePathAry = filePath.split('.');
-            extName = filePathAry[filePathAry.length - 1];
+          if ($paraItem.hasClass('text')) {
+            paraName = $paraItem.attr('data-para-name');
+            $stateItem = $paraItem.parents('.state-item');
+            extName = '';
+            stateData = that.getStateItemByData($stateItem);
+            if (stateData && stateData.parameter && stateData.parameter.path) {
+              filePath = stateData.parameter.path;
+              filePathAry = filePath.split('.');
+              extName = filePathAry[filePathAry.length - 1];
+            }
+            cmdName = $stateItem.attr('data-command');
+            return that.openStateTextEditor(cmdName, paraName, extName, paraEditor);
           }
-          cmdName = $stateItem.attr('data-command');
-          return that.openStateTextEditor(cmdName, paraName, extName, paraEditor);
         }
       },
       openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
@@ -3653,8 +3693,10 @@ return TEMPLATE; });
         textContent = originEditor.getValue();
         modal($.trim(template.stateTextExpandModal({
           cmd_name: cmdName,
-          para_name: paraName
+          para_name: paraName,
+          read_only: that.readOnlyMode
         })), false);
+        $('#modal-state-text-expand').data('origin-editor', originEditor);
         $codeArea = $('#modal-state-text-expand .editable-area');
         that.initCodeEditor($codeArea[0], {
           at: that.resAttrDataAry
@@ -3670,12 +3712,26 @@ return TEMPLATE; });
           codeEditor.clearSelection();
         }
         return $('#modal-state-text-expand-save').off('click').on('click', function() {
-          var codeEditorValue;
-          codeEditorValue = codeEditor.getValue();
-          originEditor.setValue(codeEditorValue);
-          originEditor.clearSelection();
-          return modal.close();
+          return that.saveStateTextEditorContent();
         });
+      },
+      saveStateTextEditorContent: function() {
+        var $codeArea, codeEditor, codeEditorValue, originEditor, that;
+        that = this;
+        if (that.readOnlyMode) {
+          return modal.close();
+        } else {
+          originEditor = $('#modal-state-text-expand').data('origin-editor');
+          if (originEditor) {
+            $codeArea = $('#modal-state-text-expand .editable-area');
+            codeEditor = $codeArea.data('editor');
+            codeEditorValue = codeEditor.getValue();
+            originEditor.setValue(codeEditorValue);
+            originEditor.clearSelection();
+            originEditor.focus();
+            return modal.close();
+          }
+        }
       }
     });
     return StateEditorView;
