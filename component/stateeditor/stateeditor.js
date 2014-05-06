@@ -187,7 +187,7 @@ function program15(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n			<div class=\"parameter-name\">\n				"
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-expand tooltip\" data-tooltip=\"Expand content to edit\"></div>\n				<div class=\"parameter-value editable-area text\">"
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-expand\">Expand</div>\n				<div class=\"parameter-value editable-area text\">"
     + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n			</div>\n		</div>\n	";
   return buffer;

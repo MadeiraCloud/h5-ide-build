@@ -981,7 +981,7 @@ define({
         "IDE_LBL_REGION_NAME_SHORT_ap-northeast-1": "Tokyo",
         "IDE_LBL_REGION_NAME_SHORT_sa-east-1": "Sao Paulo",
         "IDE_LBL_LAST_STATUS_CHANGE": "Last Changed",
-        "POP_DOWNLOAD_KP_NOT_AVAILABLE": "Not available yet. Password generation and encryption can sometimes take more than 30 minutes. Please wait at least 15 minutes after launching an instance before trying to retrieve the generated password.",
+        "POP_DOWNLOAD_KP_NOT_AVAILABLE": "<p>Your password is not ready. Password generation can sometimes take more than 30 minutes. Please wait at least 15 minutes after launching an instance before trying to retrieve the generated password.</p> <p>If you launched this instance from your own AMI, the password is the same as for the instance from which you created the AMI, unless this setting was modified in the EC2Config service settings.</p>",
         "POP_BTN_CLOSE": "Close",
         "POP_TIP_PEM_ENCODED": "PEM Encoded",
         "RUN_STACK": "run stack",

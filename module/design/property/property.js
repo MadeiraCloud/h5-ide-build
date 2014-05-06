@@ -3970,7 +3970,7 @@ function program26(depth0,data) {
           $("#keypair-pwd").val(option.passwd);
         } else {
           $("#keypair-login").hide();
-          $("#keypair-no-pwd").text(lang.ide.POP_DOWNLOAD_KP_NOT_AVAILABLE);
+          $("#keypair-no-pwd").html(lang.ide.POP_DOWNLOAD_KP_NOT_AVAILABLE);
         }
         if (option.cmd_line) {
           $("#keypair-cmd").val(option.cmd_line);
