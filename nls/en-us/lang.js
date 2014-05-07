@@ -1171,7 +1171,7 @@ define({
         "TA_MSG_ERROR_VPN_NOT_PUBLIC_IP": "VPN Connection <span class='validation-tag tag-vpn'>%s</span>'s IP prefix <span class='validation-tag tag-ip'>%s</span> is invalid.",
         "TA_MSG_ERROR_STACK_CHECKING_FORMAT_VALID": "Checking Stack data format validity...",
         "TA_MSG_ERROR_STACK_FORMAT_VALID_FAILED": "Resource %s has format problem, %s.",
-        "TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_AMI": "%s <span class='validation-tag tag-%s'>%s</span>'s AMI <span class='validation-tag tag-ami'>%s</span> is not available any more. Please use another AMI by creating new instance.",
+        "TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_AMI": "%s <span class='validation-tag tag-%s'>%s</span>'s AMI <span class='validation-tag tag-ami'>%s</span> is not available any more. Please change another AMI.",
         "TA_MSG_ERROR_STACK_HAVE_NOT_AUTHED_AMI": "You are not authorized for %s <span class='validation-tag tag-%s'>%s</span>'s AMI <span class='validation-tag tag-ami'>%s</span>. Go to AWS Marketplace to get authorized or use another AMI by creating new instance.",
         "TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_INSTANCE": "Instance <span class='validation-tag tag-instance'>%s</span> <span class='validation-tag tag-state'>state %s</span> has referenced the inexistent <span class='validation-tag tag-state-ref'>%s</span>.",
         "TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_ASG": "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span> <span class='validation-tag tag-state'>state %s</span> has referenced the inexistent <span class='validation-tag tag-state-ref'>%s</span>.",
