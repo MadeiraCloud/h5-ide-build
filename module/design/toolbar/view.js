@@ -163,7 +163,7 @@
               MC.common.other.canvasData.set('name', new_name);
               if ($('#property-stack-name').length !== 0) {
                 $('#property-stack-name').val(new_name);
-                $('#property-title').text('Stack - ' + new_name);
+                $('#property-title').val(new_name);
               }
               ide_event.trigger(ide_event.SAVE_STACK, MC.common.other.canvasData.data());
               return true;
