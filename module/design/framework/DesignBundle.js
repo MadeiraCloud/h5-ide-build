@@ -10879,7 +10879,7 @@
       if (isCreate) {
         node = this.createGroup(label);
         node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-gray port-subnet-assoc-in',
+          'class': 'port port-gray port-subnet-assoc-in tooltip',
           'data-name': 'subnet-assoc-in',
           'data-position': 'left',
           'data-type': 'association',
@@ -10963,7 +10963,7 @@
           imageH: 76
         });
         node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-cgw-vpn',
+          'class': 'port port-purple port-cgw-vpn tooltip',
           'data-name': 'cgw-vpn',
           'data-position': 'left',
           'data-type': 'vpn',
@@ -11013,7 +11013,7 @@
           label: m.get("name")
         });
         node.append(Canvon.path(this.constant.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-igw-tgt',
+          'class': 'port port-blue port-igw-tgt tooltip',
           'data-name': 'igw-tgt',
           'data-position': 'right',
           'data-type': 'sg',
@@ -11060,14 +11060,14 @@
           label: m.get("name")
         });
         node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-vgw-tgt',
+          'class': 'port port-blue port-vgw-tgt tooltip',
           'data-name': 'vgw-tgt',
           'data-position': 'left',
           'data-type': 'sg',
           'data-direction': 'in',
           'data-tooltip': lang.ide.PORT_TIP_C
         }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-vgw-vpn',
+          'class': 'port port-purple port-vgw-vpn tooltip',
           'data-name': 'vgw-vpn',
           'data-position': 'right',
           'data-type': 'vpn',
@@ -11126,7 +11126,7 @@
           imageH: 57
         });
         node.append(Canvon.path(this.constant.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left',
+          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left tooltip',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-left',
           'data-position': 'left',
@@ -11134,7 +11134,7 @@
           'data-direction': 'out',
           'data-tooltip': lang.ide.PORT_TIP_B
         }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right',
+          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right tooltip',
           'data-name': 'rtb-tgt',
           'data-alias': 'rtb-tgt-right',
           'data-position': 'right',
@@ -11142,7 +11142,7 @@
           'data-direction': 'out',
           'data-tooltip': lang.ide.PORT_TIP_B
         }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-top',
+          'class': 'port port-gray port-rtb-src port-rtb-src-top tooltip',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-top',
           'data-position': 'top',
@@ -11150,7 +11150,7 @@
           'data-direction': 'in',
           'data-tooltip': lang.ide.PORT_TIP_A
         }), Canvon.path(this.constant.PATH_PORT_TOP).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-bottom',
+          'class': 'port port-gray port-rtb-src port-rtb-src-bottom tooltip',
           'data-name': 'rtb-src',
           'data-alias': 'rtb-src-bottom',
           'data-position': 'bottom',
@@ -11214,19 +11214,21 @@
           sg: true
         });
         node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-elb-sg-in',
+          'class': 'port port-blue port-elb-sg-in tooltip',
           'data-name': 'elb-sg-in',
           'data-position': 'left',
           'data-type': 'sg',
-          'data-direction': "in"
+          'data-direction': "in",
+          'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-gray port-elb-assoc',
+          'class': 'port port-gray port-elb-assoc tooltip',
           'data-name': 'elb-assoc',
           'data-position': 'right',
           'data-type': 'association',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_K
         }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-elb-sg-out',
+          'class': 'port port-blue port-elb-sg-out tooltip',
           'data-name': 'elb-sg-out',
           'data-position': 'right',
           'data-type': 'sg',
@@ -11405,7 +11407,7 @@
           }), Canvon.text(65, 116, lcLabel).attr({
             'class': 'node-label'
           }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-            'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left',
+            'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left tooltip',
             'data-name': 'launchconfig-sg',
             'data-alias': 'launchconfig-sg-left',
             'data-position': 'left',
@@ -11413,7 +11415,7 @@
             'data-direction': 'in',
             'data-tooltip': lang.ide.PORT_TIP_D
           }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-            'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right',
+            'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right tooltip',
             'data-name': 'launchconfig-sg',
             'data-alias': 'launchconfig-sg-right',
             'data-position': 'right',
@@ -11510,7 +11512,7 @@
           'class': 'instance-number-group',
           "display": "none"
         }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-left',
+          'class': 'port port-blue port-instance-sg port-instance-sg-left tooltip',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-left',
           'data-position': 'left',
@@ -11518,7 +11520,7 @@
           'data-direction': 'in',
           'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-right',
+          'class': 'port port-blue port-instance-sg port-instance-sg-right tooltip',
           'data-name': 'instance-sg',
           'data-alias': 'instance-sg-right',
           'data-position': 'right',
@@ -11526,17 +11528,19 @@
           'data-direction': 'out',
           'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-green port-instance-attach',
+          'class': 'port port-green port-instance-attach tooltip',
           'data-name': 'instance-attach',
           'data-position': 'right',
           'data-type': 'attachment',
-          'data-direction': 'out'
+          'data-direction': 'out',
+          'data-tooltip': lang.ide.PORT_TIP_E
         }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-blue port-instance-rtb',
+          'class': 'port port-blue port-instance-rtb tooltip',
           'data-name': 'instance-rtb',
           'data-position': 'top',
           'data-type': 'sg',
-          'data-direction': 'in'
+          'data-direction': 'in',
+          'data-tooltip': lang.ide.PORT_TIP_C
         }));
         if (!this.model.design().modeIsStack() && m.get("appId")) {
           node.append(Canvon.circle(68, 15, 5, {}).attr({
@@ -11842,7 +11846,7 @@
           'id': "" + this.id + "_eip_status",
           'class': 'eip-status tooltip'
         }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-left',
+          'class': 'port port-blue port-eni-sg port-eni-sg-left tooltip',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-left',
           'data-position': 'left',
@@ -11850,14 +11854,14 @@
           'data-direction': "in",
           'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-green port-eni-attach',
+          'class': 'port port-green port-eni-attach tooltip',
           'data-name': 'eni-attach',
           'data-position': 'left',
           'data-type': 'attachment',
           'data-direction': "in",
           'data-tooltip': lang.ide.PORT_TIP_G
         }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-right',
+          'class': 'port port-blue port-eni-sg port-eni-sg-right tooltip',
           'data-name': 'eni-sg',
           'data-alias': 'eni-sg-right',
           'data-position': 'right',
@@ -11865,7 +11869,7 @@
           'data-direction': 'out',
           'data-tooltip': lang.ide.PORT_TIP_F
         }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-blue port-eni-rtb',
+          'class': 'port port-blue port-eni-rtb tooltip',
           'data-name': 'eni-rtb',
           'data-position': 'top',
           'data-type': 'sg',
@@ -12003,7 +12007,7 @@
           'class': 'instance-volume',
           'fill': 'none'
         }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left',
+          'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left tooltip',
           'data-name': 'launchconfig-sg',
           'data-alias': 'launchconfig-sg-left',
           'data-position': 'left',
@@ -12011,7 +12015,7 @@
           'data-direction': 'in',
           'data-tooltip': lang.ide.PORT_TIP_D
         }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right',
+          'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right tooltip',
           'data-name': 'launchconfig-sg',
           'data-alias': 'launchconfig-sg-right',
           'data-position': 'right',
