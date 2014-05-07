@@ -4,5 +4,5 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"modal-header\">\n	<h3>Validation</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div id=\"modal-validation-statusbar\">\n	</div>\n</div>";
+  return "<div class=\"modal-header\">\r\n	<h3>Validation</h3>\r\n	<i class=\"modal-close\">×</i>\r\n</div>\r\n<div class=\"modal-body\">\r\n	<div id=\"modal-validation-statusbar\">\r\n	</div>\r\n</div>";
   }; return Handlebars.template(TEMPLATE); });
