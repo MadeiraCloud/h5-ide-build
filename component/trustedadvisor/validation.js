@@ -2700,6 +2700,18 @@ This file use for validate component about state.
               snaphostMap[snaphostId].push(MC.extractID(instanceUID));
             }
           }
+          if (compObj.type === constant.RESTYPE.LC) {
+            _.each(compObj.resource.BlockDeviceMapping, function(blockObj) {
+              snaphostId = blockObj.Ebs.SnapshotId;
+              instanceUID = compObj.uid;
+              if (snaphostId && instanceUID) {
+                if (!snaphostMap[snaphostId]) {
+                  snaphostMap[snaphostId] = [];
+                }
+                return snaphostMap[snaphostId].push(instanceUID);
+              }
+            });
+          }
           return null;
         });
         snaphostAry = _.keys(snaphostMap);
