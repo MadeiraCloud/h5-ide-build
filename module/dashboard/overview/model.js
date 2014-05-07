@@ -1729,7 +1729,7 @@
         console.log("Imported JSON: ", result, result.region);
         MC.common.other.checkRepeatStackName();
         result.username = $.cookie('usercode');
-        result.name = 'untitled-' + MC.data.untitled;
+        result.name = MC.aws.aws.getDuplicateName(result.name);
         result.id = 'import-' + MC.data.untitled + '-' + result.region;
         new_result = {};
         new_result.resolved_data = [];

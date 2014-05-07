@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar", "../framework/util/serializeVisitor/AppToStack"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, download, constant) {
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, download, constant) {
     var ToolbarView;
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -11,7 +11,6 @@
         'click #toolbar-run': 'clickRunIcon',
         'click .icon-save': 'clickSaveIcon',
         'click #toolbar-duplicate': 'clickDuplicateIcon',
-        'click #toolbar-app-to-stack': 'appToStackClick',
         'click #toolbar-delete': 'clickDeleteIcon',
         'click #toolbar-new': 'clickNewStackIcon',
         'click .icon-zoom-in': 'clickZoomInIcon',
@@ -162,8 +161,14 @@
             if (MC.aws.aws.checkStackName(id, new_name)) {
               modal.close();
               MC.common.other.canvasData.set('name', new_name);
+              if ($('#property-stack-name').length !== 0) {
+                $('#property-stack-name').val(new_name);
+                $('#property-title').val(new_name);
+              }
               ide_event.trigger(ide_event.SAVE_STACK, MC.common.other.canvasData.data());
               return true;
+            } else {
+              return $('.resource-name-label').text(new_name);
             }
           });
         } else {
@@ -201,64 +206,6 @@
           }
         });
         return true;
-      },
-      appToStackClick: function(event) {
-        var name, new_name, originStack;
-        console.log("Click to save App as Stack");
-        name = MC.common.other.canvasData.get('name');
-        new_name = MC.aws.aws.getStackNameFromApp(name);
-        originStack = Design.instance().serialize().stack_id;
-        MC.aws.aws.hasStack(originStack);
-        $('#modal-input-value').val(new_name);
-        if (MC.aws.aws.hasStack(originStack)) {
-          $("input[type=radio]").change(function() {
-            if ($(this).is(":checked")) {
-              $(".radio-instruction").addClass('hide');
-              return $(this).parent().parent().find('.radio-instruction').removeClass('hide');
-            }
-          });
-        } else {
-          $("#replace_stack").hide();
-          $("#save_new_stack").find('div.radio,label').hide();
-          $("#save_new_stack").find('.radio-instruction').removeClass('hide');
-        }
-        $("#btn-confirm").on('click', {
-          target: this
-        }, function(event) {
-          var stackData;
-          console.log("Toolbar save app as stack");
-          if ($("#save_new_stack").find(".radio-instruction").hasClass("hide")) {
-            modal.close();
-            stackData = Design.instance().serializeAsStack();
-            stackData.id = originStack;
-            console.warn(stackData);
-            ide_event.trigger(ide_event.SAVE_STACK, stackData);
-            setTimeout(function() {
-              var id;
-              id = MC.common.other.canvasData.get('id');
-              return MC.common.other.addCacheThumb(id, $('#canvas_body').html(), $('#svg_canvas')[0].getBBox());
-            }, 500);
-            return false;
-          }
-          new_name = $("#modal-input-value").val();
-          if (!new_name) {
-            return notification("warning", lang.ide.PROP_MSG_WARN_NO_STACK_NAME);
-          } else if (new_name.indexOf(' ') >= 0) {
-            return notification('warning', lang.ide.PROP_MSG_WARN_WHITE_SPACE);
-          } else if (!MC.aws.aws.checkStackName(null, new_name)) {
-            return notification('warning', lang.ide.PROP_MSG_WARN_REPEATED_STACK_NAME);
-          } else {
-            modal.close();
-            console.warn(Design.instance().serializeAsStack(new_name), "New");
-            ide_event.trigger(ide_event.SAVE_STACK, Design.instance().serializeAsStack(new_name));
-            return setTimeout(function() {
-              var id;
-              id = MC.common.other.canvasData.get('id');
-              return MC.common.other.addCacheThumb(id, $('#canvas_body').html(), $('#svg_canvas')[0].getBBox());
-            }, 500);
-          }
-        });
-        return null;
       },
       clickDeleteIcon: function() {
         var me, target;

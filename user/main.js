@@ -182,8 +182,10 @@
         deepth = 'reset';
         hashTarget = hashArray[0];
         if (hashTarget === 'password') {
-          return checkPassKey(hashArray[1], function(result) {
-            if (result) {
+          return checkPassKey(hashArray[1], function(statusCode, result) {
+            var tempLang;
+            if (!statusCode) {
+              console.log('Right Verify Code!');
               render("#password-template");
               $('form.box-body').find('input').eq(0).focus();
               return $('#reset-form').on('submit', function(e) {
@@ -195,6 +197,8 @@
                 return false;
               });
             } else {
+              tempLang = tempLang || langsrc.reset['expired-info'];
+              langsrc.reset['expired-info'] = langsrc.service['RESET_PASSWORD_ERROR_' + statusCode] || tempLang;
               return window.location.hash = "expire";
             }
           });
@@ -554,12 +558,8 @@
       method: 'check_validation',
       data: [keyToValid, 'reset'],
       success: function(result, statusCode) {
-        if (!statusCode) {
-          return fn(true);
-        } else {
-          handleErrorCode(statusCode);
-          return fn(false);
-        }
+        console.log(statusCode, result);
+        return fn(statusCode);
       },
       error: function(status) {
         handleNetError(status);

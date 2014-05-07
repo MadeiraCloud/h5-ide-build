@@ -57,7 +57,7 @@
           access_key: access_key,
           secret_key: secret_key,
           account_id: account_id
-        }).then(function(result) {
+        }).then(function() {
           var name;
           name = 'DescribeAccountAttributes' + '_' + $.cookie('usercode') + '__' + 'supported-platforms,default-vpc';
           if (MC.session.get(name)) {
@@ -74,7 +74,7 @@
               MC.common.cookie.setCookieByName('has_cred', true);
               MC.common.cookie.setCookieByName('account_id', account_id);
               regionAttrSet = result.resolved_data;
-              return _.map(constant.REGION_KEYS, function(value) {
+              _.map(constant.REGION_KEYS, function(value) {
                 var default_vpc, support_platform;
                 if (regionAttrSet[value] && regionAttrSet[value].accountAttributeSet) {
                   support_platform = regionAttrSet[value].accountAttributeSet.item[0].attributeValueSet.item;
@@ -92,7 +92,11 @@
                 }
                 return null;
               });
+            } else {
+              me.set('is_authenticated', false);
             }
+            me.set('account_id', account_id);
+            return me.trigger('REFRESH_AWS_CREDENTIAL');
           });
         }, (function(_this) {
           return function(error) {

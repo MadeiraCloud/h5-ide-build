@@ -1,8 +1,8 @@
 (function() {
-  define(['MC', 'event', 'handlebars', 'i18n!nls/lang.js', './view', 'canvas_layout', 'header', 'navigation', 'tabbar', 'dashboard', 'design_module', 'process', 'constant', 'base_model', 'common_handle', 'validation', 'aws_handle'], function(MC, ide_event, Handlebars, lang, view, canvas_layout, header, navigation, tabbar, dashboard, design, process, constant, base_model, common_handle, validation) {
+  define(['MC', 'event', 'handlebars', 'i18n!nls/lang.js', './view', 'canvas_layout', 'header', 'navigation', 'tabbar', 'dashboard', 'design_module', 'process', 'WS', 'constant', 'base_model', 'common_handle', 'validation', 'aws_handle'], function(MC, ide_event, Handlebars, lang, view, canvas_layout, header, navigation, tabbar, dashboard, design, process, WS, constant, base_model, common_handle, validation) {
     return {
       initialize: function() {
-        var r, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+        var initialize, listenImportList, listenRequestList, r, relogin, status, subRequestReady, subScoket, subScriptionError, websocket, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
         _.delay(function() {
           console.log('---------- check network ----------');
           if (!MC.data.is_loading_complete && $('#loading-bar-wrapper').html().trim() !== '') {
@@ -68,6 +68,45 @@
         MC.data.stateClipboard = [];
         MC.data.running_app_list = {};
         MC.data.open_tab_data = {};
+        WS.websocketInit();
+        websocket = new WS.WebSocket();
+        initialize = true;
+        relogin = function() {
+          console.log('relogin');
+          ide_event.trigger(ide_event.SWITCH_MAIN);
+          return require(['component/session/SessionDialog'], function(SessionDialog) {
+            return new SessionDialog();
+          });
+        };
+        status = function() {
+          websocket.status(false, function() {
+            return view.showDisconnected();
+          });
+          return websocket.status(true, function() {
+            return view.hideDisconnected();
+          });
+        };
+        setTimeout(status, 15000);
+        subScriptionError = function(error) {
+          console.log('---------- session invalid ----------');
+          console.log(error);
+          relogin();
+          return null;
+        };
+        subRequestReady = function() {
+          console.log('collection request ready');
+          return ide_event.trigger(ide_event.WS_COLLECTION_READY_REQUEST);
+        };
+        subScoket = function() {
+          console.log('subScoket');
+          websocket.sub("request", $.cookie('usercode'), $.cookie('session_id'), null, subRequestReady, subScriptionError);
+          websocket.sub("stack", $.cookie('usercode'), $.cookie('session_id'), null, null, null);
+          websocket.sub("app", $.cookie('usercode'), $.cookie('session_id'), null, null, null);
+          websocket.sub("status", $.cookie('usercode'), $.cookie('session_id'), null, null, null);
+          return websocket.sub("imports", $.cookie('usercode'), $.cookie('session_id'), null, null, null);
+        };
+        subScoket();
+        MC.data.websocket = websocket;
         ide_event.onLongListen(ide_event.RETURN_OVERVIEW_TAB, function() {
           return view.showOverviewTab();
         });
@@ -103,6 +142,9 @@
             return ide_event.trigger(ide_event.SWITCH_MAIN);
           }
         });
+        ide_event.onLongListen(ide_event.RECONNECT_WEBSOCKET, function() {
+          return subScoket();
+        });
         header.loadModule();
         tabbar.loadModule();
         dashboard.loadModule();
@@ -126,10 +168,7 @@
           var error_msg, label, _ref5;
           console.log('sub');
           if (error.return_code === constant.RETURN_CODE.E_SESSION) {
-            ide_event.trigger(ide_event.SWITCH_MAIN);
-            require(['component/session/SessionDialog'], function(SessionDialog) {
-              return new SessionDialog();
-            });
+            relogin();
             if (error.param[0].method === 'info') {
               if ((_ref5 = error.param[0].url) === '/stack/' || _ref5 === '/app/') {
                 ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, error.param[4][0]);
@@ -163,6 +202,38 @@
           }
           return null;
         });
+        listenRequestList = function() {
+          var handle, query;
+          console.log('listen to request list');
+          MC.data.websocket.collection.request.find().fetch();
+          query = MC.data.websocket.collection.request.find();
+          handle = query.observeChanges({
+            added: function(idx, dag) {
+              return ide_event.trigger(ide_event.UPDATE_REQUEST_ITEM, idx, dag);
+            },
+            changed: function(idx, dag) {
+              return ide_event.trigger(ide_event.UPDATE_REQUEST_ITEM, idx, dag);
+            }
+          });
+          return null;
+        };
+        listenRequestList();
+        listenImportList = function() {
+          var handle, query;
+          console.log('listen to import list');
+          MC.data.websocket.collection.imports.find().fetch();
+          query = MC.data.websocket.collection.imports.find();
+          handle = query.observe({
+            added: function(idx, dag) {
+              return ide_event.trigger(ide_event.UPDATE_IMPORT_ITEM, idx);
+            },
+            changed: function(idx, dag) {
+              return ide_event.trigger(ide_event.UPDATE_IMPORT_ITEM, idx);
+            }
+          });
+          return null;
+        };
+        listenImportList();
         return null;
       }
     };
