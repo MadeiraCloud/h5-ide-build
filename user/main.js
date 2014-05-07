@@ -182,10 +182,8 @@
         deepth = 'reset';
         hashTarget = hashArray[0];
         if (hashTarget === 'password') {
-          return checkPassKey(hashArray[1], function(statusCode, result) {
-            var tempLang;
-            if (!statusCode) {
-              console.log('Right Verify Code!');
+          return checkPassKey(hashArray[1], function(result) {
+            if (result) {
               render("#password-template");
               $('form.box-body').find('input').eq(0).focus();
               return $('#reset-form').on('submit', function(e) {
@@ -197,8 +195,6 @@
                 return false;
               });
             } else {
-              tempLang = tempLang || langsrc.reset['expired-info'];
-              langsrc.reset['expired-info'] = langsrc.service['RESET_PASSWORD_ERROR_' + statusCode] || tempLang;
               return window.location.hash = "expire";
             }
           });
@@ -558,8 +554,12 @@
       method: 'check_validation',
       data: [keyToValid, 'reset'],
       success: function(result, statusCode) {
-        console.log(statusCode, result);
-        return fn(statusCode);
+        if (!statusCode) {
+          return fn(true);
+        } else {
+          handleErrorCode(statusCode);
+          return fn(false);
+        }
       },
       error: function(status) {
         handleNetError(status);
@@ -579,16 +579,16 @@
       $.removeCookie(ckey, domain);
     }
     session_info = {
-      usercode: result.username,
-      username: base64Decode(result.username),
-      email: result.email,
-      user_hash: result.user_hash,
-      session_id: result.session_id,
-      account_id: result.account_id,
-      mod_repo: result.mod_repo,
-      mod_tag: result.mod_tag,
-      state: result.state,
-      has_cred: result.has_cred
+      usercode: result[0],
+      username: base64Decode(result[0]),
+      email: result[1],
+      user_hash: result[2],
+      session_id: result[3],
+      account_id: result[4],
+      mod_repo: result[5],
+      mod_tag: result[6],
+      state: result[7],
+      has_cred: result[8]
     };
     COOKIE_OPTION = {
       expires: 30,

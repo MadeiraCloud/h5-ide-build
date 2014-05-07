@@ -2,8 +2,8 @@
   font-family: 'MCIcon';
   font-weight: normal;
   font-style: normal;
-  src: url('../fonts/icon.eot?v=64106437');
-  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff?v=f2605ffe") format("woff"), url("../fonts/icon.ttf?v=ae9ed394") format("truetype"); }
+  src: url('../fonts/icon.eot');
+  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff") format("woff"), url("../fonts/icon.ttf") format("truetype"); }
 
 .icon-play:before,
 .icon-stop:before,
@@ -69,8 +69,7 @@
 .icon-import:before,
 .icon-drag-copy:before,
 .icon-gear:before,
-.icon-menu:before,
-.icon-expand:before {
+.icon-menu:before {
   font: 16px/1em "MCIcon";
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
@@ -269,6 +268,3 @@
 
 .icon-menu:before {
   content: "\F151"; }
-
-.icon-expand:before {
-  content: "\F152"; }
