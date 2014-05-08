@@ -49,6 +49,16 @@
         url: "/account/",
         method: "reset_key",
         params: ["usercode", "session_id", "flag"]
+      },
+      saveStack: {
+        url: "/stack/",
+        method: "save",
+        params: ["username", "session_id", "region_name", 'data']
+      },
+      createStack: {
+        url: "/stack/",
+        method: "create",
+        params: ["username", "session_id", "region_name", "data"]
       }
     };
 

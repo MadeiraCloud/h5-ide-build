@@ -1641,10 +1641,18 @@
       currentDesignObj.use();
       return data;
     };
-    DesignImpl.prototype.serializeAsStack = function() {
-      return this.serialize({
+    DesignImpl.prototype.serializeAsStack = function(new_name) {
+      var json;
+      json = this.serialize({
         toStack: true
       });
+      json.name = new_name || json.name;
+      json.state = "Enabled";
+      json.id = "";
+      delete json.history;
+      delete json.stack_id;
+      delete json.usage;
+      return json;
     };
     DesignImpl.prototype.getCost = function() {
       var c, comp, cost, costList, currency, feeMap, priceMap, totalFee, uid, _i, _len, _ref;
@@ -10667,6 +10675,72 @@
 }).call(this);
 
 (function() {
+  define('module/design/framework/util/serializeVisitor/AppToStack',["Design"], function(Design) {
+    Design.registerSerializeVisitor(function(components, layouts, options) {
+      var comp, compo;
+      console.info(arguments, "<===========");
+      if (!options || !options.toStack) {
+        return;
+      }
+      for (comp in components) {
+        compo = components[comp];
+        console.log(compo);
+        switch (compo.type) {
+          case 'AWS.VPC.VPC':
+            compo.resource.VpcId = "";
+            break;
+          case 'AWS.VPC.NetworkInterface':
+            compo.resource.NetworkInterfaceId = "";
+            break;
+          case 'AWS.EC2.Instance':
+            compo.resource.PrivateIpAddress = "";
+            compo.resource.InstanceId = "";
+            break;
+          case 'AWS.VPC.Subnet':
+            compo.resource.SubnetId = "";
+            break;
+          case 'AWS.EC2.EIP':
+            compo.name = "EIP";
+            compo.resource.AllocationId = "";
+            compo.resource.PublicIp = "";
+            break;
+          case 'AWS.VPC.RouteTable':
+            compo.resource.RouteTableId = "";
+            compo.resource.AssociationSet.forEach(function(e) {
+              return e.RouteTableAssociationId = "";
+            });
+            break;
+          case 'AWS.EC2.SecurityGroup':
+            compo.resource.GroupId = "";
+            compo.resource.GroupName = "WebServerSG";
+            break;
+          case 'AWS.EC2.KeyPair':
+            compo.resource.KeyFingerprint = "";
+            compo.resource.KeyName = "DefaultDP";
+            break;
+          case 'AWS.VPC.InternetGateway':
+            compo.resource.InternetGatewayId = "";
+            break;
+          case 'AWS.VPC.NetworkAcl':
+            compo.resource.NetworkAclId = "";
+            compo.resource.AssociationSet.forEach(function(e) {
+              e.NetworkAclAssociationId = "";
+              return e.NetworkAclId = "";
+            });
+            break;
+          case 'AWS.EC2.Tag':
+            delete components[comp];
+            break;
+        }
+      }
+      return console.info(components, "<===============>");
+    });
+    return null;
+  });
+
+}).call(this);
+
+(function() {
   define('module/design/framework/canvasview/CeLine',["./CanvasElement", "CanvasManager", "constant"], function(CanvasElement, CanvasManager, constant) {
     var CeLine, ChildElementProto;
     CeLine = function() {
@@ -12078,7 +12152,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
+  define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
     /* env:dev                                                                             env:dev:end */
 
