@@ -2,7 +2,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define(["component/exporter/Thumbnail", 'MC', 'backbone', 'jquery', 'underscore', 'event', 'stack_service', 'stack_model', 'app_model', 'constant', 'account_model'], function(ThumbUtil, MC, Backbone, $, _, ide_event, stack_service, stack_model, app_model, constant, account_model) {
-    var AWSRes, AwsTypeConvertMap, ToolbarModel, is_tab, item_state_map, model, process_data_map, req_map, ws;
+    var AWSRes, AwsTypeConvertMap, ToolbarModel, is_tab, item_state_map, model, process_data_map, req_map;
     AWSRes = constant.RESTYPE;
     AwsTypeConvertMap = {};
     AwsTypeConvertMap[AWSRes.ACL] = "Network ACL";
@@ -26,7 +26,6 @@
       req_map = $.extend(true, {}, MC.storage.get('req_map'));
     }
     is_tab = true;
-    ws = MC.data.websocket;
     ToolbarModel = Backbone.Model.extend({
       defaults: {
         'item_flags': null,
@@ -670,7 +669,7 @@
       reqHandle: function(idx, dag) {
         var appId, appName, app_id, app_list, descContent, dones, flag, flag_list, id, item, lst, mainContent, me, name, region, req, req_id, req_list, step, steps, tab_name, template, time_update, _i, _len, _ref;
         me = this;
-        req_list = MC.data.websocket.collection.request.find({
+        req_list = App.WS.collection.request.find({
           '_id': idx
         }).fetch();
         if (req_list.length > 0) {

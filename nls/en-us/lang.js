@@ -981,7 +981,7 @@ define({
         "IDE_LBL_REGION_NAME_SHORT_ap-northeast-1": "Tokyo",
         "IDE_LBL_REGION_NAME_SHORT_sa-east-1": "Sao Paulo",
         "IDE_LBL_LAST_STATUS_CHANGE": "Last Changed",
-        "POP_DOWNLOAD_KP_NOT_AVAILABLE": "<p>Your password is not ready. Password generation can sometimes take more than 30 minutes. Please wait at least 15 minutes after launching an instance before trying to retrieve the generated password.</p> <p>If you launched this instance from your own AMI, the password is the same as for the instance from which you created the AMI, unless this setting was modified in the EC2Config service settings.</p>",
+        "POP_DOWNLOAD_KP_NOT_AVAILABLE": "Not available yet. Password generation and encryption can sometimes take more than 30 minutes. Please wait at least 15 minutes after launching an instance before trying to retrieve the generated password.",
         "POP_BTN_CLOSE": "Close",
         "POP_TIP_PEM_ENCODED": "PEM Encoded",
         "RUN_STACK": "run stack",
@@ -1093,9 +1093,6 @@ define({
         "KEY_NEXT_KEY": "Tab",
         "KEY_NEXT_ACTION": "Switch to the next input",
         "KEY_PREV_KEY": "Shift + Tab",
-        "KEY_CONTENT_EDITOR_MAC": "Command + E",
-        "KEY_CONTENT_EDITOR_PC": "Ctrl + E",
-        "KEY_CONTENT_EDITOR_ACTION": "Open content editor",
         "KEY_PREV_ACTION": "Switch back to the previous input",
         "KEY_INFO_KEY_MAC": "Command + I",
         "KEY_INFO_KEY_PC": "Ctrl + I",
@@ -1171,8 +1168,7 @@ define({
         "TA_MSG_ERROR_VPN_NOT_PUBLIC_IP": "VPN Connection <span class='validation-tag tag-vpn'>%s</span>'s IP prefix <span class='validation-tag tag-ip'>%s</span> is invalid.",
         "TA_MSG_ERROR_STACK_CHECKING_FORMAT_VALID": "Checking Stack data format validity...",
         "TA_MSG_ERROR_STACK_FORMAT_VALID_FAILED": "Resource %s has format problem, %s.",
-        "TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_AMI": "%s <span class='validation-tag tag-%s'>%s</span>'s AMI <span class='validation-tag tag-ami'>%s</span> is not available any more. Please change another AMI.",
-        "TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT": "Snapshot <span class='validation-tag tag-snapshot'>%s</span> attached to %s <span class='validation-tag tag-instance'>%s</span> is not available or not accessible to your account. Please change another one.",
+        "TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_AMI": "%s <span class='validation-tag tag-%s'>%s</span>'s AMI <span class='validation-tag tag-ami'>%s</span> is not available any more. Please use another AMI by creating new instance.",
         "TA_MSG_ERROR_STACK_HAVE_NOT_AUTHED_AMI": "You are not authorized for %s <span class='validation-tag tag-%s'>%s</span>'s AMI <span class='validation-tag tag-ami'>%s</span>. Go to AWS Marketplace to get authorized or use another AMI by creating new instance.",
         "TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_INSTANCE": "Instance <span class='validation-tag tag-instance'>%s</span> <span class='validation-tag tag-state'>state %s</span> has referenced the inexistent <span class='validation-tag tag-state-ref'>%s</span>.",
         "TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_ASG": "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span> <span class='validation-tag tag-state'>state %s</span> has referenced the inexistent <span class='validation-tag tag-state-ref'>%s</span>.",
@@ -1208,9 +1204,6 @@ define({
         "ERROR_CODE_18_MESSAGE": "Sorry, AWS is suffering from some technical issues, please try again later.",
         "ERROR_CODE_19_MESSAGE": "Sorry, your session has expired, please login again.",
         "ERROR_CODE_20_MESSAGE": "Sorry, this invitation has finished.",
-        "ERROR_CODE_21_MESSAGE": "User has been blocked.",
-        "RESET_PASSWORD_ERROR_2": "Sorry, but your url is invalid. Please Check your url and try again.",
-        "RESET_PASSWORD_ERROR_12": "Sorry, password reset URL is invalid or has expired.",
-        "RESET_PASSWORD_ERROR_18": "Sorry, but your params is invalid. Please check your url and try again."
+        "ERROR_CODE_21_MESSAGE": "User has been blocked."
     }
 });

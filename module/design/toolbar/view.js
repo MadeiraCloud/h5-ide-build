@@ -161,14 +161,8 @@
             if (MC.aws.aws.checkStackName(id, new_name)) {
               modal.close();
               MC.common.other.canvasData.set('name', new_name);
-              if ($('#property-stack-name').length !== 0) {
-                $('#property-stack-name').val(new_name);
-                $('#property-title').text('Stack - ' + new_name);
-              }
               ide_event.trigger(ide_event.SAVE_STACK, MC.common.other.canvasData.data());
               return true;
-            } else {
-              return $('.resource-name-label').text(new_name);
             }
           });
         } else {
