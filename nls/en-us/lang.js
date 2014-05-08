@@ -214,7 +214,7 @@ define({
         "TOOL_EXPORT_AS_JSON": "Export to JSON",
         "TOOL_POP_TIT_EXPORT_AS_JSON": "Export",
         "TOOL_POP_TIT_APP_TO_STACK": "Save App as Stack",
-        "TOOL_POP_INTRO_1": "Saving app as stack helps you to `revert` changes made during app editing back to stack.",
+        "TOOL_POP_INTRO_1": "Saving app as stack helps you to revert changes made during app editing back to stack.",
         "TOOL_POP_INTRO_2": "Canvas design, resource properties and instance states will be saved.",
         "TOOL_POP_REPLACE_STACK": "Replace the original stack",
         "TOOL_POP_REPLACE_STACK_INTRO": "This app is launched from stack",
