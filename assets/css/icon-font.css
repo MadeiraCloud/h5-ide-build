@@ -1,60 +1,282 @@
-/*
-Syntax error: Invalid CSS after ".icon-expand,": expected "{", was "<<<<<<< HEAD"
-        on line 80 of /Users/Cyril/Code/h5-ide/src/assets/scss/icon-font.scss
+@font-face {
+  font-family: 'MCIcon';
+  font-weight: normal;
+  font-style: normal;
+  src: url('../fonts/icon.eot');
+  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff") format("woff"), url("../fonts/icon.ttf") format("truetype"); }
 
-Backtrace:
-/Users/Cyril/Code/h5-ide/src/assets/scss/icon-font.scss:80
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:1147:in `expected'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:1085:in `expected'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:1080:in `tok!'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:534:in `block'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:529:in `ruleset'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:553:in `block_child'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:546:in `block_contents'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:82:in `stylesheet'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:27:in `parse'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:342:in `_to_tree'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:315:in `_render'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:262:in `render'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:139:in `block (2 levels) in compile'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:126:in `timed'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:138:in `block in compile'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/logger.rb:45:in `red'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:137:in `compile'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:118:in `compile_if_required'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:103:in `block (2 levels) in run'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:101:in `each'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:101:in `block in run'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:126:in `timed'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:100:in `run'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/watch_project.rb:147:in `recompile'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:73:in `call'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:73:in `run_callback'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:55:in `callback_action'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:35:in `update'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:39:in `block in modified'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:37:in `each'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:37:in `modified'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:18:in `refresh'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:17:in `block (2 levels) in run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:17:in `each'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:17:in `block in run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:15:in `loop'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:15:in `run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/monitor.rb:26:in `run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm.rb:70:in `monitor'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/watch_project.rb:87:in `perform'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/base.rb:18:in `execute'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/project_base.rb:19:in `execute'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/exec/sub_command_ui.rb:43:in `perform!'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/exec/sub_command_ui.rb:15:in `run!'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/bin/compass:30:in `block in <top (required)>'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/bin/compass:44:in `call'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/bin/compass:44:in `<top (required)>'
-/usr/bin/compass:23:in `load'
-/usr/bin/compass:23:in `<main>'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Invalid CSS after \".icon-expand,\": expected \"{\", was \"<<<<<<< HEAD\"\A         on line 80 of /Users/Cyril/Code/h5-ide/src/assets/scss/icon-font.scss"; }
+.icon-play:before,
+.icon-stop:before,
+.icon-save:before,
+.icon-undo:before,
+.icon-redo:before,
+.icon-zoom-out:before,
+.icon-zoom-in:before,
+.icon-send:before,
+.icon-add:before,
+.icon-duplicate:before,
+.icon-delete:before,
+.icon-new-stack:before,
+.icon-btn-details:before,
+.icon-btn-back:before,
+.icon-export-png:before,
+.icon-export-json:before,
+.icon-caret-down:before,
+.icon-terminate:before,
+.icon-close:before,
+.icon-caret-right:before,
+.icon-caret-left:before,
+.icon-close-circle:before,
+.icon-info:before,
+.icon-user:before,
+.icon-password:before,
+.icon-notification:before,
+.icon-message:before,
+.icon-remove:before,
+.icon-allow:before,
+.icon-deny:before,
+.icon-outbound:before,
+.icon-inbound:before,
+.icon-refresh:before,
+.icon-edit:before,
+.icon-resize-right:before,
+.icon-resize-left:before,
+.icon-resize-down:before,
+.icon-resize-up:before,
+.icon-pending:before,
+.icon-warning:before,
+.icon-error:before,
+.icon-success:before,
+.icon-time:before,
+.icon-sort:before,
+.icon-detail:before,
+.icon-del:before,
+.icon-line-shape:before,
+.icon-copy:before,
+.icon-straight:before,
+.icon-elbow:before,
+.icon-bezier-q:before,
+.icon-bezier-qt:before,
+.icon-toolbar-cloudformation:before,
+.icon-update-app:before,
+.icon-cancel-update-app:before,
+.icon-apply-app:before,
+.icon-visualize:before,
+.icon-toolbar-diff:before,
+.icon-desc:before,
+.icon-log:before,
+.icon-syslog:before,
+.icon-import:before,
+.icon-drag-copy:before,
+.icon-gear:before,
+.icon-menu:before,
+.icon-expand:before,
+.icon-save-app:before,
+.icon-support:before {
+  font: 16px/1em "MCIcon";
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased; }
+
+.icon-play:before {
+  content: "\F110"; }
+
+.icon-stop:before {
+  content: "\F111"; }
+
+.icon-save:before {
+  content: "\F112"; }
+
+.icon-undo:before {
+  content: "\F114"; }
+
+.icon-redo:before {
+  content: "\F115"; }
+
+.icon-zoom-in:before {
+  content: "\F116"; }
+
+.icon-zoom-out:before {
+  content: "\F117"; }
+
+.icon-send:before {
+  content: "\F118"; }
+
+.icon-add:before {
+  content: "\F119"; }
+
+.icon-duplicate:before {
+  content: "\F11B"; }
+
+.icon-duplicate:before {
+  content: "\F11B"; }
+
+.icon-delete:before {
+  content: "\F11C"; }
+
+.icon-new-stack:before {
+  content: "\F11A"; }
+
+.icon-btn-details:before {
+  content: "\F11F"; }
+
+.icon-btn-back:before {
+  content: "\F120"; }
+
+.icon-export-png:before {
+  content: "\F11D"; }
+
+.icon-export-json:before {
+  content: "\F11E"; }
+
+.icon-caret-down:before {
+  content: "\F121"; }
+
+.icon-close:before {
+  content: "\F122"; }
+
+.icon-terminate:before {
+  content: "\F154"; }
+
+.icon-caret-right:before {
+  content: "\F124"; }
+
+.icon-caret-left:before {
+  content: "\F125"; }
+
+.icon-close-circle:before {
+  content: "\F126"; }
+
+.icon-info:before {
+  content: "\F127"; }
+
+.icon-password:before {
+  content: "\F128"; }
+
+.icon-user:before {
+  content: "\F129"; }
+
+.icon-notification:before {
+  content: "\F12A"; }
+
+.icon-message:before {
+  content: "\F12B"; }
+
+.icon-remove:before {
+  content: "\F12C"; }
+
+.icon-allow:before {
+  content: "\F12D"; }
+
+.icon-deny:before {
+  content: "\F12E"; }
+
+.icon-outbound:before {
+  content: "\F12F"; }
+
+.icon-inbound:before {
+  content: "\F130"; }
+
+.icon-refresh:before {
+  content: "\F131"; }
+
+.icon-edit:before {
+  content: "\F132"; }
+
+.icon-resize-right:before {
+  content: "\F133"; }
+
+.icon-resize-left:before {
+  content: "\F134"; }
+
+.icon-resize-down:before {
+  content: "\F135"; }
+
+.icon-resize-up:before {
+  content: "\F136"; }
+
+.icon-pending:before {
+  content: "\F137"; }
+
+.icon-warning:before {
+  content: "\F138"; }
+
+.icon-error:before {
+  content: "\F139"; }
+
+.icon-success:before, .icon-apply-app:before {
+  content: "\F13A"; }
+
+.icon-time:before {
+  content: "\F13B"; }
+
+.icon-sort:before {
+  content: "\F13C"; }
+
+.ipt-controls > .icon-add:before {
+  content: "\F13D"; }
+
+.icon-del:before, .icon-cancel-update-app:before {
+  content: "\F13E"; }
+
+.icon-detail:before {
+  content: "\F140"; }
+
+.icon-line-shape:before {
+  content: "\F141"; }
+
+.icon-copy:before {
+  content: "\F142"; }
+
+.icon-straight:before {
+  content: "\F143"; }
+
+.icon-elbow:before {
+  content: "\F144"; }
+
+.icon-bezier-qt:before {
+  content: "\F145"; }
+
+.icon-bezier-q:before {
+  content: "\F146"; }
+
+.icon-toolbar-cloudformation:before {
+  content: "\F147"; }
+
+.icon-update-app:before {
+  content: "\F148"; }
+
+.icon-visualize:before {
+  content: "\F149"; }
+
+.icon-log:before {
+  content: "\F14A"; }
+
+.icon-desc:before {
+  content: "\F14B"; }
+
+.icon-syslog:before {
+  content: "\F14C"; }
+
+.icon-toolbar-diff:before {
+  content: "\F14D"; }
+
+.icon-import:before {
+  content: "\F14E"; }
+
+.icon-drag-copy:before {
+  content: "\F14F"; }
+
+.icon-gear:before {
+  content: "\F150"; }
+
+.icon-menu:before {
+  content: "\F151"; }
+
+.icon-expand:before {
+  content: "\F152"; }
+
+.icon-save-app:before {
+  content: "\F153"; }
+
+.icon-support:before {
+  content: "\F155"; }
