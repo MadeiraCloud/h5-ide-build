@@ -1,5 +1,18 @@
 (function() {
-  define('lib/ApiRequestDefs',[], function() {
+  define('api/ApiRequestDefs',[], function() {
+
+    /*
+     * === McError ===
+     * McError is Object to represent an Error. Every promise handler that wants to throw error should throw an McError
+     */
+    var ApiRequestDefs;
+    window.McError = function(errorNum, errorMsg, params) {
+      return {
+        error: errorNum,
+        msg: errorMsg || "",
+        result: params || void 0
+      };
+    };
 
     /*
     == Following name of the paramter is autofilled. Thus the paramter is not required.
@@ -11,7 +24,6 @@
     usercode
     session_id
      */
-    var ApiRequestDefs;
     ApiRequestDefs = {
       login: {
         url: "/session/",
@@ -37,32 +49,37 @@
         url: "/account/",
         method: "reset_key",
         params: ["usercode", "session_id", "flag"]
+      },
+      saveStack: {
+        url: "/stack/",
+        method: "save",
+        params: ["username", "session_id", "region_name", 'data']
+      },
+      createStack: {
+        url: "/stack/",
+        method: "create",
+        params: ["username", "session_id", "region_name", "data"]
       }
     };
 
     /*
     Parsers are promise's success hanlder.
     Thus, if the parser cannot parse a result, it should throw an error !!!
-    An example would be like :
-    ```
-    throw {
-      error : 300
-      msg   : "Cannot parse the result"
-    }
-    ```
+    An example would be like : `throw McError( 300, "Cannot parse the result" )`
      */
     ApiRequestDefs.Parsers = {
       login: function(result) {
         return {
-          usercode: result[0],
-          email: result[1],
-          user_hash: result[2],
-          session_id: result[3],
-          account_id: result[4],
-          mod_repo: result[5],
-          mod_tag: result[6],
-          state: result[7],
-          has_cred: result[8]
+          usercode: result.username,
+          username: MC.base64Decode(result.username),
+          email: result.email,
+          user_hash: result.user_hash,
+          session_id: result.session_id,
+          account_id: result.account_id,
+          mod_repo: result.mod_repo,
+          mod_tag: result.mod_tag,
+          state: result.state,
+          has_cred: result.has_cred
         };
       }
     };
@@ -83,7 +100,7 @@
 }).call(this);
 
 (function() {
-  define('ApiRequest',["lib/ApiRequestDefs", "MC"], function(ApiDefination) {
+  define('ApiRequest',["api/ApiRequestDefs", "MC"], function(ApiDefination) {
 
     /*
      * === ApiRequest ===
@@ -107,37 +124,23 @@
     };
     logAndThrow = function(obj) {
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                   env:dev:end */
       throw obj;
     };
     AjaxSuccessHandler = function(res) {
       if (!res || !res.result || res.result.length !== 2) {
-        logAndThrow({
-          error: -1,
-          msg: "Invalid JsonRpc Return Data"
-        });
+        logAndThrow(McError(-1, "Invalid JsonRpc Return Data"));
       }
       if (res.result[0] !== 0) {
-        logAndThrow({
-          error: res.result[0],
-          msg: "Service Error",
-          result: res.result[1]
-        });
+        logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
       }
       return res.result[1];
     };
     AjaxErrorHandler = function(jqXHR, textStatus, error) {
       if (!error && jqXHR.status !== 200) {
-        logAndThrow({
-          error: -jqXHR.status,
-          msg: "Network Error"
-        });
+        logAndThrow(McError(-jqXHR.status, "Network Error"));
       }
-      logAndThrow({
-        error: -2,
-        msg: textStatus,
-        result: error
-      });
+      logAndThrow(McError(-2, textStatus, error));
     };
     Abort = function() {
       this.ajax.abort();
