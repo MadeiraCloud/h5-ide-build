@@ -66,6 +66,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       connect: function(password) {
         return ApiRequest("login", {
+          username: $.cookie('username'),
           password: password
         }).then((function(_this) {
           return function(result) {
