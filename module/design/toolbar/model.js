@@ -43,7 +43,7 @@
           name = data.name;
           if (!result.is_error) {
             console.log('save stack successfully');
-            me.saveStackCallback(id, name, region);
+            me.saveStackCallback(id, name);
             return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK', name);
           } else {
             me.trigger('TOOLBAR_HANDLE_FAILED', 'SAVE_STACK', name);
@@ -223,18 +223,17 @@
             item_state_map[new_id].is_delete = true;
             delete item_state_map[old_id];
           }
-          return ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", name, region, result.resolved_data);
+          return ide_event.trigger(ide_event.UPDATE_TAB_DATA, new_id, old_id);
         }
       },
-      saveStackCallback: function(id, name, region) {
-        console.log('saveStackCallback', id, name, region);
+      saveStackCallback: function(id, name) {
+        console.log('saveStackCallback', id, name);
         this.savePNG(id);
         ide_event.trigger(ide_event.UPDATE_STACK_LIST, 'SAVE_STACK', [id]);
         if (MC.common.other.isCurrentTab(id)) {
           this.setFlag(id, 'SAVE_STACK', name);
           ide_event.trigger(ide_event.UPDATE_STATUS_BAR_SAVE_TIME);
         } else {
-          ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", name, region, id);
           if (item_state_map && item_state_map[id]) {
             item_state_map[id].is_enable = true;
             item_state_map[id].is_duplicate = true;
@@ -244,7 +243,7 @@
         return null;
       },
       setFlag: function(id, flag, value) {
-        var is_pending, is_running, me, name, region, state, _ref;
+        var is_pending, is_running, me, name, region, state;
         me = this;
         name = MC.common.other.canvasData.get('name');
         state = MC.common.other.canvasData.get('state');
@@ -377,9 +376,7 @@
             item_state_map[id].is_app_updating = value;
           }
         } else if (flag === 'ENABLE_SAVE') {
-          if ((_ref = item_state_map[id]) != null) {
-            _ref.is_enable = value;
-          }
+          item_state_map[id].is_enable = value;
         }
         if (id === MC.common.other.canvasData.get('id') && is_tab) {
           me.set('item_flags', $.extend(true, {}, item_state_map[id]));
@@ -456,7 +453,7 @@
                 id = data.id;
                 name = data.name;
                 if (id.split('-')[0] === 'stack') {
-                  me.saveStackCallback(id, name, region);
+                  me.saveStackCallback(id, name);
                   return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK_BY_RUN', name);
                 } else if (id.split('-')[0] === 'new') {
                   me.createStackCallback(aws_result, id, name, region);

@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'ApiRequest', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, download, constant, ApiRequest) {
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, download, constant) {
     var ToolbarView;
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -11,7 +11,6 @@
         'click #toolbar-run': 'clickRunIcon',
         'click .icon-save': 'clickSaveIcon',
         'click #toolbar-duplicate': 'clickDuplicateIcon',
-        'click #toolbar-app-to-stack': 'appToStackClick',
         'click #toolbar-delete': 'clickDeleteIcon',
         'click #toolbar-new': 'clickNewStackIcon',
         'click .icon-zoom-in': 'clickZoomInIcon',
@@ -207,94 +206,6 @@
           }
         });
         return true;
-      },
-      appToStackClick: function(event) {
-        var appToStackCb, name, new_name, originStack;
-        console.log("Click to save App as Stack");
-        appToStackCb = function(err, data, id) {
-          if (err) {
-            notification('error', sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, data.name));
-            return;
-          }
-          if (data.id) {
-            notification("info", sprintf(lang.ide.TOOL_MSG_INFO_HDL_SUCCESS, lang.ide.TOOLBAR_HANDLE_SAVE_STACK, data.name));
-          } else {
-            notification("info", sprintf(lang.ide.TOOL_MSG_INFO_HDL_SUCCESS, lang.ide.TOOLBAR_HANDLE_CREATE_STACK, data.name));
-            ide_event.trigger(ide_event.UPDATE_STACK_LIST, 'SAVE_STACK', [id]);
-          }
-          return ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", data.name, data.region, data.id || id);
-        };
-        name = MC.common.other.canvasData.get('name');
-        new_name = MC.aws.aws.getStackNameFromApp(name);
-        originStack = Design.instance().serialize().stack_id;
-        MC.aws.aws.hasStack(originStack);
-        $('#modal-input-value').val(new_name);
-        if (MC.aws.aws.hasStack(originStack)) {
-          $("input[type=radio]").change(function() {
-            if ($(this).is(":checked")) {
-              $(".radio-instruction").addClass('hide');
-              return $(this).parent().parent().find('.radio-instruction').removeClass('hide');
-            }
-          });
-        } else {
-          $("#replace_stack").hide();
-          $("#save_new_stack").find('div.radio,label').hide();
-          $("#save_new_stack").find('.radio-instruction').removeClass('hide');
-        }
-        $("#modal-input-value").keyup(function() {
-          if (!MC.aws.aws.checkStackName(null, $(this).val())) {
-            return $("#stack-name-exist").removeClass('hide');
-          } else {
-            return $('#stack-name-exist').addClass('hide');
-          }
-        });
-        $("#btn-confirm").on('click', {
-          target: this
-        }, function(event) {
-          var newData, stackData;
-          console.log("Toolbar save app as stack");
-          if ($("#save_new_stack").find(".radio-instruction").hasClass("hide")) {
-            modal.close();
-            stackData = Design.instance().serializeAsStack();
-            stackData.id = originStack;
-            ApiRequest("saveStack", {
-              username: $.cookie('usercode'),
-              session_id: $.cookie('session_id'),
-              region_name: stackData.region,
-              data: stackData
-            }).then(function(result) {
-              return appToStackCb(null, stackData, result);
-            }, function(err) {
-              return appToStackCb(err, stackData);
-            });
-            return false;
-          }
-          new_name = $("#modal-input-value").val();
-          if (!new_name) {
-            return notification("warning", lang.ide.PROP_MSG_WARN_NO_STACK_NAME);
-          } else if (new_name.indexOf(' ') >= 0) {
-            return notification('warning', lang.ide.PROP_MSG_WARN_WHITE_SPACE);
-          } else if (!MC.aws.aws.checkStackName(null, new_name)) {
-            $("#stack-name-exist").addClass('error-msg').removeClass('hide');
-            return notification('warning', lang.ide.PROP_MSG_WARN_REPEATED_STACK_NAME);
-          } else {
-            $("#stack-name-exist").addClass('hide');
-            modal.close();
-            newData = Design.instance().serializeAsStack();
-            newData.name = new_name;
-            return ApiRequest("createStack", {
-              username: $.cookie('usercode'),
-              session_id: $.cookie('session_id'),
-              region_name: newData.region,
-              data: newData
-            }).then(function(result) {
-              return appToStackCb(null, newData, result);
-            }, function(err) {
-              return appToStackCb(err, newData);
-            });
-          }
-        });
-        return null;
       },
       clickDeleteIcon: function() {
         var me, target;
