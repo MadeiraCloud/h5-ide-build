@@ -4,7 +4,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<section style=\"width:400px;\" class=\"invalid-session\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>OK</button>\n    <button id=\"SessionClose2\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n</section>\n";
+  return "<section style=\"width:400px;\" class=\"invalid-session\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>\n";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('component/session/SessionDialogView',['./template', 'i18n!nls/lang.js'], function(template, lang) {
@@ -37,6 +37,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           $("#SessionConnect").removeAttr("disabled");
           notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
           $("#SessionPassword").toggleClass("parsley-error", true);
+          return console.log(error);
         });
       },
       passwordChanged: function(evt) {
@@ -73,7 +74,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             _this.trigger("CONNECTED");
             ide_event.trigger(ide_event.UPDATE_APP_LIST);
             ide_event.trigger(ide_event.UPDATE_DASHBOARD);
-            App.WS.subscribe();
+            ide_event.trigger(ide_event.RECONNECT_WEBSOCKET);
             if (!MC.data.is_loading_complete) {
               window.location.href = "/";
             }

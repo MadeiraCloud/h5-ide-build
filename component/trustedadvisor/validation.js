@@ -14,7 +14,8 @@
       'AWS.VPC.NetworkInterface': ['eni'],
       'AWS.VPC.NetworkAcl': ['acl'],
       'AWS.AutoScaling.LaunchConfiguration': ['state'],
-      'AWS.VPC.RouteTable': ['rtb']
+      'AWS.VPC.RouteTable': ['rtb'],
+      'AWS.EC2.EBS.Volume': ['ebs']
     },
     globalList: {
       eip: ['isHasIGW'],
@@ -26,7 +27,8 @@
     asyncList: {
       cgw: ['isCGWHaveIPConflict'],
       stack: ['verify', 'isHaveNotExistAMIAsync'],
-      subnet: ['getAllAWSENIForAppEditAndDefaultVPC']
+      subnet: ['getAllAWSENIForAppEditAndDefaultVPC'],
+      ebs: ['isSnapshotExist']
     }
   });
 
@@ -2674,7 +2676,115 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/main',['MC', './stack/stack', './ec2/instance', './vpc/subnet', './vpc/vpc', './elb/elb', './ec2/securitygroup', './asg/asg', './ec2/eip', './ec2/az', './vpc/vgw', './vpc/vpn', './vpc/igw', './vpc/networkacl', './vpc/cgw', './vpc/eni', './vpc/rtb', './stateeditor/main', './state/state'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state) {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('component/trustedadvisor/validation/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'ebs_service', '../result_vo'], function(constant, $, MC, lang, ebsService) {
+    var isSnapshotExist;
+    isSnapshotExist = function(callback) {
+      var currentRegion, err, snaphostAry, snaphostMap;
+      try {
+        if (!callback) {
+          callback = function() {};
+        }
+        snaphostAry = [];
+        snaphostMap = {};
+        _.each(MC.canvas_data.component, function(compObj) {
+          var instanceUID, snaphostId;
+          if (compObj.type === constant.RESTYPE.VOL) {
+            snaphostId = compObj.resource.SnapshotId;
+            instanceUID = compObj.resource.AttachmentSet.InstanceId;
+            if (snaphostId && instanceUID) {
+              if (!snaphostMap[snaphostId]) {
+                snaphostMap[snaphostId] = [];
+              }
+              snaphostMap[snaphostId].push(MC.extractID(instanceUID));
+            }
+          }
+          if (compObj.type === constant.RESTYPE.LC) {
+            _.each(compObj.resource.BlockDeviceMapping, function(blockObj) {
+              snaphostId = blockObj.Ebs.SnapshotId;
+              instanceUID = compObj.uid;
+              if (snaphostId && instanceUID) {
+                if (!snaphostMap[snaphostId]) {
+                  snaphostMap[snaphostId] = [];
+                }
+                return snaphostMap[snaphostId].push(instanceUID);
+              }
+            });
+          }
+          return null;
+        });
+        snaphostAry = _.keys(snaphostMap);
+        if (snaphostAry.length) {
+          currentRegion = MC.canvas_data.region;
+          ebsService.DescribeSnapshots({
+            sender: this
+          }, $.cookie('usercode'), $.cookie('session_id'), currentRegion, snaphostAry, null, null, null, function(result) {
+            var awsSnapshotIdAry, awsSnapshotIdAryStr, tipInfoAry;
+            tipInfoAry = [];
+            if (result.is_error && result.aws_error_code === 'InvalidSnapshot.NotFound') {
+              awsSnapshotIdAryStr = result.error_message;
+              awsSnapshotIdAryStr = awsSnapshotIdAryStr.replace("The snapshot '", "").replace("' does not exist.", "");
+              awsSnapshotIdAry = awsSnapshotIdAryStr.split(',');
+              awsSnapshotIdAry = _.map(awsSnapshotIdAry, function(awsSnapshotId) {
+                return $.trim(awsSnapshotId);
+              });
+              if (!awsSnapshotIdAry.length) {
+                callback(null);
+                return null;
+              }
+              _.each(snaphostAry, function(snapshotId) {
+                var instanceUIDAry;
+                if (__indexOf.call(awsSnapshotIdAry, snapshotId) >= 0) {
+                  instanceUIDAry = snaphostMap[snapshotId];
+                  _.each(instanceUIDAry, function(instanceUID) {
+                    var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
+                    instanceObj = MC.canvas_data.component[instanceUID];
+                    instanceType = instanceObj.type;
+                    instanceName = instanceObj.name;
+                    infoObjType = 'Instance';
+                    infoTagType = 'instance';
+                    if (instanceType === constant.RESTYPE.LC) {
+                      infoObjType = 'Launch Configuration';
+                      infoTagType = 'lc';
+                    }
+                    tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
+                    tipInfoAry.push({
+                      level: constant.TA.ERROR,
+                      info: tipInfo,
+                      uid: instanceUID
+                    });
+                    return null;
+                  });
+                }
+                return null;
+              });
+            }
+            if (tipInfoAry.length) {
+              callback(tipInfoAry);
+              return console.log(tipInfoAry);
+            } else {
+              return callback(null);
+            }
+          });
+          return null;
+        } else {
+          return callback(null);
+        }
+      } catch (_error) {
+        err = _error;
+        return callback(null);
+      }
+    };
+    return {
+      isSnapshotExist: isSnapshotExist
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/main',['MC', './stack/stack', './ec2/instance', './vpc/subnet', './vpc/vpc', './elb/elb', './ec2/securitygroup', './asg/asg', './ec2/eip', './ec2/az', './vpc/vgw', './vpc/vpn', './vpc/igw', './vpc/networkacl', './vpc/cgw', './vpc/eni', './vpc/rtb', './stateeditor/main', './state/state', './ec2/ebs'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs) {
     return {
       stack: stack,
       instance: instance,
@@ -2693,7 +2803,8 @@ This file use for validate component about state.
       eni: eni,
       rtb: rtb,
       stateEditor: stateEditor,
-      state: state
+      state: state,
+      ebs: ebs
     };
   });
 

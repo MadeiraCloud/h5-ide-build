@@ -145,7 +145,7 @@
         } else {
           $btnState.show();
         }
-        stateList = App.WS.collection.status.find().fetch();
+        stateList = MC.data.websocket.collection.status.find().fetch();
         return this.renderStateBar(stateList);
       },
       updateStateBarWhenStateChanged: function(state) {
@@ -155,13 +155,13 @@
           return this.unloadStateStatusBar();
         } else if (state === 'Running') {
           this.loadStateStatusBar(state);
-          stateList = App.WS.collection.status.find().fetch();
+          stateList = MC.data.websocket.collection.status.find().fetch();
           return this.renderStateBar(stateList);
         }
       },
       updateStateBar: function(type, idx, statusData) {
         var stateList;
-        stateList = App.WS.collection.status.find().fetch();
+        stateList = MC.data.websocket.collection.status.find().fetch();
         return this.renderStateBar(stateList);
       },
       unloadStateStatusBar: function() {

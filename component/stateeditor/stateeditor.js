@@ -187,7 +187,7 @@ function program15(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n			<div class=\"parameter-name\">\n				"
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-pending\"></div>\n				<div class=\"parameter-value editable-area text\">"
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-expand\">Expand</div>\n				<div class=\"parameter-value editable-area text\">"
     + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n			</div>\n		</div>\n	";
   return buffer;
@@ -687,9 +687,21 @@ TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
+  
+  
+  return "View";
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "Edit";
+  }
+
+function program5(depth0,data) {
   
   var buffer = "";
   buffer += "<button id=\"modal-state-text-expand-save\" class=\"btn btn-blue\">"
@@ -698,12 +710,15 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div id=\"modal-state-text-expand\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>Edit "
+  buffer += "<div id=\"modal-state-text-expand\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " "
     + escapeExpression(((stack1 = (depth0 && depth0.cmd_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " > "
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<div class=\"editable-area text-code-editor text\"></div>\n	</div>\n	<div class=\"modal-footer\">\n		";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n</div>\n";
   return buffer;
@@ -2283,7 +2298,7 @@ return TEMPLATE; });
           option = {};
         }
         _initEditor = function() {
-          var editColumn, editRow, editSession, editor, editorSingleLine, maxLines, resRefModeAry, tk;
+          var editColumn, editRow, editSession, editor, editorSingleLine, enableTab, maxLines, resRefModeAry, tk;
           editor = ace.edit(editorElem);
           $editorElem.data('editor', editor);
           editor.hintObj = hintObj;
@@ -2295,17 +2310,6 @@ return TEMPLATE; });
             maxLines = 1;
             editorSingleLine = true;
           }
-          editor.setOptions({
-            enableBasicAutocompletion: true,
-            maxLines: maxLines,
-            showGutter: option.showGutter || false,
-            highlightGutterLine: true,
-            showPrintMargin: false,
-            highlightActiveLine: false,
-            highlightSelectedWord: false,
-            enableSnippets: false,
-            singleLine: editorSingleLine
-          });
           resRefModeAry = [
             {
               token: 'res_ref_correct',
@@ -2316,12 +2320,20 @@ return TEMPLATE; });
             }
           ];
           editSession = editor.getSession();
+          enableTab = false;
           if (option.isCodeEditor) {
             ace.modeResRefRule = resRefModeAry;
             if (option.extName === 'js') {
               editSession.setMode('ace/mode/javascript');
+            } else if (option.extName === 'sh') {
+              editSession.setMode('ace/mode/sh');
+            } else if (option.extName === 'rb') {
+              editSession.setMode('ace/mode/ruby');
+            } else if (option.extName === 'py') {
+              editSession.setMode('ace/mode/python');
             }
             editor.setTheme('ace/theme/tomorrow_night');
+            enableTab = true;
           } else {
             tk = new that.Tokenizer({
               'start': resRefModeAry
@@ -2330,6 +2342,18 @@ return TEMPLATE; });
             editSession.bgTokenizer.setTokenizer(tk);
             editor.renderer.updateText();
           }
+          editor.setOptions({
+            enableBasicAutocompletion: true,
+            maxLines: maxLines,
+            showGutter: option.showGutter || false,
+            highlightGutterLine: true,
+            showPrintMargin: false,
+            highlightActiveLine: false,
+            highlightSelectedWord: false,
+            enableSnippets: false,
+            singleLine: editorSingleLine,
+            enableTab: enableTab
+          });
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;
           editor.gotoLine(editRow, editColumn);

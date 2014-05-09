@@ -307,8 +307,8 @@
       },
       listenStateStatusList: function() {
         var handle, query;
-        App.WS.collection.status.find().fetch();
-        query = App.WS.collection.status.find();
+        MC.data.websocket.collection.status.find().fetch();
+        query = MC.data.websocket.collection.status.find();
         handle = query.observe({
           added: function(idx, statusData) {
             var newStateUpdateResIdAry;
