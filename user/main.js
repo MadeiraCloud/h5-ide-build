@@ -81,7 +81,9 @@
     hashArray = window.location.hash.split('#').pop().split('/');
     pathArray = window.location.pathname.split('/');
     pathArray.shift();
-    return typeof routes[_name = pathArray[0]] === "function" ? routes[_name](pathArray, hashArray) : void 0;
+    if (typeof routes[_name = pathArray[0]] === "function") {
+      routes[_name](pathArray, hashArray);
+    }
   };
 
   guid = function() {
@@ -94,7 +96,7 @@
   };
 
   api = function(option) {
-    return xhr = $.ajax({
+    xhr = $.ajax({
       url: API_PROTO + API_HOST + option.url,
       dataType: 'json',
       type: 'POST',
@@ -113,6 +115,7 @@
         }
       }
     });
+    return xhr;
   };
 
   Handlebars.registerHelper('i18n', function(str) {
@@ -131,7 +134,7 @@
         return $("#main-body").html(template());
       },
       success: function(data) {
-        return window.langsrc = data;
+        window.langsrc = data;
       },
       error: function(error) {
         goto500();
@@ -199,7 +202,7 @@
             } else {
               tempLang = tempLang || langsrc.reset['expired-info'];
               langsrc.reset['expired-info'] = langsrc.service['RESET_PASSWORD_ERROR_' + statusCode] || tempLang;
-              return window.location.hash = "expire";
+              window.location.hash = "expire";
             }
           });
         } else if (hashTarget === "expire") {
@@ -279,7 +282,7 @@
         if (hashArray[0] === 'success') {
           render("#success-template");
           $('#register-get-start').click(function() {
-            return window.location = "/";
+            window.location = "/";
           });
           return false;
         }
@@ -401,7 +404,7 @@
             xhr.abort();
           }
           window.clearTimeout(usernameTimeout);
-          return usernameTimeout = window.setTimeout(function() {
+          usernameTimeout = window.setTimeout(function() {
             return checkUserExist([username, null], function(statusCode) {
               if (!statusCode) {
                 if (!checkUsername()) {
@@ -424,7 +427,7 @@
             xhr.abort();
           }
           window.clearTimeout(emailTimeout);
-          return emailTimeout = window.setTimeout(function() {
+          emailTimeout = window.setTimeout(function() {
             return checkUserExist([null, email], function(statusCode) {
               if (!statusCode) {
                 if (!checkEmail()) {
@@ -613,7 +616,7 @@
       success: function(result, statusCode) {
         if (!statusCode) {
           setCredit(result);
-          return window.location.hash = "success";
+          window.location.hash = "success";
         } else {
           return errorCB(statusCode);
         }
@@ -632,7 +635,7 @@
       success: function(result, statusCode) {
         if (!statusCode) {
           setCredit(result);
-          return window.location = '/';
+          window.location = '/';
         } else {
           return errorCB(statusCode);
         }
@@ -691,7 +694,7 @@
       data: [hashArray[1], newPw],
       success: function(result, statusCode) {
         if (!statusCode) {
-          return window.location.hash = 'success';
+          window.location.hash = 'success';
         } else {
           return handleErrorCode(statusCode);
         }

@@ -25,10 +25,6 @@
     session_id
      */
     ApiRequestDefs = {};
-
-    /*
-      Some of the api defined manually, might change to use generated api.
-     */
     ApiRequestDefs.Defs = {
       login: {
         url: "/session/",
@@ -54,6 +50,16 @@
         url: "/account/",
         method: "reset_key",
         params: ["username", "session_id", "flag"]
+      },
+      saveStack: {
+        url: "/stack/",
+        method: "save",
+        params: ["username", "session_id", "region_name", 'data']
+      },
+      createStack: {
+        url: "/stack/",
+        method: "create",
+        params: ["username", "session_id", "region_name", "data"]
       },
       changePwd: {
         url: "/account/",
