@@ -39,7 +39,39 @@ function program5(depth0,data) {
   buffer += " data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOL_TIP_TERMINATE_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"></button>\n";
+  buffer += "\"></button>\n<button class=\"modal btn-toolbar tooltip icon-save-app seperator\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
+    + "' id=\"toolbar-app-to-stack\" data-modal-template=\"modalAppToStack\" data-modal-data='{\"title\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_TIT_APP_TO_STACK", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"intro-1\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_INTRO_1", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"intro-2\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_INTRO_2", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"replace\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"replace-info\":\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO", {hash:{},data:data}))
+    + "\",\"replace-info-end\":\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO_END", {hash:{},data:data}))
+    + "\",\"save-new\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_SAVE_NEW_STACK", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"instruction\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\",\"error-message\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_STACK_NAME_ERROR", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\", \"input\":\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\", \"confirm\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_BTN_SAVE_TO_STACK", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\", \"color\":\"blue\" }' data-modal-dismiss=\"true\"></button>\n";
   return buffer;
   }
 function program6(depth0,data) {
@@ -258,7 +290,7 @@ function program36(depth0,data) {
   buffer += "\n\n";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_app_updating), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n<button class=\"btn-toolbar icon-zoom-in ";
+  buffer += "\n\n\n\n<button class=\"btn-toolbar icon-zoom-in ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_zoomin), {hash:{},inverse:self.program(34, program34, data),fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tooltip='"

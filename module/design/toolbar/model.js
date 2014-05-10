@@ -2,7 +2,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define(["component/exporter/Thumbnail", 'MC', 'backbone', 'jquery', 'underscore', 'event', 'stack_service', 'stack_model', 'app_model', 'constant', 'account_model'], function(ThumbUtil, MC, Backbone, $, _, ide_event, stack_service, stack_model, app_model, constant, account_model) {
-    var AWSRes, AwsTypeConvertMap, ToolbarModel, is_tab, item_state_map, model, process_data_map, req_map, ws;
+    var AWSRes, AwsTypeConvertMap, ToolbarModel, is_tab, item_state_map, model, process_data_map, req_map;
     AWSRes = constant.RESTYPE;
     AwsTypeConvertMap = {};
     AwsTypeConvertMap[AWSRes.ACL] = "Network ACL";
@@ -26,7 +26,6 @@
       req_map = $.extend(true, {}, MC.storage.get('req_map'));
     }
     is_tab = true;
-    ws = MC.data.websocket;
     ToolbarModel = Backbone.Model.extend({
       defaults: {
         'item_flags': null,
@@ -44,7 +43,7 @@
           name = data.name;
           if (!result.is_error) {
             console.log('save stack successfully');
-            me.saveStackCallback(id, name);
+            me.saveStackCallback(id, name, region);
             return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK', name);
           } else {
             me.trigger('TOOLBAR_HANDLE_FAILED', 'SAVE_STACK', name);
@@ -224,17 +223,18 @@
             item_state_map[new_id].is_delete = true;
             delete item_state_map[old_id];
           }
-          return ide_event.trigger(ide_event.UPDATE_TAB_DATA, new_id, old_id);
+          return ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", name, region, result.resolved_data);
         }
       },
-      saveStackCallback: function(id, name) {
-        console.log('saveStackCallback', id, name);
+      saveStackCallback: function(id, name, region) {
+        console.log('saveStackCallback', id, name, region);
         this.savePNG(id);
         ide_event.trigger(ide_event.UPDATE_STACK_LIST, 'SAVE_STACK', [id]);
         if (MC.common.other.isCurrentTab(id)) {
           this.setFlag(id, 'SAVE_STACK', name);
           ide_event.trigger(ide_event.UPDATE_STATUS_BAR_SAVE_TIME);
         } else {
+          ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", name, region, id);
           if (item_state_map && item_state_map[id]) {
             item_state_map[id].is_enable = true;
             item_state_map[id].is_duplicate = true;
@@ -244,7 +244,7 @@
         return null;
       },
       setFlag: function(id, flag, value) {
-        var is_pending, is_running, me, name, region, state;
+        var is_pending, is_running, me, name, region, state, _ref;
         me = this;
         name = MC.common.other.canvasData.get('name');
         state = MC.common.other.canvasData.get('state');
@@ -377,7 +377,9 @@
             item_state_map[id].is_app_updating = value;
           }
         } else if (flag === 'ENABLE_SAVE') {
-          item_state_map[id].is_enable = value;
+          if ((_ref = item_state_map[id]) != null) {
+            _ref.is_enable = value;
+          }
         }
         if (id === MC.common.other.canvasData.get('id') && is_tab) {
           me.set('item_flags', $.extend(true, {}, item_state_map[id]));
@@ -454,7 +456,7 @@
                 id = data.id;
                 name = data.name;
                 if (id.split('-')[0] === 'stack') {
-                  me.saveStackCallback(id, name);
+                  me.saveStackCallback(id, name, region);
                   return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK_BY_RUN', name);
                 } else if (id.split('-')[0] === 'new') {
                   me.createStackCallback(aws_result, id, name, region);
@@ -486,7 +488,14 @@
         return null;
       },
       runStack: function(data) {
-        var app_name, id, idx, me, region, usage;
+        var app_name, comp, id, idx, me, region, usage;
+        for (id in data) {
+          comp = data[id];
+          if (comp.type === "AWS.EC2.Instance" && comp.state && comp.state.length) {
+            MC.Analytics.increase("use_visualops");
+            break;
+          }
+        }
         console.log('runStack', data);
         me = this;
         id = data.id;
@@ -670,7 +679,7 @@
       reqHandle: function(idx, dag) {
         var appId, appName, app_id, app_list, descContent, dones, flag, flag_list, id, item, lst, mainContent, me, name, region, req, req_id, req_list, step, steps, tab_name, template, time_update, _i, _len, _ref;
         me = this;
-        req_list = MC.data.websocket.collection.request.find({
+        req_list = App.WS.collection.request.find({
           '_id': idx
         }).fetch();
         if (req_list.length > 0) {
