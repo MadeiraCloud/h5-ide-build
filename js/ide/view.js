@@ -96,6 +96,28 @@
         $('#tab-content-design').removeClass('active');
         return this.hideStatubar();
       },
+      showDisconnected: function() {
+        if ($(".disconnected-msg").show().length > 0) {
+          return;
+        }
+        return $(MC.template.disconnectedMsg()).appendTo("body").on("mouseover", function() {
+          $(".disconnected-msg").addClass("hovered");
+          $("body").on("mousemove.disconnectedmsg", function(e) {
+            var msg, pos, x, y;
+            msg = $(".disconnected-msg");
+            pos = msg.offset();
+            x = e.pageX;
+            y = e.pageY;
+            if (x < pos.left || y < pos.top || x >= pos.left + msg.outerWidth() || y >= pos.top + msg.outerHeight()) {
+              $("body").off("mousemove.disconnectedmsg");
+              msg.removeClass("hovered");
+            }
+          });
+        });
+      },
+      hideDisconnected: function() {
+        return $(".disconnected-msg").remove();
+      },
       beforeunloadEvent: function() {
         var checked_tab_id, has_refresh, _ref;
         if (MC.browser === 'msie' && MC.browserVersion === 10) {

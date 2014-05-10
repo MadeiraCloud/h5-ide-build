@@ -37,6 +37,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           $("#SessionConnect").removeAttr("disabled");
           notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
           $("#SessionPassword").toggleClass("parsley-error", true);
+          return console.log(error);
         });
       },
       passwordChanged: function(evt) {
@@ -66,7 +67,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       connect: function(password) {
         return ApiRequest("login", {
-          username: $.cookie('username'),
           password: password
         }).then((function(_this) {
           return function(result) {
@@ -74,7 +74,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             _this.trigger("CONNECTED");
             ide_event.trigger(ide_event.UPDATE_APP_LIST);
             ide_event.trigger(ide_event.UPDATE_DASHBOARD);
-            App.WS.subscribe();
+            ide_event.trigger(ide_event.RECONNECT_WEBSOCKET);
             if (!MC.data.is_loading_complete) {
               window.location.href = "/";
             }

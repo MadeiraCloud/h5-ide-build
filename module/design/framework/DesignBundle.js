@@ -1181,9 +1181,6 @@
        * serialize() : Object
           description : returns a Plain JS Object that is indentical to JSON data.
     
-       * serializeAsStack() : Object
-          description : same as serialize(), but it ensure that the JSON will be a stack JSON.
-    
        * getCost() : Array
           description : return an array of cost object to represent the cost of the stack.
      */
@@ -1553,8 +1550,8 @@
       }
       return true;
     };
-    DesignImpl.prototype.serialize = function(options) {
-      var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    DesignImpl.prototype.serialize = function() {
+      var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, version, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       currentDesignObj = Design.instance();
       this.use();
       console.debug("Design is serializing.");
@@ -1628,10 +1625,11 @@
       data = $.extend(true, {}, this.attributes);
       data.component = component_data;
       data.layout = layout_data;
+      version = data.version;
       _ref1 = Design.__serializeVisitors;
       for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
         visitor = _ref1[_k];
-        visitor(component_data, layout_data, options);
+        visitor(component_data, layout_data, version);
       }
       data.layout.size = this.canvas.sizeAry;
       data.property = $.extend({
@@ -1640,19 +1638,6 @@
       data.version = "2014-02-17";
       currentDesignObj.use();
       return data;
-    };
-    DesignImpl.prototype.serializeAsStack = function(new_name) {
-      var json;
-      json = this.serialize({
-        toStack: true
-      });
-      json.name = new_name || json.name;
-      json.state = "Enabled";
-      json.id = "";
-      delete json.history;
-      delete json.stack_id;
-      delete json.usage;
-      return json;
     };
     DesignImpl.prototype.getCost = function() {
       var c, comp, cost, costList, currency, feeMap, priceMap, totalFee, uid, _i, _len, _ref;
@@ -10678,85 +10663,6 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/util/serializeVisitor/AppToStack',["Design"], function(Design) {
-    Design.registerSerializeVisitor(function(components, layouts, options) {
-      var comp, compo, _results;
-      if (!options || !options.toStack) {
-        return;
-      }
-      _results = [];
-      for (comp in components) {
-        compo = components[comp];
-        switch (compo.type) {
-          case 'AWS.VPC.VPC':
-            _results.push(compo.resource.VpcId = "");
-            break;
-          case 'AWS.VPC.NetworkInterface':
-            _results.push(compo.resource.NetworkInterfaceId = "");
-            break;
-          case 'AWS.EC2.Instance':
-            compo.resource.PrivateIpAddress = "";
-            _results.push(compo.resource.InstanceId = "");
-            break;
-          case 'AWS.VPC.Subnet':
-            _results.push(compo.resource.SubnetId = "");
-            break;
-          case 'AWS.EC2.EIP':
-            compo.resource.AllocationId = "";
-            _results.push(compo.resource.PublicIp = "");
-            break;
-          case 'AWS.VPC.RouteTable':
-            compo.resource.RouteTableId = "";
-            _results.push(compo.resource.AssociationSet.forEach(function(e) {
-              e.RouteTableAssociationId = "";
-            }));
-            break;
-          case 'AWS.EC2.SecurityGroup':
-            compo.resource.GroupId = "";
-            _results.push(compo.resource.GroupName = "WebServerSG");
-            break;
-          case 'AWS.EC2.KeyPair':
-            compo.resource.KeyFingerprint = "";
-            _results.push(compo.resource.KeyName = "DefaultDP");
-            break;
-          case 'AWS.VPC.InternetGateway':
-            _results.push(compo.resource.InternetGatewayId = "");
-            break;
-          case 'AWS.VPC.NetworkAcl':
-            compo.resource.NetworkAclId = "";
-            _results.push(compo.resource.AssociationSet.forEach(function(e) {
-              e.NetworkAclAssociationId = "";
-              e.NetworkAclId = "";
-            }));
-            break;
-          case 'AWS.VPC.VPNGateway':
-            _results.push(compo.resource.VpnGatewayId = "");
-            break;
-          case 'AWS.VPC.VPNConnection':
-            _results.push(compo.resource.VpnConnectionId = "");
-            break;
-          case 'AWS.VPC.CustomerGateway':
-            _results.push(compo.resource.CustomerGatewayId = "");
-            break;
-          case "AWS.EC2.EBS.Volume":
-            _results.push(compo.resource.VolumeId = "");
-            break;
-          case "AWS.VPC.DhcpOptions":
-            _results.push(compo.resource.DhcpOptionsId = "");
-            break;
-          case 'AWS.EC2.Tag':
-            _results.push(delete components[comp]);
-            break;
-        }
-      }
-      return _results;
-    });
-    return null;
-  });
-
-}).call(this);
-
-(function() {
   define('module/design/framework/canvasview/CeLine',["./CanvasElement", "CanvasManager", "constant"], function(CanvasElement, CanvasManager, constant) {
     var CeLine, ChildElementProto;
     CeLine = function() {
@@ -12172,7 +12078,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
+  define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
     /* env:dev                                                                             env:dev:end */
 
