@@ -10695,7 +10695,6 @@
             _results.push(compo.resource.Attachment.AttachmentId = "");
             break;
           case 'AWS.EC2.Instance':
-            compo.resource.PrivateIpAddress = "";
             _results.push(compo.resource.InstanceId = "");
             break;
           case 'AWS.VPC.Subnet':
@@ -10726,7 +10725,6 @@
             compo.resource.NetworkAclId = "";
             _results.push(compo.resource.AssociationSet.forEach(function(e) {
               e.NetworkAclAssociationId = "";
-              e.NetworkAclId = "";
             }));
             break;
           case 'AWS.VPC.VPNGateway':
