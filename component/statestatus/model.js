@@ -5,7 +5,7 @@
       initialize: function() {
         var stateList;
         this.collection = new (this.__customCollection())();
-        stateList = App.WS.collection.status.find().fetch();
+        stateList = MC.data.websocket.collection.status.find().fetch();
         this.collection.set(this.__dispose(stateList).models, {
           silent: true
         });

@@ -6406,13 +6406,19 @@ function program3(depth0,data) {
         allCertModelAry = Design.modelClassForType(constant.RESTYPE.IAM).allObjects();
         attr.noSSLCert = true;
         attr.sslCertItem = _.map(allCertModelAry, function(sslCertModel) {
+          var disableCertEdit;
           if (currentSSLCert === sslCertModel) {
             attr.noSSLCert = false;
+          }
+          disableCertEdit = false;
+          if (sslCertModel.get('certId') && sslCertModel.get('arn')) {
+            disableCertEdit = true;
           }
           return {
             uid: sslCertModel.id,
             name: sslCertModel.get('name'),
-            selected: currentSSLCert === sslCertModel
+            selected: currentSSLCert === sslCertModel,
+            disableCertEdit: disableCertEdit
           };
         });
         if (attr.ConnectionDraining) {
@@ -6735,18 +6741,25 @@ function program23(depth0,data) {
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.uid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n									"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "<span class=\"icon-edit\"></span><span class=\"icon-remove\"></span>\n								</li>\n							";
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disableCertEdit), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "<span class=\"icon-remove\"></span>\n								</li>\n							";
   return buffer;
   }
+function program24(depth0,data) {
+  
+  
+  return "<span class=\"icon-edit\"></span>";
+  }
 
-function program25(depth0,data) {
+function program26(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program27(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "";
   buffer += "\n	<div class=\"option-group-head expand\">"
@@ -6755,31 +6768,31 @@ function program27(depth0,data) {
   return buffer;
   }
 
-function program29(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n		";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
-  return buffer;
-  }
 function program30(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		<div class=\"option-group-head\"> "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_AVAILABILITY_ZONE", {hash:{},data:data}))
-    + " </div>\n		<div class=\"option-group\" id=\"property-elb-az-cb-group\">\n			";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
+  buffer += "\n		";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n		";
+  buffer += "\n	";
   return buffer;
   }
 function program31(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n		<div class=\"option-group-head\"> "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_AVAILABILITY_ZONE", {hash:{},data:data}))
+    + " </div>\n		<div class=\"option-group\" id=\"property-elb-az-cb-group\">\n			";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</div>\n		";
+  return buffer;
+  }
+function program32(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n			<section class=\"property-control-group\">\n				<div class=\"checkbox\">\n					<input class=\"property-elb-az-checkbox\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
@@ -6869,9 +6882,9 @@ function program31(depth0,data) {
     + "\" name=\"property-elb-health-port\" id=\"property-elb-health-port\" data-required=\"true\" data-type=\"digits\" data-ignore=\"true\" maxlength=\"5\"/>\n		</section>\n		<section class=\"property-control-group\">\n			<label for=\"property-elb-health-path\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_PING_PATH", {hash:{},data:data}))
     + "</label>\n			<div class=\"pos-r mgt5\">\n				<input class=\"input\" ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.pingPath)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -6892,7 +6905,7 @@ function program31(depth0,data) {
     + "</label>\n			<div class=\"slider\" id=\"elb-property-slider-unhealthy\">\n				<a class=\"thumb\"></a>\n				<ul class=\"marker\"><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li></ul>\n			</div>\n		</section>\n		<section class=\"property-control-group\">\n			<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_THRESHOLD", {hash:{},data:data}))
     + "</label>\n			<div class=\"slider\" id=\"elb-property-slider-healthy\">\n				<a class=\"thumb\"></a>\n				<ul class=\"marker\"><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li></ul>\n			</div>\n		</section>\n	</div>\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVpc), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVpc), {hash:{},inverse:self.program(30, program30, data),fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>\n";
   return buffer;

@@ -627,7 +627,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         clone.insertBefore(replaceEl, line);
       }
       clone.removeChild(line);
-      svg = (new XMLSerializer()).serializeToString(clone).replace(/data-[^=<>]+="[^"]*?"/g, "");
+      svg = (new XMLSerializer()).serializeToString(clone).replace(/data-[^=]+="[^"]*?"/g, "");
       if (data.isExport) {
         if (Href === void 0) {
           Href = (svg.indexOf("xlink:href") === -1 ? "href" : "xlink:href");
@@ -899,13 +899,6 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       }
       signature = j.signature;
       delete j.signature;
-
-      /* env:dev                          env:dev:end */
-
-      /* env:debug */
-      return j;
-
-      /* env:debug:end */
       if (CryptoJS.HmacMD5(JSON.stringify(j), key).toString() !== signature) {
         return lang.ide.POP_IMPORT_MODIFIED_ERROR;
       }
