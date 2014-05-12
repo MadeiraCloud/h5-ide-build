@@ -488,7 +488,15 @@
         return null;
       },
       runStack: function(data) {
-        var app_name, id, idx, me, region, usage;
+        var app_name, comp, id, idx, me, region, usage, _ref;
+        _ref = data.component;
+        for (id in _ref) {
+          comp = _ref[id];
+          if (comp.type === "AWS.EC2.Instance" && comp.state && comp.state.length) {
+            MC.Analytics.increase("use_visualops");
+            break;
+          }
+        }
         console.log('runStack', data);
         me = this;
         id = data.id;

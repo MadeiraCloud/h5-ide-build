@@ -1137,7 +1137,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
 
     /*
       -------------------------------
@@ -1649,9 +1649,10 @@
       json.name = new_name || json.name;
       json.state = "Enabled";
       json.id = "";
+      json.owner = "";
+      json.usage = "";
       delete json.history;
       delete json.stack_id;
-      delete json.usage;
       return json;
     };
     DesignImpl.prototype.getCost = function() {
@@ -1840,7 +1841,7 @@
     };
     CanvasAdaptor.setDesign(Design);
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -1881,7 +1882,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
 
     /*
       -------------------------------
@@ -2002,7 +2003,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                               env:dev:end */
+        /* env:dev                                                                             env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2076,7 +2077,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                          env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2286,7 +2287,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                              env:dev:end */
+        /* env:dev                                                                                           env:dev:end */
 
         /* jshint -W083 */
 
@@ -2375,7 +2376,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                             env:dev:end */
+        /* env:dev                                                                                                                                                                                                           env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -2986,7 +2987,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this);
 
-          /* env:dev                                                                                                                                                                env:dev:end */
+          /* env:dev                                                                                                                                                             env:dev:end */
         }
         return this.__view;
       },
@@ -3771,8 +3772,7 @@
             DisableApiTermination: false,
             ShutdownBehavior: "terminate",
             SecurityGroup: [],
-            SecurityGroupId: [],
-            PrivateIpAddress: ""
+            SecurityGroupId: []
           }
         };
         return component;
@@ -3789,7 +3789,6 @@
             InstanceId: this.createRef("InstanceId", instanceId),
             AllocationId: eipData.allocationId || "",
             NetworkInterfaceId: "",
-            PrivateIpAddress: "",
             PublicIp: eipData.publicIp || ""
           }
         };
@@ -10692,10 +10691,10 @@
             _results.push(compo.resource.VpcId = "");
             break;
           case 'AWS.VPC.NetworkInterface':
-            _results.push(compo.resource.NetworkInterfaceId = "");
+            compo.resource.NetworkInterfaceId = "";
+            _results.push(compo.resource.Attachment.AttachmentId = "");
             break;
           case 'AWS.EC2.Instance':
-            compo.resource.PrivateIpAddress = "";
             _results.push(compo.resource.InstanceId = "");
             break;
           case 'AWS.VPC.Subnet':
@@ -10713,11 +10712,11 @@
             break;
           case 'AWS.EC2.SecurityGroup':
             compo.resource.GroupId = "";
-            _results.push(compo.resource.GroupName = "WebServerSG");
+            _results.push(compo.resource.GroupName = compo.name);
             break;
           case 'AWS.EC2.KeyPair':
             compo.resource.KeyFingerprint = "";
-            _results.push(compo.resource.KeyName = "DefaultDP");
+            _results.push(compo.resource.KeyName = compo.name);
             break;
           case 'AWS.VPC.InternetGateway':
             _results.push(compo.resource.InternetGatewayId = "");
@@ -10726,7 +10725,6 @@
             compo.resource.NetworkAclId = "";
             _results.push(compo.resource.AssociationSet.forEach(function(e) {
               e.NetworkAclAssociationId = "";
-              e.NetworkAclId = "";
             }));
             break;
           case 'AWS.VPC.VPNGateway':
@@ -10746,6 +10744,42 @@
             break;
           case 'AWS.EC2.Tag':
             _results.push(delete components[comp]);
+            break;
+          case 'AWS.AutoScaling.Tag':
+            _results.push(delete components[comp]);
+            break;
+          case 'AWS.ELB':
+            compo.resource.DNSName = "";
+            _results.push(compo.resource.LoadBalancerName = compo.name);
+            break;
+          case 'AWS.IAM.ServerCertificate':
+            compo.resource.ServerCertificateMetadata.Arn = "";
+            compo.resource.ServerCertificateMetadata.ServerCertificateId = "";
+            _results.push(compo.resource.ServerCertificateMetadata.ServerCertificateName = compo.name);
+            break;
+          case 'AWS.AutoScaling.LaunchConfiguration':
+            compo.resource.LaunchConfigurationARN = "";
+            _results.push(compo.resource.LaunchConfigurationName = compo.name);
+            break;
+          case 'AWS.AutoScaling.Group':
+            compo.resource.AutoScalingGroupARN = "";
+            _results.push(compo.resource.AutoScalingGroupName = compo.name);
+            break;
+          case 'AWS.AutoScaling.NotificationConfiguration':
+            _results.push(console.log("Do Nothing Here"));
+            break;
+          case 'AWS.SNS.Subscription':
+            _results.push(console.log("Do Nothing Here"));
+            break;
+          case "AWS.SNS.Topic":
+            _results.push(compo.resource.TopicArn = "");
+            break;
+          case 'AWS.AutoScaling.ScalingPolicy':
+            _results.push(compo.resource.PolicyARN = "");
+            break;
+          case 'AWS.CloudWatch.CloudWatch':
+            compo.resource.AlarmArn = "";
+            _results.push(compo.resource.AlarmName = compo.name);
             break;
         }
       }
@@ -12174,7 +12208,7 @@
 (function() {
   define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                               env:dev:end */
+    /* env:dev                                                                             env:dev:end */
 
     /* env:debug */
     require(["./module/design/framework/util/DesignDebugger"], function() {});

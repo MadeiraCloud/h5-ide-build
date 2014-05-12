@@ -1804,13 +1804,14 @@
   define('component/trustedadvisor/validation/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'customergateway_service', '../result_vo'], function(constant, $, MC, lang, cgwService) {
     var isCGWHaveIPConflict, isValidCGWIP;
     isCGWHaveIPConflict = function(callback) {
-      var currentRegion, err, stackCGWIP, stackCGWId, stackCGWName, stackCGWUID, tipInfo;
+      var currentRegion, err, stackCGWIP, stackCGWName, stackCGWUID, tipInfo;
       try {
         if (!callback) {
           callback = function() {};
         }
-        stackCGWIP = stackCGWName = stackCGWUID = stackCGWId = null;
+        stackCGWIP = stackCGWName = stackCGWUID = null;
         _.each(MC.canvas_data.component, function(compObj) {
+          var stackCGWId;
           if (compObj.type === constant.RESTYPE.CGW) {
             stackCGWId = compObj.resource.CustomerGatewayId;
             stackCGWIP = compObj.resource.IpAddress;

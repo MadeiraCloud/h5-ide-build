@@ -219,7 +219,7 @@ define({
         "TOOL_POP_REPLACE_STACK": "Replace the original stack",
         "TOOL_POP_REPLACE_STACK_INTRO": "This app is launched from stack",
         "TOOL_POP_REPLACE_STACK_INTRO_END": ". Entirely replace the stack with current app design.",
-        "TOOL_POP_SAVE_NEW_STACK": "Save as new Stack",
+        "TOOL_POP_SAVE_NEW_STACK": "Save as new stack",
         "TOOL_POP_SAVE_STACK_INSTRUCTION": "Specify a name for new stack:",
         "TOOL_POP_STACK_NAME_ERROR": "The stack name is already in use. Please use another one.",
         "TOOL_POP_BODY_EXPORT_AS_JSON": "The stack is ready to export. Please click the Download button to save the file.",

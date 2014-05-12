@@ -261,8 +261,6 @@
             stackData = Design.instance().serializeAsStack();
             stackData.id = originStack;
             ApiRequest("saveStack", {
-              username: $.cookie('usercode'),
-              session_id: $.cookie('session_id'),
               region_name: stackData.region,
               data: stackData
             }).then(function(result) {
@@ -286,8 +284,6 @@
             newData = Design.instance().serializeAsStack();
             newData.name = new_name;
             return ApiRequest("createStack", {
-              username: $.cookie('usercode'),
-              session_id: $.cookie('session_id'),
               region_name: newData.region,
               data: newData
             }).then(function(result) {

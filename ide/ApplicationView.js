@@ -10,17 +10,6 @@
 (function() {
   define(["backbone"], function(Backbone) {
     return Backbone.View.extend({
-      initialize: function() {
-
-        /* env:dev                                                                             env:dev:end */
-
-        /* env:debug */
-        return require(["./ide/subviews/DebugTool"], function(DT) {
-          return new DT();
-        });
-
-        /* env:debug:end */
-      },
       toggleWSStatus: function(isConnected) {
         if (isConnected) {
           return $(".disconnected-msg").remove();
