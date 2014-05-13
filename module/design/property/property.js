@@ -431,11 +431,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       type: null,
       initialize: function() {
         $(document.body).on('click', '#hide-property-panel', this.togglePropertyPanel).on('click', '.option-group-head', _.bind(this.toggleOption, this)).on('click', '#hide-second-panel', _.bind(this.hideSecondPanel, this)).on('click', '#btn-switch-state, #btn-switch-property', _.bind(this.switchTab, this));
-
-        /*
-         * Move from render to initialize
-         */
-        $("body").on("click", ".click-select", this.selectText);
         return null;
       },
       switchTab: function(event) {
@@ -836,24 +831,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if ($('#hide-property-panel').hasClass('icon-caret-left')) {
           return $('#hide-property-panel').trigger('click');
         }
-      },
-      selectText: function(event) {
-        var e, range;
-        try {
-          range = document.body.createTextRange();
-          range.moveToElementText(event.currentTarget);
-          range.select();
-          console.warn("Select text by document.body.createTextRange");
-        } catch (_error) {
-          e = _error;
-          if (window.getSelection) {
-            range = document.createRange();
-            range.selectNode(event.currentTarget);
-            window.getSelection().addRange(range);
-            console.warn("Select text by document.createRange");
-          }
-        }
-        return false;
       }
     });
     return PropertyView;

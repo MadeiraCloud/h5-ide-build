@@ -91,54 +91,51 @@
       },
       clickRunIcon: function(event) {
         var cost, me;
-        console.log('clickRunIcon');
         if ($('#toolbar-run').hasClass('disabled')) {
-          modal.close();
-          return;
+          return false;
         }
+        modal(MC.template.modalRunStack({
+          hasCred: App.user.hasCredential()
+        }));
         me = this;
         event.preventDefault();
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
-          modal.close();
-          console.log('show credential setting dialog');
-          require(['component/awscredential/main'], function(awscredential_main) {
-            return awscredential_main.loadModule();
-          });
-        } else {
-          $('.modal-input-value').val(MC.common.other.canvasData.get('name'));
-          cost = Design.instance().getCost();
-          $('#label-total-fee').find("b").text("$" + cost.totalFee);
-          require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
-            return trustedadvisor_main.loadModule('stack');
-          });
-          $('#btn-confirm').on('click', this, function(event) {
-            var app_name, obj, process_tab_name;
-            console.log('clickRunIcon');
-            app_name = $('.modal-input-value').val();
-            if (!app_name) {
-              notification('warning', lang.ide.PROP_MSG_WARN_NO_APP_NAME);
-              return;
-            }
-            if (!MC.validate('awsName', app_name)) {
-              notification('warning', lang.ide.PROP_MSG_WARN_INVALID_APP_NAME);
-              return;
-            }
-            process_tab_name = 'process-' + MC.common.other.canvasData.get('region') + '-' + app_name;
-            obj = MC.common.other.getProcess(process_tab_name);
-            if (obj && obj.flag_list && obj.flag_list.is_failed === true && obj.flag_list.flag === 'RUN_STACK') {
-              MC.common.other.deleteProcess(process_tab_name);
-              ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, process_tab_name);
-            }
-            if ((!MC.aws.aws.checkAppName(app_name)) || (_.contains(_.keys(MC.process), process_tab_name))) {
-              notification('warning', lang.ide.PROP_MSG_WARN_REPEATED_APP_NAME);
-              return false;
-            }
-            $('#btn-confirm').attr('disabled', true);
-            $('.modal-header .modal-close').hide();
-            $('#run-stack-cancel').attr('disabled', true);
-            return event.data.model.syncSaveStack(MC.common.other.canvasData.get('region'), MC.common.other.canvasData.data());
-          });
-        }
+        $('.modal-input-value').val(MC.common.other.canvasData.get('name'));
+        cost = Design.instance().getCost();
+        $('#label-total-fee').find("b").text("$" + cost.totalFee);
+        require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
+          return trustedadvisor_main.loadModule('stack');
+        });
+        $('#btn-confirm').on('click', this, function(event) {
+          var app_name, obj, process_tab_name;
+          if (!App.user.hasCredential()) {
+            App.showSettings(1);
+            return false;
+          }
+          console.log('clickRunIcon');
+          app_name = $('.modal-input-value').val();
+          if (!app_name) {
+            notification('warning', lang.ide.PROP_MSG_WARN_NO_APP_NAME);
+            return;
+          }
+          if (!MC.validate('awsName', app_name)) {
+            notification('warning', lang.ide.PROP_MSG_WARN_INVALID_APP_NAME);
+            return;
+          }
+          process_tab_name = 'process-' + MC.common.other.canvasData.get('region') + '-' + app_name;
+          obj = MC.common.other.getProcess(process_tab_name);
+          if (obj && obj.flag_list && obj.flag_list.is_failed === true && obj.flag_list.flag === 'RUN_STACK') {
+            MC.common.other.deleteProcess(process_tab_name);
+            ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, process_tab_name);
+          }
+          if ((!MC.aws.aws.checkAppName(app_name)) || (_.contains(_.keys(MC.process), process_tab_name))) {
+            notification('warning', lang.ide.PROP_MSG_WARN_REPEATED_APP_NAME);
+            return false;
+          }
+          $('#btn-confirm').attr('disabled', true);
+          $('.modal-header .modal-close').hide();
+          $('#run-stack-cancel').attr('disabled', true);
+          return event.data.model.syncSaveStack(MC.common.other.canvasData.get('region'), MC.common.other.canvasData.data());
+        });
         return null;
       },
       clickSaveIcon: function() {
@@ -364,7 +361,7 @@
       clickExportJSONIcon: function() {
         var data, date, design, name, username;
         design = Design.instance();
-        username = $.cookie('username');
+        username = App.user.get('username');
         date = MC.dateFormat(new Date(), "yyyy-MM-dd");
         name = [design.get("name"), username, date].join("-");
         data = JsonExporter.exportJson(Design.instance().serialize(), name + ".json");
@@ -426,7 +423,7 @@
         var me, target;
         me = this;
         console.log('click stop app');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           return require(['component/awscredential/main'], function(awscredential_main) {
@@ -450,7 +447,7 @@
         var me, target;
         me = this;
         console.log('click run app');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           return require(['component/awscredential/main'], function(awscredential_main) {
@@ -474,7 +471,7 @@
         var me, target;
         me = this;
         console.log('click terminate app');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           return require(['component/awscredential/main'], function(awscredential_main) {
@@ -528,7 +525,7 @@
       },
       clickSaveEditApp: function(event) {
         var result;
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {

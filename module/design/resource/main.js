@@ -102,7 +102,7 @@
           if (model.get('check_required_service_count') === -1) {
             return;
           }
-          if (MC.common.cookie.getCookieByName('has_cred') === 'false' && model.get('check_required_service_count') === 1) {
+          if (false && model.get('check_required_service_count') === 1) {
             console.log('not set credential and described quickstart service');
             is_true = true;
           } else if (model.get('check_required_service_count') === 3) {

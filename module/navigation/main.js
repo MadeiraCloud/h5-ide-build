@@ -50,9 +50,7 @@
         });
         ide_event.onLongListen(ide_event.UPDATE_AWS_CREDENTIAL, function() {
           console.log('navigation:UPDATE_AWS_CREDENTIAL');
-          if (MC.common.cookie.getCookieByName('has_cred') === 'true') {
-            return model.describeRegionsService();
-          }
+          return model.describeRegionsService();
         });
         return ide_event.onLongListen(ide_event.UPDATE_APP_STATE, function(type, id) {
           console.log('navigation:UPDATE_APP_STATE', type, id);
