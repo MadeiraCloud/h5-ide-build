@@ -8,7 +8,7 @@ body {
 
 #body {
 	color      : #222;
-	background : #000 url('../images/login/bg.jpeg');
+	background : #000 url('../images/login/bg.jpeg?v=5e70e91c');
 	background-size : cover;
 }
 
@@ -26,7 +26,7 @@ header {
 }
 
 #logo-link {
-	background: url('../images/login/logo.svg') center no-repeat;
+	background: url('../images/login/logo.svg?v=d99f5c3f') center no-repeat;
 	background-size: 240px auto;
 	height: 80px;
 	width: 240px;
@@ -312,7 +312,7 @@ footer {
 }
 
 #arn {
-	background-image: url('../images/login/arn-dark.png');
+	background-image: url('../images/login/arn-dark.png?v=a9e27585');
 	background-size:  261px 85px;
 	width:            261px;
 	height:           85px;
