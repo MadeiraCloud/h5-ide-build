@@ -328,6 +328,6 @@ function program36(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
     + "</span></li>\n  </ul>\n</div>\n\n<button class=\"btn-toolbar tooltip icon-refresh seperator\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_REFRESH_REOURCES", {hash:{},data:data}))
-    + "\" id=\"btn-app-refresh\"></button>\n";
+    + "\" id=\"btn-app-refresh\"></button>\n\n<!-- env:dev                                                                                                                                                                                                                                                                                    env:dev:end -->\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });

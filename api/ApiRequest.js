@@ -36,20 +36,20 @@
         method: "logout",
         params: ["username", "session_id"]
       },
+      syncRedis: {
+        url: "/session/",
+        method: "sync_redis",
+        params: ["username", "session_id"]
+      },
       updateCred: {
-        url: "/account/",
+        url: "/session/",
         method: "set_credential",
-        params: ["username", "session_id", "access_key", "secret_key", "account_id", "force"]
+        params: ["username", "session_id", "access_key", "secret_key", "account_id"]
       },
-      validateCred: {
+      resetKey: {
         url: "/account/",
-        method: "validate_credential",
-        params: ["username", "session_id", "access_key", "secret_key"]
-      },
-      updateAccount: {
-        url: "/account/",
-        method: "update_account",
-        params: ["username", "session_id", "params"]
+        method: "reset_key",
+        params: ["username", "session_id", "flag"]
       },
       saveStack: {
         url: "/stack/",
@@ -60,6 +60,11 @@
         url: "/stack/",
         method: "create",
         params: ["username", "session_id", "region_name", "data"]
+      },
+      changePwd: {
+        url: "/account/",
+        method: "update_account",
+        params: ["username", "session_id", "params"]
       }
     };
 
@@ -88,18 +93,12 @@
 
     /*
      * === Error Code Defination ===
-     * 1. Any network errors will be negative. For example, when server returns 404, the `error` in the promise will be -404.
+     * TODO :
+     * The Errors is just some random number at this time. Should define it when the Backend Error Code is defined.
      */
     var Errors;
     Errors = {
-      InvalidRpcReturn: -1,
-      XhrFailure: -2,
-      InvalidMethodCall: -3,
-      Network404: -404,
-      Network500: -500,
-      InvalidSession: 19,
-      ChangeCredConfirm: 325,
-      InvalidCred: 326
+      InvalidSession: 19
     };
     return Errors;
   });
@@ -473,7 +472,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
     AjaxSuccessHandler = function(res) {
       var gloablHandler;
       if (!res || !res.result || res.result.length !== 2) {
-        logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
+        logAndThrow(McError(-1, "Invalid JsonRpc Return Data"));
       }
       if (res.result[0] !== 0) {
         gloablHandler = ApiHandlers[res.result[0]];
@@ -488,7 +487,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
       if (!error && jqXHR.status !== 200) {
         logAndThrow(McError(-jqXHR.status, "Network Error"));
       }
-      logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
+      logAndThrow(McError(-2, textStatus, error));
     };
     Abort = function() {
       this.ajax.abort();
@@ -511,11 +510,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
         _ref = ApiDef.params;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           i = _ref[_i];
-          if (apiParameters.hasOwnProperty(i)) {
-            p.push(apiParameters[i]);
-          } else {
-            p.push(ApiDefination.AutoFill(i));
-          }
+          p.push(apiParameters[i] || ApiDefination.AutoFill(i));
         }
       } else if (apiParameters) {
         OneParaArray[0] = apiParameters;

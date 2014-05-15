@@ -12,10 +12,10 @@
     };
     Helper = {
       hasCredential: function() {
-        return true;
+        return MC.common.cookie.getCookieByName('has_cred') === 'true';
       },
       accountIsDemo: function() {
-        return !App.user.hasCredential();
+        return $.cookie('account_id') === 'demo_account';
       },
       cleanupThumbnail: function() {
         var app, id, keepArray, region, _i, _j, _len, _len1, _ref, _ref1;
@@ -149,6 +149,9 @@
             return view.reloadResource(null, false);
           }
         });
+        if (MC.common.cookie.getCookieByName('state') === '1') {
+          view.showCredential('welcome');
+        }
         model.describeAccountAttributesService();
         ide_event.onLongListen('RESULT_APP_LIST', function(result) {
           overview_app = result;

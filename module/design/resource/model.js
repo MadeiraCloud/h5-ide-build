@@ -131,7 +131,7 @@
             MC.data.config[region_name].price = result.resolved_data.price;
             MC.data.config[region_name].vpc_limit = result.resolved_data.vpc_limit;
             MC.data.config[region_name].zone = null;
-            if (false) {
+            if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
               MC.data.config[region_name].zone = {
                 'item': []
               };
@@ -402,7 +402,7 @@
         var me;
         me = this;
         me.set('resource_snapshot', null);
-        if (!App.user.hasCredential()) {
+        if (MC.common.cookie.getCookieByName('account_id') === 'demo_account') {
           return;
         }
         if (MC.data.config[region_name] && MC.data.config[region_name].snapshot_list) {
@@ -438,7 +438,7 @@
         console.log('myAmiService', region_name);
         me = this;
         me.set('my_ami', Math.round(+new Date()));
-        if (!App.user.hasCredential()) {
+        if (MC.common.cookie.getCookieByName('account_id') === 'demo_account') {
           return;
         }
         if (MC.data.config[region_name] && MC.data.config[region_name].my_ami) {

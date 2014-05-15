@@ -548,7 +548,7 @@
           this.status.isAwsHandleWait = true;
           return;
         }
-        if (!App.user.hasCredential()) {
+        if ($.cookie('account_id') === 'demo_account') {
           return;
         }
         data = result.resolved_data;
@@ -1404,10 +1404,22 @@
             }
           });
           me.set('region_classic_list', region_classic_vpc_result);
+          if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+            MC.common.cookie.setCookieByName('has_cred', true);
+            ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
+          }
           setTimeout(function() {
             return me.describeAWSResourcesService();
           }, 2000);
           return null;
+        } else {
+          if (result.return_code !== constant.RETURN_CODE.E_SESSION && result.return_code !== constant.RETURN_CODE.E_BUSY) {
+            common_handle.cookie.setCred(false);
+            ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
+            console.log('----------- dashboard:SWITCH_MAIN -----------');
+            ide_event.trigger(ide_event.SWITCH_MAIN);
+          }
+          return me.set('region_classic_list', region_classic_vpc_result);
         }
       },
       updateMap: function(me, app_list, stack_list) {

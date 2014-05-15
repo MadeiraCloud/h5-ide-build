@@ -101,7 +101,7 @@
         if (MC.browser === 'msie' && MC.browserVersion === 10) {
           return;
         }
-        if (!(App && App.user && App.user.get("session"))) {
+        if (!common_handle.cookie.getCookieByName('usercode')) {
           return;
         }
         has_refresh = true;

@@ -431,6 +431,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       type: null,
       initialize: function() {
         $(document.body).on('click', '#hide-property-panel', this.togglePropertyPanel).on('click', '.option-group-head', _.bind(this.toggleOption, this)).on('click', '#hide-second-panel', _.bind(this.hideSecondPanel, this)).on('click', '#btn-switch-state, #btn-switch-property', _.bind(this.switchTab, this));
+
+        /*
+         * Move from render to initialize
+         */
+        $("body").on("click", ".click-select", this.selectText);
         return null;
       },
       switchTab: function(event) {
@@ -831,6 +836,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if ($('#hide-property-panel').hasClass('icon-caret-left')) {
           return $('#hide-property-panel').trigger('click');
         }
+      },
+      selectText: function(event) {
+        var e, range;
+        try {
+          range = document.body.createTextRange();
+          range.moveToElementText(event.currentTarget);
+          range.select();
+          console.warn("Select text by document.body.createTextRange");
+        } catch (_error) {
+          e = _error;
+          if (window.getSelection) {
+            range = document.createRange();
+            range.selectNode(event.currentTarget);
+            window.getSelection().addRange(range);
+            console.warn("Select text by document.createRange");
+          }
+        }
+        return false;
       }
     });
     return PropertyView;
@@ -13855,7 +13878,12 @@ function program3(depth0,data) {
   buffer += " value=\"elb\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " name=\"property-asg-hc-option\" />\n					<label for=\"property-asg-elb\"></label>\n				</div>\n				<label for=\"property-asg-elb\">ELB</label>\n			</div>\n		</section>\n\n		<section class=\"property-control-group\">\n			<label class=\"left\" for=\"property-asg-healthcheck\">"
+  buffer += " name=\"property-asg-hc-option\" />\n					<label for=\"property-asg-elb\"></label>\n				</div>\n				<label for=\"property-asg-elb\">ELB</label>\n                <p id=\"property-asg-elb-warn\" class=\"hide property-info\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROPERTY_ASG_ELB_WARN", {hash:{},data:data}))
+    + "</p>\n			</div>\n		</section>\n\n		<section class=\"property-control-group\">\n			<label class=\"left\" for=\"property-asg-healthcheck\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_HEALTH_CHECK_CRACE_PERIOD", {hash:{},data:data}))
     + "</label>\n			<input class=\"input input-short\" type=\"text\" id=\"property-asg-healthcheck\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.healthCheckGracePeriod)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -13884,10 +13912,10 @@ function program3(depth0,data) {
     + "\"></i>\n	        <i class=\"icon-remove icon-del tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY_TLT_REMOVE", {hash:{},data:data}))
     + "\"></i>\n        </div>\n      </li>\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n		</ul>\n		<div class=\"property-control-group tac\">\n			<button class=\"btn btn-blue ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"property-asg-policy-add\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_TIP_YOU_CAN_ONLY_ADD_25_SCALING_POLICIES", {hash:{},data:data}))
@@ -13898,32 +13926,32 @@ function program3(depth0,data) {
     + "</div>\n	<div class=\"option-group\" id=\"property-asg-sns\">\n		<div class=\"property-control-group property-asg-notification-wrap\">\n			<p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
     + "</p>\n			<div><div class=\"checkbox\">\n				<input id=\"property-asg-sns1\" type=\"checkbox\" data-key=\"instanceLaunch\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"property-asg-sns1\"></label>\n			</div>\n			<label for=\"property-asg-sns1\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\n\n			<div><div class=\"checkbox\">\n				<input id=\"property-asg-sns2\" type=\"checkbox\" data-key=\"instanceLaunchError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"property-asg-sns2\"></label>\n			</div>\n			<label for=\"property-asg-sns2\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\n\n			<div><div class=\"checkbox\">\n				<input id=\"property-asg-sns3\" type=\"checkbox\" data-key=\"instanceTerminate\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"property-asg-sns3\"></label>\n			</div>\n			<label for=\"property-asg-sns3\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\n\n			<div><div class=\"checkbox\">\n				<input id=\"property-asg-sns4\" type=\"checkbox\" data-key=\"instanceTerminateError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"property-asg-sns4\"></label>\n			</div>\n			<label for=\"property-asg-sns4\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\n\n			<div><div class=\"checkbox\">\n				<input id=\"property-asg-sns5\" type=\"checkbox\" data-key=\"test\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"property-asg-sns5\"></label>\n			</div>\n			<label for=\"property-asg-sns5\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
     + "</label></div>\n\n	    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_sns_sub), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_sns_sub), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n		</div>\n	</div>\n	";
   return buffer;
@@ -13956,6 +13984,12 @@ function program10(depth0,data) {
   }
 
 function program12(depth0,data) {
+  
+  
+  return " style=\"display: block\"";
+  }
+
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <li class=\"pos-r\" data-uid=\""
@@ -14001,30 +14035,30 @@ function program12(depth0,data) {
   return buffer;
   }
 
-function program14(depth0,data) {
+function program16(depth0,data) {
   
   
   return "disabled tooltip";
   }
 
-function program16(depth0,data) {
+function program18(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program18(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n			<p class=\"property-warning ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_notification), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_notification), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"property-asg-sns-info\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_MSG_SNS_WARN", {hash:{},data:data}))
     + " </p>\n	    ";
   return buffer;
   }
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   
   return "hide";
@@ -14693,10 +14727,12 @@ function program4(depth0,data) {
         return this.model.setNotification(checkMap);
       },
       setHealthyCheckELBType: function(event) {
-        return this.model.setHealthCheckType('ELB');
+        this.model.setHealthCheckType('ELB');
+        return $("#property-asg-elb-warn").toggle($("#property-asg-elb").is(":checked"));
       },
       setHealthyCheckEC2Type: function(event) {
-        return this.model.setHealthCheckType('EC2');
+        this.model.setHealthCheckType('EC2');
+        return $("#property-asg-elb-warn").toggle($("#property-asg-elb").is(":checked"));
       }
     });
     return new InstanceView();
@@ -15099,7 +15135,12 @@ function program8(depth0,data) {
   buffer += " value=\"elb\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " name=\"property-asg-hc-option\" />\n          <label for=\"property-asg-elb\"></label>\n        </div>\n        <label for=\"property-asg-elb\">ELB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label class=\"left\" for=\"property-asg-healthcheck\">"
+  buffer += " name=\"property-asg-hc-option\" />\n          <label for=\"property-asg-elb\"></label>\n        </div>\n        <label for=\"property-asg-elb\">ELB</label>\n        <p id=\"property-asg-elb-warn\" class=\"hide property-info\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROPERTY_ASG_ELB_WARN", {hash:{},data:data}))
+    + "</p>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label class=\"left\" for=\"property-asg-healthcheck\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_HEALTH_CHECK_CRACE_PERIOD", {hash:{},data:data}))
     + "</label>\n      <input class=\"input input-short\" type=\"text\" id=\"property-asg-healthcheck\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.healthCheckGracePeriod)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15137,29 +15178,35 @@ function program15(depth0,data) {
 
 function program17(depth0,data) {
   
+  
+  return " style=\"display: block\"";
+  }
+
+function program19(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_INSTANCE", {hash:{},data:data}))
     + " <span class=\"property-head-num-wrap\">("
     + escapeExpression(((stack1 = (depth0 && depth0.instance_count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span></div>\n    <div class=\"option-group\">\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_groups), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_groups), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </div>\n  ";
   return buffer;
   }
-function program18(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <div class=\"property-group-head\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n      <ul class=\"property-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </ul>\n      ";
   return buffer;
   }
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n          <li><i class=\"status status-"
@@ -15172,7 +15219,7 @@ function program19(depth0,data) {
   return buffer;
   }
 
-function program21(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <section class=\"property-control-group pos-r\">\n        <h5>"
@@ -15180,12 +15227,12 @@ function program21(depth0,data) {
     + "</h5>\n        <p class=\"termination-policy-brief\">"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.term_policy_brief), {hash:{},data:data}))
     + "</p>\n      </section>\n      <ul id=\"property-asg-policies\" class=\"property-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </ul>\n    ";
   return buffer;
   }
-function program22(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n          <li class=\"pos-r\" data-uid=\""
@@ -15195,12 +15242,12 @@ function program22(depth0,data) {
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.arn), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.arn), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n          </li>\n\n        ";
   return buffer;
   }
-function program23(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <div class=\"click-select tooltip\" data-tooltip=\""
@@ -15211,7 +15258,7 @@ function program23(depth0,data) {
   return buffer;
   }
 
-function program25(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <span class=\"asg-p-metric asg-p-tag\" title=\""
@@ -15247,7 +15294,7 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <section class=\"property-control-group pos-r property-term-p\">\n        <h5>"
@@ -15271,10 +15318,10 @@ function program27(depth0,data) {
     + "\"></i>\n            <i class=\"icon-remove icon-del tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY_TLT_REMOVE", {hash:{},data:data}))
     + "\"></i>\n          </div>\n        </li>\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      </ul>\n      <div class=\"property-control-group tac\">\n        <button class=\"btn btn-blue ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"property-asg-policy-add\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_TIP_YOU_CAN_ONLY_ADD_25_SCALING_POLICIES", {hash:{},data:data}))
@@ -15283,7 +15330,7 @@ function program27(depth0,data) {
     + "</button>\n      </div>\n    ";
   return buffer;
   }
-function program28(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <li class=\"pos-r\" data-uid=\""
@@ -15329,58 +15376,49 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program32(depth0,data) {
   
   
   return "disabled tooltip";
   }
 
-function program32(depth0,data) {
+function program34(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <div class=\"property-asg-notification-wrap property-control-group\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(44, program44, data),fn:self.program(33, program33, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(46, program46, data),fn:self.program(35, program35, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </div>\n\n    ";
   return buffer;
   }
-function program33(depth0,data) {
+function program35(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
     + "</label>\n        <section>\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[1]), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[1]), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[2]), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[2]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[3]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[3]), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(44, program44, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </section>\n        ";
   return buffer;
   }
-function program34(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
-  return buffer;
-  }
-
 function program36(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
@@ -15389,7 +15427,7 @@ function program38(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
@@ -15398,7 +15436,7 @@ function program40(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
@@ -15407,12 +15445,21 @@ function program42(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
 
 function program44(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
+    + "</p>";
+  return buffer;
+  }
+
+function program46(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <p class=\"property-info tac\">"
@@ -15421,60 +15468,60 @@ function program44(depth0,data) {
   return buffer;
   }
 
-function program46(depth0,data) {
+function program48(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <div class=\"property-control-group property-asg-notification-wrap\">\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
     + "</p>\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns1\" type=\"checkbox\" data-key=\"instanceLaunch\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns1\"></label>\n        </div>\n        <label for=\"property-asg-sns1\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns2\" type=\"checkbox\" data-key=\"instanceLaunchError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns2\"></label>\n        </div>\n        <label for=\"property-asg-sns2\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns3\" type=\"checkbox\" data-key=\"instanceTerminate\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns3\"></label>\n        </div>\n        <label for=\"property-asg-sns3\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns4\" type=\"checkbox\" data-key=\"instanceTerminateError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns4\"></label>\n        </div>\n        <label for=\"property-asg-sns4\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns5\" type=\"checkbox\" data-key=\"test\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns5\"></label>\n        </div>\n        <label for=\"property-asg-sns5\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
     + "</label></div>\n\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_sns_sub), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_sns_sub), {hash:{},inverse:self.noop,fn:self.program(51, program51, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      </div>\n    ";
   return buffer;
   }
-function program47(depth0,data) {
+function program49(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program49(depth0,data) {
+function program51(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <p class=\"property-warning ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_notification), {hash:{},inverse:self.noop,fn:self.program(50, program50, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_notification), {hash:{},inverse:self.noop,fn:self.program(52, program52, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"property-asg-sns-info\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_MSG_SNS_WARN", {hash:{},data:data}))
     + " </p>\n        ";
   return buffer;
   }
-function program50(depth0,data) {
+function program52(depth0,data) {
   
   
   return "hide";
@@ -15487,17 +15534,17 @@ function program50(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(27, program27, data),fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(29, program29, data),fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n  </div>\n\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_NOTIFICATION", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\" id=\"property-asg-sns\">\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(46, program46, data),fn:self.program(32, program32, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(48, program48, data),fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  </div>\n\n</article>\n";
   return buffer;
@@ -15893,10 +15940,12 @@ function program50(depth0,data) {
         return this.model.setNotification(checkMap);
       },
       setHealthyCheckELBType: function(event) {
-        return this.model.setHealthCheckType('ELB');
+        this.model.setHealthCheckType('ELB');
+        return $("#property-asg-elb-warn").toggle($("#property-asg-elb").is(":checked"));
       },
       setHealthyCheckEC2Type: function(event) {
-        return this.model.setHealthCheckType('EC2');
+        this.model.setHealthCheckType('EC2');
+        return $("#property-asg-elb-warn").toggle($("#property-asg-elb").is(":checked"));
       },
       render: function() {
         var data, p, _i, _len, _ref;

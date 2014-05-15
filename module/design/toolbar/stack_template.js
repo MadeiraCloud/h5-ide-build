@@ -79,12 +79,17 @@ function program13(depth0,data) {
   return "selected";
   }
 
-  buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary ";
+  buffer += "<button class=\"btn-toolbar icon-play tooltip modal toolbar-btn-primary ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_enable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"toolbar-run\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_BTN_RUN_STACK", {hash:{},data:data}))
-    + "'>"
+    + "' data-modal-template=\"modalRunStack\" data-modal-data='{\"title\":\"";
+  stack1 = helpers.i18n.call(depth0, "TOOL_POP_TIT_RUN_STACK", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\", \"name\":\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"}' data-modal-dismiss=\"false\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_BTN_RUN_STACK", {hash:{},data:data}))
     + "</button>\n\n<button class=\"btn-toolbar tooltip icon-save ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_enable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -143,7 +148,9 @@ function program13(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "'><i class=\"icon-bezier-qt\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
-    + "</span></li>\n	</ul>\n</div>\n\n<label class=\"switch toolbar-visual-ops-switch tooltip\" data-tooltip=\""
+    + "</span></li>\n	</ul>\n</div>\n\n<!-- env:dev                                                                                                                                                                                                                                                                                              env:dev:end -->\n\n<!--\n<section class=\"toolbar-btn-group\">\n	<a href=\"javascript:void(0);\" id=\"apply-visops\" style=\"display: none;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPERIMENT", {hash:{},data:data}))
+    + "</a>\n</section>\n-->\n\n<label class=\"switch toolbar-visual-ops-switch tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_CUSTOM_USER_DATA", {hash:{},data:data}))
     + "\">\n  <span class=\"switch-label\" data-on=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TOGGLE_VISUALOPS_ON", {hash:{},data:data}))

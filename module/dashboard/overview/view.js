@@ -60,10 +60,10 @@
         });
       },
       hasCredential: function() {
-        return true;
+        return MC.common.cookie.getCookieByName('has_cred') === 'true';
       },
       accountIsDemo: function() {
-        return !App.user.hasCredential();
+        return $.cookie('account_id') === 'demo_account';
       }
     };
     OverviewView = Backbone.View.extend({
@@ -269,7 +269,7 @@
         $middleButton.removeAttr('disabled');
         $topButton.removeAttr('disabled').addClass('js-toggle-dropdown');
         $("#global-import-stack").removeAttr("disabled");
-        if (App.user.hasCredential()) {
+        if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
           $('#global-region-visualize-VPC').removeAttr('disabled');
         }
         return null;
@@ -432,7 +432,7 @@
         console.log('click to start app');
         id = $(event.currentTarget).attr('id');
         name = $(event.currentTarget).attr('name');
-        if (false) {
+        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -454,7 +454,7 @@
         console.log('click to stop app');
         id = $(event.currentTarget).attr('id');
         name = $(event.currentTarget).attr('name');
-        if (false) {
+        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -476,7 +476,7 @@
         console.log('click to terminate app');
         id = $(event.currentTarget).attr('id');
         name = $(event.currentTarget).attr('name');
-        if (false) {
+        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -509,7 +509,7 @@
       },
       unmanagedVPCClick: function() {
         console.log('unmanagedVPCClick');
-        if (App.user.hasCredential()) {
+        if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
           unmanagedvpc.loadModule();
         }
         return null;

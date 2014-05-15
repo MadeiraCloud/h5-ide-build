@@ -479,7 +479,7 @@
       return null;
     };
     CanvasElement.prototype.clone = function(parentId, x, y) {
-      var attributes, createOption, design, name, nameMatch, parent, pos;
+      var attributes, createOption, design, parent, pos;
       design = this.model.design();
       if (!design.modeIsStack() && !design.modeIsAppEdit()) {
         return;
@@ -490,16 +490,9 @@
         return;
       }
       if (this.model.clone) {
-        name = this.model.get("name");
-        nameMatch = name.match(/(.+-copy)(\d*)$/);
-        if (nameMatch) {
-          name = nameMatch[1] + ((parseInt(nameMatch[2], 10) || 0) + 1);
-        } else {
-          name += "-copy";
-        }
         attributes = {
           parent: parent,
-          name: name
+          name: this.model.get("name") + "-copy"
         };
         pos = {
           x: x,
@@ -1233,8 +1226,8 @@
         agent: {
           enabled: false,
           module: {
-            repo: App.user.get("mod_repo"),
-            tag: App.user.get("mod_tag")
+            repo: $.cookie("mod_repo"),
+            tag: $.cookie("mod_tag")
           }
         }
       }, canvas_data);
@@ -5852,7 +5845,6 @@
       handleTypes: "ExpandedAsg",
       deserialize: function(data, layout_data, resolve) {
         new ExpandedAsgModel({
-          id: layout_data.uid,
           originalAsg: resolve(layout_data.originalId),
           parent: resolve(layout_data.groupUId),
           x: layout_data.coordinate[0],

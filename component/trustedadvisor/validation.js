@@ -579,7 +579,7 @@
           protocalCode = Helper.protocal.get(protocal.toLowerCase());
           portCode = Number(port);
           _.each(portData[direction], function(portAry, proto) {
-            if (proto === protocalCode) {
+            if (proto === protocalCode || proto === 'all') {
               _.each(portAry, function(portObj) {
                 if (portCode >= portObj.from && portCode <= portObj.to) {
                   isInRangeResult = true;
@@ -848,7 +848,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!nls/lang.js', '../../helper'], function(constant, MC, lang, taHelper) {
-    var isAttachELBToMultiAZ, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleOutboundToInstanceListener;
+    var isAttachELBToMultiAZ, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener;
     isHaveIGWForInternetELB = function(elbUID) {
       var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
       elbComp = MC.canvas_data.component[elbUID];
@@ -1158,6 +1158,33 @@
       });
       return resultAry;
     };
+    isRuleInboundToELBPingPort = function(elbUID) {
+      var elbComp, elbName, err, isInRange, pingPort, portData, sgCompAry, tipInfo;
+      elbComp = MC.canvas_data.component[elbUID];
+      elbName = elbComp.name;
+      sgCompAry = taHelper.sg.get(elbComp);
+      portData = taHelper.sg.port(sgCompAry);
+      pingPort = null;
+      try {
+        pingPort = elbComp.resource.HealthCheck.Target;
+        pingPort = pingPort.split(':')[1];
+        pingPort = pingPort.split('/')[0];
+      } catch (_error) {
+        err = _error;
+        return null;
+      }
+      isInRange = taHelper.sg.isInRange('tcp', pingPort, portData, 'in');
+      if (!isInRange) {
+        elbName = elbComp.name;
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_ELB_RULE_NOT_INBOUND_TO_ELB_PING_PORT, elbName, pingPort);
+        return {
+          level: constant.TA.WARNING,
+          info: tipInfo,
+          uid: elbUID
+        };
+      }
+      return null;
+    };
     return {
       isHaveIGWForInternetELB: isHaveIGWForInternetELB,
       isHaveInstanceAttached: isHaveInstanceAttached,
@@ -1167,7 +1194,8 @@
       isHaveSSLCert: isHaveSSLCert,
       isRuleInboundToELBListener: isRuleInboundToELBListener,
       isRuleOutboundToInstanceListener: isRuleOutboundToInstanceListener,
-      isRuleInboundInstanceForELBListener: isRuleInboundInstanceForELBListener
+      isRuleInboundInstanceForELBListener: isRuleInboundInstanceForELBListener,
+      isRuleInboundToELBPingPort: isRuleInboundToELBPingPort
     };
   });
 
