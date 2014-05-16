@@ -16,7 +16,7 @@
         this.header = new HeaderView();
         this.listenTo(App.user, "change:state", this.toggleWelcome);
 
-        /* env:dev                                                                           env:dev:end */
+        /* env:dev                                                                             env:dev:end */
 
         /* env:debug */
         require(["./ide/subviews/DebugTool"], function(DT) {

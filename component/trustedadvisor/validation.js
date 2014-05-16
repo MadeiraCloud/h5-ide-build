@@ -15,14 +15,16 @@
       'AWS.VPC.NetworkAcl': ['acl'],
       'AWS.AutoScaling.LaunchConfiguration': ['state'],
       'AWS.VPC.RouteTable': ['rtb'],
-      'AWS.EC2.EBS.Volume': ['ebs']
+      'AWS.EC2.EBS.Volume': ['ebs'],
+      'AWS.EC2.KeyPair': ['kp']
     },
     globalList: {
       eip: ['isHasIGW'],
       az: ['isAZAlone'],
       sg: ['isStackUsingOnlyOneSG', 'isAssociatedSGNumExceedLimit'],
       vpc: ['isVPCAbleConnectToOutside'],
-      stack: ['~isHaveNotExistAMI']
+      stack: ['~isHaveNotExistAMI'],
+      kp: ['longLiveNotice']
     },
     asyncList: {
       cgw: ['isCGWHaveIPConflict'],
@@ -136,7 +138,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'stack_service', 'ami_service', '../result_vo'], function(constant, $, MC, lang, stackService, amiService) {
+  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', '../result_vo'], function(constant, $, MC, lang, ApiRequest, stackService, amiService) {
     var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
@@ -180,14 +182,16 @@
           callback = function() {};
         }
         validData = MC.canvas_data;
-        stackService.verify({
-          sender: this
-        }, $.cookie('usercode'), $.cookie('session_id'), validData, function(result) {
+        ApiRequest('stack_verify', {
+          username: $.cookie('usercode'),
+          session_id: $.cookie('session_id'),
+          spec: validData
+        }).then(function(result) {
           var checkResult, err, errCode, errCompName, errCompType, errCompUID, errInfoStr, errKey, errMessage, returnInfo, returnInfoObj, validResultObj;
           checkResult = true;
           returnInfo = null;
           errInfoStr = '';
-          if (!result.is_error) {
+          if (result && result[0] === ApiRequest.Errors.StackVerifyFailed) {
             validResultObj = result.resolved_data;
             if (typeof validResultObj === 'object') {
               if (validResultObj.result) {
@@ -2811,7 +2815,52 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/main',['MC', './stack/stack', './ec2/instance', './vpc/subnet', './vpc/vpc', './elb/elb', './ec2/securitygroup', './asg/asg', './ec2/eip', './ec2/az', './vpc/vgw', './vpc/vpn', './vpc/igw', './vpc/networkacl', './vpc/cgw', './vpc/eni', './vpc/rtb', './stateeditor/main', './state/state', './ec2/ebs'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs) {
+  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', '../../helper'], function(constant, MC, Design, Helper) {
+    var i18n, isNotDefaultAndRefInstance, longLiveNotice;
+    i18n = Helper.i18n.short();
+    isNotDefaultAndRefInstance = function(uid) {
+      var instance, instanceStr, instances, kp, lcStr, message, tag, _i, _len;
+      kp = Design.instance().component(uid);
+      instances = kp.connectionTargets("KeypairUsage");
+      if (kp.isDefault() || !instances.length) {
+        return null;
+      }
+      lcStr = '';
+      instanceStr = '';
+      message = '';
+      for (_i = 0, _len = instances.length; _i < _len; _i++) {
+        instance = instances[_i];
+        tag = instance.type === constant.RESTYPE.LC ? 'lc' : 'instance';
+        if (instance.type === constant.RESTYPE.LC) {
+          tag = 'lc';
+          lcStr += "<span class='validation-tag tag-" + tag + "'>" + (instance.get('name')) + "</span>, ";
+        } else {
+          tag = 'instance';
+          instanceStr += "<span class='validation-tag tag-" + tag + "'>" + (instance.get('name')) + "</span>, ";
+        }
+      }
+      if (instanceStr) {
+        message += 'Instance ' + instanceStr;
+      }
+      if (lcStr) {
+        message += 'Launch Configuration' + lcStr;
+      }
+      message = message.slice(0, -2);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_INSTANCE_REF_OLD_KEYPAIR, message, kp.get('name'));
+    };
+    longLiveNotice = function() {
+      return Helper.message.notice(null, i18n.TA_MSG_NOTICE_KEYPAIR_LONE_LIVE);
+    };
+    return {
+      isNotDefaultAndRefInstance: isNotDefaultAndRefInstance,
+      longLiveNotice: longLiveNotice
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/main',['MC', './stack/stack', './ec2/instance', './vpc/subnet', './vpc/vpc', './elb/elb', './ec2/securitygroup', './asg/asg', './ec2/eip', './ec2/az', './vpc/vgw', './vpc/vpn', './vpc/igw', './vpc/networkacl', './vpc/cgw', './vpc/eni', './vpc/rtb', './stateeditor/main', './state/state', './ec2/ebs', './ec2/kp'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp) {
     return {
       stack: stack,
       instance: instance,
@@ -2831,7 +2880,8 @@ This file use for validate component about state.
       rtb: rtb,
       stateEditor: stateEditor,
       state: state,
-      ebs: ebs
+      ebs: ebs,
+      kp: kp
     };
   });
 

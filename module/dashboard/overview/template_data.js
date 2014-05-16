@@ -667,7 +667,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <tr>\n                        <td>\n                            <div>\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(8, program8, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </div>\n                            <div>\n                                "
     + escapeExpression(((stack1 = (depth0 && depth0.host)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -712,17 +712,8 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.owner), {hash:{},inverse:self.program(6, program6, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                ";
-  return buffer;
-  }
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n                                <span class=\"table-app-link truncate tooltip ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isTerminated), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.clickAble), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
@@ -736,24 +727,13 @@ function program3(depth0,data) {
     + "]</span>\n                                ";
   return buffer;
   }
-function program4(depth0,data) {
+function program3(depth0,data) {
   
   
   return "table-app-link-clickable";
   }
 
-function program6(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY_OTHER_USER", {hash:{},data:data}))
-    + "\" >["
-    + escapeExpression(((stack1 = (depth0 && depth0.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span>\n                                ";
-  return buffer;
-  }
-
-function program8(depth0,data) {
+function program5(depth0,data) {
   
   var buffer = "";
   buffer += "\n                                <span class=\"table-app-link truncate table-app-link-unmanaged tooltip\" data-tooltip='"
@@ -764,7 +744,7 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"dashboard-widget-body dashboard-widget-body-table table-tall blank-widget\">\n                        <p>"
@@ -790,7 +770,7 @@ function program10(depth0,data) {
     + "</th>\n                <th class=\"sortable\" style=\"width: 8%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 17%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 8%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeInstances), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeInstances), {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
   return buffer;
@@ -854,7 +834,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <tr>\n                        <td>\n                            <div>\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(7, program7, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </div>\n                            <div>\n                                "
     + escapeExpression(((stack1 = (depth0 && depth0.volumeId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -865,13 +845,13 @@ function program1(depth0,data) {
     + "</td>\n                        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.createTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n                        <td>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n                        <td><i class=\"status status-";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " icon-label\"></i>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n                        <td class=\"table-action\"><a href=\"javascript:void(0)\" title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
@@ -884,15 +864,6 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.owner), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                ";
-  return buffer;
-  }
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
     + escapeExpression(((stack1 = (depth0 && depth0.owner)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -902,18 +873,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY_OTHER_USER", {hash:{},data:data}))
-    + "\" >["
-    + escapeExpression(((stack1 = (depth0 && depth0.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span>\n                                ";
-  return buffer;
-  }
-
-function program7(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "";
   buffer += "\n                                <span class=\"table-app-link truncate table-app-link-unmanaged tooltip\" data-tooltip='"
@@ -924,19 +884,19 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program6(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.device)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program11(depth0,data) {
+function program8(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program13(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"dashboard-widget-body dashboard-widget-body-table table-tall blank-widget\">\n                        <p>"
@@ -962,7 +922,7 @@ function program13(depth0,data) {
     + "</th>\n                <th style=\"width:15%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 16%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 18%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 21%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVolumes), {hash:{},inverse:self.program(13, program13, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVolumes), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
   return buffer;
@@ -979,7 +939,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <tr>\n                        <td>\n                            <div>\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(7, program7, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </div>\n                            <div>\n                                "
     + escapeExpression(((stack1 = (depth0 && depth0.vpcId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -990,7 +950,7 @@ function program1(depth0,data) {
     + "</td>\n                        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.cidrBlock)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n                        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dhcp), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dhcp), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        <td class=\"table-action\"><a href=\"javascript:void(0)\" title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
@@ -1003,15 +963,6 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.owner), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                ";
-  return buffer;
-  }
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
     + escapeExpression(((stack1 = (depth0 && depth0.owner)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1021,18 +972,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY_OTHER_USER", {hash:{},data:data}))
-    + "\" >["
-    + escapeExpression(((stack1 = (depth0 && depth0.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span>\n                                ";
-  return buffer;
-  }
-
-function program7(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "";
   buffer += "\n                                <span class=\"table-app-link truncate table-app-link-unmanaged tooltip\" data-tooltip='"
@@ -1043,7 +983,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <td><a href=\"javascript:void(0)\" class=\"bubble table-link\"  data-bubble-template=\"bubbleRegionResourceInfo\" data-bubble-data='";
@@ -1055,13 +995,13 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program8(depth0,data) {
   
   
   return "\n                        <td>None</td>\n                        ";
   }
 
-function program13(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"dashboard-widget-body dashboard-widget-body-table table-tall blank-widget\">\n                        <p>"
@@ -1085,7 +1025,7 @@ function program13(depth0,data) {
     + "</th>\n                <th style=\"width:10%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVpcs), {hash:{},inverse:self.program(13, program13, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVpcs), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
   return buffer;
@@ -1102,7 +1042,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <tr>\n                        <td>\n                            <div>\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(7, program7, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </div>\n                            <div>\n                                "
     + escapeExpression(((stack1 = (depth0 && depth0.vpnConnectionId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1131,15 +1071,6 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.owner), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                ";
-  return buffer;
-  }
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
     + escapeExpression(((stack1 = (depth0 && depth0.owner)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1149,18 +1080,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY_OTHER_USER", {hash:{},data:data}))
-    + "\" >["
-    + escapeExpression(((stack1 = (depth0 && depth0.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span>\n                                ";
-  return buffer;
-  }
-
-function program7(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "";
   buffer += "\n                                <span class=\"table-app-link truncate table-app-link-unmanaged tooltip\" data-tooltip='"
@@ -1171,7 +1091,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"dashboard-widget-body dashboard-widget-body-table table-tall blank-widget\">\n                        <p>"
@@ -1195,7 +1115,7 @@ function program9(depth0,data) {
     + "</th>\n                <th style=\"width:10%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVpnConnections), {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVpnConnections), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
   return buffer;
@@ -1267,7 +1187,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <tr>\n                        <td>\n                            <div>\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(7, program7, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </div>\n                            <div>\n                                "
     + escapeExpression(((stack1 = (depth0 && depth0.AutoScalingGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1286,15 +1206,6 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.owner), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                ";
-  return buffer;
-  }
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n                                <span class=\"table-app-link truncate tooltip\" id=\"asg-app-name\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
     + escapeExpression(((stack1 = (depth0 && depth0.owner)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1304,18 +1215,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                                <span class=\"table-app-link truncate tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY_OTHER_USER", {hash:{},data:data}))
-    + "\" >["
-    + escapeExpression(((stack1 = (depth0 && depth0.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span>\n                                ";
-  return buffer;
-  }
-
-function program7(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "";
   buffer += "\n                                <span class=\"table-app-link truncate table-app-link-unmanaged tooltip\" data-tooltip='"
@@ -1326,7 +1226,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <!-- Blank Slate -->\n                    <div class=\"dashboard-widget-body dashboard-widget-body-table table-tall blank-widget\">\n                        <p>"
@@ -1348,7 +1248,7 @@ function program9(depth0,data) {
     + "</th>\n                <th style=\"width:10%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 50%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeAutoScalingGroups), {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeAutoScalingGroups), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
   return buffer;

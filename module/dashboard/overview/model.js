@@ -706,16 +706,17 @@
         return this.trigger("REGION_RESOURCE_CHANGED", type, this.get('cur_region_resource'));
       },
       _fillAppFiled: function(describe) {
-        var owner, tag;
+        var owner, tag, _ref;
         owner = atob($.cookie('usercode'));
         if (describe.tagSet) {
           tag = describe.tagSet;
+          if (tag['Created by'] === owner && !(((_ref = describe.instanceState) != null ? _ref.name : void 0) === 'terminated')) {
+            describe.clickAble = true;
+          }
           if (tag.app) {
             describe.app = tag.app;
             describe.host = tag.name;
-            if (tag['Created by'] === owner) {
-              describe.owner = tag['Created by'];
-            }
+            describe.owner = tag['Created by'];
           }
         }
         return describe;
@@ -814,7 +815,7 @@
                 if (tag.Key === 'app-id') {
                   asl.app_id = tag.Value;
                 }
-                if (tag.Key === 'Created by' && tag.Value === owner) {
+                if (tag.Key === 'Created by') {
                   asl.owner = tag.Value;
                 }
                 return null;
@@ -1193,7 +1194,7 @@
             if (tag.key === 'app') {
               resources[action][i].app = tag.value;
             }
-            if (tag.key === 'Created by' && tag.value === owner) {
+            if (tag.key === 'Created by') {
               resources[action][i].owner = tag.value;
             }
             return null;

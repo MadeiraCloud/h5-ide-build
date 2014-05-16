@@ -93,15 +93,24 @@
             var vpcs;
             vpcs = {};
             return _.each(obj, function(vpc_obj, vpc_id) {
-              var l2_res, new_value, new_vpc_obj;
+              var l2_res, new_value, new_vpc_obj, tag;
               new_vpc_obj = {};
               _.each(vpc_obj, function(value, key) {
-                var new_key;
-                new_key = key.replace(/\|/igm, '.');
-                return new_vpc_obj[new_key] = value;
+                var i, new_key, tag;
+                if (key === "Tag" && vpc_obj[key] && vpc_obj[key].item && $.type(vpc_obj[key].item) === "array") {
+                  tag = {};
+                  for (i in vpc_obj[key].item) {
+                    tag[vpc_obj[key].item[i].key] = vpc_obj[key].item[i].value;
+                  }
+                  return new_vpc_obj["Tag"] = tag;
+                } else {
+                  new_key = key.replace(/\|/igm, '.');
+                  return new_vpc_obj[new_key] = value;
+                }
               });
               vpc_obj = new_vpc_obj;
-              if (vpc_id !== MC.data.account_attribute[region].default_vpc) {
+              tag = vpc_obj["Tag"];
+              if (vpc_id !== MC.data.account_attribute[region].default_vpc && !(tag && tag["app"] && tag["app-id"] && tag["Created by"])) {
                 l2_res = {
                   'AWS.VPC.VPC': {
                     'id': [vpc_id]

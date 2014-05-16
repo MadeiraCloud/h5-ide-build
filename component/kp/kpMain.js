@@ -1,4 +1,4 @@
-define('component/kp/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+define('component/kp/kpTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -64,12 +64,12 @@ function program9(depth0,data) {
   buffer += "<div class=\"selectbox keypair-select\">\n    <div class=\"selection\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n    </div>\n    <div style=\"height: 300px; width:260px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <input class=\"input keypair-filter\" type=\"text\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_FILTER_KP", {hash:{},data:data}))
-    + "\"/>\n            <ul id=\"kp-list\">\n                <div class=\"loading-spinner loading-spinner-small\"></div>\n            </ul>\n        </div>\n        ";
+  buffer += "\n\n\n    </div>\n    <div style=\"height: 300px; width:260px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\" id=\"kp-content\">\n        </div>\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</div>\n\n";
+  buffer += "\n        <input class=\"input keypair-filter\" type=\"text\" placeholder=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_FILTER_KP", {hash:{},data:data}))
+    + "\"/>\n    </div>\n</div>\n\n";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -83,30 +83,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <li data-id=\"@no\" class=\"item";
+  buffer += "\n        <li data-id=\"@no\" class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noKey), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" tabindex=\"-1\">\n        "
+  buffer += "\" tabindex=\"-1\">\n            "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_NO_KP", {hash:{},data:data}))
-    + "\n        <i class=\"icon-info tooltip\" data-tooltip=\""
+    + "\n            <i class=\"icon-info tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_NO_KP", {hash:{},data:data}))
-    + "\"></i>\n    </li>\n";
+    + "\"></i>\n        </li>\n    ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <li data-id=\"@default\" class=\"item";
+  buffer += "\n        <li data-id=\"@default\" class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.defaultKey), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" tabindex=\"-1\">\n        "
+  buffer += "\" tabindex=\"-1\">\n            "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_DEFAULT_KP", {hash:{},data:data}))
-    + "\n        <i class=\"icon-info tooltip\" data-tooltip=\""
+    + "\n            <i class=\"icon-info tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_DEFAULT_KP", {hash:{},data:data}))
-    + "\"></i>\n    </li>\n    ";
+    + "'></i>\n        </li>\n        ";
   return buffer;
   }
 function program3(depth0,data) {
@@ -118,7 +118,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <li class=\"item";
+  buffer += "\n        <li class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
@@ -127,22 +127,46 @@ function program5(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" tabindex=\"-1\">"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n    </li>\n";
+    + "\n        </li>\n    ";
   return buffer;
   }
 
+  buffer += "<ul id=\"kp-list\">\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideDefaultNoKey), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
+  buffer += "\n\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</ul>\n\n";
   return buffer;
   };
 TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"kp-no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>\n\n";
+  };
+TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"loading-spinner loading-spinner-small\"></div>\n\n";
+  };
+TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
-define('component/kp/template_modal',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+define('component/kp/kpDialogTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -168,7 +192,7 @@ function program1(depth0,data) {
 
   buffer += "<div id=\"modal-kp-manage\" class=\"modal-toolbar\">\n    <div class=\"modal-header\">\n        <h3>Manage Key Pairs in "
     + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\n        <i class=\"modal-close\">×</i>\n    </div>\n\n    <div class=\"modal-body\">\n        <div class=\"content-wrap\">\n            <div class=\"toolbar\">\n                <button class=\"icon-new-stack btn btn-blue\" id=\"kp-create\">Create Key Pair</button>\n                <div class=\"btn-group\">\n                    <button class=\"icon-import tooltip\" id=\"kp-import\" data-tooltip=\"\"></button>\n                    <button class=\"icon-del tooltip\" id=\"kp-delete\" data-tooltip=\"\" disabled></button>\n                    <button class=\"icon-refresh tooltip\" id=\"kp-refresh\" data-tooltip=\"\"></button>\n                </div>\n            </div>\n            <div class=\"list\">\n                <div class=\"slidebox\">\n                    <div class=\"content clearfix\">\n                    </div>\n                    <div class=\"error\">\n                        something wrong\n                    </div>\n                </div>\n                <div class=\"table-head-fix\">\n                        <table class=\"table-head\">\n                            <thead>\n                                <tr>\n                                    <th>\n                                        <div class=\"checkbox\">\n                                            <input id=\"kp-select-all\" type=\"checkbox\" value=\"None\">\n                                            <label for=\"kp-select-all\"></label>\n                                        </div>\n                                    </th>\n                                    <th class=\"sortable\">Name</th>\n                                    <th>Fingerprint</th>\n                                </tr>\n                            </thead>\n                        </table>\n                        <div class=\"scroll-wrap\">\n                            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                            <div class=\"scroll-content\" style=\"display:block;\">\n                                <table class=\"table\">\n                                    <thead>\n                                        <tr>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                        </tr>\n                                    </thead>\n                                    <tbody id=\"community_ami_table\">\n                                        ";
+    + "</h3>\n        <i class=\"modal-close\">×</i>\n    </div>\n\n    <div class=\"modal-body\">\n        <div class=\"content-wrap\">\n            <div class=\"toolbar\">\n                <button class=\"icon-new-stack btn btn-blue\" id=\"kp-create\">Create Key Pair</button>\n                <div class=\"btn-group\">\n                    <button class=\"icon-import tooltip\" id=\"kp-import\" data-tooltip=\"\">Import Key Pair</button>\n                    <button class=\"icon-del tooltip\" id=\"kp-delete\" data-tooltip=\"\" disabled>Delete</button>\n                    <button class=\"icon-refresh tooltip\" id=\"kp-refresh\" data-tooltip=\"\"></button>\n                </div>\n            </div>\n            <div class=\"list\">\n                <div class=\"slidebox\">\n                    <div class=\"content clearfix\">\n                    </div>\n                    <div class=\"error\">\n                        something wrong\n                    </div>\n                </div>\n                <div class=\"table-head-fix\">\n                        <table class=\"table-head\">\n                            <thead>\n                                <tr>\n                                    <th>\n                                        <div class=\"checkbox\">\n                                            <input id=\"kp-select-all\" type=\"checkbox\" value=\"None\">\n                                            <label for=\"kp-select-all\"></label>\n                                        </div>\n                                    </th>\n                                    <th class=\"sortable\">Name</th>\n                                    <th>Fingerprint</th>\n                                </tr>\n                            </thead>\n                        </table>\n                        <div class=\"scroll-wrap\">\n                            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                            <div class=\"scroll-content\" style=\"display:block;\">\n                                <table class=\"table\">\n                                    <thead>\n                                        <tr>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                        </tr>\n                                    </thead>\n                                    <tbody id=\"community_ami_table\">\n                                        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                                    </tbody>\n                                </table>\n                            </div>\n                        </div>\n                    </div>\n\n            </div>\n        </div>\n    </div>\n</div>\n\n";
@@ -224,7 +248,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">Key Pair Name</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    </div>\n    <div class=\"after-create hide\"><span></span> is Created.</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Cancel</button>\n    </div>\n</div>\n\n";
+  return "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">Key Pair Name</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    </div>\n    <div class=\"after-create hide\">Key pair <span></span> is created. You have to download the private key file (*.pem file) before you can continue. Store it in a secure and accessible location. You will not be able to download the file again after it's created.</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>\n\n";
   };
 TEMPLATE.slideCreate=Handlebars.template(__TEMPLATE__);
 
@@ -285,7 +309,7 @@ TEMPLATE.upload=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('kp_upload',['./component/kp/template_modal', 'backbone', 'jquery'], function(template_modal, Backbone, $) {
+  define('kp_upload',['./component/kp/kpDialogTpl', 'backbone', 'jquery'], function(template_modal, Backbone, $) {
     return Backbone.View.extend({
       __data: null,
       events: {
@@ -371,7 +395,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('component/kp/view',['./template', './template_modal', 'kp_upload', 'backbone', 'jquery', 'constant', 'component/exporter/JsonExporter', 'UI.notification'], function(template, template_modal, upload, Backbone, $, constant, JsonExporter) {
+  define('component/kp/kpView',['./kpTpl', './kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'component/exporter/JsonExporter', 'UI.notification'], function(template, template_modal, upload, Backbone, $, constant, JsonExporter) {
     var download, modalView;
     download = JsonExporter.download;
     modalView = Backbone.View.extend({
@@ -509,6 +533,7 @@ return TEMPLATE; });
           } else if (success.length > 1) {
             notification('info', "Selected " + success.length + " key pairs are deleted.");
           }
+          that.processDelBtn();
           return _.each(error, function(s) {
             return console.log(s);
           });
@@ -670,7 +695,7 @@ return TEMPLATE; });
       },
       checkOne: function(event) {
         var cbAll, cbAmount, checkedAmount;
-        this.processDelBtn(event);
+        this.processDelBtn();
         cbAll = this.$('#kp-select-all');
         cbAmount = this.model.get('keys').length;
         checkedAmount = this.$('.one-cb:checked').length;
@@ -681,15 +706,15 @@ return TEMPLATE; });
         }
       },
       checkAll: function(event) {
-        this.processDelBtn(event);
+        this.processDelBtn();
         if (event.currentTarget.checked) {
           return this.$('input[type="checkbox"]').prop('checked', true);
         } else {
           return this.$('input[type="checkbox"]').prop('checked', false);
         }
       },
-      processDelBtn: function(event) {
-        if (event.currentTarget.checked) {
+      processDelBtn: function() {
+        if (this.$('.one-cb:checked').length) {
           return this.$('#kp-delete').prop('disabled', false);
         } else {
           return this.$('#kp-delete').prop('disabled', true);
@@ -710,9 +735,13 @@ return TEMPLATE; });
       events: {
         'click .keypair-filter': 'returnFalse',
         'click .manage-kp': 'manageKp',
+        'click .show-credential': 'showCredential',
         'OPTION_SHOW .selectbox': 'show',
         'OPTION_CHANGE .selectbox': 'setKey',
         'keyup .keypair-filter': 'filter'
+      },
+      showCredential: function() {
+        return App.showSettings(1);
       },
       filter: function(event) {
         var hitKeys, keyword, len;
@@ -757,15 +786,34 @@ return TEMPLATE; });
         }
       },
       show: function() {
-        if (!this.model.haveGot()) {
-          return this.model.getKeys();
+        if (App.user.hasCredential()) {
+          if (!this.model.haveGot()) {
+            this.renderLoading();
+            return this.model.getKeys();
+          }
+        } else {
+          return this.renderNoCredential();
         }
       },
       render: function() {
         this.renderFrame();
         return this;
       },
-      syncErrorHandler: function() {},
+      renderLoading: function() {
+        this.$('#kp-content').html(template.loading);
+        return this.toggleKpListControls(false);
+      },
+      renderNoCredential: function() {
+        this.$('#kp-content').html(template.nocredential);
+        this.toggleKpListControls(false);
+        return this;
+      },
+      toggleKpListControls: function(showOrHide) {
+        return this.$('.keypair-filter, .manage-kp').toggle(showOrHide);
+      },
+      syncErrorHandler: function(err) {
+        return console.error(err);
+      },
       renderKeys: function(data) {
         if (data) {
           data = {
@@ -786,7 +834,8 @@ return TEMPLATE; });
           }
         }
         data.isRunTime = this.__mode === 'runtime';
-        this.$('#kp-list').html(template.keys(data));
+        this.$('#kp-content').html(template.keys(data));
+        this.toggleKpListControls(true);
         this.showManageBtn();
         return this;
       },
@@ -815,8 +864,8 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('component/kp/model',['constant', 'backbone', 'underscore', 'MC', 'keypair_service', 'Design'], function(constant, Backbone, _, MC, keypair_service, Design) {
-    var errorHandler, filterIllegal, request, setSelectedKey, successHandler;
+  define('component/kp/kpModel',['constant', 'backbone', 'underscore', 'MC', 'keypair_service', 'Design'], function(constant, Backbone, _, MC, keypair_service, Design) {
+    var errorHandler, filterIllegal, packErrorMsg, request, setSelectedKey, successHandler;
     request = function(api, name, data) {
       var args, region, session, username;
       username = $.cookie("usercode");
@@ -834,7 +883,6 @@ return TEMPLATE; });
     successHandler = function(context) {
       return function(res) {
         if (res.is_error) {
-          context.trigger('request:error', res, context);
           throw res;
         } else {
           return res.resolved_data || res;
@@ -843,9 +891,21 @@ return TEMPLATE; });
     };
     errorHandler = function(context) {
       return function(err) {
+        err = packErrorMsg(err);
         context.trigger('request:error', err);
         throw err;
       };
+    };
+    packErrorMsg = function(err) {
+      var msg;
+      msg = err.error_message;
+      if (err.error_message) {
+        if (msg.indexOf('Length exceeds maximum of 2048' !== -1)) {
+          msg = 'Length exceeds maximum of 2048';
+        }
+      }
+      err.error_message = msg;
+      return err;
     };
     setSelectedKey = function(keys, name) {
       _.each(keys, function(key) {
@@ -930,12 +990,12 @@ return TEMPLATE; });
         });
       },
       list: function() {
-        return request('DescribeKeyPairs', null, null).then(successHandler(this), errorHandler(this));
+        return request('DescribeKeyPairs', null, null).then(successHandler(this)).fail(errorHandler(this));
       },
       "import": function(name, data) {
         var that;
         that = this;
-        return request('ImportKeyPair', name, data).then(successHandler(this), errorHandler(this)).then(function(res) {
+        return request('ImportKeyPair', name, data).then(successHandler(this)).fail(errorHandler(this)).then(function(res) {
           var keys;
           keys = that.get('keys') || [];
           keys.unshift(res);
@@ -946,7 +1006,7 @@ return TEMPLATE; });
       create: function(name) {
         var that;
         that = this;
-        return request('CreateKeyPair', name).then(successHandler(this), errorHandler(this)).then(function(res) {
+        return request('CreateKeyPair', name).then(successHandler(this)).fail(errorHandler(this)).then(function(res) {
           var keys;
           keys = that.get('keys') || [];
           keys.unshift(res);
@@ -957,7 +1017,7 @@ return TEMPLATE; });
       remove: function(name) {
         var that;
         that = this;
-        return request('DeleteKeyPair', name).then(successHandler(this), errorHandler(this)).then(function(res) {
+        return request('DeleteKeyPair', name).then(successHandler(this)).fail(errorHandler(this)).then(function(res) {
           var keyName, keys;
           keys = that.get('keys');
           keyName = res.param[4];
@@ -980,9 +1040,9 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('kp',['./component/kp/view', './component/kp/model', 'constant'], function(View, Model, constant) {
-    var hasResourceWithDefaultKp, loadModule, unLoadModule;
-    loadModule = function(resModel) {
+  define('kp',['./component/kp/kpView', './component/kp/kpModel', 'constant'], function(View, Model, constant) {
+    var hasResourceWithDefaultKp, load, unload;
+    load = function(resModel) {
       var model, view;
       model = new Model({
         resModel: resModel
@@ -992,7 +1052,7 @@ return TEMPLATE; });
       });
       return view.render();
     };
-    unLoadModule = function() {
+    unload = function() {
       view.remove();
       return model.destroy();
     };
@@ -1011,8 +1071,8 @@ return TEMPLATE; });
       return has;
     };
     return {
-      loadModule: loadModule,
-      unLoadModule: unLoadModule,
+      load: load,
+      unload: unload,
       hasResourceWithDefaultKp: hasResourceWithDefaultKp
     };
   });

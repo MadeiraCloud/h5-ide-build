@@ -40,9 +40,7 @@
           awsSecretKey: result.secret_key
         };
         if (result.account_id === "demo_account") {
-          res.account = "";
-        } else {
-          res.account = result.account_id;
+          res.account = res.awsAccessKey = res.awsSecretKey = "";
         }
         this.set(res);
         if (this.isFirstVisit()) {

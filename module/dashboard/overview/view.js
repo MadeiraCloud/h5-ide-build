@@ -324,10 +324,8 @@
         id = $target.data('id');
         return ide_event.trigger(ide_event.OPEN_DESIGN_TAB, 'OPEN_APP', name, current_region, id);
       },
-      showCredential: function(flag) {
-        return require(['component/awscredential/main'], function(awscredential_main) {
-          return awscredential_main.loadModule(flag);
-        });
+      showCredential: function() {
+        return App.showSettings(1);
       },
       renderMapResult: function() {
         var cur_tmpl;
