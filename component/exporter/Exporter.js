@@ -893,6 +893,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       var e, j, signature;
       try {
         j = JSON.parse(json);
+        delete j['_id'];
       } catch (_error) {
         e = _error;
         return lang.ide.POP_IMPORT_FORMAT_ERROR;
@@ -937,6 +938,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
     return {
       exportJson: exportJson,
       importJson: importJson,
+      download: download,
       genericExport: genericExport
     };
   });

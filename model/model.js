@@ -20,8 +20,63 @@
 }).call(this);
 
 (function() {
-  define('result_vo',['constant'], function(constant) {
-    var parseAWSError, processAWSReturnHandler, processForgeReturnHandler;
+  define('result_vo',['constant', 'underscore'], function(constant, _) {
+    var genErrorHandler, genSendRequest, genSuccessHandler, parseAWSError, processAWSReturnHandler, processForgeReturnHandler;
+    genSuccessHandler = function(api_name, src, param_ary, parser, callback) {
+      return function(res) {
+        var aws_result, result, return_code;
+        result = res.result[1];
+        return_code = res.result[0];
+        param_ary.splice(0, 0, {
+          url: URL,
+          method: api_name,
+          src: src
+        });
+        aws_result = {};
+        aws_result = parser(result, return_code, param_ary);
+        if (callback) {
+          callback(aws_result);
+          return null;
+        } else {
+          return aws_result;
+        }
+      };
+    };
+    genErrorHandler = function(api_name, src, param_ary, parser, callback) {
+      return function(res) {
+        var aws_result, result, return_code;
+        result = res.result[1];
+        return_code = res.result[0];
+        aws_result = {};
+        aws_result.return_code = return_code;
+        aws_result.is_error = true;
+        aws_result.error_message = result.toString();
+        param_ary.splice(0, 0, {
+          url: URL,
+          method: api_name,
+          src: src
+        });
+        aws_result.param = param_ary;
+        if (callback) {
+          callback(aws_result);
+          return null;
+        } else {
+          return aws_result;
+        }
+      };
+    };
+    genSendRequest = function(url) {
+      return function(api_name, src, param_ary, parser, callback) {
+        var errorHandler, successHandler;
+        successHandler = genSuccessHandler.apply(null, arguments);
+        errorHandler = genErrorHandler.apply(null, arguments);
+        return MC.api({
+          url: url,
+          method: api_name,
+          data: param_ary
+        }).then(successHandler, errorHandler);
+      };
+    };
     processForgeReturnHandler = function(result, return_code, param) {
       var error, error_message, forge_result, is_error, resolved_data;
       forge_result = {
@@ -101,6 +156,8 @@
             error_message = constant.MESSAGE_E.E_UNKNOWN;
             break;
           case constant.RETURN_CODE.E_PARAM:
+          case 404:
+          case 405:
             errObj = parseAWSError(result);
             error_message = errObj.errMessage;
             aws_error_code = errObj.errCode;
@@ -152,7 +209,8 @@
     };
     return {
       processForgeReturnHandler: processForgeReturnHandler,
-      processAWSReturnHandler: processAWSReturnHandler
+      processAWSReturnHandler: processAWSReturnHandler,
+      genSendRequest: genSendRequest
     };
   });
 
@@ -1077,49 +1135,7 @@
   define('instance_service',['MC', 'constant', 'result_vo'], function(MC, constant, result_vo) {
     var BundleInstance, CancelBundleTask, ConfirmProductInstance, DescribeBundleTasks, DescribeInstanceAttribute, DescribeInstanceStatus, DescribeInstances, GetConsoleOutput, GetPasswordData, ModifyInstanceAttribute, MonitorInstances, RebootInstances, ResetInstanceAttribute, RunInstances, StartInstances, StopInstances, TerminateInstances, URL, UnmonitorInstances, parserBundleInstanceReturn, parserCancelBundleTaskReturn, parserConfirmProductInstanceReturn, parserDescribeBundleTasksReturn, parserDescribeInstanceAttributeReturn, parserDescribeInstanceStatusReturn, parserDescribeInstancesReturn, parserGetConsoleOutputReturn, parserGetPasswordDataReturn, parserModifyInstanceAttributeReturn, parserMonitorInstancesReturn, parserRebootInstancesReturn, parserResetInstanceAttributeReturn, parserRunInstancesReturn, parserStartInstancesReturn, parserStopInstancesReturn, parserTerminateInstancesReturn, parserUnmonitorInstancesReturn, resolveDescribeBundleTasksResult, resolveDescribeInstanceAttributeResult, resolveDescribeInstanceStatusResult, resolveDescribeInstancesResult, resolveGetConsoleOutputResult, resolveGetPasswordDataResult, send_request;
     URL = '/aws/ec2/instance/';
-    send_request = function(api_name, src, param_ary, parser, callback) {
-      var error;
-      if (callback === null) {
-        console.log("instance." + api_name + " callback is null");
-        return false;
-      }
-      try {
-        MC.api({
-          url: URL,
-          method: api_name,
-          data: param_ary,
-          success: function(result, return_code) {
-            var aws_result;
-            param_ary.splice(0, 0, {
-              url: URL,
-              method: api_name,
-              src: src
-            });
-            aws_result = {};
-            aws_result = parser(result, return_code, param_ary);
-            return callback(aws_result);
-          },
-          error: function(result, return_code) {
-            var aws_result;
-            aws_result = {};
-            aws_result.return_code = return_code;
-            aws_result.is_error = true;
-            aws_result.error_message = result.toString();
-            param_ary.splice(0, 0, {
-              url: URL,
-              method: api_name,
-              src: src
-            });
-            aws_result.param = param_ary;
-            return callback(aws_result);
-          }
-        });
-      } catch (_error) {
-        error = _error;
-        console.log("instance." + api_name + " error:" + error.toString());
-      }
-      return true;
-    };
+    send_request = result_vo.genSendRequest(URL);
     parserRunInstancesReturn = function(result, return_code, param) {
       var aws_result;
       aws_result = result_vo.processAWSReturnHandler(result, return_code, param);
@@ -1268,15 +1284,16 @@
       return aws_result;
     };
     resolveGetPasswordDataResult = function(result) {
-      var aws_result, data;
+      var aws_result, data, jsonData;
       aws_result = null;
-      data = ($.xml2json($.parseXML(result[1])))["ns0:GetPasswordDataResponse"];
+      jsonData = $.xml2json($.parseXML(result[1]));
+      data = jsonData["ns0:GetPasswordDataResponse"] || jsonData["GetPasswordDataResponse"];
       if (data) {
         aws_result = {
-          instanceId: data["ns0:instanceId"],
-          passwordData: data["ns0:passwordData"],
-          requestId: data["ns0:requestId"],
-          timestamp: data["ns0:timestamp"]
+          instanceId: data["ns0:instanceId"] || data["instanceId"],
+          passwordData: data["ns0:passwordData"] || data["passwordData"],
+          requestId: data["ns0:requestId"] || data["requestId"],
+          timestamp: data["ns0:timestamp"] || data["timestamp"]
         };
       }
       return aws_result;
@@ -1291,15 +1308,13 @@
       return aws_result;
     };
     RunInstances = function(src, username, session_id, callback) {
-      send_request("RunInstances", src, [username, session_id], parserRunInstancesReturn, callback);
-      return true;
+      return send_request("RunInstances", src, [username, session_id], parserRunInstancesReturn, callback);
     };
     StartInstances = function(src, username, session_id, region_name, instance_ids, callback) {
       if (instance_ids == null) {
         instance_ids = null;
       }
-      send_request("StartInstances", src, [username, session_id, region_name, instance_ids], parserStartInstancesReturn, callback);
-      return true;
+      return send_request("StartInstances", src, [username, session_id, region_name, instance_ids], parserStartInstancesReturn, callback);
     };
     StopInstances = function(src, username, session_id, region_name, instance_ids, force, callback) {
       if (instance_ids == null) {
@@ -1308,50 +1323,40 @@
       if (force == null) {
         force = false;
       }
-      send_request("StopInstances", src, [username, session_id, region_name, instance_ids, force], parserStopInstancesReturn, callback);
-      return true;
+      return send_request("StopInstances", src, [username, session_id, region_name, instance_ids, force], parserStopInstancesReturn, callback);
     };
     RebootInstances = function(src, username, session_id, region_name, instance_ids, callback) {
       if (instance_ids == null) {
         instance_ids = null;
       }
-      send_request("RebootInstances", src, [username, session_id, region_name, instance_ids], parserRebootInstancesReturn, callback);
-      return true;
+      return send_request("RebootInstances", src, [username, session_id, region_name, instance_ids], parserRebootInstancesReturn, callback);
     };
     TerminateInstances = function(src, username, session_id, region_name, instance_ids, callback) {
       if (instance_ids == null) {
         instance_ids = null;
       }
-      send_request("TerminateInstances", src, [username, session_id, region_name, instance_ids], parserTerminateInstancesReturn, callback);
-      return true;
+      return send_request("TerminateInstances", src, [username, session_id, region_name, instance_ids], parserTerminateInstancesReturn, callback);
     };
     MonitorInstances = function(src, username, session_id, region_name, instance_ids, callback) {
-      send_request("MonitorInstances", src, [username, session_id, region_name, instance_ids], parserMonitorInstancesReturn, callback);
-      return true;
+      return send_request("MonitorInstances", src, [username, session_id, region_name, instance_ids], parserMonitorInstancesReturn, callback);
     };
     UnmonitorInstances = function(src, username, session_id, region_name, instance_ids, callback) {
-      send_request("UnmonitorInstances", src, [username, session_id, region_name, instance_ids], parserUnmonitorInstancesReturn, callback);
-      return true;
+      return send_request("UnmonitorInstances", src, [username, session_id, region_name, instance_ids], parserUnmonitorInstancesReturn, callback);
     };
     BundleInstance = function(src, username, session_id, region_name, instance_id, s3_bucket, callback) {
-      send_request("BundleInstance", src, [username, session_id, region_name, instance_id, s3_bucket], parserBundleInstanceReturn, callback);
-      return true;
+      return send_request("BundleInstance", src, [username, session_id, region_name, instance_id, s3_bucket], parserBundleInstanceReturn, callback);
     };
     CancelBundleTask = function(src, username, session_id, region_name, bundle_id, callback) {
-      send_request("CancelBundleTask", src, [username, session_id, region_name, bundle_id], parserCancelBundleTaskReturn, callback);
-      return true;
+      return send_request("CancelBundleTask", src, [username, session_id, region_name, bundle_id], parserCancelBundleTaskReturn, callback);
     };
     ModifyInstanceAttribute = function(src, username, session_id, callback) {
-      send_request("ModifyInstanceAttribute", src, [username, session_id], parserModifyInstanceAttributeReturn, callback);
-      return true;
+      return send_request("ModifyInstanceAttribute", src, [username, session_id], parserModifyInstanceAttributeReturn, callback);
     };
     ResetInstanceAttribute = function(src, username, session_id, region_name, instance_id, attribute_name, callback) {
-      send_request("ResetInstanceAttribute", src, [username, session_id, region_name, instance_id, attribute_name], parserResetInstanceAttributeReturn, callback);
-      return true;
+      return send_request("ResetInstanceAttribute", src, [username, session_id, region_name, instance_id, attribute_name], parserResetInstanceAttributeReturn, callback);
     };
     ConfirmProductInstance = function(src, username, session_id, region_name, instance_id, product_code, callback) {
-      send_request("ConfirmProductInstance", src, [username, session_id, region_name, instance_id, product_code], parserConfirmProductInstanceReturn, callback);
-      return true;
+      return send_request("ConfirmProductInstance", src, [username, session_id, region_name, instance_id, product_code], parserConfirmProductInstanceReturn, callback);
     };
     DescribeInstances = function(src, username, session_id, region_name, instance_ids, filters, callback) {
       if (instance_ids == null) {
@@ -1360,8 +1365,7 @@
       if (filters == null) {
         filters = null;
       }
-      send_request("DescribeInstances", src, [username, session_id, region_name, instance_ids, filters], parserDescribeInstancesReturn, callback);
-      return true;
+      return send_request("DescribeInstances", src, [username, session_id, region_name, instance_ids, filters], parserDescribeInstancesReturn, callback);
     };
     DescribeInstanceStatus = function(src, username, session_id, region_name, instance_ids, include_all_instances, max_results, next_token, callback) {
       if (instance_ids == null) {
@@ -1376,8 +1380,7 @@
       if (next_token == null) {
         next_token = null;
       }
-      send_request("DescribeInstanceStatus", src, [username, session_id, region_name, instance_ids, include_all_instances, max_results, next_token], parserDescribeInstanceStatusReturn, callback);
-      return true;
+      return send_request("DescribeInstanceStatus", src, [username, session_id, region_name, instance_ids, include_all_instances, max_results, next_token], parserDescribeInstanceStatusReturn, callback);
     };
     DescribeBundleTasks = function(src, username, session_id, region_name, bundle_ids, filters, callback) {
       if (bundle_ids == null) {
@@ -1386,23 +1389,19 @@
       if (filters == null) {
         filters = null;
       }
-      send_request("DescribeBundleTasks", src, [username, session_id, region_name, bundle_ids, filters], parserDescribeBundleTasksReturn, callback);
-      return true;
+      return send_request("DescribeBundleTasks", src, [username, session_id, region_name, bundle_ids, filters], parserDescribeBundleTasksReturn, callback);
     };
     DescribeInstanceAttribute = function(src, username, session_id, region_name, instance_id, attribute_name, callback) {
-      send_request("DescribeInstanceAttribute", src, [username, session_id, region_name, instance_id, attribute_name], parserDescribeInstanceAttributeReturn, callback);
-      return true;
+      return send_request("DescribeInstanceAttribute", src, [username, session_id, region_name, instance_id, attribute_name], parserDescribeInstanceAttributeReturn, callback);
     };
     GetConsoleOutput = function(src, username, session_id, region_name, instance_id, callback) {
-      send_request("GetConsoleOutput", src, [username, session_id, region_name, instance_id], parserGetConsoleOutputReturn, callback);
-      return true;
+      return send_request("GetConsoleOutput", src, [username, session_id, region_name, instance_id], parserGetConsoleOutputReturn, callback);
     };
     GetPasswordData = function(src, username, session_id, region_name, instance_id, key_data, callback) {
       if (key_data == null) {
         key_data = null;
       }
-      send_request("GetPasswordData", src, [username, session_id, region_name, instance_id, key_data], parserGetPasswordDataReturn, callback);
-      return true;
+      return send_request("GetPasswordData", src, [username, session_id, region_name, instance_id, key_data], parserGetPasswordDataReturn, callback);
     };
     return {
       RunInstances: RunInstances,
@@ -1431,54 +1430,16 @@
 
 (function() {
   define('keypair_service',['MC', 'constant', 'result_vo'], function(MC, constant, result_vo) {
-    var CreateKeyPair, DeleteKeyPair, DescribeKeyPairs, ImportKeyPair, URL, download, list, parserCreateKeyPairReturn, parserDeleteKeyPairReturn, parserDescribeKeyPairsReturn, parserDownloadReturn, parserImportKeyPairReturn, parserListReturn, parserRemoveReturn, parserUploadReturn, remove, resolveDescribeKeyPairsResult, send_request, upload;
+    var CreateKeyPair, DeleteKeyPair, DescribeKeyPairs, ImportKeyPair, URL, download, list, parserCreateKeyPairReturn, parserDeleteKeyPairReturn, parserDescribeKeyPairsReturn, parserDownloadReturn, parserImportKeyPairReturn, parserListReturn, parserRemoveReturn, parserUploadReturn, remove, resolveCreateKeyPairsResult, resolveDescribeKeyPairsResult, resolveImportKeyPairsResult, send_request, upload;
     URL = '/aws/ec2/keypair/';
-    send_request = function(api_name, src, param_ary, parser, callback) {
-      var error;
-      if (callback === null) {
-        console.log("keypair." + api_name + " callback is null");
-        return false;
-      }
-      try {
-        MC.api({
-          url: URL,
-          method: api_name,
-          data: param_ary,
-          success: function(result, return_code) {
-            var aws_result;
-            param_ary.splice(0, 0, {
-              url: URL,
-              method: api_name,
-              src: src
-            });
-            aws_result = {};
-            aws_result = parser(result, return_code, param_ary);
-            return callback(aws_result);
-          },
-          error: function(result, return_code) {
-            var aws_result;
-            aws_result = {};
-            aws_result.return_code = return_code;
-            aws_result.is_error = true;
-            aws_result.error_message = result.toString();
-            param_ary.splice(0, 0, {
-              url: URL,
-              method: api_name,
-              src: src
-            });
-            aws_result.param = param_ary;
-            return callback(aws_result);
-          }
-        });
-      } catch (_error) {
-        error = _error;
-        console.log("keypair." + api_name + " error:" + error.toString());
-      }
-      return true;
-    };
+    send_request = result_vo.genSendRequest(URL);
     parserCreateKeyPairReturn = function(result, return_code, param) {
-      var aws_result;
+      var aws_result, resolved_data;
       aws_result = result_vo.processAWSReturnHandler(result, return_code, param);
+      if (return_code === constant.RETURN_CODE.E_OK && !aws_result.is_error) {
+        resolved_data = resolveCreateKeyPairsResult(result);
+        aws_result.resolved_data = resolved_data;
+      }
       return aws_result;
     };
     parserDeleteKeyPairReturn = function(result, return_code, param) {
@@ -1487,9 +1448,23 @@
       return aws_result;
     };
     parserImportKeyPairReturn = function(result, return_code, param) {
-      var aws_result;
+      var aws_result, resolved_data;
       aws_result = result_vo.processAWSReturnHandler(result, return_code, param);
+      if (return_code === constant.RETURN_CODE.E_OK && !aws_result.is_error) {
+        resolved_data = resolveImportKeyPairsResult(result);
+        aws_result.resolved_data = resolved_data;
+      }
       return aws_result;
+    };
+    resolveCreateKeyPairsResult = function(result) {
+      var result_set;
+      result_set = ($.xml2json($.parseXML(result[1]))).CreateKeyPairResponse;
+      return result_set;
+    };
+    resolveImportKeyPairsResult = function(result) {
+      var result_set;
+      result_set = ($.xml2json($.parseXML(result[1]))).ImportKeyPairResponse;
+      return result_set;
     };
     resolveDescribeKeyPairsResult = function(result) {
       var result_set;
@@ -1531,16 +1506,13 @@
       return aws_result;
     };
     CreateKeyPair = function(src, username, session_id, region_name, key_name, callback) {
-      send_request("CreateKeyPair", src, [username, session_id, region_name, key_name], parserCreateKeyPairReturn, callback);
-      return true;
+      return send_request("CreateKeyPair", src, [username, session_id, region_name, key_name], parserCreateKeyPairReturn, callback);
     };
     DeleteKeyPair = function(src, username, session_id, region_name, key_name, callback) {
-      send_request("DeleteKeyPair", src, [username, session_id, region_name, key_name], parserDeleteKeyPairReturn, callback);
-      return true;
+      return send_request("DeleteKeyPair", src, [username, session_id, region_name, key_name], parserDeleteKeyPairReturn, callback);
     };
     ImportKeyPair = function(src, username, session_id, region_name, key_name, key_data, callback) {
-      send_request("ImportKeyPair", src, [username, session_id, region_name, key_name, key_data], parserImportKeyPairReturn, callback);
-      return true;
+      return send_request("ImportKeyPair", src, [username, session_id, region_name, key_name, key_data], parserImportKeyPairReturn, callback);
     };
     DescribeKeyPairs = function(src, username, session_id, region_name, key_names, filters, callback) {
       if (key_names == null) {
@@ -1549,24 +1521,19 @@
       if (filters == null) {
         filters = null;
       }
-      send_request("DescribeKeyPairs", src, [username, session_id, region_name, key_names, filters], parserDescribeKeyPairsReturn, callback);
-      return true;
+      return send_request("DescribeKeyPairs", src, [username, session_id, region_name, key_names, filters], parserDescribeKeyPairsReturn, callback);
     };
     upload = function(src, username, session_id, region_name, key_name, key_data, callback) {
-      send_request("upload", src, [username, session_id, region_name, key_name, key_data], parserUploadReturn, callback);
-      return true;
+      return send_request("upload", src, [username, session_id, region_name, key_name, key_data], parserUploadReturn, callback);
     };
     download = function(src, username, session_id, region_name, key_name, callback) {
-      send_request("download", src, [username, session_id, region_name, key_name], parserDownloadReturn, callback);
-      return true;
+      return send_request("download", src, [username, session_id, region_name, key_name], parserDownloadReturn, callback);
     };
     remove = function(src, username, session_id, region_name, key_name, callback) {
-      send_request("remove", src, [username, session_id, region_name, key_name], parserRemoveReturn, callback);
-      return true;
+      return send_request("remove", src, [username, session_id, region_name, key_name], parserRemoveReturn, callback);
     };
     list = function(src, username, session_id, region_name, callback) {
-      send_request("list", src, [username, session_id, region_name], parserListReturn, callback);
-      return true;
+      return send_request("list", src, [username, session_id, region_name], parserListReturn, callback);
     };
     return {
       CreateKeyPair: CreateKeyPair,

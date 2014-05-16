@@ -431,11 +431,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       type: null,
       initialize: function() {
         $(document.body).on('click', '#hide-property-panel', this.togglePropertyPanel).on('click', '.option-group-head', _.bind(this.toggleOption, this)).on('click', '#hide-second-panel', _.bind(this.hideSecondPanel, this)).on('click', '#btn-switch-state, #btn-switch-property', _.bind(this.switchTab, this));
-
-        /*
-         * Move from render to initialize
-         */
-        $("body").on("click", ".click-select", this.selectText);
         return null;
       },
       switchTab: function(event) {
@@ -836,24 +831,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if ($('#hide-property-panel').hasClass('icon-caret-left')) {
           return $('#hide-property-panel').trigger('click');
         }
-      },
-      selectText: function(event) {
-        var e, range;
-        try {
-          range = document.body.createTextRange();
-          range.moveToElementText(event.currentTarget);
-          range.select();
-          console.warn("Select text by document.body.createTextRange");
-        } catch (_error) {
-          e = _error;
-          if (window.getSelection) {
-            range = document.createRange();
-            range.selectNode(event.currentTarget);
-            window.getSelection().addRange(range);
-            console.warn("Select text by document.createRange");
-          }
-        }
-        return false;
       }
     });
     return PropertyView;
@@ -2375,7 +2352,9 @@ function program9(depth0,data) {
       getKeyPair: function() {
         var selectedKP;
         selectedKP = Design.instance().component(this.get("uid")).connectionTargets("KeypairUsage")[0];
-        this.set("keypair", selectedKP.getKPList());
+        if (selectedKP) {
+          this.set("keypair", selectedKP.getKPList());
+        }
         return null;
       },
       addKP: function(kp_name) {
@@ -2693,53 +2672,23 @@ function program23(depth0,data) {
 
 function program25(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n							<li class=\"item";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-using=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.using)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n							";
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n							</li>\n						";
-  return buffer;
-  }
-function program26(depth0,data) {
-  
-  
-  return " selected";
-  }
-
-function program28(depth0,data) {
-  
-  
-  return "<span class=\"icon-remove\"></span>";
-  }
-
-function program30(depth0,data) {
-  
   
   return "\n				<input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" checked=\"true\" value=\"None\" name=\"property-instance-enable-cloudwatch\" />\n				";
   }
 
-function program32(depth0,data) {
+function program27(depth0,data) {
   
   
   return "\n				<input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" value=\"None\" name=\"property-instance-enable-cloudwatch\" />\n				";
   }
 
-function program34(depth0,data) {
+function program29(depth0,data) {
   
   
   return "hide";
   }
 
-function program36(depth0,data) {
+function program31(depth0,data) {
   
   var buffer = "";
   buffer += "\n			<div class=\"property-info\">User Data is disabled to allow installing OpsAgent for VisualOps. <a href=\""
@@ -2748,7 +2697,7 @@ function program36(depth0,data) {
   return buffer;
   }
 
-function program38(depth0,data) {
+function program33(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n			<label for=\"property-instance-user-data\">"
@@ -2759,7 +2708,7 @@ function program38(depth0,data) {
   return buffer;
   }
 
-function program40(depth0,data) {
+function program35(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<div class=\"option-group-head\">Root Device</div>\n	<div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>"
@@ -2778,7 +2727,7 @@ function program40(depth0,data) {
   buffer += "/>\n          <label for=\"radio-standard\"></label>\n        </div>\n        <label for=\"radio-standard\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_TYPE_STANDARD", {hash:{},data:data}))
     + "</label>\n      </div>\n      <div ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_MSG_WARN", {hash:{},data:data}))
@@ -2786,37 +2735,37 @@ function program40(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(43, program43, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"radio-iops\"></label>\n        </div>\n        <label for=\"radio-iops\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_TYPE_IOPS", {hash:{},data:data}))
     + "</label>\n      </div>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\" id=\"iops-group\" ";
-  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n        <label>IOPS</label>\n        <div class=\"ranged-number-input\">\n          <label for=\"iops-ranged\"></label>\n          <input id=\"iops-ranged\" type=\"text\" class=\"input\" min=\"100\" max=\"2000\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n        </div>\n    </section>\n	</div>\n  ";
   return buffer;
   }
-function program41(depth0,data) {
+function program36(depth0,data) {
   
   
   return "class=\"tooltip\"";
   }
 
-function program43(depth0,data) {
+function program38(depth0,data) {
   
   
   return "disabled";
   }
 
-function program45(depth0,data) {
+function program40(depth0,data) {
   
   
   return "style=\"display:none\"";
   }
 
-function program47(depth0,data) {
+function program42(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<div class=\"option-group-head\">"
@@ -2826,18 +2775,18 @@ function program47(depth0,data) {
     + "</label>\n			<textarea id=\"property-instance-ni-description\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</textarea>\n		</section>\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.sourceDestCheck), {hash:{},inverse:self.program(50, program50, data),fn:self.program(48, program48, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.sourceDestCheck), {hash:{},inverse:self.program(45, program45, data),fn:self.program(43, program43, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				<label for=\"property-instance-source-check\"></label>\n			</div>\n			<label for=\"property-instance-source-check\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_SOURCE_DEST_CHECK", {hash:{},data:data}))
     + "</label>\n		</section>\n		<section ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multi_enis), {hash:{},inverse:self.program(54, program54, data),fn:self.program(52, program52, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multi_enis), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n			<div class=\"checkbox\">\n				<input id=\"property-instance-public-ip\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multi_enis), {hash:{},inverse:self.noop,fn:self.program(56, program56, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multi_enis), {hash:{},inverse:self.noop,fn:self.program(51, program51, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.assoPublicIp), {hash:{},inverse:self.noop,fn:self.program(58, program58, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.assoPublicIp), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-instance-public-ip\" />\n				<label for=\"property-instance-public-ip\"></label>\n			</div>\n			<label for=\"property-instance-public-ip\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_AUTO_PUBLIC_IP", {hash:{},data:data}))
@@ -2850,19 +2799,19 @@ function program47(depth0,data) {
     + "</button>\n				</div>\n				<ul class=\"network-list\" id=\"property-network-list\" data-bind=\"true\"></ul>\n			</div>\n		</section>\n	</div>\n	";
   return buffer;
   }
-function program48(depth0,data) {
+function program43(depth0,data) {
   
   
   return "\n				<input id=\"property-instance-source-check\" type=\"checkbox\" checked=\"true\" value=\"None\" name=\"property-instance-source-check\" />\n				";
   }
 
-function program50(depth0,data) {
+function program45(depth0,data) {
   
   
   return "\n				<input id=\"property-instance-source-check\" type=\"checkbox\" value=\"None\" name=\"property-instance-source-check\" />\n				";
   }
 
-function program52(depth0,data) {
+function program47(depth0,data) {
   
   var buffer = "";
   buffer += "class=\"property-control-group tooltip\" data-tooltip=\""
@@ -2871,19 +2820,19 @@ function program52(depth0,data) {
   return buffer;
   }
 
-function program54(depth0,data) {
+function program49(depth0,data) {
   
   
   return "class=\"property-control-group\"";
   }
 
-function program56(depth0,data) {
+function program51(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program58(depth0,data) {
+function program53(depth0,data) {
   
   
   return "checked=\"checked\" ";
@@ -2936,31 +2885,26 @@ function program58(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
-    + "</label>\n			<div class=\"selectbox\" id=\"keypair-select\">\n				<div class=\"selection\"></div>\n				<div style=\"height: 120px; width:260px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n					<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n					<div class=\"scroll-content\">\n						<ul> ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.keypair), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " </ul>\n					</div>\n				</div>\n\n				<div class=\"editor\">\n					<a href=\"#\" class=\"editbtn\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_NEW_KP", {hash:{},data:data}))
-    + "</a>\n					<div class=\"edit\">\n						<button class=\"btn btn-blue btn-small\">OK</button>\n						<span class=\"fitfloat\" data-bind=\"true\">\n							<input class=\"input\" type=\"text\" placeholder=\"Key Pair Name\" data-ignore=\"true\"/>\n						</span>\n					</div>\n				</div>\n			</div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
+    + "</label>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(32, program32, data),fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				<label for=\"property-instance-enable-cloudwatch\"></label>\n			</div>\n			<label for=\"property-instance-enable-cloudwatch\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CW_ENABLED", {hash:{},data:data}))
     + "</label>\n\n			<p class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " property-info\" id=\"property-cloudwatch-warn\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CW_WARN", {hash:{},data:data}))
     + "<a target=\"_blank\" href=\"http://aws.amazon.com/cloudwatch\">Amazon Cloud Watch product page</a></p>\n		</section>\n		<section class=\"property-control-group\">\n			";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stackAgentEnable), {hash:{},inverse:self.program(38, program38, data),fn:self.program(36, program36, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stackAgentEnable), {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</section>\n	</div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n	<div class=\"option-group-head\" id=\"sg-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -2968,7 +2912,7 @@ function program58(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/instance/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'constant'], function(PropertyView, template, lang, constant) {
+  define('module/design/property/instance/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'constant', 'kp'], function(PropertyView, template, lang, constant, kp) {
     var InstanceView, noop;
     noop = function() {
       return null;
@@ -3050,8 +2994,10 @@ function program58(depth0,data) {
         return null;
       },
       render: function() {
-        var me;
+        var instanceModel, me;
         this.$el.html(template(this.model.attributes));
+        instanceModel = Design.instance().component(this.model.get('uid'));
+        this.$('#kp-placeholder').html(kp.loadModule(instanceModel).el);
         this.refreshIPList();
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
@@ -3164,21 +3110,6 @@ function program58(depth0,data) {
         this.model.setPublicIp(event.target.checked);
         return null;
       },
-      setKP: function(event, id) {
-        this.model.setKP(id);
-        return null;
-      },
-      addKP: function(event, id) {
-        if (!id) {
-          return;
-        }
-        id = this.model.addKP(id);
-        event.id = id;
-        if (!id) {
-          notification("error", lang.ide.NOTIFY_MSG_WARN_KEYPAIR_NAME_ALREADY_EXISTS);
-          return id;
-        }
-      },
       updateKPSelect: function() {
         $("#keypair-select").find(".item:last-child").append('<span class="icon-remove"></span>');
         return null;
@@ -3186,36 +3117,6 @@ function program58(depth0,data) {
       openAmiPanel: function(event) {
         this.trigger("OPEN_AMI", $("#property-ami").attr("data-uid"));
         return null;
-      },
-      deleteKP: function(event) {
-        var $li, data, me, removeKP, selected, using;
-        me = this;
-        $li = $(event.currentTarget).closest("li");
-        selected = $li.hasClass("selected");
-        using = using === "true" ? true : selected;
-        removeKP = function() {
-          $li.remove();
-          if (selected) {
-            $("#keypair-select").find(".item").eq(0).click();
-          }
-          return me.model.deleteKP($li.attr("data-id"));
-        };
-        if (using) {
-          data = {
-            title: "Delete Key Pair",
-            confirm: "Delete",
-            color: "red",
-            body: "<p class='modal-text-major'>Are you sure to delete " + ($li.text()) + "?</p><p class='modal-text-minor'>Resources using this key pair will change automatically to use DefaultKP.</p>"
-          };
-          modal(MC.template.modalApp(data));
-          $("#btn-confirm").one("click", function() {
-            removeKP();
-            return modal.close();
-          });
-        } else {
-          removeKP();
-        }
-        return false;
       },
       validateIpItem: function($item) {
         var result, that;
@@ -3342,112 +3243,47 @@ function program58(depth0,data) {
 }).call(this);
 
 (function() {
-  define('module/design/property/instance/app_model',['../base/model', 'keypair_model', 'instance_model', 'constant', 'i18n!nls/lang.js', 'Design'], function(PropertyModel, keypair_model, instance_model, constant, lang, Design) {
+  define('module/design/property/instance/app_model',['../base/model', 'keypair_model', 'keypair_service', 'instance_model', 'instance_service', 'constant', 'i18n!nls/lang.js', 'Design'], function(PropertyModel, keypair_model, keypair_service, instance_model, instance_service, constant, lang, Design) {
     var AppInstanceModel;
     AppInstanceModel = PropertyModel.extend({
       defaults: {
         'id': null
       },
-      initialize: function() {
-        var me;
-        me = this;
-        this.on('EC2_KPDOWNLOAD_RETURN', function(result) {
-          var cmd_line, curr_keypairname, instance, instance_data, instance_id, instance_state, key_data, keypairname, login_user, option, os_type, public_dns, region_name;
-          region_name = result.param[3];
-          keypairname = result.param[4];
-          os_type = null;
-          key_data = null;
-          instance = null;
-          public_dns = null;
-          cmd_line = null;
-          login_user = null;
-          instance_id = me.get("instanceId");
-          curr_keypairname = me.get("keyName");
-          if (curr_keypairname !== keypairname) {
-            return;
+      setOsTypeAndLoginCmd: function(appId) {
+        var cmd_line, instance_data, instance_state, login_user, os_type, region;
+        region = Design.instance().region();
+        instance_data = MC.data.resource_list[region][appId];
+        if (instance_data && instance_data.imageId) {
+          os_type = MC.data.dict_ami[instance_data.imageId].osType;
+        }
+        if (!os_type) {
+          return;
+        }
+        if ('win|windows'.indexOf(os_type) > 0) {
+          this.set('osType', 'windows');
+        } else {
+          this.set('osType', os_type);
+        }
+        if (instance_data) {
+          instance_state = instance_data.instanceState.name;
+        }
+        if (instance_state === 'running') {
+          switch (os_type) {
+            case 'amazon':
+              login_user = 'ec2-user';
+              break;
+            case 'ubuntu':
+              login_user = 'ubuntu';
+              break;
+            case 'redhat':
+              login_user = 'ec2-user';
+              break;
+            default:
+              login_user = 'root';
           }
-
-          /*
-           * The EC2_KPDOWNLOAD_RETURN event won't fire when the result.is_error
-           * is true. According to bugs in service models.
-           */
-          if (result.is_error) {
-            notification('error', lang.ide.PROP_MSG_ERR_DOWNLOAD_KP_FAILED + keypairname);
-            key_data = null;
-          } else {
-            key_data = result.resolved_data;
-          }
-          instance_data = MC.data.resource_list[region_name][instance_id];
-          if (instance_data && instance_data.imageId) {
-            os_type = MC.data.dict_ami[instance_data.imageId].osType;
-          }
-          if ('win|windows'.indexOf(os_type) > 0 && key_data) {
-            me.getPasswordData(instance_id, key_data);
-          } else {
-            instance = MC.data.resource_list[region_name][instance_id];
-            if (instance) {
-              instance_state = instance.instanceState.name;
-            }
-            if (instance_state === 'running') {
-              switch (os_type) {
-                case 'amazon':
-                  login_user = 'ec2-user';
-                  break;
-                case 'ubuntu':
-                  login_user = 'ubuntu';
-                  break;
-                default:
-                  login_user = 'root';
-              }
-            }
-            if (instance.ipAddress) {
-              cmd_line = sprintf('ssh -i %s.pem %s@%s', instance.keyName, login_user, instance.ipAddress);
-            }
-            option = {
-              type: 'linux',
-              cmd_line: cmd_line
-            };
-            me.trigger("KP_DOWNLOADED", key_data, option);
-          }
-          return null;
-        });
-        return this.on('EC2_INS_GET_PWD_DATA_RETURN', function(result) {
-          var curr_instance_id, instance, instance_id, instance_state, key_data, option, rdp, region_name, win_passwd;
-          region_name = result.param[3];
-          instance_id = result.param[4];
-          key_data = result.param[5];
-          instance = null;
-          instance_state = null;
-          win_passwd = null;
-          rdp = null;
-          curr_instance_id = me.get("instanceId");
-          if (curr_instance_id !== instance_id) {
-            return;
-          }
-          if (result.is_error) {
-            notification('error', lang.ide.PROP_MSG_ERR_GET_PASSWD_FAILED + instance_id);
-            key_data = null;
-          } else {
-            instance = MC.data.resource_list[region_name][instance_id];
-            if (instance) {
-              instance_state = instance.instanceState.name;
-            }
-            if (instance_state === 'running' && instance.ipAddress) {
-              rdp = sprintf(constant.RDP_TMPL, instance.ipAddress);
-            }
-            if (result.resolved_data) {
-              win_passwd = result.resolved_data.passwordData;
-            }
-          }
-          option = {
-            type: 'win',
-            passwd: win_passwd,
-            rdp: rdp,
-            public_dns: instance.ipAddress
-          };
-          me.trigger("KP_DOWNLOADED", key_data, option);
-          return null;
-        });
+        }
+        cmd_line = sprintf('ssh -i %s.pem %s@%s', instance_data.keyName, login_user, instance_data.ipAddress || instance_data.privateIpAddress);
+        return this.set('loginCmd', cmd_line);
       },
       init: function(instance_id) {
         var app_data, deviceName, effective, i, instance, myInstanceComponent, rdName, rootDevice, volume, _i, _len, _ref;
@@ -3496,6 +3332,8 @@ function program58(depth0,data) {
           instance.eni = this.getEniData(instance);
           instance.app_view = MC.canvas.getState() === 'appview' ? true : false;
           this.set(instance);
+          this.resModel = myInstanceComponent;
+          this.setOsTypeAndLoginCmd(instance_id);
         } else {
           return false;
         }
@@ -3546,23 +3384,70 @@ function program58(depth0,data) {
         }
         return data;
       },
-      downloadKP: function(keypairname) {
-        var session, username;
+      genPasswordHandler: function(action) {
+        var me;
+        me = this;
+        return function(result) {
+          var curr_instance_id, instance, instance_id, instance_state, key_data, rdp, region_name, win_passwd;
+          region_name = result.param[3];
+          instance_id = result.param[4];
+          key_data = result.param[5];
+          instance = null;
+          instance_state = null;
+          win_passwd = null;
+          rdp = null;
+          curr_instance_id = me.get("instanceId");
+          if (curr_instance_id !== instance_id) {
+            return;
+          }
+          if (result.is_error) {
+            notification('error', lang.ide.PROP_MSG_ERR_GET_PASSWD_FAILED + instance_id);
+            key_data = null;
+          } else {
+            if (result.resolved_data) {
+              win_passwd = result.resolved_data.passwordData;
+            }
+          }
+          if (action === 'check') {
+            me.trigger('PASSWORD_STATE', !!win_passwd);
+          } else if (action === 'download') {
+            me.trigger('KEYPAIR_DOWNLOAD', true, win_passwd, result.param[5]);
+          } else {
+            me.trigger("PASSWORD_GOT", win_passwd);
+          }
+          return null;
+        };
+      },
+      getPasswordData: function(key_data, check) {
+        var handler, instance_id, session, username;
+        instance_id = this.get("instanceId");
         username = $.cookie("usercode");
         session = $.cookie("session_id");
-        keypair_model.download({
-          sender: this
-        }, username, session, Design.instance().region(), keypairname);
+        handler = this.genPasswordHandler(check ? 'check' : void 0);
+        instance_service.GetPasswordData(null, username, session, Design.instance().region(), instance_id, key_data).then(handler);
         return null;
       },
-      getPasswordData: function(instance_id, key_data) {
-        var me, session, username;
+      downloadKp: function(kpName) {
+        var handler, region, session, that, username;
+        that = this;
         username = $.cookie("usercode");
         session = $.cookie("session_id");
-        me = this;
-        instance_model.GetPasswordData({
-          sender: me
-        }, username, session, Design.instance().region(), instance_id, key_data);
+        region = Design.instance().region();
+        handler = this.genPasswordHandler('download');
+        keypair_service.download(null, username, session, region, kpName).then(function(res) {
+          var instance_id, key_data;
+          if (!res.is_error) {
+            if (that.get('osType') === 'windows') {
+              instance_id = that.get("instanceId");
+              key_data = res.resolved_data;
+              return instance_service.GetPasswordData(null, username, session, region, instance_id, key_data).then(handler);
+            } else {
+              return that.trigger('KEYPAIR_DOWNLOAD', true, res.resolved_data);
+            }
+          } else {
+            return that.trigger('KEYPAIR_DOWNLOAD', false, res.resolved_data);
+          }
+        });
         return null;
       },
       getAMI: function(ami_id) {
@@ -3596,22 +3481,67 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <dd>"
-    + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      ";
+  buffer += "\n      <dd>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\n      ";
   return buffer;
   }
+function program2(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
 
-function program3(depth0,data) {
+function program4(depth0,data) {
+  
+  
+  return "No Key Pair";
+  }
+
+function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <dd><a href=\"#\" class=\"icon-download\" id=\"property-app-keypair\">"
+  buffer += "\n      <dd>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(12, program12, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </dd>\n      ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.windows), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                "
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></dd>\n      ";
+    + "\n                <button class=\"icon-download btn btn-blue\" id=\"property-app-keypair\">Get Windows Password</button>\n            ";
   return buffer;
   }
 
-function program5(depth0,data) {
+function program10(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <a href=\"#\" class=\"icon-download\" id=\"property-app-keypair\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\n            ";
+  return buffer;
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "\n          No Key Pair\n        ";
+  }
+
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">Root Device</div>\n  <div class=\"option-group\">\n    <article class=\"property-app\">\n      <dl class=\"dl-vertical\">\n        <dt>"
@@ -3637,14 +3567,14 @@ function program5(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.volumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_SIZE", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.size), {hash:{},data:data}))
     + " GB</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_ATTACHMENT_STATE", {hash:{},data:data}))
@@ -3661,7 +3591,7 @@ function program5(depth0,data) {
     + "</dd>\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program6(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3672,7 +3602,7 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>IOPS</dt>\n        <dd>"
@@ -3681,7 +3611,7 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program19(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -3701,7 +3631,7 @@ function program10(depth0,data) {
     + "\"></i>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_SOURCE_DEST_CHECK_DISP", {hash:{},data:data}))
@@ -3720,32 +3650,32 @@ function program10(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.subnetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_MAC_ADDRESS", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.macAddress), {hash:{},data:data}))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </div>\n    <table class=\"table table-small\">\n      <tr>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_IP_ADDRESS", {hash:{},data:data}))
     + "</th>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_PUBLIC_IP", {hash:{},data:data}))
     + "</th>\n      </tr>\n      ";
-  stack1 = helpers.each.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </table>\n\n  </div>\n  ";
   return buffer;
   }
-function program11(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dt>"
@@ -3756,7 +3686,7 @@ function program11(depth0,data) {
   return buffer;
   }
 
-function program13(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3775,7 +3705,7 @@ function program13(depth0,data) {
   return buffer;
   }
 
-function program15(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3786,7 +3716,7 @@ function program15(depth0,data) {
   return buffer;
   }
 
-function program17(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3797,7 +3727,7 @@ function program17(depth0,data) {
   return buffer;
   }
 
-function program19(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3808,32 +3738,32 @@ function program19(depth0,data) {
   return buffer;
   }
 
-function program21(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <tr>\n        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.privateIpAddress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n        <td>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(26, program26, data),fn:self.program(24, program24, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n      </tr>\n      ";
   return buffer;
   }
-function program22(depth0,data) {
+function program31(depth0,data) {
   
   
   return "<span>(Primary)</span>";
   }
 
-function program24(depth0,data) {
+function program33(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program26(depth0,data) {
+function program35(depth0,data) {
   
   
   return "-";
@@ -3890,7 +3820,7 @@ function program26(depth0,data) {
     + "</dd>\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
@@ -3909,10 +3839,10 @@ function program26(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.blockDevice), {hash:{},data:data}))
     + "</dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -3920,79 +3850,146 @@ function program26(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/instance/app_view',['../base/view', './template/app', 'i18n!nls/lang.js', 'instance_model'], function(PropertyView, template, lang, instance_model) {
-    var InstanceAppView;
+  define('module/design/property/instance/app_view',['../base/view', './template/app', 'i18n!nls/lang.js', 'instance_model', 'kp_upload', 'Design', 'component/exporter/JsonExporter'], function(PropertyView, template, lang, instance_model, kp_upload, Design, JsonExporter) {
+    var InstanceAppView, download, genDownload;
+    download = JsonExporter.download;
+    genDownload = function(name, str) {
+      return function() {
+        var blob;
+        if ($("body").hasClass("safari")) {
+          blob = null;
+        } else {
+          blob = new Blob([str]);
+        }
+        if (!blob) {
+          return {
+            data: "data://text/plain;," + str,
+            name: name
+          };
+        }
+        download(blob, name);
+        return null;
+      };
+    };
     InstanceAppView = PropertyView.extend({
+      __kpUpload: null,
       events: {
-        "click #property-app-keypair": "downloadKeypair",
+        "click #property-app-keypair": "keyPairClick",
         "click #property-app-ami": "openAmiPanel",
         "click .property-btn-get-system-log": "openSysLogModal"
       },
       kpModalClosed: false,
       render: function() {
-        this.$el.html(template(this.model.attributes));
+        var data;
+        data = this.model.toJSON();
+        data.windows = this.model.get('osType') === 'windows';
+        this.$el.html(template(data));
         return this.model.attributes.name;
       },
-      downloadKeypair: function(event) {
+      keyPairClick: function(event) {
+        return this.proccessKpStuff();
+      },
+      proccessKpStuff: function(notOld) {
+        var isOldDefaultKp, isOldKp, isOldOtherKp, kp, kpName;
+        kpName = this.model.get('keyName');
+        isOldKp = false;
+        if (!notOld) {
+          kp = this.model.resModel.connectionTargets("KeypairUsage")[0];
+          isOldDefaultKp = kp && kp.isDefault() && kp.get('appId') === ("DefaultKP---" + (Design.instance().get('id')));
+          isOldOtherKp = kp && !kp.isDefault();
+          isOldKp = isOldDefaultKp || isOldOtherKp;
+          if (isOldKp) {
+            this.model.downloadKp(kpName);
+          }
+        }
+        if (!isOldKp && this.model.get('osType') === 'windows') {
+          return this.decryptPassword(isOldKp);
+        } else {
+          return this.loginPrompt(isOldKp);
+        }
+      },
+      loginPrompt: function(isOldKp) {
         var keypair, me;
-        keypair = $(event.currentTarget).html();
-        this.model.downloadKP(keypair);
+        keypair = this.model.get('keyName');
         modal(MC.template.modalDownloadKP({
-          name: keypair
+          name: keypair,
+          loginCmd: this.model.get('loginCmd'),
+          isOldKp: isOldKp,
+          windows: this.model.get('osType') === 'windows'
         }));
         me = this;
-        $('#modal-wrap').on("closed", function() {
-          me.kpModalClosed = true;
-          return null;
-        });
-        $(".modal-body").on("click", ".click-select", function(event) {
+        $('#keypair-cmd').off('click').on('click', function(event) {
           if (event.currentTarget.select) {
             event.currentTarget.select();
           }
           return event.stopPropagation();
         });
-        $("#keypair-show").on("click", function() {
-          $("#keypair-pwd").attr("type", "string");
+        return false;
+      },
+      decryptPassword: function(isOldKp) {
+        var keypair, me;
+        me = this;
+        keypair = this.model.get('keyName');
+        if (!isOldKp) {
+          this.model.getPasswordData(null, 'check');
+        }
+        modal(MC.template.modalDecryptPassword({
+          name: keypair,
+          isOldKp: isOldKp
+        }));
+        $('#modal-wrap').on("closed", function() {
+          me.kpModalClosed = true;
           return null;
+        });
+        $("#do-kp-decrypt").off('click').on('click', function(event) {
+          return me.model.getPasswordData(me.__kpUpload.getData());
         });
         this.kpModalClosed = false;
         return false;
       },
-      updateKPModal: function(data, option) {
-        if (!data) {
-          modal.close();
-          return;
-        }
+      updateKPModal: function(action, data, data2, data3) {
+        var $kpPwdInput, kp, kpPwdInput, pwd, success;
         if (this.kpModalClosed) {
           return;
         }
-        if (option.passwd) {
-          $("#keypair-pwd").val(option.passwd);
-        } else {
-          $("#keypair-login").hide();
-          $("#keypair-no-pwd").html(lang.ide.POP_DOWNLOAD_KP_NOT_AVAILABLE);
+        if (action === 'check') {
+          if (data) {
+            this.__kpUpload && this.__kpUpload.remove();
+            this.__kpUpload = new kp_upload();
+            this.__kpUpload.on('load', function() {
+              return $("#do-kp-decrypt").prop('disabled', false);
+            });
+            $('#modal-box .import-zone').html(this.__kpUpload.render().el);
+            return $('#modal-box .decrypt-action').show();
+          } else {
+            $('#modal-box .import-zone').html('');
+            return $('#modal-box .no-password').show();
+          }
+        } else if (action === 'got') {
+          $("#do-kp-decrypt").prop('disabled', true);
+          $kpPwdInput = $('#keypair-pwd');
+          kpPwdInput = $kpPwdInput.get(0);
+          $kpPwdInput.val(data);
+          kpPwdInput.select();
+          kpPwdInput.focus();
+          $('#do-kp-decrypt').text('Decrypted');
+          return $('.change-pw-recommend').show();
+        } else if (action === 'download') {
+          success = data;
+          pwd = data2;
+          kp = data3 || data2;
+          $('#keypair-kp-download').off('click').on('click', genDownload("" + (this.model.get('keyName')) + ".pem", kp));
+          $('#keypair-loading').hide();
+          $('#keypair-body').show();
+          if (this.model.get('osType') === 'windows') {
+            $('#keypair-pwd-old').val(pwd).off('click').on('click', function() {
+              return this.select();
+            });
+            return $('#keypair-show').one('click', function() {
+              return $('#keypair-pwd-old').prop('type', 'input');
+            });
+          }
         }
-        if (option.cmd_line) {
-          $("#keypair-cmd").val(option.cmd_line);
-        } else {
-          $("#keypair-remote").hide();
-        }
-        if (option.public_dns) {
-          $("#keypair-dns").val(option.public_dns);
-        } else {
-          $("#keypair-public").hide();
-        }
-        if (option.rdp) {
-          $("#keypair-rdp").attr("href", "data://text/plain;charset=utf8," + encodeURIComponent(option.rdp)).attr("download", $("#keypair-name").text() + ".rdp");
-        } else {
-          $("#keypair-rdp").hide();
-        }
-        $("#keypair-kp-" + option.type).attr("href", "data://text/plain;charset=utf8," + encodeURIComponent(data)).attr("download", $("#keypair-name").text() + ".pem");
-        $("#keypair-private-key").val(data);
-        $("#keypair-loading").hide();
-        $("#keypair-body-" + option.type).show();
-        modal.position();
-        return null;
       },
       openAmiPanel: function(event) {
         this.trigger("OPEN_AMI", $(event.target).data("uid"));
@@ -4077,8 +4074,14 @@ function program26(depth0,data) {
       setupApp: function() {
         var me;
         me = this;
-        this.model.on("KP_DOWNLOADED", function(data, option) {
-          return me.view.updateKPModal(data, option);
+        this.model.on("KEYPAIR_DOWNLOAD", function(success, data, data2) {
+          return me.view.updateKPModal('download', success, data, data2);
+        });
+        this.model.on("PASSWORD_STATE", function(data) {
+          return me.view.updateKPModal('check', data);
+        });
+        this.model.on("PASSWORD_GOT", function(data) {
+          return me.view.updateKPModal('got', data);
         });
         this.view.on("OPEN_AMI", function(id) {
           return PropertyModule.loadSubPanel("STATIC", id);
@@ -12957,7 +12960,9 @@ function program3(depth0,data) {
       getKeyPair: function() {
         var selectedKP;
         selectedKP = Design.instance().component(this.get("uid")).connectionTargets("KeypairUsage")[0];
-        this.set("keypair", selectedKP.getKPList());
+        if (selectedKP) {
+          this.set("keypair", selectedKP.getKPList());
+        }
         return null;
       },
       addKP: function(kp_name) {
@@ -13087,70 +13092,40 @@ function program11(depth0,data) {
 function program13(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n							<li class=\"item";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-using=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.using)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n							";
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n							</li>\n							";
-  return buffer;
-  }
-function program14(depth0,data) {
-  
-  
-  return " selected";
-  }
-
-function program16(depth0,data) {
-  
-  
-  return "<span class=\"icon-remove\"></span>";
-  }
-
-function program18(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n			<section class=\"property-control-group\">\n				<div class=\"checkbox\">\n					<input id=\"property-instance-public-ip\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.publicIp), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.publicIp), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-instance-public-ip\" />\n					<label for=\"property-instance-public-ip\"></label>\n				</div>\n				<label for=\"property-instance-public-ip\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_AUTO_PUBLIC_IP", {hash:{},data:data}))
     + "</label>\n			</section>\n		";
   return buffer;
   }
-function program19(depth0,data) {
+function program14(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program21(depth0,data) {
+function program16(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program22(depth0,data) {
+function program17(depth0,data) {
   
   
   return "checked=\"true\"";
   }
 
-function program24(depth0,data) {
+function program19(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program26(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "";
   buffer += "\n			<div class=\"property-info\"> User Data is disabled to allow installing OpsAgent for VisualOps. <a href=\""
@@ -13159,7 +13134,7 @@ function program26(depth0,data) {
   return buffer;
   }
 
-function program28(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n				<label for=\"property-instance-user-data\">"
@@ -13170,7 +13145,7 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<div class=\"option-group-head\">Root Device</div>\n	<div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>"
@@ -13184,44 +13159,44 @@ function program30(depth0,data) {
     + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-property-ranged-number\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_TYPE", {hash:{},data:data}))
     + "</label>\n      <div id=\"volume-type-radios\">\n      <div>\n      	<div class=\"radio\">\n          <input id=\"radio-standard\" type=\"radio\" name=\"volume-type\" ";
-  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"radio-standard\"></label>\n        </div>\n        <label for=\"radio-standard\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_TYPE_STANDARD", {hash:{},data:data}))
     + "</label>\n      </div>\n      <div ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_MSG_WARN", {hash:{},data:data}))
     + "\">\n        <div class=\"radio\">\n          <input id=\"radio-iops\" type=\"radio\" name=\"volume-type\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"radio-iops\"></label>\n        </div>\n        <label for=\"radio-iops\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_TYPE_IOPS", {hash:{},data:data}))
     + "</label>\n      </div>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\" id=\"iops-group\" ";
-  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n        <label>IOPS</label>\n        <div class=\"ranged-number-input\">\n          <label for=\"iops-ranged\"></label>\n          <input id=\"iops-ranged\" type=\"text\" class=\"input\" min=\"100\" max=\"2000\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n        </div>\n    </section>\n	</div>\n  ";
   return buffer;
   }
-function program31(depth0,data) {
+function program26(depth0,data) {
   
   
   return "class=\"tooltip\"";
   }
 
-function program33(depth0,data) {
+function program28(depth0,data) {
   
   
   return "disabled";
   }
 
-function program35(depth0,data) {
+function program30(depth0,data) {
   
   
   return "style=\"display:none\"";
@@ -13257,18 +13232,13 @@ function program35(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				<label for=\"property-instance-ebs-optimized\"></label>\n			</div>\n			<label for=\"property-instance-ebs-optimized\">EBS Optimized</label>\n		</section>\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
-    + "</label>\n			<div class=\"selectbox\" id=\"keypair-select\">\n				<div class=\"selection\"></div>\n				<div style=\"height: 120px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n					<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n					<div class=\"scroll-content\">\n						<ul tabindex=\"-1\">\n							";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.keypair), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n						</ul>\n					</div>\n				</div>\n\n				<div class=\"editor\">\n					<a href=\"#\" class=\"editbtn\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_NEW_KP", {hash:{},data:data}))
-    + "</a>\n					<div class=\"edit\">\n						<button class=\"btn btn-blue btn-small\">OK</button>\n						<span class=\"fitfloat\">\n							<input class=\"input\" type=\"text\" placeholder=\"Key Pair Name\" />\n						</span>\n					</div>\n				</div>\n			</div>\n		</section>\n		";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayAssociatePublicIp), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+    + "</label>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n		";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayAssociatePublicIp), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				<input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitorEnabled), {hash:{},inverse:self.program(24, program24, data),fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitorEnabled), {hash:{},inverse:self.program(19, program19, data),fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-instance-enable-cloudwatch\" />\n				<label for=\"property-instance-enable-cloudwatch\"></label>\n			</div>\n			<label for=\"property-instance-enable-cloudwatch\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CW_ENABLED", {hash:{},data:data}))
@@ -13278,10 +13248,10 @@ function program35(depth0,data) {
   buffer += " property-info\" id=\"property-cloudwatch-warn\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CW_WARN", {hash:{},data:data}))
     + "<a target=\"_blank\" href=\"http://aws.amazon.com/cloudwatch\">Amazon Cloud Watch product page</a></p>\n		</section>\n		<section class=\"property-control-group\">\n			";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stackAgentEnable), {hash:{},inverse:self.program(28, program28, data),fn:self.program(26, program26, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stackAgentEnable), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</section>\n	</div>\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -13289,7 +13259,7 @@ function program35(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/launchconfig/view',['../base/view', './template/stack', 'event', 'constant', 'i18n!nls/lang.js'], function(PropertyView, template, ide_event, constant, lang) {
+  define('module/design/property/launchconfig/view',['../base/view', './template/stack', 'event', 'constant', 'i18n!nls/lang.js', 'kp'], function(PropertyView, template, ide_event, constant, lang, kp) {
     var LanchConfigView;
     LanchConfigView = PropertyView.extend({
       events: {
@@ -13360,9 +13330,10 @@ function program35(depth0,data) {
         return null;
       },
       render: function() {
-        var me;
+        var instanceModel, me;
         this.$el.html(template(this.model.attributes));
-        $("#keypair-select").on("click", ".icon-remove", _.bind(this.deleteKP, this));
+        instanceModel = Design.instance().component(this.model.get('uid'));
+        this.$('#kp-placeholder').html(kp.loadModule(instanceModel).el);
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
           val = +val;
@@ -13498,15 +13469,6 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <dd><a href=\"#\" class=\"icon-download\" id=\"property-app-keypair\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></dd>\n      ";
-  return buffer;
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">Root Device</div>\n  <div class=\"option-group\">\n    <article class=\"property-app\">\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_DEVICE_NAME", {hash:{},data:data}))
     + "</dt>\n        <dd>"
@@ -13516,19 +13478,19 @@ function program5(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_SIZE", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeSize), {hash:{},data:data}))
     + " GB</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program6(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -13539,7 +13501,7 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>IOPS</dt>\n        <dd>"
@@ -13565,14 +13527,14 @@ function program8(depth0,data) {
     + "</dd>\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(1, program1, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.ebsOptimized)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -13584,7 +13546,6 @@ function program8(depth0,data) {
     var LCAppView;
     LCAppView = PropertyView.extend({
       events: {
-        'click #property-app-keypair': 'downloadKeypair',
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
         'change #property-instance-user-data': 'userdataChange'
       },
@@ -13601,38 +13562,6 @@ function program8(depth0,data) {
       },
       userdataChange: function(event) {
         return this.model.setUserData(event.target.value);
-      },
-      downloadKeypair: function(event) {
-        var keypair, me;
-        keypair = $(event.currentTarget).html();
-        this.model.downloadKP(keypair);
-        modal(MC.template.modalDownloadKP({
-          name: keypair
-        }));
-        me = this;
-        $('#modal-wrap').on("closed", function() {
-          me.kpModalClosed = true;
-          return null;
-        });
-        this.kpModalClosed = false;
-        return false;
-      },
-      updateKPModal: function(data) {
-        if (!data) {
-          modal.close();
-          return;
-        }
-        if (this.kpModalClosed) {
-          return;
-        }
-        $("#keypair-login").hide();
-        $("#keypair-remote").hide();
-        $("#keypair-public").hide();
-        $("#keypair-rdp").hide();
-        $("#keypair-kp-linux").attr("href", "data://text/plain;charset=utf8," + encodeURIComponent(data)).attr("download", $("#keypair-name").text() + ".pem");
-        $("#keypair-private-key").val(data);
-        $("#keypair-loading").hide();
-        return $("#keypair-body-linux").show();
       }
     });
     return new LCAppView();

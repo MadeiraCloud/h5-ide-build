@@ -20,6 +20,8 @@
         return singleton;
       }
       singleton = this;
+      this.__readyDefer = Q.defer();
+      this.__isReady = false;
       this.connection = Meteor.connect(WEBSOCKET_URL, true);
       opts = {
         connection: this.connection
@@ -34,23 +36,46 @@
       };
       Deps.autorun((function(_this) {
         return function() {
-          return _this.trigger("StatusChanged", _this.connection.status().connected);
+          return _this.statusChanged();
         };
       })(this));
       this.subscribe();
       this.pipeChanges();
+      setTimeout((function(_this) {
+        return function() {
+          _this.shouldNotify = true;
+          if (!_this.connection.status.connected) {
+            return _this.statusChanged();
+          }
+        };
+      })(this), 5000);
       return this;
     };
+    Websocket.prototype.statusChanged = function() {
+      var status;
+      status = this.connection.status().connected;
+      if (status) {
+        this.shouldNotify = true;
+      }
+      if (!this.shouldNotify) {
+        return;
+      }
+      return this.trigger("StatusChanged", status);
+    };
     Websocket.prototype.subscribe = function() {
-      var callback, session, subscribed, usercode;
+      var callback, onReady, session, subscribed, usercode;
       if (this.subscribed) {
         return;
       }
       subscribed = true;
-      usercode = $.cookie('usercode');
-      session = $.cookie('session_id');
+      onReady = function() {
+        this.__isReady = true;
+        return this.__readyDefer.resolve();
+      };
+      usercode = App.user.get('usercode');
+      session = App.user.get('session');
       callback = {
-        onReady: _.bind(this.onReady, this),
+        onReady: _.bind(onReady, this),
         onError: _.bind(this.onError, this)
       };
       this.connection.subscribe("request", usercode, session, callback);
@@ -59,8 +84,11 @@
       this.connection.subscribe("status", usercode, session);
       this.connection.subscribe("imports", usercode, session);
     };
-    Websocket.prototype.onReady = function() {
-      ide_event.trigger(ide_event.WS_COLLECTION_READY_REQUEST);
+    Websocket.prototype.ready = function() {
+      return this.__readyDefer.promise;
+    };
+    Websocket.prototype.isReady = function() {
+      return this.__isReady;
     };
     Websocket.prototype.onError = function(error) {
       console.error("Websocket/Meteor Error:", error);

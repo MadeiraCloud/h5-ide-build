@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", "component/exporter/Download", 'constant', 'ApiRequest', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, download, constant, ApiRequest) {
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest) {
     var ToolbarView;
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -89,56 +89,81 @@
           }
         }
       },
+      showErr: function(id, msg) {
+        return $("#runtime-error-" + id).text(msg).show();
+      },
+      hideErr: function(type) {
+        if (type) {
+          return $("#runtime-error-" + id).hide();
+        } else {
+          return $(".runtime-error").hide();
+        }
+      },
+      defaultKpIsSet: function() {
+        if ($('#kp-runtime-placeholder #kp-list .item.selected').length === 0) {
+          this.showErr('kp', 'Specify a key pair as $DefaultKeyPair for this app.');
+          return false;
+        }
+        return true;
+      },
+      renderDefaultKpDropdown: function() {
+        if (kp.hasResourceWithDefaultKp()) {
+          $('#kp-runtime-placeholder').html(kp.loadModule().el);
+          $('.default-kp-group').show();
+        }
+        return null;
+      },
       clickRunIcon: function(event) {
         var cost, me;
-        console.log('clickRunIcon');
-        if ($('#toolbar-run').hasClass('disabled')) {
-          modal.close();
-          return;
-        }
         me = this;
-        event.preventDefault();
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
-          modal.close();
-          console.log('show credential setting dialog');
-          require(['component/awscredential/main'], function(awscredential_main) {
-            return awscredential_main.loadModule();
-          });
-        } else {
-          $('.modal-input-value').val(MC.common.other.canvasData.get('name'));
-          cost = Design.instance().getCost();
-          $('#label-total-fee').find("b").text("$" + cost.totalFee);
-          require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
-            return trustedadvisor_main.loadModule('stack');
-          });
-          $('#btn-confirm').on('click', this, function(event) {
-            var app_name, obj, process_tab_name;
-            console.log('clickRunIcon');
-            app_name = $('.modal-input-value').val();
-            if (!app_name) {
-              notification('warning', lang.ide.PROP_MSG_WARN_NO_APP_NAME);
-              return;
-            }
-            if (!MC.validate('awsName', app_name)) {
-              notification('warning', lang.ide.PROP_MSG_WARN_INVALID_APP_NAME);
-              return;
-            }
-            process_tab_name = 'process-' + MC.common.other.canvasData.get('region') + '-' + app_name;
-            obj = MC.common.other.getProcess(process_tab_name);
-            if (obj && obj.flag_list && obj.flag_list.is_failed === true && obj.flag_list.flag === 'RUN_STACK') {
-              MC.common.other.deleteProcess(process_tab_name);
-              ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, process_tab_name);
-            }
-            if ((!MC.aws.aws.checkAppName(app_name)) || (_.contains(_.keys(MC.process), process_tab_name))) {
-              notification('warning', lang.ide.PROP_MSG_WARN_REPEATED_APP_NAME);
-              return false;
-            }
-            $('#btn-confirm').attr('disabled', true);
-            $('.modal-header .modal-close').hide();
-            $('#run-stack-cancel').attr('disabled', true);
-            return event.data.model.syncSaveStack(MC.common.other.canvasData.get('region'), MC.common.other.canvasData.data());
-          });
+        if ($('#toolbar-run').hasClass('disabled')) {
+          return false;
         }
+        modal(MC.template.modalRunStack({
+          hasCred: App.user.hasCredential()
+        }));
+        me.renderDefaultKpDropdown();
+        event.preventDefault();
+        $('.modal-input-value').val(MC.common.other.canvasData.get('name'));
+        cost = Design.instance().getCost();
+        $('#label-total-fee').find("b").text("$" + cost.totalFee);
+        require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
+          return trustedadvisor_main.loadModule('stack');
+        });
+        $('#btn-confirm').on('click', this, function(event) {
+          var appNameRepeated, app_name, obj, process_tab_name;
+          me.hideErr();
+          if (!App.user.hasCredential()) {
+            App.showSettings(1);
+            return false;
+          }
+          app_name = $('.modal-input-value').val();
+          if (!app_name) {
+            me.showErr('appname', lang.ide.PROP_MSG_WARN_NO_APP_NAME);
+            return false;
+          }
+          if (!MC.validate('awsName', app_name)) {
+            me.showErr('appname', lang.ide.PROP_MSG_WARN_INVALID_APP_NAME);
+            return false;
+          }
+          process_tab_name = 'process-' + MC.common.other.canvasData.get('region') + '-' + app_name;
+          obj = MC.common.other.getProcess(process_tab_name);
+          if (obj && obj.flag_list && obj.flag_list.is_failed === true && obj.flag_list.flag === 'RUN_STACK') {
+            MC.common.other.deleteProcess(process_tab_name);
+            ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, process_tab_name);
+          }
+          appNameRepeated = (!MC.aws.aws.checkAppName(app_name)) || (_.contains(_.keys(MC.process), process_tab_name));
+          if (appNameRepeated) {
+            me.showErr('appname', lang.ide.PROP_MSG_WARN_REPEATED_APP_NAME);
+          }
+          if (!me.defaultKpIsSet() || appNameRepeated) {
+            return false;
+          }
+          $('#btn-confirm').attr('disabled', true);
+          $('.modal-header .modal-close').hide();
+          $('#run-stack-cancel').attr('disabled', true);
+          return event.data.model.syncSaveStack(MC.common.other.canvasData.get('region'), MC.common.other.canvasData.data());
+        });
         return null;
       },
       clickSaveIcon: function() {
@@ -364,7 +389,7 @@
       clickExportJSONIcon: function() {
         var data, date, design, name, username;
         design = Design.instance();
-        username = $.cookie('username');
+        username = App.user.get('username');
         date = MC.dateFormat(new Date(), "yyyy-MM-dd");
         name = [design.get("name"), username, date].join("-");
         data = JsonExporter.exportJson(Design.instance().serialize(), name + ".json");
@@ -386,7 +411,7 @@
           });
         } else {
           $("#modal-wrap").find("#btn-confirm").show().click(function() {
-            return download(blob, name + ".png");
+            return JsonExporter.download(blob, name + ".png");
           });
         }
         $('.modal-body').html("<img style='max-height:100%;display:inline-block' src='" + base64_image + "' />").css({
@@ -426,7 +451,7 @@
         var me, target;
         me = this;
         console.log('click stop app');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           return require(['component/awscredential/main'], function(awscredential_main) {
@@ -450,7 +475,7 @@
         var me, target;
         me = this;
         console.log('click run app');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           return require(['component/awscredential/main'], function(awscredential_main) {
@@ -474,7 +499,7 @@
         var me, target;
         me = this;
         console.log('click terminate app');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           return require(['component/awscredential/main'], function(awscredential_main) {
@@ -528,7 +553,7 @@
       },
       clickSaveEditApp: function(event) {
         var result;
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -541,6 +566,7 @@
             return;
           } else {
             modal(MC.template.updateApp(result));
+            this.renderDefaultKpDropdown();
             require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
               return trustedadvisor_main.loadModule('stack');
             });
@@ -587,7 +613,12 @@
         return null;
       },
       appUpdating: function(event) {
+        var me;
         console.log('appUpdating');
+        me = event.data;
+        if (!me.defaultKpIsSet()) {
+          return false;
+        }
         event.data.trigger('APP_UPDATING', MC.common.other.canvasData.data());
         modal.close();
         return null;

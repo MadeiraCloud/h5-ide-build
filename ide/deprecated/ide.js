@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', 'handlebars', 'i18n!nls/lang.js', './view', 'canvas_layout', 'header', 'navigation', 'tabbar', 'dashboard', 'design_module', 'process', 'constant', 'base_model', 'common_handle', 'validation', 'aws_handle'], function(MC, ide_event, Handlebars, lang, view, canvas_layout, header, navigation, tabbar, dashboard, design, process, constant, base_model, common_handle, validation) {
+  define(['MC', 'event', 'handlebars', 'i18n!nls/lang.js', './view', 'canvas_layout', 'navigation', 'tabbar', 'dashboard', 'design_module', 'process', 'constant', 'base_model', 'common_handle', 'validation', 'aws_handle'], function(MC, ide_event, Handlebars, lang, view, canvas_layout, navigation, tabbar, dashboard, design, process, constant, base_model, common_handle, validation) {
     return {
       initialize: function() {
         var r, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
@@ -103,7 +103,6 @@
             return ide_event.trigger(ide_event.SWITCH_MAIN);
           }
         });
-        header.loadModule();
         tabbar.loadModule();
         dashboard.loadModule();
         ide_event.onListen(ide_event.DASHBOARD_COMPLETE, function() {
@@ -126,10 +125,7 @@
           var error_msg, label, _ref5;
           console.log('sub');
           if (error.return_code === constant.RETURN_CODE.E_SESSION) {
-            ide_event.trigger(ide_event.SWITCH_MAIN);
-            require(['component/session/SessionDialog'], function(SessionDialog) {
-              return new SessionDialog();
-            });
+            App.acquireSession();
             if (error.param[0].method === 'info') {
               if ((_ref5 = error.param[0].url) === '/stack/' || _ref5 === '/app/') {
                 ide_event.trigger(ide_event.CLOSE_DESIGN_TAB, error.param[4][0]);

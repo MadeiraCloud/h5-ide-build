@@ -36,20 +36,20 @@
         method: "logout",
         params: ["username", "session_id"]
       },
-      syncRedis: {
-        url: "/session/",
-        method: "sync_redis",
-        params: ["username", "session_id"]
-      },
       updateCred: {
-        url: "/session/",
-        method: "set_credential",
-        params: ["username", "session_id", "access_key", "secret_key", "account_id"]
-      },
-      resetKey: {
         url: "/account/",
-        method: "reset_key",
-        params: ["username", "session_id", "flag"]
+        method: "set_credential",
+        params: ["username", "session_id", "access_key", "secret_key", "account_id", "force"]
+      },
+      validateCred: {
+        url: "/account/",
+        method: "validate_credential",
+        params: ["username", "session_id", "access_key", "secret_key"]
+      },
+      updateAccount: {
+        url: "/account/",
+        method: "update_account",
+        params: ["username", "session_id", "params"]
       },
       saveStack: {
         url: "/stack/",
@@ -60,11 +60,6 @@
         url: "/stack/",
         method: "create",
         params: ["username", "session_id", "region_name", "data"]
-      },
-      changePwd: {
-        url: "/account/",
-        method: "update_account",
-        params: ["username", "session_id", "params"]
       }
     };
 
@@ -93,12 +88,97 @@
 
     /*
      * === Error Code Defination ===
-     * TODO :
-     * The Errors is just some random number at this time. Should define it when the Backend Error Code is defined.
+     * 1. Any network errors will be negative. For example, when server returns 404, the `error` in the promise will be -404.
      */
     var Errors;
     Errors = {
-      InvalidSession: 19
+      InvalidRpcReturn: -1,
+      XhrFailure: -2,
+      InvalidMethodCall: -3,
+      Network404: -404,
+      Network500: -500,
+      InvalidSession: 19,
+      ChangeCredConfirm: 325,
+      InvalidCred: 326,
+      GlobalErrorInit: 100,
+      GlobalErrorApi: 101,
+      GlobalErrorSession: 102,
+      GlobalErrorDb: 103,
+      GlobalErrorRegion: 104,
+      GlobalErrorId: 105,
+      GlobalErrorUsername: 106,
+      GlobalErrorIntercom: 107,
+      GlobalErrorUnknown: 109,
+      UserInvalidUser: 110,
+      UserInvalidUsername: 111,
+      UserErrorUser: 112,
+      UserBlockedUser: 113,
+      UserRemovedUser: 114,
+      UserNoUser: 115,
+      UserInvalidEmail: 116,
+      SessionInvalidSessio: 120,
+      SessionInvalidId: 121,
+      SessionFailedCreate: 122,
+      SessionFailedUpdate: 123,
+      SessionFailedDelete: 124,
+      SessionFailedGet: 125,
+      SessionErrorSession: 126,
+      SessionNotConnected: 127,
+      RequestErrorRequest: 130,
+      RequestInvalidId: 131,
+      RequestNoPending: 132,
+      RequestErrorEmail: 133,
+      RequestOnProcess: 134,
+      IdConstrain: 134,
+      AppInvalidFormat: 210,
+      AppNotStop: 211,
+      AppBeingOperated: 212,
+      AppNotRename: 213,
+      AppInvalidId: 214,
+      AppInvalidState: 214,
+      AppIsRunning: 215,
+      AppIsStopped: 216,
+      AppNotStoppable: 217,
+      FavoriteId: 217,
+      GuestErrorGuest: 230,
+      GuestInvalidId: 231,
+      GuestInvalidState: 232,
+      GuestGuestEnd: 233,
+      GuestGuestFailed: 234,
+      GuestGuestThank: 245,
+      GuestGuestBusy: 246,
+      OpsbackendId: 246,
+      OpsbackendRemoveStat: 240,
+      OpsbackendErrorStatu: 241,
+      StackInvalidFormat: 250,
+      StackNotStop: 251,
+      StackRepeatedStack: 252,
+      StackInvalidId: 253,
+      StackIsRemoved: 254,
+      StackIsDisabled: 255,
+      StackVerifyFailed: 256,
+      StateErrorModule: 260,
+      RequestNotSend: 300,
+      UserInvalidKey: 320,
+      UserInvalidUpdateTim: 321,
+      UserExpiredActivatio: 322,
+      UserInvalidOperation: 323,
+      UserExistedUser: 324,
+      UserExistedApp: 325,
+      UserInvalidCredentia: 326,
+      TokenCreateFailed: 330,
+      TokenNoneToken: 331,
+      TokenMismatchedToken: 332,
+      AwsErrorApi: 400,
+      AwsInvalidAws: 401,
+      AwsExceededResource: 402,
+      AwsErrorAws: 403,
+      AwsErrorParams: 404,
+      AwsErrorExternal: 405,
+      AwsInvalidKeypair: 406,
+      AwsErrorEmail: 407,
+      AwsNoAmi: 408,
+      AwsErrorUnknown: 409
     };
     return Errors;
   });
@@ -124,7 +204,6 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'session_login'           : { url:'/session/',	method:'login',	params:['username', 'password']   },
 		'session_logout'          : { url:'/session/',	method:'logout',	params:['username', 'session_id']   },
 		'session_set_credential'  : { url:'/session/',	method:'set_credential',	params:['username', 'session_id', 'access_key', 'secret_key', 'account_id']   },
-		'session_guest'           : { url:'/session/',	method:'guest',	params:['guest_id', 'guestname']   },
 		'app_create'              : { url:'/app/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
 		'app_update'              : { url:'/app/',	method:'update',	params:['username', 'session_id', 'region_name', 'spec', 'app_id']   },
 		'app_rename'              : { url:'/app/',	method:'rename',	params:['username', 'session_id', 'region_name', 'app_id', 'new_name', 'app_name']   },
@@ -141,7 +220,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'favorite_add'            : { url:'/favorite/',	method:'add',	params:['username', 'session_id', 'region_name', 'resource']   },
 		'favorite_remove'         : { url:'/favorite/',	method:'remove',	params:['username', 'session_id', 'region_name', 'resource_ids']   },
 		'favorite_info'           : { url:'/favorite/',	method:'info',	params:['username', 'session_id', 'region_name', 'provider', 'service', 'resource']   },
-		'guest_invite'            : { url:'/guest/',	method:'invite',	params:['username', 'session_id', 'region_name']   },
+		'guest_invite'            : { url:'/guest/',	method:'invite',	params:['username', 'session_id', 'region_name', 'guest_emails', 'stack_id', 'time_length', 'time_due', 'post_ops', 'autostart', 'autostop_when', 'autostop_during', 'information', 'stack_name']   },
 		'guest_cancel'            : { url:'/guest/',	method:'cancel',	params:['username', 'session_id', 'region_name', 'guest_id']   },
 		'guest_access'            : { url:'/guest/',	method:'access',	params:['guestname', 'session_id', 'region_name', 'guest_id']   },
 		'guest_end'               : { url:'/guest/',	method:'end',	params:['guestname', 'session_id', 'region_name', 'guest_id']   },
@@ -164,12 +243,17 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'state_module'            : { url:'/state/',	method:'module',	params:['username', 'session_id', 'mod_repo', 'mod_tag']   },
 		'state_status'            : { url:'/state/',	method:'status',	params:['username', 'session_id', 'app_id']   },
 		'state_log'               : { url:'/state/',	method:'log',	params:['username', 'session_id', 'app_id', 'res_id']   },
+		'token_create'            : { url:'/token/',	method:'create',	params:['username', 'session_id', 'token_name']   },
+		'token_update'            : { url:'/token/',	method:'update',	params:['username', 'session_id', 'token_name', 'new_token_name']   },
+		'token_remove'            : { url:'/token/',	method:'remove',	params:['username', 'session_id', 'token']   },
+		'token_list'              : { url:'/token/',	method:'list',	params:['username', 'session_id', 'token_names']   },
+		'token_verify'            : { url:'/token/',	method:'verify',	params:['username', 'token']   },
 		'account_register'        : { url:'/account/',	method:'register',	params:['username', 'password', 'email']   },
 		'account_update_account'  : { url:'/account/',	method:'update_account',	params:['username', 'session_id', 'attributes']   },
 		'account_reset_password'  : { url:'/account/',	method:'reset_password',	params:['username']   },
 		'account_update_password' : { url:'/account/',	method:'update_password',	params:['key', 'new_pwd']   },
 		'account_check_repeat'    : { url:'/account/',	method:'check_repeat',	params:['username', 'email']   },
-		'account_check_validation' : { url:'/account/',	method:'check_validation',	params:['key', 'flag']   },
+		'account_check_validation' : { url:'/account/',	method:'check_validation',	params:['key', 'operation_flag']   },
 		'account_reset_key'       : { url:'/account/',	method:'reset_key',	params:['username', 'session_id', 'flag']   },
 		'account_del_account'     : { url:'/account/',	method:'del_account',	params:['username', 'email', 'password', 'force_delete']   },
 		'account_is_invitated'    : { url:'/account/',	method:'is_invitated',	params:['username', 'session_id']   },
@@ -212,8 +296,6 @@ define('api/define/aws/aws',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'aws_public'         : { url:'/aws/',	method:'public',	params:['username', 'session_id', 'region_name', 'filters']   },
 		'aws_property'       : { url:'/aws/',	method:'property',	params:['username', 'session_id']   },
 		'aws_resource'       : { url:'/aws/',	method:'resource',	params:['username', 'session_id', 'region_name', 'resources', 'addition', 'retry_times']   },
-		'aws_price'          : { url:'/aws/',	method:'price',	params:['username', 'session_id']   },
-		'aws_status'         : { url:'/aws/',	method:'status',	params:['username', 'session_id']   },
 	}
 
 	for ( var i in Apis ) {
@@ -245,9 +327,9 @@ define('api/define/aws/ec2',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'ec2_DescribeRegions'                    : { url:'/aws/ec2/',	method:'DescribeRegions',	params:['username', 'session_id', 'region_names', 'filters']   },
 		'ec2_DescribeAvailabilityZones'          : { url:'/aws/ec2/',	method:'DescribeAvailabilityZones',	params:['username', 'session_id', 'region_name', 'zone_names', 'filters']   },
 		'ami_CreateImage'                        : { url:'/aws/ec2/ami/',	method:'CreateImage',	params:['username', 'session_id', 'region_name', 'instance_id', 'ami_name', 'ami_desc', 'no_reboot', 'bd_mappings']   },
-		'ami_RegisterImage'                      : { url:'/aws/ec2/ami/',	method:'RegisterImage',	params:['username', 'session_id', 'region_name', 'ami_name']   },
+		'ami_RegisterImage'                      : { url:'/aws/ec2/ami/',	method:'RegisterImage',	params:['username', 'session_id', 'region_name', 'ami_name', 'ami_desc', 'location', 'architecture', 'kernel_id', 'ramdisk_id', 'root_device_name', 'block_device_map']   },
 		'ami_DeregisterImage'                    : { url:'/aws/ec2/ami/',	method:'DeregisterImage',	params:['username', 'session_id', 'region_name', 'ami_id']   },
-		'ami_ModifyImageAttribute'               : { url:'/aws/ec2/ami/',	method:'ModifyImageAttribute',	params:['username', 'session_id']   },
+		'ami_ModifyImageAttribute'               : { url:'/aws/ec2/ami/',	method:'ModifyImageAttribute',	params:['username', 'session_id', 'region_name', 'ami_id', 'user_ids', 'group_names', 'product_codes', 'description']   },
 		'ami_ResetImageAttribute'                : { url:'/aws/ec2/ami/',	method:'ResetImageAttribute',	params:['username', 'session_id', 'region_name', 'ami_id', 'attribute_name']   },
 		'ami_DescribeImageAttribute'             : { url:'/aws/ec2/ami/',	method:'DescribeImageAttribute',	params:['username', 'session_id', 'region_name', 'ami_id', 'attribute_name']   },
 		'ami_DescribeImages'                     : { url:'/aws/ec2/ami/',	method:'DescribeImages',	params:['username', 'session_id', 'region_name', 'ami_ids', 'owners', 'executable_by', 'filters']   },
@@ -268,19 +350,19 @@ define('api/define/aws/ec2',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'ebs_DescribeSnapshotAttribute'          : { url:'/aws/ec2/ebs/snapshot/',	method:'DescribeSnapshotAttribute',	params:['username', 'session_id', 'region_name', 'snapshot_id', 'attribute_name']   },
 		'eip_AllocateAddress'                    : { url:'/aws/ec2/elasticip/',	method:'AllocateAddress',	params:['username', 'session_id', 'region_name', 'domain']   },
 		'eip_ReleaseAddress'                     : { url:'/aws/ec2/elasticip/',	method:'ReleaseAddress',	params:['username', 'session_id', 'region_name', 'ip', 'allocation_id']   },
-		'eip_AssociateAddress'                   : { url:'/aws/ec2/elasticip/',	method:'AssociateAddress',	params:['username']   },
+		'eip_AssociateAddress'                   : { url:'/aws/ec2/elasticip/',	method:'AssociateAddress',	params:['username', 'session_id', 'region_name', 'ip', 'instance_id', 'allocation_id', 'nif_id', 'private_ip', 'allow_reassociation']   },
 		'eip_DisassociateAddress'                : { url:'/aws/ec2/elasticip/',	method:'DisassociateAddress',	params:['username', 'session_id', 'region_name', 'ip', 'association_id']   },
 		'eip_DescribeAddresses'                  : { url:'/aws/ec2/elasticip/',	method:'DescribeAddresses',	params:['username', 'session_id', 'region_name', 'ips', 'allocation_ids', 'filters']   },
-		'ins_RunInstances'                       : { url:'/aws/ec2/instance/',	method:'RunInstances',	params:['username']   },
+		'ins_RunInstances'                       : { url:'/aws/ec2/instance/',	method:'RunInstances',	params:['username', 'session_id', 'region_name', 'ami_id', 'min_count', 'max_count', 'key_name', 'security_group_ids', 'security_group_names', 'user_data', 'instance_type', 'placement', 'kernel_id', 'ramdisk_id', 'block_device_map', 'monitoring_enabled', 'subnet_id', 'disable_api_termination', 'instance_initiated_shutdown_behavior', 'private_ip_address', 'client_token', 'network_interfaces', 'iam_instance_profiles', 'ebs_optimized']   },
 		'ins_StartInstances'                     : { url:'/aws/ec2/instance/',	method:'StartInstances',	params:['username', 'session_id', 'region_name', 'instance_ids']   },
 		'ins_StopInstances'                      : { url:'/aws/ec2/instance/',	method:'StopInstances',	params:['username', 'session_id', 'region_name', 'instance_ids', 'force']   },
 		'ins_RebootInstances'                    : { url:'/aws/ec2/instance/',	method:'RebootInstances',	params:['username', 'session_id', 'region_name', 'instance_ids']   },
 		'ins_TerminateInstances'                 : { url:'/aws/ec2/instance/',	method:'TerminateInstances',	params:['username', 'session_id', 'region_name', 'instance_ids']   },
 		'ins_MonitorInstances'                   : { url:'/aws/ec2/instance/',	method:'MonitorInstances',	params:['username', 'session_id', 'region_name', 'instance_ids']   },
 		'ins_UnmonitorInstances'                 : { url:'/aws/ec2/instance/',	method:'UnmonitorInstances',	params:['username', 'session_id', 'region_name', 'instance_ids']   },
-		'ins_BundleInstance'                     : { url:'/aws/ec2/instance/',	method:'BundleInstance',	params:['username', 'session_id', 'region_name', 'instance_id', 's3_bucket']   },
+		'ins_BundleInstance'                     : { url:'/aws/ec2/instance/',	method:'BundleInstance',	params:['username', 'session_id', 'region_name', 'instance_id', 's3_bucket', 's3_prefix', 's3_access_key', 's3_upload_policy', 's3_upload_policy_signature']   },
 		'ins_CancelBundleTask'                   : { url:'/aws/ec2/instance/',	method:'CancelBundleTask',	params:['username', 'session_id', 'region_name', 'bundle_id']   },
-		'ins_ModifyInstanceAttribute'            : { url:'/aws/ec2/instance/',	method:'ModifyInstanceAttribute',	params:['username']   },
+		'ins_ModifyInstanceAttribute'            : { url:'/aws/ec2/instance/',	method:'ModifyInstanceAttribute',	params:['username', 'session_id', 'region_name', 'instance_id', 'instance_type', 'kernel_id', 'ramdisk_id', 'user_data', 'disable_api_termination', 'instance_initiated_shutdown_bahavior', 'block_mapping_device', 'source_dest_check', 'group_ids', 'ebs_optimized']   },
 		'ins_ResetInstanceAttribute'             : { url:'/aws/ec2/instance/',	method:'ResetInstanceAttribute',	params:['username', 'session_id', 'region_name', 'instance_id', 'attribute_name']   },
 		'ins_ConfirmProductInstance'             : { url:'/aws/ec2/instance/',	method:'ConfirmProductInstance',	params:['username', 'session_id', 'region_name', 'instance_id', 'product_code']   },
 		'ins_DescribeInstances'                  : { url:'/aws/ec2/instance/',	method:'DescribeInstances',	params:['username', 'session_id', 'region_name', 'instance_ids', 'filters']   },
@@ -302,8 +384,8 @@ define('api/define/aws/ec2',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'pg_DescribePlacementGroups'             : { url:'/aws/ec2/placementgroup/',	method:'DescribePlacementGroups',	params:['username', 'session_id', 'region_name', 'group_names', 'filters']   },
 		'sg_CreateSecurityGroup'                 : { url:'/aws/ec2/securitygroup/',	method:'CreateSecurityGroup',	params:['username', 'session_id', 'region_name', 'group_name', 'group_desc', 'vpc_id']   },
 		'sg_DeleteSecurityGroup'                 : { url:'/aws/ec2/securitygroup/',	method:'DeleteSecurityGroup',	params:['username', 'session_id', 'region_name', 'group_name', 'group_id']   },
-		'sg_AuthorizeSecurityGroupIngress'       : { url:'/aws/ec2/securitygroup/',	method:'AuthorizeSecurityGroupIngress',	params:['username']   },
-		'sg_RevokeSecurityGroupIngress'          : { url:'/aws/ec2/securitygroup/',	method:'RevokeSecurityGroupIngress',	params:['username']   },
+		'sg_AuthorizeSecurityGroupIngress'       : { url:'/aws/ec2/securitygroup/',	method:'AuthorizeSecurityGroupIngress',	params:['username', 'session_id', 'region_name', 'group_name', 'group_id', 'ip_permissions']   },
+		'sg_RevokeSecurityGroupIngress'          : { url:'/aws/ec2/securitygroup/',	method:'RevokeSecurityGroupIngress',	params:['username', 'session_id', 'region_name', 'group_name', 'group_id', 'ip_permissions']   },
 		'sg_DescribeSecurityGroups'              : { url:'/aws/ec2/securitygroup/',	method:'DescribeSecurityGroups',	params:['username', 'session_id', 'region_name', 'group_names', 'group_ids', 'filters']   },
 	}
 
@@ -366,19 +448,19 @@ define('api/define/aws/opsworks',['ApiRequestDefs'], function( ApiRequestDefs ){
 
 define('api/define/aws/rds',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
-		'rds_DescribeDBEngineVersions'           : { url:'/aws/rds/',	method:'DescribeDBEngineVersions',	params:['username']   },
-		'rds_DescribeOrderableDBInstanceOptions' : { url:'/aws/rds/',	method:'DescribeOrderableDBInstanceOptions',	params:['username']   },
+		'rds_DescribeDBEngineVersions'           : { url:'/aws/rds/',	method:'DescribeDBEngineVersions',	params:['username', 'session_id', 'region_name', 'pg_family', 'default_only', 'engine', 'engine_version', 'list_supported_character_set', 'marker', 'max_records']   },
+		'rds_DescribeOrderableDBInstanceOptions' : { url:'/aws/rds/',	method:'DescribeOrderableDBInstanceOptions',	params:['username', 'session_id', 'region_name', 'engine', 'engine_version', 'instance_class', 'license_model', 'marker', 'max_records']   },
 		'rds_DescribeEngineDefaultParameters'    : { url:'/aws/rds/',	method:'DescribeEngineDefaultParameters',	params:['username', 'session_id', 'region_name', 'pg_family', 'marker', 'max_records']   },
-		'rds_DescribeEvents'                     : { url:'/aws/rds/',	method:'DescribeEvents',	params:['username']   },
+		'rds_DescribeEvents'                     : { url:'/aws/rds/',	method:'DescribeEvents',	params:['username', 'session_id', 'region_name', 'duration', 'start_time', 'end_time', 'source_id', 'source_type', 'marker', 'max_records']   },
 		'rds_ins_DescribeDBInstances'            : { url:'/aws/rds/instance/',	method:'DescribeDBInstances',	params:['username', 'session_id', 'region_name', 'instance_id', 'marker', 'max_records']   },
-		'rds_og_DescribeOptionGroupOptions'      : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroupOptions',	params:['username']   },
-		'rds_og_DescribeOptionGroups'            : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroups',	params:['username']   },
+		'rds_og_DescribeOptionGroupOptions'      : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroupOptions',	params:['username', 'session_id', 'region_name', 'engine_name', 'major_engine_version', 'marker', 'max_records']   },
+		'rds_og_DescribeOptionGroups'            : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroups',	params:['username', 'session_id', 'region_name', 'op_name', 'engine_name', 'major_engine_version', 'marker', 'max_records']   },
 		'rds_pg_DescribeDBParameterGroups'       : { url:'/aws/rds/parametergroup/',	method:'DescribeDBParameterGroups',	params:['username', 'session_id', 'region_name', 'pg_name', 'marker', 'max_records']   },
 		'rds_pg_DescribeDBParameters'            : { url:'/aws/rds/parametergroup/',	method:'DescribeDBParameters',	params:['username', 'session_id', 'region_name', 'pg_name', 'source', 'marker', 'max_records']   },
-		'rds_revd_ins_DescribeReservedDBInstances' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstances',	params:['username']   },
-		'rds_revd_ins_DescribeReservedDBInstancesOfferings' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstancesOfferings',	params:['username']   },
+		'rds_revd_ins_DescribeReservedDBInstances' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstances',	params:['username', 'session_id', 'region_name', 'instance_id', 'instance_class', 'offering_id', 'offering_type', 'duration', 'multi_az', 'description', 'marker', 'max_records']   },
+		'rds_revd_ins_DescribeReservedDBInstancesOfferings' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstancesOfferings',	params:['username', 'session_id', 'region_name', 'offering_id', 'offering_type', 'instance_class', 'duration', 'multi_az', 'description', 'marker', 'max_records']   },
 		'rds_sg_DescribeDBSecurityGroups'        : { url:'/aws/rds/securitygroup/',	method:'DescribeDBSecurityGroups',	params:['username', 'session_id', 'region_name', 'sg_name', 'marker', 'max_records']   },
-		'rds_snap_DescribeDBSnapshots'           : { url:'/aws/rds/snapshot/',	method:'DescribeDBSnapshots',	params:['username']   },
+		'rds_snap_DescribeDBSnapshots'           : { url:'/aws/rds/snapshot/',	method:'DescribeDBSnapshots',	params:['username', 'session_id', 'region_name', 'instance_id', 'snapshot_id', 'snapshot_type', 'marker', 'max_records']   },
 		'rds_subgrp_DescribeDBSubnetGroups'      : { url:'/aws/rds/subnetgroup/',	method:'DescribeDBSubnetGroups',	params:['username', 'session_id', 'region_name', 'sg_name', 'marker', 'max_records']   },
 	}
 
@@ -418,19 +500,19 @@ define('api/define/aws/sns',['ApiRequestDefs'], function( ApiRequestDefs ){
 
 define('api/define/aws/vpc',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
-		'vpc_DescribeVpcs'                       : { url:'/aws/',	method:'DescribeVpcs',	params:['username', 'session_id', 'region_name', 'vpc_ids', 'filters']   },
-		'vpc_DescribeAccountAttributes'          : { url:'/aws/',	method:'DescribeAccountAttributes',	params:['username', 'session_id', 'region_name', 'attribute_name']   },
-		'vpc_DescribeVpcAttribute'               : { url:'/aws/',	method:'DescribeVpcAttribute',	params:['username', 'session_id', 'region_name', 'vpc_id', 'attribute']   },
-		'acl_DescribeNetworkAcls'                : { url:'/aws/acl/',	method:'DescribeNetworkAcls',	params:['username', 'session_id', 'region_name', 'acl_ids', 'filters']   },
-		'cgw_DescribeCustomerGateways'           : { url:'/aws/cgw/',	method:'DescribeCustomerGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
-		'dhcp_DescribeDhcpOptions'               : { url:'/aws/dhcp/',	method:'DescribeDhcpOptions',	params:['username', 'session_id', 'region_name', 'dhcp_ids', 'filters']   },
-		'eni_DescribeNetworkInterfaces'          : { url:'/aws/eni/',	method:'DescribeNetworkInterfaces',	params:['username', 'session_id', 'region_name', 'eni_ids', 'filters']   },
-		'eni_DescribeNetworkInterfaceAttribute'  : { url:'/aws/eni/',	method:'DescribeNetworkInterfaceAttribute',	params:['username', 'session_id', 'region_name', 'eni_id', 'attribute']   },
-		'igw_DescribeInternetGateways'           : { url:'/aws/igw/',	method:'DescribeInternetGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
-		'rtb_DescribeRouteTables'                : { url:'/aws/routetable/',	method:'DescribeRouteTables',	params:['username', 'session_id', 'region_name', 'rt_ids', 'filters']   },
-		'subnet_DescribeSubnets'                 : { url:'/aws/subnet/',	method:'DescribeSubnets',	params:['username', 'session_id', 'region_name', 'subnet_ids', 'filters']   },
-		'vgw_DescribeVpnGateways'                : { url:'/aws/vgw/',	method:'DescribeVpnGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
-		'vpn_DescribeVpnConnections'             : { url:'/aws/vpn/',	method:'DescribeVpnConnections',	params:['username', 'session_id', 'region_name', 'vpn_ids', 'filters']   },
+		'vpc_DescribeVpcs'                       : { url:'/aws/vpc/',	method:'DescribeVpcs',	params:['username', 'session_id', 'region_name', 'vpc_ids', 'filters']   },
+		'vpc_DescribeAccountAttributes'          : { url:'/aws/vpc/',	method:'DescribeAccountAttributes',	params:['username', 'session_id', 'region_name', 'attribute_name']   },
+		'vpc_DescribeVpcAttribute'               : { url:'/aws/vpc/',	method:'DescribeVpcAttribute',	params:['username', 'session_id', 'region_name', 'vpc_id', 'attribute']   },
+		'acl_DescribeNetworkAcls'                : { url:'/aws/vpc/acl/',	method:'DescribeNetworkAcls',	params:['username', 'session_id', 'region_name', 'acl_ids', 'filters']   },
+		'cgw_DescribeCustomerGateways'           : { url:'/aws/vpc/cgw/',	method:'DescribeCustomerGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
+		'dhcp_DescribeDhcpOptions'               : { url:'/aws/vpc/dhcp/',	method:'DescribeDhcpOptions',	params:['username', 'session_id', 'region_name', 'dhcp_ids', 'filters']   },
+		'eni_DescribeNetworkInterfaces'          : { url:'/aws/vpc/eni/',	method:'DescribeNetworkInterfaces',	params:['username', 'session_id', 'region_name', 'eni_ids', 'filters']   },
+		'eni_DescribeNetworkInterfaceAttribute'  : { url:'/aws/vpc/eni/',	method:'DescribeNetworkInterfaceAttribute',	params:['username', 'session_id', 'region_name', 'eni_id', 'attribute']   },
+		'igw_DescribeInternetGateways'           : { url:'/aws/vpc/igw/',	method:'DescribeInternetGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
+		'rtb_DescribeRouteTables'                : { url:'/aws/vpc/routetable/',	method:'DescribeRouteTables',	params:['username', 'session_id', 'region_name', 'rt_ids', 'filters']   },
+		'subnet_DescribeSubnets'                 : { url:'/aws/vpc/subnet/',	method:'DescribeSubnets',	params:['username', 'session_id', 'region_name', 'subnet_ids', 'filters']   },
+		'vgw_DescribeVpnGateways'                : { url:'/aws/vpc/vgw/',	method:'DescribeVpnGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
+		'vpn_DescribeVpnConnections'             : { url:'/aws/vpc/vpn/',	method:'DescribeVpnConnections',	params:['username', 'session_id', 'region_name', 'vpn_ids', 'filters']   },
 	}
 
 	for ( var i in Apis ) {
@@ -472,7 +554,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
     AjaxSuccessHandler = function(res) {
       var gloablHandler;
       if (!res || !res.result || res.result.length !== 2) {
-        logAndThrow(McError(-1, "Invalid JsonRpc Return Data"));
+        logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
       }
       if (res.result[0] !== 0) {
         gloablHandler = ApiHandlers[res.result[0]];
@@ -487,7 +569,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
       if (!error && jqXHR.status !== 200) {
         logAndThrow(McError(-jqXHR.status, "Network Error"));
       }
-      logAndThrow(McError(-2, textStatus, error));
+      logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
     };
     Abort = function() {
       this.ajax.abort();
@@ -510,7 +592,11 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
         _ref = ApiDef.params;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           i = _ref[_i];
-          p.push(apiParameters[i] || ApiDefination.AutoFill(i));
+          if (apiParameters.hasOwnProperty(i)) {
+            p.push(apiParameters[i]);
+          } else {
+            p.push(ApiDefination.AutoFill(i));
+          }
         }
       } else if (apiParameters) {
         OneParaArray[0] = apiParameters;

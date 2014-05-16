@@ -60,10 +60,10 @@
         });
       },
       hasCredential: function() {
-        return MC.common.cookie.getCookieByName('has_cred') === 'true';
+        return true;
       },
       accountIsDemo: function() {
-        return $.cookie('account_id') === 'demo_account';
+        return !App.user.hasCredential();
       }
     };
     OverviewView = Backbone.View.extend({
@@ -269,7 +269,7 @@
         $middleButton.removeAttr('disabled');
         $topButton.removeAttr('disabled').addClass('js-toggle-dropdown');
         $("#global-import-stack").removeAttr("disabled");
-        if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
+        if (App.user.hasCredential()) {
           $('#global-region-visualize-VPC').removeAttr('disabled');
         }
         return null;
@@ -432,7 +432,7 @@
         console.log('click to start app');
         id = $(event.currentTarget).attr('id');
         name = $(event.currentTarget).attr('name');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -454,7 +454,7 @@
         console.log('click to stop app');
         id = $(event.currentTarget).attr('id');
         name = $(event.currentTarget).attr('name');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -476,7 +476,7 @@
         console.log('click to terminate app');
         id = $(event.currentTarget).attr('id');
         name = $(event.currentTarget).attr('name');
-        if (MC.common.cookie.getCookieByName('has_cred') !== 'true') {
+        if (false) {
           modal.close();
           console.log('show credential setting dialog');
           require(['component/awscredential/main'], function(awscredential_main) {
@@ -509,7 +509,7 @@
       },
       unmanagedVPCClick: function() {
         console.log('unmanagedVPCClick');
-        if (MC.common.cookie.getCookieByName('account_id') !== 'demo_account') {
+        if (App.user.hasCredential()) {
           unmanagedvpc.loadModule();
         }
         return null;
@@ -551,9 +551,11 @@
         $("#modal-import-json-file").on("change", hanldeFile);
         zone = $("#modal-import-json-dropzone").on("drop", hanldeFile);
         zone.on("dragenter", function() {
+          console.log("dragenter");
           return $(this).closest("#modal-import-json-dropzone").toggleClass("dragover", true);
         });
         zone.on("dragleave", function() {
+          console.log("dragleave");
           return $(this).closest("#modal-import-json-dropzone").toggleClass("dragover", false);
         });
         zone.on("dragover", function(evt) {

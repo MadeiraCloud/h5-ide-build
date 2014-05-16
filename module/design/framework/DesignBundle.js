@@ -479,7 +479,7 @@
       return null;
     };
     CanvasElement.prototype.clone = function(parentId, x, y) {
-      var attributes, createOption, design, parent, pos;
+      var attributes, createOption, design, name, nameMatch, parent, pos;
       design = this.model.design();
       if (!design.modeIsStack() && !design.modeIsAppEdit()) {
         return;
@@ -490,9 +490,16 @@
         return;
       }
       if (this.model.clone) {
+        name = this.model.get("name");
+        nameMatch = name.match(/(.+-copy)(\d*)$/);
+        if (nameMatch) {
+          name = nameMatch[1] + ((parseInt(nameMatch[2], 10) || 0) + 1);
+        } else {
+          name += "-copy";
+        }
         attributes = {
           parent: parent,
-          name: this.model.get("name") + "-copy"
+          name: name
         };
         pos = {
           x: x,
@@ -1226,8 +1233,8 @@
         agent: {
           enabled: false,
           module: {
-            repo: $.cookie("mod_repo"),
-            tag: $.cookie("mod_tag")
+            repo: App.user.get("repo"),
+            tag: App.user.get("tag")
           }
         }
       }, canvas_data);
@@ -1654,6 +1661,39 @@
       delete json.history;
       delete json.stack_id;
       return json;
+    };
+    DesignImpl.prototype.getUidByProperty = function(property, value, res_type) {
+      var comp, context, json_data, key, last, namespaces, result, uid, _i, _len, _ref;
+      if (res_type == null) {
+        res_type = null;
+      }
+      if (!property) {
+        return;
+      }
+      json_data = this.serialize();
+      result = {};
+      if (json_data && json_data.component) {
+        _ref = json_data.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (res_type === null || comp.type === res_type) {
+            context = comp;
+            namespaces = property.split('.');
+            last = namespaces.pop();
+            for (_i = 0, _len = namespaces.length; _i < _len; _i++) {
+              key = namespaces[_i];
+              context = context[key];
+            }
+            if (context[last] === value) {
+              if (!result[comp.type]) {
+                result[comp.type] = [];
+              }
+              result[comp.type].push(uid);
+            }
+          }
+        }
+      }
+      return result;
     };
     DesignImpl.prototype.getCost = function() {
       var c, comp, cost, costList, currency, feeMap, priceMap, totalFee, uid, _i, _len, _ref;
@@ -3720,7 +3760,7 @@
         return null;
       },
       generateJSON: function() {
-        var blockDeviceMapping, component, kp, name, p, tenancy, volume, vpc, _i, _len, _ref;
+        var blockDeviceMapping, component, name, p, tenancy, volume, vpc, _i, _len, _ref;
         tenancy = this.get("tenancy");
         p = this.parent();
         if (p.type === constant.RESTYPE.SUBNET) {
@@ -3729,8 +3769,6 @@
             tenancy = "dedicated";
           }
         }
-        kp = this.connectionTargets("KeypairUsage")[0];
-        kp = kp ? kp.createRef("KeyName") : "";
         name = this.get("name");
         if (this.get("count") > 1) {
           name += "-0";
@@ -3762,7 +3800,7 @@
             },
             InstanceId: this.get("appId"),
             ImageId: this.get("imageId"),
-            KeyName: kp,
+            KeyName: this.get("keyName"),
             EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
             VpcId: this.getVpcRef(),
             SubnetId: this.getSubnetRef(),
@@ -3798,6 +3836,44 @@
       },
       setStateData: function(stateAryData) {
         return this.set("state", stateAryData);
+      },
+      setKey: function(keyName, defaultKey) {
+        var KpModel, defaultKp;
+        KpModel = Design.modelClassForType(constant.RESTYPE.KP);
+        defaultKp = KpModel.getDefaultKP();
+        if (defaultKey) {
+          if (defaultKp) {
+            return defaultKp.assignTo(this);
+          } else {
+            return console.error("No DefaultKP found when initialize InstanceModel");
+          }
+        } else {
+          defaultKp.dissociate(this);
+          return this.set('keyName', keyName);
+        }
+      },
+      getKeyName: function() {
+        var kp;
+        kp = this.connectionTargets("KeypairUsage")[0];
+        if (kp) {
+          if (kp.isDefault()) {
+            return '$DefaultKeyPair';
+          } else {
+            return kp.get('name');
+          }
+        } else {
+          return this.get('keyName') || 'No Key Pair';
+        }
+      },
+      isDefaultKey: function() {
+        var kp;
+        kp = this.connectionTargets("KeypairUsage")[0];
+        return kp && kp.isDefault();
+      },
+      isNoKey: function() {
+        var kp;
+        kp = this.connectionTargets("KeypairUsage")[0];
+        return !kp && !this.get('keyName');
       },
       serialize: function() {
         var allResourceArray, ami, attach, eni, eniIndex, eniModels, enis, i, idx, instance, instances, layout, member, memberObj, res, serverGroupOption, v, volume, volumeModels, volumes, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
@@ -3965,7 +4041,7 @@
         }
       },
       deserialize: function(data, layout_data, resolve) {
-        var attr, eipData, m, members, model, rootDevice, _i, _len;
+        var KP, attr, eipData, m, members, model, rootDevice, _i, _len;
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
           members = resolve(data.serverGroupUid).groupMembers();
           for (_i = 0, _len = members.length; _i < _len; _i++) {
@@ -4036,7 +4112,12 @@
           };
         }
         model = new Model(attr);
-        resolve(MC.extractID(data.resource.KeyName)).assignTo(model);
+        KP = resolve(MC.extractID(data.resource.KeyName));
+        if (KP) {
+          KP.assignTo(model);
+        } else {
+          model.set('keyName', data.resource.KeyName);
+        }
         return null;
       }
     });
@@ -5845,6 +5926,7 @@
       handleTypes: "ExpandedAsg",
       deserialize: function(data, layout_data, resolve) {
         new ExpandedAsgModel({
+          id: layout_data.uid,
           originalAsg: resolve(layout_data.originalId),
           parent: resolve(layout_data.groupUId),
           x: layout_data.coordinate[0],
@@ -8797,6 +8879,44 @@
       setStateData: function(stateAryData) {
         return this.set("state", stateAryData);
       },
+      setKey: function(keyName, defaultKey) {
+        var KpModel, defaultKp;
+        KpModel = Design.modelClassForType(constant.RESTYPE.KP);
+        defaultKp = KpModel.getDefaultKP();
+        if (defaultKey) {
+          if (defaultKp) {
+            return defaultKp.assignTo(this);
+          } else {
+            return console.error("No DefaultKP found when initialize InstanceModel");
+          }
+        } else {
+          defaultKp.dissociate(this);
+          return this.set('keyName', keyName);
+        }
+      },
+      getKeyName: function() {
+        var kp;
+        kp = this.connectionTargets("KeypairUsage")[0];
+        if (kp) {
+          if (kp.isDefault()) {
+            return '$DefaultKeyPair';
+          } else {
+            return kp.get('name');
+          }
+        } else {
+          return this.get('keyName') || 'No Key Pair';
+        }
+      },
+      isDefaultKey: function() {
+        var kp;
+        kp = this.connectionTargets("KeypairUsage")[0];
+        return kp && kp.isDefault();
+      },
+      isNoKey: function() {
+        var kp;
+        kp = this.connectionTargets("KeypairUsage")[0];
+        return !kp && !this.get('keyName');
+      },
       setAmi: InstanceModel.prototype.setAmi,
       getAmi: InstanceModel.prototype.getAmi,
       getDetailedOSFamily: InstanceModel.prototype.getDetailedOSFamily,
@@ -8848,9 +8968,9 @@
             LaunchConfigurationARN: this.get("appId"),
             InstanceMonitoring: this.get("monitoring"),
             ImageId: this.get("imageId"),
+            KeyName: this.get("keyName"),
             EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
             BlockDeviceMapping: blockDevice,
-            KeyName: "",
             SecurityGroups: sgarray,
             LaunchConfigurationName: this.get("configName") || this.get("name"),
             InstanceType: this.get("instanceType"),
@@ -8865,7 +8985,7 @@
     }, {
       handleTypes: constant.RESTYPE.LC,
       deserialize: function(data, layout_data, resolve) {
-        var SgAsso, attr, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1;
+        var KP, SgAsso, attr, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1;
         attr = {
           id: data.uid,
           name: data.name,
@@ -8915,7 +9035,12 @@
           sg = _ref1[_j];
           new SgAsso(model, resolve(MC.extractID(sg)));
         }
-        resolve(MC.extractID(data.resource.KeyName)).assignTo(model);
+        KP = resolve(MC.extractID(data.resource.KeyName));
+        if (KP) {
+          KP.assignTo(model);
+        } else {
+          model.set('keyName', data.resource.KeyName);
+        }
         return null;
       }
     });
@@ -8933,8 +9058,14 @@
       serialize: function(components) {
         var kp, otherTarget;
         kp = this.getTarget(constant.RESTYPE.KP);
-        otherTarget = this.getOtherTarget(kp);
-        components[otherTarget.id].resource.KeyName = kp.createRef("KeyName");
+        if (kp) {
+          otherTarget = this.getOtherTarget(kp);
+          if (kp.isDefault()) {
+            components[otherTarget.id].resource.KeyName = kp.createRef("KeyName");
+          } else {
+            components[otherTarget.id].resource.KeyName = '';
+          }
+        }
         return null;
       }
     });
@@ -8945,6 +9076,9 @@
       },
       isVisual: function() {
         return false;
+      },
+      isDefault: function() {
+        return this.get('name') === 'DefaultKP';
       },
       remove: function() {
         var defaultKp, i, _i, _len, _ref;
@@ -8959,6 +9093,18 @@
       },
       assignTo: function(target) {
         return new KeypairUsage(this, target);
+      },
+      dissociate: function(target) {
+        var conns;
+        conns = this.connections();
+        return _.each(conns, function(c) {
+          if (c.getOtherTarget(constant.RESTYPE.KP) === target) {
+            return c.remove();
+          }
+        });
+      },
+      isSet: function() {
+        return this.get('appId') && this.get('fingerprint');
       },
       getKPList: function() {
         var kp, kps, _i, _len, _ref;
@@ -8998,8 +9144,8 @@
             type: this.type,
             uid: this.id,
             resource: {
-              KeyFingerprint: this.get("fingerprint"),
-              KeyName: this.get("appId") || this.get("name")
+              KeyFingerprint: this.get("fingerprint") || '',
+              KeyName: this.get("appId") || ''
             }
           }
         };
@@ -9010,13 +9156,21 @@
           return obj.get("name") === "DefaultKP";
         });
       },
+      setDefaultKP: function(keyName, fingerprint) {
+        var defaultKP;
+        defaultKP = _.find(KeypairModel.allObjects(), function(obj) {
+          return obj.get("name") === "DefaultKP";
+        });
+        defaultKP.set('appId', keyName || '');
+        return defaultKP.set('fingerprint', fingerprint || '');
+      },
       diffJson: function() {},
       handleTypes: constant.RESTYPE.KP,
       deserialize: function(data, layout_data, resolve) {
         new KeypairModel({
           id: data.uid,
           name: data.name,
-          appId: data.resource.KeyName,
+          appId: data.resource.KeyFingerprint ? data.resource.KeyName : '',
           fingerprint: data.resource.KeyFingerprint
         });
         return null;
