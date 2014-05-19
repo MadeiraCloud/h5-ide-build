@@ -1,6 +1,1268 @@
 
 /*
 ----------------------------
+  A refactor version of previous lib/websocket
+  The usage of Meteor seems to be wrong, but whatever.
+----------------------------
+ */
+
+(function() {
+  define('ide/Websocket',["Meteor", "backbone", "event", "MC"], function(Meteor, Backbone, ide_event) {
+    var WEBSOCKET_URL, Websocket, singleton;
+    WEBSOCKET_URL = "" + MC.API_HOST + "/ws/";
+    Meteor._debug = function() {
+      return console.log.apply(console, arguments);
+    };
+    singleton = null;
+    Websocket = function() {
+      var opts;
+      if (singleton) {
+        return singleton;
+      }
+      singleton = this;
+      this.__readyDefer = Q.defer();
+      this.__isReady = false;
+      this.connection = Meteor.connect(WEBSOCKET_URL, true);
+      opts = {
+        connection: this.connection
+      };
+      this.collection = {
+        request: new Meteor.Collection("request", opts),
+        request_detail: new Meteor.Collection("request_detail", opts),
+        stack: new Meteor.Collection("stack", opts),
+        app: new Meteor.Collection("app", opts),
+        status: new Meteor.Collection("status", opts),
+        imports: new Meteor.Collection("imports", opts)
+      };
+      Deps.autorun((function(_this) {
+        return function() {
+          return _this.statusChanged();
+        };
+      })(this));
+      this.subscribe();
+      this.pipeChanges();
+      setTimeout((function(_this) {
+        return function() {
+          _this.shouldNotify = true;
+          if (!_this.connection.status.connected) {
+            return _this.statusChanged();
+          }
+        };
+      })(this), 5000);
+      return this;
+    };
+    Websocket.prototype.statusChanged = function() {
+      var status;
+      status = this.connection.status().connected;
+      if (status) {
+        this.shouldNotify = true;
+      }
+      if (!this.shouldNotify) {
+        return;
+      }
+      return this.trigger("StatusChanged", status);
+    };
+    Websocket.prototype.subscribe = function() {
+      var callback, onReady, session, subscribed, usercode;
+      if (this.subscribed) {
+        return;
+      }
+      subscribed = true;
+      onReady = function() {
+        this.__isReady = true;
+        return this.__readyDefer.resolve();
+      };
+      usercode = App.user.get('usercode');
+      session = App.user.get('session');
+      callback = {
+        onReady: _.bind(onReady, this),
+        onError: _.bind(this.onError, this)
+      };
+      this.connection.subscribe("request", usercode, session, callback);
+      this.connection.subscribe("stack", usercode, session);
+      this.connection.subscribe("app", usercode, session);
+      this.connection.subscribe("status", usercode, session);
+      this.connection.subscribe("imports", usercode, session);
+    };
+    Websocket.prototype.ready = function() {
+      return this.__readyDefer.promise;
+    };
+    Websocket.prototype.isReady = function() {
+      return this.__isReady;
+    };
+    Websocket.prototype.onError = function(error) {
+      console.error("Websocket/Meteor Error:", error);
+      this.subscribed = false;
+      this.trigger("Disconnected");
+    };
+    Websocket.prototype.pipeChanges = function() {
+      this.collection.request.find().fetch();
+      this.collection.request.find().observeChanges({
+        added: function(idx, dag) {
+          return ide_event.trigger(ide_event.UPDATE_REQUEST_ITEM, idx, dag);
+        },
+        changed: function(idx, dag) {
+          return ide_event.trigger(ide_event.UPDATE_REQUEST_ITEM, idx, dag);
+        }
+      });
+      this.collection.imports.find().fetch();
+      return this.collection.imports.find().observe({
+        added: function(idx, dag) {
+          return ide_event.trigger(ide_event.UPDATE_IMPORT_ITEM, idx);
+        },
+        changed: function(idx, dag) {
+          return ide_event.trigger(ide_event.UPDATE_IMPORT_ITEM, idx);
+        }
+      });
+    };
+    _.extend(Websocket.prototype, Backbone.Events);
+    return Websocket;
+  });
+
+}).call(this);
+
+define('ide/subviews/SessionDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>\n";
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/SessionDialog',['i18n!nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
+    var CurrentSessionDialog, SessionDialogView;
+    CurrentSessionDialog = null;
+    SessionDialogView = Backbone.View.extend({
+      events: {
+        'click #SessionReconnect': 'showReconnect',
+        'click #SessionClose': 'closeSession',
+        'click #SessionClose2': 'closeSession',
+        'click #SessionConnect': 'connect',
+        'keypress #SessionPassword': 'passwordChanged'
+      },
+      constructor: function() {
+        if (CurrentSessionDialog) {
+          return CurrentSessionDialog;
+        }
+        CurrentSessionDialog = this;
+        this.defer = Q.defer();
+        modal(template(), false);
+        return this.setElement($('#modal-wrap'));
+      },
+      promise: function() {
+        return this.defer.promise;
+      },
+      showReconnect: function() {
+        $(".invalid-session .confirmSession").hide();
+        $(".invalid-session .reconnectSession").show();
+      },
+      closeSession: function() {
+        return App.logout();
+      },
+      connect: function() {
+        if ($("#SessionConnect").is(":disabled")) {
+          return;
+        }
+        $("#SessionConnect").attr("disabled", "disabled");
+        return App.user.acquireSession($("#SessionPassword").val()).then((function(_this) {
+          return function() {
+            _this.remove();
+            _this.defer.resolve();
+          };
+        })(this), function(error) {
+          $("#SessionConnect").removeAttr("disabled");
+          notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
+          $("#SessionPassword").toggleClass("parsley-error", true);
+        });
+      },
+      passwordChanged: function(evt) {
+        $("#SessionPassword").toggleClass("parsley-error", false);
+        if (($("#SessionPassword").val() || "").length >= 6) {
+          $("#SessionConnect").removeAttr("disabled");
+        } else {
+          $("#SessionConnect").attr("disabled", "disabled");
+        }
+        if (evt.which === 13) {
+          this.connect();
+        }
+      }
+    });
+    return SessionDialogView;
+  });
+
+}).call(this);
+
+define('ide/subviews/HeaderTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<nav class=\"header-menu\" id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
+    + "</div>\n          <div class=\"description\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
+    + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.user_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
+    + "</li>\n      <li><a href=\"http://docs.visualops.io\" target=\"_blank\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
+    + "</a></li>\n      <li id=\"HeaderSettings\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
+    + "</li>\n      <li id=\"HeaderLogout\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
+    + "</li>\n    </ul>\n  </section>\n</nav>\n";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+define('ide/subviews/SettingsDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "style=\"display:block;\"";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
+    + "</button>\n        ";
+  return buffer;
+  }
+
+  buffer += "<div class=\"modal-header\">\n  <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_SETTING", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i>\n</div>\n\n<nav id=\"SettingsNav\">\n  <span data-target=\"AccountTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
+    + "</span>\n  <span data-target=\"CredentialTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CREDENTIAL", {hash:{},data:data}))
+    + "</span>\n  <!-- <span data-target=\"TokenTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
+    + "</span> -->\n</nav>\n\n<div class=\"modal-body\" id=\"SettingsBody\">\n  <section id=\"AccountTab\">\n    <dl class=\"dl-horizontal\">\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n    </dl>\n\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
+    + "</button>\n    <div id=\"AccountPwdWrap\">\n\n      <dl class=\"dl-horizontal\">\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n      <div id=\"AccountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
+    + "</button>\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
+    + "</span>\n      </div>\n    </div>\n  </section>\n\n  <section id=\"CredentialTab\">\n    <div id=\"CredDemoWrap\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n      <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TIT", {hash:{},data:data}))
+    + "</h3>\n      <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TEXT", {hash:{},data:data}))
+    + "</p>\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_SETUP", {hash:{},data:data}))
+    + "</button></p>\n    </div>\n\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n      <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_CONNECTED_TIT", {hash:{},data:data}))
+    + "</h3>\n      <button class=\"cred-setup link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_UPDATE", {hash:{},data:data}))
+    + "</button>\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n      </dl>\n    </div>\n\n    <div id=\"CredSetupWrap\">\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n      <ul>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
+    + "\"></i>\n          <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
+    + "\"></i>\n          <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
+    + "\"></i>\n          <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </li>\n      </ul>\n\n      <div class=\"cred-btn-wrap clearfix\">\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.credNeeded), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <button class=\"right link-style cred-setup-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
+    + "</button>\n      </div>\n\n    </div>\n\n    <div id=\"CredRemoveWrap\">\n      <h3>"
+    + escapeExpression(((stack1 = (depth0 && depth0.credRemoveTitle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</h3>\n      <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVE_TEXT", {hash:{},data:data}))
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredConfirmWrap\">\n      <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TIT", {hash:{},data:data}))
+    + "</h3>\n      <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TEXT", {hash:{},data:data}))
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_UPDATE_CONFIRM", {hash:{},data:data}))
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredRemoving\"><p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
+    + "</p><div class=\"loading-spinner\"></div></div>\n    <div id=\"CredUpdating\"><p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
+    + "</button>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
+    + "<a href=\"\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
+    + "</a> </p>\n      <ul class=\"token-table\" data-empty=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
+    + "\"></ul>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n      <h3 id=\"TokenRmTit\"></h3>\n      <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
+    + "</p>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
+    + "</button>\n      </div>\n    </div>\n  </section>\n</div>\n";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/SettingsDialog',["./SettingsDialogTpl", 'i18n!nls/lang.js', "ApiRequest", "backbone"], function(SettingsTpl, lang, ApiRequest) {
+    var SettingsDialog;
+    SettingsDialog = Backbone.View.extend({
+      events: {
+        "click #SettingsNav span": "switchTab",
+        "click #AccountPwd": "showPwd",
+        "click #AccountCancelPwd": "hidePwd",
+        "click #AccountUpdatePwd": "changePwd",
+        "click .cred-setup, .cred-cancel": "showCredSetup",
+        "click .cred-setup-cancel": "cancelCredSetup",
+        "click #CredSetupRemove": "showRemoveCred",
+        "click #CredRemoveConfirm": "removeCred",
+        "click #CredSetupSubmit": "submitCred",
+        "click #CredSetupConfirm": "confirmCred",
+        "click #TokenCreate": "createToken",
+        "click .tokenControl .icon-edit": "editToken",
+        "click .tokenControl .icon-delete": "removeToken",
+        "click .tokenControl .tokenDone": "doneEditToken",
+        "click #TokenRemove": "confirmRmToken",
+        "click #TokenRmCancel": "cancelRmToken",
+        "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn",
+        "keyup #AccountCurrentPwd, #AccountNewPwd": "updatePwdBtn"
+      },
+      initialize: function(options) {
+        var attributes, tab;
+        attributes = {
+          username: App.user.get("username"),
+          email: App.user.get("email"),
+          account: App.user.get("account"),
+          awsAccessKey: App.user.get("awsAccessKey"),
+          awsSecretKey: App.user.get("awsSecretKey"),
+          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
+          credNeeded: !!(_.reduce(_.map(MC.data.app_list, function(el) {
+            return el.length;
+          }), (function(m, n) {
+            return m + n;
+          }), 0))
+        };
+        modal(SettingsTpl(attributes));
+        this.setElement($("#modal-box"));
+        tab = 0;
+        if (options) {
+          tab = options.defaultTab || 0;
+          if (tab === SettingsDialog.TAB.CredentialInvalid) {
+            this.showCredSetup();
+            $(".modal-close").hide();
+            $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          }
+          if (tab < 0) {
+            tab = Math.abs(defaultTab);
+          }
+        }
+        $("#SettingsNav").children().eq(tab).click();
+        this.updateTokenTab();
+      },
+      updateCredSettings: function() {
+        var attributes;
+        attributes = {
+          username: App.user.get("username"),
+          email: App.user.get("email"),
+          account: App.user.get("account"),
+          awsAccessKey: App.user.get("awsAccessKey"),
+          awsSecretKey: App.user.get("awsSecretKey"),
+          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
+        };
+        $("#modal-box").html(SettingsTpl(attributes));
+        return $("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
+      },
+      switchTab: function(evt) {
+        var $this;
+        $this = $(evt.currentTarget);
+        if ($this.hasClass("selected")) {
+          return;
+        }
+        $("#SettingsBody").children().hide();
+        $("#SettingsNav").children().removeClass("selected");
+        $("#" + $this.addClass("selected").attr("data-target")).show();
+      },
+      showPwd: function() {
+        $("#AccountPwd").hide();
+        $("#AccountPwdWrap").show();
+        $("#AccountCurrentPwd").focus();
+      },
+      hidePwd: function() {
+        $("#AccountPwd").show();
+        $("#AccountPwdWrap").hide();
+        $("#AccountCurrentPwd, #AccountNewPwd").val("");
+        $("#AccountInfo").empty();
+      },
+      updatePwdBtn: function() {
+        var new_pwd, old_pwd;
+        old_pwd = $("#AccountCurrentPwd").val() || "";
+        new_pwd = $("#AccountNewPwd").val() || "";
+        if (old_pwd.length && new_pwd.length) {
+          $("#AccountUpdatePwd").removeAttr("disabled");
+        } else {
+          $("#AccountUpdatePwd").attr("disabled", "disabled");
+        }
+      },
+      changePwd: function() {
+        var new_pwd, old_pwd;
+        old_pwd = $("#AccountCurrentPwd").val() || "";
+        new_pwd = $("#AccountNewPwd").val() || "";
+        if (new_pwd.length < 6) {
+          $('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
+          return;
+        }
+        $("#AccountInfo").empty();
+        $("#AccountUpdatePwd").attr("disabled", "disabled");
+        App.user.changePassword(old_pwd, new_pwd).then(function() {
+          notification('info', lang.ide.SETTINGS_UPDATE_PWD_SUCCESS);
+          $("#AccountCancelPwd").click();
+          $("#AccountUpdatePwd").removeAttr("disabled");
+        }, function(err) {
+          if (err.error === 2) {
+            $('#AccountInfo').html("" + lang.ide.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.ide.SETTINGS_INFO_FORGET_PWD + "</a>");
+          } else {
+            $('#AccountInfo').text(lang.ide.SETTINGS_UPDATE_PWD_FAILURE);
+          }
+          return $("#AccountUpdatePwd").removeAttr("disabled");
+        });
+      },
+      showCredSetup: function() {
+        $("#CredentialTab").children().hide();
+        $("#CredSetupWrap").show();
+        $("#CredSetupAccount").focus()[0].select();
+        $("#CredSetupRemove").toggle(App.user.hasCredential());
+        this.updateSubmitBtn();
+      },
+      cancelCredSetup: function() {
+        $("#CredentialTab").children().hide();
+        if (App.user.hasCredential()) {
+          $("#CredAwsWrap").show();
+        } else {
+          $("#CredDemoWrap").show();
+        }
+      },
+      showRemoveCred: function() {
+        $("#CredentialTab").children().hide();
+        $("#CredRemoveWrap").show();
+      },
+      removeCred: function() {
+        var self;
+        $("#CredentialTab").children().hide();
+        $("#CredRemoving").show();
+        $("#modal-box .modal-close").hide();
+        self = this;
+        App.user.changeCredential().then(function() {
+          self.updateCredSettings();
+        }, function() {
+          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_REMOVE);
+          $("#modal-box .modal-close").show();
+          return self.showCredSetup();
+        });
+      },
+      updateSubmitBtn: function() {
+        var accesskey, account, privatekey;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        if (account.length && accesskey.length && privatekey.length) {
+          $("#CredSetupSubmit").removeAttr("disabled");
+        } else {
+          $("#CredSetupSubmit").attr("disabled", "disabled");
+        }
+      },
+      submitCred: function() {
+        var accesskey, privatekey, self;
+        $("#CredentialTab").children().hide();
+        $("#CredUpdating").show();
+        $("#modal-box .modal-close").hide();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        self = this;
+        return App.user.validateCredential(accesskey, privatekey).then(function() {
+          self.setCred();
+        }, function() {
+          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          $("#modal-box .modal-close").show();
+          self.showCredSetup();
+        });
+      },
+      setCred: function() {
+        var accesskey, account, privatekey, self;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        self = this;
+        return App.user.changeCredential(account, accesskey, privatekey, false).then(function() {
+          return self.updateCredSettings();
+        }, function(err) {
+          if (err.error === ApiRequest.Errors.ChangeCredConfirm) {
+            self.showCredConfirm();
+          } else {
+            self.showCredUpdateFail();
+          }
+        });
+      },
+      showCredUpdateFail: function() {
+        $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+        $("#modal-box .modal-close").show();
+        return this.showCredSetup();
+      },
+      showCredConfirm: function() {
+        $("#CredentialTab").children().hide();
+        $("#CredConfirmWrap").show();
+        return $("#modal-box .modal-close").show();
+      },
+      confirmCred: function() {
+        var accesskey, account, privatekey, self;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        self = this;
+        App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
+          return self.updateCredSettings();
+        }, function() {
+          return self.showCredUpdateFail();
+        });
+      },
+      editToken: function(evt) {
+        var $p, $t;
+        $t = $(evt.currentTarget);
+        $p = $t.closest("li").toggleClass("editing", true);
+        $p.children(".tokenName").removeAttr("readonly").focus().select();
+      },
+      removeToken: function(evt) {
+        var $p, name;
+        $p = $(evt.currentTarget).closest("li");
+        name = $p.children(".tokenName").val();
+        this.rmToken = $p.children(".tokenToken").text();
+        $("#TokenManager").hide();
+        $("#TokenRmConfirm").show();
+        $("#TokenRmTit").text(sprintf(lang.ide.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+      },
+      createToken: function() {
+        var self;
+        $("#TokenCreate").attr("disabled", "disabled");
+        self = this;
+        Q.defer().promise.then(function() {
+          self.updateTokenTab();
+          return $("#TokenCreate").removeAttr("disabled");
+        }, function() {
+          return $("#TokenCreate").removeAttr("disabled");
+        });
+      },
+      doneEditToken: function(evt) {
+        var $p;
+        $p = $(evt.currentTarget).closest("li").removeClass("editing");
+        $p.children(".tokenName").attr("readonly", true);
+        Q.defer().promise.then(function() {}, function() {
+          var oldName;
+          oldName = "";
+          return $p.children(".tokenName").val(oldName);
+        });
+      },
+      confirmRmToken: function() {
+        var self;
+        $("#TokenRemove").attr("disabled", "disabled");
+        self = this;
+        Q.defer().promise.then(function() {
+          self.updateTokenTab();
+          return self.cancelRmToken();
+        }, function() {
+          return notification("Fail to delete access token, please retry.");
+        });
+      },
+      cancelRmToken: function() {
+        this.rmToken = "";
+        $("#TokenManager").show();
+        $("#TokenRmConfirm").hide();
+      },
+      updateTokenTab: function() {
+        var tokens;
+        tokens = [
+          {
+            name: "Token1",
+            token: "aaabbbccc"
+          }, {
+            name: "Token2",
+            token: "bbbdddccc"
+          }
+        ];
+        if (tokens.length) {
+          $("#TokenManager").children("ul").html(MC.template.accessTokenTable(tokens));
+        } else {
+          $("#TokenManager").empty();
+        }
+      }
+    });
+    SettingsDialog.TAB = {
+      CredentialInvalid: -1,
+      Normal: 0,
+      Credential: 1,
+      Token: 2
+    };
+    return SettingsDialog;
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/subviews/HeaderView',["./HeaderTpl", "./SettingsDialog", 'backbone'], function(tmpl, SettingsDialog) {
+    var HeaderView;
+    HeaderView = Backbone.View.extend({
+      events: {
+        'click #HeaderLogout': 'logout',
+        'click #HeaderSettings': 'settings',
+        'click #HeaderShortcuts': 'shortcuts',
+        'DROPDOWN_CLOSE #HeaderNotification': 'dropdownClosed'
+      },
+      initialize: function() {
+        this.listenTo(App.user, "change", this.update);
+        this.listenTo(App.model, "change:notification", this.updateNotification);
+        this.setElement($(tmpl(App.user.toJSON())).prependTo("#header-wrapper"));
+      },
+      logout: function() {
+        return App.logout();
+      },
+      shortcuts: function() {
+        return modal(MC.template.shortkey());
+      },
+      settings: function() {
+        return new SettingsDialog();
+      },
+      update: function() {
+        return $("#HeaderUser").data("tooltip", App.user.get("email")).children("span").text(App.user.get("username"));
+      },
+      setAlertCount: function(count) {
+        return $('#NotificationCounter').text(count || "");
+      },
+      updateNotification: function() {
+        var html, i, notification, unread_num, _i, _len;
+        console.info("Notification Updated");
+        notification = App.model.get("notification");
+        html = "";
+        unread_num = 0;
+        for (_i = 0, _len = notification.length; _i < _len; _i++) {
+          i = notification[_i];
+          html += MC.template.headerNotifyItem(i);
+          if (!i.is_readed) {
+            unread_num++;
+          }
+        }
+        this.setAlertCount(unread_num);
+        $("#notification-panel-wrapper").find(".scroll-content").html(html);
+        $("#notification-panel-wrapper").css("max-height", Math.ceil(window.innerHeight * 0.8));
+        return null;
+      },
+      dropdownClosed: function() {
+        $("#notification-panel-wrapper").find(".scroll-content").children().removeClass("unread");
+        this.setAlertCount();
+        App.model.markNotificationRead();
+        return null;
+      }
+    });
+    return HeaderView;
+  });
+
+}).call(this);
+
+define('ide/subviews/WelcomeTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<div class=\"modal-header\"> <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DIALOG_TIT", {hash:{},data:data}))
+    + "</h3> </div>\n\n<div id=\"WelcomeDialog\">\n\n<section id=\"WelcomeSettings\">\n  <header>\n    <h2>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_TIT", {hash:{},data:data}))
+    + "<span>"
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></h2>\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DESC", {hash:{},data:data}))
+    + "</p>\n  </header>\n  <div id=\"CredSetupWrap\">\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n    <ul>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
+    + "\"></i>\n        <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
+    + "\"></i>\n        <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
+    + "\"></i>\n        <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\n      </li>\n    </ul>\n\n    <footer class=\"cred-btn-wrap clearfix tar\">\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_SKIP", {hash:{},data:data}))
+    + "</button>\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
+    + "</button>\n    </footer>\n  </div>\n</section>\n\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\n  <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
+    + "</p>\n  <div class=\"loading-spinner\"></div>\n</section>\n\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\n  <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_TIT", {hash:{},data:data}))
+    + "</h3>\n  <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_SUBTIT", {hash:{},data:data}))
+    + "</h5>\n  <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG", {hash:{},data:data}))
+    + "</p>\n  <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG_EXTRA", {hash:{},data:data}))
+    + "</p>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeBack\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
+    + "</button>\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
+    + "</button>\n  </footer>\n</section>\n\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\n  <p id=\"WelcomeDoneTitDemo\">"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT_DEMO", {hash:{},data:data}))
+    + "</p>\n  <p id=\"WelcomeDoneTit\">"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT", {hash:{},data:data}))
+    + " <span></span></p>\n  <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_TIT", {hash:{},data:data}))
+    + "</h3>\n  <ul>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_MSG", {hash:{},data:data}))
+    + "</ul>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
+    + "</button>\n  </footer>\n</section>\n\n</div>\n";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/WelcomeDialog',["./WelcomeTpl", 'i18n!nls/lang.js', "backbone"], function(WelcomeTpl, lang) {
+    var WelcomeDialog;
+    WelcomeDialog = Backbone.View.extend({
+      events: {
+        "click #WelcomeSkip": "skip",
+        "click #WelcomeBack": "back",
+        "click #WelcomeDone": "done",
+        "click #WelcomeClose": "close",
+        "click #CredSetupSubmit": "submitCred",
+        "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn"
+      },
+      initialize: function(options) {
+        var attributes;
+        attributes = {
+          username: App.user.get("username")
+        };
+        modal(WelcomeTpl(attributes));
+        this.setElement($("#modal-box"));
+      },
+      skip: function() {
+        $("#WelcomeSettings").hide();
+        return $("#WelcomeSkipWarning").show();
+      },
+      back: function() {
+        $("#WelcomeSettings").show();
+        return $("#WelcomeSkipWarning").hide();
+      },
+      done: function() {
+        $("#WelcomeSettings, #WelcomeSkipWarning, #WelcomeCredUpdate").hide();
+        $("#WelcomeDoneWrap").show();
+        if (App.user.hasCredential()) {
+          $("#WelcomeDoneTitDemo").hide();
+          return $("#WelcomeDoneTit").children("span").text(App.user.get("account"));
+        } else {
+          $("#WelcomeDoneTitDemo").show();
+          return $("#WelcomeDoneTit").hide();
+        }
+      },
+      close: function() {
+        return modal.close();
+      },
+      updateSubmitBtn: function() {
+        var accesskey, account, privatekey;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        if (account.length && accesskey.length && privatekey.length) {
+          $("#CredSetupSubmit").removeAttr("disabled");
+        } else {
+          $("#CredSetupSubmit").attr("disabled", "disabled");
+        }
+      },
+      submitCred: function() {
+        var accesskey, privatekey, self;
+        $("#WelcomeSettings").hide();
+        $("#WelcomeCredUpdate").show();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        self = this;
+        return App.user.validateCredential(accesskey, privatekey).then(function() {
+          self.setCred();
+        }, function() {
+          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          self.showCredSetup();
+        });
+      },
+      setCred: function() {
+        var accesskey, account, privatekey, self;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        self = this;
+        return App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
+          self.done();
+        }, function(err) {
+          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+          self.showCredSetup();
+        });
+      },
+      showCredSetup: function() {
+        $("#WelcomeDialog").children().hide();
+        $("#WelcomeSettings").show();
+        $("#CredSetupAccount").focus()[0].select();
+        this.updateSubmitBtn();
+      }
+    });
+    return WelcomeDialog;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The View for application
+----------------------------
+ */
+
+(function() {
+  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog"], function(Backbone, SessionDialog, HeaderView, WelcomeDialog) {
+    return Backbone.View.extend({
+      el: "body",
+      events: {
+        "click .click-select": "selectText"
+      },
+      initialize: function() {
+        this.header = new HeaderView();
+        this.listenTo(App.user, "change:state", this.toggleWelcome);
+
+        /* env:dev                                                                           env:dev:end */
+
+        /* env:debug */
+        require(["./ide/subviews/DebugTool"], function(DT) {
+          return new DT();
+        });
+
+        /* env:debug:end */
+      },
+      toggleWSStatus: function(isConnected) {
+        if (isConnected) {
+          return $(".disconnected-msg").remove();
+        } else {
+          if ($(".disconnected-msg").show().length > 0) {
+            return;
+          }
+          return $(MC.template.disconnectedMsg()).appendTo("body").on("mouseover", function() {
+            $(".disconnected-msg").addClass("hovered");
+            $("body").on("mousemove.disconnectedmsg", function(e) {
+              var msg, pos, x, y;
+              msg = $(".disconnected-msg");
+              if (!msg.length) {
+                $("body").off("mousemove.disconnectedmsg");
+                return;
+              }
+              pos = msg.offset();
+              x = e.pageX;
+              y = e.pageY;
+              if (x < pos.left || y < pos.top || x >= pos.left + msg.outerWidth() || y >= pos.top + msg.outerHeight()) {
+                $("body").off("mousemove.disconnectedmsg");
+                msg.removeClass("hovered");
+              }
+            });
+          });
+        }
+      },
+      toggleWelcome: function() {
+        if (App.user.isFirstVisit()) {
+          new WelcomeDialog();
+        }
+      },
+      showSessionDialog: function() {
+        return (new SessionDialog()).promise();
+      },
+      selectText: function(event) {
+        var e, range;
+        try {
+          range = document.body.createTextRange();
+          range.moveToElementText(event.currentTarget);
+          range.select();
+          console.warn("Select text by document.body.createTextRange");
+        } catch (_error) {
+          e = _error;
+          if (window.getSelection) {
+            range = document.createRange();
+            range.selectNode(event.currentTarget);
+            window.getSelection().addRange(range);
+            console.warn("Select text by document.createRange");
+          }
+        }
+        return false;
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for application
+----------------------------
+
+  This model holds all the data of the user in our database. For example, stack list / app list / notification things and extra.
+ */
+
+(function() {
+  define('ide/ApplicationModel',["backbone", "./Websocket", "event", "constant"], function(Backbone, Websocket, ide_event, constant) {
+    return Backbone.Model.extend({
+      defaults: function() {
+        return {
+          notification: [],
+          __websocketReady: false
+        };
+      },
+      initialize: function() {
+        this.__initializeNotification();
+      },
+      __initializeNotification: function() {
+
+        /*
+        ide_event.onLongListen ide_event.SWITCH_DASHBOARD, () -> return
+        ide_event.onLongListen ide_event.SWITCH_TAB, () -> return
+        ide_event.onListen ide_event.OPEN_DESIGN, () -> return
+         */
+        var self;
+        self = this;
+        return ide_event.onLongListen(ide_event.UPDATE_REQUEST_ITEM, function(idx) {
+          return self.__processSingleNotification(idx);
+        });
+      },
+      __processSingleNotification: function(idx) {
+        var i, info_list, item, req, same_req, _i, _len;
+        req = App.WS.collection.request.findOne({
+          '_id': idx
+        });
+        if (!req) {
+          return;
+        }
+        item = this.__parseRequestInfo(req);
+        if (!item) {
+          return;
+        }
+        info_list = this.attributes.notification;
+        for (idx = _i = 0, _len = info_list.length; _i < _len; idx = ++_i) {
+          i = info_list[idx];
+          if (i.id === item.id) {
+            same_req = i;
+            break;
+          }
+        }
+        if (same_req && same_req.is_request === item.is_request && same_req.is_process === item.is_process && same_req.is_complete === item.is_complete) {
+          return;
+        }
+        item.is_readed = !App.WS.isReady();
+        info_list.splice(idx, 1);
+        info_list.splice(0, 0, item);
+        if (!this.__notifyDebounce) {
+          this.__notifyDebounce = setTimeout((function(_this) {
+            return function() {
+              _this.trigger("change:notification");
+              _this.__notifyDebounce = null;
+            };
+          })(this), 300);
+        }
+        return null;
+      },
+      __parseRequestInfo: function(req) {
+        var duration, item, lst, time_begin, time_end;
+        if (!req.brief) {
+          return;
+        }
+        lst = req.brief.split(' ');
+        item = {
+          is_readed: true,
+          is_request: req.state === constant.OPS_STATE.OPS_STATE_PENDING,
+          is_process: req.state === constant.OPS_STATE.OPS_STATE_INPROCESS,
+          is_complete: req.state === constant.OPS_STATE.OPS_STATE_DONE,
+          operation: lst[0].toLowerCase(),
+          name: lst[lst.length - 1],
+          region_label: constant.REGION_SHORT_LABEL[req.region],
+          time: req.time_end
+        };
+        item = $.extend({}, req, item);
+        if (req.state === constant.OPS_STATE.OPS_STATE_FAILED) {
+          item.error = req.data;
+        } else if (req.state === constant.OPS_STATE.OPS_STATE_INPROCESS) {
+          item.time = req.time_begin;
+        }
+        if (req.state !== constant.OPS_STATE.OPS_STATE_PENDING) {
+          item.time_str = MC.dateFormat(new Date(item.time * 1000), "hh:mm yyyy-MM-dd");
+          if (req.state !== constant.OPS_STATE.OPS_STATE_INPROCESS) {
+            time_begin = parseInt(req.time_begin, 10);
+            time_end = parseInt(req.time_end, 10);
+            if (!isNaN(time_begin) && !isNaN(time_end) && time_end >= time_begin) {
+              duration = time_end - time_begin;
+              if (duration < 60) {
+                item.duration = "Took " + duration + " sec.";
+              } else {
+                item.duration = "Took " + (Math.round(duration / 60)) + " min.";
+              }
+            }
+          }
+        }
+        if (item.rid.search('stack') === 0) {
+          item.name = lst[2];
+        }
+        item.is_terminated = item.is_complete && item.operation === 'terminate';
+        return item;
+      },
+      markNotificationRead: function() {
+        var i, _i, _len, _ref;
+        _ref = this.attributes.notification;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          i.is_readed = true;
+        }
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  User is a model containing user's data. Nothing more, nothing less.
+  Currently most of the data is stored in cookie. But in the future,
+  it might just fetch user data at the beginning.
+----------------------------
+ */
+
+(function() {
+  define('ide/User',["ApiRequest", "event", "backbone"], function(ApiRequest, ide_event) {
+    var UserState;
+    UserState = {
+      NotFirstTime: 2
+    };
+    return Backbone.Model.extend({
+      initialize: function() {
+        this.set({
+          usercode: $.cookie("usercode"),
+          username: MC.base64Decode($.cookie("usercode")),
+          session: $.cookie("session_id")
+        });
+      },
+      hasCredential: function() {
+        return !!this.get("account");
+      },
+      isFirstVisit: function() {
+        return !(UserState.NotFirstTime & this.get("state"));
+      },
+      userInfoAccuired: function(result) {
+        var res;
+        res = {
+          email: MC.base64Decode(result.email),
+          repo: result.mod_repo,
+          tag: result.mod_tag,
+          state: parseInt(result.state, 10),
+          intercomHash: result.intercom_secret,
+          account: result.account_id,
+          awsAccessKey: result.access_key,
+          awsSecretKey: result.secret_key
+        };
+        if (result.account_id === "demo_account") {
+          res.account = res.awsAccessKey = res.awsSecretKey = "";
+        }
+        this.set(res);
+        if (this.isFirstVisit()) {
+          ApiRequest("updateAccount", {
+            params: {
+              state: this.get("state") | UserState.NotFirstTime
+            }
+          });
+        }
+      },
+      bootIntercom: function() {
+        var intId;
+        if (!window.Intercom) {
+          intId = setInterval((function(_this) {
+            return function() {
+              if (window.Intercom) {
+                console.log("Intercom Loaded, Booting Intercom");
+                clearInterval(intId);
+                _this.bootIntercom();
+              }
+            };
+          })(this), 1000);
+          return;
+        }
+        window.Intercom("boot", {
+          app_id: "3rp02j1w",
+          email: this.get("email"),
+          username: this.get("username"),
+          user_hash: this.get("intercomHash"),
+          widget: {
+            'activator': '#feedback'
+          }
+        });
+      },
+      fetch: function() {
+        return ApiRequest("login", {
+          username: this.get("username"),
+          password: this.get("session")
+        }).then((function(_this) {
+          return function(result) {
+            _this.userInfoAccuired(result);
+
+            /* env:prod */
+            return _this.bootIntercom();
+
+            /* env:prod:end */
+          };
+        })(this), function(err) {
+          if (err.error < 0) {
+            window.location.reload();
+          } else {
+            App.logout();
+          }
+          throw err;
+        });
+      },
+      acquireSession: function(password) {
+        return ApiRequest("login", {
+          username: this.get("username"),
+          password: password
+        }).then((function(_this) {
+          return function(result) {
+            $.cookie("session_id", result.session_id, {
+              expires: 30,
+              path: '/'
+            });
+            _this.set("session", result.session_id);
+            _this.userInfoAccuired(result);
+            _this.trigger("SessionUpdated");
+          };
+        })(this));
+      },
+      logout: function() {
+        var cValue, ckey, domain, _ref;
+        domain = {
+          "domain": window.location.hostname.replace("ide", "")
+        };
+        _ref = $.cookie();
+        for (ckey in _ref) {
+          cValue = _ref[ckey];
+          $.removeCookie(ckey, domain);
+          $.removeCookie(ckey);
+        }
+      },
+      changePassword: function(oldPwd, newPwd) {
+        return ApiRequest("updateAccount", {
+          params: {
+            password: oldPwd,
+            new_password: newPwd
+          }
+        });
+      },
+      validateCredential: function(accessKey, secretKey) {
+        return ApiRequest("validateCred", {
+          access_key: accessKey,
+          secret_key: secretKey
+        });
+      },
+      changeCredential: function(account, accessKey, secretKey, force) {
+        var self;
+        if (account == null) {
+          account = "";
+        }
+        if (accessKey == null) {
+          accessKey = "";
+        }
+        if (secretKey == null) {
+          secretKey = "";
+        }
+        if (force == null) {
+          force = false;
+        }
+        self = this;
+        return ApiRequest("updateCred", {
+          access_key: accessKey,
+          secret_key: secretKey,
+          account_id: account,
+          force: force
+        }).then(function() {
+          var attr;
+          attr = {
+            account: account,
+            awsAccessKey: accessKey,
+            awsSecretKey: secretKey
+          };
+          if (attr.awsAccessKey.length > 6) {
+            attr.awsAccessKey = (new Array(accessKey.length - 6)).join("*") + accessKey.substr(-6);
+          }
+          if (attr.awsSecretKey.length > 6) {
+            attr.awsSecretKey = (new Array(secretKey.length - 6)).join("*") + secretKey.substr(-6);
+          }
+          self.set(attr);
+          self.trigger("change:credential");
+          ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
   This is the core / entry point / controller of the whole IDE.
 ----------------------------
 
@@ -9,7 +1271,7 @@
  */
 
 (function() {
-  define(["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "common_handle", "event", "vpc_model", "constant"], function(Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, common_handle, ide_event, vpc_model, constant) {
+  define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "common_handle", "event", "vpc_model", "constant"], function(Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, common_handle, ide_event, vpc_model, constant) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -103,3 +1365,4 @@
   });
 
 }).call(this);
+
