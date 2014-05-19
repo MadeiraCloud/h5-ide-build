@@ -189,7 +189,7 @@
         err_xml = result[1];
         errCodeXML = $($.parseXML(err_xml)).find('Error').find('Code');
         errMessageXML = $($.parseXML(err_xml)).find('Error').find('Message');
-        if (err_code === 400 && errCodeXML.length === 1 && errMessageXML.length === 1) {
+        if (((400 <= err_code && err_code < 500)) && errCodeXML.length === 1 && errMessageXML.length === 1) {
           errCodeStr = errCodeXML.text();
           switch (errCodeStr) {
             case 'InvalidAMIID.NotFound':

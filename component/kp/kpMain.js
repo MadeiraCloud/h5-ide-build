@@ -761,7 +761,11 @@ return TEMPLATE; });
         hitKeys = _.filter(this.model.get('keys'), function(k) {
           return k.keyName.slice(0, len).toLowerCase() === keyword;
         });
-        return this.renderKeys(hitKeys);
+        if (keyword) {
+          return this.renderKeys(hitKeys);
+        } else {
+          return this.renderKeys();
+        }
       },
       setKey: function(event, name, data) {
         var KpModel;
@@ -965,11 +969,13 @@ return TEMPLATE; });
         }
       },
       settle: function(key, value) {
+        var originKeys;
         if (arguments.length === 1) {
           return this.trigger("change:" + key);
         } else {
+          originKeys = this.get('keys');
           this.set(key, value);
-          if (_.isEqual(this.get(key), value)) {
+          if (_.isEqual(originKeys, value)) {
             return this.trigger("change:" + key);
           }
         }
