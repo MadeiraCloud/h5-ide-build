@@ -562,7 +562,7 @@
     CanvasElement.prototype.list = function() {
       var component, id, idx, instance_data, list, member, members, name, resource_list, state, _i, _len, _ref;
       component = this.model;
-      members = this.model.groupMembers();
+      members = this.model.members ? this.model.members() : this.model.groupMembers();
       if (members.length === 0) {
         return [];
       }
@@ -5927,7 +5927,7 @@
       handleTypes: "ExpandedAsg",
       deserialize: function(data, layout_data, resolve) {
         new ExpandedAsgModel({
-          id: layout_data.uid,
+          id: data.uid,
           originalAsg: resolve(layout_data.originalId),
           parent: resolve(layout_data.groupUId),
           x: layout_data.coordinate[0],
@@ -8827,7 +8827,7 @@
       isDefaultTenancy: function() {
         return true;
       },
-      groupMembers: function() {
+      members: function() {
         var amis, i, resource, resource_list, _i, _len, _ref;
         resource_list = MC.data.resource_list[Design.instance().region()];
         if (!resource_list) {
@@ -10320,7 +10320,7 @@
             break;
           }
         }
-        if (fee) {
+        if (fee && this.__asg) {
           asgSize = Design.instance().modeIsStack() ? this.__asg.get("minSize") : this.__asg.get("capacity");
           fee = Math.round(fee / 7 * 1000) / 1000;
           return {

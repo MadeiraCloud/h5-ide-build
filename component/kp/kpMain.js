@@ -192,7 +192,7 @@ function program1(depth0,data) {
 
   buffer += "<div id=\"modal-kp-manage\" class=\"modal-toolbar\">\n    <div class=\"modal-header\">\n        <h3>Manage Key Pairs in "
     + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\n        <i class=\"modal-close\">×</i>\n    </div>\n\n    <div class=\"modal-body\">\n        <div class=\"content-wrap\">\n            <div class=\"toolbar\">\n                <button class=\"icon-new-stack btn btn-blue\" id=\"kp-create\">Create Key Pair</button>\n                <div class=\"btn-group\">\n                    <button class=\"icon-import tooltip\" id=\"kp-import\" data-tooltip=\"\">Import Key Pair</button>\n                    <button class=\"icon-del tooltip\" id=\"kp-delete\" data-tooltip=\"\" disabled>Delete</button>\n                    <button class=\"icon-refresh tooltip\" id=\"kp-refresh\" data-tooltip=\"\"></button>\n                </div>\n            </div>\n            <div class=\"list\">\n                <div class=\"slidebox\">\n                    <div class=\"content clearfix\">\n                    </div>\n                    <div class=\"error\">\n                        something wrong\n                    </div>\n                </div>\n                <div class=\"table-head-fix\">\n                        <table class=\"table-head\">\n                            <thead>\n                                <tr>\n                                    <th>\n                                        <div class=\"checkbox\">\n                                            <input id=\"kp-select-all\" type=\"checkbox\" value=\"None\">\n                                            <label for=\"kp-select-all\"></label>\n                                        </div>\n                                    </th>\n                                    <th class=\"sortable\">Name</th>\n                                    <th>Fingerprint</th>\n                                </tr>\n                            </thead>\n                        </table>\n                        <div class=\"scroll-wrap\">\n                            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                            <div class=\"scroll-content\" style=\"display:block;\">\n                                <table class=\"table\">\n                                    <thead>\n                                        <tr>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                        </tr>\n                                    </thead>\n                                    <tbody id=\"community_ami_table\">\n                                        ";
+    + "</h3>\n        <i class=\"modal-close\">×</i>\n    </div>\n\n    <div class=\"modal-body\">\n        <div class=\"content-wrap\">\n            <div class=\"toolbar\">\n                <button class=\"icon-new-stack btn btn-blue\" id=\"kp-create\">Create Key Pair</button>\n                <div class=\"btn-group\">\n                    <button class=\"icon-import tooltip\" id=\"kp-import\" data-tooltip=\"\">Import Key Pair</button>\n                    <button class=\"icon-del tooltip\" id=\"kp-delete\" data-tooltip=\"\" disabled>Delete</button>\n                    <button class=\"icon-refresh tooltip\" id=\"kp-refresh\" data-tooltip=\"\"></button>\n                </div>\n            </div>\n            <div class=\"list\">\n                <div class=\"slidebox\">\n                    <div class=\"content clearfix\">\n                    </div>\n                    <div class=\"error\">\n                        something wrong\n                    </div>\n                </div>\n                <div class=\"table-head-fix\">\n                        <table class=\"table-head\">\n                            <thead>\n                                <tr>\n                                    <th>\n                                        <div class=\"checkbox\">\n                                            <input id=\"kp-select-all\" type=\"checkbox\" value=\"None\">\n                                            <label for=\"kp-select-all\"></label>\n                                        </div>\n                                    </th>\n                                    <th class=\"sortable\">Name</th>\n                                    <th>Fingerprint</th>\n                                </tr>\n                            </thead>\n                        </table>\n                        <div class=\"scroll-wrap\">\n                            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                            <div class=\"scroll-content\" style=\"display:block;\">\n                                <table class=\"table\">\n                                    <thead>\n                                        <tr>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                        </tr>\n                                    </thead>\n                                    <tbody>\n                                        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                                    </tbody>\n                                </table>\n                            </div>\n                        </div>\n                    </div>\n\n            </div>\n        </div>\n    </div>\n</div>\n\n";
@@ -209,15 +209,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<tr class=\"item\" data-id=\"\">\n    <td class=\"ami-table-fav\">\n        <div class=\"checkbox\">\n            <input id=\"kp-select-"
+  buffer += "\n<tr class=\"item\" data-id=\"\">\n    <td>\n        <div class=\"checkbox\">\n            <input id=\"kp-select-"
     + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" value=\"None\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n            <label for=\"kp-select-"
     + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n        </div>\n    </td>\n    <td class=\"ami-table-id\">"
+    + "\"></label>\n        </div>\n    </td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n    <td class=\"ami-table-size\">"
+    + "</td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n</tr>\n";
   return buffer;
@@ -697,11 +697,13 @@ return TEMPLATE; });
         return this.switchAction('ready');
       },
       checkOne: function(event) {
-        var cbAll, cbAmount, checkedAmount;
+        var $target, cbAll, cbAmount, checkedAmount;
+        $target = $(event.currentTarget);
         this.processDelBtn();
         cbAll = this.$('#kp-select-all');
         cbAmount = this.model.get('keys').length;
         checkedAmount = this.$('.one-cb:checked').length;
+        $target.closest('tr').toggleClass('selected');
         if (checkedAmount === cbAmount) {
           return cbAll.prop('checked', true);
         } else if (cbAmount - checkedAmount === 1) {
@@ -711,9 +713,11 @@ return TEMPLATE; });
       checkAll: function(event) {
         this.processDelBtn();
         if (event.currentTarget.checked) {
-          return this.$('input[type="checkbox"]').prop('checked', true);
+          this.$('input[type="checkbox"]').prop('checked', true);
+          return this.$('tr.item').addClass('selected');
         } else {
-          return this.$('input[type="checkbox"]').prop('checked', false);
+          this.$('input[type="checkbox"]').prop('checked', false);
+          return this.$('tr.item').removeClass('selected');
         }
       },
       processDelBtn: function() {
@@ -822,7 +826,7 @@ return TEMPLATE; });
         return console.error(err);
       },
       renderKeys: function(data) {
-        if (data) {
+        if (data && arguments.length === 1) {
           data = {
             keys: data,
             hideDefaultNoKey: true

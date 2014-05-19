@@ -30,7 +30,8 @@
       cgw: ['isCGWHaveIPConflict'],
       stack: ['verify', 'isHaveNotExistAMIAsync'],
       subnet: ['getAllAWSENIForAppEditAndDefaultVPC'],
-      ebs: ['isSnapshotExist']
+      ebs: ['isSnapshotExist'],
+      kp: ['isKeyPairExistInAws']
     }
   });
 
@@ -2815,8 +2816,8 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', '../../helper'], function(constant, MC, Design, Helper) {
-    var i18n, isNotDefaultAndRefInstance, longLiveNotice;
+  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', '../../helper', 'keypair_service', 'underscore'], function(constant, MC, Design, Helper, keypair_service, _) {
+    var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
     i18n = Helper.i18n.short();
     isNotDefaultAndRefInstance = function(uid) {
       var instance, instanceStr, instances, kp, lcStr, message, tag, _i, _len;
@@ -2851,9 +2852,78 @@ This file use for validate component about state.
     longLiveNotice = function() {
       return Helper.message.notice(null, i18n.TA_MSG_NOTICE_KEYPAIR_LONE_LIVE);
     };
+    isKeyPairExistInAws = function(callback) {
+      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, needValidate, region, results, session, username, _i, _len;
+      allInstances = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
+      allLcs = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
+      instanceLike = allInstances.concat(allLcs);
+      needValidate = [];
+      invalid = [];
+      errors = {};
+      results = [];
+      for (_i = 0, _len = instanceLike.length; _i < _len; _i++) {
+        i = instanceLike[_i];
+        keyName = i.get('keyName');
+        if (keyName && keyName[0] !== '@') {
+          needValidate.push(i);
+        }
+      }
+      if (needValidate.length) {
+        username = $.cookie("usercode");
+        session = $.cookie("session_id");
+        region = Design.instance().region();
+        return keypair_service.DescribeKeyPairs(null, username, session, region).then(function(res) {
+          var kpList;
+          if (res.is_error) {
+            throw res;
+          }
+          kpList = res.resolved_data || [];
+          _.each(needValidate, function(i) {
+            var inexist, tag;
+            inexist = _.every(kpList, function(kp) {
+              return kp.keyName !== i.get('keyName');
+            });
+            if (inexist) {
+              keyName = i.get('keyName');
+              invalid.push(i);
+              if (!errors[keyName]) {
+                errors[keyName] = {
+                  lc: '',
+                  instance: ''
+                };
+              }
+              tag = i.type === constant.RESTYPE.LC ? 'lc' : 'instance';
+              if (i.type === constant.RESTYPE.LC) {
+                tag = 'lc';
+                return errors[keyName].lc += "<span class='validation-tag tag-" + tag + "'>" + (i.get('name')) + "</span>, ";
+              } else {
+                tag = 'instance';
+                return errors[keyName].instance += "<span class='validation-tag tag-" + tag + "'>" + (i.get('name')) + "</span>, ";
+              }
+            }
+          });
+          _.each(errors, function(err, keyName) {
+            var message;
+            message = '';
+            if (err.instance) {
+              message += 'Instance ' + err.instance;
+            }
+            if (err.lc) {
+              message += 'Launch Configuration' + err.lc;
+            }
+            message = message.slice(0, -2);
+            return results.push(Helper.message.error(keyName, i18n.TA_MSG_ERROR_INSTANCE_REF_OLD_KEYPAIR, message, keyName));
+          });
+          return callback(results);
+        }).fail(function(error) {
+          return callback(null);
+        });
+      }
+    };
     return {
       isNotDefaultAndRefInstance: isNotDefaultAndRefInstance,
-      longLiveNotice: longLiveNotice
+      longLiveNotice: longLiveNotice,
+      isKeyPairExistInAws: isKeyPairExistInAws
     };
   });
 
