@@ -2733,14 +2733,16 @@ This file use for validate component about state.
             }
           }
           if (compObj.type === constant.RESTYPE.LC) {
-            _.each(compObj.resource.BlockDeviceMapping, function(blockObj) {
-              snaphostId = blockObj.Ebs.SnapshotId;
-              instanceUID = compObj.uid;
-              if (snaphostId && instanceUID) {
-                if (!snaphostMap[snaphostId]) {
-                  snaphostMap[snaphostId] = [];
+            _.each(compObj.resource.BlockDeviceMapping, function(blockObj, idx) {
+              if (idx > 0) {
+                snaphostId = blockObj.Ebs.SnapshotId;
+                instanceUID = compObj.uid;
+                if (snaphostId && instanceUID) {
+                  if (!snaphostMap[snaphostId]) {
+                    snaphostMap[snaphostId] = [];
+                  }
+                  return snaphostMap[snaphostId].push(instanceUID);
                 }
-                return snaphostMap[snaphostId].push(instanceUID);
               }
             });
           }
