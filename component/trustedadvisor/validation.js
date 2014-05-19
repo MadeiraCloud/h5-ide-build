@@ -2864,7 +2864,7 @@ This file use for validate component about state.
       for (_i = 0, _len = instanceLike.length; _i < _len; _i++) {
         i = instanceLike[_i];
         keyName = i.get('keyName');
-        if (keyName && keyName[0] !== '@') {
+        if (keyName && keyName[0] !== '@' && !i.connectionTargets("KeypairUsage").length) {
           needValidate.push(i);
         }
       }
