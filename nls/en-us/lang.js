@@ -569,7 +569,7 @@ define({
         "PROP_TEXT_DEFAULT_SG_DESC": "Default Security Group",
         "PROP_TEXT_CUSTOM_SG_DESC": "Custom Security Group",
         "PROP_MSG_WARN_WHITE_SPACE": "Stack name contains white space",
-        "PROP_MSG_ERR_GET_PASSWD_FAILED": "Sorry, there was a problem getting password data for instance ",
+        "PROP_MSG_ERR_GET_PASSWD_FAILED": "There was an error decrypting your password. Please ensure that you have entered your private key correctly.",
         "PROP_MSG_ERR_AMI_NOT_FOUND": "Can not find information for selected AMI( %s ), try to drag another AMI.",
         "PROP_MSG_SG_CREATE": "1 rule has been created in %s to allow %s %s %s.",
         "PROP_MSG_SG_CREATE_MULTI": "%d rules have been created in %s and %s to allow %s %s %s.",

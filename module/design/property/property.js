@@ -3403,6 +3403,7 @@ function program53(depth0,data) {
           if (result.is_error) {
             notification('error', lang.ide.PROP_MSG_ERR_GET_PASSWD_FAILED + instance_id);
             key_data = null;
+            return null;
           } else {
             if (result.resolved_data) {
               win_passwd = result.resolved_data.passwordData;

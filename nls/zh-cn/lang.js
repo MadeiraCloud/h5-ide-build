@@ -569,7 +569,7 @@ define({
         "PROP_TEXT_DEFAULT_SG_DESC": "Default Security Group",
         "PROP_TEXT_CUSTOM_SG_DESC": "Custom Security Group",
         "PROP_MSG_WARN_WHITE_SPACE": "模板名称不能包含空格",
-        "PROP_MSG_ERR_GET_PASSWD_FAILED": "抱歉，获取实例口令信息时出现了问题。",
+        "PROP_MSG_ERR_GET_PASSWD_FAILED": "解密出错，请确认您是否上传了正确的私钥。",
         "PROP_MSG_ERR_AMI_NOT_FOUND": "无法获取选中的( %s )AMI的信息，请拖拽其他的AMI。",
         "PROP_MSG_SG_CREATE": "1条规则被创建到 %s 来允许 %s %s %s。",
         "PROP_MSG_SG_CREATE_MULTI": "%d条规则被创建到 %s 并且 %s 来允许 %s %s %s.",
