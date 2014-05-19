@@ -3401,7 +3401,7 @@ function program53(depth0,data) {
             return;
           }
           if (result.is_error) {
-            notification('error', lang.ide.PROP_MSG_ERR_GET_PASSWD_FAILED + instance_id);
+            notification('error', lang.ide.PROP_MSG_ERR_GET_PASSWD_FAILED);
             key_data = null;
             return null;
           } else {
@@ -12838,7 +12838,7 @@ function program3(depth0,data) {
         return null;
       },
       init: function(uid) {
-        var agentData, data, design, rootDevice;
+        var agentData, data, design, kp, rootDevice;
         this.lc = Design.instance().component(uid);
         data = this.lc.toJSON();
         data.uid = uid;
@@ -12856,7 +12856,8 @@ function program3(depth0,data) {
         this.set("stackAgentEnable", agentData.enabled);
         if (this.isApp) {
           this.getAppLaunch(uid);
-          this.set('keyName', this.lc.connectionTargets('KeypairUsage')[0].get("appId"));
+          kp = this.lc.connectionTargets('KeypairUsage')[0];
+          this.set('keyName', kp && kp.get("appId") || this.lc.get('keyName'));
           rootDevice = this.lc.getBlockDeviceMapping();
           if (rootDevice.length === 1) {
             this.set("rootDevice", rootDevice[0]);
