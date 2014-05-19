@@ -22,7 +22,7 @@
         "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn"
       },
       initialize: function(options) {
-        var attributes, defaultTab;
+        var attributes, tab;
         attributes = {
           username: App.user.get("username"),
           email: App.user.get("email"),
@@ -38,11 +38,19 @@
         };
         modal(SettingsTpl(attributes));
         this.setElement($("#modal-box"));
-        defaultTab = 0;
+        tab = 0;
         if (options) {
-          defaultTab = options.defaultTab || 0;
+          tab = options.defaultTab || 0;
+          if (tab === SettingsDialog.TAB.CredentialInvalid) {
+            this.showCredSetup();
+            $(".modal-close").hide();
+            $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          }
+          if (tab < 0) {
+            tab = Math.abs(defaultTab);
+          }
         }
-        $("#SettingsNav").children().eq(defaultTab).click();
+        $("#SettingsNav").children().eq(tab).click();
         this.updateTokenTab();
       },
       updateCredSettings: function() {
@@ -271,6 +279,7 @@
       }
     });
     SettingsDialog.TAB = {
+      CredentialInvalid: -1,
       Normal: 0,
       Credential: 1,
       Token: 2

@@ -829,7 +829,7 @@ define({
         "SETTINGS_CRED_REMOVING": "Removing credential...",
         "SETTINGS_CRED_UPDATING": "Updating credential...",
         "SETTINGS_CRED_RES_LOADING": "Loading resources...",
-        "SETTINGS_ERR_CRED_VALIDATE": "Fail to validate your credential, please retry.",
+        "SETTINGS_ERR_CRED_VALIDATE": "Fail to validate your credential.",
         "SETTINGS_ERR_CRED_UPDATE": "Fail to update your credential, please retry.",
         "SETTINGS_ERR_CRED_REMOVE": "Fail to remove your credential, please retry.",
         "SETTINGS_CRED_UPDATE_CONFIRM_TIT": "<span>You have running or stopped app(s).</span> Do you confirm to update the AWS credential?",

@@ -325,7 +325,7 @@
         return ide_event.trigger(ide_event.OPEN_DESIGN_TAB, 'OPEN_APP', name, current_region, id);
       },
       showCredential: function() {
-        return App.showSettings(1);
+        return App.showSettings(App.showSettings.TAB.Credential);
       },
       renderMapResult: function() {
         var cur_tmpl;

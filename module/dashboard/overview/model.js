@@ -1409,6 +1409,12 @@
             return me.describeAWSResourcesService();
           }, 2000);
           return null;
+        } else {
+          if (result.return_code !== constant.RETURN_CODE.E_SESSION && result.return_code !== constant.RETURN_CODE.E_BUSY) {
+            App.showSettings(App.showSettings.TAB.CredentialInvalid);
+            ide_event.trigger(ide_event.SWITCH_MAIN);
+          }
+          return me.set('region_classic_list', region_classic_vpc_result);
         }
       },
       updateMap: function(me, app_list, stack_list) {

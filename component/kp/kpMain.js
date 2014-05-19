@@ -534,6 +534,9 @@ return TEMPLATE; });
             notification('info', "Selected " + success.length + " key pairs are deleted.");
           }
           that.processDelBtn();
+          if (!that.model.get('keys').length) {
+            that.$('#kp-select-all').get(0).checked = false;
+          }
           return _.each(error, function(s) {
             return console.log(s);
           });
@@ -745,7 +748,7 @@ return TEMPLATE; });
         'keyup .keypair-filter': 'filter'
       },
       showCredential: function() {
-        return App.showSettings(1);
+        return App.showSettings(App.showSettings.TAB.Credential);
       },
       filter: function(event) {
         var hitKeys, keyword, len;
@@ -904,7 +907,7 @@ return TEMPLATE; });
       var msg;
       msg = err.error_message;
       if (err.error_message) {
-        if (msg.indexOf('Length exceeds maximum of 2048' !== -1)) {
+        if (msg.indexOf('Length exceeds maximum of 2048') !== -1) {
           msg = 'Length exceeds maximum of 2048';
         }
       }
@@ -988,9 +991,9 @@ return TEMPLATE; });
           } else {
             keys = res.resolved_data;
           }
-          return that.settle('keys', keys);
+          return that.settle('keys', keys || []);
         }, function(err) {
-          return that.settle('keys', '');
+          return that.settle('keys', []);
         });
       },
       list: function() {
@@ -1001,7 +1004,7 @@ return TEMPLATE; });
         that = this;
         return request('ImportKeyPair', name, data).then(successHandler(this)).fail(errorHandler(this)).then(function(res) {
           var keys;
-          keys = that.get('keys') || [];
+          keys = that.get('keys');
           keys.unshift(res);
           that.settle('keys');
           return res;
@@ -1012,7 +1015,7 @@ return TEMPLATE; });
         that = this;
         return request('CreateKeyPair', name).then(successHandler(this)).fail(errorHandler(this)).then(function(res) {
           var keys;
-          keys = that.get('keys') || [];
+          keys = that.get('keys');
           keys.unshift(res);
           that.settle('keys');
           return res;

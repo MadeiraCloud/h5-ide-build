@@ -9,7 +9,7 @@
  */
 
 (function() {
-  define(["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "common_handle", "event", "vpc_model", "constant"], function(Websocket, ApplicationView, ApplicationModel, User, common_handle, ide_event, vpc_model, constant) {
+  define(["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "common_handle", "event", "vpc_model", "constant"], function(Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, common_handle, ide_event, vpc_model, constant) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -94,8 +94,11 @@
       window.location.href = "/login/";
     };
     VisualOps.prototype.showSettings = function(tab) {
-      return this.__view.showSettings(tab);
+      return new SettingsDialog({
+        defaultTab: tab
+      });
     };
+    VisualOps.prototype.showSettings.TAB = SettingsDialog.TAB;
     return VisualOps;
   });
 

@@ -140,7 +140,7 @@
           var appNameRepeated, app_name, obj, process_tab_name;
           me.hideErr();
           if (!App.user.hasCredential()) {
-            App.showSettings(1);
+            App.showSettings(App.showSettings.TAB.Credential);
             return false;
           }
           app_name = $('.modal-input-value').val();

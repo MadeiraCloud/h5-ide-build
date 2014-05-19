@@ -6,7 +6,7 @@
  */
 
 (function() {
-  define(["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog"], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog) {
+  define(["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog"], function(Backbone, SessionDialog, HeaderView, WelcomeDialog) {
     return Backbone.View.extend({
       el: "body",
       events: {
@@ -59,11 +59,6 @@
       },
       showSessionDialog: function() {
         return (new SessionDialog()).promise();
-      },
-      showSettings: function(tab) {
-        new SettingsDialog({
-          defaultTab: tab
-        });
       },
       selectText: function(event) {
         var e, range;
