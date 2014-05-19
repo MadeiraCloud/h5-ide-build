@@ -100,7 +100,13 @@
         }
       },
       defaultKpIsSet: function() {
-        if ($('#kp-runtime-placeholder #kp-list .item.selected').length === 0) {
+        var KpModel, defaultKp;
+        if (!kp.hasResourceWithDefaultKp()) {
+          return true;
+        }
+        KpModel = Design.modelClassForType(constant.RESTYPE.KP);
+        defaultKp = KpModel.getDefaultKP();
+        if (!defaultKp.get('isSet')) {
           this.showErr('kp', 'Specify a key pair as $DefaultKeyPair for this app.');
           return false;
         }

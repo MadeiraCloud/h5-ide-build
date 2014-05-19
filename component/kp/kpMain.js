@@ -177,11 +177,11 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                        <tr class=\"item\" data-id=\"\">\n                                            <td>\n                                                <div class=\"checkbox\">\n                                                    <input id=\"kp-select-"
-    + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" value=\"None\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n                                                    <label for=\"kp-select-"
-    + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></label>\n                                                </div>\n                                            </td>\n                                            <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n                                            <td>"
@@ -714,11 +714,15 @@ return TEMPLATE; });
         }
       },
       processDelBtn: function() {
-        if (this.$('.one-cb:checked').length) {
-          return this.$('#kp-delete').prop('disabled', false);
-        } else {
-          return this.$('#kp-delete').prop('disabled', true);
-        }
+        var that;
+        that = this;
+        return _.defer(function() {
+          if (that.$('input:checked').length) {
+            return that.$('#kp-delete').prop('disabled', false);
+          } else {
+            return that.$('#kp-delete').prop('disabled', true);
+          }
+        });
       },
       close: function(event) {
         if (this.needDownload()) {
