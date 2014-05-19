@@ -19,7 +19,8 @@
         "click .tokenControl .tokenDone": "doneEditToken",
         "click #TokenRemove": "confirmRmToken",
         "click #TokenRmCancel": "cancelRmToken",
-        "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn"
+        "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn",
+        "keyup #AccountCurrentPwd, #AccountNewPwd": "updatePwdBtn"
       },
       initialize: function(options) {
         var attributes, tab;
@@ -87,11 +88,21 @@
         $("#AccountCurrentPwd, #AccountNewPwd").val("");
         $("#AccountInfo").empty();
       },
+      updatePwdBtn: function() {
+        var new_pwd, old_pwd;
+        old_pwd = $("#AccountCurrentPwd").val() || "";
+        new_pwd = $("#AccountNewPwd").val() || "";
+        if (old_pwd.length && new_pwd.length) {
+          $("#AccountUpdatePwd").removeAttr("disabled");
+        } else {
+          $("#AccountUpdatePwd").attr("disabled", "disabled");
+        }
+      },
       changePwd: function() {
         var new_pwd, old_pwd;
         old_pwd = $("#AccountCurrentPwd").val() || "";
         new_pwd = $("#AccountNewPwd").val() || "";
-        if (old_pwd.length < 6 || new_pwd.length < 6) {
+        if (new_pwd.length < 6) {
           $('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
           return;
         }

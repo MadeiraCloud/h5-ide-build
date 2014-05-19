@@ -40,7 +40,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
     + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n      <div id=\"AccountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\">"
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n      <div id=\"AccountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
     + "</button>\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
