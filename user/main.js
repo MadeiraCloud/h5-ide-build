@@ -415,8 +415,10 @@
               } else if (statusCode === 'error') {
                 $('.error-msg').eq(0).text(langsrc.service.NETWORK_ERROR).show();
                 return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
-              } else {
+              } else if (checkUsername()) {
                 status.removeClass('verification-status').addClass('error-status').text(langsrc.register.username_taken);
+                return typeof cb === "function" ? cb(0) : void 0;
+              } else {
                 return typeof cb === "function" ? cb(0) : void 0;
               }
             });

@@ -9058,16 +9058,18 @@
       type: "KeypairUsage",
       oneToMany: constant.RESTYPE.KP,
       serialize: function(components) {
-        var kp, member, otherTarget, ref, _i, _len, _ref;
+        var groupMembers, kp, member, otherTarget, ref, _i, _len;
         kp = this.getTarget(constant.RESTYPE.KP);
         if (kp) {
           otherTarget = this.getOtherTarget(kp);
           ref = kp.createRef("KeyName");
           components[otherTarget.id].resource.KeyName = ref;
-          _ref = otherTarget.groupMembers();
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            member = _ref[_i];
-            components[member.id].resource.KeyName = ref;
+          groupMembers = otherTarget.groupMembers ? otherTarget.groupMembers() : [];
+          for (_i = 0, _len = groupMembers.length; _i < _len; _i++) {
+            member = groupMembers[_i];
+            if (components[member.id]) {
+              components[member.id].resource.KeyName = ref;
+            }
           }
         }
         return null;
@@ -9150,7 +9152,7 @@
             uid: this.id,
             resource: {
               KeyFingerprint: this.get("fingerprint") || '',
-              KeyName: this.get("appId") || this.get("name")
+              KeyName: this.get("appId")
             }
           }
         };
