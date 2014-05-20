@@ -328,6 +328,6 @@ function program36(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
     + "</span></li>\n  </ul>\n</div>\n\n<button class=\"btn-toolbar tooltip icon-refresh seperator\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_REFRESH_REOURCES", {hash:{},data:data}))
-    + "\" id=\"btn-app-refresh\"></button>\n\n<label class=\"switch toolbar-visual-ops-refresh tooltip\" data-tooltip=\"Instantly rerun all states in this app.\">\n    <span class=\"icon-new-stack refresh-icon\"></span><span class=\"refresh-label\" data-original=\"Reload States\" data-disabled=\"Initiating…\" >Reload States</span>\n</label>";
+    + "\" id=\"btn-app-refresh\"></button>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });

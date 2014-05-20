@@ -139,7 +139,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         'click #SessionClose': 'closeSession',
         'click #SessionClose2': 'closeSession',
         'click #SessionConnect': 'connect',
-        'keypress #SessionPassword': 'passwordChanged'
+        'keyup #SessionPassword': 'passwordChanged'
       },
       constructor: function() {
         if (CurrentSessionDialog) {
@@ -244,9 +244,9 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
     + "</span>\n  <span data-target=\"CredentialTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CREDENTIAL", {hash:{},data:data}))
-    + "</span>\n  <span data-target=\"TokenTab\">"
+    + "</span>\n  <!-- <span data-target=\"TokenTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</span>\n</nav>\n\n<div class=\"modal-body\" id=\"SettingsBody\">\n  <section id=\"AccountTab\">\n    <dl class=\"dl-horizontal\">\n      <dt>"
+    + "</span> -->\n</nav>\n\n<div class=\"modal-body\" id=\"SettingsBody\">\n  <section id=\"AccountTab\">\n    <dl class=\"dl-horizontal\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -343,13 +343,9 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
     + "<a href=\"\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\n      <section class=\"token-table\">\n        <header class=\"clearfix\">\n          <span class=\"tokenName\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\n          <span class=\"tokenToken\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\n        </header>\n        <div class=\"scroll-wrap\">\n          <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n          <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</a> </p>\n      <ul class=\"token-table\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\n        </div>\n      </section>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n      <h3 id=\"TokenRmTit\"></h3>\n      <p>"
+    + "\"></ul>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n      <h3 id=\"TokenRmTit\"></h3>\n      <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
     + "</p>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
@@ -600,11 +596,10 @@ function program3(depth0,data) {
         var self;
         $("#TokenCreate").attr("disabled", "disabled");
         self = this;
-        App.user.createToken().then(function() {
+        Q.defer().promise.then(function() {
           self.updateTokenTab();
           return $("#TokenCreate").removeAttr("disabled");
         }, function() {
-          notification("error", "Fail to create token, please retry.");
           return $("#TokenCreate").removeAttr("disabled");
         });
       },
@@ -612,39 +607,43 @@ function program3(depth0,data) {
         var $p;
         $p = $(evt.currentTarget).closest("li").removeClass("editing");
         $p.children(".tokenName").attr("readonly", true);
-        App.user.updateToken($p.children(".tokenToken").text(), $p.children(".tokenName").val()).then(function() {}, function() {
+        Q.defer().promise.then(function() {}, function() {
           var oldName;
           oldName = "";
-          $p.children(".tokenName").val(oldName);
-          return notification("error", "Fail to update token, please retry.");
+          return $p.children(".tokenName").val(oldName);
         });
       },
       confirmRmToken: function() {
         var self;
         $("#TokenRemove").attr("disabled", "disabled");
         self = this;
-        App.user.removeToken(this.rmToken).then(function() {
+        Q.defer().promise.then(function() {
           self.updateTokenTab();
           return self.cancelRmToken();
         }, function() {
-          notification("Fail to delete token, please retry.");
-          return self.cancelRmToken();
+          return notification("Fail to delete access token, please retry.");
         });
       },
       cancelRmToken: function() {
         this.rmToken = "";
-        $("#TokenRemove").removeAttr("disabled");
         $("#TokenManager").show();
         $("#TokenRmConfirm").hide();
       },
       updateTokenTab: function() {
         var tokens;
-        tokens = App.user.get("tokens");
-        $("#TokenManager").find(".token-table").toggleClass("empty", tokens.length === 0);
+        tokens = [
+          {
+            name: "Token1",
+            token: "aaabbbccc"
+          }, {
+            name: "Token2",
+            token: "bbbdddccc"
+          }
+        ];
         if (tokens.length) {
-          $("#TokenList").html(MC.template.accessTokenTable(tokens));
+          $("#TokenManager").children("ul").html(MC.template.accessTokenTable(tokens));
         } else {
-          $("#TokenList").empty();
+          $("#TokenManager").empty();
         }
       }
     });
@@ -987,9 +986,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return self.__processSingleNotification(idx);
         });
       },
-      __triggerChange: _.debounce(function() {
-        return this.trigger("change:notification");
-      }, 300),
       __processSingleNotification: function(idx) {
         var i, info_list, item, req, same_req, _i, _len;
         req = App.WS.collection.request.findOne({
@@ -1016,7 +1012,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         item.is_readed = !App.WS.isReady();
         info_list.splice(idx, 1);
         info_list.splice(0, 0, item);
-        this.__triggerChange();
+        if (!this.__notifyDebounce) {
+          this.__notifyDebounce = setTimeout((function(_this) {
+            return function() {
+              _this.trigger("change:notification");
+              _this.__notifyDebounce = null;
+            };
+          })(this), 300);
+        }
         return null;
       },
       __parseRequestInfo: function(req) {
@@ -1105,7 +1108,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return !(UserState.NotFirstTime & this.get("state"));
       },
       userInfoAccuired: function(result) {
-        var idx, res, t, _i, _len, _ref;
+        var res;
         res = {
           email: MC.base64Decode(result.email),
           repo: result.mod_repo,
@@ -1114,21 +1117,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           intercomHash: result.intercom_secret,
           account: result.account_id,
           awsAccessKey: result.access_key,
-          awsSecretKey: result.secret_key,
-          tokens: result.tokens || [],
-          defaultToken: ""
+          awsSecretKey: result.secret_key
         };
         if (result.account_id === "demo_account") {
           res.account = res.awsAccessKey = res.awsSecretKey = "";
-        }
-        _ref = res.tokens;
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          t = _ref[idx];
-          if (!t.name) {
-            res.defaultToken = t.token;
-            res.tokens.splice(idx, 1);
-            break;
-          }
         }
         this.set(res);
         if (this.isFirstVisit()) {
@@ -1263,72 +1255,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           self.set(attr);
           self.trigger("change:credential");
           ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
-        });
-      },
-      createToken: function() {
-        var base, nameMap, newName, self, t, tmpl, _i, _len, _ref;
-        tmpl = "MyToken";
-        base = 1;
-        nameMap = {};
-        _ref = this.attributes.tokens;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          t = _ref[_i];
-          nameMap[t.name] = true;
-        }
-        while (true) {
-          newName = tmpl + base;
-          if (nameMap[newName]) {
-            base += 1;
-          } else {
-            break;
-          }
-        }
-        self = this;
-        return ApiRequest("token_create", {
-          token_name: newName
-        }).then(function(res) {
-          self.attributes.tokens.splice(0, 0, {
-            name: res[0],
-            token: res[1]
-          });
-        });
-      },
-      removeToken: function(token) {
-        var idx, self, t, _i, _len, _ref;
-        _ref = this.attributes.tokens;
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          t = _ref[idx];
-          if (t.token === token) {
-            break;
-          }
-        }
-        self = this;
-        return ApiRequest("token_remove", {
-          token: token,
-          token_name: t.name
-        }).then(function(res) {
-          idx = self.attributes.tokens.indexOf(t);
-          if (idx >= 0) {
-            self.attributes.tokens.splice(idx, 1);
-          }
-        });
-      },
-      updateToken: function(token, newName) {
-        var self;
-        self = this;
-        return ApiRequest("token_update", {
-          token: token,
-          new_token_name: newName
-        }).then(function(res) {
-          var idx, t, _i, _len, _ref;
-          _ref = self.attributes.tokens;
-          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-            t = _ref[idx];
-            if (t.token === token) {
-              t.name = newName;
-              break;
-            }
-          }
         });
       }
     });

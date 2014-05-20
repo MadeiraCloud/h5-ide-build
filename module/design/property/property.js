@@ -2885,7 +2885,9 @@ function program53(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
-    + "</label>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
+    + "</label>\n			<i class=\"icon-info tooltip default-kp-info\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "POP_INSTANCE_KEYPAIR_INFO_TIP", {hash:{},data:data}))
+    + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
@@ -13234,7 +13236,9 @@ function program30(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				<label for=\"property-instance-ebs-optimized\"></label>\n			</div>\n			<label for=\"property-instance-ebs-optimized\">EBS Optimized</label>\n		</section>\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
-    + "</label>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n		";
+    + "</label>\n			<i class=\"icon-info tooltip default-kp-info\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "POP_INSTANCE_KEYPAIR_INFO_TIP", {hash:{},data:data}))
+    + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n		";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayAssociatePublicIp), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n\n	<div class=\"option-group-head\">"

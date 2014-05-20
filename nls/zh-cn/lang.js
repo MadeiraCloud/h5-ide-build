@@ -300,6 +300,7 @@ define({
         "PROP_INSTANCE_AMI": "映像",
         "PROP_INSTANCE_TYPE": "实例类型",
         "PROP_INSTANCE_KEY_PAIR": "秘钥",
+        "POP_INSTANCE_KEYPAIR_INFO_TIP": "",
         "PROP_INSTANCE_EBS_OPTIMIZED": "EBS 优化",
         "PROP_INSTANCE_TENANCY": "租用",
         "PROP_INSTANCE_TENANCY_DEFAULT": "默认",
@@ -1215,7 +1216,8 @@ define({
         "TA_MSG_ERROR_NO_EIP_OR_PIP": "",
         "TA_MSG_ERROR_NO_CGW": "",
         "TA_MSG_ERROR_NO_OUTBOUND_RULES": "",
-        "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": ""
+        "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": "",
+        "TIP_KEYPAIR_USED_DEFAULT_KP": ""
     },
     "service": {
         "NETWORK_ERROR": "服务暂时不可用, 请稍后重试",
