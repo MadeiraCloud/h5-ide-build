@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest) {
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'component/stateeditor/stateeditor', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest, stateeditor) {
     var ToolbarView;
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -10,11 +10,9 @@
         'click #toolbar-bezier-qt': 'clickLineStyleBezierQT',
         'click #toolbar-run': 'clickRunIcon',
         'click .icon-save': 'clickSaveIcon',
-        'modal-shown #toolbar-delete': 'clickDeleteIcon',
-        'modal-shown #toolbar-duplicate': 'clickDuplicateIcon',
-        'modal-shown #toolbar-stop-app': 'clickStopApp',
-        'modal-shown #toolbar-start-app': 'clickStartApp',
-        'modal-shown #toolbar-app-to-stack': 'appToStackClick',
+        'click #toolbar-duplicate': 'clickDuplicateIcon',
+        'click #toolbar-app-to-stack': 'appToStackClick',
+        'click #toolbar-delete': 'clickDeleteIcon',
         'click #toolbar-new': 'clickNewStackIcon',
         'click .icon-zoom-in': 'clickZoomInIcon',
         'click .icon-zoom-out': 'clickZoomOutIcon',
@@ -22,13 +20,16 @@
         'click .icon-redo': 'clickRedoIcon',
         'click #toolbar-export-png': 'clickExportPngIcon',
         'click #toolbar-export-json': 'clickExportJSONIcon',
+        'click #toolbar-stop-app': 'clickStopApp',
+        'click #toolbar-start-app': 'clickStartApp',
         'click #toolbar-terminate-app': 'clickTerminateApp',
         'click #btn-app-refresh': 'clickRefreshApp',
         'click #toolbar-convert-cf': 'clickConvertCloudFormation',
         'click #toolbar-edit-app': 'clickEditApp',
         'click #toolbar-save-edit-app': 'clickSaveEditApp',
         'click #toolbar-cancel-edit-app': 'clickCancelEditApp',
-        'click .toolbar-visual-ops-switch': 'opsOptionChanged'
+        'click .toolbar-visual-ops-switch': 'opsOptionChanged',
+        'click .toolbar-visual-ops-refresh': 'clickReloadStates'
       },
       render: function(type, flag) {
         var data, lines;
@@ -325,6 +326,63 @@
           }
         });
         return null;
+      },
+      clickReloadStates: function(event) {
+        var $label, $target;
+        $target = $(event.currentTarget);
+        $label = $target.find('.refresh-label');
+        if ($target.hasClass('disabled')) {
+          return false;
+        }
+        console.log(event);
+        $target.toggleClass('disabled');
+        $label.html($label.attr('data-disabled'));
+        return $.ajax({
+          url: "http://urlthatdoesnotexist.com",
+          method: "POST",
+          data: {
+            "encoded_user": App.user.get("usercode"),
+            "token": App.user.get("defaultToken")
+          },
+          dataType: 'json',
+          statusCode: {
+            200: function() {
+              var appData, uid, _results;
+              console.log(200, arguments);
+              notification('info', "Success!");
+              appData = Design.instance().serialize();
+              _results = [];
+              for (uid in appData.component) {
+                if (appData.component[uid].type === "AWS.EC2.Instance" && appData.component[uid].state.length > 0) {
+                  console.log(appData, uid);
+                  _results.push(stateEditor.loadModule(appData.component, uid, null, true));
+                } else {
+                  _results.push(void 0);
+                }
+              }
+              return _results;
+            },
+            401: function() {
+              console.log(401, arguments);
+              return notification('error', "Error 401");
+            },
+            404: function() {
+              console.log(404, arguments);
+              return notification('error', "Error 404");
+            },
+            500: function() {
+              console.log(500, arguments);
+              return notification('error', "Error 500");
+            }
+          },
+          error: function() {
+            console.log('Reload State Request Error.');
+            return null;
+          }
+        }).always(function() {
+          $target.removeClass('disabled');
+          return $label.html($label.attr('data-original'));
+        });
       },
       clickDeleteIcon: function() {
         var me, target;
