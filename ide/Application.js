@@ -1469,7 +1469,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             localStackStoreIdStamp = $.cookie('stack_store_id_local') || '';
             stackStoreId = stackStoreIdStamp.split('#')[0];
             if (stackStoreId && stackStoreIdStamp !== localStackStoreIdStamp) {
-              $.setCookie('stack_store_id_local', stackStoreIdStamp);
+              $.cookie('stack_store_id_local', stackStoreIdStamp);
               return ApiRequest('stackstore_fetch_stackstore', {
                 file_name: "stack/" + stackStoreId + ".json"
               }).then(function(result) {
