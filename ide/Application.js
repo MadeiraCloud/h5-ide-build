@@ -1210,7 +1210,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         _ref = $.cookie();
         for (ckey in _ref) {
           cValue = _ref[ckey];
-          if (ckey !== 'stack_store_id') {
+          if (ckey !== 'stack_store_id_local') {
             $.removeCookie(ckey, domain);
             $.removeCookie(ckey);
           }
@@ -1459,24 +1459,31 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return null;
     };
     VisualOps.prototype.openSampleStack = function(fromWelcome) {
-      var isFirstVisit, stackStoreId, that;
+      var err, isFirstVisit, localStackStoreIdStamp, stackStoreId, stackStoreIdStamp, that;
       that = this;
-      if (!this.hasOpenedSampleStack) {
-        isFirstVisit = this.user.isFirstVisit();
-        if ((isFirstVisit && fromWelcome) || (!isFirstVisit && !fromWelcome)) {
-          stackStoreId = $.cookie('stack_store_id');
-          if (stackStoreId) {
-            $.removeCookie('stack_store_id');
-            return ApiRequest('stackstore_fetch_stackstore', {
-              file_name: "stack/" + stackStoreId + ".json"
-            }).then(function(result) {
-              var jsonDataStr;
-              jsonDataStr = result;
-              that.importJson(jsonDataStr);
-              return that.hasOpenedSampleStack = true;
-            });
+      try {
+        if (!this.hasOpenedSampleStack) {
+          isFirstVisit = this.user.isFirstVisit();
+          if ((isFirstVisit && fromWelcome) || (!isFirstVisit && !fromWelcome)) {
+            stackStoreIdStamp = $.cookie('stack_store_id') || '';
+            localStackStoreIdStamp = $.cookie('stack_store_id_local') || '';
+            stackStoreId = stackStoreIdStamp.split('#')[0];
+            if (stackStoreId && stackStoreIdStamp !== localStackStoreIdStamp) {
+              $.setCookie('stack_store_id_local', stackStoreIdStamp);
+              return ApiRequest('stackstore_fetch_stackstore', {
+                file_name: "stack/" + stackStoreId + ".json"
+              }).then(function(result) {
+                var jsonDataStr;
+                jsonDataStr = result;
+                that.importJson(jsonDataStr);
+                return that.hasOpenedSampleStack = true;
+              });
+            }
           }
         }
+      } catch (_error) {
+        err = _error;
+        return console.log('Open store stack failed');
       }
     };
     return VisualOps;
