@@ -94,7 +94,7 @@
       },
       hideErr: function(type) {
         if (type) {
-          return $("#runtime-error-" + id).hide();
+          return $("#runtime-error-" + type).hide();
         } else {
           return $(".runtime-error").hide();
         }
@@ -106,15 +106,23 @@
         }
         KpModel = Design.modelClassForType(constant.RESTYPE.KP);
         defaultKp = KpModel.getDefaultKP();
-        if (!defaultKp.get('isSet')) {
+        if (!defaultKp.get('isSet') || !$('#kp-runtime-placeholder .item.selected').length) {
           this.showErr('kp', 'Specify a key pair as $DefaultKeyPair for this app.');
           return false;
         }
         return true;
       },
+      hideDefaultKpError: function(context) {
+        return function() {
+          return context.hideErr('kp');
+        };
+      },
       renderDefaultKpDropdown: function() {
+        var kpDropdown;
         if (kp.hasResourceWithDefaultKp()) {
-          $('#kp-runtime-placeholder').html(kp.load().el);
+          kpDropdown = kp.load();
+          $('#kp-runtime-placeholder').html(kpDropdown.el);
+          kpDropdown.$('.selectbox').on('OPTION_CHANGE', this.hideDefaultKpError(this));
           $('.default-kp-group').show();
         }
         return null;
