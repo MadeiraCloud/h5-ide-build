@@ -127,7 +127,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\r\n  <div class=\"confirmSession\">\r\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\r\n\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\r\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\r\n  </article>\r\n\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\r\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\r\n  </footer>\r\n  </div>\r\n\r\n  <div class=\"reconnectSession\" style=\"display:none;\">\r\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\r\n    <div class=\"modal-input\">\r\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n    </div>\r\n  </article>\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\r\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\r\n  </footer>\r\n  </div>\r\n</section>\r\n";
+  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>\n";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/SessionDialog',['i18n!nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
@@ -139,7 +139,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         'click #SessionClose': 'closeSession',
         'click #SessionClose2': 'closeSession',
         'click #SessionConnect': 'connect',
-        'keypress #SessionPassword': 'passwordChanged'
+        'keyup #SessionPassword': 'passwordChanged'
       },
       constructor: function() {
         if (CurrentSessionDialog) {
@@ -199,23 +199,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav class=\"header-menu\" id=\"header\">\r\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\r\n      <i class=\"icon-notification\"></i>\r\n      <span id=\"NotificationCounter\"></span>\r\n    </div>\r\n\r\n    <div class=\"dropdown-menu\">\r\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\r\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n        <ul class=\"scroll-content\"></ul>\r\n\r\n        <div class=\"notification-empty\">\r\n          <div class=\"title\">"
+  buffer += "<nav class=\"header-menu\" id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
-    + "</div>\r\n          <div class=\"description\">"
+    + "</div>\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
-    + "</div>\r\n        </div>\r\n      </div>\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
+    + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
     + escapeExpression(((stack1 = (depth0 && depth0.user_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
+    + "\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\r\n      <i class=\"icon-caret-down\"></i>\r\n    </div>\r\n\r\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\">\r\n      <li id=\"HeaderShortcuts\">"
+    + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul id=\"user-dropdown-wrapper\" class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
-    + "</li>\r\n      <li><a href=\"http://docs.visualops.io\" target=\"_blank\" >"
+    + "</li>\n      <li><a href=\"http://docs.visualops.io\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
-    + "</a></li>\r\n      <li id=\"HeaderSettings\">"
+    + "</a></li>\n      <li id=\"HeaderSettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
-    + "</li>\r\n      <li id=\"HeaderLogout\">"
+    + "</li>\n      <li id=\"HeaderLogout\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
-    + "</li>\r\n    </ul>\r\n  </section>\r\n</nav>\r\n";
+    + "</li>\n    </ul>\n  </section>\n</nav>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('ide/subviews/SettingsDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -232,130 +232,126 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
+  buffer += "\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
-    + "</button>\r\n        ";
+    + "</button>\n        ";
   return buffer;
   }
 
-  buffer += "<div class=\"modal-header\">\r\n  <h3>"
+  buffer += "<div class=\"modal-header\">\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_SETTING", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i>\r\n</div>\r\n\r\n<nav id=\"SettingsNav\">\r\n  <span data-target=\"AccountTab\">"
+    + "</h3><i class=\"modal-close\">&times;</i>\n</div>\n\n<nav id=\"SettingsNav\">\n  <span data-target=\"AccountTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</span>\r\n  <span data-target=\"CredentialTab\">"
+    + "</span>\n  <span data-target=\"CredentialTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CREDENTIAL", {hash:{},data:data}))
-    + "</span>\r\n  <span data-target=\"TokenTab\">"
+    + "</span>\n  <!-- <span data-target=\"TokenTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</span>\r\n</nav>\r\n\r\n<div class=\"modal-body\" id=\"SettingsBody\">\r\n  <section id=\"AccountTab\">\r\n    <dl class=\"dl-horizontal\">\r\n      <dt>"
+    + "</span> -->\n</nav>\n\n<div class=\"modal-body\" id=\"SettingsBody\">\n  <section id=\"AccountTab\">\n    <dl class=\"dl-horizontal\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      <dt>"
+    + "</dd>\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n    </dl>\r\n\r\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + "</dd>\n    </dl>\n\n    <button id=\"AccountPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
-    + "</button>\r\n    <div id=\"AccountPwdWrap\">\r\n\r\n      <dl class=\"dl-horizontal\">\r\n        <dt>"
+    + "</button>\n    <div id=\"AccountPwdWrap\">\n\n      <dl class=\"dl-horizontal\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\r\n\r\n        <dt>"
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\r\n      </dl>\r\n\r\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\r\n\r\n      <div id=\"AccountPwdBtns\">\r\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n      <div id=\"AccountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
+    + "</button>\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section id=\"CredentialTab\">\r\n    <div id=\"CredDemoWrap\" ";
+    + "</span>\n      </div>\n    </div>\n  </section>\n\n  <section id=\"CredentialTab\">\n    <div id=\"CredDemoWrap\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\r\n      <h3>"
+  buffer += ">\n      <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <p>"
+    + "</h3>\n      <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TEXT", {hash:{},data:data}))
-    + "</p>\r\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
+    + "</p>\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_SETUP", {hash:{},data:data}))
-    + "</button></p>\r\n    </div>\r\n\r\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
+    + "</button></p>\n    </div>\n\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\r\n      <h3>"
+  buffer += ">\n      <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_CONNECTED_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <button class=\"cred-setup link-style\">"
+    + "</h3>\n      <button class=\"cred-setup link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\r\n        <dt>"
+    + "</button>\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>"
+    + "</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>"
+    + "</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      </dl>\r\n    </div>\r\n\r\n    <div id=\"CredSetupWrap\">\r\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\r\n      <ul>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</dd>\n      </dl>\n    </div>\n\n    <div id=\"CredSetupWrap\">\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n      <ul>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
     + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
     + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n      </ul>\r\n\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        ";
+    + "\">\n        </li>\n      </ul>\n\n      <div class=\"cred-btn-wrap clearfix\">\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.credNeeded), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        <button class=\"right link-style cred-setup-cancel\">"
+  buffer += "\n        <button class=\"right link-style cred-setup-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
+    + "</button>\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n\r\n    </div>\r\n\r\n    <div id=\"CredRemoveWrap\">\r\n      <h3>"
+    + "</button>\n      </div>\n\n    </div>\n\n    <div id=\"CredRemoveWrap\">\n      <h3>"
     + escapeExpression(((stack1 = (depth0 && depth0.credRemoveTitle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\r\n      <div>"
+    + "</h3>\n      <div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVE_TEXT", {hash:{},data:data}))
-    + "</div>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style cred-cancel\">"
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
+    + "</button>\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"CredConfirmWrap\">\r\n      <h3>"
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredConfirmWrap\">\n      <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <div>"
+    + "</h3>\n      <div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TEXT", {hash:{},data:data}))
-    + "</div>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style cred-cancel\">"
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
+    + "</button>\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_UPDATE_CONFIRM", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"CredRemoving\"><p>"
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredRemoving\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\r\n    <div id=\"CredUpdating\"><p>"
+    + "</p><div class=\"loading-spinner\"></div></div>\n    <div id=\"CredUpdating\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\r\n\r\n  </section>\r\n\r\n  <section id=\"TokenTab\">\r\n    <div id=\"TokenManager\">\r\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
     + "</button>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
     + "<a href=\"\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\r\n      <section class=\"token-table\">\r\n        <header class=\"clearfix\">\r\n          <span class=\"tokenName\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\r\n          <span class=\"tokenToken\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\r\n        </header>\r\n        <div class=\"scroll-wrap\">\r\n          <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n          <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</a> </p>\n      <ul class=\"token-table\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\r\n        </div>\r\n      </section>\r\n    </div>\r\n    <div id=\"TokenRmConfirm\" class=\"hide\">\r\n      <h3 id=\"TokenRmTit\"></h3>\r\n      <p>"
+    + "\"></ul>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n      <h3 id=\"TokenRmTit\"></h3>\n      <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
-    + "</p>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
+    + "</p>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + "</button>\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n";
+    + "</button>\n      </div>\n    </div>\n  </section>\n</div>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -600,65 +596,54 @@ function program3(depth0,data) {
         var self;
         $("#TokenCreate").attr("disabled", "disabled");
         self = this;
-        App.user.createToken().then(function() {
+        Q.defer().promise.then(function() {
           self.updateTokenTab();
           return $("#TokenCreate").removeAttr("disabled");
         }, function() {
-          notification("error", "Fail to create token, please retry.");
           return $("#TokenCreate").removeAttr("disabled");
         });
       },
       doneEditToken: function(evt) {
-        var $p, duplicate, newTokenName, oldName, t, token, _i, _len, _ref;
+        var $p;
         $p = $(evt.currentTarget).closest("li").removeClass("editing");
         $p.children(".tokenName").attr("readonly", true);
-        token = $p.children(".tokenToken").text();
-        newTokenName = $p.children(".tokenName").val();
-        _ref = App.user.get("tokens");
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          t = _ref[_i];
-          if (t.token === token) {
-            oldName = t.name;
-          } else if (t.name === newTokenName) {
-            duplicate = true;
-          }
-        }
-        if (!newTokenName || duplicate) {
-          $p.children(".tokenName").val(oldName);
-          return;
-        }
-        App.user.updateToken(token, newTokenName).fail(function() {
+        Q.defer().promise.then(function() {}, function() {
+          var oldName;
           oldName = "";
-          $p.children(".tokenName").val(oldName);
-          return notification("error", "Fail to update token, please retry.");
+          return $p.children(".tokenName").val(oldName);
         });
       },
       confirmRmToken: function() {
         var self;
         $("#TokenRemove").attr("disabled", "disabled");
         self = this;
-        App.user.removeToken(this.rmToken).then(function() {
+        Q.defer().promise.then(function() {
           self.updateTokenTab();
           return self.cancelRmToken();
         }, function() {
-          notification("Fail to delete token, please retry.");
-          return self.cancelRmToken();
+          return notification("Fail to delete access token, please retry.");
         });
       },
       cancelRmToken: function() {
         this.rmToken = "";
-        $("#TokenRemove").removeAttr("disabled");
         $("#TokenManager").show();
         $("#TokenRmConfirm").hide();
       },
       updateTokenTab: function() {
         var tokens;
-        tokens = App.user.get("tokens");
-        $("#TokenManager").find(".token-table").toggleClass("empty", tokens.length === 0);
+        tokens = [
+          {
+            name: "Token1",
+            token: "aaabbbccc"
+          }, {
+            name: "Token2",
+            token: "bbbdddccc"
+          }
+        ];
         if (tokens.length) {
-          $("#TokenList").html(MC.template.accessTokenTable(tokens));
+          $("#TokenManager").children("ul").html(MC.template.accessTokenTable(tokens));
         } else {
-          $("#TokenList").empty();
+          $("#TokenManager").empty();
         }
       }
     });
@@ -741,53 +726,53 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"modal-header\"> <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DIALOG_TIT", {hash:{},data:data}))
-    + "</h3> </div>\r\n\r\n<div id=\"WelcomeDialog\">\r\n\r\n<section id=\"WelcomeSettings\">\r\n  <header>\r\n    <h2>"
+    + "</h3> </div>\n\n<div id=\"WelcomeDialog\">\n\n<section id=\"WelcomeSettings\">\n  <header>\n    <h2>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_TIT", {hash:{},data:data}))
     + "<span>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></h2>\r\n    <p>"
+    + "</span></h2>\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DESC", {hash:{},data:data}))
-    + "</p>\r\n  </header>\r\n  <div id=\"CredSetupWrap\">\r\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\r\n    <ul>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</p>\n  </header>\n  <div id=\"CredSetupWrap\">\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n    <ul>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\r\n      </li>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\r\n      </li>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\r\n      </li>\r\n    </ul>\r\n\r\n    <footer class=\"cred-btn-wrap clearfix tar\">\r\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\n      </li>\n    </ul>\n\n    <footer class=\"cred-btn-wrap clearfix tar\">\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_SKIP", {hash:{},data:data}))
-    + "</button>\r\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
+    + "</button>\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
-    + "</button>\r\n    </footer>\r\n  </div>\r\n</section>\r\n\r\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\r\n  <p>"
+    + "</button>\n    </footer>\n  </div>\n</section>\n\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p>\r\n  <div class=\"loading-spinner\"></div>\r\n</section>\r\n\r\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\r\n  <h3>"
+    + "</p>\n  <div class=\"loading-spinner\"></div>\n</section>\n\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_TIT", {hash:{},data:data}))
-    + "</h3>\r\n  <h5>"
+    + "</h3>\n  <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_SUBTIT", {hash:{},data:data}))
-    + "</h5>\r\n  <p>"
+    + "</h5>\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG", {hash:{},data:data}))
-    + "</p>\r\n  <p>"
+    + "</p>\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG_EXTRA", {hash:{},data:data}))
-    + "</p>\r\n  <footer class=\"cred-btn-wrap clearfix tar\">\r\n    <button id=\"WelcomeBack\" class=\"link-style\">"
+    + "</p>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeBack\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
-    + "</button>\r\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
+    + "</button>\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n</section>\r\n\r\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\r\n  <p id=\"WelcomeDoneTitDemo\">"
+    + "</button>\n  </footer>\n</section>\n\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\n  <p id=\"WelcomeDoneTitDemo\">"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT_DEMO", {hash:{},data:data}))
-    + "</p>\r\n  <p id=\"WelcomeDoneTit\">"
+    + "</p>\n  <p id=\"WelcomeDoneTit\">"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT", {hash:{},data:data}))
-    + " <span></span></p>\r\n  <h3>"
+    + " <span></span></p>\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_TIT", {hash:{},data:data}))
-    + "</h3>\r\n  <ul>"
+    + "</h3>\n  <ul>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_MSG", {hash:{},data:data}))
-    + "</ul>\r\n  <footer class=\"cred-btn-wrap clearfix tar\">\r\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
+    + "</ul>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n</section>\r\n\r\n</div>\r\n";
+    + "</button>\n  </footer>\n</section>\n\n</div>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -900,7 +885,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.header = new HeaderView();
         this.listenTo(App.user, "change:state", this.toggleWelcome);
 
-        /* env:dev                                                                             env:dev:end */
+        /* env:dev                                                                           env:dev:end */
 
         /* env:debug */
         require(["./ide/subviews/DebugTool"], function(DT) {
@@ -1001,9 +986,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return self.__processSingleNotification(idx);
         });
       },
-      __triggerChange: _.debounce(function() {
-        return this.trigger("change:notification");
-      }, 300),
       __processSingleNotification: function(idx) {
         var i, info_list, item, req, same_req, _i, _len;
         req = App.WS.collection.request.findOne({
@@ -1030,7 +1012,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         item.is_readed = !App.WS.isReady();
         info_list.splice(idx, 1);
         info_list.splice(0, 0, item);
-        this.__triggerChange();
+        if (!this.__notifyDebounce) {
+          this.__notifyDebounce = setTimeout((function(_this) {
+            return function() {
+              _this.trigger("change:notification");
+              _this.__notifyDebounce = null;
+            };
+          })(this), 300);
+        }
         return null;
       },
       __parseRequestInfo: function(req) {
@@ -1119,7 +1108,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return !(UserState.NotFirstTime & this.get("state"));
       },
       userInfoAccuired: function(result) {
-        var idx, res, t, _i, _len, _ref;
+        var res;
         res = {
           email: MC.base64Decode(result.email),
           repo: result.mod_repo,
@@ -1128,21 +1117,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           intercomHash: result.intercom_secret,
           account: result.account_id,
           awsAccessKey: result.access_key,
-          awsSecretKey: result.secret_key,
-          tokens: result.tokens || [],
-          defaultToken: ""
+          awsSecretKey: result.secret_key
         };
         if (result.account_id === "demo_account") {
           res.account = res.awsAccessKey = res.awsSecretKey = "";
-        }
-        _ref = res.tokens;
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          t = _ref[idx];
-          if (!t.name) {
-            res.defaultToken = t.token;
-            res.tokens.splice(idx, 1);
-            break;
-          }
         }
         this.set(res);
         if (this.isFirstVisit()) {
@@ -1277,72 +1255,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           self.set(attr);
           self.trigger("change:credential");
           ide_event.trigger(ide_event.UPDATE_AWS_CREDENTIAL);
-        });
-      },
-      createToken: function() {
-        var base, nameMap, newName, self, t, tmpl, _i, _len, _ref;
-        tmpl = "MyToken";
-        base = 1;
-        nameMap = {};
-        _ref = this.attributes.tokens;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          t = _ref[_i];
-          nameMap[t.name] = true;
-        }
-        while (true) {
-          newName = tmpl + base;
-          if (nameMap[newName]) {
-            base += 1;
-          } else {
-            break;
-          }
-        }
-        self = this;
-        return ApiRequest("token_create", {
-          token_name: newName
-        }).then(function(res) {
-          self.attributes.tokens.splice(0, 0, {
-            name: res[0],
-            token: res[1]
-          });
-        });
-      },
-      removeToken: function(token) {
-        var idx, self, t, _i, _len, _ref;
-        _ref = this.attributes.tokens;
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          t = _ref[idx];
-          if (t.token === token) {
-            break;
-          }
-        }
-        self = this;
-        return ApiRequest("token_remove", {
-          token: token,
-          token_name: t.name
-        }).then(function(res) {
-          idx = self.attributes.tokens.indexOf(t);
-          if (idx >= 0) {
-            self.attributes.tokens.splice(idx, 1);
-          }
-        });
-      },
-      updateToken: function(token, newName) {
-        var self;
-        self = this;
-        return ApiRequest("token_update", {
-          token: token,
-          new_token_name: newName
-        }).then(function(res) {
-          var idx, t, _i, _len, _ref;
-          _ref = self.attributes.tokens;
-          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-            t = _ref[idx];
-            if (t.token === token) {
-              t.name = newName;
-              break;
-            }
-          }
         });
       }
     });

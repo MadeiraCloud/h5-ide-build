@@ -4394,7 +4394,7 @@ return TEMPLATE; });
 (function() {
   define('component/stateeditor/stateeditor',['event', './view', './model', './lib/ace', 'UI.modal', 'jquerysort'], function(ide_event, View, Model) {
     var loadModule, unLoadModule;
-    loadModule = function(allCompData, uid, resId, force) {
+    loadModule = function(allCompData, uid, resId) {
       var compData, model, resModel, view;
       compData = allCompData[uid];
       resModel = Design.instance().component(uid);
@@ -4420,9 +4420,7 @@ return TEMPLATE; });
       ide_event.onLongListen(ide_event.STATE_EDITOR_SAVE_DATA, function(event) {
         return view.onMouseDownSaveFromOther(event);
       });
-      if (!force) {
-        $('#property-panel').addClass('state');
-      }
+      $('#property-panel').addClass('state');
       return $('#property-panel .sub-stateeditor').html(view.render().el);
     };
     unLoadModule = function(view, model) {

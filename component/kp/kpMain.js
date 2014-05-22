@@ -744,15 +744,19 @@ return TEMPLATE; });
     return Backbone.View.extend({
       tagName: 'section',
       events: {
-        'click .keypair-filter': 'returnFalse',
         'click .manage-kp': 'manageKp',
         'click .show-credential': 'showCredential',
         'OPTION_SHOW .selectbox': 'show',
         'OPTION_CHANGE .selectbox': 'setKey',
+        'click .keypair-filter': 'returnFalse',
+        'keydown .keypair-filter': 'filterOnKeyDown',
         'keyup .keypair-filter': 'filter'
       },
       showCredential: function() {
         return App.showSettings(App.showSettings.TAB.Credential);
+      },
+      filterOnKeyDown: function(event) {
+        return event.stopPropagation();
       },
       filter: function(event) {
         var hitKeys, keyword, len;
