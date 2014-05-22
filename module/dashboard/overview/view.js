@@ -519,7 +519,7 @@
         reader = new FileReader();
         reader.onload = function(evt) {
           var error;
-          error = App.importJson(reader.result);
+          error = model.importJson(reader.result);
           if (error) {
             $("#import-json-error").html(error);
           } else {

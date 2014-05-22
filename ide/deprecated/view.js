@@ -10,8 +10,7 @@
         return $(document).on('keydown', this.globalKeyEvent);
       },
       showMain: function() {
-        var target, that;
-        that = this;
+        var target;
         console.log('showMain');
         if ($('#waiting-bar-wrapper').hasClass('waiting-bar')) {
           this.toggleWaiting();

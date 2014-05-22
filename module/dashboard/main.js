@@ -87,8 +87,7 @@
         ide_event.onLongListen(ide_event.SWITCH_MAIN, function() {
           if (MC.data.supported_platforms && MC.data.supported_platforms.length) {
             model.set('supported_platforms', true);
-            view.enableCreateStack();
-            return App.openSampleStack();
+            return view.enableCreateStack();
           }
         });
         ide_event.onLongListen(ide_event.UPDATE_AWS_CREDENTIAL, function() {

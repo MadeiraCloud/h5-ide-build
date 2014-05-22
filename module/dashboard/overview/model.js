@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['MC', 'event', 'constant', 'vpc_model', 'aws_model', 'app_model', 'stack_model', 'ami_service', 'elb_service', 'dhcp_service', 'vpngateway_service', 'customergateway_service', 'i18n!nls/lang.js', 'common_handle'], function(MC, ide_event, constant, vpc_model, aws_model, app_model, stack_model, ami_service, elb_service, dhcp_service, vpngateway_service, customergateway_service, lang, common_handle, JsonExporter) {
+  define(['MC', 'event', 'constant', 'vpc_model', 'aws_model', 'app_model', 'stack_model', 'ami_service', 'elb_service', 'dhcp_service', 'vpngateway_service', 'customergateway_service', 'i18n!nls/lang.js', 'common_handle', "component/exporter/JsonExporter"], function(MC, ide_event, constant, vpc_model, aws_model, app_model, stack_model, ami_service, elb_service, dhcp_service, vpngateway_service, customergateway_service, lang, common_handle, JsonExporter) {
     var OverviewModel, current_region, popup_key_set, region_aws_list, region_classic_vpc_result, region_counts, region_tooltip, result_list, total_app, total_aws, total_stack;
     region_counts = [];
     region_aws_list = [];
@@ -1713,6 +1713,24 @@
             }
           }
         }
+        return null;
+      },
+      importJson: function(json) {
+        var new_result, result;
+        result = JsonExporter.importJson(json);
+        if (_.isString(result)) {
+          return result;
+        }
+        console.log("Imported JSON: ", result, result.region);
+        MC.common.other.checkRepeatStackName();
+        result.username = $.cookie('usercode');
+        result.name = MC.aws.aws.getDuplicateName(result.name);
+        result.id = 'import-' + MC.data.untitled + '-' + result.region;
+        new_result = {};
+        new_result.resolved_data = [];
+        new_result.resolved_data.push(result);
+        console.log("Formate JSON: ", new_result);
+        ide_event.trigger(ide_event.OPEN_DESIGN_TAB, 'IMPORT_STACK', new_result);
         return null;
       }
     });
