@@ -305,7 +305,7 @@
               "key": ["HealthCheck"],
               "show_key": lang.ide.PROP_ELB_HEALTH_CHECK
             }, {
-              "key": ["Instances", 'member'],
+              "key": ["Instances", 'member', 'InstanceId'],
               "show_key": lang.ide.DASH_LBL_INSTANCE
             }, {
               "key": ["ListenerDescriptions", "member", "Listener"],
