@@ -300,7 +300,6 @@ define({
         "PROP_INSTANCE_AMI": "AMI",
         "PROP_INSTANCE_TYPE": "Instance Type",
         "PROP_INSTANCE_KEY_PAIR": "Key Pair",
-        "POP_INSTANCE_KEYPAIR_INFO_TIP": "If any instance or launch configuration uses $DefaultKeyPair, you will need to specify which key pair (or no key pair) should be used for $DefaultKeyPair when launching the instance or creating the launch configuration.",
         "PROP_INSTANCE_EBS_OPTIMIZED": "EBS Optimization",
         "PROP_INSTANCE_TENANCY": "Tenancy",
         "PROP_INSTANCE_TENANCY_DEFAULT": "Default",
@@ -1217,7 +1216,10 @@ define({
         "TA_MSG_ERROR_NO_CGW": "You have configured states for instance. To make sure OpsAgent to work, the VPC must have an internet gateway.",
         "TA_MSG_ERROR_NO_OUTBOUND_RULES": "<span class='validation-tag tag-instance'>%s</span> has configured states. To make sure OpsAgent to work, it should have outbound rules on <span class='validation-tag tag-port'>80</span> and <span class='validation-tag tag-port'>443</span> ports to the outside.",
         "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": "<span class='validation-tag tag-instance'>%s</span> has configured states. Suggest to set its outbound rule on <span class='validation-tag tag-port'>80</span> and <span class='validation-tag tag-port'>443</span> to <span class='validation-tag tag-ip'>0.0.0.0/0</span>. Otherwise, agent may not be able to work properly, install packages or check out source codes lacking route to VisualOps's monitoring systems or required repositories.",
-        "TIP_KEYPAIR_USED_DEFAULT_KP": "One or more instance/launch configuration has used $DefaultKeyPair. You need to specify which key pair (or no key pair) should be used for $DefaultKeyPair."
+        "RELOAD_STATE_INVALID_REQUEST": "Sorry, but the request is not valid.",
+        "RELOAD_STATE_NETWORKERROR": "Network error, please try again later.",
+        "RELOAD_STATE_INTERNAL_SERVER_ERROR": "Sorry, Internal server error, please try again later.",
+        "RELOAD_STATE_SUCCESS": "States reloaded successfully!"
     },
     "service": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",

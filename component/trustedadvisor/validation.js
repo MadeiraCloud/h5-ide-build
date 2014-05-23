@@ -2870,9 +2870,7 @@ This file use for validate component about state.
           needValidate.push(i);
         }
       }
-      if (!needValidate.length) {
-        return callback(null);
-      } else {
+      if (needValidate.length) {
         username = $.cookie("usercode");
         session = $.cookie("session_id");
         region = Design.instance().region();
