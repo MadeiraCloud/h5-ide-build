@@ -305,10 +305,10 @@
               "key": ["HealthCheck"],
               "show_key": lang.ide.PROP_ELB_HEALTH_CHECK
             }, {
-              "key": ["Instances", 'member', 'InstanceId'],
-              "show_key": lang.ide.DASH_LBL_INSTANCE
+              "key": ["Instances", 'member'],
+              "show_key": lang.ide.DASH_LBL_DNS_NAME
             }, {
-              "key": ["ListenerDescriptions", "member", "Listener"],
+              "key": ["ListenerDescriptions", "member"],
               "show_key": lang.ide.PROP_ELB_LBL_LISTENER_DESCRIPTIONS
             }, {
               "key": ["SecurityGroups", "member"],
@@ -766,7 +766,7 @@
                   _ref = result.resolved_data;
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                     instance = _ref[_i];
-                    if (instance.State === "InService") {
+                    if (instance.state === "InService") {
                       health++;
                     }
                   }
@@ -821,11 +821,7 @@
                 return null;
               });
             }
-            if (asl.Instances) {
-              asl.Instances = _.pluck(asl.Instances.member, 'InstanceId');
-            } else {
-              asl.Instances = [];
-            }
+            asl.Instances = _.pluck(asl.Instances.member, 'InstanceId');
             asl.detail = me.parseSourceValue('DescribeAutoScalingGroups', asl, "detail", null);
             if (resources.DescribeScalingActivities) {
               $.each(resources.DescribeScalingActivities, function(idx, activity) {
@@ -842,10 +838,7 @@
         if (resources.DescribeAlarms) {
           _.map(resources.DescribeAlarms, function(alarm, i) {
             lists.CW += 1;
-            alarm.dimension_display = '';
-            if (alarm.Dimensions) {
-              alarm.dimension_display = alarm.Dimensions.member[0].Name + ':' + alarm.Dimensions.member[0].Value;
-            }
+            alarm.dimension_display = alarm.Dimensions.member[0].Name + ':' + alarm.Dimensions.member[0].Value;
             alarm.threshold_display = "" + alarm.MetricName + " " + alarm.ComparisonOperator + " " + alarm.Threshold + " for " + alarm.Period + " seconds";
             if (alarm.StateValue === 'OK') {
               alarm.state_ok = true;
@@ -1152,14 +1145,10 @@
           show_key = value.show_key;
           cur_key = key_array[0];
           cur_value = value_to_parse[cur_key];
-          _.map(key_array, function(attr, key) {
+          _.map(key_array, function(value, key) {
             if (cur_value) {
               if (key > 0) {
-                if (_.isArray(cur_value) && !_.isNumber(attr)) {
-                  cur_value = _.pluck(cur_value, attr);
-                } else if (_.isObject(cur_value)) {
-                  cur_value = cur_value[attr];
-                }
+                cur_value = cur_value[value];
                 return cur_value;
               }
             }

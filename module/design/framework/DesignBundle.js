@@ -1144,7 +1144,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
 
     /*
       -------------------------------
@@ -1761,7 +1761,7 @@
       } else if (!oldComp) {
         changeObj.change = "Create";
       } else if (!_.isEqual(newComp.resource, oldComp.resource)) {
-        changeObj.change = "Update";
+        changeObj.change = "Modify";
       }
       if (changeObj.change) {
         result.push(changeObj);
@@ -1881,7 +1881,7 @@
     };
     CanvasAdaptor.setDesign(Design);
 
-    /* env:dev                                            env:dev:end */
+    /* env:dev                                              env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -1922,7 +1922,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
 
     /*
       -------------------------------
@@ -2043,7 +2043,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                             env:dev:end */
+        /* env:dev                                                                               env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2117,7 +2117,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                          env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2327,7 +2327,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                           env:dev:end */
+        /* env:dev                                                                                              env:dev:end */
 
         /* jshint -W083 */
 
@@ -2416,7 +2416,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                           env:dev:end */
+        /* env:dev                                                                                                                                                                                                             env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -3027,7 +3027,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this);
 
-          /* env:dev                                                                                                                                                             env:dev:end */
+          /* env:dev                                                                                                                                                                env:dev:end */
         }
         return this.__view;
       },
@@ -8183,54 +8183,33 @@
         return false;
       },
       isRemovable: function() {
-        var az, child, childAZ, connected, elb, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
+        var elb;
         if (this.design().modeIsAppEdit()) {
           if (this.hasAppUpdateRestriction()) {
             return {
               error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_2
             };
           }
-        }
-        elb = this.getTarget(constant.RESTYPE.ELB);
-        subnet = this.getTarget(constant.RESTYPE.SUBNET);
-        az = subnet.parent();
-        _ref = elb.connectionTargets("ElbAmiAsso");
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
-          childAZ = child.parent();
-          while (childAZ) {
-            if (childAZ.type === constant.RESTYPE.AZ) {
-              break;
-            }
-            childAZ = childAZ.parent();
+        } else {
+          elb = this.getTarget(constant.RESTYPE.ELB);
+          if (elb.connections("ElbAmiAsso").length > 0 && elb.connections("ElbSubnetAsso").length <= 1) {
+            return {
+              error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_1
+            };
           }
-          if (!childAZ) {
-            continue;
-          }
-          if (childAZ === az) {
-            connected = true;
-            break;
-          }
-        }
-        if (!connected) {
-          return true;
-        }
-        _ref1 = elb.connectionTargets("ElbSubnetAsso");
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          sb = _ref1[_j];
-          if (sb !== subnet && sb.parent() === az) {
-            connected = false;
-            break;
-          }
-        }
-        if (connected) {
-          return {
-            error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_2
-          };
         }
         return true;
       }
-    }, {});
+    }, {
+      isConnectable: function(comp1, comp2) {
+        var subnet;
+        subnet = comp1.type === constant.RESTYPE.SUBNET ? comp1 : comp2;
+        if (parseInt(subnet.get("cidr").split("/")[1], 10) <= 27) {
+          return true;
+        }
+        return lang.ide.CVS_MSG_WARN_CANNOT_CONNECT_SUBNET_TO_ELB;
+      }
+    });
     ElbAmiAsso = ConnectionModel.extend({
       type: "ElbAmiAsso",
       defaults: function() {
@@ -8269,38 +8248,25 @@
         }
       ],
       initialize: function(attibutes, option) {
-        var ami, asg, connectedSbs, elb, foundSubnet, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
+        var ami, asg, elb, subnet, _i, _len, _ref;
         if (option && option.createByUser) {
           new SGRulePopup(this.id);
         }
         ami = this.getOtherTarget(constant.RESTYPE.ELB);
         elb = this.getTarget(constant.RESTYPE.ELB);
-        subnet = ami;
-        while (true) {
-          subnet = subnet.parent();
-          if (!subnet) {
-            return;
+        if (elb.connections("ElbSubnetAsso").length === 0) {
+          subnet = ami.parent();
+          while (subnet.type !== constant.RESTYPE.SUBNET) {
+            subnet = subnet.parent();
           }
-          if (subnet.type === constant.RESTYPE.SUBNET) {
-            break;
+          if (subnet) {
+            new ElbSubnetAsso(elb, subnet);
           }
-        }
-        connectedSbs = elb.connectionTargets("ElbSubnetAsso");
-        _ref = subnet.parent().children();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          sb = _ref[_i];
-          if (connectedSbs.indexOf(sb) !== -1) {
-            foundSubnet = true;
-            break;
-          }
-        }
-        if (!foundSubnet) {
-          new ElbSubnetAsso(subnet, elb);
         }
         if (ami.type === constant.RESTYPE.LC) {
-          _ref1 = ami.parent().get("expandedList");
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            asg = _ref1[_j];
+          _ref = ami.parent().get("expandedList");
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            asg = _ref[_i];
             new ElbAmiAsso(asg, elb);
           }
         }
@@ -9676,32 +9642,27 @@
         return true;
       },
       isRemovable: function() {
-        var ami, az, childAZ, cn, _i, _j, _len, _len1, _ref, _ref1;
-        az = this.parent();
+        var ami, cn, notRemovable, _i, _j, _len, _len1, _ref, _ref1;
         _ref = this.connections("ElbSubnetAsso");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cn = _ref[_i];
           if (cn.isRemovable() !== true) {
-            if (!this.design().modeIsStack()) {
+            notRemovable = true;
+            if (this.design().modeIsStack()) {
+              notRemovable = false;
+              _ref1 = cn.getOtherTarget(this).connectionTargets("ElbAmiAsso");
+              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                ami = _ref1[_j];
+                if (ami.parent() !== this && ami.parent().parent() !== this) {
+                  notRemovable = true;
+                  break;
+                }
+              }
+            }
+            if (notRemovable) {
               return {
                 error: lang.ide.CVS_MSG_ERR_DEL_LINKED_ELB
               };
-            }
-            _ref1 = cn.getOtherTarget(this).connectionTargets("ElbAmiAsso");
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              ami = _ref1[_j];
-              if (ami.parent() === this || ami.parent().parent() === this) {
-                continue;
-              }
-              childAZ = ami.parent();
-              while (childAZ) {
-                if (childAZ === az) {
-                  return {
-                    error: lang.ide.CVS_MSG_ERR_DEL_LINKED_ELB
-                  };
-                }
-                childAZ = childAZ.parent();
-              }
             }
           }
         }
@@ -9739,6 +9700,12 @@
         if (!this.isCidrEnoughForIps(cidr)) {
           return {
             error: "" + cidr + " has not enough IP for the ENIs in this subnet."
+          };
+        }
+        if (this.connections("ElbSubnetAsso").length && Number(cidr.split('/')[1]) > 27) {
+          return {
+            error: "The subnet is attached with a load balancer. The CIDR mask must be smaller than /27.",
+            shouldRemove: false
           };
         }
         return true;
@@ -12403,7 +12370,7 @@
 (function() {
   define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                             env:dev:end */
+    /* env:dev                                                                               env:dev:end */
 
     /* env:debug */
     require(["./module/design/framework/util/DesignDebugger"], function() {});

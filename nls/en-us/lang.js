@@ -171,7 +171,7 @@ define({
         "CVS_MSG_ERR_DEL_MAIN_RT": "The main route table %s cannot be deleted. Please set another route table as the main and try again.",
         "CVS_MSG_ERR_DEL_LINKED_RT": "Subnets must be associated to a route table. Please associate the subnets with another route table first.",
         "CVS_MSG_ERR_DEL_SBRT_LINE": "Subnets must be associated with a route table.",
-        "CVS_MSG_ERR_DEL_ELB_LINE_1": "Load Balancer must associate with at least 1 subnet for each Availability Zone where it has registered load balanced instances.",
+        "CVS_MSG_ERR_DEL_ELB_LINE_1": "Load balancer must attach to at least one subnet.",
         "CVS_MSG_ERR_DEL_ELB_LINE_2": "Cannot delete or change the current attachment.",
         "CVS_MSG_ERR_DEL_LINKED_ELB": "This subnet cannot be deleted because it is associated to a load balancer.",
         "CVS_CFM_DEL": "Delete %s",
@@ -300,8 +300,6 @@ define({
         "PROP_INSTANCE_AMI": "AMI",
         "PROP_INSTANCE_TYPE": "Instance Type",
         "PROP_INSTANCE_KEY_PAIR": "Key Pair",
-        "PROP_INSTANCE_CLOUDWATCH_DETAILED_MONITORING": "CloudWatch Detailed Monitoring",
-        "POP_INSTANCE_KEYPAIR_INFO_TIP": "If any instance or launch configuration uses $DefaultKeyPair, you will need to specify which key pair (or no key pair) should be used for $DefaultKeyPair when launching the instance or creating the launch configuration.",
         "PROP_INSTANCE_EBS_OPTIMIZED": "EBS Optimization",
         "PROP_INSTANCE_TENANCY": "Tenancy",
         "PROP_INSTANCE_TENANCY_DEFAULT": "Default",
@@ -1183,7 +1181,6 @@ define({
         "TA_MSG_WARNING_ELB_RULE_NOT_INBOUND_TO_ELB_PING_PORT": "Load balancer <span class='validation-tag tag-elb'>%s</span>'s security group rule should allow inbound traffic towards its ping port: <span class='validation-tag tag-port'>%s</span>.",
         "TA_MSG_ERROR_ELB_RULE_NOT_OUTBOUND_TO_INSTANCE_LISTENER": "Load balancer <span class='validation-tag tag-elb'>%s</span> should allow outbound traffic towards its backend instance or auto-scaling group through Instance Protocol: %s.",
         "TA_MSG_ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER": "%s <span class='validation-tag tag-elb'>%s</span> should allow inbound traffic towards %s according to %s's Instance Listener Protocol.",
-        "TA_MSG_ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27": "Load Balancer <span class='validation-tag tag-elb'>%s</span> has been associated with Subnet <span class='validation-tag tag-subnet'>%s</span>, whose CIDR mask must be smaller than /27.",
         "TA_MSG_WARNING_SG_RULE_EXCEED_FIT_NUM": "Security Group <span class='validation-tag tag-sg'>%s</span> has more than %s rules, If a security group has a large number of rules, performance can be degraded.",
         "TA_MSG_NOTICE_STACK_USING_ONLY_ONE_SG": "This stack is only using 1 security group.",
         "TA_MSG_WARNING_SG_USING_ALL_PROTOCOL_RULE": "Security Group <span class='validation-tag tag-sg'>%s</span> is using 'ALL' protocol traffic.",
@@ -1219,7 +1216,10 @@ define({
         "TA_MSG_ERROR_NO_CGW": "You have configured states for instance. To make sure OpsAgent to work, the VPC must have an internet gateway.",
         "TA_MSG_ERROR_NO_OUTBOUND_RULES": "<span class='validation-tag tag-instance'>%s</span> has configured states. To make sure OpsAgent to work, it should have outbound rules on <span class='validation-tag tag-port'>80</span> and <span class='validation-tag tag-port'>443</span> ports to the outside.",
         "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": "<span class='validation-tag tag-instance'>%s</span> has configured states. Suggest to set its outbound rule on <span class='validation-tag tag-port'>80</span> and <span class='validation-tag tag-port'>443</span> to <span class='validation-tag tag-ip'>0.0.0.0/0</span>. Otherwise, agent may not be able to work properly, install packages or check out source codes lacking route to VisualOps's monitoring systems or required repositories.",
-        "TIP_KEYPAIR_USED_DEFAULT_KP": "One or more instance/launch configuration has used $DefaultKeyPair. You need to specify which key pair (or no key pair) should be used for $DefaultKeyPair."
+        "RELOAD_STATE_INVALID_REQUEST": "Sorry, but the request is not valid.",
+        "RELOAD_STATE_NETWORKERROR": "Network error, please try again later.",
+        "RELOAD_STATE_INTERNAL_SERVER_ERROR": "Sorry, Internal server error, please try again later.",
+        "RELOAD_STATE_SUCCESS": "States reloaded successfully!"
     },
     "service": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",

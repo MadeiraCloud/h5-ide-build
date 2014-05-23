@@ -1,6 +1,15 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest) {
-    var ToolbarView;
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'component/stateeditor/stateeditor', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest, stateEditor) {
+    var API_HOST, API_URL, ToolbarView;
+    API_HOST = "api.visualops.io";
+
+    /* env:debug */
+    API_HOST = "api.mc3.io";
+
+    /* env:debug:end */
+
+    /* env:dev                                           env:dev:end */
+    API_URL = "https://" + API_HOST + "/v1/apps/";
     ToolbarView = Backbone.View.extend({
       el: document,
       events: {
@@ -10,11 +19,9 @@
         'click #toolbar-bezier-qt': 'clickLineStyleBezierQT',
         'click #toolbar-run': 'clickRunIcon',
         'click .icon-save': 'clickSaveIcon',
-        'modal-shown #toolbar-delete': 'clickDeleteIcon',
-        'modal-shown #toolbar-duplicate': 'clickDuplicateIcon',
-        'modal-shown #toolbar-stop-app': 'clickStopApp',
-        'modal-shown #toolbar-start-app': 'clickStartApp',
-        'modal-shown #toolbar-app-to-stack': 'appToStackClick',
+        'click #toolbar-duplicate': 'clickDuplicateIcon',
+        'click #toolbar-app-to-stack': 'appToStackClick',
+        'click #toolbar-delete': 'clickDeleteIcon',
         'click #toolbar-new': 'clickNewStackIcon',
         'click .icon-zoom-in': 'clickZoomInIcon',
         'click .icon-zoom-out': 'clickZoomOutIcon',
@@ -22,13 +29,16 @@
         'click .icon-redo': 'clickRedoIcon',
         'click #toolbar-export-png': 'clickExportPngIcon',
         'click #toolbar-export-json': 'clickExportJSONIcon',
+        'click #toolbar-stop-app': 'clickStopApp',
+        'click #toolbar-start-app': 'clickStartApp',
         'click #toolbar-terminate-app': 'clickTerminateApp',
         'click #btn-app-refresh': 'clickRefreshApp',
         'click #toolbar-convert-cf': 'clickConvertCloudFormation',
         'click #toolbar-edit-app': 'clickEditApp',
         'click #toolbar-save-edit-app': 'clickSaveEditApp',
         'click #toolbar-cancel-edit-app': 'clickCancelEditApp',
-        'click .toolbar-visual-ops-switch': 'opsOptionChanged'
+        'click .toolbar-visual-ops-switch': 'opsOptionChanged',
+        'click .reload-states': 'clickReloadStates'
       },
       render: function(type, flag) {
         var data, lines;
@@ -94,7 +104,7 @@
       },
       hideErr: function(type) {
         if (type) {
-          return $("#runtime-error-" + type).hide();
+          return $("#runtime-error-" + id).hide();
         } else {
           return $(".runtime-error").hide();
         }
@@ -106,23 +116,15 @@
         }
         KpModel = Design.modelClassForType(constant.RESTYPE.KP);
         defaultKp = KpModel.getDefaultKP();
-        if (!defaultKp.get('isSet') || !$('#kp-runtime-placeholder .item.selected').length) {
+        if (!defaultKp.get('isSet')) {
           this.showErr('kp', 'Specify a key pair as $DefaultKeyPair for this app.');
           return false;
         }
         return true;
       },
-      hideDefaultKpError: function(context) {
-        return function() {
-          return context.hideErr('kp');
-        };
-      },
       renderDefaultKpDropdown: function() {
-        var kpDropdown;
         if (kp.hasResourceWithDefaultKp()) {
-          kpDropdown = kp.load();
-          $('#kp-runtime-placeholder').html(kpDropdown.el);
-          kpDropdown.$('.selectbox').on('OPTION_CHANGE', this.hideDefaultKpError(this));
+          $('#kp-runtime-placeholder').html(kp.load().el);
           $('.default-kp-group').show();
         }
         return null;
@@ -333,6 +335,71 @@
           }
         });
         return null;
+      },
+      clickReloadStates: function(event) {
+        var $label, $target, app_id, data;
+        $target = $(event.currentTarget);
+        $label = $target;
+        if ($target.hasClass('disabled')) {
+          return false;
+        }
+        console.log(event);
+        $target.toggleClass('disabled');
+        $label.html($label.attr('data-disabled'));
+        app_id = Design.instance().serialize().id;
+        console.log(API_URL + app_id);
+        data = {
+          "encoded_user": App.user.get("usercode"),
+          "token": App.user.get("defaultToken")
+        };
+        return $.ajax({
+          url: API_URL + app_id,
+          method: "POST",
+          data: JSON.stringify(data),
+          dataType: 'json',
+          statusCode: {
+            200: function() {
+              var appData, uid, _results;
+              console.log(200, arguments);
+              appData = Design.instance().serialize();
+              _results = [];
+              for (uid in appData.component) {
+                if (appData.component[uid].type === "AWS.EC2.Instance" && appData.component[uid].state.length > 0) {
+                  console.log(appData, uid);
+                  stateEditor.loadModule(appData.component, uid, null, true);
+                  _results.push(notification('info', lang.ide.RELOAD_STATE_SUCCESS));
+                } else {
+                  _results.push(void 0);
+                }
+              }
+              return _results;
+            },
+            401: function() {
+              console.log(401, arguments);
+              return notification('error', lang.ide.RELOAD_STATE_INVALID_REQUEST);
+            },
+            404: function() {
+              console.log(404, arguments);
+              return notification('error', lang.ide.RELOAD_STATE_NETWORKERROR);
+            },
+            500: function() {
+              console.log(500, arguments);
+              return notification('error', lang.ide.RELOAD_STATE_INTERNAL_SERVER_ERROR);
+            }
+          },
+          error: function() {
+            console.log('Reload State Request Error.');
+            return null;
+          },
+          success: function() {
+            return console.log('Succeeded Get Right Response.');
+          }
+        }).always(function() {
+          return window.setTimeout(function() {
+            $target.removeClass('disabled');
+            return $label.html($label.attr('data-original'));
+          }, 2000);
+        });
       },
       clickDeleteIcon: function() {
         var me, target;
@@ -638,10 +705,9 @@
         return null;
       },
       opsState: function() {
-        var $applyVisops, $switchCheckbox, agentData;
+        var $switchCheckbox, agentData;
         console.log('opsState');
         $switchCheckbox = $('#main-toolbar .toolbar-visual-ops-switch');
-        $applyVisops = $('#apply-visops');
         if (Tabbar.current === 'new') {
           $switchCheckbox.addClass('on');
           this.model.setAgentEnable(true);
