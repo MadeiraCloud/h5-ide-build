@@ -853,7 +853,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!nls/lang.js', '../../helper'], function(constant, MC, lang, taHelper) {
-    var isAttachELBToMultiAZ, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener;
+    var isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener;
     isHaveIGWForInternetELB = function(elbUID) {
       var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
       elbComp = MC.canvas_data.component[elbUID];
@@ -1190,6 +1190,34 @@
       }
       return null;
     };
+    isELBSubnetCIDREnough = function(elbUID) {
+      var elbComp, elbName, elbSubnetAry, resultAry;
+      elbComp = MC.canvas_data.component[elbUID];
+      elbSubnetAry = elbComp.resource.Subnets;
+      elbName = elbComp.name;
+      resultAry = [];
+      _.each(elbSubnetAry, function(subnetRef) {
+        var subnetCIDR, subnetComp, subnetName, subnetUID, suffixNum, tipInfo;
+        subnetUID = MC.extractID(subnetRef);
+        subnetComp = MC.canvas_data.component[subnetUID];
+        if (subnetComp) {
+          subnetName = subnetComp.name;
+          subnetUID = subnetComp.uid;
+          subnetCIDR = subnetComp.resource.CidrBlock;
+          suffixNum = Number(subnetCIDR.split('/')[1]);
+          if (suffixNum > 27) {
+            tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27, elbName, subnetName);
+            resultAry.push({
+              level: constant.TA.ERROR,
+              info: tipInfo,
+              uid: subnetUID
+            });
+          }
+        }
+        return null;
+      });
+      return resultAry;
+    };
     return {
       isHaveIGWForInternetELB: isHaveIGWForInternetELB,
       isHaveInstanceAttached: isHaveInstanceAttached,
@@ -1200,7 +1228,8 @@
       isRuleInboundToELBListener: isRuleInboundToELBListener,
       isRuleOutboundToInstanceListener: isRuleOutboundToInstanceListener,
       isRuleInboundInstanceForELBListener: isRuleInboundInstanceForELBListener,
-      isRuleInboundToELBPingPort: isRuleInboundToELBPingPort
+      isRuleInboundToELBPingPort: isRuleInboundToELBPingPort,
+      isELBSubnetCIDREnough: isELBSubnetCIDREnough
     };
   });
 

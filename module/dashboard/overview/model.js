@@ -306,9 +306,9 @@
               "show_key": lang.ide.PROP_ELB_HEALTH_CHECK
             }, {
               "key": ["Instances", 'member'],
-              "show_key": lang.ide.DASH_LBL_DNS_NAME
+              "show_key": lang.ide.DASH_LBL_INSTANCE
             }, {
-              "key": ["ListenerDescriptions", "member"],
+              "key": ["ListenerDescriptions", "member", "Listener"],
               "show_key": lang.ide.PROP_ELB_LBL_LISTENER_DESCRIPTIONS
             }, {
               "key": ["SecurityGroups", "member"],
@@ -766,7 +766,7 @@
                   _ref = result.resolved_data;
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                     instance = _ref[_i];
-                    if (instance.state === "InService") {
+                    if (instance.State === "InService") {
                       health++;
                     }
                   }
@@ -1152,10 +1152,14 @@
           show_key = value.show_key;
           cur_key = key_array[0];
           cur_value = value_to_parse[cur_key];
-          _.map(key_array, function(value, key) {
+          _.map(key_array, function(attr, key) {
             if (cur_value) {
               if (key > 0) {
-                cur_value = cur_value[value];
+                if (_.isArray(cur_value) && !_.isNumber(attr)) {
+                  cur_value = _.pluck(cur_value, attr);
+                } else if (_.isObject(cur_value)) {
+                  cur_value = cur_value[attr];
+                }
                 return cur_value;
               }
             }
