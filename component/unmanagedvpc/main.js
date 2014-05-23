@@ -8,7 +8,7 @@
         model = new Model();
         view.model = model;
 
-        /* env:dev                                                                         env:dev:end */
+        /* env:dev                                                                       env:dev:end */
         model.on('change:resource_list', function() {
           console.log('change:resource_list', model.get('resource_list'));
           return view.render();

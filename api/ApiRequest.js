@@ -228,7 +228,6 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'opsbackend_render_app'   : { url:'/opsbackend/',	method:'render_app',	params:['timestamp', 'app_id', 'res_id', 'is_arrived']   },
 		'opsbackend_check_app'    : { url:'/opsbackend/',	method:'check_app',	params:['timestamp', 'app_id']   },
 		'opsbackend_update_status' : { url:'/opsbackend/',	method:'update_status',	params:['app_id', 'instance_id', 'recipe_version', 'timestamp', 'statuses', 'waiting', 'agent_status', 'token']   },
-		'opsbackend_verify'       : { url:'/opsbackend/',	method:'verify',	params:['username', 'token']   },
 		'request_init'            : { url:'/request/',	method:'init',	params:['username', 'session_id', 'region_name']   },
 		'request_update'          : { url:'/request/',	method:'update',	params:['username', 'session_id', 'region_name', 'timestamp']   },
 		'stack_create'            : { url:'/stack/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
@@ -241,14 +240,14 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'stack_list'              : { url:'/stack/',	method:'list',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
 		'stack_export_cloudformation' : { url:'/stack/',	method:'export_cloudformation',	params:['username', 'session_id', 'region_name', 'stack']   },
 		'stack_verify'            : { url:'/stack/',	method:'verify',	params:['username', 'session_id', 'spec']   },
-		'stackstore_fetch_stackstore' : { url:'/stackstore/',	method:'fetch_stackstore',	params:['filename']   },
 		'state_module'            : { url:'/state/',	method:'module',	params:['username', 'session_id', 'mod_repo', 'mod_tag']   },
 		'state_status'            : { url:'/state/',	method:'status',	params:['username', 'session_id', 'app_id']   },
 		'state_log'               : { url:'/state/',	method:'log',	params:['username', 'session_id', 'app_id', 'res_id']   },
 		'token_create'            : { url:'/token/',	method:'create',	params:['username', 'session_id', 'token_name']   },
-		'token_update'            : { url:'/token/',	method:'update',	params:['username', 'session_id', 'token', 'new_token_name']   },
-		'token_remove'            : { url:'/token/',	method:'remove',	params:['username', 'session_id', 'token', 'token_name']   },
+		'token_update'            : { url:'/token/',	method:'update',	params:['username', 'session_id', 'token_name', 'new_token_name']   },
+		'token_remove'            : { url:'/token/',	method:'remove',	params:['username', 'session_id', 'token']   },
 		'token_list'              : { url:'/token/',	method:'list',	params:['username', 'session_id', 'token_names']   },
+		'token_verify'            : { url:'/token/',	method:'verify',	params:['username', 'token']   },
 		'account_register'        : { url:'/account/',	method:'register',	params:['username', 'password', 'email']   },
 		'account_update_account'  : { url:'/account/',	method:'update_account',	params:['username', 'session_id', 'attributes']   },
 		'account_reset_password'  : { url:'/account/',	method:'reset_password',	params:['username']   },
@@ -276,7 +275,6 @@ define('api/define/aws/autoscaling',['ApiRequestDefs'], function( ApiRequestDefs
 		'asl_DescribeAutoScalingInstances'       : { url:'/aws/autoscaling/',	method:'DescribeAutoScalingInstances',	params:['username', 'session_id', 'region_name', 'instance_ids', 'max_records', 'next_token']   },
 		'asl_DescribeAutoScalingNotificationTypes' : { url:'/aws/autoscaling/',	method:'DescribeAutoScalingNotificationTypes',	params:['username', 'session_id', 'region_name']   },
 		'asl_DescribeLaunchConfigurations'       : { url:'/aws/autoscaling/',	method:'DescribeLaunchConfigurations',	params:['username', 'session_id', 'region_name', 'config_names', 'max_records', 'next_token']   },
-		'asl_DeleteLaunchConfiguration'          : { url:'/aws/autoscaling/',	method:'DeleteLaunchConfiguration',	params:['username', 'session_id', 'region_name', 'config_name']   },
 		'asl_DescribeMetricCollectionTypes'      : { url:'/aws/autoscaling/',	method:'DescribeMetricCollectionTypes',	params:['username', 'session_id', 'region_name']   },
 		'asl_DescribeNotificationConfigurations' : { url:'/aws/autoscaling/',	method:'DescribeNotificationConfigurations',	params:['username', 'session_id', 'region_name', 'group_names', 'max_records', 'next_token']   },
 		'asl_DescribePolicies'                   : { url:'/aws/autoscaling/',	method:'DescribePolicies',	params:['username', 'session_id', 'region_name', 'group_name', 'policy_names', 'max_records', 'next_token']   },
@@ -284,8 +282,6 @@ define('api/define/aws/autoscaling',['ApiRequestDefs'], function( ApiRequestDefs
 		'asl_DescribeScalingProcessTypes'        : { url:'/aws/autoscaling/',	method:'DescribeScalingProcessTypes',	params:['username', 'session_id', 'region_name']   },
 		'asl_DescribeScheduledActions'           : { url:'/aws/autoscaling/',	method:'DescribeScheduledActions',	params:['username', 'session_id', 'region_name', 'group_name', 'action_names', 'start_time', 'end_time', 'max_records', 'next_token']   },
 		'asl_DescribeTags'                       : { url:'/aws/autoscaling/',	method:'DescribeTags',	params:['username', 'session_id', 'region_name', 'filters', 'max_records', 'next_token']   },
-		'asl_CreateAutoScalingGroup'             : { url:'/aws/autoscaling/',	method:'CreateAutoScalingGroup',	params:['username', 'session_id', 'region_name', 'group_name', 'min_size', 'max_size', 'availability_zones', 'default_cooldown', 'desired_capacity', 'health_check_period', 'health_check_type', 'instance_id', 'launch_config', 'load_balancers', 'placement_group', 'tags', 'termination_policies', 'vpc_zone_identifier']   },
-		'asl_CreateLaunchConfiguration'          : { url:'/aws/autoscaling/',	method:'CreateLaunchConfiguration',	params:['username', 'session_id', 'region_name', 'config_name', 'associate_public_ip', 'block_device_mappings', 'ebs_optimized', 'iam_instance_profile', 'image_id', 'instance_id', 'instance_monitoring', 'instance_type', 'kernel_id', 'key_name', 'placement_tenancy', 'ramdisk_id', 'security_groups', 'spot_price', 'user_data']   },
 	}
 
 	for ( var i in Apis ) {
@@ -310,12 +306,11 @@ define('api/define/aws/aws',['ApiRequestDefs'], function( ApiRequestDefs ){
 
 define('api/define/aws/cloudwatch',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
-		'clw_GetMetricStatistics'                : { url:'/aws/cloudwatch/',	method:'GetMetricStatistics',	params:['username', 'session_id', 'region_name', 'metric_name', 'namespace', 'start_time', 'end_time', 'period', 'statistics', 'unit', 'dimensions']   },
+		'clw_GetMetricStatistics'                : { url:'/aws/cloudwatch/',	method:'GetMetricStatistics',	params:['username', 'session_id', 'region_name', 'metric_name', 'namespace', 'start_time', 'end_time', 'period', 'unit', 'statistics', 'dimensions']   },
 		'clw_ListMetrics'                        : { url:'/aws/cloudwatch/',	method:'ListMetrics',	params:['username', 'session_id', 'region_name', 'metric_name', 'namespace', 'dimensions', 'next_token']   },
 		'clw_DescribeAlarmHistory'               : { url:'/aws/cloudwatch/',	method:'DescribeAlarmHistory',	params:['username', 'session_id', 'region_name', 'alarm_name', 'start_date', 'end_date', 'history_item_type', 'max_records', 'next_token']   },
 		'clw_DescribeAlarms'                     : { url:'/aws/cloudwatch/',	method:'DescribeAlarms',	params:['username', 'session_id', 'region_name', 'alarm_names', 'alarm_name_prefix', 'action_prefix', 'state_value', 'max_records', 'next_token']   },
 		'clw_DescribeAlarmsForMetric'            : { url:'/aws/cloudwatch/',	method:'DescribeAlarmsForMetric',	params:['username', 'session_id', 'region_name', 'metric_name', 'namespace', 'dimension_names', 'period', 'statistic', 'unit']   },
-		'clw_DeleteAlarms'                       : { url:'/aws/cloudwatch/',	method:'DeleteAlarms',	params:['username', 'session_id', 'region_name', 'alarm_names']   },
 	}
 
 	for ( var i in Apis ) {
@@ -419,8 +414,6 @@ define('api/define/aws/iam',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
 		'iam_GetServerCertificate'               : { url:'/aws/iam/',	method:'GetServerCertificate',	params:['username', 'session_id', 'region_name', 'servercer_name']   },
 		'iam_ListServerCertificates'             : { url:'/aws/iam/',	method:'ListServerCertificates',	params:['username', 'session_id', 'region_name', 'marker', 'max_items', 'path_prefix']   },
-		'iam_DeleteServerCertificate'            : { url:'/aws/iam/',	method:'DeleteServerCertificate',	params:['username', 'session_id', 'region_name', 'servercer_name']   },
-		'iam_UpdateServerCertificate'            : { url:'/aws/iam/',	method:'UpdateServerCertificate',	params:['username', 'session_id', 'region_name', 'servercer_name', 'new_servercer_name', 'new_path']   },
 	}
 
 	for ( var i in Apis ) {
@@ -495,12 +488,8 @@ define('api/define/aws/sns',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'sns_GetSubscriptionAttributes'          : { url:'/aws/sns/',	method:'GetSubscriptionAttributes',	params:['username', 'session_id', 'region_name', 'subscription_arn']   },
 		'sns_GetTopicAttributes'                 : { url:'/aws/sns/',	method:'GetTopicAttributes',	params:['username', 'session_id', 'region_name', 'topic_arn']   },
 		'sns_ListSubscriptions'                  : { url:'/aws/sns/',	method:'ListSubscriptions',	params:['username', 'session_id', 'region_name', 'next_token']   },
-		'sns_SetSubscriptionAttributes'          : { url:'/aws/sns/',	method:'SetSubscriptionAttributes',	params:['username', 'session_id', 'region_name', 'subscription_arn', 'attr_name', 'attr_value']   },
 		'sns_ListSubscriptionsByTopic'           : { url:'/aws/sns/',	method:'ListSubscriptionsByTopic',	params:['username', 'session_id', 'region_name', 'topic_arn', 'next_token']   },
 		'sns_ListTopics'                         : { url:'/aws/sns/',	method:'ListTopics',	params:['username', 'session_id', 'region_name', 'next_token']   },
-		'sns_DeleteTopic'                        : { url:'/aws/sns/',	method:'DeleteTopic',	params:['username', 'session_id', 'region_name', 'topic_arn']   },
-		'sns_CreateTopic'                        : { url:'/aws/sns/',	method:'CreateTopic',	params:['username', 'session_id', 'region_name', 'topic_name']   },
-		'sns_SetTopicAttributes'                 : { url:'/aws/sns/',	method:'SetTopicAttributes',	params:['username', 'session_id', 'region_name', 'topic_arn', 'attr_name', 'attr_value']   },
 	}
 
 	for ( var i in Apis ) {
@@ -516,10 +505,7 @@ define('api/define/aws/vpc',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'vpc_DescribeVpcAttribute'               : { url:'/aws/vpc/',	method:'DescribeVpcAttribute',	params:['username', 'session_id', 'region_name', 'vpc_id', 'attribute']   },
 		'acl_DescribeNetworkAcls'                : { url:'/aws/vpc/acl/',	method:'DescribeNetworkAcls',	params:['username', 'session_id', 'region_name', 'acl_ids', 'filters']   },
 		'cgw_DescribeCustomerGateways'           : { url:'/aws/vpc/cgw/',	method:'DescribeCustomerGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
-		'dhcp_AssociateDhcpOptions'              : { url:'/aws/vpc/dhcp/',	method:'AssociateDhcpOptions',	params:['username', 'session_id', 'region_name', 'dhcp_id', 'vpc_id']   },
 		'dhcp_DescribeDhcpOptions'               : { url:'/aws/vpc/dhcp/',	method:'DescribeDhcpOptions',	params:['username', 'session_id', 'region_name', 'dhcp_ids', 'filters']   },
-		'dhcp_DeleteDhcpOptions'                 : { url:'/aws/vpc/dhcp/',	method:'DeleteDhcpOptions',	params:['username', 'session_id', 'region_name', 'dhcp_id']   },
-		'dhcp_CreateDhcpOptions'                 : { url:'/aws/vpc/dhcp/',	method:'CreateDhcpOptions',	params:['username', 'session_id', 'region_name', 'dhcp_configs']   },
 		'eni_DescribeNetworkInterfaces'          : { url:'/aws/vpc/eni/',	method:'DescribeNetworkInterfaces',	params:['username', 'session_id', 'region_name', 'eni_ids', 'filters']   },
 		'eni_DescribeNetworkInterfaceAttribute'  : { url:'/aws/vpc/eni/',	method:'DescribeNetworkInterfaceAttribute',	params:['username', 'session_id', 'region_name', 'eni_id', 'attribute']   },
 		'igw_DescribeInternetGateways'           : { url:'/aws/vpc/igw/',	method:'DescribeInternetGateways',	params:['username', 'session_id', 'region_name', 'gw_ids', 'filters']   },
@@ -562,7 +548,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
     };
     logAndThrow = function(obj) {
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                   env:dev:end */
       throw obj;
     };
     AjaxSuccessHandler = function(res) {
