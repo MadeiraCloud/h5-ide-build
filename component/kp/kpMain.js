@@ -8,71 +8,56 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            ";
+  buffer += "\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
+  buffer += "\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                "
+  buffer += "\n        "
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n            ";
+    + "\n    ";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   
-  return "\n                Select Key Pair as $DefaultKeyPair\n            ";
+  return "\n        Select Key Pair as $DefaultKeyPair\n    ";
   }
 
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            "
+  buffer += "\n    "
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n            ";
+    + "\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.defaultKey), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            ";
+  buffer += "\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noKey), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
+  buffer += "\n";
   return buffer;
   }
 function program7(depth0,data) {
   
   var buffer = "";
-  buffer += "\n                <i class=\"icon-info tooltip\" data-tooltip=\""
+  buffer += "\n        <i class=\"icon-info tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_NO_KP", {hash:{},data:data}))
-    + "\"></i>\n            ";
+    + "\"></i>\n    ";
   return buffer;
   }
 
-function program9(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n        <div class=\"manage-kp btn btn-primary\" style=\"display:none;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_MANAGE_KP", {hash:{},data:data}))
-    + "</div>\n        ";
-  return buffer;
-  }
-
-  buffer += "<div class=\"selectbox keypair-select\">\n    <div class=\"selection\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n    </div>\n    <div style=\"height: 300px; width:260px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\" id=\"kp-content\">\n        </div>\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <input class=\"input keypair-filter\" type=\"text\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_FILTER_KP", {hash:{},data:data}))
-    + "\"/>\n    </div>\n</div>\n\n";
+  buffer += "\n\n";
   return buffer;
   };
-TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+TEMPLATE.selection=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -83,30 +68,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        ";
+  buffer += "\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <li data-id=\"@no\" class=\"item";
+  buffer += "\n    <li data-id=\"@no\" class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noKey), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" tabindex=\"-1\">\n            "
+  buffer += "\" tabindex=\"-1\">\n        "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_NO_KP", {hash:{},data:data}))
-    + "\n            <i class=\"icon-info tooltip\" data-tooltip=\""
+    + "\n        <i class=\"icon-info tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_NO_KP", {hash:{},data:data}))
-    + "\"></i>\n        </li>\n    ";
+    + "\"></i>\n    </li>\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <li data-id=\"@default\" class=\"item";
+  buffer += "\n    <li data-id=\"@default\" class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.defaultKey), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" tabindex=\"-1\">\n            "
+  buffer += "\" tabindex=\"-1\">\n        "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_DEFAULT_KP", {hash:{},data:data}))
-    + "\n            <i class=\"icon-info tooltip\" data-tooltip='"
+    + "\n        <i class=\"icon-info tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_DEFAULT_KP", {hash:{},data:data}))
-    + "'></i>\n        </li>\n        ";
+    + "'></i>\n    </li>\n    ";
   return buffer;
   }
 function program3(depth0,data) {
@@ -118,7 +103,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <li class=\"item";
+  buffer += "\n    <li class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
@@ -127,42 +112,19 @@ function program5(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" tabindex=\"-1\">"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n        </li>\n    ";
+    + "\n    </li>\n";
   return buffer;
   }
 
-  buffer += "<ul id=\"kp-list\">\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideDefaultNoKey), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    ";
+  buffer += "\n\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul>\n\n";
+  buffer += "\n\n";
   return buffer;
   };
 TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"kp-no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>\n\n";
-  };
-TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"loading-spinner loading-spinner-small\"></div>\n\n";
-  };
-TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
@@ -176,29 +138,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                        <tr class=\"item\" data-id=\"\">\n                                            <td>\n                                                <div class=\"checkbox\">\n                                                    <input id=\"kp-select-"
+  buffer += "\n<tr class=\"item\" data-id=\"\">\n    <td>\n        <div class=\"checkbox\">\n            <input id=\"kp-select-"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" value=\"None\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"one-cb\">\n                                                    <label for=\"kp-select-"
+    + "\" class=\"one-cb\">\n            <label for=\"kp-select-"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n                                                </div>\n                                            </td>\n                                            <td>"
+    + "\"></label>\n        </div>\n    </td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n                                            <td>"
+    + "</td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.keyFingerprint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n                                        </tr>\n                                        ";
+    + "</td>\n</tr>\n";
   return buffer;
   }
 
-  buffer += "<div id=\"modal-kp-manage\" class=\"modal-toolbar\">\n    <div class=\"modal-header\">\n        <h3>Manage Key Pairs in "
-    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\n        <i class=\"modal-close\">×</i>\n    </div>\n\n    <div class=\"modal-body\">\n        <div class=\"content-wrap\">\n            <div class=\"toolbar\">\n                <button class=\"icon-new-stack btn btn-blue\" id=\"kp-create\">Create Key Pair</button>\n                <div class=\"btn-group\">\n                    <button class=\"icon-import tooltip\" id=\"kp-import\" data-tooltip=\"\">Import Key Pair</button>\n                    <button class=\"icon-del tooltip\" id=\"kp-delete\" data-tooltip=\"\" disabled>Delete</button>\n                    <button class=\"icon-refresh tooltip\" id=\"kp-refresh\" data-tooltip=\"\"></button>\n                </div>\n            </div>\n            <div class=\"list\">\n                <div class=\"slidebox\">\n                    <div class=\"content clearfix\">\n                    </div>\n                    <div class=\"error\">\n                        something wrong\n                    </div>\n                </div>\n                <div class=\"table-head-fix\">\n                        <table class=\"table-head\">\n                            <thead>\n                                <tr>\n                                    <th>\n                                        <div class=\"checkbox\">\n                                            <input id=\"kp-select-all\" type=\"checkbox\" value=\"None\">\n                                            <label for=\"kp-select-all\"></label>\n                                        </div>\n                                    </th>\n                                    <th class=\"sortable\">Name</th>\n                                    <th>Fingerprint</th>\n                                </tr>\n                            </thead>\n                        </table>\n                        <div class=\"scroll-wrap\">\n                            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                            <div class=\"scroll-content\" style=\"display:block;\">\n                                <table class=\"table\">\n                                    <thead>\n                                        <tr>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                            <th><div class=\"th-inner\"></div></th>\n                                        </tr>\n                                    </thead>\n                                    <tbody>\n                                        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                    </tbody>\n                                </table>\n                            </div>\n                        </div>\n                    </div>\n\n            </div>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n\n";
   return buffer;
   };
-TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -228,7 +187,7 @@ function program1(depth0,data) {
   buffer += "\n\n";
   return buffer;
   };
-TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
+TEMPLATE.keys_backup=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -250,7 +209,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   return "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">Key Pair Name</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\" autofocus>\n    </div>\n    <div class=\"after-create hide\">Key pair <span></span> is created. You have to download the private key file (*.pem file) before you can continue. Store it in a secure and accessible location. You will not be able to download the file again after it's created.</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>\n\n";
   };
-TEMPLATE.slideCreate=Handlebars.template(__TEMPLATE__);
+TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -279,7 +238,7 @@ function program3(depth0,data) {
   buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>\n";
   return buffer;
   };
-TEMPLATE.slideDelete=Handlebars.template(__TEMPLATE__);
+TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -290,7 +249,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   return "<div class=\"slide-import\" data-bind=\"true\">\n    <label for=\"import-kp-name\">Key Pair Name</label>\n    <input class=\"input\" type=\"text\" id=\"import-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    <div class=\"import-zone\">\n\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn\" disabled>Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"ready action\" style=\"display:none;\">\n        <button class=\"btn btn-blue do-action\" data-action=\"import\">Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Importing...</button>\n    </div>\n</div>\n\n";
   };
-TEMPLATE.slideImport=Handlebars.template(__TEMPLATE__);
+TEMPLATE.slide_import=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -301,7 +260,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"upload-kp-component drop-zone\">\n    <p class=\"upload-stuff\">\n        Drop "
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">select a file</label>\n        <span class=\"display-empty\">or paste the key content here.</span>\n        <span class=\"display-filled\" style=\"display:none;\">or paste the key content again to update.</span>\n        <input type=\"file\" id=\"modal-import\">\n    </p>\n    <p class=\"key-content\"></p>\n</div>\n\n\n\n";
+    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">select a file</label>\n        <span class=\"display-empty\">or paste the key content here.</span>\n        <span class=\"display-filled\" style=\"display:none;\">or paste the key content again to update.</span>\n        <input type=\"file\" id=\"modal-import\">\n    </p>\n    <p class=\"key-content\"></p>\n</div>\n\n\n\n\n";
   return buffer;
   };
 TEMPLATE.upload=Handlebars.template(__TEMPLATE__);
@@ -395,7 +354,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('component/kp/kpView',['./kpTpl', './kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'component/exporter/JsonExporter', 'UI.notification'], function(template, template_modal, upload, Backbone, $, constant, JsonExporter) {
+  define('component/kp/kpView',['combo_dropdown', 'toolbar_modal', './kpTpl', './kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'component/exporter/JsonExporter', 'i18n!nls/lang.js', 'UI.notification'], function(combo_dropdown, toolbar_modal, template, template_modal, upload, Backbone, $, constant, JsonExporter, lang) {
     var download, modalView;
     download = JsonExporter.download;
     modalView = Backbone.View.extend({
@@ -407,7 +366,7 @@ return TEMPLATE; });
         if (arguments.length === 1) {
           this.__needDownload = arguments[0];
           if (arguments[0] === false) {
-            this.$('.cancel').prop('disabled', false);
+            this.m$('.cancel').prop('disabled', false);
           }
         } else {
           if (this.__needDownload) {
@@ -416,85 +375,110 @@ return TEMPLATE; });
         }
         return this.__needDownload;
       },
-      initialize: function() {
-        return this.model.on('change:keys', function() {
-          if (this.$('.scroll-content').length) {
-            return this.renderKeys();
-          } else {
-            return this.render(true);
-          }
+      denySlide: function() {
+        return !this.needDownload();
+      },
+      getRegion: function() {
+        var region;
+        region = Design.instance().get('region');
+        return constant.REGION_SHORT_LABEL[region];
+      },
+      getModalOptions: function() {
+        var region, regionName, that;
+        that = this;
+        region = Design.instance().get('region');
+        regionName = constant.REGION_SHORT_LABEL[region];
+        return {
+          title: "Manage Key Pairs in " + regionName,
+          slideable: _.bind(that.denySlide, that),
+          context: that,
+          buttons: [
+            {
+              icon: 'new-stack',
+              type: 'create',
+              name: 'Create Key Pair'
+            }, {
+              icon: 'import',
+              type: 'import',
+              name: 'Import Key Pair'
+            }, {
+              icon: 'del',
+              type: 'delete',
+              disabled: true,
+              name: 'Delete'
+            }, {
+              icon: 'refresh',
+              type: 'refresh',
+              name: ''
+            }
+          ],
+          columns: [
+            {
+              sortable: true,
+              width: "100px",
+              name: 'Name'
+            }, {
+              sortable: false,
+              width: "100px",
+              name: 'Fingerprint'
+            }
+          ]
+        };
+      },
+      initModal: function() {
+        new toolbar_modal(this.getModalOptions());
+        this.modal.on('close', function() {
+          return this.remove();
         }, this);
+        this.modal.on('slidedown', this.renderSlides, this);
+        this.modal.on('action', this.doAction, this);
+        return this.modal.on('refresh', this.refresh, this);
+      },
+      initialize: function() {
+        this.initModal();
+        return this.model.on('change:keys', this.renderKeys, this);
+      },
+      renderModal: function() {
+        this.modal.render();
+        this.renderKeys();
+        return this;
       },
       render: function(refresh) {
-        var data, region;
-        data = this.model.toJSON();
-        region = Design.instance().get('region');
-        data.regionName = constant.REGION_SHORT_LABEL[region];
-        this.$el.html(template_modal.frame(data));
-        if (!refresh) {
-          this.open();
-        }
+        this.renderModal();
         return this;
       },
       renderKeys: function() {
-        this.$('.scroll-content tbody').html(template_modal.keys(this.model.toJSON()));
+        var data;
+        data = this.model.toJSON();
+        this.modal.setContent(template_modal.keys(data));
         return this;
       },
-      renderLoading: function() {
-        this.$('.content-wrap').html(template_modal.loading);
-        return this;
-      },
-      stopPropagation: function(event) {
-        var exception;
-        exception = '.sortable, #download-kp';
-        if (!$(event.target).is(exception)) {
-          return event.stopPropagation();
-        }
-      },
-      open: function() {
-        modal(this.el);
-        return $('#modal-wrap').click(this.stopPropagation);
-      },
-      showErr: function(msg) {
-        return this.$('.error').text(msg).show();
-      },
-      hideErr: function() {
-        return this.$('.error').hide();
-      },
-      events: {
-        'click .modal-close': 'close',
-        'change #kp-select-all': 'checkAll',
-        'change .one-cb': 'checkOne',
-        'click #download-kp': 'downloadKp',
+      __events: {
         'click #kp-create': 'renderCreate',
         'click #kp-import': 'renderImport',
         'click #kp-delete': 'renderDelete',
         'click #kp-refresh': 'refresh',
-        'click .do-action': 'doAction',
         'click .cancel': 'cancel'
       },
       downloadKp: function() {
         return this.__downloadKp && this.__downloadKp();
       },
-      doAction: function(event) {
-        var action;
-        this.hideErr();
-        action = $(event.currentTarget).data('action');
-        return this[action] && this[action](this.validate(action));
+      doAction: function(action, checked) {
+        return this[action] && this[action](this.validate(action), checked);
       },
       validate: function(action) {
         switch (action) {
           case 'create':
-            return !this.$('#create-kp-name').parsley('validate');
+            return !this.m$('#create-kp-name').parsley('validate');
           case 'import':
-            return !this.$('#import-kp-name').parsley('validate');
+            return !this.m$('#import-kp-name').parsley('validate');
         }
       },
       switchAction: function(state) {
         if (!state) {
           state = 'init';
         }
-        return this.$('.slidebox .action').each(function() {
+        return this.m$('.slidebox .action').each(function() {
           if ($(this).hasClass(state)) {
             return $(this).show();
           } else {
@@ -535,7 +519,7 @@ return TEMPLATE; });
           }
           that.processDelBtn();
           if (!that.model.get('keys').length) {
-            that.$('#kp-select-all').get(0).checked = false;
+            that.m$('#kp-select-all').get(0).checked = false;
           }
           return _.each(error, function(s) {
             return console.log(s);
@@ -554,209 +538,116 @@ return TEMPLATE; });
         var keyName, that;
         that = this;
         if (!invalid) {
-          keyName = this.$('#create-kp-name').val();
+          keyName = this.m$('#create-kp-name').val();
           this.switchAction('processing');
           return this.model.create(keyName).then(function(res) {
             console.log(res);
             that.needDownload(true);
             that.genDownload("" + res.keyName + ".pem", res.keyMaterial);
             that.switchAction('download');
-            that.$('.before-create').hide();
-            return that.$('.after-create').find('span').text(res.keyName).end().show();
+            that.m$('.before-create').hide();
+            return that.m$('.after-create').find('span').text(res.keyName).end().show();
           })["catch"](function(err) {
             console.log(err);
-            that.showErr(err.error_message);
+            that.modal.error(err.error_message);
             return that.switchAction();
           });
         }
       },
       download: function() {
         this.needDownload(false);
-        return true;
+        return this.__downloadKp && this.__downloadKp();
       },
-      "delete": function(invalid) {
-        var $checked, count, onDeleteFinish, that;
-        $checked = this.$('.one-cb:checked');
-        count = $checked.length;
+      "delete": function(invalid, checked) {
+        var count, onDeleteFinish, that;
+        count = checked.length;
         onDeleteFinish = this.genDeleteFinish(count);
         this.switchAction('processing');
         that = this;
-        return $checked.each(function() {
-          return that.model.remove($(this).data('name')).then(onDeleteFinish, onDeleteFinish);
+        return _.each(checked, function(c) {
+          return that.model.remove(c.data['name']).then(onDeleteFinish, onDeleteFinish);
         });
       },
       "import": function(invalid) {
-        var keyName, that;
+        var keyContent, keyName, that;
         that = this;
         if (!invalid) {
-          keyName = this.$('#import-kp-name').val();
+          keyName = this.m$('#import-kp-name').val();
           this.switchAction('processing');
-          return this.model["import"](keyName, btoa(that.__upload.getData())).then(function(res) {
+          try {
+            keyContent = btoa(that.__upload.getData());
+          } catch (_error) {
+            this.modal.error('Key is not in valid OpenSSH public key format');
+            that.switchAction('init');
+            return;
+          }
+          return this.model["import"](keyName, keyContent).then(function(res) {
             console.log(res);
             notification('info', "" + keyName + " is imported.");
             return that.cancel();
           })["catch"](function(err) {
             console.log(err);
-            that.showErr(err.error_message);
+            that.modal.error(err.error_message);
             return that.switchAction('ready');
           });
         }
       },
       cancel: function() {
-        return this.preSlide();
+        return this.modal.cancel();
       },
       refresh: function() {
         if (!this.needDownload()) {
-          this.model.getKeys();
-          return this.renderLoading();
+          return this.model.getKeys();
         }
       },
-      renderSlide: function(html) {
-        this.$('.slidebox .content').html(html);
-        this.hideErr();
-        return this;
+      renderSlides: function(which, checked) {
+        var slides, tpl, _ref;
+        tpl = template_modal["slide_" + which];
+        slides = this.getSlides();
+        return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
       },
-      preSlide: function(type) {
-        var $content, $slidebox, currentType, that;
-        if (this.needDownload()) {
-          return false;
-        }
+      getSlides: function() {
+        var modal, that, __upload;
         that = this;
-        $content = this.$('.content-wrap');
-        $slidebox = this.$('.slidebox');
-        currentType = $content.hasClass("show-" + type);
-        if (type === 'delete' && !currentType) {
-          this.$('input[type=checkbox]').prop('disabled', true);
-        } else {
-          this.$('input[type=checkbox]').prop('disabled', false);
-        }
-        if (!currentType) {
-          $content.removeClass('show-create show-import show-delete');
-          _.each(['create', 'delete', 'import'], function(action) {
-            if (action === type) {
-              return that.$("#kp-" + action).addClass('active');
-            } else {
-              return that.$("#kp-" + action).removeClass('active');
+        modal = this.modal;
+        __upload = this.__upload;
+        return {
+          create: function(tpl, checked) {
+            return modal.setSlide(tpl);
+          },
+          "delete": function(tpl, checked) {
+            var checkedAmount, data;
+            checkedAmount = checked.length;
+            if (!checkedAmount) {
+              return;
             }
-          });
-          if (type) {
-            $content.addClass("show-" + type);
-            $slidebox.addClass('show');
-          } else {
-            $slidebox.removeClass('show');
+            data = {};
+            if (checkedAmount === 1) {
+              data.selecteKeyName = checked[0].data['name'];
+            } else {
+              data.selectedCount = checkedAmount;
+            }
+            return modal.setSlide(tpl(data));
+          },
+          "import": function(tpl, checked) {
+            modal.setSlide(tpl);
+            that.__upload && that.__upload.remove();
+            that.__upload = new upload();
+            that.__upload.on('load', that.afterImport, this);
+            return that.m$('.import-zone').html(that.__upload.render().el);
           }
-        } else {
-          $content.removeClass('show-create show-import show-delete');
-          $slidebox.removeClass('show');
-          that.$("#kp-" + type).removeClass('active');
-        }
-        return !currentType;
-      },
-      renderCreate: function() {
-        var data, html, tpl;
-        if (this.preSlide('create')) {
-          tpl = template_modal.slideCreate;
-          data = {};
-          html = tpl(data);
-          return this.renderSlide(html);
-        }
-      },
-      renderDelete: function() {
-        var $checked, checkedAmount, data, html, tpl;
-        $checked = this.$('.one-cb:checked');
-        checkedAmount = $checked.length;
-        if (!checkedAmount) {
-          return;
-        }
-        if (this.preSlide('delete')) {
-          tpl = template_modal.slideDelete;
-          data = {};
-          if (checkedAmount === 1) {
-            data.selecteKeyName = $checked.data('name');
-          } else {
-            data.selectedCount = checkedAmount;
-          }
-          html = tpl(data);
-          return this.renderSlide(html);
-        }
-      },
-      renderImport: function() {
-        var data, html, tpl;
-        if (this.preSlide('import')) {
-          tpl = template_modal.slideImport;
-          data = {};
-          html = tpl(data);
-          this.renderSlide(html);
-          this.__upload && this.__upload.remove();
-          this.__upload = new upload();
-          this.__upload.on('load', this.afterImport, this);
-          return this.$('.import-zone').html(this.__upload.render().el);
-        }
+        };
       },
       afterImport: function(result) {
         return this.switchAction('ready');
-      },
-      checkOne: function(event) {
-        var $target, cbAll, cbAmount, checkedAmount;
-        $target = $(event.currentTarget);
-        this.processDelBtn();
-        cbAll = this.$('#kp-select-all');
-        cbAmount = this.model.get('keys').length;
-        checkedAmount = this.$('.one-cb:checked').length;
-        $target.closest('tr').toggleClass('selected');
-        if (checkedAmount === cbAmount) {
-          return cbAll.prop('checked', true);
-        } else if (cbAmount - checkedAmount === 1) {
-          return cbAll.prop('checked', false);
-        }
-      },
-      checkAll: function(event) {
-        this.processDelBtn();
-        if (event.currentTarget.checked) {
-          this.$('input[type="checkbox"]').prop('checked', true);
-          return this.$('tr.item').addClass('selected');
-        } else {
-          this.$('input[type="checkbox"]').prop('checked', false);
-          return this.$('tr.item').removeClass('selected');
-        }
-      },
-      processDelBtn: function() {
-        var that;
-        that = this;
-        return _.defer(function() {
-          if (that.$('input:checked').length) {
-            return that.$('#kp-delete').prop('disabled', false);
-          } else {
-            return that.$('#kp-delete').prop('disabled', true);
-          }
-        });
-      },
-      close: function(event) {
-        if (this.needDownload()) {
-          return false;
-        }
-        $('#modal-wrap').off('click', this.stopPropagation);
-        modal.close();
-        this.remove();
-        return false;
       }
     });
     return Backbone.View.extend({
-      tagName: 'section',
-      events: {
-        'click .keypair-filter': 'returnFalse',
-        'click .manage-kp': 'manageKp',
-        'click .show-credential': 'showCredential',
-        'OPTION_SHOW .selectbox': 'show',
-        'OPTION_CHANGE .selectbox': 'setKey',
-        'keyup .keypair-filter': 'filter'
-      },
       showCredential: function() {
         return App.showSettings(App.showSettings.TAB.Credential);
       },
-      filter: function(event) {
-        var hitKeys, keyword, len;
-        keyword = event.currentTarget.value;
+      filter: function(keyword) {
+        var hitKeys, len;
         len = keyword.length;
         hitKeys = _.filter(this.model.get('keys'), function(k) {
           return k.keyName.slice(0, len).toLowerCase() === keyword;
@@ -767,7 +658,7 @@ return TEMPLATE; });
           return this.renderKeys();
         }
       },
-      setKey: function(event, name, data) {
+      setKey: function(name, data) {
         var KpModel;
         if (this.__mode === 'runtime') {
           KpModel = Design.modelClassForType(constant.RESTYPE.KP);
@@ -786,19 +677,32 @@ return TEMPLATE; });
           }
         }
       },
-      returnFalse: function(event) {
-        return false;
-      },
       manageKp: function(event) {
         this.renderModal();
         return false;
+      },
+      initDropdown: function() {
+        var options;
+        options = {
+          manageBtnValue: lang.ide.PROP_INSTANCE_MANAGE_KP,
+          filterPlaceHolder: lang.ide.PROP_INSTANCE_FILTER_KP
+        };
+        if (this.__mode === 'runtime') {
+          options.noManage = true;
+        }
+        this.dropdown = new combo_dropdown(options);
+        this.dropdown.on('open', this.show, this);
+        this.dropdown.on('manage', this.manageKp, this);
+        this.dropdown.on('change', this.setKey, this);
+        return this.dropdown.on('filter', this.filter, this);
       },
       initialize: function(options) {
         this.model.on('change:keys', this.renderKeys, this);
         this.model.on('request:error', this.syncErrorHandler, this);
         if (!this.model.resModel) {
-          return this.__mode = 'runtime';
+          this.__mode = 'runtime';
         }
+        return this.initDropdown();
       },
       show: function() {
         if (App.user.hasCredential()) {
@@ -811,20 +715,15 @@ return TEMPLATE; });
         }
       },
       render: function() {
-        this.renderFrame();
+        this.renderDropdown();
+        this.el = this.dropdown.el;
         return this;
       },
       renderLoading: function() {
-        this.$('#kp-content').html(template.loading);
-        return this.toggleKpListControls(false);
+        return this.dropdown.render('loading').toggleControls(false);
       },
       renderNoCredential: function() {
-        this.$('#kp-content').html(template.nocredential);
-        this.toggleKpListControls(false);
-        return this;
-      },
-      toggleKpListControls: function(showOrHide) {
-        return this.$('.keypair-filter, .manage-kp').toggle(showOrHide);
+        return this.dropdown.render('nocredential').toggleControls(false);
       },
       syncErrorHandler: function(err) {
         return console.error(err);
@@ -849,13 +748,12 @@ return TEMPLATE; });
           }
         }
         data.isRunTime = this.__mode === 'runtime';
-        this.$('#kp-content').html(template.keys(data));
-        this.toggleKpListControls(true);
-        this.showManageBtn();
+        this.dropdown.setContent(template.keys(data));
+        this.dropdown.toggleControls(true);
         return this;
       },
-      renderFrame: function() {
-        var data;
+      renderDropdown: function() {
+        var data, selection;
         data = this.model.toJSON();
         if (data.keyName === '$DefaultKeyPair') {
           data.defaultKey = true;
@@ -863,15 +761,13 @@ return TEMPLATE; });
           data.noKey = true;
         }
         data.isRunTime = this.__mode === 'runtime';
-        return this.$el.html(template.frame(data));
+        selection = template.selection(data);
+        return this.dropdown.setSelection(selection);
       },
       renderModal: function() {
         return new modalView({
           model: this.model
         }).render();
-      },
-      showManageBtn: function() {
-        return this.$('.manage-kp').show();
       }
     });
   });

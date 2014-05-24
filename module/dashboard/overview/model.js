@@ -766,7 +766,7 @@
                   _ref = result.resolved_data;
                   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                     instance = _ref[_i];
-                    if (instance.state === "InService") {
+                    if (instance.State === "InService") {
                       health++;
                     }
                   }

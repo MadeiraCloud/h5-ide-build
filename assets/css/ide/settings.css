@@ -1,18 +1,17 @@
 #SettingsNav {
   background: #0c0c0c;
-  height: 38px;
+  height: 45px;
   border-bottom: 1px solid #000; }
   #SettingsNav > span {
     float: left;
     min-width: 100px;
     text-align: center;
     color: #148BE6;
-    height: 38px;
-    line-height: 38px;
+    height: 45px;
+    line-height: 45px;
     cursor: pointer;
     position: relative;
-    padding: 0 10px;
-    font-size: 12px; }
+    padding: 0 10px; }
     #SettingsNav > span.selected:before {
       position: absolute;
       left: 0;
@@ -25,10 +24,6 @@
   width: 430px;
   padding: 20px 30px 30px;
   min-height: 150px; }
-  #SettingsBody a {
-    color: #148BE6; }
-  #SettingsBody a:hover {
-    text-decoration: underline; }
   #SettingsBody .dl-horizontal {
     margin: 0;
     line-height: 30px; }
@@ -257,8 +252,7 @@
 .token-table {
   position: relative;
   height: 200px;
-  background: rgba(0, 0, 0, 0.1);
-  font-size: 12px; }
+  background: #111; }
   .token-table.empty > header {
     display: none; }
   .token-table .tokenName, .token-table .tokenToken, .token-table .tokenControl {
@@ -269,32 +263,22 @@
     width: 90px;
     float: left; }
   .token-table .tokenToken {
-    width: 230px; }
-  .token-table .tokenControl {
-    width: 60px;
-    padding: 0;
-    margin-top: 3px; }
-    .token-table .tokenControl button.tooltip {
-      cursor: pointer;
-      padding: 0;
-      color: #666; }
-      .token-table .tokenControl button.tooltip.icon-edit {
-        margin-right: 12px; }
-      .token-table .tokenControl button.tooltip.icon-edit:hover {
-        color: #148BE6; }
-      .token-table .tokenControl button.tooltip.icon-delete:hover {
-        color: #ec3c38; }
+    width: 180px; }
   .token-table input.tokenName {
     line-height: 18px; }
   .token-table input.tokenName[readonly] {
     border: none;
     background: none; }
-  .token-table .tokenDone {
+  .token-table .tokenControl, .token-table .tokenDone {
     display: none; }
   .token-table .tokenDone {
     min-width: 80px;
-    padding: 4px 0;
+    padding: 0;
+    height: 20px;
     line-height: 20px; }
+  .token-table .tokenControl .tooltip:before {
+    cursor: pointer;
+    color: #34A3F8; }
   .token-table > .scroll-wrap {
     height: 168px; }
 
@@ -318,18 +302,6 @@
   display: none; }
 #TokenList > li.editing .tokenDone {
   display: block; }
-#TokenList .tokenToken {
-  color: #eee; }
-#TokenList .tokenName.input {
-  font-size: 12px; }
-
-#TokenRmConfirm h3 {
-  font-size: 18px;
-  padding: 10px 0;
-  color: #eee;
-  margin-bottom: 10px; }
-#TokenRmConfirm p {
-  color: #ccc; }
 
 .cred-btn-wrap {
   margin-top: 20px; }

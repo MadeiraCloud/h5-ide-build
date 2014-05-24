@@ -4,13 +4,20 @@
     /*
      * === McError ===
      * McError is Object to represent an Error. Every promise handler that wants to throw error should throw an McError
+     * If McError contains aws result error, it will have 3 additional members:
+      awsError     : Number
+      awsErrorCode : String
+      awsResult    : Object
      */
     var ApiRequestDefs;
     window.McError = function(errorNum, errorMsg, params) {
       return {
         error: errorNum,
         msg: errorMsg || "",
-        result: params || void 0
+        result: params || void 0,
+        reason: errorMsg
+
+        /* env:dev                                                     env:dev:end */
       };
     };
 
@@ -75,6 +82,9 @@
           return $.cookie('usercode');
         case "session_id":
           return $.cookie('session_id');
+        case "region_name":
+          console.warn("Autofilling region_name:'us-east-1' for ApiRequest, this is for some api who requires region_name while it doesn't care about its value. %o", MC.prettyStackTrace(1));
+          return "us-east-1";
       }
       return null;
     };
@@ -95,6 +105,7 @@
       InvalidRpcReturn: -1,
       XhrFailure: -2,
       InvalidMethodCall: -3,
+      InvalidAwsReturn: -4,
       Network404: -404,
       Network500: -500,
       InvalidSession: 19,
@@ -241,7 +252,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'stack_list'              : { url:'/stack/',	method:'list',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
 		'stack_export_cloudformation' : { url:'/stack/',	method:'export_cloudformation',	params:['username', 'session_id', 'region_name', 'stack']   },
 		'stack_verify'            : { url:'/stack/',	method:'verify',	params:['username', 'session_id', 'spec']   },
-		'stackstore_fetch_stackstore' : { url:'/stackstore/',	method:'fetch_stackstore',	params:['filename']   },
+		'stackstore_fetch_stackstore' : { url:'/stackstore/',	method:'fetch_stackstore',	params:['sub_path']   },
 		'state_module'            : { url:'/state/',	method:'module',	params:['username', 'session_id', 'mod_repo', 'mod_tag']   },
 		'state_status'            : { url:'/state/',	method:'status',	params:['username', 'session_id', 'app_id']   },
 		'state_log'               : { url:'/state/',	method:'log',	params:['username', 'session_id', 'app_id', 'res_id']   },
@@ -421,6 +432,7 @@ define('api/define/aws/iam',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'iam_ListServerCertificates'             : { url:'/aws/iam/',	method:'ListServerCertificates',	params:['username', 'session_id', 'region_name', 'marker', 'max_items', 'path_prefix']   },
 		'iam_DeleteServerCertificate'            : { url:'/aws/iam/',	method:'DeleteServerCertificate',	params:['username', 'session_id', 'region_name', 'servercer_name']   },
 		'iam_UpdateServerCertificate'            : { url:'/aws/iam/',	method:'UpdateServerCertificate',	params:['username', 'session_id', 'region_name', 'servercer_name', 'new_servercer_name', 'new_path']   },
+		'iam_UploadServerCertificate'            : { url:'/aws/iam/',	method:'UploadServerCertificate',	params:['username', 'session_id', 'region_name', 'servercer_name', 'cert_body', 'private_key', 'cert_chain', 'path']   },
 	}
 
 	for ( var i in Apis ) {
@@ -497,6 +509,8 @@ define('api/define/aws/sns',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'sns_ListSubscriptions'                  : { url:'/aws/sns/',	method:'ListSubscriptions',	params:['username', 'session_id', 'region_name', 'next_token']   },
 		'sns_SetSubscriptionAttributes'          : { url:'/aws/sns/',	method:'SetSubscriptionAttributes',	params:['username', 'session_id', 'region_name', 'subscription_arn', 'attr_name', 'attr_value']   },
 		'sns_ListSubscriptionsByTopic'           : { url:'/aws/sns/',	method:'ListSubscriptionsByTopic',	params:['username', 'session_id', 'region_name', 'topic_arn', 'next_token']   },
+		'sns_Subscribe'                          : { url:'/aws/sns/',	method:'Subscribe',	params:['username', 'session_id', 'region_name', 'topic_arn', 'protocol', 'endpoint']   },
+		'sns_Unsubscribe'                        : { url:'/aws/sns/',	method:'Unsubscribe',	params:['username', 'session_id', 'region_name', 'sub_arn']   },
 		'sns_ListTopics'                         : { url:'/aws/sns/',	method:'ListTopics',	params:['username', 'session_id', 'region_name', 'next_token']   },
 		'sns_DeleteTopic'                        : { url:'/aws/sns/',	method:'DeleteTopic',	params:['username', 'session_id', 'region_name', 'topic_arn']   },
 		'sns_CreateTopic'                        : { url:'/aws/sns/',	method:'CreateTopic',	params:['username', 'session_id', 'region_name', 'topic_name']   },
@@ -550,7 +564,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
      *         If an api has no param map, the apiParameters is considered as the first and only one paramter
      *         to be send with the api.
      */
-    var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow;
+    var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow, tryParseAws;
     OneParaArray = [""];
     EmptyArray = [];
     EmptyObject = {};
@@ -562,20 +576,63 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
     };
     logAndThrow = function(obj) {
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                   env:dev:end */
       throw obj;
     };
+    tryParseAws = function(xml, findError) {
+      var e, json;
+      try {
+        xml = $.parseXML(xml);
+        json = $.xml2json(xml);
+      } catch (_error) {
+        e = _error;
+        if (findError) {
+          return {
+            error: ApiErrors.InvalidAwsReturn,
+            result: awsResult
+          };
+        } else {
+          return null;
+        }
+      }
+      if (!findError) {
+        return json;
+      }
+      xml = $(xml).find("Error");
+      return {
+        error: xml.find("Code").text() || "",
+        result: xml.find("Message").text() || ""
+      };
+    };
     AjaxSuccessHandler = function(res) {
-      var gloablHandler;
+      var awsresult, error, gloablHandler, _ref;
       if (!res || !res.result || res.result.length !== 2) {
         logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
       }
-      if (res.result[0] !== 0) {
+      if (res.result[0] !== 0 && !((ApiErrors.AwsErrorAws <= (_ref = res.result[0]) && _ref <= ApiErrors.AwsErrorExternal))) {
         gloablHandler = ApiHandlers[res.result[0]];
         if (gloablHandler) {
           return gloablHandler(res);
         }
         logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
+      }
+      awsresult = res.result[1];
+      if (awsresult && _.isArray(awsresult) && (typeof awsresult[1] === "string") && awsresult[1][0] === "<") {
+        if (awsresult[0] === 200) {
+          res = tryParseAws(awsresult[1]);
+          if (!res) {
+            logAndThrow(McError(ApiErrors.InvalidAwsReturn, "Aws returns invalid xml data.", res.result));
+          } else {
+            return res;
+          }
+        } else {
+          error = McError(res.result[0], "Service Error", res.result[1]);
+          error.awsError = awsresult[0];
+          awsresult = tryParseAws(awsresult[1], true);
+          error.awsErrorCode = "" + awsresult.error;
+          error.awsresult = awsresult.result;
+          logAndThrow(error);
+        }
       }
       return res.result[1];
     };
