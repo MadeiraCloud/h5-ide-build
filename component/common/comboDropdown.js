@@ -185,16 +185,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                    <button class=\"icon-new-stack btn btn-blue t-m-btn\" data-btn=\"create\">"
+  buffer += "\n            <button class=\"icon-new-stack btn btn-blue t-m-btn\" data-btn=\"create\">"
     + escapeExpression(((stack1 = (depth0 && depth0.btnValueCreate)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</button>\n                ";
+    + "</button>\n            ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                        <button class=\"icon-"
+  buffer += "\n                <button class=\"icon-"
     + escapeExpression(((stack1 = (depth0 && depth0.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " t-m-btn\" data-btn=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -203,7 +203,7 @@ function program3(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</button>\n                    ";
+    + "</button>\n                ";
   return buffer;
   }
 function program4(depth0,data) {
@@ -215,7 +215,7 @@ function program4(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                <th class=\"";
+  buffer += "\n                            <th class=\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sortable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" style=\"";
@@ -223,7 +223,7 @@ function program6(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</th>\n                                ";
+    + "</th>\n                            ";
   return buffer;
   }
 function program7(depth0,data) {
@@ -244,24 +244,22 @@ function program9(depth0,data) {
 function program11(depth0,data) {
   
   
-  return "\n                                        <th><div class=\"th-inner\"></div></th>\n                                        ";
+  return "\n                                    <th><div class=\"th-inner\"></div></th>\n                                    ";
   }
 
-  buffer += "<div class=\"modal-toolbar\">\n    <div class=\"modal-header\">\n        <h3>"
-    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\n        <i class=\"modal-close\">×</i>\n    </div>\n\n    <div class=\"modal-body\">\n        <div class=\"content-wrap hide\">\n            <div class=\"toolbar\">\n                ";
+  buffer += "<div class=\"modal-toolbar\">\n    <div class=\"content-wrap hide\">\n        <div class=\"toolbar\">\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.btnValueCreate), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                <div class=\"btn-group\">\n                    ";
+  buffer += "\n            <div class=\"btn-group\">\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.buttons), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </div>\n            </div>\n            <div class=\"list\">\n                <div class=\"slidebox\">\n                    <div class=\"content clearfix\">\n                    </div>\n                    <div class=\"error\">\n                        something wrong\n                    </div>\n                </div>\n                <div class=\"table-head-fix\">\n                    <table class=\"table-head\">\n                        <thead>\n                            <tr>\n                                <th>\n                                    <div class=\"checkbox\">\n                                        <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                        <label for=\"t-m-select-all\"></label>\n                                    </div>\n                                </th>\n                                ";
+  buffer += "\n            </div>\n        </div>\n        <div class=\"list\">\n            <div class=\"slidebox\">\n                <div class=\"content clearfix\">\n                </div>\n                <div class=\"error\">\n                    something wrong\n                </div>\n            </div>\n            <div class=\"table-head-fix\">\n                <table class=\"table-head\">\n                    <thead>\n                        <tr>\n                            <th>\n                                <div class=\"checkbox\">\n                                    <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                    <label for=\"t-m-select-all\"></label>\n                                </div>\n                            </th>\n                            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                            </tr>\n                        </thead>\n                    </table>\n                    <div class=\"scroll-wrap\">\n                        <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\" style=\"display:block;\">\n                            <table class=\"table\">\n                                <thead>\n                                    <tr>\n                                        <th><div class=\"th-inner\"></div></th>\n                                        ";
+  buffer += "\n                        </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\">\n                    <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\" style=\"display:block;\">\n                        <table class=\"table\">\n                            <thead>\n                                <tr>\n                                    <th><div class=\"th-inner\"></div></th>\n                                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                    </tr>\n                                </thead>\n                                <tbody class='t-m-content'>\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"loading-spinner\"></div>\n    </div>\n</div>\n\n\n";
+  buffer += "\n                                </tr>\n                            </thead>\n                            <tbody class='t-m-content'>\n\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"loading-spinner\"></div>\n</div>\n\n\n";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -333,10 +331,11 @@ define [ 'toolbar_modal' ], ( toolbar_modal ) ->
  */
 
 (function() {
-  define('toolbar_modal',['./component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.notification'], function(template, Backbone, $) {
+  define('toolbar_modal',['./component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', 'UI.notification'], function(template, Backbone, $, modalplus) {
     return Backbone.View.extend({
       tagName: 'section',
       __slide: null,
+      __modalplus: null,
       events: {
         'click .modal-close': 'close',
         'change #t-m-select-all': 'checkAll',
@@ -466,7 +465,17 @@ define [ 'toolbar_modal' ], ( toolbar_modal ) ->
         }
       },
       open: function() {
-        modal(this.el);
+        var options;
+        options = {
+          template: this.el,
+          title: this.options.title,
+          disableFooter: true,
+          disableClose: true,
+          dragable: true,
+          width: '855px',
+          height: '473px'
+        };
+        this.__modalplus = new modalplus(options);
         return $('#modal-wrap').click(this.stopPropagation);
       },
       renderLoading: function() {
