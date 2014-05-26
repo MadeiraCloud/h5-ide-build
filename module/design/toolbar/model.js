@@ -325,7 +325,11 @@
             'is_app_updating': false,
             'has_instance_store_ami': me.isInstanceStore(),
             'is_asg': me.isAutoScaling(),
-            'is_production': MC.common.other.canvasData.get('usage') !== 'production' ? false : true
+            'is_production': MC.common.other.canvasData.get('usage') !== 'production' ? false : true,
+            'has_states': Design.instance().serialize().agent.enabled && (_.some(_.values(Design.instance().serialize().component), function(e) {
+              var _ref;
+              return ((_ref = e.state) != null ? _ref.length : void 0) > 0;
+            }))
           };
           is_tab = true;
         } else if (flag === 'RUNNING_APP') {

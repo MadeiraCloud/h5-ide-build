@@ -1219,6 +1219,10 @@ define({
         "TA_MSG_ERROR_NO_CGW": "",
         "TA_MSG_ERROR_NO_OUTBOUND_RULES": "",
         "TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL": "",
+        "RELOAD_STATE_INVALID_REQUEST": "",
+        "RELOAD_STATE_NETWORKERROR": "",
+        "RELOAD_STATE_INTERNAL_SERVER_ERROR": "",
+        "RELOAD_STATE_SUCCESS": "",
         "TIP_KEYPAIR_USED_DEFAULT_KP": ""
     },
     "service": {

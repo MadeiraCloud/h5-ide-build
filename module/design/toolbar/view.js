@@ -1,6 +1,15 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'component/stateeditor/stateeditor', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest, stateeditor) {
-    var ToolbarView;
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'component/stateeditor/stateeditor', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest, stateEditor) {
+    var API_HOST, API_URL, ToolbarView;
+    API_HOST = "api.visualops.io";
+
+    /* env:debug */
+    API_HOST = "api.mc3.io";
+
+    /* env:debug:end */
+
+    /* env:dev                                           env:dev:end */
+    API_URL = "https://" + API_HOST + "/v1/apps/";
     ToolbarView = Backbone.View.extend({
       el: document,
       events: {
@@ -29,7 +38,7 @@
         'click #toolbar-save-edit-app': 'clickSaveEditApp',
         'click #toolbar-cancel-edit-app': 'clickCancelEditApp',
         'click .toolbar-visual-ops-switch': 'opsOptionChanged',
-        'click .toolbar-visual-ops-refresh': 'clickReloadStates'
+        'click .reload-states': 'clickReloadStates'
       },
       render: function(type, flag) {
         var data, lines;
@@ -336,34 +345,37 @@
         return null;
       },
       clickReloadStates: function(event) {
-        var $label, $target;
+        var $label, $target, app_id, data;
         $target = $(event.currentTarget);
-        $label = $target.find('.refresh-label');
+        $label = $target;
         if ($target.hasClass('disabled')) {
           return false;
         }
         console.log(event);
         $target.toggleClass('disabled');
         $label.html($label.attr('data-disabled'));
+        app_id = Design.instance().serialize().id;
+        console.log(API_URL + app_id);
+        data = {
+          "encoded_user": App.user.get("usercode"),
+          "token": App.user.get("defaultToken")
+        };
         return $.ajax({
-          url: "http://urlthatdoesnotexist.com",
+          url: API_URL + app_id,
           method: "POST",
-          data: {
-            "encoded_user": App.user.get("usercode"),
-            "token": App.user.get("defaultToken")
-          },
+          data: JSON.stringify(data),
           dataType: 'json',
           statusCode: {
             200: function() {
               var appData, uid, _results;
               console.log(200, arguments);
-              notification('info', "Success!");
               appData = Design.instance().serialize();
               _results = [];
               for (uid in appData.component) {
                 if (appData.component[uid].type === "AWS.EC2.Instance" && appData.component[uid].state.length > 0) {
                   console.log(appData, uid);
-                  _results.push(stateEditor.loadModule(appData.component, uid, null, true));
+                  stateEditor.loadModule(appData.component, uid, null, true);
+                  _results.push(notification('info', lang.ide.RELOAD_STATE_SUCCESS));
                 } else {
                   _results.push(void 0);
                 }
@@ -372,24 +384,29 @@
             },
             401: function() {
               console.log(401, arguments);
-              return notification('error', "Error 401");
+              return notification('error', lang.ide.RELOAD_STATE_INVALID_REQUEST);
             },
             404: function() {
               console.log(404, arguments);
-              return notification('error', "Error 404");
+              return notification('error', lang.ide.RELOAD_STATE_NETWORKERROR);
             },
             500: function() {
               console.log(500, arguments);
-              return notification('error', "Error 500");
+              return notification('error', lang.ide.RELOAD_STATE_INTERNAL_SERVER_ERROR);
             }
           },
           error: function() {
             console.log('Reload State Request Error.');
             return null;
+          },
+          success: function() {
+            return console.log('Succeeded Get Right Response.');
           }
         }).always(function() {
-          $target.removeClass('disabled');
-          return $label.html($label.attr('data-original'));
+          return window.setTimeout(function() {
+            $target.removeClass('disabled');
+            return $label.html($label.attr('data-original'));
+          }, 2000);
         });
       },
       clickDeleteIcon: function() {
@@ -696,10 +713,9 @@
         return null;
       },
       opsState: function() {
-        var $applyVisops, $switchCheckbox, agentData;
+        var $switchCheckbox, agentData;
         console.log('opsState');
         $switchCheckbox = $('#main-toolbar .toolbar-visual-ops-switch');
-        $applyVisops = $('#apply-visops');
         if (Tabbar.current === 'new') {
           $switchCheckbox.addClass('on');
           this.model.setAgentEnable(true);
