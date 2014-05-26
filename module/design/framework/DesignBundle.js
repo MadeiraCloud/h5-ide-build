@@ -8006,7 +8006,7 @@
           id: data.uid,
           appId: data.resource.GroupId,
           groupName: data.resource.GroupName,
-          description: data.resource.GroupDescription
+          description: data.name === "DefaultSG" ? "default VPC security group" : data.resource.GroupDescription
         }, {
           isDeserialize: true
         });
@@ -8183,33 +8183,54 @@
         return false;
       },
       isRemovable: function() {
-        var elb;
+        var az, child, childAZ, connected, elb, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
         if (this.design().modeIsAppEdit()) {
           if (this.hasAppUpdateRestriction()) {
             return {
               error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_2
             };
           }
-        } else {
-          elb = this.getTarget(constant.RESTYPE.ELB);
-          if (elb.connections("ElbAmiAsso").length > 0 && elb.connections("ElbSubnetAsso").length <= 1) {
-            return {
-              error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_1
-            };
+        }
+        elb = this.getTarget(constant.RESTYPE.ELB);
+        subnet = this.getTarget(constant.RESTYPE.SUBNET);
+        az = subnet.parent();
+        _ref = elb.connectionTargets("ElbAmiAsso");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          childAZ = child.parent();
+          while (childAZ) {
+            if (childAZ.type === constant.RESTYPE.AZ) {
+              break;
+            }
+            childAZ = childAZ.parent();
           }
+          if (!childAZ) {
+            continue;
+          }
+          if (childAZ === az) {
+            connected = true;
+            break;
+          }
+        }
+        if (!connected) {
+          return true;
+        }
+        _ref1 = elb.connectionTargets("ElbSubnetAsso");
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          sb = _ref1[_j];
+          if (sb !== subnet && sb.parent() === az) {
+            connected = false;
+            break;
+          }
+        }
+        if (connected) {
+          return {
+            error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_2
+          };
         }
         return true;
       }
-    }, {
-      isConnectable: function(comp1, comp2) {
-        var subnet;
-        subnet = comp1.type === constant.RESTYPE.SUBNET ? comp1 : comp2;
-        if (parseInt(subnet.get("cidr").split("/")[1], 10) <= 27) {
-          return true;
-        }
-        return lang.ide.CVS_MSG_WARN_CANNOT_CONNECT_SUBNET_TO_ELB;
-      }
-    });
+    }, {});
     ElbAmiAsso = ConnectionModel.extend({
       type: "ElbAmiAsso",
       defaults: function() {
@@ -8248,25 +8269,38 @@
         }
       ],
       initialize: function(attibutes, option) {
-        var ami, asg, elb, subnet, _i, _len, _ref;
+        var ami, asg, connectedSbs, elb, foundSubnet, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
         if (option && option.createByUser) {
           new SGRulePopup(this.id);
         }
         ami = this.getOtherTarget(constant.RESTYPE.ELB);
         elb = this.getTarget(constant.RESTYPE.ELB);
-        if (elb.connections("ElbSubnetAsso").length === 0) {
-          subnet = ami.parent();
-          while (subnet.type !== constant.RESTYPE.SUBNET) {
-            subnet = subnet.parent();
+        subnet = ami;
+        while (true) {
+          subnet = subnet.parent();
+          if (!subnet) {
+            return;
           }
-          if (subnet) {
-            new ElbSubnetAsso(elb, subnet);
+          if (subnet.type === constant.RESTYPE.SUBNET) {
+            break;
           }
         }
+        connectedSbs = elb.connectionTargets("ElbSubnetAsso");
+        _ref = subnet.parent().children();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          sb = _ref[_i];
+          if (connectedSbs.indexOf(sb) !== -1) {
+            foundSubnet = true;
+            break;
+          }
+        }
+        if (!foundSubnet) {
+          new ElbSubnetAsso(subnet, elb);
+        }
         if (ami.type === constant.RESTYPE.LC) {
-          _ref = ami.parent().get("expandedList");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            asg = _ref[_i];
+          _ref1 = ami.parent().get("expandedList");
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            asg = _ref1[_j];
             new ElbAmiAsso(asg, elb);
           }
         }
@@ -9642,27 +9676,32 @@
         return true;
       },
       isRemovable: function() {
-        var ami, cn, notRemovable, _i, _j, _len, _len1, _ref, _ref1;
+        var ami, az, childAZ, cn, _i, _j, _len, _len1, _ref, _ref1;
+        az = this.parent();
         _ref = this.connections("ElbSubnetAsso");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cn = _ref[_i];
           if (cn.isRemovable() !== true) {
-            notRemovable = true;
-            if (this.design().modeIsStack()) {
-              notRemovable = false;
-              _ref1 = cn.getOtherTarget(this).connectionTargets("ElbAmiAsso");
-              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                ami = _ref1[_j];
-                if (ami.parent() !== this && ami.parent().parent() !== this) {
-                  notRemovable = true;
-                  break;
-                }
-              }
-            }
-            if (notRemovable) {
+            if (!this.design().modeIsStack()) {
               return {
                 error: lang.ide.CVS_MSG_ERR_DEL_LINKED_ELB
               };
+            }
+            _ref1 = cn.getOtherTarget(this).connectionTargets("ElbAmiAsso");
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              ami = _ref1[_j];
+              if (ami.parent() === this || ami.parent().parent() === this) {
+                continue;
+              }
+              childAZ = ami.parent();
+              while (childAZ) {
+                if (childAZ === az) {
+                  return {
+                    error: lang.ide.CVS_MSG_ERR_DEL_LINKED_ELB
+                  };
+                }
+                childAZ = childAZ.parent();
+              }
             }
           }
         }
@@ -9700,12 +9739,6 @@
         if (!this.isCidrEnoughForIps(cidr)) {
           return {
             error: "" + cidr + " has not enough IP for the ENIs in this subnet."
-          };
-        }
-        if (this.connections("ElbSubnetAsso").length && Number(cidr.split('/')[1]) > 27) {
-          return {
-            error: "The subnet is attached with a load balancer. The CIDR mask must be smaller than /27.",
-            shouldRemove: false
           };
         }
         return true;
@@ -10670,7 +10703,7 @@
             IpPermissionsEgress: [],
             Default: "true",
             GroupName: "DefaultSG",
-            GroupDescription: 'Default Security Group'
+            GroupDescription: 'default VPC security group'
           }
         };
       }

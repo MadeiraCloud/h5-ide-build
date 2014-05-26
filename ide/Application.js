@@ -139,7 +139,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         'click #SessionClose': 'closeSession',
         'click #SessionClose2': 'closeSession',
         'click #SessionConnect': 'connect',
-        'keypress #SessionPassword': 'passwordChanged'
+        'keyup #SessionPassword': 'passwordChanged'
       },
       constructor: function() {
         if (CurrentSessionDialog) {
@@ -816,7 +816,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
       },
       close: function() {
-        return modal.close();
+        modal.close();
+        return App.openSampleStack(true);
       },
       updateSubmitBtn: function() {
         var accesskey, account, privatekey;
@@ -1209,8 +1210,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         _ref = $.cookie();
         for (ckey in _ref) {
           cValue = _ref[ckey];
-          $.removeCookie(ckey, domain);
-          $.removeCookie(ckey);
+          if (ckey !== 'stack_store_id_local' && ckey !== 'stack_store_id') {
+            $.removeCookie(ckey, domain);
+            $.removeCookie(ckey);
+          }
         }
       },
       changePassword: function(oldPwd, newPwd) {
@@ -1347,7 +1350,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "common_handle", "event", "vpc_model", "constant"], function(Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, common_handle, ide_event, vpc_model, constant) {
+  define('ide/Application',["ApiRequest", "component/exporter/JsonExporter", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "common_handle", "event", "vpc_model", "constant"], function(ApiRequest, JsonExporter, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, common_handle, ide_event, vpc_model, constant) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -1388,8 +1391,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       })(this));
       this.user.on("change:credential", (function(_this) {
         return function() {
-          _this.__onCredentialChanged();
-          return CloudResources.invalidate();
+          return _this.__onCredentialChanged();
         };
       })(this));
     };
@@ -1438,6 +1440,52 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       });
     };
     VisualOps.prototype.showSettings.TAB = SettingsDialog.TAB;
+    VisualOps.prototype.importJson = function(json) {
+      var new_result, result;
+      result = JsonExporter.importJson(json);
+      if (_.isString(result)) {
+        return result;
+      }
+      console.log("Imported JSON: ", result, result.region);
+      MC.common.other.checkRepeatStackName();
+      result.username = $.cookie('usercode');
+      result.name = MC.aws.aws.getDuplicateName(result.name);
+      result.id = 'import-' + MC.data.untitled + '-' + result.region;
+      new_result = {};
+      new_result.resolved_data = [];
+      new_result.resolved_data.push(result);
+      console.log("Formate JSON: ", new_result);
+      ide_event.trigger(ide_event.OPEN_DESIGN_TAB, 'IMPORT_STACK', new_result);
+      return null;
+    };
+    VisualOps.prototype.openSampleStack = function(fromWelcome) {
+      var err, gitBranch, isFirstVisit, localStackStoreIdStamp, stackStoreId, stackStoreIdStamp, that;
+      that = this;
+      try {
+        isFirstVisit = this.user.isFirstVisit();
+        if ((isFirstVisit && fromWelcome) || (!isFirstVisit && !fromWelcome)) {
+          stackStoreIdStamp = $.cookie('stack_store_id') || '';
+          localStackStoreIdStamp = $.cookie('stack_store_id_local') || '';
+          stackStoreId = stackStoreIdStamp.split('#')[0];
+          if (stackStoreId && stackStoreIdStamp !== localStackStoreIdStamp) {
+            $.cookie('stack_store_id_local', stackStoreIdStamp, {
+              expires: 30
+            });
+            gitBranch = 'master';
+            return ApiRequest('stackstore_fetch_stackstore', {
+              sub_path: "" + gitBranch + "/stack/" + stackStoreId + "/" + stackStoreId + ".json"
+            }).then(function(result) {
+              var jsonDataStr;
+              jsonDataStr = result;
+              return that.importJson(jsonDataStr);
+            });
+          }
+        }
+      } catch (_error) {
+        err = _error;
+        return console.log('Open store stack failed');
+      }
+    };
     return VisualOps;
   });
 

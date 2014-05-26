@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(['MC', 'event', 'constant', 'vpc_model', 'aws_model', 'app_model', 'stack_model', 'ami_service', 'elb_service', 'dhcp_service', 'vpngateway_service', 'customergateway_service', 'i18n!nls/lang.js', 'common_handle', "component/exporter/JsonExporter"], function(MC, ide_event, constant, vpc_model, aws_model, app_model, stack_model, ami_service, elb_service, dhcp_service, vpngateway_service, customergateway_service, lang, common_handle, JsonExporter) {
+  define(['MC', 'event', 'constant', 'vpc_model', 'aws_model', 'app_model', 'stack_model', 'ami_service', 'elb_service', 'dhcp_service', 'vpngateway_service', 'customergateway_service', 'i18n!nls/lang.js', 'common_handle'], function(MC, ide_event, constant, vpc_model, aws_model, app_model, stack_model, ami_service, elb_service, dhcp_service, vpngateway_service, customergateway_service, lang, common_handle, JsonExporter) {
     var OverviewModel, current_region, popup_key_set, region_aws_list, region_classic_vpc_result, region_counts, region_tooltip, result_list, total_app, total_aws, total_stack;
     region_counts = [];
     region_aws_list = [];
@@ -305,10 +305,10 @@
               "key": ["HealthCheck"],
               "show_key": lang.ide.PROP_ELB_HEALTH_CHECK
             }, {
-              "key": ["Instances", 'member'],
-              "show_key": lang.ide.DASH_LBL_DNS_NAME
+              "key": ["Instances", 'member', 'InstanceId'],
+              "show_key": lang.ide.DASH_LBL_INSTANCE
             }, {
-              "key": ["ListenerDescriptions", "member"],
+              "key": ["ListenerDescriptions", "member", "Listener"],
               "show_key": lang.ide.PROP_ELB_LBL_LISTENER_DESCRIPTIONS
             }, {
               "key": ["SecurityGroups", "member"],
@@ -821,7 +821,11 @@
                 return null;
               });
             }
-            asl.Instances = _.pluck(asl.Instances.member, 'InstanceId');
+            if (asl.Instances) {
+              asl.Instances = _.pluck(asl.Instances.member, 'InstanceId');
+            } else {
+              asl.Instances = [];
+            }
             asl.detail = me.parseSourceValue('DescribeAutoScalingGroups', asl, "detail", null);
             if (resources.DescribeScalingActivities) {
               $.each(resources.DescribeScalingActivities, function(idx, activity) {
@@ -838,7 +842,10 @@
         if (resources.DescribeAlarms) {
           _.map(resources.DescribeAlarms, function(alarm, i) {
             lists.CW += 1;
-            alarm.dimension_display = alarm.Dimensions.member[0].Name + ':' + alarm.Dimensions.member[0].Value;
+            alarm.dimension_display = '';
+            if (alarm.Dimensions) {
+              alarm.dimension_display = alarm.Dimensions.member[0].Name + ':' + alarm.Dimensions.member[0].Value;
+            }
             alarm.threshold_display = "" + alarm.MetricName + " " + alarm.ComparisonOperator + " " + alarm.Threshold + " for " + alarm.Period + " seconds";
             if (alarm.StateValue === 'OK') {
               alarm.state_ok = true;
@@ -1145,10 +1152,14 @@
           show_key = value.show_key;
           cur_key = key_array[0];
           cur_value = value_to_parse[cur_key];
-          _.map(key_array, function(value, key) {
+          _.map(key_array, function(attr, key) {
             if (cur_value) {
               if (key > 0) {
-                cur_value = cur_value[value];
+                if (_.isArray(cur_value) && !_.isNumber(attr)) {
+                  cur_value = _.pluck(cur_value, attr);
+                } else if (_.isObject(cur_value)) {
+                  cur_value = cur_value[attr];
+                }
                 return cur_value;
               }
             }
@@ -1713,24 +1724,6 @@
             }
           }
         }
-        return null;
-      },
-      importJson: function(json) {
-        var new_result, result;
-        result = JsonExporter.importJson(json);
-        if (_.isString(result)) {
-          return result;
-        }
-        console.log("Imported JSON: ", result, result.region);
-        MC.common.other.checkRepeatStackName();
-        result.username = $.cookie('usercode');
-        result.name = MC.aws.aws.getDuplicateName(result.name);
-        result.id = 'import-' + MC.data.untitled + '-' + result.region;
-        new_result = {};
-        new_result.resolved_data = [];
-        new_result.resolved_data.push(result);
-        console.log("Formate JSON: ", new_result);
-        ide_event.trigger(ide_event.OPEN_DESIGN_TAB, 'IMPORT_STACK', new_result);
         return null;
       }
     });

@@ -7,10 +7,16 @@
       open_fail: false,
       initialize: function() {
         $(window).on('beforeunload', this.beforeunloadEvent);
-        return $(document).on('keydown', this.globalKeyEvent);
+        $(document).on('keydown', this.globalKeyEvent);
+        return $(window).on('focus', function() {
+          if (App && App.openSampleStack) {
+            return App.openSampleStack();
+          }
+        });
       },
       showMain: function() {
-        var target;
+        var target, that;
+        that = this;
         console.log('showMain');
         if ($('#waiting-bar-wrapper').hasClass('waiting-bar')) {
           this.toggleWaiting();
@@ -101,7 +107,7 @@
         if (MC.browser === 'msie' && MC.browserVersion === 10) {
           return;
         }
-        if (!(window.App && App.user && App.user.get("session"))) {
+        if (!(App && App.user && App.user.get("session"))) {
           return;
         }
         has_refresh = true;

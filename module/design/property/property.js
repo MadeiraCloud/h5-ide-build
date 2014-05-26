@@ -2885,7 +2885,9 @@ function program53(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
-    + "</label>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
+    + "</label>\n			<i class=\"icon-info tooltip default-kp-info\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "POP_INSTANCE_KEYPAIR_INFO_TIP", {hash:{},data:data}))
+    + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
@@ -3286,7 +3288,7 @@ function program53(depth0,data) {
         return this.set('loginCmd', cmd_line);
       },
       init: function(instance_id) {
-        var app_data, deviceName, effective, i, instance, myInstanceComponent, rdName, rootDevice, volume, _i, _len, _ref;
+        var app_data, deviceName, effective, i, instance, monitoringState, myInstanceComponent, rdName, rootDevice, volume, _i, _len, _ref;
         this.set('id', instance_id);
         this.set('uid', instance_id);
         myInstanceComponent = Design.instance().component(instance_id);
@@ -3331,6 +3333,11 @@ function program53(depth0,data) {
           }
           instance.eni = this.getEniData(instance);
           instance.app_view = MC.canvas.getState() === 'appview' ? true : false;
+          monitoringState = 'disabled';
+          if (instance.monitoring && instance.monitoring.state) {
+            monitoringState = instance.monitoring.state;
+          }
+          this.set('monitoringState', monitoringState);
           this.set(instance);
           this.resModel = myInstanceComponent;
           this.setOsTypeAndLoginCmd(instance_id);
@@ -3823,7 +3830,11 @@ function program35(depth0,data) {
     + "</dt>\n      ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
+  buffer += "\n\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CLOUDWATCH_DETAILED_MONITORING", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.monitoringState)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.ebsOptimized), {hash:{},data:data}))
@@ -4139,6 +4150,7 @@ function program35(depth0,data) {
         }
         this.set('number', myInstanceComponent.get('count'));
         this.set('name', myInstanceComponent.get('name'));
+        this.set('monitoring', myInstanceComponent.get('monitoring'));
         this.getGroupList();
         this.getEni();
         return null;
@@ -4220,7 +4232,9 @@ function program35(depth0,data) {
       isValidIp: instance_model.isValidIp,
       addIp: instance_model.addIp,
       removeIp: instance_model.removeIp,
-      attachEip: instance_model.attachEip
+      attachEip: instance_model.attachEip,
+      setMonitoring: instance_model.setMonitoring,
+      setSourceCheck: instance_model.setSourceCheck
     });
     return new ServerGroupModel();
   });
@@ -4258,11 +4272,23 @@ function program3(depth0,data) {
   buffer += "\n\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_editable), {hash:{},inverse:self.program(21, program21, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  buffer += "\n  </div>\n\n  <div class=\"option-group-head\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
+    + "</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <label for=\"property-instance-enable-cloudwatch\"></label>\n      </div>\n      <label for=\"property-instance-enable-cloudwatch\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CW_ENABLED", {hash:{},data:data}))
+    + "</label>\n\n      <p class=\"";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " property-info\" id=\"property-cloudwatch-warn\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_CW_WARN", {hash:{},data:data}))
+    + "<a target=\"_blank\" href=\"http://aws.amazon.com/cloudwatch\">Amazon Cloud Watch product page</a></p>\n    </section>\n  </div>\n\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -4387,6 +4413,18 @@ function program21(depth0,data) {
 
 function program23(depth0,data) {
   
+  
+  return "\n        <input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" checked=\"true\" value=\"None\" name=\"property-instance-enable-cloudwatch\" />\n        ";
+  }
+
+function program25(depth0,data) {
+  
+  
+  return "\n        <input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" value=\"None\" name=\"property-instance-enable-cloudwatch\" />\n        ";
+  }
+
+function program27(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">Root Device</div>\n  <div class=\"option-group\">\n    <article class=\"property-app\">\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_DEVICE_NAME", {hash:{},data:data}))
@@ -4397,19 +4435,19 @@ function program23(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VOLUME_SIZE", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeSize), {hash:{},data:data}))
     + " GB</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program24(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -4420,7 +4458,7 @@ function program24(depth0,data) {
   return buffer;
   }
 
-function program26(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>IOPS</dt>\n        <dd>"
@@ -4429,12 +4467,17 @@ function program26(depth0,data) {
   return buffer;
   }
 
-function program28(depth0,data) {
+function program32(depth0,data) {
   
-  var buffer = "";
+  var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_DETAIL", {hash:{},data:data}))
-    + "</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <div class=\"network-list-wrap\">\n        <div class=\"network-list-header clearfix\">\n          "
+    + "</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.sourceDestCheck), {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <label for=\"property-instance-source-check\"></label>\n      </div>\n      <label for=\"property-instance-source-check\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_SOURCE_DEST_CHECK", {hash:{},data:data}))
+    + "</label>\n    </section>\n    <section class=\"property-control-group\">\n      <div class=\"network-list-wrap\">\n        <div class=\"network-list-header clearfix\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_IP_ADDRESS", {hash:{},data:data}))
     + "\n          <button id=\"instance-ip-add\" class=\"right btn btn-blue btn-small tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_TIP_ADD_IP_ADDRESS", {hash:{},data:data}))
@@ -4442,6 +4485,17 @@ function program28(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_ENI_ADD_IP", {hash:{},data:data}))
     + "</button>\n        </div>\n        <ul class=\"network-list\" id=\"property-network-list\" data-bind=\"true\"></ul>\n      </div>\n    </section>\n  </div>\n  ";
   return buffer;
+  }
+function program33(depth0,data) {
+  
+  
+  return "\n        <input id=\"property-instance-source-check\" type=\"checkbox\" checked=\"true\" value=\"None\" name=\"property-instance-source-check\" />\n        ";
+  }
+
+function program35(depth0,data) {
+  
+  
+  return "\n        <input id=\"property-instance-source-check\" type=\"checkbox\" value=\"None\" name=\"property-instance-source-check\" />\n        ";
   }
 
   buffer += "<article class=\"property-app\">\n  <div id=\"prop-appedit-ami-list\" ";
@@ -4576,7 +4630,9 @@ function program12(depth0,data) {
         'click .toggle-eip': 'setEip',
         'click #instance-ip-add': "addIp",
         'click #property-network-list .icon-remove': "removeIp",
-        'change .input-ip': 'syncIPList'
+        'change .input-ip': 'syncIPList',
+        'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
+        'change #property-instance-source-check': 'sourceCheckChange'
       },
       render: function() {
         this.$el.html(template(this.model.attributes));
@@ -4614,6 +4670,8 @@ function program12(depth0,data) {
         return null;
       },
       instanceTypeSelect: instance_view.instanceTypeSelect,
+      cloudwatchSelect: instance_view.cloudwatchSelect,
+      sourceCheckChange: instance_view.sourceCheckChange,
       addIp: instance_view.addIp,
       removeIp: instance_view.removeIp,
       setEip: instance_view.setEip,
@@ -5165,8 +5223,6 @@ function program10(depth0,data) {
         }
         if (inputReadOnly || component.isDefault()) {
           this.set('nameReadOnly', true);
-        }
-        if (inputReadOnly) {
           this.set('descReadOnly', true);
         }
         return null;
@@ -11382,7 +11438,12 @@ function program3(depth0,data) {
     + "</div>\n  <div class=\"option-group\">\n";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    <section class=\"property-control-group\">\n      <div class=\"network-list-wrap\">\n        <div class=\"network-list-header\">\n          "
+  buffer += "\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sourceDestCheck), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " />\n        <label for=\"property-eni-source-check\"></label>\n      </div>\n      <label for=\"property-eni-source-check\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_SOURCE_DEST_CHECK", {hash:{},data:data}))
+    + "</label>\n    </section>\n\n    <section class=\"property-control-group\">\n      <div class=\"network-list-wrap\">\n        <div class=\"network-list-header\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_IP_ADDRESS", {hash:{},data:data}))
     + "\n          <button id=\"property-eni-ip-add\" class=\"right btn btn-blue btn-small tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_TIP_ADD_IP_ADDRESS", {hash:{},data:data}))
@@ -11400,15 +11461,11 @@ function program4(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_LBL_DESC", {hash:{},data:data}))
     + "</label>\n      <textarea id=\"property-eni-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
     + escapeExpression(((stack1 = (depth0 && depth0.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</textarea>\n    </section>\n\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sourceDestCheck), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " />\n        <label for=\"property-eni-source-check\"></label>\n      </div>\n      <label for=\"property-eni-source-check\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ENI_SOURCE_DEST_CHECK", {hash:{},data:data}))
-    + "</label>\n    </section>\n";
+    + "</textarea>\n    </section>\n";
   return buffer;
   }
-function program5(depth0,data) {
+
+function program6(depth0,data) {
   
   
   return "checked=\"checked\"";
@@ -13234,7 +13291,9 @@ function program30(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				<label for=\"property-instance-ebs-optimized\"></label>\n			</div>\n			<label for=\"property-instance-ebs-optimized\">EBS Optimized</label>\n		</section>\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_KEY_PAIR", {hash:{},data:data}))
-    + "</label>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n		";
+    + "</label>\n			<i class=\"icon-info tooltip default-kp-info\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "POP_INSTANCE_KEYPAIR_INFO_TIP", {hash:{},data:data}))
+    + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n		";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayAssociatePublicIp), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n\n	<div class=\"option-group-head\">"
