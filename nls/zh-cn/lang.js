@@ -368,6 +368,8 @@ define({
         "PROP_STACK_LBL_DESC": "描述",
         "PROP_STACK_LBL_REGION": "地区",
         "PROP_STACK_LBL_TYPE": "类型",
+        "PROP_STACK_LBL_ID": "模板标识",
+        "PROP_APP_LBL_ID": "应用标识",
         "PROP_STACK_LBL_USAGE": "用途",
         "PROP_STACK_TIT_SG": "安全组",
         "PROP_STACK_TIT_ACL": "访问控制表",

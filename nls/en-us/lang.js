@@ -368,6 +368,8 @@ define({
         "PROP_STACK_LBL_DESC": "Description",
         "PROP_STACK_LBL_REGION": "Region",
         "PROP_STACK_LBL_TYPE": "Type",
+        "PROP_STACK_LBL_ID": "Stack ID",
+        "PROP_APP_LBL_ID": "App ID",
         "PROP_STACK_LBL_USAGE": "Usage",
         "PROP_STACK_TIT_SG": "Security Groups",
         "PROP_STACK_TIT_ACL": "Network ACL",

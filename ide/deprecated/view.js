@@ -9,7 +9,7 @@
         $(window).on('beforeunload', this.beforeunloadEvent);
         $(document).on('keydown', this.globalKeyEvent);
         return $(window).on('focus', function() {
-          if (App && App.openSampleStack) {
+          if (window.App && App.openSampleStack) {
             return App.openSampleStack();
           }
         });

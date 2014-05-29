@@ -257,10 +257,16 @@
         amiAry = [];
         instanceAMIMap = {};
         _.each(MC.canvas_data.component, function(compObj) {
-          var imageId;
+          var imageId, instanceId;
           if (compObj.type === constant.RESTYPE.INSTANCE || compObj.type === constant.RESTYPE.LC) {
             imageId = compObj.resource.ImageId;
-            if (imageId) {
+            instanceId = '';
+            if (compObj.type === constant.RESTYPE.INSTANCE) {
+              instanceId = compObj.resource.InstanceId;
+            } else if (compObj.type === constant.RESTYPE.LC) {
+              instanceId = compObj.resource.LaunchConfigurationARN;
+            }
+            if (imageId && (!instanceId)) {
               if (!instanceAMIMap[imageId]) {
                 instanceAMIMap[imageId] = [];
                 amiAry.push(imageId);
@@ -371,10 +377,16 @@
       amiAry = [];
       instanceAMIMap = {};
       _.each(MC.canvas_data.component, function(compObj) {
-        var imageId;
+        var imageId, instanceId;
         if (compObj.type === constant.RESTYPE.INSTANCE || compObj.type === constant.RESTYPE.LC) {
           imageId = compObj.resource.ImageId;
-          if (imageId) {
+          instanceId = '';
+          if (compObj.type === constant.RESTYPE.INSTANCE) {
+            instanceId = compObj.resource.InstanceId;
+          } else if (compObj.type === constant.RESTYPE.LC) {
+            instanceId = compObj.resource.LaunchConfigurationARN;
+          }
+          if (imageId && (!instanceId)) {
             if (!instanceAMIMap[imageId]) {
               instanceAMIMap[imageId] = [];
               amiAry.push(imageId);
