@@ -2,8 +2,8 @@
   font-family: 'MCIcon';
   font-weight: normal;
   font-style: normal;
-  src: url('../fonts/icon.eot?v=1cd66845');
-  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff?v=59a57962") format("woff"), url("../fonts/icon.ttf?v=6adcd0ab") format("truetype"); }
+  src: url('../fonts/icon.eot');
+  src: url('../fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff") format("woff"), url("../fonts/icon.ttf") format("truetype"); }
 
 .icon-play:before,
 .icon-stop:before,

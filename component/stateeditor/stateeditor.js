@@ -3751,7 +3751,7 @@ return TEMPLATE; });
         stateLogDataAry: []
       },
       initialize: function() {
-        var agentData, allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, currentCompData, currentState, groupResSelectData, modRepo, modTag, modVersion, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, that;
+        var agentData, allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, compLayout, currentCompData, currentState, groupResSelectData, modRepo, modTag, modVersion, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, that;
         that = this;
         agentData = Design.instance().get('agent');
         modRepo = agentData.module.repo;
@@ -3765,6 +3765,11 @@ return TEMPLATE; });
           that.set('isWindowsPlatform', true);
         } else {
           that.set('isWindowsPlatform', false);
+        }
+        currentCompData = that.get('compData');
+        compLayout = MC.canvas_data.layout[currentCompData.uid];
+        if (compLayout && compLayout.osType && compLayout.osType === 'windows') {
+          that.set('isWindowsPlatform', true);
         }
         that.set('amiExist', platformInfo.amiExist);
         if (osPlatformDistro) {
@@ -3851,7 +3856,6 @@ return TEMPLATE; });
         that.set('cmdModuleMap', cmdModuleMap);
         that.set('moduleCMDMap', moduleCMDMap);
         that.genStateRefList(allCompData);
-        currentCompData = that.get('compData');
         resAttrDataAry = MC.aws.aws.genAttrRefList(currentCompData, allCompData);
         that.set('resAttrDataAry', resAttrDataAry);
         that.genAttrRefRegexList();
