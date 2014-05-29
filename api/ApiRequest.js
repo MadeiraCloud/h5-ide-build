@@ -214,9 +214,8 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'app_info'                : { url:'/app/',	method:'info',	params:['username', 'session_id', 'region_name', 'app_ids']   },
 		'app_list'                : { url:'/app/',	method:'list',	params:['username', 'session_id', 'region_name', 'app_ids']   },
 		'app_resource'            : { url:'/app/',	method:'resource',	params:['username', 'session_id', 'region_name', 'app_id']   },
-		'app_render_app'          : { url:'/app/',	method:'render_app',	params:['timestamp', 'app_id', 'res_id', 'is_arrived']   },
-		'app_check_app'           : { url:'/app/',	method:'check_app',	params:['timestamp', 'app_id']   },
-		'app_update_status'       : { url:'/app/',	method:'update_status',	params:['app_id', 'instance_id', 'recipe_version', 'timestamp', 'statuses', 'waiting', 'agent_status', 'token']   },
+		'app_get_info'            : { url:'/app/',	method:'get_info',	params:['username', 'session_id', 'vpc_ids']   },
+		'app_save_info'           : { url:'/app/',	method:'save_info',	params:['username', 'session_id', 'spec', 'resource']   },
 		'favorite_add'            : { url:'/favorite/',	method:'add',	params:['username', 'session_id', 'region_name', 'resource']   },
 		'favorite_remove'         : { url:'/favorite/',	method:'remove',	params:['username', 'session_id', 'region_name', 'resource_ids']   },
 		'favorite_info'           : { url:'/favorite/',	method:'info',	params:['username', 'session_id', 'region_name', 'provider', 'service', 'resource']   },
@@ -565,7 +564,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
     };
     logAndThrow = function(obj) {
 
-      /* env:dev                                   env:dev:end */
+      /* env:dev                                     env:dev:end */
       throw obj;
     };
     AjaxSuccessHandler = function(res) {

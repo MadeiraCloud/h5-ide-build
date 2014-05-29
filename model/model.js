@@ -3481,7 +3481,8 @@
       DescribeVpcs: DescribeVpcs,
       DescribeAccountAttributes: DescribeAccountAttributes,
       DescribeVpcAttribute: DescribeVpcAttribute,
-      resolveDescribeVpcsResult: resolveDescribeVpcsResult
+      resolveDescribeVpcsResult: resolveDescribeVpcsResult,
+      resolveDescribeVpcAttributeResult: resolveDescribeVpcAttributeResult
     };
   });
 
@@ -4137,7 +4138,7 @@
       return forge_result;
     };
     resourceMap = function(result) {
-      var action_name, dict, dict_name, elbAttrData, elbHealthData, node, responses, _i, _len;
+      var action_name, dict, dict_name, elbAttrData, elbHealthData, node, responses, vpcAttr, _i, _len;
       responses = {
         "DescribeImagesResponse": ami_service.resolveDescribeImagesResult,
         "DescribeAvailabilityZonesResponse": ec2_service.resolveDescribeAvailabilityZonesResult,
@@ -4169,7 +4170,8 @@
         "ListTopicsResponse": sns_service.resolveListTopicsResult,
         "DescribeAutoScalingInstancesResponse": autoscaling_service.resolveDescribeAutoScalingInstancesResult,
         "DescribeInstanceHealthResponse": elb_service.resolveDescribeInstanceHealthResult,
-        "DescribeLoadBalancerAttributesResponse": elb_service.resolveDescribeLoadBalancerAttributesResult
+        "DescribeLoadBalancerAttributesResponse": elb_service.resolveDescribeLoadBalancerAttributesResult,
+        "DescribeVpcAttributeResponse": vpc_service.resolveDescribeVpcAttributeResult
       };
       dict = {};
       for (_i = 0, _len = result.length; _i < _len; _i++) {
@@ -4177,10 +4179,26 @@
         if ($.type(node) === "string") {
           action_name = ($.parseXML(node)).documentElement.localName;
           dict_name = action_name.replace(/Response/i, "");
-          if (dict[dict_name] != null) {
-            dict[dict_name] = [];
+          if (!responses[action_name]) {
+            console.warn("[resourceMap] can not find action_name [" + action_name + "]");
+            continue;
           }
-          dict[dict_name] = responses[action_name]([null, node]);
+          if (action_name === "DescribeVpcAttributeResponse") {
+            if (!dict[dict_name]) {
+              dict[dict_name] = {};
+            }
+            vpcAttr = responses[action_name]([null, node]);
+            if (vpcAttr.enableDnsSupport) {
+              dict[dict_name]['enableDnsSupport'] = vpcAttr.enableDnsSupport.value;
+            } else if (vpcAttr.enableDnsHostnames) {
+              dict[dict_name]['enableDnsHostnames'] = vpcAttr.enableDnsHostnames.value;
+            }
+          } else {
+            if (dict[dict_name] != null) {
+              dict[dict_name] = [];
+            }
+            dict[dict_name] = responses[action_name]([null, node]);
+          }
         } else if ($.type(node) === "object") {
           elbAttrData = node["DescribeLoadBalancerAttributes"];
           if (elbAttrData) {
