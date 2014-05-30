@@ -4298,8 +4298,8 @@
       send_request("create", src, [username, session_id, region_name, spec], parserCreateReturn, callback);
       return true;
     };
-    update = function(src, username, session_id, region_name, spec, app_id, callback) {
-      send_request("update", src, [username, session_id, region_name, spec, app_id], parserUpdateReturn, callback);
+    update = function(src, username, session_id, region_name, spec, app_id, fast_update, callback) {
+      send_request("update", src, [username, session_id, region_name, spec, app_id, fast_update], parserUpdateReturn, callback);
       return true;
     };
     rename = function(src, username, session_id, region_name, app_id, new_name, app_name, callback) {
@@ -4408,11 +4408,11 @@
           }
         });
       },
-      update: function(src, username, session_id, region_name, spec, app_id) {
+      update: function(src, username, session_id, region_name, spec, app_id, fast_update) {
         var me;
         me = this;
         src.model = me;
-        return app_service.update(src, username, session_id, region_name, spec, app_id, function(forge_result) {
+        return app_service.update(src, username, session_id, region_name, spec, app_id, fast_update, function(forge_result) {
           if (!forge_result.is_error) {
 
           } else {

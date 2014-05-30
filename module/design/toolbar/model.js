@@ -626,15 +626,47 @@
         return null;
       },
       saveApp: function(data) {
-        var id, idx, item, me, name, region;
+        var backingStore, backingStoreState, comp, dataState, fastUpdate, id, idx, item, me, name, region, state, uid, __bsBackup, __dtBackup, _ref, _ref1;
         me = this;
         region = data.region;
         id = data.id;
         name = data.name;
         MC.common.other.addCacheThumb(id, $("#canvas_body").html(), $("#svg_canvas")[0].getBBox());
+        backingStore = Design.instance().backingStore();
+        __bsBackup = $.extend(true, {}, backingStore);
+        __dtBackup = $.extend(true, {}, data);
+        backingStoreState = {};
+        dataState = {};
+        _ref = backingStore.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === "AWS.AutoScaling.LaunchConfiguration" || comp.type === "AWS.EC2.Instance") {
+            backingStoreState[uid] = comp.state;
+            delete comp.state;
+          }
+        }
+        _ref1 = data.component;
+        for (uid in _ref1) {
+          comp = _ref1[uid];
+          if (comp.type === "AWS.AutoScaling.LaunchConfiguration" || comp.type === "AWS.EC2.Instance") {
+            dataState[uid] = comp.state;
+            delete comp.state;
+          }
+        }
+        fastUpdate = _.isEqual(backingStore.component, data.component);
+        for (uid in backingStoreState) {
+          state = backingStoreState[uid];
+          backingStore.component[uid].state = state;
+        }
+        for (uid in dataState) {
+          state = dataState[uid];
+          data.component[uid].state = state;
+        }
+        console.assert(_.isEqual(backingStore, __bsBackup), "BackingStore Modified.");
+        console.assert(_.isEqual(data, __dtBackup), "Data Modified.");
         app_model.update({
           sender: me
-        }, $.cookie('usercode'), $.cookie('session_id'), region, data, id);
+        }, $.cookie('usercode'), $.cookie('session_id'), region, data, id, fastUpdate);
         idx = 'process-' + region + '-' + name;
         process_data_map[idx] = data;
         item = {
