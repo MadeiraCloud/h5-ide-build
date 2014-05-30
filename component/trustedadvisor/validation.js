@@ -192,36 +192,27 @@
           checkResult = true;
           returnInfo = null;
           errInfoStr = '';
-          if (result && result[0] === ApiRequest.Errors.StackVerifyFailed) {
-            validResultObj = result.resolved_data;
-            if (typeof validResultObj === 'object') {
-              if (validResultObj.result) {
-                callback(null);
-              } else {
-                checkResult = false;
-                try {
-                  returnInfo = validResultObj.cause;
-                  returnInfoObj = JSON.parse(returnInfo);
-                  errCompUID = returnInfoObj.uid;
-                  errCode = returnInfoObj.code;
-                  errKey = returnInfoObj.key;
-                  errMessage = returnInfoObj.message;
-                  errCompName = _getCompName(errCompUID);
-                  errCompType = _getCompType(errCompUID);
-                  errInfoStr = sprintf(lang.ide.TA_MSG_ERROR_STACK_FORMAT_VALID_FAILED, errCompName, errMessage);
-                  if (errCode === 'EMPTY_VALUE' && errKey === 'InstanceId' && errMessage === 'Key InstanceId can not empty' && errCompType === 'AWS.VPC.NetworkInterface') {
-                    checkResult = true;
-                  }
-                  if (errCode === 'EMPTY_VALUE' && errKey === 'LaunchConfigurationName' && errMessage === 'Key LaunchConfigurationName can not empty' && errCompType === 'AWS.AutoScaling.Group') {
-                    checkResult = true;
-                  }
-                } catch (_error) {
-                  err = _error;
-                  errInfoStr = "Stack format validation error";
-                }
+          if (result !== true) {
+            checkResult = false;
+            try {
+              returnInfo = result;
+              returnInfoObj = JSON.parse(returnInfo);
+              errCompUID = returnInfoObj.uid;
+              errCode = returnInfoObj.code;
+              errKey = returnInfoObj.key;
+              errMessage = returnInfoObj.message;
+              errCompName = _getCompName(errCompUID);
+              errCompType = _getCompType(errCompUID);
+              errInfoStr = sprintf(lang.ide.TA_MSG_ERROR_STACK_FORMAT_VALID_FAILED, errCompName, errMessage);
+              if (errCode === 'EMPTY_VALUE' && errKey === 'InstanceId' && errMessage === 'Key InstanceId can not empty' && errCompType === 'AWS.VPC.NetworkInterface') {
+                checkResult = true;
               }
-            } else {
-              callback(null);
+              if (errCode === 'EMPTY_VALUE' && errKey === 'LaunchConfigurationName' && errMessage === 'Key LaunchConfigurationName can not empty' && errCompType === 'AWS.AutoScaling.Group') {
+                checkResult = true;
+              }
+            } catch (_error) {
+              err = _error;
+              errInfoStr = "Stack format validation error";
             }
           } else {
             callback(null);
@@ -236,6 +227,8 @@
             callback(validResultObj);
             return console.log(validResultObj);
           }
+        }, function(result) {
+          return callback(null);
         });
         tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_CHECKING_FORMAT_VALID);
         return {

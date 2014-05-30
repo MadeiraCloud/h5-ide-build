@@ -3481,8 +3481,7 @@
       DescribeVpcs: DescribeVpcs,
       DescribeAccountAttributes: DescribeAccountAttributes,
       DescribeVpcAttribute: DescribeVpcAttribute,
-      resolveDescribeVpcsResult: resolveDescribeVpcsResult,
-      resolveDescribeVpcAttributeResult: resolveDescribeVpcAttributeResult
+      resolveDescribeVpcsResult: resolveDescribeVpcsResult
     };
   });
 
@@ -4138,7 +4137,7 @@
       return forge_result;
     };
     resourceMap = function(result) {
-      var action_name, dict, dict_name, elbAttrData, elbHealthData, node, responses, vpcAttr, _i, _len;
+      var action_name, dict, dict_name, elbAttrData, elbHealthData, node, responses, _i, _len;
       responses = {
         "DescribeImagesResponse": ami_service.resolveDescribeImagesResult,
         "DescribeAvailabilityZonesResponse": ec2_service.resolveDescribeAvailabilityZonesResult,
@@ -4170,8 +4169,7 @@
         "ListTopicsResponse": sns_service.resolveListTopicsResult,
         "DescribeAutoScalingInstancesResponse": autoscaling_service.resolveDescribeAutoScalingInstancesResult,
         "DescribeInstanceHealthResponse": elb_service.resolveDescribeInstanceHealthResult,
-        "DescribeLoadBalancerAttributesResponse": elb_service.resolveDescribeLoadBalancerAttributesResult,
-        "DescribeVpcAttributeResponse": vpc_service.resolveDescribeVpcAttributeResult
+        "DescribeLoadBalancerAttributesResponse": elb_service.resolveDescribeLoadBalancerAttributesResult
       };
       dict = {};
       for (_i = 0, _len = result.length; _i < _len; _i++) {
@@ -4179,26 +4177,10 @@
         if ($.type(node) === "string") {
           action_name = ($.parseXML(node)).documentElement.localName;
           dict_name = action_name.replace(/Response/i, "");
-          if (!responses[action_name]) {
-            console.warn("[resourceMap] can not find action_name [" + action_name + "]");
-            continue;
+          if (dict[dict_name] != null) {
+            dict[dict_name] = [];
           }
-          if (action_name === "DescribeVpcAttributeResponse") {
-            if (!dict[dict_name]) {
-              dict[dict_name] = {};
-            }
-            vpcAttr = responses[action_name]([null, node]);
-            if (vpcAttr.enableDnsSupport) {
-              dict[dict_name]['enableDnsSupport'] = vpcAttr.enableDnsSupport.value;
-            } else if (vpcAttr.enableDnsHostnames) {
-              dict[dict_name]['enableDnsHostnames'] = vpcAttr.enableDnsHostnames.value;
-            }
-          } else {
-            if (dict[dict_name] != null) {
-              dict[dict_name] = [];
-            }
-            dict[dict_name] = responses[action_name]([null, node]);
-          }
+          dict[dict_name] = responses[action_name]([null, node]);
         } else if ($.type(node) === "object") {
           elbAttrData = node["DescribeLoadBalancerAttributes"];
           if (elbAttrData) {
@@ -4298,8 +4280,8 @@
       send_request("create", src, [username, session_id, region_name, spec], parserCreateReturn, callback);
       return true;
     };
-    update = function(src, username, session_id, region_name, spec, app_id, fast_update, callback) {
-      send_request("update", src, [username, session_id, region_name, spec, app_id, fast_update], parserUpdateReturn, callback);
+    update = function(src, username, session_id, region_name, spec, app_id, callback) {
+      send_request("update", src, [username, session_id, region_name, spec, app_id], parserUpdateReturn, callback);
       return true;
     };
     rename = function(src, username, session_id, region_name, app_id, new_name, app_name, callback) {
@@ -4408,11 +4390,11 @@
           }
         });
       },
-      update: function(src, username, session_id, region_name, spec, app_id, fast_update) {
+      update: function(src, username, session_id, region_name, spec, app_id) {
         var me;
         me = this;
         src.model = me;
-        return app_service.update(src, username, session_id, region_name, spec, app_id, fast_update, function(forge_result) {
+        return app_service.update(src, username, session_id, region_name, spec, app_id, function(forge_result) {
           if (!forge_result.is_error) {
 
           } else {

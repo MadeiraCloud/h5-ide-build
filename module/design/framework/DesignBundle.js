@@ -1768,9 +1768,6 @@
       }
       return null;
     };
-    DesignImpl.prototype.backingStore = function() {
-      return this.__backingStore;
-    };
     DesignImpl.prototype.diff = function() {
       var comp, isModified, newData, oldData, result, uid, _ref, _ref1;
       newData = this.serialize();
