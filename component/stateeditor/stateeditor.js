@@ -3751,7 +3751,7 @@ return TEMPLATE; });
         stateLogDataAry: []
       },
       initialize: function() {
-        var agentData, allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, compLayout, currentCompData, currentState, groupResSelectData, modRepo, modTag, modVersion, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, that;
+        var agentData, allCompData, cachedAmi, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, currentCompData, currentState, groupResSelectData, modRepo, modTag, modVersion, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, that;
         that = this;
         agentData = Design.instance().get('agent');
         modRepo = agentData.module.repo;
@@ -3767,8 +3767,8 @@ return TEMPLATE; });
           that.set('isWindowsPlatform', false);
         }
         currentCompData = that.get('compData');
-        compLayout = MC.canvas_data.layout[currentCompData.uid];
-        if (compLayout && compLayout.osType && compLayout.osType === 'windows') {
+        cachedAmi = Design.instance().component(currentCompData.uid).get('cachedAmi');
+        if (cachedAmi && cachedAmi.osType && cachedAmi.osType === 'windows') {
           that.set('isWindowsPlatform', true);
         }
         that.set('amiExist', platformInfo.amiExist);
@@ -3893,7 +3893,7 @@ return TEMPLATE; });
         return newCMDAllParaAry;
       },
       getResPlatformInfo: function() {
-        var amiExist, compData, imageId, imageObj, linuxDistroRange, osFamily, osPlatform, osPlatformDistro, osType, that;
+        var amiExist, cachedAmi, compData, imageId, imageObj, layoutOSType, linuxDistroRange, osPlatform, osPlatformDistro, osType, that;
         that = this;
         compData = that.get('compData');
         imageId = compData.resource.ImageId;
@@ -3901,15 +3901,25 @@ return TEMPLATE; });
         osPlatform = null;
         osPlatformDistro = null;
         amiExist = true;
-        if (imageObj) {
-          osFamily = imageObj.osFamily;
-          osType = imageObj.osType;
-          linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz', 'linux-other'];
+        layoutOSType = '';
+        cachedAmi = Design.instance().component(compData.uid).get('cachedAmi');
+        if (cachedAmi) {
+          layoutOSType = cachedAmi.osType;
+        }
+        if ((imageObj && imageObj.osType) || layoutOSType) {
+          if (!imageObj) {
+            imageObj = {};
+          }
+          osType = imageObj.osType || layoutOSType;
+          linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz'];
           if (osType === 'windows') {
             osPlatform = 'windows';
           } else if (__indexOf.call(linuxDistroRange, osType) >= 0) {
             osPlatform = 'linux';
             osPlatformDistro = osType;
+          } else if (__indexOf.call(linuxDistroRange, layoutOSType) >= 0) {
+            osPlatform = 'linux';
+            osPlatformDistro = layoutOSType;
           }
         } else {
           amiExist = false;

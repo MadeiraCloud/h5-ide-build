@@ -29,7 +29,6 @@
           if (!result.is_error) {
             me.set('resource_snapshot', result.resolved_data);
             MC.data.config[region_name].snapshot_list = result.resolved_data;
-            me.checkRefreshResourceList();
           }
           return null;
         });
@@ -120,9 +119,7 @@
             quickstart_amis = ami_list;
             console.log('get quistart ami: -> data region: ' + region_name + ', stack region: ' + MC.canvas_data.region);
             if (region_name === MC.canvas_data.region) {
-              me.set('quickstart_ami', null);
               me.set('quickstart_ami', quickstart_amis);
-              me.checkRefreshResourceList();
             }
             MC.data.config[region_name].ami = result.resolved_data.ami;
             MC.data.config[region_name].ami_instance_type = result.resolved_data.ami_instance_type;
@@ -149,6 +146,10 @@
               }
             }
             MC.data.config[region_name].ami_list = ami_list;
+            MC.data.config[region_name].favorite_ami = null;
+            MC.data.config[region_name].my_ami = null;
+            me.myAmiService(region_name);
+            me.favoriteAmiService(region_name);
             me.stackLoadDepend('quickstartService:NEW');
             me.describeStackAmiService(region_name);
             ide_event.trigger(ide_event.RESOURCE_QUICKSTART_READY, region_name);
@@ -158,7 +159,7 @@
           return null;
         });
         me.on('EC2_AMI_DESC_IMAGES_RETURN', function(result) {
-          var ami_list, my_ami_list, newMyAMIAry, region_name, _ref, _ref1;
+          var ami_list, my_ami_list, region_name, _ref, _ref1;
           region_name = result.param[3];
           console.log('EC2_AMI_DESC_IMAGES_RETURN: ' + region_name);
           if (!result.is_error && ((result.param[6] && result.param[6][0] && result.param[6][0] === 'self') || (result.param[5] && result.param[5][0] === 'self'))) {
@@ -195,24 +196,11 @@
                 return null;
               });
               my_ami_list = ami_list;
-              if (!MC.data.config[region_name].my_ami) {
-                MC.data.config[region_name].my_ami = [];
-              }
               MC.data.config[region_name].my_ami = MC.data.config[region_name].my_ami.concat(ami_list);
-              newMyAMIAry = MC.data.config[region_name].my_ami.sort(function(a, b) {
-                if (a.name > b.name) {
-                  return 1;
-                } else if (a.name < b.name) {
-                  return -1;
-                }
-                return 0;
-              });
-              MC.data.config[region_name].my_ami = newMyAMIAry;
             }
             console.log('get my ami: -> data region: ' + region_name + ', stack region: ' + MC.canvas_data.region);
             if (region_name === MC.canvas_data.region && MC.data.config[region_name].owner && MC.data.config[region_name].exec) {
               me.set('my_ami', MC.data.config[region_name].my_ami);
-              me.checkRefreshResourceList();
             }
           } else {
             console.log('EC2_AMI_DESC_IMAGES_RETURN:describeStackAmiService');
@@ -301,7 +289,6 @@
           if (region_name === MC.canvas_data.region) {
             me.set('favorite_ami', null);
             me.set('favorite_ami', legalData);
-            me.checkRefreshResourceList();
           }
           MC.data.config[region_name].favorite_ami = {};
           MC.data.config[region_name].favorite_ami = legalData;
@@ -419,7 +406,6 @@
           return;
         }
         if (MC.data.config[region_name] && MC.data.config[region_name].snapshot_list) {
-          me.set('resource_snapshot', null);
           return me.set('resource_snapshot', MC.data.config[region_name].snapshot_list);
         } else {
           return ebs_model.DescribeSnapshots({
@@ -430,11 +416,13 @@
       quickstartService: function(region_name) {
         var ami_list, me, quickstart_amis;
         me = this;
+        me.set('quickstart_ami', null);
         if (MC.data.config[region_name] && MC.data.config[region_name].ami_list) {
           ami_list = MC.data.config[region_name].ami_list;
           quickstart_amis = ami_list;
-          me.set('quickstart_ami', null);
           me.set('quickstart_ami', quickstart_amis);
+          me.myAmiService(region_name);
+          me.favoriteAmiService(region_name);
           me.stackLoadDepend('quickstartService:OLD');
           me.describeStackAmiService(region_name);
           ide_event.trigger(ide_event.RESOURCE_QUICKSTART_READY, region_name);
@@ -449,11 +437,11 @@
         var me;
         console.log('myAmiService', region_name);
         me = this;
+        me.set('my_ami', Math.round(+new Date()));
         if (!App.user.hasCredential()) {
           return;
         }
         if (MC.data.config[region_name] && MC.data.config[region_name].my_ami) {
-          me.set('my_ami', null);
           me.set('my_ami', MC.data.config[region_name].my_ami);
         } else {
           MC.data.config[region_name].my_ami = [];
@@ -671,37 +659,6 @@
           console.warn("convertBlockDeviceMapping(): nothing to convert");
         }
         return null;
-      },
-      refreshResourceList: function(regionName) {
-        if (MC.data.config[regionName] && MC.data.config[regionName].ami_list) {
-          MC.data.config[regionName].ami_list = null;
-        }
-        if (MC.data.config[regionName] && MC.data.config[regionName].snapshot_list) {
-          MC.data.config[regionName].my_ami = null;
-        }
-        if (MC.data.config[regionName] && MC.data.config[regionName].snapshot_list) {
-          MC.data.config[regionName].favorite_ami = null;
-        }
-        if (MC.data.config[regionName] && MC.data.config[regionName].snapshot_list) {
-          MC.data.config[regionName].snapshot_list = null;
-        }
-        this.quickstartService(regionName);
-        this.myAmiService(regionName);
-        this.favoriteAmiService(regionName);
-        this.describeSnapshotsService(regionName);
-        return this.set('refresh_resource_count', 0);
-      },
-      checkRefreshResourceList: function() {
-        var refreshResourceCount, that;
-        that = this;
-        refreshResourceCount = that.get('refresh_resource_count');
-        if (refreshResourceCount >= 0) {
-          that.set('refresh_resource_count', ++refreshResourceCount);
-        }
-        if (refreshResourceCount === 5) {
-          that.trigger('refresh_resource_finish');
-          return that.set('refresh_resource_count', null);
-        }
       }
     });
     model = new ResourcePanelModel();

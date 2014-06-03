@@ -63,7 +63,11 @@
   };
 
   checkAllCookie = function() {
-    return $.cookie('usercode') && $.cookie('session_id');
+    if ($.cookie('usercode') && $.cookie('username') && $.cookie('session_id') && $.cookie('account_id') && $.cookie('mod_repo') && $.cookie('mod_tag') && $.cookie('state') && $.cookie('has_cred')) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   langType = function() {
@@ -570,7 +574,7 @@
   };
 
   setCredit = function(result) {
-    var COOKIE_OPTION, cValue, ckey, domain, _ref;
+    var COOKIE_OPTION, cValue, ckey, domain, key, session_info, value, _ref;
     domain = {
       "domain": window.location.hostname.replace("ide", "")
     };
@@ -581,13 +585,27 @@
         $.removeCookie(ckey, domain);
       }
     }
+    session_info = {
+      usercode: result.username,
+      username: base64Decode(result.username),
+      email: result.email,
+      user_hash: result.user_hash,
+      session_id: result.session_id,
+      account_id: result.account_id,
+      mod_repo: result.mod_repo,
+      mod_tag: result.mod_tag,
+      state: result.state,
+      has_cred: result.has_cred
+    };
     COOKIE_OPTION = {
       expires: 30,
       path: '/'
     };
-    $.cookie("usercode", result.username, COOKIE_OPTION);
-    $.cookie("session_id", result.session_id, COOKIE_OPTION);
-    return $.cookie("has_session", !!result.session_id, {
+    for (key in session_info) {
+      value = session_info[key];
+      $.cookie(key, value, COOKIE_OPTION);
+    }
+    return $.cookie("has_session", !!session_info.session_id, {
       domain: window.location.hostname.replace("ide", ""),
       path: "/",
       expires: 30

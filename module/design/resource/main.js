@@ -16,12 +16,10 @@
           MC.data.resouceapi = [];
           ide_event.onListen(ide_event.RESOURCE_QUICKSTART_READY, function(region_name) {
             console.log('resource:RESOURCE_QUICKSTART_READY');
-            return model.describeAvailableZonesService(region_name);
+            model.describeAvailableZonesService(region_name);
+            return model.describeSnapshotsService(region_name);
           });
           model.quickstartService(region_name);
-          model.myAmiService(region_name);
-          model.favoriteAmiService(region_name);
-          model.describeSnapshotsService(region_name);
           model.describeSubnetInDefaultVpc(region_name);
           view.region = region_name;
           view.resourceVpcRender(current_platform, type);
@@ -97,7 +95,7 @@
           console.log('resource availability_zone change');
           return ide_event.trigger(ide_event.RELOAD_AZ, model.get('availability_zone'));
         });
-        model.on('change:check_required_service_count', function() {
+        return model.on('change:check_required_service_count', function() {
           var is_true;
           console.log('check_required_service_count, count = ' + model.get('check_required_service_count'));
           is_true = false;
@@ -116,9 +114,6 @@
             model.service_count = 0;
           }
           return null;
-        });
-        return model.on('refresh_resource_finish', function() {
-          return view.stopRefreshResourcePanel();
         });
       });
     };

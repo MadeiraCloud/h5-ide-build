@@ -436,8 +436,8 @@
         return this.setFlag(id, 'ENABLE_SAVE', false);
       },
       syncSaveStack: function(region, data) {
-        var deferred, func, id, me, src;
-        deferred = Q.defer();
+        var func, id, me, src;
+        console.log('syncSaveStack', region, data);
         me = this;
         src = {};
         src.sender = this;
@@ -451,7 +451,7 @@
             func = stack_service.create;
           }
           if (_.isFunction(func)) {
-            func(src, $.cookie('usercode'), $.cookie('session_id'), region, data, function(aws_result) {
+            return func(src, $.cookie('usercode'), $.cookie('session_id'), region, data, function(aws_result) {
               var name;
               if (!aws_result.is_error) {
                 console.log('stack_service api');
@@ -461,19 +461,17 @@
                 name = data.name;
                 if (id.split('-')[0] === 'stack') {
                   me.saveStackCallback(id, name, region);
-                  return deferred.resolve(name);
+                  return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK_BY_RUN', name);
                 } else if (id.split('-')[0] === 'new') {
                   me.createStackCallback(aws_result, id, name, region);
-                  return deferred.resolve(name);
+                  return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK_BY_RUN', name);
                 }
               } else {
-                console.error('stack_service.save_stack, error is ' + aws_result.error_message);
-                return deferred.reject(aws_result);
+                return console.log('stack_service.save_stack, error is ' + aws_result.error_message);
               }
             });
           }
         }
-        return deferred.promise;
       },
       duplicateStack: function(region, id, new_name, name) {
         var me;

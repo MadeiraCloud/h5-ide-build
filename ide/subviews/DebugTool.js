@@ -54,11 +54,9 @@
       $("#ApiSelect").html(option).select2({
         width: 400
       }).on("change", function() {
-        var apiDef, p, phtml, v, val, _j, _len1, _ref1;
-        val = $("#ApiSelect").select2("val");
-        apiDef = ApiRequestDefs.Defs[val];
+        var apiDef, p, phtml, v, _j, _len1, _ref1;
+        apiDef = ApiRequestDefs.Defs[$("#ApiSelect").select2("val")];
         $("#ApiResult").empty();
-        $("#ApiSelect").siblings("label").text("Api : '" + val + "'");
         if (!apiDef) {
           return $("#ApiParamsWrap").empty();
         }
@@ -100,11 +98,12 @@
         $("#ApiDebugSend").attr("disabled", "disabled");
         $("#ApiResult").text("Loading...");
         ApiRequest(api, params).then(function(result) {
-          if (apiDef.url.indexOf("/aws/") === 0 && apiDef.url.length > 5 && (typeof result[1] === "string")) {
+          if (apiDef.url.indexOf("/aws/") === 0 && apiDef.url.length > 5) {
             try {
               result[1] = $.xml2json($.parseXML(result[1]));
             } catch (_error) {
-
+              e = _error;
+              console.error("[ApiRequest]Convert aws api return from XML to JSON failed!", e);
             }
           }
           $("#ApiResult").text(JSON.stringify(result, void 0, 4));
@@ -115,14 +114,12 @@
         });
         return null;
       });
-      $("#modal-box").css({
+      return $("#modal-box").css({
         width: "98%",
         height: "98%",
         top: "1%",
         left: "1%"
       });
-      $("#ApiSelect").select2("open");
-      return $("#s2id_autogen1_search").focus();
     };
     debugSession = function() {
       var session;

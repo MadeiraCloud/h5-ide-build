@@ -1364,7 +1364,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/Application',["ApiRequest", "component/exporter/JsonExporter", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "common_handle", "event", "vpc_model", "constant"], function(ApiRequest, JsonExporter, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, common_handle, ide_event, vpc_model, constant) {
+  define('ide/Application',["ApiRequest", "component/exporter/JsonExporter", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "common_handle", "event", "vpc_model", "constant"], function(ApiRequest, JsonExporter, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, common_handle, ide_event, vpc_model, constant) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -1405,8 +1405,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       })(this));
       this.user.on("change:credential", (function(_this) {
         return function() {
-          _this.__onCredentialChanged();
-          return CloudResources.invalidate();
+          return _this.__onCredentialChanged();
         };
       })(this));
     };

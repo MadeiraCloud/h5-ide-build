@@ -1,5 +1,5 @@
 (function() {
-  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp_dropdown', 'ApiRequest', 'component/stateeditor/stateeditor', 'UI.modalplus', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kpDropdown, ApiRequest, stateEditor, modalplus) {
+  define(['MC', 'event', "Design", 'i18n!nls/lang.js', './stack_template', './app_template', './appview_template', "component/exporter/JsonExporter", 'constant', 'kp', 'ApiRequest', 'component/stateeditor/stateeditor', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', "UI.tabbar"], function(MC, ide_event, Design, lang, stack_tmpl, app_tmpl, appview_tmpl, JsonExporter, constant, kp, ApiRequest, stateEditor) {
     var API_HOST, API_URL, ToolbarView;
     API_HOST = "api.visualops.io";
 
@@ -111,7 +111,7 @@
       },
       defaultKpIsSet: function() {
         var KpModel, defaultKp;
-        if (!kpDropdown.hasResourceWithDefaultKp()) {
+        if (!kp.hasResourceWithDefaultKp()) {
           return true;
         }
         KpModel = Design.modelClassForType(constant.RESTYPE.KP);
@@ -128,48 +128,34 @@
         };
       },
       renderDefaultKpDropdown: function() {
-        var kpDd;
-        if (kpDropdown.hasResourceWithDefaultKp()) {
-          kpDd = new kpDropdown();
-          $('#kp-runtime-placeholder').html(kpDd.render().el);
-          kpDd.$('.selectbox').on('OPTION_CHANGE', this.hideDefaultKpError(this));
+        var kpDropdown;
+        if (kp.hasResourceWithDefaultKp()) {
+          kpDropdown = kp.load();
+          $('#kp-runtime-placeholder').html(kpDropdown.el);
+          kpDropdown.$('.selectbox').on('OPTION_CHANGE', this.hideDefaultKpError(this));
           $('.default-kp-group').show();
         }
         return null;
       },
       clickRunIcon: function(event) {
-        var cost, me, options;
+        var cost, me;
         me = this;
         if ($('#toolbar-run').hasClass('disabled')) {
           return false;
         }
-        options = {
-          title: 'Run Stack',
-          template: MC.template.modalRunStack,
-          disableClose: true,
-          width: '450px',
-          height: '515px',
-          confirm: {
-            text: 'Run Stack',
-            disabled: true
-          }
-        };
-        if (!App.user.hasCredential()) {
-          options.confirm.text = 'Set Up Credential First';
-        }
-        me.modalPlus = new modalplus(options);
+        modal(MC.template.modalRunStack({
+          hasCred: App.user.hasCredential()
+        }));
         me.renderDefaultKpDropdown();
         event.preventDefault();
         $('.modal-input-value').val(MC.common.other.canvasData.get('name'));
         cost = Design.instance().getCost();
         $('#label-total-fee').find("b").text("$" + cost.totalFee);
         require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
-          return trustedadvisor_main.loadModule('stack').then(function() {
-            return me.modalPlus && me.modalPlus.toggleConfirm(false);
-          });
+          return trustedadvisor_main.loadModule('stack');
         });
-        me.modalPlus.on('confirm', function() {
-          var appNameRepeated, app_name, canvasData, obj, process_tab_name, region, that;
+        $('#btn-confirm').on('click', this, function(event) {
+          var appNameRepeated, app_name, obj, process_tab_name;
           me.hideErr();
           if (!App.user.hasCredential()) {
             App.showSettings(App.showSettings.TAB.Credential);
@@ -197,30 +183,11 @@
           if (!me.defaultKpIsSet() || appNameRepeated) {
             return false;
           }
-          me.modalPlus.toggleConfirm(true);
+          $('#btn-confirm').attr('disabled', true);
           $('.modal-header .modal-close').hide();
           $('#run-stack-cancel').attr('disabled', true);
-          region = MC.common.other.canvasData.get('region');
-          canvasData = MC.common.other.canvasData.data();
-          that = this;
-          return me.model.syncSaveStack(region, canvasData).then(function() {
-            var data, usage;
-            if (!me.modalPlus || !me.modalPlus.isOpen) {
-              return;
-            }
-            data = canvasData;
-            app_name = $('.modal-input-value').val();
-            data.name = app_name;
-            data.usage = 'others';
-            usage = $('#app-usage-selectbox .selected').data('value');
-            if (usage) {
-              data.usage = usage;
-            }
-            me.model.runStack(data);
-            MC.data.app_list[region].push(app_name);
-            return me.modalPlus && me.modalPlus.close();
-          });
-        }, this);
+          return event.data.model.syncSaveStack(MC.common.other.canvasData.get('region'), MC.common.other.canvasData.data());
+        });
         return null;
       },
       clickSaveIcon: function() {
@@ -663,32 +630,25 @@
         return null;
       },
       clickSaveEditApp: function(event) {
-        var me, options, result;
-        me = this;
-        result = this.model.diff();
-        if (!result.isModified) {
-          this.appedit2App();
-          return;
-        } else {
-          options = {
-            title: 'Run Stack',
-            template: MC.template.updateApp(result),
-            disableClose: true,
-            width: '460px',
-            height: '515px',
-            confirm: {
-              text: lang.ide.POP_CONFIRM_UPDATE_CONFIRM_BTN,
-              disabled: true
-            }
-          };
-          me.modalPlus = new modalplus(options);
-          me.modalPlus.on('confirm', me.appUpdating, this);
-          this.renderDefaultKpDropdown();
-          require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
-            return trustedadvisor_main.loadModule('stack').then(function() {
-              return me.modalPlus && me.modalPlus.toggleConfirm(false);
-            });
+        var result;
+        if (false) {
+          modal.close();
+          console.log('show credential setting dialog');
+          require(['component/awscredential/main'], function(awscredential_main) {
+            return awscredential_main.loadModule();
           });
+        } else {
+          result = this.model.diff();
+          if (!result.isModified) {
+            this.appedit2App();
+            return;
+          } else {
+            modal(MC.template.updateApp(result));
+            this.renderDefaultKpDropdown();
+            require(['component/trustedadvisor/main'], function(trustedadvisor_main) {
+              return trustedadvisor_main.loadModule('stack');
+            });
+          }
         }
         return null;
       },
@@ -733,12 +693,12 @@
       appUpdating: function(event) {
         var me;
         console.log('appUpdating');
-        me = this;
+        me = event.data;
         if (!me.defaultKpIsSet()) {
           return false;
         }
-        this.trigger('APP_UPDATING', MC.common.other.canvasData.data());
-        this.modalPlus && this.modalPlus.close();
+        event.data.trigger('APP_UPDATING', MC.common.other.canvasData.data());
+        modal.close();
         return null;
       },
       opsState: function() {

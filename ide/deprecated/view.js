@@ -107,7 +107,7 @@
         if (MC.browser === 'msie' && MC.browserVersion === 10) {
           return;
         }
-        if (!(window.App && App.user && App.user.get("session"))) {
+        if (!(App && App.user && App.user.get("session"))) {
           return;
         }
         has_refresh = true;
