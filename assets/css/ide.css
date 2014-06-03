@@ -1,10 +1,10 @@
 @import url("./core.css");
-@import url("./ide/settings.css");
-@import url("./ide/shareres/kp.css");
-@import url("./ide/shareres/sns.css");
-@import url("./ide/shareres/sslcert.css");
-@import url("./ide/modal.css");
-@import url("./ide/toolbar.css");
+@import url("./ide/settings.css?v=42494335");
+@import url("./ide/shareres/kp.css?v=ddb7aab6");
+@import url("./ide/shareres/sns.css?v=e34a176e");
+@import url("./ide/shareres/sslcert.css?v=ff37d544");
+@import url("./ide/modal.css?v=e69de29b");
+@import url("./ide/toolbar.css?v=7a8a34fb");
 
 html,
 body {
@@ -988,7 +988,7 @@ button {
 	width: 20px;
 	height: 20px;
 	position: absolute;
-	background: url('../images/ide/global-region-app-stack-s.png') no-repeat;
+	background: url('../images/ide/global-region-app-stack-s.png?v=4f2794b7') no-repeat;
 }
 
 .global-region-location-stack {
@@ -1000,7 +1000,7 @@ button {
 	position: relative;
 	margin: 0 auto;
 	height: 474px;
-	background: url('../images/ide/global-dotted-map.png') left center no-repeat;
+	background: url('../images/ide/global-dotted-map.png?v=bb513914') left center no-repeat;
 }
 
 #global-region-status-widget {
@@ -1068,7 +1068,7 @@ button {
 	width: 50px;
 	height: 47px;
 	background-repeat: no-repeat;
-	background-image: url('../images/ide/global-region-app-stack.png');
+	background-image: url('../images/ide/global-region-app-stack.png?v=84df4862');
 	display: inline;
 }
 
@@ -1360,7 +1360,7 @@ button {
 	width: 55px;
 	height: 55px;
 	background-repeat: no-repeat;
-	background-image: url('../images/ide/global-region-icon.png');
+	background-image: url('../images/ide/global-region-icon.png?v=171d6867');
 	display: inline;
 }
 
@@ -1519,7 +1519,7 @@ button {
 	display: block;
 	left: 22px;
 	position: absolute;
-	background: url('../images/ide/global-region-app-stack-m.png') no-repeat;
+	background: url('../images/ide/global-region-app-stack-m.png?v=7887b063') no-repeat;
 }
 
 .region-resource-tab-number {
@@ -1554,11 +1554,11 @@ button {
 }
 
 .region-resource-status-running {
-	background: url('../images/ide/icon-app-running-16x16.png') no-repeat;
+	background: url('../images/ide/icon-app-running-16x16.png?v=b28aa273') no-repeat;
 }
 
 .region-resource-status-stopped {
-	background: url('../images/ide/icon-app-stopped-16x16.png') no-repeat;
+	background: url('../images/ide/icon-app-stopped-16x16.png?v=605f9caf') no-repeat;
 }
 
 #region-resource-app-wrap .region-resource-item-name {
@@ -1597,13 +1597,13 @@ button {
 	width           : 220px;
 	height          : 146px;
 	border-radius   : 5px 5px 0 0;
-	background      : #55626e url("../images/ide/thumbnail-stack-placehoder@2x.png") center center no-repeat;
+	background      : #55626e url("../images/ide/thumbnail-stack-placehoder@2x.png?v=74f70ad2") center center no-repeat;
 	background-size : 220px auto;
 	overflow        : hidden;
 }
 
 .region-resource-thumbnail.app-thumbnail {
-	background: url("../images/ide/thumbnail-app-placehoder@2x.png") center center no-repeat;
+	background: url("../images/ide/thumbnail-app-placehoder@2x.png?v=ce6e16db") center center no-repeat;
 	background-size: 220px auto;
 }
 
@@ -2510,7 +2510,7 @@ td.table-action a.btn {
 	width: 24px;
 	height: 23px;
 	background-repeat: no-repeat;
-	background-image: url('../images/ide/icon/icon-ami-os.png');
+	background-image: url('../images/ide/icon/icon-ami-os.png?v=e9d68226');
 }
 
 .icon-centos {
@@ -2726,7 +2726,7 @@ a.sidebar-hider:before {
 }
 
 .resource-icon-az {
-	background-image: url('../images/ide/icon/az-resource.png');
+	background-image: url('../images/ide/icon/az-resource.png?v=6cb57043');
 }
 
 .resource-icon-az-label {
@@ -2740,43 +2740,43 @@ a.sidebar-hider:before {
 }
 
 .resource-icon-instance {
-	background-image: url('../images/ide/icon/instance-resource.png');
+	background-image: url('../images/ide/icon/instance-resource.png?v=e7572ea2');
 }
 
 .resource-icon-volume {
-	background-image: url('../images/ide/icon/volume-resource-1109.png');
+	background-image: url('../images/ide/icon/volume-resource-1109.png?v=9f846396');
 }
 
 .resource-icon-ebs-snapshot {
-	background-image: url('../images/ide/icon/ebs-snapshot-resource-1109.png');
+	background-image: url('../images/ide/icon/ebs-snapshot-resource-1109.png?v=b3163db9');
 }
 
 .resource-icon-eni {
-	background-image: url('../images/ide/icon/eni-resource.png');
+	background-image: url('../images/ide/icon/eni-resource.png?v=780fdc71');
 }
 
 .resource-icon-subnet {
-	background-image: url('../images/ide/icon/subnet-resource.png');
+	background-image: url('../images/ide/icon/subnet-resource.png?v=000082da');
 }
 
 .resource-icon-rt {
-	background-image: url('../images/ide/icon/rt-resource.png');
+	background-image: url('../images/ide/icon/rt-resource.png?v=2e0f08e3');
 }
 
 .resource-icon-igw {
-	background-image: url('../images/ide/icon/igw-resource.png');
+	background-image: url('../images/ide/icon/igw-resource.png?v=e11c7e01');
 }
 
 .resource-icon-vgw {
-	background-image: url('../images/ide/icon/vgw-resource.png');
+	background-image: url('../images/ide/icon/vgw-resource.png?v=c6dc4804');
 }
 
 .resource-icon-cgw {
-	background-image: url('../images/ide/icon/cgw-resource.png');
+	background-image: url('../images/ide/icon/cgw-resource.png?v=8798c00d');
 }
 
 .resource-icon-asg {
-	background-image: url('../images/ide/icon/asg-resource.png');
+	background-image: url('../images/ide/icon/asg-resource.png?v=ac82d7c9');
 }
 
 .resource-icon-asg-label {
@@ -2797,7 +2797,7 @@ a.sidebar-hider:before {
 }
 
 .resource-icon-elb {
-	background-image: url('../images/ide/icon/elb-resource.png');
+	background-image: url('../images/ide/icon/elb-resource.png?v=caba4afd');
 }
 
 .resource-label {
@@ -2863,7 +2863,7 @@ a.sidebar-hider:before {
 	display: none;
 	width: 16px;
 	height: 16px;
-	background: url('../images/ide/btn-fav-ami-unfaved-normal.png');
+	background: url('../images/ide/btn-fav-ami-unfaved-normal.png?v=906b4a87');
 }
 
 .btn-fav-ami:hover {
@@ -2871,15 +2871,15 @@ a.sidebar-hider:before {
 	right      : 3px;
 	width      : 20px;
 	height     : 20px;
-	background : url('../images/ide/btn-fav-ami-unfaved-hover.png');
+	background : url('../images/ide/btn-fav-ami-unfaved-hover.png?v=6093bd2a');
 }
 
 .btn-fav-ami.faved {
-	background: url('../images/ide/btn-fav-ami-faved-normal.png');
+	background: url('../images/ide/btn-fav-ami-faved-normal.png?v=24c08ed2');
 }
 
 .btn-fav-ami.faved:hover {
-	background: url('../images/ide/btn-fav-ami-faved-hover.png');
+	background: url('../images/ide/btn-fav-ami-faved-hover.png?v=f2a87dfd');
 }
 
 #btn-browse-community-ami {
@@ -3663,11 +3663,11 @@ li:hover > .rule-remove-icon,
 	cursor: pointer;
 	width: 14px;
 	height: 17px;
-	background: url('../images/ide/icon/eip-off.png') no-repeat;
+	background: url('../images/ide/icon/eip-off.png?v=738aed88') no-repeat;
 }
 
 .toggle-eip.associated {
-	background: url('../images/ide/icon/eip-on.png') no-repeat;
+	background: url('../images/ide/icon/eip-on.png?v=f52b7ea4') no-repeat;
 }
 
 
@@ -4788,7 +4788,7 @@ a.action-link:hover {
 /* Tabbar Icon */
 
 .icon-dashboard {
-	background: url('../images/ide/icon-dashboard.png') center center no-repeat;
+	background: url('../images/ide/icon-dashboard.png?v=106bc401') center center no-repeat;
 }
 
 .icon-stack {
@@ -4797,12 +4797,12 @@ a.action-link:hover {
 
 .icon-app-running,
 .icon-app-Running {
-	background: url('../images/ide/icon/icon-app-running.png') center center no-repeat;
+	background: url('../images/ide/icon/icon-app-running.png?v=84d3cae3') center center no-repeat;
 }
 
 .icon-app-stopped,
 .icon-app-Stopped {
-	background: url('../images/ide/icon/icon-app-stopped.png') center center no-repeat;
+	background: url('../images/ide/icon/icon-app-stopped.png?v=51931d11') center center no-repeat;
 }
 
 .icon-app-pending,
@@ -4814,22 +4814,22 @@ a.action-link:hover {
 .icon-app-updating,
 .icon-app-Updating,
 .icon-app-Terminating  {
-	background: url('../images/ide/icon/icon-app-pending.png') center center no-repeat;
+	background: url('../images/ide/icon/icon-app-pending.png?v=850a245a') center center no-repeat;
 }
 
 /* Nav Icon */
 .icon-app-nav {
-	background: url('../images/ide/icon-app-nav.png') center center no-repeat;
+	background: url('../images/ide/icon-app-nav.png?v=818331a6') center center no-repeat;
 }
 
 .icon-stack-nav,
 .icon-stack-tabbar {
-	background: url('../images/ide/icon-stack.png') center center no-repeat;
+	background: url('../images/ide/icon-stack.png?v=bb85c31c') center center no-repeat;
 }
 
 
 .icon-visualization-tabbar {
-	background: url('../images/ide/icon-app-visualization.png') center center no-repeat;
+	background: url('../images/ide/icon-app-visualization.png?v=c2192986') center center no-repeat;
 }
 
 #json-content {
@@ -6983,7 +6983,7 @@ summary:focus {
 
 #experimental-modal .modal-body-content {
 	padding-left         : 160px;
-	background-image     : url('../images/ide/request_invite_image.png');
+	background-image     : url('../images/ide/request_invite_image.png?v=8dea4a87');
 	background-repeat    : no-repeat;
 	background-size      : 91px 98px;
 	background-position-x: 10px;
