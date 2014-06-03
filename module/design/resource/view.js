@@ -1,5 +1,5 @@
 (function() {
-  define(['event', 'constant', './template', './template_data', 'i18n!nls/lang.js', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.radiobuttons', 'UI.modal', 'UI.table'], function(ide_event, constant, template, template_data, lang) {
+  define(['event', 'constant', './template', './template_data', 'i18n!nls/lang.js', 'snapshotManager', 'sslcert_manage', 'dhcp', 'sns_manage', 'kp_manage', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.radiobuttons', 'UI.modal', 'UI.table'], function(ide_event, constant, template, template_data, lang, snapshotManager, sslCertManage, dhcpManage, snsManage, kpManage) {
     var ResourceView, itemDisableToolTip, itemEnableToolTip, res_type;
     ResourceView = Backbone.View.extend({
       el: $('#resource-panel'),
@@ -8,7 +8,7 @@
       community_ami_tmpl: template_data.community_ami_tmpl,
       resource_vpc_tmpl: template_data.resource_vpc_tmpl,
       initialize: function() {
-        $(document).on('click', '#hide-resource-panel', this.toggleResourcePanel).on('OPTION_CHANGE', '#resource-select', this, this.resourceSelectEvent).on('click', '#btn-browse-community-ami', this, this.openBrowseCommunityAMIsModal).on('click', '#btn-search-ami', this, this.searchCommunityAmiCurrent).on('click', '#community_ami_page_preview', this, this.searchCommunityAmiPreview).on('click', '#community_ami_page_next', this, this.searchCommunityAmiNext).on('click', '#community_ami_table .toggle-fav', this, this.toggleFav).on('click', '.favorite-ami-list .faved', this, this.removeFav).on('click', '.favorite-ami-list .btn-fav-ami.deleted', this, this.addFav).on('keypress', '#community-ami-input', this, this.searchCommunityAmiCurrent);
+        $(document).on('click', '#hide-resource-panel', this.toggleResourcePanel).on('OPTION_CHANGE', '#resource-select', this, this.resourceSelectEvent).on('click', '#btn-browse-community-ami', this, this.openBrowseCommunityAMIsModal).on('click', '#btn-snapshot-manager', this, this.openSnapshotManager).on('click', '#btn-search-ami', this, this.searchCommunityAmiCurrent).on('click', '#community_ami_page_preview', this, this.searchCommunityAmiPreview).on('click', '#community_ami_page_next', this, this.searchCommunityAmiNext).on('click', '#community_ami_table .toggle-fav', this, this.toggleFav).on('click', '.favorite-ami-list .faved', this, this.removeFav).on('click', '.favorite-ami-list .btn-fav-ami.deleted', this, this.addFav).on('keypress', '#community-ami-input', this, this.searchCommunityAmiCurrent).on('click', '.resources-dropdown-wrapper li', this, this.resourcesMenuClick);
         $(window).on("resize", _.bind(this.resizeAccordion, this));
         return $("#tab-content-design").on("click", ".fixedaccordion-head", this.updateAccordion);
       },
@@ -209,6 +209,16 @@
         }
         $('.availability-zone').html(template_data.availability_zone_data(this.model.attributes));
         return null;
+      },
+      openSnapshotManager: function() {
+        this.snapshotManager || (this.snapshotManager = new snapshotManager());
+        this.snapshotManager.off('datachange', this.refreshSnapshotRender);
+        this.snapshotManager.on('datachange', this.refreshSnapshotRender);
+        return this.snapshotManager.render();
+      },
+      refreshSnapshotRender: function() {
+        console.log('Change detected, Updating Snapshot Resource.');
+        return this.resourceSnapshotRender();
       },
       resourceSnapshotRender: function() {
         console.log('resourceSnapshotRender');
@@ -432,6 +442,23 @@
           }
         });
         return null;
+      },
+      resourcesMenuClick: function(event) {
+        var $currentDom, currentAction;
+        $currentDom = $(event.currentTarget);
+        currentAction = $currentDom.data('action');
+        switch (currentAction) {
+          case 'keypair':
+            return new kpManage().render();
+          case 'snapshot':
+            return new snapshotManager().render();
+          case 'sns':
+            return new snsManage().render();
+          case 'sslcert':
+            return new sslCertManage().render();
+          case 'dhcp':
+            return (new dhcpManage()).manageDhcp();
+        }
       }
     });
     res_type = constant.RESTYPE;

@@ -436,8 +436,8 @@
         return this.setFlag(id, 'ENABLE_SAVE', false);
       },
       syncSaveStack: function(region, data) {
-        var func, id, me, src;
-        console.log('syncSaveStack', region, data);
+        var deferred, func, id, me, src;
+        deferred = Q.defer();
         me = this;
         src = {};
         src.sender = this;
@@ -451,7 +451,7 @@
             func = stack_service.create;
           }
           if (_.isFunction(func)) {
-            return func(src, $.cookie('usercode'), $.cookie('session_id'), region, data, function(aws_result) {
+            func(src, $.cookie('usercode'), $.cookie('session_id'), region, data, function(aws_result) {
               var name;
               if (!aws_result.is_error) {
                 console.log('stack_service api');
@@ -461,17 +461,19 @@
                 name = data.name;
                 if (id.split('-')[0] === 'stack') {
                   me.saveStackCallback(id, name, region);
-                  return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK_BY_RUN', name);
+                  return deferred.resolve(name);
                 } else if (id.split('-')[0] === 'new') {
                   me.createStackCallback(aws_result, id, name, region);
-                  return me.trigger('TOOLBAR_HANDLE_SUCCESS', 'SAVE_STACK_BY_RUN', name);
+                  return deferred.resolve(name);
                 }
               } else {
-                return console.log('stack_service.save_stack, error is ' + aws_result.error_message);
+                console.error('stack_service.save_stack, error is ' + aws_result.error_message);
+                return deferred.reject(aws_result);
               }
             });
           }
         }
+        return deferred.promise;
       },
       duplicateStack: function(region, id, new_name, name) {
         var me;
@@ -626,15 +628,47 @@
         return null;
       },
       saveApp: function(data) {
-        var id, idx, item, me, name, region;
+        var backingStore, backingStoreState, comp, dataState, fastUpdate, id, idx, item, me, name, region, state, uid, __bsBackup, __dtBackup, _ref, _ref1;
         me = this;
         region = data.region;
         id = data.id;
         name = data.name;
         MC.common.other.addCacheThumb(id, $("#canvas_body").html(), $("#svg_canvas")[0].getBBox());
+        backingStore = Design.instance().backingStore();
+        __bsBackup = $.extend(true, {}, backingStore);
+        __dtBackup = $.extend(true, {}, data);
+        backingStoreState = {};
+        dataState = {};
+        _ref = backingStore.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === "AWS.AutoScaling.LaunchConfiguration" || comp.type === "AWS.EC2.Instance") {
+            backingStoreState[uid] = comp.state;
+            delete comp.state;
+          }
+        }
+        _ref1 = data.component;
+        for (uid in _ref1) {
+          comp = _ref1[uid];
+          if (comp.type === "AWS.AutoScaling.LaunchConfiguration" || comp.type === "AWS.EC2.Instance") {
+            dataState[uid] = comp.state;
+            delete comp.state;
+          }
+        }
+        fastUpdate = _.isEqual(backingStore.component, data.component);
+        for (uid in backingStoreState) {
+          state = backingStoreState[uid];
+          backingStore.component[uid].state = state;
+        }
+        for (uid in dataState) {
+          state = dataState[uid];
+          data.component[uid].state = state;
+        }
+        console.assert(_.isEqual(backingStore, __bsBackup), "BackingStore Modified.");
+        console.assert(_.isEqual(data, __dtBackup), "Data Modified.");
         app_model.update({
           sender: me
-        }, $.cookie('usercode'), $.cookie('session_id'), region, data, id);
+        }, $.cookie('usercode'), $.cookie('session_id'), region, data, id, fastUpdate);
         idx = 'process-' + region + '-' + name;
         process_data_map[idx] = data;
         item = {

@@ -4,13 +4,20 @@
     /*
      * === McError ===
      * McError is Object to represent an Error. Every promise handler that wants to throw error should throw an McError
+     * If McError contains aws result error, it will have 3 additional members:
+      awsError     : Number
+      awsErrorCode : String
+      awsResult    : String or Object
      */
     var ApiRequestDefs;
     window.McError = function(errorNum, errorMsg, params) {
       return {
         error: errorNum,
         msg: errorMsg || "",
-        result: params || void 0
+        result: params || void 0,
+        reason: errorMsg
+
+        /* env:dev                                                     env:dev:end */
       };
     };
 
@@ -75,6 +82,9 @@
           return $.cookie('usercode');
         case "session_id":
           return $.cookie('session_id');
+        case "region_name":
+          console.warn("Autofilling region_name:'us-east-1' for ApiRequest, this is for some api who requires region_name while it doesn't care about its value. %o", MC.prettyStackTrace(1));
+          return "us-east-1";
       }
       return null;
     };
@@ -95,6 +105,7 @@
       InvalidRpcReturn: -1,
       XhrFailure: -2,
       InvalidMethodCall: -3,
+      InvalidAwsReturn: -4,
       Network404: -404,
       Network500: -500,
       InvalidSession: 19,
@@ -205,7 +216,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'session_logout'          : { url:'/session/',	method:'logout',	params:['username', 'session_id']   },
 		'session_set_credential'  : { url:'/session/',	method:'set_credential',	params:['username', 'session_id', 'access_key', 'secret_key', 'account_id']   },
 		'app_create'              : { url:'/app/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
-		'app_update'              : { url:'/app/',	method:'update',	params:['username', 'session_id', 'region_name', 'spec', 'app_id']   },
+		'app_update'              : { url:'/app/',	method:'update',	params:['username', 'session_id', 'region_name', 'spec', 'app_id', 'fast_update']   },
 		'app_rename'              : { url:'/app/',	method:'rename',	params:['username', 'session_id', 'region_name', 'app_id', 'new_name', 'app_name']   },
 		'app_terminate'           : { url:'/app/',	method:'terminate',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name', 'flag']   },
 		'app_start'               : { url:'/app/',	method:'start',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name']   },
@@ -214,9 +225,8 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'app_info'                : { url:'/app/',	method:'info',	params:['username', 'session_id', 'region_name', 'app_ids']   },
 		'app_list'                : { url:'/app/',	method:'list',	params:['username', 'session_id', 'region_name', 'app_ids']   },
 		'app_resource'            : { url:'/app/',	method:'resource',	params:['username', 'session_id', 'region_name', 'app_id']   },
-		'app_render_app'          : { url:'/app/',	method:'render_app',	params:['timestamp', 'app_id', 'res_id', 'is_arrived']   },
-		'app_check_app'           : { url:'/app/',	method:'check_app',	params:['timestamp', 'app_id']   },
-		'app_update_status'       : { url:'/app/',	method:'update_status',	params:['app_id', 'instance_id', 'recipe_version', 'timestamp', 'statuses', 'waiting', 'agent_status', 'token']   },
+		'app_get_info'            : { url:'/app/',	method:'get_info',	params:['username', 'session_id', 'vpc_ids']   },
+		'app_save_info'           : { url:'/app/',	method:'save_info',	params:['username', 'session_id', 'spec', 'resource']   },
 		'favorite_add'            : { url:'/favorite/',	method:'add',	params:['username', 'session_id', 'region_name', 'resource']   },
 		'favorite_remove'         : { url:'/favorite/',	method:'remove',	params:['username', 'session_id', 'region_name', 'resource_ids']   },
 		'favorite_info'           : { url:'/favorite/',	method:'info',	params:['username', 'session_id', 'region_name', 'provider', 'service', 'resource']   },
@@ -351,6 +361,7 @@ define('api/define/aws/ec2',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'ebs_DeleteSnapshot'                     : { url:'/aws/ec2/ebs/snapshot/',	method:'DeleteSnapshot',	params:['username', 'session_id', 'region_name', 'snapshot_id']   },
 		'ebs_ModifySnapshotAttribute'            : { url:'/aws/ec2/ebs/snapshot/',	method:'ModifySnapshotAttribute',	params:['username', 'session_id', 'region_name', 'snapshot_id', 'user_ids', 'group_names']   },
 		'ebs_ResetSnapshotAttribute'             : { url:'/aws/ec2/ebs/snapshot/',	method:'ResetSnapshotAttribute',	params:['username', 'session_id', 'region_name', 'snapshot_id', 'attribute_name']   },
+		'ebs_CopySnapshot'                       : { url:'/aws/ec2/ebs/snapshot/',	method:'CopySnapshot',	params:['username', 'session_id', 'source_region', 'source_snapshot_id', 'description', 'destination_region', 'presigned_url']   },
 		'ebs_DescribeSnapshots'                  : { url:'/aws/ec2/ebs/snapshot/',	method:'DescribeSnapshots',	params:['username', 'session_id', 'region_name', 'snapshot_ids', 'owners', 'restorable_by', 'filters']   },
 		'ebs_DescribeSnapshotAttribute'          : { url:'/aws/ec2/ebs/snapshot/',	method:'DescribeSnapshotAttribute',	params:['username', 'session_id', 'region_name', 'snapshot_id', 'attribute_name']   },
 		'eip_AllocateAddress'                    : { url:'/aws/ec2/elasticip/',	method:'AllocateAddress',	params:['username', 'session_id', 'region_name', 'domain']   },
@@ -553,7 +564,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
      *         If an api has no param map, the apiParameters is considered as the first and only one paramter
      *         to be send with the api.
      */
-    var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow;
+    var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow, tryParseAws;
     OneParaArray = [""];
     EmptyArray = [];
     EmptyObject = {};
@@ -568,17 +579,60 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
       /* env:dev                                   env:dev:end */
       throw obj;
     };
+    tryParseAws = function(xml, findError) {
+      var e, json;
+      try {
+        xml = $.parseXML(xml);
+        json = $.xml2json(xml);
+      } catch (_error) {
+        e = _error;
+        if (findError) {
+          return {
+            error: ApiErrors.InvalidAwsReturn,
+            result: awsResult
+          };
+        } else {
+          return null;
+        }
+      }
+      if (!findError) {
+        return json;
+      }
+      xml = $(xml).find("Error");
+      return {
+        error: xml.find("Code").text() || "",
+        result: xml.find("Message").text() || ""
+      };
+    };
     AjaxSuccessHandler = function(res) {
-      var gloablHandler;
+      var awsresult, error, gloablHandler, _ref;
       if (!res || !res.result || res.result.length !== 2) {
         logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
       }
-      if (res.result[0] !== 0) {
+      if (res.result[0] !== 0 && !((ApiErrors.AwsErrorAws <= (_ref = res.result[0]) && _ref <= ApiErrors.AwsErrorExternal))) {
         gloablHandler = ApiHandlers[res.result[0]];
         if (gloablHandler) {
           return gloablHandler(res);
         }
         logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
+      }
+      awsresult = res.result[1];
+      if (awsresult && _.isArray(awsresult) && (typeof awsresult[1] === "string") && awsresult[1][0] === "<") {
+        if (awsresult[0] === 200) {
+          res = tryParseAws(awsresult[1]);
+          if (!res) {
+            logAndThrow(McError(ApiErrors.InvalidAwsReturn, "Aws returns invalid xml data.", res.result));
+          } else {
+            return res;
+          }
+        } else {
+          error = McError(res.result[0], "Service Error", res.result[1]);
+          error.awsError = awsresult[0];
+          awsresult = tryParseAws(awsresult[1], true);
+          error.awsErrorCode = "" + awsresult.error;
+          error.awsResult = awsresult.result;
+          logAndThrow(error);
+        }
       }
       return res.result[1];
     };

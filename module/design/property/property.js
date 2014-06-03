@@ -1077,121 +1077,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.set("vpcid", vpc.get("appId"));
         }
         this.getNetworkACL();
-        if (this.isApp) {
-          this.getAppSubscription();
-        } else {
-          this.getSubscription();
-        }
         if (this.isStack) {
           this.set('isStack', true);
         }
         this.set(Design.instance().getCost());
         return null;
-      },
-      addSubscription: function(data) {
-        var SubscriptionModel, idx, sub, sub_comp, subs, _i, _len;
-        SubscriptionModel = Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION);
-        subs = this.get("subscription");
-        if (!data.uid) {
-          sub_comp = new SubscriptionModel(data);
-          sub = sub_comp.toJSON();
-          sub.confirmed = true;
-          subs.push(sub);
-        } else {
-          sub_comp = Design.instance().component(data.uid);
-          sub_comp.set("protocol", data.protocol);
-          sub_comp.set("endpoint", data.endpoint);
-          for (idx = _i = 0, _len = subs.length; _i < _len; idx = ++_i) {
-            sub = subs[idx];
-            if (sub.id === data.uid) {
-              sub.protocol = data.protocol;
-              sub.endpoint = data.endpoint;
-              sub.confirmed = data.confirmed;
-              break;
-            }
-          }
-        }
-        return null;
-      },
-      deleteSNS: function(uid) {
-        var idx, sub, sub_list, _i, _len;
-        sub_list = this.get('subscription');
-        for (idx = _i = 0, _len = sub_list.length; _i < _len; idx = ++_i) {
-          sub = sub_list[idx];
-          if (sub.id === uid) {
-            sub_list.splice(idx, 1);
-            break;
-          }
-        }
-        Design.instance().component(uid).remove();
-        return null;
-      },
-      getSubscription: function() {
-        var SubscriptionModel, TopicModel, sub, subState, subs, _i, _len;
-        SubscriptionModel = Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION);
-        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
-        subs = _.map(SubscriptionModel.allObjects(), function(sub) {
-          return sub.toJSON();
-        });
-        subState = this.getSubState();
-        for (_i = 0, _len = subs.length; _i < _len; _i++) {
-          sub = subs[_i];
-          if (subState && subState[sub.protocol + "-" + sub.endpoint] === false) {
-            sub.confirmed = false;
-          } else {
-            sub.confirmed = true;
-          }
-        }
-        this.set("subscription", subs);
-        this.set("has_asg", TopicModel.isTopicNeeded());
-        return null;
-      },
-      getSubState: function() {
-        var TopicModel, sub, subRes, subState, topic, topic_arn, _i, _len;
-        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
-        topic = TopicModel.allObjects()[0];
-        if (topic) {
-          topic_arn = topic.get("appId");
-        }
-        subRes = MC.data.resource_list[Design.instance().region()].Subscriptions;
-        subState = {};
-        if (topic_arn && subRes) {
-          for (_i = 0, _len = subRes.length; _i < _len; _i++) {
-            sub = subRes[_i];
-            if (sub.TopicArn === topic_arn) {
-              subState[sub.Protocol + "-" + sub.Endpoint] = sub.SubscriptionArn !== "PendingConfirmation";
-            }
-          }
-        }
-        return subState;
-      },
-      getAppSubscription: function() {
-        var TopicModel, sub, subs, subscription, topic, topic_arn, _i, _len;
-        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
-        topic = TopicModel.allObjects()[0];
-        if (topic) {
-          topic_arn = topic.get("appId");
-          this.set('snstopic', {
-            name: topic.get("name"),
-            arn: topic_arn
-          });
-        }
-        subs = MC.data.resource_list[Design.instance().region()].Subscriptions;
-        subscription = [];
-        if (topic_arn && subs) {
-          for (_i = 0, _len = subs.length; _i < _len; _i++) {
-            sub = subs[_i];
-            if (sub.TopicArn === topic_arn) {
-              subscription.push({
-                protocol: sub.Protocol,
-                endpoint: sub.Endpoint,
-                arn: sub.SubscriptionArn,
-                confirmed: sub.SubscriptionArn !== "PendingConfirmation"
-              });
-            }
-          }
-        }
-        return this.set('subscription', subscription);
       },
       createAcl: function() {
         var ACLModel;
@@ -1339,145 +1229,6 @@ function program7(depth0,data) {
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <div class=\"option-group-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_TIT_SNS", {hash:{},data:data}))
-    + "<span class=\"property-head-num-wrap\">(";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.subscription), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ")</span></div>\n  <div class=\"option-group\">\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.subscription), {hash:{},inverse:self.program(20, program20, data),fn:self.program(14, program14, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>\n  ";
-  return buffer;
-  }
-function program10(depth0,data) {
-  
-  var stack1;
-  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subscription)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  }
-
-function program12(depth0,data) {
-  
-  
-  return "0";
-  }
-
-function program14(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <div class=\"property-group-head\">SNS Topic</div>\n    <div class=\"property-control-group\">\n      <dl class=\"dl-vertical\">\n        <dt>SNS Topic Name</dt>\n        <dd>"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.snstopic)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>SNS Topic ARN</dt>\n        <dd class=\"click-select tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_SELECT_ALL", {hash:{},data:data}))
-    + "\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.snstopic)),stack1 == null || stack1 === false ? stack1 : stack1.arn)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      </dl>\n    </div>\n    <div class=\"property-group-head\">Subscription</div>\n    <ul class=\"property-list\">\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.subscription), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </ul>\n    ";
-  return buffer;
-  }
-function program15(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <li>\n        <dl class=\"dl-horizontal dl-region-type\">\n          <dt><label>Protocol</label></dt><dd class=\"protocol\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n          <dt><label>Endpoint</label></dt><dd class=\"endpoint truncate\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.endpoint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n          <dt><label>Confirmed</label></dt><dd class=\"\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.confirmed), {hash:{},inverse:self.program(18, program18, data),fn:self.program(16, program16, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</dd>\n        </dl>\n      </li>\n    ";
-  return buffer;
-  }
-function program16(depth0,data) {
-  
-  
-  return "True";
-  }
-
-function program18(depth0,data) {
-  
-  
-  return "False";
-  }
-
-function program20(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n    <div class=\"property-control-group\">\n      <p class=\"property-info tac\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_APP_SNS_NONE", {hash:{},data:data}))
-    + "</p>\n    </div>\n    ";
-  return buffer;
-  }
-
-function program22(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n	<div class=\"option-group-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_TIT_SNS", {hash:{},data:data}))
-    + "<span class=\"property-head-num-wrap\">(<span id=\"property-stack-sns-num\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subscription)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)</span></div>\n  <div class=\"option-group\">\n\n  	<ul id=\"property-sub-list\" class=\"property-list\">\n      <li class=\"pos-r hide\">\n      	<dl class=\"dl-horizontal dl-region-type\">\n	        <dt><label>Protocol</label></dt><dd class=\"protocol\"></dd>\n	        <dt><label>Endpoint</label></dt><dd class=\"endpoint truncate\"></dd>\n        </dl>\n        <div class=\"sns-action\">\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </div>\n      </li>\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.subscription), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  	</ul>\n\n    <section class=\"property-sns-info property-control-group\">\n      <div id=\"property-sns-no-sub-no-asg\" class=\"property-info\" >\n        <p>SNS is available for auto scaling group notification and scaling policy.</p>\n        <p>You can enable auto scaling group to send notification via SNS Topic</p>\n      </div>\n\n      <div id=\"property-sns-no-asg\" class=\"property-info\"><p>There is no auto scaling group in this stack using notification. If there is no usage of SNS topic, the topic will not be created when the stack runs into an app.</p></div>\n\n      <div id=\"property-sns-no-sub\"><p class=\"property-warning\">There is auto scaling group relay on SNS Topic to receive notification. Yet no subscription is set up. </p></div>\n    </section>\n	<div class=\"tac property-control-group\"><button id=\"property-create-asg\" class=\"btn btn-blue\" style=\"width:180px\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_BTN_ADD_SUB", {hash:{},data:data}))
-    + "</button></div>\n  </div>\n  ";
-  return buffer;
-  }
-function program23(depth0,data) {
-  
-  
-  return "\n            <i class=\"icon-del icon-remove\"></i>\n          ";
-  }
-
-function program25(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.confirmed), {hash:{},inverse:self.program(28, program28, data),fn:self.program(26, program26, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  return buffer;
-  }
-function program26(depth0,data) {
-  
-  
-  return "\n              <i class=\"icon-del icon-remove\"></i>\n            ";
-  }
-
-function program28(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n              <i class=\"icon-pending tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_PENDING_CONFIRM", {hash:{},data:data}))
-    + "\" ></i>\n            ";
-  return buffer;
-  }
-
-function program30(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <li class=\"pos-r\" data-uid=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n        <dl class=\"dl-horizontal dl-region-type\">\n	        <dt><label>Protocol</label></dt><dd class=\"protocol\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n	        <dt><label>Endpoint</label></dt><dd class=\"endpoint truncate\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.endpoint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        </dl>\n        <div class=\"sns-action\">\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </div>\n      </li>\n      ";
-  return buffer;
-  }
-
-function program32(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "$"
     + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "/";
@@ -1487,7 +1238,7 @@ function program32(depth0,data) {
   return buffer;
   }
 
-function program34(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <tr> <td>"
@@ -1508,13 +1259,10 @@ function program34(depth0,data) {
     + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n  <div class=\"option-group sg-group\"></div>\n\n\n	";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.program(22, program22, data),fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n	<div class=\"option-group-head\">\n		"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_TIT_COST_ESTIMATION", {hash:{},data:data}))
     + "\n		<span class=\"cost-counter right\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</span>\n	</div>\n	<div class=\"option-group\">\n		<table class=\"table cost-estimation-table\">\n			<thead> <tr>\n					<th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_COST_COL_RESOURCE", {hash:{},data:data}))
@@ -1523,7 +1271,7 @@ function program34(depth0,data) {
     + "</th>\n          <th style=\"min-width:60px;\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_COST_COL_FEE", {hash:{},data:data}))
     + "</th>\n			</tr> </thead>\n			<tbody> ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">AWS EC2 Pricing</a>\n		</div>\n	</div>\n\n</article>\n\n\n";
   return buffer;
@@ -1600,10 +1348,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         'change #property-stack-description': 'stackDescriptionChanged',
         'click #stack-property-new-acl': 'createAcl',
         'click #stack-property-acl-list .edit': 'openAcl',
-        'click .sg-list-delete-btn': 'deleteAcl',
-        'click #property-sub-list .icon-edit': 'editSNS',
-        'click #property-sub-list .icon-del': 'delSNS',
-        'click #property-create-asg': 'openSNSModal'
+        'click .sg-list-delete-btn': 'deleteAcl'
       },
       render: function() {
         var str, t, title;
@@ -1624,9 +1369,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.setTitle(title);
         }
         this.refreshACLList();
-        if (!this.model.isApp) {
-          this.updateSNSList(this.model.get("subscription"), true);
-        }
         return null;
       },
       stackDescriptionChanged: function() {
@@ -1666,161 +1408,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       openAcl: function(event) {
         this.trigger("OPEN_ACL", $(event.currentTarget).closest("li").attr("data-uid"));
         return null;
-      },
-      updateSNSList: function(snslist_data, textOnly) {
-        var $clone, $list, $template, hasASG, sub, _i, _len;
-        hasASG = this.model.get("has_asg");
-        $(".property-sns-info").children().hide();
-        if (!snslist_data || !snslist_data.length) {
-          if (hasASG) {
-            $("#property-sns-no-sub").show();
-          } else {
-            $("#property-sns-no-sub-no-asg").show();
-          }
-        } else if (!hasASG) {
-          $("#property-sns-no-asg").show();
-        }
-        if (textOnly) {
-          return;
-        }
-        $list = $("#property-sub-list");
-        $list.find("li:not(.hide)").remove();
-        $template = $list.find(".hide");
-        for (_i = 0, _len = snslist_data.length; _i < _len; _i++) {
-          sub = snslist_data[_i];
-          $clone = $template.clone().removeClass("hide").appendTo($list);
-          $clone.attr("data-uid", sub.id);
-          $clone.find(".protocol").html(sub.protocol);
-          $clone.find(".endpoint").html(sub.endpoint);
-          if (sub.confirmed !== null && sub.confirmed === false) {
-            $clone.find(".sns-action").html('<i class="icon-pending tooltip" data-tooltip="pendingConfirm" ></i>');
-          } else {
-            $clone.find(".sns-action").html('<i class="icon-del icon-remove"></i>');
-          }
-        }
-        $("#property-stack-sns-num").html(snslist_data.length);
-        return null;
-      },
-      delSNS: function(event) {
-        var $li, uid;
-        $li = $(event.currentTarget).closest("li");
-        uid = $li.attr("data-uid");
-        $li.remove();
-        this.updateSNSList($("#property-sub-list").children(":not(.hide)"), true);
-        return this.model.deleteSNS(uid);
-      },
-      editSNS: function(event) {
-        var $sub_li, data;
-        $sub_li = $(event.currentTarget).closest("li");
-        data = {
-          title: "Edit",
-          uid: $sub_li.attr("data-uid"),
-          protocol: $sub_li.find(".protocol").text(),
-          endpoint: $sub_li.find(".endpoint").text()
-        };
-        this.openSNSModal(event, data);
-        return null;
-      },
-      saveSNS: function(data) {
-        var $dom;
-        if (data.uid) {
-          $dom = $("#property-sub-list").children("li[data-uid='" + data.uid + "']");
-          $dom.find(".protocol").html(data.protocol);
-          $dom.find(".endpoint").html(data.endpoint);
-          if (data.confirmed !== null && data.confirmed === false) {
-            $dom.find(".sns-action").html('<i class="icon-pending tooltip" data-tooltip="pendingConfirm" ></i>');
-          } else {
-            $dom.find(".sns-action").html('<i class="icon-del icon-remove"></i>');
-          }
-        }
-        this.model.addSubscription(data);
-        if (!data.uid) {
-          return this.updateSNSList(this.model.get("subscription"));
-        }
-      },
-      openSNSModal: function(event, data) {
-        var $modal, self, updateEndpoint;
-        if (!data) {
-          data = {
-            protocol: "email",
-            title: "Add"
-          };
-        }
-        modal(sub_template(data));
-        $modal = $("#property-asg-sns-modal");
-        $modal.find(".dropdown").find(".item").each(function() {
-          if ($(this).data("id") === data.protocol) {
-            return $(this).addClass("selected").parent().siblings().text($(this).text());
-          }
-        });
-        updateEndpoint = function(protocol) {
-          var $input, endPoint, errorMsg, placeholder, type;
-          $input = $(".property-asg-ep");
-          switch ($modal.find(".selected").data("id")) {
-            case "sqs":
-              placeholder = lang.ide.PROP_STACK_AMAZON_ARN;
-              type = lang.ide.PROP_STACK_SQS;
-              errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_AMAZON_SQS_ARN;
-              break;
-            case "arn":
-              placeholder = lang.ide.PROP_STACK_AMAZON_ARN;
-              type = lang.ide.PROP_STACK_ARN;
-              errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_APPLICATION_ARN;
-              break;
-            case "email":
-              placeholder = lang.ide.PROP_STACK_EXAMPLE_EMAIL;
-              type = lang.ide.PROP_STACK_EMAIL;
-              errorMsg = lang.ide.HEAD_MSG_ERR_UPDATE_EMAIL3;
-              break;
-            case "email-json":
-              placeholder = lang.ide.PROP_STACK_EXAMPLE_EMAIL;
-              type = lang.ide.PROP_STACK_EMAIL;
-              errorMsg = lang.ide.HEAD_MSG_ERR_UPDATE_EMAIL3;
-              break;
-            case "sms":
-              placeholder = lang.ide.PROP_STACK_E_G_1_206_555_6423;
-              type = lang.ide.PROP_STACK_USPHONE;
-              errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_PHONE_NUMBER;
-              break;
-            case "http":
-              placeholder = lang.ide.PROP_STACK_HTTP_WWW_EXAMPLE_COM;
-              type = lang.ide.PROP_STACK_HTTP;
-              errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_URL;
-              break;
-            case "https":
-              placeholder = lang.ide.PROP_STACK_HTTPS_WWW_EXAMPLE_COM;
-              type = lang.ide.PROP_STACK_HTTPS;
-              errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_URL;
-          }
-          endPoint = $('#property-asg-endpoint');
-          endPoint.attr("placeholder", placeholder);
-          endPoint.parsley('custom', function(value) {
-            if (type && value && (!MC.validate(type, value))) {
-              return errorMsg;
-            }
-          });
-          if (endPoint.val().length) {
-            endPoint.parsley('validate');
-          }
-          return null;
-        };
-        updateEndpoint();
-        $modal.on("OPTION_CHANGE", updateEndpoint);
-        self = this;
-        return $("#property-asg-sns-done").on("click", function() {
-          var endPoint;
-          endPoint = $("#property-asg-endpoint");
-          if (endPoint.parsley('validate')) {
-            data = {
-              uid: $modal.attr("data-uid"),
-              protocol: $modal.find(".selected").data("id"),
-              endpoint: endPoint.val()
-            };
-            modal.close();
-            self.saveSNS(data);
-          }
-          return null;
-        });
       },
       deleteAcl: function(event) {
         var $target, aclName, aclUID, assoCont, dialog_template, that;
@@ -2922,7 +2509,7 @@ function program53(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/instance/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'constant', 'kp'], function(PropertyView, template, lang, constant, kp) {
+  define('module/design/property/instance/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'constant', 'kp_dropdown'], function(PropertyView, template, lang, constant, kp) {
     var InstanceView, noop;
     noop = function() {
       return null;
@@ -3007,7 +2594,9 @@ function program53(depth0,data) {
         var instanceModel, me;
         this.$el.html(template(this.model.attributes));
         instanceModel = Design.instance().component(this.model.get('uid'));
-        this.$('#kp-placeholder').html(kp.load(instanceModel).el);
+        this.$('#kp-placeholder').html(new kp({
+          resModel: instanceModel
+        }).render().el);
         this.refreshIPList();
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
@@ -6406,7 +5995,7 @@ function program3(depth0,data) {
 }).call(this);
 
 (function() {
-  define('module/design/property/elb/model',['../base/model', "event", "Design", 'constant'], function(PropertyModel, ide_event, Design, constant) {
+  define('module/design/property/elb/model',['../base/model', "event", "Design", 'constant', 'sslcert_dropdown'], function(PropertyModel, ide_event, Design, constant, SSLCertDropdown) {
     var ElbModel;
     ElbModel = PropertyModel.extend({
       init: function(uid) {
@@ -6629,6 +6218,22 @@ function program3(depth0,data) {
         var elbModel;
         elbModel = Design.instance().component(this.get("uid"));
         return elbModel.setPolicyProxyProtocol(enable, portAry);
+      },
+      initNewSSLCertDropDown: function(idx) {
+        var elbModel, sslCertDropDown, sslCertModel, that;
+        that = this;
+        elbModel = Design.instance().component(this.get("uid"));
+        sslCertDropDown = new SSLCertDropdown();
+        sslCertModel = elbModel.getSSLCert(idx);
+        if (sslCertModel) {
+          sslCertDropDown.sslCertName = sslCertModel.get('name');
+        }
+        sslCertDropDown.dropdown.on('change', function(sslCertId) {
+          var listenerNum;
+          listenerNum = $(this.el).parents('.elb-property-listener').index();
+          return Design.instance().component(that.get("uid")).setSSLCert(listenerNum, sslCertId);
+        }, sslCertDropDown);
+        return sslCertDropDown;
       }
     });
     return new ElbModel();
@@ -6743,7 +6348,7 @@ function program16(depth0,data) {
     + "\" ";
   stack1 = helpers.unless.call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "></div>\n\n			<div class=\"property-control-group clearfix\">\n				<div class=\"elb-property-listener-item-1\">\n					<label class=\"left\">Load Balancer Protocol</label>\n					<div class=\"selectbox elb-property-elb-protocol\">\n						<div class=\"selection\">"
+  buffer += "></div>\n\n			<div class=\"property-control-group listener-item clearfix\">\n				<div class=\"elb-property-listener-item-1\">\n					<label class=\"left\">Load Balancer Protocol</label>\n					<div class=\"selectbox elb-property-elb-protocol\">\n						<div class=\"selection\">"
     + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n						<ul class=\"dropdown\">\n							<li data-id=\"HTTP\" class=\"item ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
@@ -6761,7 +6366,7 @@ function program16(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_25_80_443OR1024TO65535", {hash:{},data:data}))
     + "\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-ignore=\"true\" data-required=\"true\" data-type=\"digits\" maxlength=\"5\"/>\n				</div>\n			</div>\n\n			<div class=\"property-control-group clearfix\">\n				<div class=\"left elb-property-listener-item-1\">\n					<label class=\"left\">Instance Protocol</label>\n					<div class=\"selectbox elb-property-instance-protocol\">\n						<div class=\"selection\">"
+    + "\" data-ignore=\"true\" data-required=\"true\" data-type=\"digits\" maxlength=\"5\"/>\n				</div>\n			</div>\n\n			<div class=\"property-control-group listener-item clearfix\">\n				<div class=\"left elb-property-listener-item-1\">\n					<label class=\"left\">Instance Protocol</label>\n					<div class=\"selectbox elb-property-instance-protocol\">\n						<div class=\"selection\">"
     + escapeExpression(((stack1 = (depth0 && depth0.instanceProtocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n						<ul class=\"dropdown\">\n							<li data-id=\"HTTP\" class=\"item ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
@@ -6779,7 +6384,9 @@ function program16(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_1_65535", {hash:{},data:data}))
     + "\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.instancePort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-ignore=\"true\" data-required=\"true\" data-type=\"digits\" maxlength=\"5\"/>\n				</div>\n			</div>\n		</li>\n		";
+    + "\" data-ignore=\"true\" data-required=\"true\" data-type=\"digits\" maxlength=\"5\"/>\n				</div>\n			</div>\n\n			<div class=\"property-control-group sslcert-select clearfix\">\n				<label for=\"sslcert-placeholder\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_SERVER_CERTIFICATE", {hash:{},data:data}))
+    + "</label>\n				<div class=\"sslcert-placeholder\"></div>\n			</div>\n		</li>\n		";
   return buffer;
   }
 function program17(depth0,data) {
@@ -6917,7 +6524,7 @@ function program32(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</ul>\n		<a href=\"#\" id=\"elb-property-listener-content-add\" class=\"add-to-list action-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_BTN_ADD_LISTENER", {hash:{},data:data}))
-    + "</a>\n		<section class=\"property-control-group\" id=\"property-control-group-cert-setting\">\n			<label class=\"left\">"
+    + "</a>\n<!-- 		<section class=\"property-control-group\" id=\"property-control-group-cert-setting\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_SERVER_CERTIFICATE", {hash:{},data:data}))
     + "</label>\n			<div class=\"selectbox\" id=\"sslcert-select\">\n				<div class=\"selection\"></div>\n				<div style=\"height: 120px; width:260px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n					<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n					<div class=\"scroll-content\">\n						<ul>\n							<li class=\"item";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSSLCert), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
@@ -6925,7 +6532,7 @@ function program32(depth0,data) {
   buffer += "\">None</li>\n							";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.sslCertItem), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n						</ul>\n					</div>\n				</div>\n				<div class=\"editor\">\n					<a href=\"#\" class=\"editbtn\">Add New Certiﬁcate...</a>\n				</div>\n			</div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\"> "
+  buffer += "\n						</ul>\n					</div>\n				</div>\n				<div class=\"editor\">\n					<a href=\"#\" class=\"editbtn\">Add New Certificate...</a>\n				</div>\n			</div>\n		</section> -->\n	</div>\n\n	<div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_CHECK_DETAILS", {hash:{},data:data}))
     + " </div>\n	<div class=\"option-group\" data-bind=\"true\" data-validate=\"parsley\" >\n		<section class=\"property-control-group\">\n			<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_PING_PROTOCOL", {hash:{},data:data}))
@@ -7036,9 +6643,17 @@ function program32(depth0,data) {
         'click #elb-advanced-proxy-protocol-select': 'elbAdvancedProxyProtocolSelectChange'
       },
       render: function() {
+        var that;
+        that = this;
         this.$el.html(template(this.model.attributes));
         this.updateSlider($('#elb-property-slider-unhealthy'), this.model.get('unHealthyThreshold') - 2);
         this.updateSlider($('#elb-property-slider-healthy'), this.model.get('healthyThreshold') - 2);
+        _.each(this.$('.sslcert-placeholder'), function(sslCertPlaceHolder, idx) {
+          var $sslCertPlaceHolder, sslCertDropDown;
+          $sslCertPlaceHolder = $(sslCertPlaceHolder);
+          sslCertDropDown = that.model.initNewSSLCertDropDown(idx);
+          return $sslCertPlaceHolder.html(sslCertDropDown.render().el);
+        });
         this.updateCertView();
         return this.model.attributes.name;
       },
@@ -7138,7 +6753,8 @@ function program32(depth0,data) {
         }
       },
       listenerItemAddClicked: function(event) {
-        var $li, $selectbox;
+        var $li, $selectbox, $sslCertPlaceHolder, sslCertDropDown, that;
+        that = this;
         $li = $("#elb-property-listener-list").children().eq(0).clone();
         $li.find(".elb-property-listener-item-remove").show();
         $selectbox = $li.find("ul");
@@ -7147,6 +6763,9 @@ function program32(depth0,data) {
         $selectbox.prev(".selection").text("HTTP");
         $('#elb-property-listener-list').append($li);
         this.updateListener($li);
+        $sslCertPlaceHolder = $li.find('.sslcert-placeholder');
+        sslCertDropDown = that.model.initNewSSLCertDropDown($li.index());
+        $sslCertPlaceHolder.html(sslCertDropDown.render().el);
         return false;
       },
       updateListener: function($li) {
@@ -7338,22 +6957,16 @@ function program32(depth0,data) {
         return null;
       },
       updateCertView: function() {
-        var $certPanel, show;
-        show = false;
         $("#elb-property-listener-list").children().each(function() {
-          var protocol;
+          var $certPanel, protocol;
           protocol = $(this).find(".elb-property-elb-protocol .selected").text();
+          $certPanel = $(this).find(".sslcert-select");
           if (protocol === "HTTPS" || protocol === "SSL") {
-            show = true;
-            return false;
+            return $certPanel.show();
+          } else {
+            return $certPanel.hide();
           }
         });
-        $certPanel = $('#property-control-group-cert-setting');
-        if (show) {
-          $certPanel.show();
-        } else {
-          $certPanel.hide();
-        }
         return null;
       },
       azCheckChanged: function(event) {
@@ -7636,7 +7249,7 @@ function program32(depth0,data) {
           $.each(elb.ListenerDescriptions.member, function(i, listener) {
             elb.listenerDisplay.push(listener);
             if (listener.Listener.SSLCertificateId) {
-              elb.server_certificate = listener.Listener.SSLCertificateId.split('/')[1];
+              listener.Listener.server_certificate = listener.Listener.SSLCertificateId.split('/')[1];
               return null;
             }
           });
@@ -7749,68 +7362,70 @@ function program5(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_PORT", {hash:{},data:data}))
     + "</label>\n          <div>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.Listener)),stack1 == null || stack1 === false ? stack1 : stack1.InstancePort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </div>\n      </li>\n    ";
+    + "</div>\n        </div>\n        ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.Listener)),stack1 == null || stack1 === false ? stack1 : stack1.server_certificate), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </li>\n    ";
   return buffer;
   }
-
-function program7(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <li class=\"clearfix\">\n        <p class=\"app-panel-li-main\">"
+  buffer += "\n        <div class=\"app-panel-li-col2-full\">\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_SERVER_CERTIFICATE", {hash:{},data:data}))
-    + "</p>\n        <p class=\"app-panel-li-sub\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.server_certificate)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</p>\n      </li>\n    ";
+    + "</label>\n          <div>"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.Listener)),stack1 == null || stack1 === false ? stack1 : stack1.server_certificate)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </div>\n        ";
   return buffer;
   }
 
-function program9(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <li>\n        <div class=\"list-row\">\n            <i class=\"status status-";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " icon-label\"></i>\n            <span class=\"app-panel-li-main\">"
     + escapeExpression(((stack1 = (depth0 && depth0.zone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n        </div>\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          </ul>\n        </div>\n      </li>\n    ";
   return buffer;
   }
-function program10(depth0,data) {
+function program9(depth0,data) {
   
   
   return "green";
   }
 
-function program12(depth0,data) {
+function program11(depth0,data) {
   
   
   return "red";
   }
 
-function program14(depth0,data) {
+function program13(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n              <li>\n                <div class=\"instance-info\">\n                  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                  <div class=\"instance-id ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">("
     + escapeExpression(((stack1 = (depth0 && depth0.instance_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</div>\n                </div>\n                <div class=\"instance-state\">\n                  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </div>\n              </li>\n            ";
   return buffer;
   }
-function program15(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<div class=\"instance-name\">"
@@ -7819,25 +7434,25 @@ function program15(depth0,data) {
   return buffer;
   }
 
-function program17(depth0,data) {
+function program16(depth0,data) {
   
   
   return "instance-id-down";
   }
 
-function program19(depth0,data) {
+function program18(depth0,data) {
   
   
   return "InService";
   }
 
-function program21(depth0,data) {
+function program20(depth0,data) {
   
   
   return "OutOfService";
   }
 
-function program23(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<a class=\"elb-info-icon tooltip icon-info\" data-tooltip=\""
@@ -7846,7 +7461,7 @@ function program23(depth0,data) {
   return buffer;
   }
 
-function program25(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "";
   buffer += "\n  <div class=\"option-group-head\">"
@@ -7893,9 +7508,6 @@ function program25(depth0,data) {
     + "</div>\n  <div class=\"option-group\">\n    <ul class=\"property-list\">\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.listenerDisplay), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.server_certificate), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n  </div>\n\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_CHECK_DETAILS", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n      <dl class=\"dl-vertical\">\n        <dt>"
@@ -7933,10 +7545,10 @@ function program25(depth0,data) {
     + "</dd>\n      </dl>\n  </div>\n\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_INSTANCES", {hash:{},data:data}))
     + "</div>\n  <ul class=\"option-group property-list\">\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </ul>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>\n";
   return buffer;
@@ -8722,7 +8334,7 @@ function program1(depth0,data) {
         component = Design.instance().component(uid);
         dhcp_comp = component.get("dhcp");
         dhcp = $.extend({}, dhcp_comp.attributes);
-        dhcp.none = dhcp_comp.isNone();
+        dhcp.none = dhcp_comp.isAuto();
         dhcp["default"] = dhcp_comp.isDefault();
         dhcp.hasDhcp = (!dhcp.none) && (!dhcp["default"]);
         data = {
@@ -8797,17 +8409,18 @@ function program1(depth0,data) {
         }
         return null;
       },
-      useDhcp: function() {
-        var uid;
-        uid = this.get("uid");
-        Design.instance().component(uid).get("dhcp").setCustom();
-        return null;
-      },
-      setDHCPOptions: function(options) {
+      setDhcp: function(val) {
         var dhcp, uid;
         uid = this.get("uid");
         dhcp = Design.instance().component(uid).get("dhcp");
-        dhcp.set(options);
+        dhcp.setDhcp(val);
+        return null;
+      },
+      setDHCPOptions: function(options, force) {
+        var dhcp, uid;
+        uid = this.get("uid");
+        dhcp = Design.instance().component(uid).get("dhcp");
+        dhcp.set(options, force);
         return null;
       }
     });
@@ -8860,7 +8473,9 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"dns-hostname\">\n        <label for=\"property-dns-hostname\"></label>\n      </div>\n      <label for=\"property-dns-hostname\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DETAIL_LBL_ENABLE_DNS_HOSTNAME_SUPPORT", {hash:{},data:data}))
-    + "</label>\n    </section>\n  </div>\n\n\n  ";
+    + "</label>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label class=\"left\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIT_DHCP_OPTION", {hash:{},data:data}))
+    + "</label>\n      <div id=\"dhcp-dropdown\"></div>\n    </section>\n  </div>\n\n\n  ";
   return buffer;
   }
 function program2(depth0,data) {
@@ -8911,7 +8526,9 @@ function program4(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"dns-hostname\">\n        <label for=\"property-dns-hostname\"></label>\n      </div>\n      <label for=\"property-dns-hostname\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DETAIL_LBL_ENABLE_DNS_HOSTNAME_SUPPORT", {hash:{},data:data}))
-    + "</label>\n    </section>\n  </div>\n\n  ";
+    + "</label>\n    </section>\n\n    <section class=\"property-control-group\">\n        <label class=\"left\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIT_DHCP_OPTION", {hash:{},data:data}))
+    + "</label>\n        <div id=\"dhcp-dropdown\"></div>\n    </section>\n  </div>\n\n  ";
   return buffer;
   }
 function program5(depth0,data) {
@@ -8934,231 +8551,17 @@ function program9(depth0,data) {
   return " selected";
   }
 
-function program11(depth0,data) {
-  
-  
-  return "checked=\"checked\"  ";
-  }
-
-function program13(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1['default']), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  return buffer;
-  }
-function program14(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <section class=\"property-control-group\">\n        <div class=\"radio property-dhcp\">\n          <input id=\"property-dhcp-default\" type=\"radio\" name=\"dhcp-opts\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1['default']), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "value=\"none\" />\n          <label for=\"property-dhcp-default\"></label>\n        </div>\n        <label for=\"property-dhcp-default\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_DEFAULT", {hash:{},data:data}))
-    + "</label>\n      </section>\n      ";
-  return buffer;
-  }
-function program15(depth0,data) {
-  
-  
-  return "checked=\"checked\" ";
-  }
-
-function program17(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <section class=\"property-control-group\">\n        <div class=\"radio property-dhcp\">\n          <input id=\"property-dhcp-default\" type=\"radio\" name=\"dhcp-opts\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1['default']), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "value=\"none\" />\n          <label for=\"property-dhcp-default\"></label>\n        </div>\n        <label for=\"property-dhcp-default\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_DEFAULT", {hash:{},data:data}))
-    + "</label>\n      </section>\n    ";
-  return buffer;
-  }
-
-function program19(depth0,data) {
-  
-  
-  return "checked=\"checked\"";
-  }
-
-function program21(depth0,data) {
-  
-  
-  return "hide";
-  }
-
-function program23(depth0,data) {
-  
-  
-  return "3";
-  }
-
-function program25(depth0,data) {
-  
-  
-  return "4";
-  }
-
-function program27(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n          <div class=\"multi-ipt-row\">\n            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_DNS", {hash:{},data:data}))
-    + "\" value=\""
-    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "\" type=\"text\" maxlength=\"255\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_EG_172_16_16_16", {hash:{},data:data}))
-    + "\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n          </div>\n          ";
-  return buffer;
-  }
-
-function program29(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n          <div class=\"multi-ipt-row\">\n            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_DNS", {hash:{},data:data}))
-    + "\"  placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_EG_172_16_16_16", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n          </div>\n          ";
-  return buffer;
-  }
-
-function program31(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n          <div class=\"multi-ipt-row\">\n            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NTP", {hash:{},data:data}))
-    + "\" value=\""
-    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n          </div>\n          ";
-  return buffer;
-  }
-
-function program33(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n          <div class=\"multi-ipt-row\">\n            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NTP", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n          </div>\n          ";
-  return buffer;
-  }
-
-function program35(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n          <div class=\"multi-ipt-row\">\n            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NETBIOS", {hash:{},data:data}))
-    + "\" value=\""
-    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n          </div>\n          ";
-  return buffer;
-  }
-
-function program37(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n          <div class=\"multi-ipt-row\">\n            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NETBIOS", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n          </div>\n          ";
-  return buffer;
-  }
-
-function program39(depth0,data) {
-  
-  var stack1;
-  stack1 = helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE_NOT_SPECIFIED", {hash:{},data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
-  }
-
-function program41(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            <li class=\"item";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n            ";
-  return buffer;
-  }
-
   buffer += "<article>\n  <div class=\"option-group-head expand\" id=\"vpc-property-detail\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIT_DETAIL", {hash:{},data:data}))
     + "</div>\n\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  <div class=\"option-group-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIT_DHCP_OPTION", {hash:{},data:data}))
-    + "</div>\n  <div class=\"option-group\" id=\"dhcp-property-detail\" data-type=\"true\">\n    <section class=\"property-control-group\">\n      <div class=\"radio property-dhcp\">\n        <input id=\"property-dhcp-none\" type=\"radio\" name=\"dhcp-opts\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.none), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "value=\"none\" />\n        <label for=\"property-dhcp-none\"></label>\n      </div>\n      <label for=\"property-dhcp-none\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_NONE", {hash:{},data:data}))
-    + "</label>\n    </section>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(17, program17, data),fn:self.program(13, program13, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <section class=\"property-control-group\">\n      <div class=\"radio property-dhcp\">\n        <input id=\"property-dhcp-spec\" type=\"radio\" name=\"dhcp-opts\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.hasDhcp), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"specified\"/>\n        <label for=\"property-dhcp-spec\"></label>\n      </div>\n      <label for=\"property-dhcp-spec\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_SPECIFIED", {hash:{},data:data}))
-    + "</label>\n\n      <div class=\"property-info ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.hasDhcp), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" id=\"property-dhcp-desc\">Specify Domain Name, DNS Server, NTP server NetBIOS Name Server or NetBIOS Node Type.</div>\n    </section>\n\n    <section id=\"property-dhcp-options\" data-bind=\"true\" class=\"property-control-group-sub ";
-  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.hasDhcp), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n      <div class=\"property-control-group\">\n        <label class=\"left\" for=\"property-dhcp-domain\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
-    + "</label>\n        <input class=\"input tooltip\" type=\"text\" value=\""
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_THE_DOMAIN_NAME", {hash:{},data:data}))
-    + "\" id=\"property-dhcp-domain\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\"/>\n      </div>\n\n      <div class=\"property-control-group\">\n        <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
-    + "</label>\n        <div>\n          <div class=\"checkbox left\">\n            <input id=\"property-amazon-dns\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.amazonDNS), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "type=\"checkbox\">\n            <label for=\"property-amazon-dns\"></label>\n          </div>\n          <label for=\"property-amazon-dns\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_AMZN_PROVIDED_DNS", {hash:{},data:data}))
-    + "</label>\n        </div>\n\n        <div id=\"property-domain-server\" class=\"multi-input\" data-max-row=\"";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.amazonDNS), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n          ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainServers), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </div>\n      </div>\n\n      <div class=\"property-control-group\">\n        <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
-    + "</label>\n        <div id=\"property-ntp-server\" class=\"multi-input\" data-max-row=\"4\">\n          ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers), {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </div>\n      </div>\n\n      <div class=\"property-control-group\">\n        <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
-    + "</label>\n        <div id=\"property-netbios-server\" class=\"multi-input\" data-max-row=\"4\">\n          ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosServers), {hash:{},inverse:self.program(37, program37, data),fn:self.program(35, program35, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </div>\n      </div>\n\n      <div class=\"property-control-group\">\n        <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE", {hash:{},data:data}))
-    + "</label>\n        <div class=\"selectbox selectbox-mega\" id=\"property-netbios-type\">\n          <div class=\"selection tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_SELECT_NETBIOS_NODE", {hash:{},data:data}))
-    + "\">";
-  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosType), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n          <ul class=\"dropdown\" tabindex=\"-1\">\n            ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosTypes), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          </ul>\n        </div>\n      </div>\n\n    </section>\n  </div>\n</article>\n";
+  buffer += "\n\n</article>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/vpc/view',['../base/view', './template/stack', 'i18n!nls/lang.js'], function(PropertyView, template, lang) {
-    var VPCView, mapFilterInput, updateAmazonCB;
+  define('module/design/property/vpc/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'dhcp', 'UI.modalplus'], function(PropertyView, template, lang, dhcp, modalPlus) {
+    var VPCView, mapFilterInput;
     mapFilterInput = function(selector) {
       var $inputs, ipt, result, _i, _len;
       $inputs = $(selector);
@@ -9171,15 +8574,6 @@ function program41(depth0,data) {
       }
       return result;
     };
-    updateAmazonCB = function() {
-      var rowLength;
-      rowLength = $("#property-domain-server").children().length;
-      if (rowLength > 3) {
-        return $('#property-amazon-dns').attr("disabled", true);
-      } else {
-        return $('#property-amazon-dns').removeAttr("disabled");
-      }
-    };
     VPCView = PropertyView.extend({
       events: {
         'change #property-vpc-name': 'onChangeName',
@@ -9187,50 +8581,60 @@ function program41(depth0,data) {
         'change #property-dns-resolution': 'onChangeDnsSupport',
         'change #property-dns-hostname': 'onChangeDnsHostname',
         'OPTION_CHANGE #property-tenancy': 'onChangeTenancy',
-        'click #property-dhcp-none': 'onRemoveDhcp',
-        'click #property-dhcp-default': 'onRemoveDhcp',
-        'click #property-dhcp-spec': 'onUseDHCP',
-        'click #property-amazon-dns': 'onChangeAmazonDns',
         'change .property-control-group-sub .input': 'onChangeDhcpOptions',
         'OPTION_CHANGE #property-netbios-type': 'onChangeDhcpOptions',
         'REMOVE_ROW #property-dhcp-options': 'onChangeDhcpOptions',
         'ADD_ROW .multi-input': 'processParsley'
       },
       render: function() {
-        var data, selectedType;
-        data = this.model.attributes;
-        selectedType = data.dhcp.netbiosType || 0;
-        data.dhcp.netbiosTypes = [
-          {
-            id: "default",
-            value: lang.ide.PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE_NOT_SPECIFIED,
-            selected: selectedType === 0
-          }, {
-            id: 1,
-            value: 1,
-            selected: selectedType === 1
-          }, {
-            id: 2,
-            value: 2,
-            selected: selectedType === 2
-          }, {
-            id: 4,
-            value: 4,
-            selected: selectedType === 4
-          }, {
-            id: 8,
-            value: 8,
-            selected: selectedType === 8
-          }
-        ];
+        var data;
+        data = this.model.toJSON();
         this.$el.html(template(data));
-        $('#property-domain-server').on('ADD_ROW REMOVE_ROW', updateAmazonCB);
-        updateAmazonCB();
         multiinputbox.update($("#property-domain-server"));
+        this.dhcp = new dhcp({
+          resModel: this.model
+        });
+        this.dhcp.off('change');
+        this.dhcp.on('change', (function(_this) {
+          return function(e) {
+            return _this.changeDhcp(e);
+          };
+        })(this));
+        this.dhcp.on('manage', (function(_this) {
+          return function() {
+            return console.log(_this.dhcp.manager);
+          };
+        })(this));
+        this.$el.find('#dhcp-dropdown').html(this.dhcp.dropdown.el);
+        this.initDhcpSelection();
         return data.name;
       },
-      processParsley: function(event) {
-        return $(event.currentTarget).find('input').last().removeClass('parsley-validated').removeClass('parsley-error').next('.parsley-error-list').remove();
+      initDhcpSelection: function() {
+        var currentVal, selection;
+        currentVal = this.model.toJSON().dhcp.dhcpOptionsId;
+        if (currentVal === '') {
+          selection = {
+            isAuto: true
+          };
+        } else if (currentVal === "default") {
+          selection = {
+            isDefault: true
+          };
+        } else {
+          selection = {
+            id: currentVal
+          };
+        }
+        return this.dhcp.setSelection(selection);
+      },
+      changeDhcp: function(e) {
+        if (e.id === 'default') {
+          return this.model.removeDhcp(true);
+        } else if (e.id === '') {
+          return this.model.removeDhcp(false);
+        } else {
+          return this.model.setDhcp(e.id);
+        }
       },
       onChangeName: function(event) {
         var name, target;
@@ -9266,14 +8670,6 @@ function program41(depth0,data) {
         this.model.setDnsHosts(event.target.checked);
         return null;
       },
-      onRemoveDhcp: function(event) {
-        var isDefault;
-        isDefault = $(event.currentTarget).closest("section").find("input").attr("id") === "property-dhcp-default";
-        $("#property-dhcp-desc").show();
-        $("#property-dhcp-options").hide();
-        this.model.removeDhcp(isDefault);
-        return null;
-      },
       onChangeAmazonDns: function(event) {
         var $inputbox, $rows, allowRows, useAmazonDns;
         useAmazonDns = $("#property-amazon-dns").is(":checked");
@@ -9302,7 +8698,6 @@ function program41(depth0,data) {
           netbiosServers: mapFilterInput("#property-netbios-server .input"),
           netbiosType: parseInt($("#property-netbios-type .selection").html(), 10) || 0
         };
-        console.log("DHCP Options Changed", data);
         this.model.setDHCPOptions(data);
         return null;
       }
@@ -9342,7 +8737,8 @@ function program41(depth0,data) {
           if (!appData[vpc.dhcpOptionsId]) {
             vpc.default_dhcp = true;
           } else {
-            dhcpData = appData[vpc.dhcpOptionsId].dhcpConfigurationSet.item;
+            dhcpData = appData[myVPCComponent.toJSON().dhcp.toJSON().dhcpOptionsId].dhcpConfigurationSet.item;
+            vpc.dhcpOptionsId = myVPCComponent.toJSON().dhcp.toJSON().dhcpOptionsId;
             dhcp = {};
             for (_i = 0, _len = dhcpData.length; _i < _len; _i++) {
               i = dhcpData[_i];
@@ -13328,7 +12724,7 @@ function program30(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/launchconfig/view',['../base/view', './template/stack', 'event', 'constant', 'i18n!nls/lang.js', 'kp'], function(PropertyView, template, ide_event, constant, lang, kp) {
+  define('module/design/property/launchconfig/view',['../base/view', './template/stack', 'event', 'constant', 'i18n!nls/lang.js', 'kp_dropdown'], function(PropertyView, template, ide_event, constant, lang, kp) {
     var LanchConfigView;
     LanchConfigView = PropertyView.extend({
       events: {
@@ -13402,7 +12798,9 @@ function program30(depth0,data) {
         var instanceModel, me;
         this.$el.html(template(this.model.attributes));
         instanceModel = Design.instance().component(this.model.get('uid'));
-        this.$('#kp-placeholder').html(kp.load(instanceModel).el);
+        this.$('#kp-placeholder').html(new kp({
+          resModel: instanceModel
+        }).render().el);
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
           val = +val;
@@ -13718,7 +13116,7 @@ function program6(depth0,data) {
         n = component.getNotification();
         this.set("notification", n);
         this.set("has_notification", n.instanceLaunch || n.instanceLaunchError || n.instanceTerminate || n.instanceTerminateError || n.test);
-        this.set("has_sns_sub", !!(Design.modelClassForType(constant.RESTYPE.SUBSCRIPTION).allObjects().length));
+        this.notiObject = component.getNotiObject();
         this.set("policies", _.map(data.policies, function(p) {
           data = $.extend(true, {}, p.attributes);
           data.cooldown = Math.round(data.cooldown / 60);
@@ -13746,7 +13144,20 @@ function program6(depth0,data) {
         return Design.instance().component(this.get("uid")).set("healthCheckGracePeriod", value);
       },
       setNotification: function(notification) {
-        return Design.instance().component(this.get("uid")).setNotification(notification);
+        var n;
+        n = Design.instance().component(this.get("uid")).setNotification(notification);
+        return this.notiObject = n;
+      },
+      removeTopic: function() {
+        var n;
+        n = Design.instance().component(this.get("uid")).setNotification(notification);
+        return n != null ? n.removeTopic() : void 0;
+      },
+      getNotificationTopicName: function() {
+        return Design.instance().component(this.get("uid")).getNotificationTopicName();
+      },
+      setNotificationTopic: function(appId, name) {
+        return Design.instance().component(this.get("uid")).setNotificationTopic(appId, name);
       },
       setTerminatePolicy: function(policies) {
         Design.instance().component(this.get("uid")).set("terminationPolicies", policies);
@@ -13794,9 +13205,6 @@ function program6(depth0,data) {
         if (asg.type === "ExpandedAsg") {
           asg = asg.get('originalAsg');
         }
-        if (policy_detail.sendNotification) {
-          Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
-        }
         if (!policy_detail.uid) {
           PolicyModel = Design.modelClassForType(constant.RESTYPE.SP);
           policy = new PolicyModel(policy_detail);
@@ -13810,6 +13218,9 @@ function program6(depth0,data) {
           delete policy_detail.alarmData;
           policy.set(policy_detail);
           policy_detail.alarmData = alarmData;
+        }
+        if (policy_detail.sendNotification && policy_detail.topic) {
+          policy.setTopic(policy_detail.topic.appId, policy_detail.topic.name);
         }
         return null;
       }
@@ -13948,10 +13359,7 @@ function program3(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"property-asg-sns5\"></label>\n			</div>\n			<label for=\"property-asg-sns5\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
-    + "</label></div>\n\n	    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_sns_sub), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n		</div>\n	</div>\n	";
+    + "</label></div>\n\n		</div>\n\n		<div class=\"property-control-group sns-group\" style=\"display:none;\">\n			<label for=\"sns-placeholder\">Select SNS Topic</label>\n			<div id=\"sns-placeholder\"></div>\n		</div>\n\n	</div>\n	";
   return buffer;
   }
 function program4(depth0,data) {
@@ -14045,23 +13453,6 @@ function program18(depth0,data) {
   return "checked=\"checked\"";
   }
 
-function program20(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n			<p class=\"property-warning ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_notification), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" id=\"property-asg-sns-info\"> "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_MSG_SNS_WARN", {hash:{},data:data}))
-    + " </p>\n	    ";
-  return buffer;
-  }
-function program21(depth0,data) {
-  
-  
-  return "hide";
-  }
-
   buffer += "<article>\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.emptyAsg), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -14071,7 +13462,7 @@ function program21(depth0,data) {
 define('module/design/property/asg/template/policy',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -14082,7 +13473,7 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   
-  return "\n								<li data-id=\"StatusCheckFailed\" class=\"item\">Status Check Failed (Any)</li>\n								<li data-id=\"StatusCheckFailed_Instance\" class=\"item\">Status Check Failed (Instance)</li>\n								<li data-id=\"StatusCheckFailed_System\" class=\"item\">Status Check Failed (System)</li>\n								";
+  return "\n						<li data-id=\"StatusCheckFailed\" class=\"item\">Status Check Failed (Any)</li>\n						<li data-id=\"StatusCheckFailed_Instance\" class=\"item\">Status Check Failed (Instance)</li>\n						<li data-id=\"StatusCheckFailed_System\" class=\"item\">Status Check Failed (System)</li>\n						";
   }
 
 function program5(depth0,data) {
@@ -14091,120 +13482,96 @@ function program5(depth0,data) {
   return "checked=\"checked\"";
   }
 
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n						<p class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.sendNotification), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " property-warning\" id=\"asg-policy-no-sns\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_MSG_SNS_WARN", {hash:{},data:data}))
-    + "</p>\n						";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  
-  return "hide";
-  }
-
-  buffer += "<div id=\"asg-termination-policy\" style=\"width:480px;\"  data-bind=\"true\">\n	 <div class=\"modal-header\">\n			<h3>"
-    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_TITLE_CONTENT", {hash:{},data:data}))
-    + "</h3>\n			<i class=\"modal-close\">&times;</i>\n	 </div>\n	<div class=\"scroll-wrap\" style=\"max-height:500px;\">\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		 <div class=\"modal-body scroll-content\" id=\"property-asg-policy\" data-uid=\""
+  buffer += "<div class=\"scroll-wrap\" style=\"max-height:500px;\" id=\"asg-termination-policy\">\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"modal-body scroll-content\" id=\"property-asg-policy\" data-uid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.uid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n\n			<label for=\"asg-policy-name\" class=\"modal-text-major\">"
+    + "\">\n\n		<label for=\"asg-policy-name\" class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY_TLT_NAME", {hash:{},data:data}))
-    + "</label>\n			<input type=\"text\" class=\"input\" value=\""
+    + "</label>\n		<input type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"asg-policy-name\" data-required-rollback=\"true\" data-ignore=\"true\" maxlength=\"255\" data-required=\"true\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOld), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n\n\n				<section class=\"modal-control-group\">\n					<h5>"
+  buffer += ">\n\n\n		<section class=\"modal-control-group\">\n			<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ALARM", {hash:{},data:data}))
-    + "</h5>\n					<div class=\"control-sentence\">\n						<span>"
+    + "</h5>\n			<div class=\"control-sentence\">\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_WHEN", {hash:{},data:data}))
-    + "</span>\n\n						<div class=\"selectbox\" id=\"asg-policy-metric\">\n							<div class=\"selection\">CPU Utillization</div>\n							<ul class=\"dropdown\" tabindex=\"-1\">\n								<li data-id=\"CPUUtilization\" class=\"item selected\">CPU Utilization</li>\n								<li data-id=\"DiskReadBytes\" class=\"item\">Disk Reads</li>\n								<li data-id=\"DiskReadOps\" class=\"item\">Disk Read Operations</li>\n								<li data-id=\"DiskWriteBytes\" class=\"item\">Disk Writes</li>\n								<li data-id=\"DiskWriteOps\" class=\"item\">Disk Write Operations</li>\n								<li data-id=\"NetworkIn\" class=\"item\">Network In</li>\n								<li data-id=\"NetworkOut\" class=\"item\">Network Out</li>\n								";
+    + "</span>\n\n				<div class=\"selectbox\" id=\"asg-policy-metric\">\n					<div class=\"selection\">CPU Utillization</div>\n					<ul class=\"dropdown\" tabindex=\"-1\">\n						<li data-id=\"CPUUtilization\" class=\"item selected\">CPU Utilization</li>\n						<li data-id=\"DiskReadBytes\" class=\"item\">Disk Reads</li>\n						<li data-id=\"DiskReadOps\" class=\"item\">Disk Read Operations</li>\n						<li data-id=\"DiskWriteBytes\" class=\"item\">Disk Writes</li>\n						<li data-id=\"DiskWriteOps\" class=\"item\">Disk Write Operations</li>\n						<li data-id=\"NetworkIn\" class=\"item\">Network In</li>\n						<li data-id=\"NetworkOut\" class=\"item\">Network Out</li>\n						";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.detail_monitor), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n							</ul>\n						</div>\n\n						<span>"
+  buffer += "\n					</ul>\n				</div>\n\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_IS", {hash:{},data:data}))
-    + "</span>\n\n						<div class=\"selectbox\" id=\"asg-policy-eval\">\n							<div class=\"selection\">&gt;=</div>\n							<ul class=\"dropdown\" tabindex=\"-1\">\n								<li data-id=\">\" class=\"item\">&gt;</li>\n								<li data-id=\">=\" class=\"item selected\">&gt;=</li>\n								<li data-id=\"<\" class=\"item\">&lt;</li>\n								<li data-id=\"<=\" class=\"item\">&lt;=</li>\n							</ul>\n						</div>\n\n						<input type=\"text\" class=\"input\" id=\"asg-policy-threshold\" value=\""
+    + "</span>\n\n				<div class=\"selectbox\" id=\"asg-policy-eval\">\n					<div class=\"selection\">&gt;=</div>\n					<ul class=\"dropdown\" tabindex=\"-1\">\n						<li data-id=\">\" class=\"item\">&gt;</li>\n						<li data-id=\">=\" class=\"item selected\">&gt;=</li>\n						<li data-id=\"<\" class=\"item\">&lt;</li>\n						<li data-id=\"<=\" class=\"item\">&lt;=</li>\n					</ul>\n				</div>\n\n				<input type=\"text\" class=\"input\" id=\"asg-policy-threshold\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.alarmData)),stack1 == null || stack1 === false ? stack1 : stack1.threshold)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_POLICY_TLT_THRESHOLD", {hash:{},data:data}))
-    + "\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9]*\\.?[0-9]*$\" data-required=\"true\">\n\n						<span id=\"asg-policy-unit\">"
+    + "\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9]*\\.?[0-9]*$\" data-required=\"true\">\n\n				<span id=\"asg-policy-unit\">"
     + escapeExpression(((stack1 = (depth0 && depth0.unit)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n\n						<br />\n\n						<span>"
+    + "</span>\n\n				<br />\n\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_FOR", {hash:{},data:data}))
-    + "</span>\n\n						<input type=\"text\" class=\"input\" id=\"asg-policy-periods\" value=\""
+    + "</span>\n\n				<input type=\"text\" class=\"input\" id=\"asg-policy-periods\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.alarmData)),stack1 == null || stack1 === false ? stack1 : stack1.evaluationPeriods)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-required=\"true\" data-ignore=\"true\" data-type=\"digits\">\n\n						<span>"
+    + "\" data-required=\"true\" data-ignore=\"true\" data-type=\"digits\">\n\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_PERIOD", {hash:{},data:data}))
-    + "</span>\n\n						<input type=\"text\" class=\"input\" id=\"asg-policy-second\" value=\""
+    + "</span>\n\n				<input type=\"text\" class=\"input\" id=\"asg-policy-second\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.alarmData)),stack1 == null || stack1 === false ? stack1 : stack1.period)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-required=\"true\" data-ignore=\"true\" data-type=\"digits\">\n\n						<span>"
+    + "\" data-required=\"true\" data-ignore=\"true\" data-type=\"digits\">\n\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_SECONDS", {hash:{},data:data}))
-    + "</span>\n\n						<br />\n\n						<span>"
+    + "</span>\n\n				<br />\n\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_START_SCALING", {hash:{},data:data}))
-    + "</span>\n\n						<div class=\"selectbox\" id=\"asg-policy-trigger\">\n							<div class=\"selection\">ALARM</div>\n							<ul class=\"dropdown\" tabindex=\"-1\">\n								<li data-id=\"ALARM\" class=\"item selected\">ALARM</li>\n								<li data-id=\"INSUFFICIANT_DATA\" class=\"item\">INSUFFICIANT_DATA</li>\n								<li data-id=\"OK\" class=\"item\">OK</li>\n							</ul>\n						</div>\n\n						<span>"
+    + "</span>\n\n				<div class=\"selectbox\" id=\"asg-policy-trigger\">\n					<div class=\"selection\">ALARM</div>\n					<ul class=\"dropdown\" tabindex=\"-1\">\n						<li data-id=\"ALARM\" class=\"item selected\">ALARM</li>\n						<li data-id=\"INSUFFICIANT_DATA\" class=\"item\">INSUFFICIANT_DATA</li>\n						<li data-id=\"OK\" class=\"item\">OK</li>\n					</ul>\n				</div>\n\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_STATE", {hash:{},data:data}))
-    + "</span>\n					</div>\n				</section>\n\n				<section class=\"modal-control-group\">\n					<h5>"
+    + "</span>\n			</div>\n		</section>\n\n		<section class=\"modal-control-group\">\n			<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_SCALING_ACTIVITY", {hash:{},data:data}))
-    + "</h5>\n					<div class=\"control-sentence\">\n						<span>"
+    + "</h5>\n			<div class=\"control-sentence\">\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADJUSTMENT", {hash:{},data:data}))
-    + "</span>\n						<div class=\"selectbox\" id=\"asg-policy-adjust-type\">\n							<div class=\"selection\">Change in Capacity</div>\n							<ul class=\"dropdown\" tabindex=\"-1\">\n								<li data-id=\"ChangeInCapacity\" class=\"item selected\">Change in Capacity</li>\n								<li data-id=\"ExactCapacity\" class=\"item\">Exact Capacity</li>\n								<li data-id=\"PercentChangeInCapacity\" class=\"item\">Percent Change in Capacity</li>\n							</ul>\n						</div>\n						<span>"
+    + "</span>\n				<div class=\"selectbox\" id=\"asg-policy-adjust-type\">\n					<div class=\"selection\">Change in Capacity</div>\n					<ul class=\"dropdown\" tabindex=\"-1\">\n						<li data-id=\"ChangeInCapacity\" class=\"item selected\">Change in Capacity</li>\n						<li data-id=\"ExactCapacity\" class=\"item\">Exact Capacity</li>\n						<li data-id=\"PercentChangeInCapacity\" class=\"item\">Percent Change in Capacity</li>\n					</ul>\n				</div>\n				<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADJUSTMENT_OF", {hash:{},data:data}))
-    + "</span>\n						<input type=\"text\" class=\"input tooltip\" id=\"asg-policy-adjust\" data-required=\"true\" value=\""
+    + "</span>\n				<input type=\"text\" class=\"input tooltip\" id=\"asg-policy-adjust\" data-required=\"true\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.adjustment)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" placeholder=\"e.g. -1\" data-ignore=\"true\" data-ignore-regexp=\"^-?[0-9]*$\">\n						<span class=\"hide pecentcapcity\">%</span>\n						<span>.</span>\n					</div>\n				</section>\n\n				<h5>"
+    + "\" placeholder=\"e.g. -1\" data-ignore=\"true\" data-ignore-regexp=\"^-?[0-9]*$\">\n				<span class=\"hide pecentcapcity\">%</span>\n				<span>.</span>\n			</div>\n		</section>\n\n		<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED", {hash:{},data:data}))
-    + "</h5>\n				<div class=\"asg-policy-advanced\">\n					<section id=\"asg-policy-statistics\" class=\"modal-control-group\">\n						<h5>"
+    + "</h5>\n		<div class=\"asg-policy-advanced\">\n			<section id=\"asg-policy-statistics\" class=\"modal-control-group\">\n				<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_ALARM_OPTION", {hash:{},data:data}))
-    + "</h5>\n						<div class=\"clearfix\">\n							<label>"
+    + "</h5>\n				<div class=\"clearfix\">\n					<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC", {hash:{},data:data}))
-    + "</label>\n							<div class=\"selectbox\" id=\"asg-policy-statistics\">\n							<div class=\"selection\">"
+    + "</label>\n					<div class=\"selectbox\" id=\"asg-policy-statistics\">\n						<div class=\"selection\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC_AVG", {hash:{},data:data}))
-    + "</div>\n							<ul class=\"dropdown\" tabindex=\"-1\">\n								<li data-id=\"Average\" class=\"item selected\">"
+    + "</div>\n						<ul class=\"dropdown\" tabindex=\"-1\">\n							<li data-id=\"Average\" class=\"item selected\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC_AVG", {hash:{},data:data}))
-    + "</li>\n								<li data-id=\"Minimum\" class=\"item\">"
+    + "</li>\n							<li data-id=\"Minimum\" class=\"item\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC_MIN", {hash:{},data:data}))
-    + "</li>\n								<li data-id=\"Maximum\" class=\"item\">"
+    + "</li>\n							<li data-id=\"Maximum\" class=\"item\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC_MAX", {hash:{},data:data}))
-    + "</li>\n								<li data-id=\"SampleCount\" class=\"item\">"
+    + "</li>\n							<li data-id=\"SampleCount\" class=\"item\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC_SAMPLE", {hash:{},data:data}))
-    + "</li>\n								<li data-id=\"Sum\" class=\"item\">"
+    + "</li>\n							<li data-id=\"Sum\" class=\"item\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_STATISTIC_SUM", {hash:{},data:data}))
-    + "</li>\n							</ul>\n						</div>\n					</div>\n					</section>\n\n					<section id=\"asg-policy-scaling\" class=\"modal-control-group\">\n						<h5>"
+    + "</li>\n						</ul>\n					</div>\n				</div>\n			</section>\n\n			<section id=\"asg-policy-scaling\" class=\"modal-control-group\">\n				<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_SCALING_OPTION", {hash:{},data:data}))
-    + "</h5>\n						<div class=\"clearfix\">\n							<label for=\"asg-policy-cooldown\">"
+    + "</h5>\n				<div class=\"clearfix\">\n					<label for=\"asg-policy-cooldown\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_COOLDOWN_PERIOD", {hash:{},data:data}))
-    + "</label>\n							<input type=\"text\" class=\"input tooltip\" data-tooltip=\""
+    + "</label>\n					<input type=\"text\" class=\"input tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_TIP_COOLDOWN_PERIOD", {hash:{},data:data}))
     + "\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.cooldown)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" maxlength=\"5\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_DEFAULT_COOL_DOWN", {hash:{},data:data}))
-    + "\" data-ignore=\"true\" data-type=\"digits\" id=\"asg-policy-cooldown\">\n							<span>"
+    + "\" data-ignore=\"true\" data-type=\"digits\" id=\"asg-policy-cooldown\">\n					<span>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_UNIT_MINS", {hash:{},data:data}))
-    + "</span>\n						</div>\n\n						<div id=\"asg-policy-step-wrapper\" class=\"hide clearfix pecentcapcity\">\n							<label>"
+    + "</span>\n				</div>\n\n				<div id=\"asg-policy-step-wrapper\" class=\"hide clearfix pecentcapcity\">\n					<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_MIN_ADJUST_STEP", {hash:{},data:data}))
-    + "</label>\n							<input type=\"text\" class=\"input tooltip\" data-tooltip=\""
+    + "</label>\n					<input type=\"text\" class=\"input tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_TIP_MIN_ADJUST_STEP", {hash:{},data:data}))
     + "\" id=\"asg-policy-step\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.minAdjustStep)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-ignore=\"true\" maxlength=\"5\" data-type=\"digits\">\n						</div>\n					</section>\n\n					<section class=\"modal-control-group\">\n						<h5>"
+    + "\" data-ignore=\"true\" maxlength=\"5\" data-type=\"digits\">\n				</div>\n			</section>\n\n			<section class=\"modal-control-group\">\n				<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_NOTIFICATION", {hash:{},data:data}))
-    + "</h5>\n						<div class=\"checkbox\">\n							<input id=\"asg-policy-notify\" type=\"checkbox\" ";
+    + "</h5>\n				<div class=\"checkbox\">\n					<input id=\"asg-policy-notify\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotification), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/>\n							<label for=\"asg-policy-notify\"></label>\n						</div>\n						<label id=\"asg-policy-notify-label\" for=\"asg-policy-notify\">"
+  buffer += "/>\n					<label for=\"asg-policy-notify\"></label>\n				</div>\n				<label id=\"asg-policy-notify-label\" for=\"asg-policy-notify\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_LBL_SEND_NOTIFICATION_D", {hash:{},data:data}))
-    + "</label>\n\n						";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSNS), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n					</section>\n				</div>\n		 </div>\n		</div>\n	 </div>\n	 <div class=\"modal-footer\">\n			<button id=\"property-asg-policy-done\" class=\"btn btn-blue\">Done</button>\n			<button class=\"btn modal-close btn-silver\">Cancel</button>\n	 </div>\n</div>\n";
+    + "</label>\n\n				<div class=\"sns-policy-field\">\n					<label>Select SNS Topic</label>\n					<div class=\"policy-sns-placeholder\"></div>\n				</div>\n\n			</section>\n		</div>\n	</div>\n</div>\n</div>\n";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('module/design/property/asg/template/term',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -14263,7 +13630,7 @@ function program4(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('module/design/property/asg/view',['../base/view', './template/stack', './template/policy', './template/term', 'i18n!nls/lang.js'], function(PropertyView, template, policy_template, term_template, lang) {
+  define('module/design/property/asg/view',['../base/view', './template/stack', './template/policy', './template/term', 'i18n!nls/lang.js', 'sns_dropdown', 'UI.modalplus'], function(PropertyView, template, policy_template, term_template, lang, snsDropdown, modalplus) {
     var InstanceView, adjustMap, adjustTooltip, adjustdefault, metricMap, unitMap;
     metricMap = {
       "CPUUtilization": "CPU Utilization",
@@ -14316,7 +13683,12 @@ function program4(depth0,data) {
         "click #property-asg-policies .icon-del": "delScalingPolicy"
       },
       render: function() {
-        var data, p, _i, _len, _ref;
+        var data, p, selectTopicName, _i, _len, _ref;
+        selectTopicName = this.model.getNotificationTopicName();
+        this.snsNotiDropdown = new snsDropdown({
+          selection: selectTopicName
+        });
+        this.snsNotiDropdown.on('change', this.model.setNotificationTopic, this.model);
         data = this.model.toJSON();
         _ref = data.policies;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -14328,7 +13700,35 @@ function program4(depth0,data) {
         data.term_policy_brief = data.terminationPolicies.join(" > ");
         data.can_add_policy = data.policies.length < 25;
         this.$el.html(template(data));
+        this.processNotiTopic(null, true);
         return data.name;
+      },
+      wheatherHasNoti: function() {
+        var n, _ref;
+        n = (_ref = this.model.notiObject) != null ? _ref.toJSON() : void 0;
+        return n && (n.instanceLaunch || n.instanceLaunchError || n.instanceTerminate || n.instanceTerminateError || n.test);
+      },
+      processNotiTopic: function(originHasNoti, render) {
+        var hasNoti;
+        hasNoti = this.wheatherHasNoti();
+        if (render && hasNoti) {
+          this.$('#sns-placeholder').html(this.snsNotiDropdown.render().el);
+          return this.$('.sns-group').show();
+        } else if (!originHasNoti && hasNoti) {
+          this.$('#sns-placeholder').html(this.snsNotiDropdown.render(true).el);
+          return this.$('.sns-group').show();
+        } else if (originHasNoti && !hasNoti) {
+          this.model.removeTopic();
+          return this.$('.sns-group').hide();
+        }
+      },
+      processPolicyTopic: function(display, dropdown) {
+        if (display) {
+          $('.policy-sns-placeholder').html(dropdown.render(true).el);
+          return $('.sns-policy-field').show();
+        } else {
+          return $('.sns-policy-field').hide();
+        }
       },
       setASGCoolDown: function(event) {
         var $target;
@@ -14543,8 +13943,31 @@ function program4(depth0,data) {
         this.showScalingPolicy();
         return false;
       },
+      openPolicyModal: function(data) {
+        var modalPlus, options, that;
+        options = {
+          template: policy_template(data),
+          title: lang.ide.PROP_ASG_ADD_POLICY_TITLE_ADD,
+          width: '480px',
+          compact: true,
+          confirm: {
+            text: 'Done'
+          }
+        };
+        modalPlus = new modalplus(options);
+        that = this;
+        return modalPlus.on('confirm', function() {
+          var result;
+          result = $("#asg-termination-policy").parsley("validate");
+          if (result === false) {
+            return false;
+          }
+          that.onPolicyDone();
+          return modalPlus.close();
+        }, this);
+      },
       showScalingPolicy: function(data) {
-        var self;
+        var policyObject, selection, self, snsPolicyDropdown;
         if (!data) {
           data = {
             title: lang.ide.PROP_ASG_ADD_POLICY_TITLE_ADD,
@@ -14556,14 +13979,16 @@ function program4(depth0,data) {
             }
           };
         }
+        if (data.uid) {
+          policyObject = Design.instance().component(data.uid);
+        }
         if (data.alarmData && data.alarmData.metricName) {
           data.unit = unitMap[data.alarmData.metricName];
         } else {
           data.unit = '%';
         }
-        data.noSNS = !this.model.attributes.has_sns_sub;
         data.detail_monitor = this.model.attributes.detail_monitor;
-        modal(policy_template(data), true);
+        this.openPolicyModal(data);
         self = this;
         $("#property-asg-policy-done").on("click", function() {
           var result;
@@ -14669,9 +14094,14 @@ function program4(depth0,data) {
             }
           }
         });
-        $("#asg-policy-notify").on("click", function(evt) {
-          $("#asg-policy-no-sns").toggle($("#asg-policy-notify").is(":checked"));
+        selection = policyObject ? policyObject.getTopicName() : null;
+        snsPolicyDropdown = new snsDropdown({
+          selection: selection
+        });
+        this.processPolicyTopic($('#asg-policy-notify').prop('checked'), snsPolicyDropdown);
+        $("#asg-policy-notify").off("click").on("click", function(evt) {
           evt.stopPropagation();
+          self.processPolicyTopic(evt.target.checked, snsPolicyDropdown);
           return null;
         });
         $("#asg-policy-metric").on("OPTION_CHANGE", function() {
@@ -14681,7 +14111,7 @@ function program4(depth0,data) {
         return null;
       },
       onPolicyDone: function() {
-        var data;
+        var data, selectedTopicData;
         data = {
           uid: $("#property-asg-policy").data("uid"),
           name: $("#asg-policy-name").val(),
@@ -14700,12 +14130,21 @@ function program4(depth0,data) {
             threshold: $("#asg-policy-threshold").val()
           }
         };
+        if (data.sendNotification) {
+          selectedTopicData = $('.policy-sns-placeholder .selected').data();
+          if (selectedTopicData && selectedTopicData.id && selectedTopicData.name) {
+            data.topic = {
+              appId: selectedTopicData.id,
+              name: selectedTopicData.name
+            };
+          }
+        }
         this.model.setPolicy(data);
         this.updateScalingPolicy(data);
         return null;
       },
       setNotification: function() {
-        var checkMap, hasChecked;
+        var checkMap, hasChecked, originHasNoti;
         checkMap = {};
         hasChecked = false;
         $("#property-asg-sns input[type = checkbox]").each(function() {
@@ -14722,7 +14161,9 @@ function program4(depth0,data) {
         } else {
           $("#property-asg-sns-info").hide();
         }
-        return this.model.setNotification(checkMap);
+        originHasNoti = this.wheatherHasNoti();
+        this.model.setNotification(checkMap);
+        return this.processNotiTopic(originHasNoti);
       },
       setHealthyCheckELBType: function(event) {
         this.model.setHealthCheckType('ELB');

@@ -17,15 +17,20 @@
         return view.render(type, status);
       };
       processRun = function() {
+        var deferred;
+        deferred = Q.defer();
         ide_event.onListen(ide_event.TA_SYNC_FINISH, function() {
           console.log('TA_SYNC_FINISH');
           model.createList();
           view.render(type, status);
           if (model.get('error_list').length === 0) {
-            return view.restoreRun();
+            return deferred.resolve();
+          } else {
+            return deferred.reject();
           }
         });
-        return MC.ta.validRun();
+        MC.ta.validRun();
+        return deferred.promise;
       };
       ide_event.onLongListen(ide_event.UNLOAD_TA_MODAL, function() {
         console.log('UNLOAD_TA_MODAL');
