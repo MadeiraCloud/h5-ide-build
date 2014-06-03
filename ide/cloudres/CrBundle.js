@@ -593,10 +593,12 @@
           volume_id: this.get("volumeId"),
           description: this.get("description")
         }).then(function(res) {
-          var e, id;
+          var e;
           try {
-            id = res.CreateSnapshotResponse.snapshotId;
-            delete res.requestId;
+            res = res.CreateSnapshotResponse;
+            res.id = res.snapshotId;
+            res.progress = res.progress || 0;
+            delete res.snapshotId;
             delete res["@attributes"];
           } catch (_error) {
             e = _error;

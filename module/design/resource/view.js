@@ -8,7 +8,7 @@
       community_ami_tmpl: template_data.community_ami_tmpl,
       resource_vpc_tmpl: template_data.resource_vpc_tmpl,
       initialize: function() {
-        $(document).on('click', '#hide-resource-panel', this.toggleResourcePanel).on('OPTION_CHANGE', '#resource-select', this, this.resourceSelectEvent).on('click', '#btn-browse-community-ami', this, this.openBrowseCommunityAMIsModal).on('click', '#btn-snapshot-manager', this, this.openSnapshotManager).on('click', '#btn-search-ami', this, this.searchCommunityAmiCurrent).on('click', '#community_ami_page_preview', this, this.searchCommunityAmiPreview).on('click', '#community_ami_page_next', this, this.searchCommunityAmiNext).on('click', '#community_ami_table .toggle-fav', this, this.toggleFav).on('click', '.favorite-ami-list .faved', this, this.removeFav).on('click', '.favorite-ami-list .btn-fav-ami.deleted', this, this.addFav).on('keypress', '#community-ami-input', this, this.searchCommunityAmiCurrent).on('click', '.resources-dropdown-wrapper li', this, this.resourcesMenuClick);
+        $(document).on('click', '#hide-resource-panel', this.toggleResourcePanel).on('OPTION_CHANGE', '#resource-select', this, this.resourceSelectEvent).on('click', '#btn-browse-community-ami', this, this.openBrowseCommunityAMIsModal).on('click', '#btn-snapshot-manager', this, this.openSnapshotManager).on('click', '#btn-search-ami', this, this.searchCommunityAmiCurrent).on('click', '#community_ami_page_preview', this, this.searchCommunityAmiPreview).on('click', '#community_ami_page_next', this, this.searchCommunityAmiNext).on('click', '#community_ami_table .toggle-fav', this, this.toggleFav).on('click', '.favorite-ami-list .faved', this, this.removeFav).on('click', '.favorite-ami-list .btn-fav-ami.deleted', this, this.addFav).on('keypress', '#community-ami-input', this, this.searchCommunityAmiCurrent).on('click', '.resources-dropdown-wrapper li', this, this.resourcesMenuClick).on('click', '.refresh-resource-panel', this, $.proxy(this.refreshResourcePanel, this));
         $(window).on("resize", _.bind(this.resizeAccordion, this));
         return $("#tab-content-design").on("click", ".fixedaccordion-head", this.updateAccordion);
       },
@@ -226,7 +226,7 @@
         if (!this.model.attributes.resource_snapshot) {
           return;
         }
-        $('.resoruce-snapshot').append(template_data.resoruce_snapshot_data(this.model.attributes));
+        $('.resoruce-snapshot').html(template_data.resoruce_snapshot_data(this.model.attributes));
         return null;
       },
       quickstartAmiRender: function() {
@@ -459,6 +459,20 @@
           case 'dhcp':
             return (new dhcpManage()).manageDhcp();
         }
+      },
+      refreshResourcePanel: function(event) {
+        var $refreshBtn, regionName, resourceView;
+        $refreshBtn = $('.sidebar-title .refresh-resource-panel');
+        if (!$refreshBtn.hasClass('disabled')) {
+          resourceView = event.data;
+          regionName = resourceView.region;
+          this.model.refreshResourceList(regionName);
+          return $refreshBtn.addClass('disabled');
+        }
+      },
+      stopRefreshResourcePanel: function() {
+        $('.sidebar-title .refresh-resource-panel').removeClass('disabled');
+        return notification('info', 'Refresh resource list success');
       }
     });
     res_type = constant.RESTYPE;

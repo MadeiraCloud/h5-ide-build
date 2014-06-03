@@ -12401,7 +12401,8 @@ function program3(depth0,data) {
             _.each(ami.blockDeviceMapping, function(value, key) {
               if (rdName.indexOf(key) !== -1 && !rdEbs) {
                 rdEbs = value;
-                return rdName = key;
+                rdName = key;
+                return null;
               }
             });
             null;
@@ -13146,7 +13147,8 @@ function program6(depth0,data) {
       setNotification: function(notification) {
         var n;
         n = Design.instance().component(this.get("uid")).setNotification(notification);
-        return this.notiObject = n;
+        this.notiObject = n;
+        return null;
       },
       removeTopic: function() {
         var n;

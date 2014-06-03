@@ -390,6 +390,9 @@ Refer to kpView.coffee
         $trDetail.find('td').html(dom);
         return $trDetail;
       },
+      triggerSlide: function(which) {
+        return this.$("[data-btn=" + which + "]").click();
+      },
       cancel: function() {
         var $activeButton, $slidebox;
         if (this.__slideRejct()) {
@@ -786,10 +789,11 @@ return TEMPLATE; });
           that.save(reader.result);
           return null;
         };
-        return reader.onerror = function() {
+        reader.onerror = function() {
           that.trigger('error');
           return null;
         };
+        return null;
       },
       getData: function() {
         return this.__data;
@@ -1195,7 +1199,11 @@ Refer to kpView.coffee
         'OPTION_CHANGE .selectbox': '__optionChange',
         'keyup .combo-dd-filter': '__filter',
         'keydown .combo-dd-filter': '__stopPropagation',
-        'click .combo-dd-filter': '__returnFalse'
+        'click .combo-dd-filter': '__returnFalse',
+        'click .create-one': '__quickCreate'
+      },
+      __quickCreate: function() {
+        return this.trigger('quick_create');
       },
       __stopPropagation: function(event) {
         return event.stopPropagation();
@@ -1783,6 +1791,9 @@ return TEMPLATE; });
           }
         });
       },
+      quickCreate: function() {
+        return this.modal.triggerSlide('create');
+      },
       getModalOptions: function() {
         var region, regionName, that;
         that = this;
@@ -2010,12 +2021,13 @@ return TEMPLATE; });
         return this;
       },
       processCol: function(noRender) {
-        var data;
+        var data, that;
+        that = this;
         if (this.topicCol.isReady() && this.subCol.isReady()) {
           data = this.topicCol.map(function(tModel) {
             var sub, tData;
             tData = tModel.toJSON();
-            sub = this.subCol.where({
+            sub = that.subCol.where({
               TopicArn: tData.id
             });
             tData.sub = sub.map(function(sModel) {
@@ -2202,7 +2214,8 @@ return TEMPLATE; });
         this.dropdown.on('open', this.show, this);
         this.dropdown.on('manage', this.manage, this);
         this.dropdown.on('change', this.set, this);
-        return this.dropdown.on('filter', this.filter, this);
+        this.dropdown.on('filter', this.filter, this);
+        return this.dropdown.on('quick_create', this.quickCreate, this);
       },
       initialize: function(options) {
         if (options && options.selection) {
@@ -2235,13 +2248,17 @@ return TEMPLATE; });
         this.el = this.dropdown.el;
         return this;
       },
+      quickCreate: function() {
+        return new snsManage().render().quickCreate();
+      },
       processCol: function(filter, keyword) {
-        var data, len, selection;
+        var data, len, selection, that;
+        that = this;
         if (this.topicCol.isReady() && this.subCol.isReady()) {
           data = this.topicCol.map(function(tModel) {
             var sub, tData;
             tData = tModel.toJSON();
-            sub = this.subCol.where({
+            sub = that.subCol.where({
               TopicArn: tData.id
             });
             tData.sub = sub.map(function(sModel) {
@@ -2259,7 +2276,8 @@ return TEMPLATE; });
           selection = this.selection;
           _.each(data, function(d) {
             if (d.Name && d.Name === selection) {
-              return d.selected = true;
+              d.selected = true;
+              return null;
             }
           });
           this.renderDropdownList(data);
@@ -2665,9 +2683,10 @@ TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('component/dhcp/dhcpView',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!nls/lang.js', './dhcp_template.js'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
-    var deleteCount, deleteErrorCount, dhcpView, fetched, mapFilterInput, updateAmazonCB;
+  define('dhcp',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!nls/lang.js', './component/dhcp/dhcp_template.js'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
+    var deleteCount, deleteErrorCount, dhcpView, fetched, fetching, mapFilterInput, updateAmazonCB;
     fetched = false;
+    fetching = false;
     updateAmazonCB = function() {
       var rowLength;
       rowLength = $("#property-domain-server").children().length;
@@ -2828,20 +2847,23 @@ return TEMPLATE; });
         return this.renderManager();
       },
       renderManager: function() {
-        var content, _ref;
-        if (!fetched) {
-          fetched = true;
-          this.collection.fetchForce().then((function(_this) {
-            return function() {
-              return _this.renderManager();
-            };
-          })(this));
-          return false;
+        var initManager;
+        initManager = this.initManager.bind(this);
+        if (!fetched && !fetching) {
+          fetching = true;
+          return this.collection.fetchForce().then(initManager, initManager);
+        } else if (!fetching) {
+          return initManager();
         }
+      },
+      initManager: function() {
+        var content;
+        fetching = false;
+        fetched = true;
         content = template.content({
           items: this.collection.toJSON()
         });
-        return (_ref = this.manager) != null ? _ref.setContent(content) : void 0;
+        return this.manager.setContent(content);
       },
       renderSlides: function(which, checked) {
         var slides, tpl, _ref;
@@ -3070,13 +3092,6 @@ return TEMPLATE; });
 
 }).call(this);
 
-(function() {
-  define('dhcp',['./component/dhcp/dhcpView'], function(dhcpView) {
-    return dhcpView;
-  });
-
-}).call(this);
-
 define('component/snapshot/snapshot_template.js',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -3112,8 +3127,8 @@ function program4(depth0,data) {
 
 function program6(depth0,data) {
   
-  
-  return escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0));
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -3150,7 +3165,7 @@ function program1(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.completed), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n        <span class=\"manager-content-sub\">Started: "
-    + escapeExpression(((stack1 = (depth0 && depth0.startTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.started)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n    </td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n</tr>\n";
@@ -3265,10 +3280,11 @@ TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
 return TEMPLATE; });
 (function() {
   define('snapshotManager',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdown', "UI.modalplus", 'toolbar_modal', "i18n!nls/lang.js", './component/snapshot/snapshot_template.js'], function(CloudResources, ApiRequest, constant, combo_dropdown, modalPlus, toolbar_modal, lang, template) {
-    var deleteCount, deleteErrorCount, fetched, snapshotRes;
+    var deleteCount, deleteErrorCount, fetched, fetching, snapshotRes;
     fetched = false;
     deleteCount = 0;
     deleteErrorCount = 0;
+    fetching = false;
     snapshotRes = Backbone.View.extend({
       constructor: function() {
         this.collection = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
@@ -3320,8 +3336,14 @@ return TEMPLATE; });
         return this.regionsDropdown;
       },
       openRegionDropdown: function(keySet) {
-        var content, data, dataSet;
-        data = this.regions;
+        var content, currentRegion, data, dataSet;
+        currentRegion = Design.instance().get('region');
+        data = _.map(this.regions, function(region) {
+          return {
+            name: region,
+            selected: region === currentRegion
+          };
+        });
         dataSet = {
           isRuntime: false,
           data: data
@@ -3338,8 +3360,12 @@ return TEMPLATE; });
       openDropdown: function(keySet) {
         return this.volumes.fetch().then((function(_this) {
           return function() {
-            var content, data, dataSet;
+            var content, currentRegion, data, dataSet;
             data = _this.volumes.toJSON();
+            currentRegion = Design.instance().get('region');
+            data = _.filter(data, function(volume) {
+              return volume.category === currentRegion;
+            });
             dataSet = {
               isRuntime: false,
               data: data
@@ -3408,12 +3434,17 @@ return TEMPLATE; });
       },
       setContent: function() {
         var content, data, dataSet, _ref;
+        fetching = false;
+        fetched = true;
         data = this.collection.toJSON();
         _.each(data, function(e, f) {
           if (e.progress === 100) {
             data[f].completed = true;
-            return null;
           }
+          if (e.startTime) {
+            data[f].started = (new Date(e.startTime)).toString();
+          }
+          return null;
         });
         dataSet = {
           items: data
@@ -3424,10 +3455,10 @@ return TEMPLATE; });
       initManager: function() {
         var setContent;
         setContent = this.setContent.bind(this);
-        if (!fetched) {
-          fetched = true;
+        if (!fetched && !fetching) {
+          fetching = true;
           return this.collection.fetchForce().then(setContent, setContent);
-        } else {
+        } else if (!fetching) {
           return this.setContent();
         }
       },
@@ -3516,7 +3547,7 @@ return TEMPLATE; });
         })(this));
       },
       do_duplicate: function(invalid, checked) {
-        var data, sourceRegion, sourceSnapshot, targetRegion;
+        var afterDuplicate, data, sourceRegion, sourceSnapshot, targetRegion;
         sourceSnapshot = checked[0];
         sourceRegion = Design.instance().get('region');
         targetRegion = $('#property-region-choose').find('.selectbox .selection').text();
@@ -3524,12 +3555,14 @@ return TEMPLATE; });
           return false;
         }
         data = {
+          'name': this.manager.$el.find('#property-snapshot-name').val(),
           'sourceRegion': sourceRegion,
           'sourceSnapshotId': sourceSnapshot.data.id,
-          'description': $('#property-snapshot-desc').val(),
+          'description': this.manager.$el.find('#property-snapshot-desc').val(),
           'destinationRegion': targetRegion
         };
-        return ApiRequest('ebs_CopySnapshot', data).then(this.afterDuplicate, this.afterDuplicate);
+        afterDuplicate = this.afterDuplicate.bind(this);
+        return ApiRequest('ebs_CopySnapshot', data).then(afterDuplicate, afterDuplicate);
       },
       afterCreated: function(result, newSnapshot) {
         this.manager.cancel();
@@ -3537,11 +3570,10 @@ return TEMPLATE; });
           notification('error', "Create failed because of: " + result.msg);
           return false;
         }
-        notification('info', "New DHCP Option is created successfully!");
-        return this.collection.fetchForce();
+        return notification('info', "New DHCP Option is created successfully!");
       },
       afterDuplicate: function(result) {
-        this.manager.calcel();
+        this.manager.cancel();
         if (result.error) {
           notification('error', "Duplicate failed because of: " + result.msg);
           return false;
@@ -3612,11 +3644,11 @@ return TEMPLATE; });
               name: 'Name'
             }, {
               sortable: true,
-              width: "20%",
+              width: "10%",
               name: 'Capicity'
             }, {
               sortable: true,
-              width: "30%",
+              width: "40%",
               name: 'status'
             }, {
               sortable: false,
