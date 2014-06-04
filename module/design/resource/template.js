@@ -6,9 +6,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<a href=\"javascript:void(0)\" id=\"hide-resource-panel\" class=\"tooltip sidebar-hider icon-caret-left\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_TOGGLE_RESOURCE_PANEL", {hash:{},data:data}))
-    + "'>\n</a>\n<div class=\"sidebar-title\">"
+    + "'>\n</a>\n<div class=\"sidebar-title\">\n	"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
-    + "</div>\n\n<div class=\"fixedaccordion accordion-default\">\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
+    + "\n	<i class=\"js-toggle-dropdown menu-manage-shard-res icon-resources\"></i>\n	<ul class=\"dropdown-menu resources-dropdown-wrapper\">\n		<li data-action=\"keypair\">Manage Key Pairs...</li>\n		<li data-action=\"snapshot\">Manage EBS Snapshots...</li>\n		<li data-action=\"sns\">Manage SNS Topic & Subscriptions...</li>\n		<li data-action=\"sslcert\">Manage Server Certificates...</li>\n		<li data-action=\"dhcp\">Manage DHCP Option Sets...</li>\n	</ul>\n	<i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</div>\n\n<div class=\"fixedaccordion accordion-default\">\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AZ", {hash:{},data:data}))
     + "</div>\n		<div class=\"accordion-body\">\n			<ul class=\"availability-zone resource-list clearfix\">loading...</ul>\n		</div>\n	</div>\n\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AMI", {hash:{},data:data}))
@@ -26,7 +26,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VOLUME", {hash:{},data:data}))
     + "' data-component-type=\"node\" data-type=\"AWS.EC2.EBS.Volume\" data-option='' >\n						<div class=\"resource-icon resource-icon-volume\"></div>\n						<div class=\"resource-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL", {hash:{},data:data}))
-    + "</div>\n					</li>\n				</ul>\n			</div>\n		</div>\n	</div>\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
+    + "</div>\n					</li>\n				</ul>\n			</div>\n            <div class=\"btn btn-primary\" id=\"btn-snapshot-manager\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_SNAPSHOT_MANAGE", {hash:{},data:data}))
+    + "</div>\n		</div>\n	</div>\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_ELB_ASG", {hash:{},data:data}))
     + "</div>\n		<div class=\"accordion-body\">\n			<ul class=\"resource-list clearfix\" id=\"resource-asg-list\">\n				<li class=\"tooltip resource-item\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ELB", {hash:{},data:data}))

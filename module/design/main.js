@@ -213,8 +213,6 @@
               ide_event.trigger(ide_event.OPEN_PROPERTY, "component", "");
             }
             return delete MC.data.open_tab_data[MC.data.current_tab_id];
-          } else {
-            return console.error('design:RESOURCE_API_COMPLETE');
           }
         });
         return ide_event.onLongListen(ide_event.GET_STATE_MODULE, function() {

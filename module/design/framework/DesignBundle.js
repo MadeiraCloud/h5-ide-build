@@ -5787,7 +5787,7 @@
 (function() {
   define('module/design/framework/resource/AsgModel',["../ResourceModel", "../ComplexResModel", "../GroupModel", "Design", "constant", "i18n!nls/lang.js"], function(ResourceModel, ComplexResModel, GroupModel, Design, constant, lang) {
     var ExpandedAsgModel, Model, NotificationModel;
-    NotificationModel = ResourceModel.extend({
+    NotificationModel = ComplexResModel.extend({
       type: constant.RESTYPE.NC,
       isUsed: function() {
         return this.get("instanceLaunch") || this.get("instanceLaunchError") || this.get("instanceTerminate") || this.get("instanceTerminateError") || this.get("test");
@@ -5796,12 +5796,36 @@
         Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
         return null;
       },
+      isVisual: function() {
+        return false;
+      },
+      getTopic: function() {
+        return this.connectionTargets('TopicUsage')[0];
+      },
+      removeTopic: function() {
+        var _ref;
+        return (_ref = this.connections('TopicUsage')[0]) != null ? _ref.remove() : void 0;
+      },
+      isEffective: function() {
+        var n;
+        n = this.toJSON();
+        return n.instanceLaunch || n.instanceLaunchError || n.instanceTerminate || n.instanceTerminateError || n.test;
+      },
+      getTopicName: function() {
+        var _ref;
+        return (_ref = this.getTopic()) != null ? _ref.get('name') : void 0;
+      },
+      setTopic: function(appId, name) {
+        var TopicModel;
+        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
+        return TopicModel.get(appId, name).assignTo(this);
+      },
       serialize: function() {
         var key, name, notifies, topic, _ref;
         if (!this.isUsed() || !this.get("asg")) {
           return;
         }
-        topic = Design.modelClassForType(constant.RESTYPE.TOPIC).ensureExistence();
+        topic = this.getTopic();
         notifies = [];
         _ref = NotificationModel.typeMap;
         for (key in _ref) {
@@ -5817,7 +5841,7 @@
             uid: this.id,
             resource: {
               AutoScalingGroupName: this.get("asg").createRef("AutoScalingGroupName"),
-              TopicARN: topic.createRef("TopicArn"),
+              TopicARN: topic && topic.createRef("TopicArn") || '',
               NotificationType: notifies
             }
           }
@@ -5834,7 +5858,7 @@
         "autoscaling:TEST_NOTIFICATION": "test"
       },
       deserialize: function(data, layout_data, resolve) {
-        var asg, attr, notify, t, _i, _len, _ref;
+        var asg, attr, notify, t, _i, _len, _ref, _ref1;
         attr = {
           id: data.uid
         };
@@ -5848,6 +5872,9 @@
         if (asg) {
           asg.set("notification", notify);
           notify.set("asg", asg);
+        }
+        if ((_ref1 = resolve(MC.extractID(data.resource.TopicARN))) != null) {
+          _ref1.assignTo(notify);
         }
         return null;
       }
@@ -6067,6 +6094,9 @@
           return {};
         }
       },
+      getNotiObject: function() {
+        return this.get("notification");
+      },
       setNotification: function(data) {
         var n;
         n = this.get("notification");
@@ -6076,6 +6106,19 @@
           data.asg = this;
           n = new NotificationModel(data);
           this.set("notification", n);
+        }
+        return n;
+      },
+      setNotificationTopic: function(appId, name) {
+        var n;
+        n = this.get("notification");
+        return n != null ? n.setTopic(appId, name) : void 0;
+      },
+      getNotificationTopicName: function() {
+        var n;
+        n = this.get("notification");
+        if (n) {
+          return n.getTopicName();
         }
         return null;
       },
@@ -6344,164 +6387,57 @@
 
 (function() {
   define('module/design/framework/resource/DhcpModel',["constant", "../ResourceModel", "Design"], function(constant, ResourceModel, Design) {
-    var Model, configNameMap, formatConfigSet, revertArray;
-    configNameMap = {
-      "domain-name": "domainName",
-      "domain-name-servers": "domainServers",
-      "ntp-servers": "ntpServers",
-      "netbios-name-servers": "netbiosServers",
-      "netbios-node-type": "netbiosType"
-    };
-    revertArray = function(array) {
-      var i, newArray, _i, _len;
-      newArray = [];
-      for (_i = 0, _len = array.length; _i < _len; _i++) {
-        i = array[_i];
-        newArray.push({
-          Value: i
-        });
-      }
-      return newArray;
-    };
-    formatConfigSet = function(configSet) {
-      var config, i, v, value, _i, _j, _len, _len1, _ref;
-      config = {
-        amazonDNS: false
-      };
-      for (_i = 0, _len = configSet.length; _i < _len; _i++) {
-        i = configSet[_i];
-        if (i.Key === "domain-name") {
-          config.domainName = i.ValueSet[0].Value;
-        } else if (i.Key === "netbios-node-type") {
-          config.netbiosType = i.ValueSet[0].Value;
-        } else {
-          value = [];
-          _ref = i.ValueSet;
-          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-            v = _ref[_j];
-            if (v.Value === "AmazonProvidedDNS") {
-              config.amazonDNS = true;
-            } else {
-              value.push(v.Value);
-            }
-          }
-          config[configNameMap[i.Key]] = value;
-        }
-      }
-      return config;
-    };
+    var Model;
     Model = ResourceModel.extend({
       type: constant.RESTYPE.DHCP,
       defaults: function() {
         return {
-          dhcpType: "",
-          amazonDNS: true,
-          domainName: "",
-          netbiosType: 0,
-          domainServers: [],
-          ntpServers: [],
-          netbiosServers: []
+          dhcpOptionsId: ""
         };
       },
-      isNone: function() {
-        return this.attributes.dhcpType === "none";
+      isAuto: function() {
+        return this.attributes.dhcpOptionsId === "";
       },
       isDefault: function() {
-        return this.attributes.dhcpType === "default";
+        return this.attributes.dhcpOptionsId === "default";
       },
       isCustom: function() {
-        return this.attributes.dhcpType === "";
+        return !(this.attributes.dhcpOptionsId === '' || this.attributes.dhcpOptionsId === 'default');
       },
       setNone: function() {
-        return this.set("dhcpType", "none");
+        return this.set("dhcpOptionsId", "");
       },
       setDefault: function() {
-        return this.set("dhcpType", "default");
+        return this.set("dhcpOptionsId", "default");
       },
-      setCustom: function() {
-        return this.set("dhcpType", "");
+      setDhcp: function(val) {
+        if (this.get('dhcpOptionsId') !== val) {
+          return this.set("dhcpOptionsId", val);
+        }
       },
       set: function() {
-        if (this.design().modeIsAppEdit() && !this.__newIdForAppEdit) {
-          this.__newIdForAppEdit = this.design().guid();
-        }
         return Backbone.Model.prototype.set.apply(this, arguments);
       },
       createRef: function(refName, isResourceNS, id) {
         if (!id) {
-          id = this.__newIdForAppEdit || this.id;
+          id = this.id;
         }
         return ResourceModel.prototype.createRef.call(this, refName, isResourceNS, id);
       },
       serialize: function() {
-        var appId, attr, component, configs, id, values, vpc;
+        var component, id;
         if (!this.isCustom()) {
           return;
         }
-        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-        configs = [];
-        attr = this.attributes;
-        if (this.__newIdForAppEdit) {
-          id = this.__newIdForAppEdit;
-          appId = "";
-        } else {
-          id = this.id;
-          appId = this.get("appId");
-        }
+        id = this.id;
         component = {
           name: "DhcpOption",
           type: this.type,
           uid: id,
           resource: {
-            DhcpOptionsId: appId,
-            VpcId: vpc.createRef("VpcId"),
-            DhcpConfigurationSet: configs
+            DhcpOptionsId: this.toJSON().dhcpOptionsId
           }
         };
-        if (attr.domainName) {
-          configs.push({
-            Key: "domain-name",
-            ValueSet: [
-              {
-                Value: attr.domainName
-              }
-            ]
-          });
-        }
-        if (attr.ntpServers.length) {
-          configs.push({
-            Key: "ntp-servers",
-            ValueSet: revertArray(attr.ntpServers)
-          });
-        }
-        if (attr.netbiosServers.length) {
-          configs.push({
-            Key: "netbios-name-servers",
-            ValueSet: revertArray(attr.netbiosServers)
-          });
-        }
-        if (attr.domainServers.length || attr.amazonDNS) {
-          values = revertArray(attr.domainServers);
-          if (attr.amazonDNS) {
-            values.splice(0, 0, {
-              Value: "AmazonProvidedDNS"
-            });
-          }
-          configs.push({
-            Key: "domain-name-servers",
-            ValueSet: values
-          });
-        }
-        if (attr.netbiosType) {
-          configs.push({
-            Key: "netbios-node-type",
-            ValueSet: [
-              {
-                Value: attr.netbiosType
-              }
-            ]
-          });
-        }
         return {
           component: component
         };
@@ -6510,7 +6446,8 @@
       handleTypes: constant.RESTYPE.DHCP,
       deserialize: function(data, layout_data) {
         var attr;
-        attr = data.resource.DhcpConfigurationSet ? formatConfigSet(data.resource.DhcpConfigurationSet) : {};
+        attr = {};
+        attr.dhcpOptionsId = data.resource.DhcpOptionsId;
         attr.id = data.uid;
         attr.appId = data.resource.DhcpOptionsId;
         new Model(attr);
@@ -6606,10 +6543,10 @@
         var component, dhcp;
         console.assert(this.get("tenancy") === "default" || this.get("tenancy") === "dedicated", "Invalid value for Vpc.attributes.tenancy");
         dhcp = this.get("dhcp");
-        if (dhcp.isNone()) {
-          dhcp = "default";
-        } else if (dhcp.isDefault()) {
+        if (dhcp.isAuto()) {
           dhcp = "";
+        } else if (dhcp.isDefault()) {
+          dhcp = "default";
         } else {
           dhcp = dhcp.createRef("DhcpOptionsId");
         }
@@ -8088,23 +8025,39 @@
         return new SslCertUsage(this, target);
       },
       serialize: function() {
-        return {
-          component: {
-            uid: this.id,
-            type: "AWS.IAM.ServerCertificate",
-            name: this.get("name"),
-            resource: {
-              PrivateKey: this.get("key"),
-              CertificateBody: this.get("body"),
-              CertificateChain: this.get("chain"),
-              ServerCertificateMetadata: {
-                ServerCertificateName: this.get("appName") || this.get("name"),
-                Arn: this.get("arn") || "",
-                ServerCertificateId: this.get("certId") || ""
+        var elbModelAry, that, used;
+        that = this;
+        used = false;
+        elbModelAry = Design.modelClassForType(constant.RESTYPE.ELB).allObjects();
+        _.each(elbModelAry, function(elbModel) {
+          _.each(elbModel.get('listeners'), function(listenerObj) {
+            if (listenerObj.sslCert === that) {
+              used = true;
+            }
+            return null;
+          });
+          return null;
+        });
+        if (used) {
+          return {
+            component: {
+              uid: this.id,
+              type: "AWS.IAM.ServerCertificate",
+              name: this.get("name"),
+              resource: {
+                PrivateKey: this.get("key"),
+                CertificateBody: this.get("body"),
+                CertificateChain: this.get("chain"),
+                ServerCertificateMetadata: {
+                  ServerCertificateName: this.get("appName") || this.get("name"),
+                  Arn: this.get("arn") || "",
+                  ServerCertificateId: this.get("certId") || ""
+                }
               }
             }
-          }
-        };
+          };
+        }
+        return {};
       },
       updateValue: function(certObj) {
         var key, value;
@@ -8128,6 +8081,30 @@
           appName: data.resource.ServerCertificateMetadata.ServerCertificateName
         });
         return null;
+      },
+      createNew: function(sslCertData) {
+        var needCreate, newSslCert, sslCertList;
+        newSslCert = null;
+        sslCertList = Design.modelClassForType(constant.RESTYPE.IAM).allObjects();
+        needCreate = true;
+        _.each(sslCertList, function(sslCertModel) {
+          if (sslCertModel.get('arn') === sslCertData.get('Arn')) {
+            needCreate = false;
+            newSslCert = sslCertModel;
+          }
+          return null;
+        });
+        if (needCreate) {
+          newSslCert = new SslCertModel({
+            name: sslCertData.get('Name'),
+            body: sslCertData.get('CertificateBody'),
+            chain: sslCertData.get('CertificateChain'),
+            key: sslCertData.get('PrivateKey'),
+            arn: sslCertData.get('Arn'),
+            certId: sslCertData.get('id')
+          });
+        }
+        return newSslCert;
       }
     });
     return SslCertModel;
@@ -8385,7 +8362,8 @@
               port: "80",
               protocol: "HTTP",
               instanceProtocol: "HTTP",
-              instancePort: "80"
+              instancePort: "80",
+              sslCertName: null
             }
           ],
           AvailabilityZones: [],
@@ -8456,13 +8434,19 @@
         return null;
       },
       setListener: function(idx, value) {
-        var listeners;
+        var listeners, _ref;
         console.assert(value.port && value.protocol && value.instanceProtocol && value.instancePort, "Invalid parameter for setListener");
         listeners = this.get("listeners");
         if (idx >= listeners.length) {
           listeners.push(value);
         } else {
-          listeners[idx] = $.extend({}, value);
+          if (!listeners[idx]) {
+            listeners[idx] = {};
+          }
+          listeners[idx] = $.extend(listeners[idx], value);
+        }
+        if (!((_ref = listeners[idx].protocol) === 'HTTPS' || _ref === 'SSL')) {
+          listeners[idx].sslCert = null;
         }
         return null;
       },
@@ -8475,6 +8459,24 @@
         listeners.splice(idx, 1);
         this.set("listeners", listeners);
         return null;
+      },
+      setSSLCert: function(idx, sslCertId) {
+        var listeners, sslCertData;
+        if (idx >= 0) {
+          listeners = this.get("listeners");
+          sslCertData = sslCertCol.get(sslCertId);
+          return listeners[idx].sslCert = SslCertModel.createNew(sslCertData);
+        }
+      },
+      removeSSLCert: function(idx) {
+        var listeners;
+        listeners = this.get("listeners");
+        return listeners[idx].sslCert = null;
+      },
+      getSSLCert: function(idx) {
+        var listeners;
+        listeners = this.get("listeners");
+        return listeners[idx].sslCert;
       },
       getHealthCheckTarget: function() {
         var path, port, protocol, splitIndex, target;
@@ -8567,25 +8569,18 @@
         return this.set('otherPoliciesMap', otherPoliciesMap);
       },
       serialize: function() {
-        var component, hcTarget, id, l, listeners, otherPoliciesAry, otherPoliciesMap, sgs, ssl, sslcertId, subnets, _i, _len, _ref;
+        var component, hcTarget, id, l, listeners, otherPoliciesAry, otherPoliciesMap, sgs, subnets, _i, _len, _ref;
         hcTarget = this.get("healthCheckTarget");
         if (hcTarget.indexOf("TCP") !== -1 || hcTarget.indexOf("SSL") !== -1) {
           hcTarget = hcTarget.split("/")[0];
         }
         listeners = [];
-        ssl = this.connectionTargets("SslCertUsage")[0];
-        if (ssl) {
-          sslcertId = ssl.createRef("ServerCertificateMetadata.Arn");
-        } else {
-          sslcertId = "";
-        }
         _ref = this.get("listeners");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           l = _ref[_i];
-          if (l.protocol === "SSL" || l.protocol === "HTTPS") {
-            id = sslcertId;
-          } else {
-            id = "";
+          id = "";
+          if ((l.protocol === "SSL" || l.protocol === "HTTPS") && l.sslCert) {
+            id = l.sslCert.createRef("ServerCertificateMetadata.Arn");
           }
           listeners.push({
             PolicyNames: "",
@@ -8665,7 +8660,7 @@
     }, {
       handleTypes: constant.RESTYPE.ELB,
       deserialize: function(data, layout_data, resolve) {
-        var ElbAmiAsso, ElbSubnetAsso, ami, attr, elb, instance, l, sb, sg, sslCert, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        var ElbAmiAsso, ElbSubnetAsso, ami, attr, elb, idx, instance, l, sb, sg, sslCert, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         attr = {
           id: data.uid,
           name: data.name,
@@ -8704,10 +8699,9 @@
             return azRef;
           }
         });
-        sslCert = null;
         _ref = data.resource.ListenerDescriptions || [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          l = _ref[_i];
+        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+          l = _ref[idx];
           l = l.Listener;
           attr.listeners.push({
             port: l.LoadBalancerPort,
@@ -8715,14 +8709,14 @@
             instanceProtocol: l.InstanceProtocol,
             instancePort: l.InstancePort
           });
-          if (l.SSLCertificateId && !sslCert) {
+          if (l.SSLCertificateId) {
             sslCert = resolve(MC.extractID(l.SSLCertificateId));
+            if (sslCert) {
+              attr.listeners[idx].sslCert = sslCert;
+            }
           }
         }
         elb = new Model(attr);
-        if (sslCert) {
-          sslCert.assignTo(elb);
-        }
         ElbAmiAsso = Design.modelClassForType("ElbAmiAsso");
         ElbSubnetAsso = Design.modelClassForType("ElbSubnetAsso");
         _ref1 = data.resource.SecurityGroups || [];
@@ -10161,36 +10155,39 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/resource/SnsSubscription',["../ResourceModel", "constant"], function(ResourceModel, constant) {
-    var SubscriptionModel, TopicModel;
-    TopicModel = ResourceModel.extend({
+  define('module/design/framework/resource/SnsModel',["../ResourceModel", "../ComplexResModel", "constant", "../ConnectionModel"], function(ResourceModel, ComplexResModel, constant, ConnectionModel) {
+    var TopicModel, TopicUsage;
+    TopicUsage = ConnectionModel.extend({
+      type: "TopicUsage",
+      oneToMany: constant.RESTYPE.TOPIC
+    });
+    TopicModel = ComplexResModel.extend({
       type: constant.RESTYPE.TOPIC,
+      isVisual: function() {
+        return false;
+      },
       serialize: function() {
-        var name, useTopic;
-        useTopic = TopicModel.isTopicNeeded();
-        if (!useTopic) {
-          useTopic = SubscriptionModel.allObjects().length > 0;
-        }
-        if (!useTopic) {
-          useTopic = !!this.get("appId");
-        }
+        var useTopic;
+        useTopic = !!this.connections().length;
         if (!useTopic) {
           console.debug("Sns Topic is not serialized, because nothing use it and it doesn't have appId.");
           return;
         }
-        name = "sns-topic";
         return {
           component: {
-            name: "sns-topic",
+            name: this.get("name"),
             type: this.type,
             uid: this.id,
             resource: {
-              DisplayName: name,
-              Name: name,
               TopicArn: this.get("appId")
             }
           }
         };
+      },
+      assignTo: function(target) {
+        if (this.get('appId')) {
+          return new TopicUsage(this, target);
+        }
       }
     }, {
       handleTypes: constant.RESTYPE.TOPIC,
@@ -10225,11 +10222,21 @@
         }
         return this.allObjects()[0];
       },
+      get: function(appId, name) {
+        var topic;
+        topic = _.findWhere(this.allObjects(), {
+          appId: appId
+        });
+        return topic || new TopicModel({
+          appId: appId,
+          name: name
+        });
+      },
       preDeserialize: function(data, layout_data) {
         new TopicModel({
           id: data.uid,
           appId: data.resource.TopicArn,
-          name: data.resource.DisplayName || data.resource.Name
+          name: data.resource.Name || data.name
         });
         return null;
       },
@@ -10237,41 +10244,45 @@
         return null;
       }
     });
-    SubscriptionModel = ResourceModel.extend({
-      type: constant.RESTYPE.SUBSCRIPTION,
-      initialize: function() {
-        TopicModel.ensureExistence();
-        return null;
-      },
-      serialize: function() {
-        var topic;
-        topic = TopicModel.ensureExistence();
-        return {
-          component: {
-            name: "SnsSubscription",
-            type: this.type,
-            uid: this.id,
-            resource: {
-              Endpoint: this.get("endpoint"),
-              Protocol: this.get("protocol"),
-              SubscriptionArn: this.get("appId"),
-              TopicArn: TopicModel.ensureExistence().createRef("TopicArn")
-            }
-          }
-        };
-      }
+
+    /*
+    
+    SubscriptionModel = ResourceModel.extend {
+      type : constant.RESTYPE.SUBSCRIPTION
+    
+      initialize : ()->
+        TopicModel.ensureExistence()
+        null
+    
+      serialize : ()->
+        topic = TopicModel.ensureExistence()
+    
+        {
+          component :
+            name : "SnsSubscription"
+            type : @type
+            uid  : @id
+            resource :
+              Endpoint        : @get("endpoint")
+              Protocol        : @get("protocol")
+              SubscriptionArn : @get("appId")
+              TopicArn        : TopicModel.ensureExistence().createRef( "TopicArn" )
+        }
+    
     }, {
-      handleTypes: constant.RESTYPE.SUBSCRIPTION,
-      deserialize: function(data, layout_data, resolve) {
+    
+      handleTypes : constant.RESTYPE.SUBSCRIPTION
+    
+      deserialize : ( data, layout_data, resolve ) ->
         new SubscriptionModel({
-          id: data.uid,
-          appId: data.resource.SubscriptionArn,
-          endpoint: data.resource.Endpoint,
-          protocol: data.resource.Protocol
-        });
-        return null;
-      }
-    });
+          id       : data.uid
+          appId    : data.resource.SubscriptionArn
+          endpoint : data.resource.Endpoint
+          protocol : data.resource.Protocol
+        })
+        null
+    }
+     */
     return null;
   });
 
@@ -10304,9 +10315,9 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/resource/ScalingPolicyModel',["../ResourceModel", "constant"], function(ResourceModel, constant) {
+  define('module/design/framework/resource/ScalingPolicyModel',["../ResourceModel", "../ComplexResModel", "constant"], function(ResourceModel, ComplexResModel, constant) {
     var Model;
-    Model = ResourceModel.extend({
+    Model = ComplexResModel.extend({
       type: constant.RESTYPE.SP,
       defaults: function() {
         return {
@@ -10331,6 +10342,9 @@
           }
         };
       },
+      isVisual: function() {
+        return false;
+      },
       constructor: function(attribute, option) {
         var defaults;
         defaults = this.defaults();
@@ -10346,6 +10360,9 @@
           alarmName: this.attributes.alarmData.alarmName
         }, alarmData));
         return null;
+      },
+      isNotificate: function() {
+        return this.get('sendNotification');
       },
       getCost: function(priceMap, currency) {
         var alarmData, asgSize, fee, p, period, _i, _len, _ref;
@@ -10374,8 +10391,24 @@
         }
         return null;
       },
+      setTopic: function(appId, name) {
+        var TopicModel;
+        TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
+        return TopicModel.get(appId, name).assignTo(this);
+      },
+      removeTopic: function() {
+        var _ref;
+        return (_ref = this.connections('TopicUsage')[0]) != null ? _ref.remove() : void 0;
+      },
+      getTopic: function() {
+        return this.connectionTargets('TopicUsage')[0];
+      },
+      getTopicName: function() {
+        var _ref;
+        return (_ref = this.getTopic()) != null ? _ref.get('name') : void 0;
+      },
       serialize: function() {
-        var TopicModel, act_alarm, act_insuffi, act_ok, action_arry, alarm, alarmData, policy;
+        var act_alarm, act_insuffi, act_ok, action_arry, alarm, alarmData, policy, topic;
         if (!this.__asg) {
           console.warn("ScalingPolicy has no attached asg when serializing.");
           return;
@@ -10398,8 +10431,10 @@
         act_alarm = act_insuffi = act_ok = [];
         action_arry = [this.createRef("PolicyARN")];
         if (this.get("sendNotification")) {
-          TopicModel = Design.modelClassForType(constant.RESTYPE.TOPIC);
-          action_arry.push(TopicModel.ensureExistence().createRef("TopicArn"));
+          topic = this.getTopic();
+          if (topic) {
+            action_arry.push(topic.createRef("TopicArn"));
+          }
         }
         if (this.get("state") === "ALARM") {
           act_alarm = action_arry;
@@ -10462,7 +10497,7 @@
         return null;
       },
       deserialize: function(data, layout_data, resolve) {
-        var alarmData, asg, i, policy, refArray, sendNotification, state, _i, _len;
+        var alarmData, asg, i, policy, refArray, sendNotification, state, topic, _i, _len;
         if (data.type === constant.RESTYPE.CW) {
           alarmData = {
             id: data.uid,
@@ -10503,8 +10538,12 @@
             if (i.indexOf("PolicyARN") !== -1) {
               policy = resolve(MC.extractID(i)) || new Backbone.Model();
             } else if (i.indexOf("TopicArn") !== -1) {
+              topic = resolve(MC.extractID(i));
               sendNotification = true;
             }
+          }
+          if (topic != null) {
+            topic.assignTo(policy);
           }
           if (policy) {
             policy.set({
@@ -12410,7 +12449,7 @@
 }).call(this);
 
 (function() {
-  define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsSubscription', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
+  define('module/design/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
     /* env:dev                                                                             env:dev:end */
 

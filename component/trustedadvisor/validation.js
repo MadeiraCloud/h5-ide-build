@@ -31,7 +31,10 @@
       stack: ['verify', 'isHaveNotExistAMIAsync'],
       subnet: ['getAllAWSENIForAppEditAndDefaultVPC'],
       ebs: ['isSnapshotExist'],
-      kp: ['isKeyPairExistInAws']
+      kp: ['isKeyPairExistInAws'],
+      elb: ['isSSLCertExist'],
+      asg: ['isTopicNonexist'],
+      vpc: ['isVPCUsingNonexistentDhcp']
     }
   });
 
@@ -208,6 +211,9 @@
                 checkResult = true;
               }
               if (errCode === 'EMPTY_VALUE' && errKey === 'LaunchConfigurationName' && errMessage === 'Key LaunchConfigurationName can not empty' && errCompType === 'AWS.AutoScaling.Group') {
+                checkResult = true;
+              }
+              if (errCode === 'EMPTY_VALUE' && errKey === 'TopicARN' && errMessage === 'Key TopicARN can not empty' && errCompType === 'AWS.AutoScaling.NotificationConfiguration') {
                 checkResult = true;
               }
             } catch (_error) {
@@ -808,8 +814,9 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang) {
-    var isVPCAbleConnectToOutside;
+  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
+    var i18n, isVPCAbleConnectToOutside, isVPCUsingNonexistentDhcp;
+    i18n = Helper.i18n.short();
     isVPCAbleConnectToOutside = function() {
       var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo;
       isHaveVPN = false;
@@ -847,8 +854,26 @@
         info: tipInfo
       };
     };
+    isVPCUsingNonexistentDhcp = function(callback) {
+      var dhcpCol, dhcpId, vpc;
+      vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
+      dhcpId = vpc.get('dhcp').get('dhcpOptionsId');
+      if (!dhcpId || dhcpId === 'default') {
+        callback(null);
+        return;
+      }
+      dhcpCol = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
+      return dhcpCol.fetch().fin(function() {
+        if (dhcpCol.get(dhcpId)) {
+          return callback(null);
+        } else {
+          return callback(Helper.message.error(vpc.id, i18n.TA_MSG_ERROR_VPC_DHCP_NONEXISTENT));
+        }
+      });
+    };
     return {
-      isVPCAbleConnectToOutside: isVPCAbleConnectToOutside
+      isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
+      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp
     };
   });
 
@@ -857,8 +882,8 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!nls/lang.js', '../../helper'], function(constant, MC, lang, taHelper) {
-    var isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener;
+  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!nls/lang.js', '../../helper', 'CloudResources'], function(constant, MC, lang, taHelper, CloudResources) {
+    var isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
     isHaveIGWForInternetELB = function(elbUID) {
       var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
       elbComp = MC.canvas_data.component[elbUID];
@@ -1223,6 +1248,88 @@
       });
       return resultAry;
     };
+    isSSLCertExist = function(callback) {
+      var allExistCertAry, eachListener, elbNameUIDMap, elbNotExistCertMap, err, haveCert, validResultAry;
+      try {
+        if (!callback) {
+          callback = function() {};
+        }
+        elbNameUIDMap = {};
+        eachListener = function(iterator) {
+          return _.each(MC.canvas_data.component, function(compObj) {
+            var elbName, listenerAry, listenerCertRef, listenerCertUID, listenerItem, listenerObj, sslCertComp, sslCertName, _i, _len;
+            if (compObj.type === constant.RESTYPE.ELB) {
+              elbName = compObj.name;
+              elbNameUIDMap[elbName] = compObj.uid;
+              listenerAry = compObj.resource.ListenerDescriptions;
+              for (_i = 0, _len = listenerAry.length; _i < _len; _i++) {
+                listenerItem = listenerAry[_i];
+                listenerObj = listenerItem.Listener;
+                listenerCertRef = listenerObj.SSLCertificateId;
+                if (!listenerCertRef) {
+                  continue;
+                }
+                listenerCertUID = MC.extractID(listenerCertRef);
+                sslCertComp = MC.canvas_data.component[listenerCertUID];
+                if (sslCertComp) {
+                  sslCertName = sslCertComp.name;
+                  iterator(elbName, sslCertName);
+                }
+              }
+            }
+            return null;
+          });
+        };
+        elbNotExistCertMap = {};
+        allExistCertAry = [];
+        validResultAry = [];
+        haveCert = false;
+        eachListener(function() {
+          return haveCert = true;
+        });
+        if (haveCert) {
+          if (!window.sslCertCol) {
+            window.sslCertCol = CloudResources(constant.RESTYPE.IAM);
+          }
+          return window.sslCertCol.fetchForce().then(function(result) {
+            var sslCertAry;
+            sslCertAry = window.sslCertCol.toJSON();
+            _.each(sslCertAry, function(sslCertData) {
+              return allExistCertAry.push(sslCertData.Name);
+            });
+            eachListener(function(elbName, sslCertName) {
+              if (__indexOf.call(allExistCertAry, sslCertName) < 0) {
+                if (!elbNotExistCertMap[elbName]) {
+                  elbNotExistCertMap[elbName] = [];
+                }
+                return elbNotExistCertMap[elbName].push(sslCertName);
+              }
+            });
+            _.each(elbNotExistCertMap, function(sslCertNameAry, elbName) {
+              var tipInfo;
+              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, sslCertNameAry.join(', '));
+              return validResultAry.push({
+                level: constant.TA.ERROR,
+                info: tipInfo,
+                uid: elbNameUIDMap[elbName]
+              });
+            });
+            if (validResultAry.length) {
+              callback(validResultAry);
+              return;
+            }
+            return callback(null);
+          }, function() {
+            return callback(null);
+          });
+        } else {
+          return callback(null);
+        }
+      } catch (_error) {
+        err = _error;
+        return callback(null);
+      }
+    };
     return {
       isHaveIGWForInternetELB: isHaveIGWForInternetELB,
       isHaveInstanceAttached: isHaveInstanceAttached,
@@ -1234,7 +1341,8 @@
       isRuleOutboundToInstanceListener: isRuleOutboundToInstanceListener,
       isRuleInboundInstanceForELBListener: isRuleInboundInstanceForELBListener,
       isRuleInboundToELBPingPort: isRuleInboundToELBPingPort,
-      isELBSubnetCIDREnough: isELBSubnetCIDREnough
+      isELBSubnetCIDREnough: isELBSubnetCIDREnough,
+      isSSLCertExist: isSSLCertExist
     };
   });
 
@@ -1561,8 +1669,9 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
-    var isELBHasHealthCheck, isHasLaunchConfiguration;
+  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo', '../../helper', 'CloudResources'], function(constant, MC, lang, resultVO, Helper, CloudResources) {
+    var i18n, isELBHasHealthCheck, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
+    i18n = Helper.i18n.short();
     isHasLaunchConfiguration = function(uid) {
       var asg, tipInfo;
       asg = MC.canvas_data.component[uid];
@@ -1590,9 +1699,91 @@
         uid: uid
       };
     };
+    isNotificationNotHasTopic = function(uid) {
+      var asg, notification, topic;
+      asg = Design.instance().component(uid);
+      notification = asg.getNotiObject();
+      if (!notification || !notification.isEffective()) {
+        return null;
+      }
+      topic = notification.getTopic();
+      if (topic && topic.get('appId')) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_ASG_NOTIFICATION_NO_TOPIC, asg.get('name'));
+    };
+    isPolicyNotHasTopic = function(uid) {
+      var asg, p, policies, result, _i, _len;
+      asg = Design.instance().component(uid);
+      policies = asg.get("policies") || [];
+      result = [];
+      for (_i = 0, _len = policies.length; _i < _len; _i++) {
+        p = policies[_i];
+        if (!p.isNotificate() || p.getTopic()) {
+          continue;
+        }
+        result.push(Helper.message.error(p.id, i18n.TA_MSG_ERROR_ASG_POLICY_NO_TOPIC, asg.get('name'), p.get('name')));
+      }
+      return result;
+    };
+    isTopicNonexist = function(callback) {
+      var allAsg, asg, needTa, notiValid, notification, p, policies, region, result, topic, topicCol, _i, _j, _len, _len1;
+      allAsg = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
+      needTa = [];
+      for (_i = 0, _len = allAsg.length; _i < _len; _i++) {
+        asg = allAsg[_i];
+        notification = asg.getNotiObject();
+        notiValid = false;
+        if (!notification || !notification.isEffective()) {
+          notiValid = true;
+        }
+        topic = notification.getTopic();
+        if (!topic) {
+          notiValid = true;
+        }
+        if (!notiValid) {
+          needTa.push([topic, asg, notification]);
+        }
+        policies = asg.get("policies") || [];
+        for (_j = 0, _len1 = policies.length; _j < _len1; _j++) {
+          p = policies[_j];
+          topic = p.getTopic();
+          if (p.isNotificate() && topic) {
+            needTa.push([topic, asg, p]);
+          }
+        }
+      }
+      if (_.isEmpty(needTa)) {
+        callback(null);
+        return;
+      }
+      region = Design.instance().region();
+      topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
+      result = [];
+      return topicCol.fetch().fin(function() {
+        var obj, ta, _k, _len2;
+        for (_k = 0, _len2 = needTa.length; _k < _len2; _k++) {
+          ta = needTa[_k];
+          topic = ta[0];
+          asg = ta[1];
+          obj = ta[2];
+          if (!topicCol.get(topic.get('appId'))) {
+            if (obj.type === constant.RESTYPE.SP) {
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTIENT, asg.get('name'), obj.get('name'), topic.get('name')));
+            } else if (obj.type === constant.RESTYPE.NC) {
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTIENT, asg.get('name'), topic.get('name')));
+            }
+          }
+        }
+        return callback(result);
+      });
+    };
     return {
       isHasLaunchConfiguration: isHasLaunchConfiguration,
-      isELBHasHealthCheck: isELBHasHealthCheck
+      isELBHasHealthCheck: isELBHasHealthCheck,
+      isNotificationNotHasTopic: isNotificationNotHasTopic,
+      isPolicyNotHasTopic: isPolicyNotHasTopic,
+      isTopicNonexist: isTopicNonexist
     };
   });
 
@@ -3024,8 +3215,7 @@ This file use for validate component about state.
     };
     _genSyncFinish = function(times) {
       return _.after(times, function() {
-        ide_event.trigger(ide_event.TA_SYNC_FINISH);
-        return console.log(resultVO.result());
+        return ide_event.trigger(ide_event.TA_SYNC_FINISH);
       });
     };
     _asyncCallback = function(method, filename, done) {
@@ -3035,7 +3225,8 @@ This file use for validate component about state.
         if (!hasRun) {
           hasRun = true;
           _pushResult(null, method, filename);
-          return done();
+          done();
+          return console.error('Async TA Timeout');
         }
       }, config.syncTimeout);
       return function(result) {
@@ -3111,7 +3302,6 @@ This file use for validate component about state.
     _validAsync = function() {
       var finishTimes, syncFinish;
       finishTimes = _.reduce(config.asyncList, function(memo, arr) {
-        console.log(memo, arr);
         return memo + arr.length;
       }, 0);
       _syncStart();
