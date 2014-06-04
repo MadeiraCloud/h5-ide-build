@@ -3,7 +3,7 @@ define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -57,9 +57,8 @@ function program5(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.app_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.app_list_data=Handlebars.template(__TEMPLATE__);
 
@@ -67,7 +66,7 @@ TEMPLATE.app_list_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -98,9 +97,8 @@ function program2(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.stack_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.stack_list_data=Handlebars.template(__TEMPLATE__);
 
@@ -108,7 +106,7 @@ TEMPLATE.stack_list_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -164,9 +162,8 @@ function program6(depth0,data) {
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stack_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.region_empty_list=Handlebars.template(__TEMPLATE__);
 
@@ -174,7 +171,7 @@ TEMPLATE.region_empty_list=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -190,9 +187,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.region_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.region_list=Handlebars.template(__TEMPLATE__);
 

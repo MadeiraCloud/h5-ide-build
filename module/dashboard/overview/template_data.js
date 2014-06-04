@@ -3,7 +3,7 @@ define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -23,9 +23,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.result_list)),stack1 == null || stack1 === false ? stack1 : stack1.region_infos), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.overview_result=Handlebars.template(__TEMPLATE__);
 
@@ -190,7 +189,7 @@ function program14(depth0,data) {
   buffer += "\n\n        ";
   stack1 = helpers['with'].call(depth0, ((stack1 = (depth0 && depth0.global_list)),stack1 == null || stack1 === false ? stack1 : stack1.DescribeVpnConnections), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </ul>\n</div>\n\n\n";
+  buffer += "\n    </ul>\n</div>";
   return buffer;
   };
 TEMPLATE.global_list=Handlebars.template(__TEMPLATE__);
@@ -595,7 +594,7 @@ function program49(depth0,data) {
   buffer += ">\n        <div class=\"scroll-wrap\">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\">\n                <ul class=\"clearfix\">\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.cur_stack_list), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </ul>\n            </div>\n        </div>\n    </div>\n    <!-- Resource Stack -->\n</div>\n<!-- Region App & Stack -->\n\n\n";
+  buffer += "\n\n                </ul>\n            </div>\n        </div>\n    </div>\n    <!-- Resource Stack -->\n</div>\n<!-- Region App & Stack -->";
   return buffer;
   };
 TEMPLATE.region_app_stack=Handlebars.template(__TEMPLATE__);
@@ -649,10 +648,10 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "\n<!-- Region AWS resource -->\n<div id=\"region-aws-resource-wrap\">\n    ";
+  buffer += "<!-- Region AWS resource -->\n<div id=\"region-aws-resource-wrap\">\n    ";
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.cur_region_resource_info), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    <div id=\"region-aws-resource-data\">\n\n    </div>\n\n</div>\n\n";
+  buffer += "\n\n    <div id=\"region-aws-resource-data\">\n\n    </div>\n\n</div>";
   return buffer;
   };
 TEMPLATE.region_resource_head=Handlebars.template(__TEMPLATE__);
@@ -772,7 +771,7 @@ function program7(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 17%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 8%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeInstances), {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeInstances=Handlebars.template(__TEMPLATE__);
@@ -819,7 +818,7 @@ function program3(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 40%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 40%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeAddresses), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeAddresses=Handlebars.template(__TEMPLATE__);
@@ -924,7 +923,7 @@ function program10(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 16%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 18%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 21%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 15%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVolumes), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeVolumes=Handlebars.template(__TEMPLATE__);
@@ -1027,7 +1026,7 @@ function program10(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVpcs), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeVpcs=Handlebars.template(__TEMPLATE__);
@@ -1117,7 +1116,7 @@ function program6(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeVpnConnections), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeVpnConnections=Handlebars.template(__TEMPLATE__);
@@ -1172,7 +1171,7 @@ function program3(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 25%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeLoadBalancers), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeLoadBalancers=Handlebars.template(__TEMPLATE__);
@@ -1250,7 +1249,7 @@ function program6(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 50%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeAutoScalingGroups), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeAutoScalingGroups=Handlebars.template(__TEMPLATE__);
@@ -1331,7 +1330,7 @@ function program8(depth0,data) {
     + "</th>\n            </tr>\n        </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <div class=\"scroll-content\">\n            <table class=\"table\">\n                <thead>\n                    <tr>\n                        <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 30%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 30%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                        <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                    </tr>\n                </thead>\n                <tbody>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.DescribeAlarms), {hash:{},inverse:self.program(8, program8, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>\n\n";
+  buffer += "\n\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.DescribeAlarms=Handlebars.template(__TEMPLATE__);
@@ -1411,7 +1410,7 @@ function program10(depth0,data) {
     + "</th>\n        </tr>\n    </thead>\n    </table>\n    <div class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n        <table class=\"table\">\n            <thead>\n                <tr>\n                    <th style=\"width: 30%\"><span class=\"th-inner\"></span></th>\n                    <th style=\"width: 40%\"><span class=\"th-inner\"></span></th>\n                    <th style=\"width: 20%\"><span class=\"th-inner\"></span></th>\n                    <th style=\"width: 10%\"><span class=\"th-inner\"></span></th>\n                </tr>\n            </thead>\n            <tbody>\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.ListSubscriptions), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n            </tbody>\n        </table>\n    </div>\n</div>\n\n";
+  buffer += "\n\n\n            </tbody>\n        </table>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.ListSubscriptions=Handlebars.template(__TEMPLATE__);
@@ -1519,7 +1518,7 @@ function program10(depth0,data) {
   buffer += "\n    </div>\n\n    <div id=\"global-region-status-stack-content\" class=\"global-region-status-content\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.recent_edited_stacks), {hash:{},inverse:self.program(10, program10, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n\n\n</div>\n\n";
+  buffer += "\n    </div>\n\n\n</div>";
   return buffer;
   };
 TEMPLATE.recent=Handlebars.template(__TEMPLATE__);
@@ -1531,7 +1530,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"dashboard-loading clearfix\">\n   <div class=\"loading-spinner\"></div>\n</div>\n\n";
+  return "<div class=\"dashboard-loading clearfix\">\n   <div class=\"loading-spinner\"></div>\n</div>";
   };
 TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 
@@ -1542,7 +1541,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"dashboard-loading aws-loading-faild clearfix\">\n    <p>Loading resource failed. The AWS Credential key is incorrect.</p>\n    <a href=\"###\" class=\"btn btn-blue show-credential\" style=\"width: 182px;\">Enter AWS credentials</a>\n</div>\n\n";
+  return "<div class=\"dashboard-loading aws-loading-faild clearfix\">\n    <p>Loading resource failed. The AWS Credential key is incorrect.</p>\n    <a href=\"###\" class=\"btn btn-blue show-credential\" style=\"width: 182px;\">Enter AWS credentials</a>\n</div>";
   };
 TEMPLATE.loading_failed=Handlebars.template(__TEMPLATE__);
 
@@ -1553,7 +1552,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"dashboard-demo\">\n    <div class=\"enter-credential\">\n        <p class=\"info\">This is only sample data of global resource sumary.</p>\n        <p class=\"link\"><a class=\"show-credential\">Provide your AWS Credential</a> to see real data</p>\n    </div>\n    <img src=\"./assets/images/ide/global-demo.png\"/>\n</div>\n\n";
+  return "<div class=\"dashboard-demo\">\n    <div class=\"enter-credential\">\n        <p class=\"info\">This is only sample data of global resource sumary.</p>\n        <p class=\"link\"><a class=\"show-credential\">Provide your AWS Credential</a> to see real data</p>\n    </div>\n    <img src=\"./assets/images/ide/global-demo.png\"/>\n</div>";
   };
 TEMPLATE.demo_global=Handlebars.template(__TEMPLATE__);
 
@@ -1564,7 +1563,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"dashboard-demo\">\n    <div class=\"enter-credential\">\n        <p class=\"info\">This is only sample data of regional resource sumary.</p>\n        <p class=\"link\"><a class=\"show-credential\">Provide your AWS Credential</a> to see real data</p>\n    </div>\n    <img src=\"./assets/images/ide/region-demo.png\"/>\n</div>\n";
+  return "<div class=\"dashboard-demo\">\n    <div class=\"enter-credential\">\n        <p class=\"info\">This is only sample data of regional resource sumary.</p>\n        <p class=\"link\"><a class=\"show-credential\">Provide your AWS Credential</a> to see real data</p>\n    </div>\n    <img src=\"./assets/images/ide/region-demo.png\"/>\n</div>";
   };
 TEMPLATE.demo_region=Handlebars.template(__TEMPLATE__);
 

@@ -329,7 +329,8 @@
             'has_states': Design.instance().serialize().agent.enabled && (_.some(_.values(Design.instance().serialize().component), function(e) {
               var _ref;
               return ((_ref = e.state) != null ? _ref.length : void 0) > 0;
-            }))
+            })),
+            'can_save_as_app': me.canSaveAsApp()
           };
           is_tab = true;
         } else if (flag === 'RUNNING_APP') {
@@ -956,6 +957,25 @@
       },
       isAutoScaling: function() {
         return !!Design.modelClassForType("AWS.AutoScaling.Group").allObjects().length;
+      },
+      canSaveAsApp: function() {
+        var i;
+        i = 0;
+        if (Design.instance().mode() === 'appview') {
+          i += Design.modelClassForType("AWS.ELB").allObjects().length;
+          i += Design.modelClassForType("AWS.IAM.ServerCertificate").allObjects().length;
+          i += Design.modelClassForType("AWS.AutoScaling.Group").allObjects().length;
+          i += Design.modelClassForType("AWS.AutoScaling.LaunchConfiguration").allObjects().length;
+          i += Design.modelClassForType("AWS.AutoScaling.NotificationConfiguration").allObjects().length;
+          i += Design.modelClassForType("AWS.AutoScaling.ScalingPolicy").allObjects().length;
+          i += Design.modelClassForType("AWS.CloudWatch.CloudWatch").allObjects().length;
+          i += Design.modelClassForType("AWS.SNS.Topic").allObjects().length;
+        }
+        if (i === 0) {
+          return true;
+        } else {
+          return false;
+        }
       },
       diff: function() {
         var c, dedupMap, dedupResult, diffResult, exist, obj, _i, _j, _len, _len1, _ref, _ref1;

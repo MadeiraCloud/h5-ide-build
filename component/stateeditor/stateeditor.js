@@ -3,7 +3,7 @@ define('component/stateeditor/template',['handlebars'], function(Handlebars){ va
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
@@ -43,9 +43,8 @@ function program2(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.state_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.stateListTpl=Handlebars.template(__TEMPLATE__);
 
@@ -53,7 +52,7 @@ TEMPLATE.stateListTpl=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
@@ -214,9 +213,8 @@ function program17(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.parameter_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.paraListTpl=Handlebars.template(__TEMPLATE__);
 
@@ -224,7 +222,7 @@ TEMPLATE.paraListTpl=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
@@ -352,9 +350,8 @@ function program13(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.parameter_view_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.paraViewListTpl=Handlebars.template(__TEMPLATE__);
 
@@ -362,7 +359,7 @@ TEMPLATE.paraViewListTpl=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -376,9 +373,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.para_value), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.paraDictListTpl=Handlebars.template(__TEMPLATE__);
 
@@ -386,7 +382,7 @@ TEMPLATE.paraDictListTpl=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -398,9 +394,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.para_value), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.paraArrayListTpl=Handlebars.template(__TEMPLATE__);
 
@@ -413,7 +408,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"state-empty\">"
     + escapeExpression(((stack1 = (depth0 && depth0.tip)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n\n";
+    + "</div>";
   return buffer;
   };
 TEMPLATE.stateEmptyTpl=Handlebars.template(__TEMPLATE__);
@@ -491,7 +486,7 @@ function program3(depth0,data) {
   buffer += "\n			";
   stack1 = self.invokePartial(partials.stateLogItemTpl, 'stateLogItemTpl', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n	</div>\n</div>\n\n";
+  buffer += "\n		</ul>\n	</div>\n</div>";
   return buffer;
   };
 TEMPLATE.editorModalTpl=Handlebars.template(__TEMPLATE__);
@@ -526,7 +521,7 @@ function program2(depth0,data) {
     + "</div>\n<ul class=\"dropdown\" tabindex=\"-1\">\n	";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.res_selects), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul>\n\n";
+  buffer += "\n</ul>";
   return buffer;
   };
 TEMPLATE.stateResSelectTpl=Handlebars.template(__TEMPLATE__);
@@ -535,7 +530,7 @@ TEMPLATE.stateResSelectTpl=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -631,9 +626,8 @@ function program15(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.state_logs), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.stateLogItemTpl=Handlebars.template(__TEMPLATE__);
 
@@ -660,7 +654,7 @@ function program3(depth0,data) {
     + "</div>\n		<div class=\"state-log-item-status\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.res_status), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n	</div>\n</li>\n\n";
+  buffer += "</div>\n	</div>\n</li>";
   return buffer;
   };
 TEMPLATE.stateLogInstanceItemTpl=Handlebars.template(__TEMPLATE__);
@@ -678,7 +672,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.content)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</textarea>\n	</div>\n	<div class=\"modal-footer\">\n		<button class=\"btn modal-close btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_DETAIL_MOD_CLOSE_BTN", {hash:{},data:data}))
-    + "</button>\n	</div>\n</div>\n\n";
+    + "</button>\n	</div>\n</div>";
   return buffer;
   };
 TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
@@ -720,7 +714,7 @@ function program5(depth0,data) {
     + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<div class=\"editable-area text-code-editor text\"></div>\n	</div>\n	<div class=\"modal-footer\">\n		";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n</div>\n";
+  buffer += "\n	</div>\n</div>";
   return buffer;
   };
 TEMPLATE.stateTextExpandModal=Handlebars.template(__TEMPLATE__);

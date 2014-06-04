@@ -225,6 +225,7 @@ define({
         "TOOL_POP_BODY_EXPORT_AS_JSON": "The stack is ready to export. Please click the Download button to save the file.",
         "TOOL_POP_BTN_DOWNLOAD": "Download",
         "TOOL_EXPORT_AS_PNG": "Export to PNG",
+        "TOOL_SAVE_AS_APP": "Save as App",
         "TOOL_EXPORT_AS_CF": "Convert to CloudFormation Format",
         "TOOL_TIP_STOP_APP": "Stop This App's Resources.",
         "TOOL_TIP_CONTAINS_INSTANCE_STORED": "This app cannot be stopped since it contains instance-stored AMI.",

@@ -93,7 +93,7 @@
             var vpcs;
             vpcs = {};
             return _.each(obj, function(vpc_obj, vpc_id) {
-              var l2_res, new_value, new_vpc_obj, tag;
+              var is_unmanaged, l2_res, new_value, new_vpc_obj, tag, vpc_type;
               new_vpc_obj = {};
               _.each(vpc_obj, function(value, key) {
                 var i, new_key, tag;
@@ -110,7 +110,17 @@
               });
               vpc_obj = new_vpc_obj;
               tag = vpc_obj["Tag"];
-              if (vpc_id !== MC.data.account_attribute[region].default_vpc && !(tag && tag["app"] && tag["app-id"] && tag["Created by"])) {
+              vpc_type = "";
+              if (!(tag && tag["app"] && tag["app-id"] && tag["Created by"])) {
+                vpc_type = "unmanaged";
+                is_unmanaged = true;
+              } else if (tag && tag["app"] && tag["app-id"] && tag["Created by"] && tag["Created by"] === atob($.cookie('usercode'))) {
+                vpc_type = "managed";
+                is_unmanaged = false;
+              } else {
+                console.info("unknown vpc type");
+              }
+              if (vpc_type && (vpc_type === "unmanaged")) {
                 l2_res = {
                   'AWS.VPC.VPC': {
                     'id': [vpc_id]
@@ -135,7 +145,8 @@
                   },
                   'AWS.EC2.Instance': {
                     'filter': {
-                      'vpc-id': vpc_id
+                      'vpc-id': vpc_id,
+                      'instance-state-name': ['running', 'stopped', 'stopping', 'pending']
                     }
                   },
                   'AWS.VPC.RouteTable': {
@@ -150,7 +161,8 @@
                   },
                   'AWS.VPC.VPNGateway': {
                     'filter': {
-                      'attachment.vpc-id': vpc_id
+                      'attachment.vpc-id': vpc_id,
+                      'state': ['pending', 'available']
                     }
                   },
                   'AWS.EC2.SecurityGroup': {
@@ -190,7 +202,8 @@
                   },
                   'AWS.VPC.VPNConnection': {
                     'filter': {
-                      'vpn-gateway-id': ''
+                      'vpn-gateway-id': '',
+                      'state': ['pending', 'available']
                     }
                   },
                   'AWS.AutoScaling.ScalingPolicy': {
@@ -311,6 +324,7 @@
                 if (_.keys(new_value).length > 0) {
                   vpcs[vpc_id] = new_value;
                 }
+                vpc_obj["is_unmanaged"] = is_unmanaged;
                 vpcs[vpc_id].origin = vpc_obj;
                 return resource_map[region] = vpcs;
               }

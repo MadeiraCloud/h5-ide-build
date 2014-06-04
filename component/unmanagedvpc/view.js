@@ -121,7 +121,7 @@
           }
           return new Handlebars.SafeString(new_item);
         });
-        return Handlebars.registerHelper('vpc_sub_item', function(items, type) {
+        Handlebars.registerHelper('vpc_sub_item', function(items, type) {
           var error, new_count;
           new_count = 0;
           try {
@@ -143,6 +143,21 @@
             return console.log('unmanagedvpc view vpc_id', items);
           } finally {
             new Handlebars.SafeString(new_count);
+          }
+        });
+        return Handlebars.registerHelper('vpc_sub_title', function(items, vpc_id) {
+          var error, title;
+          title = "";
+          try {
+            if (items["Tag"] && !items["is_unmanaged"]) {
+              title += items["Tag"]["app-id"] + "(" + items["Tag"]["app"] + ")";
+            }
+            return new Handlebars.SafeString(title);
+          } catch (_error) {
+            error = _error;
+            return console.log('unmanagedvpc title vpc_id', vpc_id);
+          } finally {
+            new Handlebars.SafeString(title);
           }
         });
       },

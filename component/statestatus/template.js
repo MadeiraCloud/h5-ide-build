@@ -6,7 +6,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"modal-header\">\n	<h3>Failed State</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-state-statusbar\">\n	</div>\n</div>\n\n";
+  return "<div class=\"modal-header\">\n	<h3>Failed State</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-state-statusbar\">\n	</div>\n</div>";
   };
 TEMPLATE.modal=Handlebars.template(__TEMPLATE__);
 
@@ -17,7 +17,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"state-status-content\">\n\n	<div class=\"scroll-wrap scroll-wrap-validation\" style=\"height:200px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n			<div class=\"update-tip\"></div>\n			<div class=\"status-item\">\n				<p class=\"no-item\">No failed item.</p>\n			</div>\n		</div>\n	</div>\n</div>\n\n";
+  return "<div class=\"state-status-content\">\n\n	<div class=\"scroll-wrap scroll-wrap-validation\" style=\"height:200px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n			<div class=\"update-tip\"></div>\n			<div class=\"status-item\">\n				<p class=\"no-item\">No failed item.</p>\n			</div>\n		</div>\n	</div>\n</div>";
   };
 TEMPLATE.content=Handlebars.template(__TEMPLATE__);
 
@@ -71,7 +71,7 @@ function program9(depth0,data) {
   buffer += "\n	</div>\n	<div class=\"timestamp\">\n		";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n</div>\n\n";
+  buffer += "\n	</div>\n</div>";
   return buffer;
   };
 TEMPLATE.item=Handlebars.template(__TEMPLATE__);
@@ -83,7 +83,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<dl class=\"state-status-pending\">\n	<dt>All states are pending.</dt>\n	<dd>A message will show here when a state succeeds or fails.</dd>\n</dl>\n\n";
+  return "<dl class=\"state-status-pending\">\n	<dt>All states are pending.</dt>\n	<dd>A message will show here when a state succeeds or fails.</dd>\n</dl>";
   };
 TEMPLATE.pending=Handlebars.template(__TEMPLATE__);
 
@@ -94,7 +94,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<ul class=\"state-status-list\">\n</ul>\n\n";
+  return "<ul class=\"state-status-list\">\n</ul>";
   };
 TEMPLATE.container=Handlebars.template(__TEMPLATE__);
 
@@ -107,7 +107,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"state-status-update\">\n	"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + " states has updated status.\n</div>\n";
+    + " states has updated status.\n</div>";
   return buffer;
   };
 TEMPLATE.update=Handlebars.template(__TEMPLATE__);

@@ -8,7 +8,7 @@
 
     /* env:debug:end */
 
-    /* env:dev                                         env:dev:end */
+    /* env:dev                                           env:dev:end */
     API_URL = "https://" + API_HOST + "/v1/apps/";
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -34,6 +34,7 @@
         'click #toolbar-terminate-app': 'clickTerminateApp',
         'click #btn-app-refresh': 'clickRefreshApp',
         'click #toolbar-convert-cf': 'clickConvertCloudFormation',
+        'click #toolbar-save-as-app': 'clickSaveAsApp',
         'click #toolbar-edit-app': 'clickEditApp',
         'click #toolbar-save-edit-app': 'clickSaveEditApp',
         'click #toolbar-cancel-edit-app': 'clickCancelEditApp',
@@ -784,6 +785,58 @@
           thatModel.setAgentEnable(false);
         }
         return ide_event.trigger(ide_event.REFRESH_PROPERTY);
+      },
+      clickSaveAsApp: function(event) {
+        var app_id, app_name, comp, key, resId, resKey, res_data, resource, spec, timestamp, vpc_id, _ref, _ref1;
+        spec = Design.instance().serialize();
+        resource = [];
+        app_id = "";
+        app_name = "";
+        if (MC.data.app_info && MC.data.app_info[spec.id] && MC.data.app_info[spec.id].id) {
+          vpc_id = spec.id;
+          spec.id = MC.data.app_info[vpc_id].id;
+          spec.name = MC.data.app_info[vpc_id].name;
+        } else {
+          spec.id = "";
+        }
+        timestamp = Math.round(new Date().getTime() / 1000);
+        _ref = spec.component;
+        for (key in _ref) {
+          comp = _ref[key];
+          resKey = constant.AWS_RESOURCE_KEY[comp.type];
+          resId = comp.resource[resKey];
+          if ((_ref1 = comp.type) !== "AWS.EC2.AvailabilityZone" && _ref1 !== "AWS.EC2.KeyPair") {
+            res_data = {
+              "username": spec.username,
+              "resource_id": resId,
+              "region": spec.region,
+              "app_id": spec.id,
+              "version": "1.0",
+              "time": timestamp,
+              "new": true,
+              "type": comp.type
+            };
+            resource.push(res_data);
+          }
+        }
+        if (!(spec && resource)) {
+          notification('error', 'format error, can not save app!');
+          return null;
+        }
+        return ApiRequest("app_save_info", {
+          username: $.cookie('usercode'),
+          session_id: $.cookie('session_id'),
+          spec: spec,
+          resource: resource
+        }).then((function(_this) {
+          return function(result) {
+            console.info(result);
+            return notification('info', 'save as app succeed!');
+          };
+        })(this), function(err) {
+          notification('error', 'save as app failed!');
+          throw err;
+        });
       }
     });
     return ToolbarView;

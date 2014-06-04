@@ -3,7 +3,7 @@ define(['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -63,9 +63,8 @@ function program10(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.availability_zone)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.availability_zone_data=Handlebars.template(__TEMPLATE__);
 
@@ -73,7 +72,7 @@ TEMPLATE.availability_zone_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -99,9 +98,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.resource_snapshot)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.resoruce_snapshot_data=Handlebars.template(__TEMPLATE__);
 
@@ -109,7 +107,7 @@ TEMPLATE.resoruce_snapshot_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -169,9 +167,8 @@ function program4(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.quickstart_ami), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.quickstart_ami_data=Handlebars.template(__TEMPLATE__);
 
@@ -179,7 +176,7 @@ TEMPLATE.quickstart_ami_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -241,9 +238,8 @@ function program4(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.my_ami), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.my_ami_data=Handlebars.template(__TEMPLATE__);
 
@@ -251,7 +247,7 @@ TEMPLATE.my_ami_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+  var stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
   
@@ -344,9 +340,8 @@ function program10(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.favorite_ami), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.favorite_ami_data=Handlebars.template(__TEMPLATE__);
 
@@ -361,7 +356,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"btn-browse-community-ami\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_BTN_BROWSE_COMMUNITY_AMI", {hash:{},data:data}))
-    + "</div>\n\n";
+    + "</div>";
   return buffer;
   };
 TEMPLATE.community_ami_btn=Handlebars.template(__TEMPLATE__);
@@ -460,7 +455,7 @@ function program11(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ENI", {hash:{},data:data}))
     + "' data-component-type=\"node\" data-type=\"AWS.VPC.NetworkInterface\">\n				<div class=\"resource-icon resource-icon-eni\"></div>\n				<div class=\"resource-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_ENI", {hash:{},data:data}))
-    + "</div>\n			</li>\n		</ul>\n	</div>\n</div>\n";
+    + "</div>\n			</li>\n		</ul>\n	</div>\n</div>";
   return buffer;
   };
 TEMPLATE.resource_vpc_select_list=Handlebars.template(__TEMPLATE__);

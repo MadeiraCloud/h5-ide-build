@@ -8,7 +8,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"modal-toolbar "
     + escapeExpression(((stack1 = (depth0 && depth0.classList)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    <div class=\"content-wrap\">\n\n    </div>\n</div>\n\n\n";
+    + "\">\n    <div class=\"content-wrap\">\n\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -102,7 +102,7 @@ function program11(depth0,data) {
   buffer += "\n                </tr>\n            </thead>\n        </table>\n        <div class=\"scroll-wrap\">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </div>\n</div>\n";
+  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.content=Handlebars.template(__TEMPLATE__);
@@ -114,7 +114,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"loading-spinner\"></div>\n\n";
+  return "<div class=\"loading-spinner\"></div>";
   };
 TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 
@@ -125,7 +125,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"kp-no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>\n\n";
+  return "<div class=\"kp-no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>";
   };
 TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
 
@@ -138,7 +138,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<tr class=\"table tr-detail\">\n    <td colspan=\""
     + escapeExpression(((stack1 = (depth0 && depth0.columnCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    </td>\n</tr>\n\n";
+    + "\">\n    </td>\n</tr>";
   return buffer;
   };
 TEMPLATE.tr_detail=Handlebars.template(__TEMPLATE__);
@@ -150,7 +150,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>\n";
+  return "<div class=\"no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>";
   };
 TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
 
@@ -631,7 +631,7 @@ define('component/kp/kpDialogTpl',['handlebars'], function(Handlebars){ var __TE
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -651,9 +651,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 
@@ -664,7 +663,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">Key Pair Name</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\" autofocus>\n    </div>\n    <div class=\"after-create hide\">Key pair <span></span> is created. You have to download the private key file (*.pem file) before you can continue. Store it in a secure and accessible location. You will not be able to download the file again after it's created.</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>\n\n";
+  return "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">Key Pair Name</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\" autofocus>\n    </div>\n    <div class=\"after-create hide\">Key pair <span></span> is created. You have to download the private key file (*.pem file) before you can continue. Store it in a secure and accessible location. You will not be able to download the file again after it's created.</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
 
@@ -692,7 +691,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>\n";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -704,7 +703,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"slide-import\" data-bind=\"true\">\n    <label for=\"import-kp-name\">Key Pair Name</label>\n    <input class=\"input\" type=\"text\" id=\"import-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    <div class=\"import-zone\">\n\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn\" disabled>Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"ready action\" style=\"display:none;\">\n        <button class=\"btn btn-blue do-action\" data-action=\"import\">Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Importing...</button>\n    </div>\n</div>\n\n";
+  return "<div class=\"slide-import\" data-bind=\"true\">\n    <label for=\"import-kp-name\">Key Pair Name</label>\n    <input class=\"input\" type=\"text\" id=\"import-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    <div class=\"import-zone\">\n\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn\" disabled>Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"ready action\" style=\"display:none;\">\n        <button class=\"btn btn-blue do-action\" data-action=\"import\">Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Importing...</button>\n    </div>\n</div>";
   };
 TEMPLATE.slide_import=Handlebars.template(__TEMPLATE__);
 
@@ -717,7 +716,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"upload-kp-component drop-zone\">\n    <p class=\"upload-stuff\">\n        Drop "
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">select a file</label>\n        <span class=\"display-empty\">or paste the key content here.</span>\n        <span class=\"display-filled\" style=\"display:none;\">or paste the key content again to update.</span>\n        <input type=\"file\" id=\"modal-import\">\n    </p>\n    <p class=\"key-content\"></p>\n</div>\n\n\n\n\n";
+    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">select a file</label>\n        <span class=\"display-empty\">or paste the key content here.</span>\n        <span class=\"display-filled\" style=\"display:none;\">or paste the key content again to update.</span>\n        <input type=\"file\" id=\"modal-import\">\n    </p>\n    <p class=\"key-content\"></p>\n</div>";
   return buffer;
   };
 TEMPLATE.upload=Handlebars.template(__TEMPLATE__);
@@ -902,16 +901,18 @@ return TEMPLATE; });
           if (!this.model.haveGot()) {
             this.model.getKeys();
           }
-        } else {
-          this.modal.render('nocredential');
         }
         this.initModal();
         return this.model.on('change:keys', this.renderKeys, this);
       },
       render: function(refresh) {
         this.modal.render();
-        if (this.model.haveGot()) {
-          this.renderKeys();
+        if (App.user.hasCredential()) {
+          if (this.model.haveGot()) {
+            this.renderKeys();
+          }
+        } else {
+          this.modal.render('nocredential');
         }
         return this;
       },
@@ -1137,13 +1138,15 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"selectbox combo-dd multiopen\" data-silent-close=\"#modal-wrap\">\n    <div class=\"selection\"></div>\n\n    <div class=\"dropdown\">\n        ";
+  buffer += "<div class=\"selectbox combo-dd multiopen "
+    + escapeExpression(((stack1 = (depth0 && depth0.classList)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-silent-close=\"#modal-wrap\">\n    <div class=\"selection\"></div>\n\n    <div class=\"dropdown\">\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noFilter), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <div class=\"scroll-wrap scrollbar-auto-hide clearfix\">\n            <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content combo-dd-content\">\n            </div>\n        </div>\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noManage), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</div>\n\n";
+  buffer += "\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -1155,7 +1158,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<ul class=\"combo-dd-list\"></ul>\n\n";
+  return "<ul class=\"combo-dd-list\"></ul>";
   };
 TEMPLATE.listframe=Handlebars.template(__TEMPLATE__);
 
@@ -1166,7 +1169,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"loading-spinner loading-spinner-small\"></div>\n\n\n";
+  return "<div class=\"loading-spinner loading-spinner-small\"></div>";
   };
 TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 
@@ -1242,9 +1245,6 @@ Refer to kpView.coffee
         this.$('.selection').html(dom);
         return this;
       },
-      getSelection: function(dom) {
-        return this.$('.selection').text();
-      },
       setContent: function(dom) {
         this.$('.combo-dd-content').html(template.listframe);
         this.$('.combo-dd-list').html(dom);
@@ -1291,7 +1291,7 @@ define('component/kp/kpTpl',['handlebars'], function(Handlebars){ var __TEMPLATE
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -1341,9 +1341,8 @@ function program7(depth0,data) {
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isRunTime), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.selection=Handlebars.template(__TEMPLATE__);
 
@@ -1409,7 +1408,6 @@ function program5(depth0,data) {
   buffer += "\n\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
   return buffer;
   };
 TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
@@ -1568,7 +1566,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<span>None</span>\n\n\n";
+  return "<span>None</span>";
   };
 TEMPLATE.dropdown_no_selection=Handlebars.template(__TEMPLATE__);
 
@@ -1576,7 +1574,7 @@ TEMPLATE.dropdown_no_selection=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
@@ -1604,9 +1602,8 @@ function program2(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.dropdown_list=Handlebars.template(__TEMPLATE__);
 
@@ -1614,7 +1611,7 @@ TEMPLATE.dropdown_list=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -1648,9 +1645,8 @@ function program2(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.modal_list=Handlebars.template(__TEMPLATE__);
 
@@ -1676,7 +1672,7 @@ function program1(depth0,data) {
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <div>\n          <label>Select Topic</label>\n            <div class=\"selectbox dd-topic-name\">\n                <div class=\"selection\">New Topic</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                  <li class=\"item selected new-topic\" data-id=\"@new\">New Topic</li>\n                  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" data-trigger=\"change\" placeholder=\"example@mail.com\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>\n\n";
+  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" data-trigger=\"change\" placeholder=\"example@mail.com\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -1707,7 +1703,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " and all associated subscriptions?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>\n\n\n";
+  buffer += " and all associated subscriptions?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -1745,7 +1741,7 @@ function program2(depth0,data) {
   buffer += "<table class=\"table sns-detail\">\n    <thead>\n        <tr>\n            <th style=\"width: 48px;\">Protocol</th>\n            <th>Endpoint</th>\n            <th style=\"wdith: 30%;\">Subscription ARN</th>\n            <th style=\"width: 103px;\"></th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </tbody>\n</table>\n\n";
+  buffer += "\n    </tbody>\n</table>";
   return buffer;
   };
 TEMPLATE.detail=Handlebars.template(__TEMPLATE__);
@@ -1759,7 +1755,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"combo-dd-no-data\">\n    <p>No SNS Topic in "
     + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".</p>\n    <a class=\"create-one\">Create SNS Topic</a>\n</div>\n";
+    + ".</p>\n    <a class=\"create-one\">Create SNS Topic</a>\n</div>";
   return buffer;
   };
 TEMPLATE.nosns=Handlebars.template(__TEMPLATE__);
@@ -2212,7 +2208,8 @@ return TEMPLATE; });
         var options;
         options = {
           manageBtnValue: lang.ide.PROP_INSTANCE_MANAGE_SNS,
-          filterPlaceHolder: lang.ide.PROP_INSTANCE_FILTER_SNS
+          filterPlaceHolder: lang.ide.PROP_INSTANCE_FILTER_SNS,
+          classList: 'sns-dropdown'
         };
         this.dropdown = new comboDropdown(options);
         this.dropdown.on('open', this.show, this);
@@ -2333,7 +2330,7 @@ define('component/dhcp/dhcp_template.js',['handlebars'], function(Handlebars){ v
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
@@ -2376,9 +2373,8 @@ function program6(depth0,data) {
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAuto), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.selection=Handlebars.template(__TEMPLATE__);
 
@@ -2386,7 +2382,7 @@ TEMPLATE.selection=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -2427,9 +2423,8 @@ function program5(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.items), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.content=Handlebars.template(__TEMPLATE__);
 
@@ -2493,7 +2488,6 @@ function program5(depth0,data) {
   buffer += "\n\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
   return buffer;
   };
 TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
@@ -2522,7 +2516,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>\n\n\n";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -3105,7 +3099,7 @@ define('component/snapshot/snapshot_template.js',['handlebars'], function(Handle
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -3140,9 +3134,8 @@ function program6(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 
@@ -3150,7 +3143,7 @@ TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -3195,9 +3188,8 @@ function program4(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.items), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.content=Handlebars.template(__TEMPLATE__);
 
@@ -3225,7 +3217,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>\n\n\n";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -3247,7 +3239,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input tooltip\" placeholder=\"Up to 255 characters\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC_TIP", {hash:{},data:data}))
-    + "\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>\n\n";
+    + "\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -3682,12 +3674,10 @@ define('component/sslcert/sslCertTpl',['handlebars'], function(Handlebars){ var 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n\n";
-  return buffer;
+  return escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   };
 TEMPLATE.dropdown_selection=Handlebars.template(__TEMPLATE__);
 
@@ -3695,7 +3685,7 @@ TEMPLATE.dropdown_selection=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
@@ -3719,9 +3709,8 @@ function program2(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.dropdown_list=Handlebars.template(__TEMPLATE__);
 
@@ -3729,7 +3718,7 @@ TEMPLATE.dropdown_list=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -3753,9 +3742,8 @@ function program1(depth0,data) {
   }
 
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.modal_list=Handlebars.template(__TEMPLATE__);
 
@@ -3774,7 +3762,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LBL_LISTENER_PUBLIC_KEY", {hash:{},data:data}))
     + "</label>\n            <textarea placeholder=\"Required. PEM Encoded\" class=\"input ssl-cert-input\" data-required=\"true\" id=\"ssl-cert-publickey-input\"></textarea>\n        </div>\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\"  >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LBL_LISTENER_CERTIFICATE_CHAIN", {hash:{},data:data}))
-    + "</label>\n            <textarea placeholder=\"Optional. PEM Encoded\" class=\"input ssl-cert-input\" id=\"ssl-cert-chain-input\"></textarea>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Upload</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Upload...</button>\n    </div>\n</div>\n\n";
+    + "</label>\n            <textarea placeholder=\"Optional. PEM Encoded\" class=\"input ssl-cert-input\" id=\"ssl-cert-chain-input\"></textarea>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Upload</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Upload...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -3805,7 +3793,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " ?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>\n\n";
+  buffer += " ?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -3819,7 +3807,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"slide-update\" data-bind=\"true\">\n    <div class=\"modal-ssl-cert-update\">\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\">Certificate Name</label>\n            <input class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.cert_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"text\" data-required=\"true\" id=\"ssl-cert-name-update-input\"/>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"update\">Update</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Updating...</button>\n    </div>\n</div>\n\n";
+    + "\" type=\"text\" data-required=\"true\" id=\"ssl-cert-name-update-input\"/>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"update\">Update</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Updating...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_update=Handlebars.template(__TEMPLATE__);
@@ -3839,7 +3827,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.Expiration)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Path</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Path)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n    </div>\n</div>\n\n";
+    + "</div>\n        </section>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.detail_info=Handlebars.template(__TEMPLATE__);
@@ -3851,7 +3839,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"combo-dd-no-data\">\n    <p>No SSL Certificate.</p>\n    <a class=\"create-one\">Create SSL Certificate</a>\n</div>\n";
+  return "<div class=\"combo-dd-no-data\">\n    <p>No SSL Certificate.</p>\n    <a class=\"create-one\">Create SSL Certificate</a>\n</div>";
   };
 TEMPLATE.no_sslcert=Handlebars.template(__TEMPLATE__);
 
@@ -4218,11 +4206,9 @@ return TEMPLATE; });
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0]) {
-            if (this.dropdown.getSelection() === 'None') {
-              this.dropdown.trigger('change', data[0].id);
-              this.dropdown.setSelection(data[0].Name);
-              $(this.el).removeClass('empty');
-            }
+            this.dropdown.trigger('change', data[0].id);
+            this.dropdown.setSelection(data[0].Name);
+            $(this.el).removeClass('empty');
           }
         }
         return this;
@@ -4232,11 +4218,9 @@ return TEMPLATE; });
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0]) {
-            if (this.dropdown.getSelection() === 'None') {
-              this.dropdown.trigger('change', data[0].id);
-              this.dropdown.setSelection(data[0].Name);
-              $(this.el).removeClass('empty');
-            }
+            this.dropdown.trigger('change', data[0].id);
+            this.dropdown.setSelection(data[0].Name);
+            $(this.el).removeClass('empty');
           }
           if (filter) {
             len = keyword.length;
@@ -4249,15 +4233,7 @@ return TEMPLATE; });
         return false;
       },
       renderDropdownList: function(data) {
-        var selection;
         if (data.length) {
-          selection = this.dropdown.getSelection();
-          _.each(data, function(d) {
-            if (d.Name && d.Name === selection) {
-              d.selected = true;
-            }
-            return null;
-          });
           return this.dropdown.setContent(template.dropdown_list(data)).toggleControls(true);
         } else {
           return this.dropdown.setContent(template.no_sslcert({})).toggleControls(true);
@@ -4277,9 +4253,7 @@ return TEMPLATE; });
       manage: function() {
         return new sslCertManage().render();
       },
-      set: function(id, data) {
-        return this.trigger('change', id);
-      },
+      set: function() {},
       filter: function(keyword) {
         return this.processCol(true, keyword);
       }

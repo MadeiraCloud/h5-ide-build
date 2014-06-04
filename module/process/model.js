@@ -1,5 +1,5 @@
 (function() {
-  define(['i18n!nls/lang.js', 'aws_model', 'ami_model', 'event', 'constant', 'forge_handle', 'UI.notification', 'backbone', 'jquery', 'underscore'], function(lang, aws_model, ami_model, ide_event, constant, forge_handle) {
+  define(['i18n!nls/lang.js', 'aws_model', 'ami_model', 'event', 'constant', 'forge_handle', 'ApiRequest', 'UI.notification', 'backbone', 'jquery', 'underscore'], function(lang, aws_model, ami_model, ide_event, constant, forge_handle, ApiRequest) {
     var ProcessModel, model;
     ProcessModel = Backbone.Model.extend({
       defaults: {
@@ -187,9 +187,37 @@
             delete resources.origin;
           }
           MC.session.remove('aws_resource_' + region);
-          aws_model.resource({
-            sender: this
-          }, $.cookie('usercode'), $.cookie('session_id'), region, resources, 'vpc', 1);
+          MC.data.app_info = {};
+          ApiRequest("app_get_info", {
+            username: $.cookie('usercode'),
+            session_id: $.cookie('session_id'),
+            vpc_ids: [vpc_id]
+          }).then((function(_this) {
+            return function(result) {
+              console.info(result);
+              if (result.length === 0) {
+                console.warn("can not get app by vpc_id [" + vpc_id + "]");
+              } else if (result.length === 1) {
+                if (result[0] && result[0].id) {
+                  MC.data.app_info[vpc_id] = result[0];
+                } else {
+                  console.warn("can not get app info by vpc_id [" + vpc_id + "]");
+                }
+              } else {
+                console.warn("can not get more than one app by one vpc_id [" + vpc_id + "]");
+              }
+              return aws_model.resource({
+                sender: _this
+              }, $.cookie('usercode'), $.cookie('session_id'), region, resources, 'vpc', 1);
+            };
+          })(this), function(err) {
+            if (err.error < 0) {
+              window.location.reload();
+            } else {
+              App.logout();
+            }
+            throw err;
+          });
           MC.common.other.setCacheMap(vpc_id, null, 'OLD', null);
         } else if (state === 'OLD_PROCESS') {
           obj = MC.common.other.searchCacheMap({

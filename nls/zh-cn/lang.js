@@ -225,6 +225,7 @@ define({
         "TOOL_POP_BODY_EXPORT_AS_JSON": "The stack is ready to export. Please click the Download button to save the file.",
         "TOOL_POP_BTN_DOWNLOAD": "保存",
         "TOOL_EXPORT_AS_PNG": "导出图片",
+        "TOOL_SAVE_AS_APP": "保存为应用",
         "TOOL_EXPORT_AS_CF": "导出JSON文件",
         "TOOL_TIP_STOP_APP": "暂停应用",
         "TOOL_TIP_CONTAINS_INSTANCE_STORED": "不能暂停这个应用，因为它包含实例存储映像",

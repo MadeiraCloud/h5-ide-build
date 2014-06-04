@@ -5573,7 +5573,7 @@
       return aws_result;
     };
     resourceMap = function(result) {
-      var action_name, dict, dict_name, elbHealthData, node, parseResult, responses, _i, _len;
+      var action_name, dict, dict_name, elbHealthData, node, responses, vpcAttr, _i, _len;
       responses = {
         "DescribeImagesResponse": ami_service.resolveDescribeImagesResult,
         "DescribeAvailabilityZonesResponse": ec2_service.resolveDescribeAvailabilityZonesResult,
@@ -5603,7 +5603,8 @@
         "DescribeScalingActivitiesResponse": autoscaling_service.resolveDescribeScalingActivitiesResult,
         "DescribeAlarmsResponse": cloudwatch_service.resolveDescribeAlarmsResult,
         "ListSubscriptionsResponse": sns_service.resolveListSubscriptionsResult,
-        "ListTopicsResponse": sns_service.resolveListTopicsResult
+        "ListTopicsResponse": sns_service.resolveListTopicsResult,
+        "DescribeVpcAttributeResponse": vpc_service.resolveDescribeVpcAttributeResult
       };
       dict = {};
       for (_i = 0, _len = result.length; _i < _len; _i++) {
@@ -5612,14 +5613,26 @@
           if ($.type(node) === "string") {
             action_name = ($.parseXML(node)).documentElement.localName;
             dict_name = action_name.replace(/Response/i, "");
-            if (dict[dict_name] != null) {
-              dict[dict_name] = [];
-            }
-            if (!(action_name in responses)) {
+            if (!responses[action_name]) {
+              console.warn("[resourceMap] can not find action_name [" + action_name + "]");
               continue;
             }
-            parseResult = responses[action_name]([null, node]);
-            dict[dict_name] = parseResult;
+            if (action_name === "DescribeVpcAttributeResponse") {
+              if (!dict[dict_name]) {
+                dict[dict_name] = {};
+              }
+              vpcAttr = responses[action_name]([null, node]);
+              if (vpcAttr.enableDnsSupport) {
+                dict[dict_name]['enableDnsSupport'] = vpcAttr.enableDnsSupport.value;
+              } else if (vpcAttr.enableDnsHostnames) {
+                dict[dict_name]['enableDnsHostnames'] = vpcAttr.enableDnsHostnames.value;
+              }
+            } else {
+              if (dict[dict_name] != null) {
+                dict[dict_name] = [];
+              }
+              dict[dict_name] = responses[action_name]([null, node]);
+            }
           } else if ($.type(node) === "object") {
             elbHealthData = node["DescribeInstanceHealth"];
             if (elbHealthData) {
@@ -5724,10 +5737,13 @@
       "DescribeAutoScalingGroups": MC.common ? MC.common.convert.convertASG : {},
       "DescribeLaunchConfigurations": MC.common ? MC.common.convert.convertLC : {},
       "DescribeNotificationConfigurations": MC.common ? MC.common.convert.convertNC : {},
-      "DescribePolicies": MC.common ? MC.common.convert.convertScalingPolicy : {}
+      "DescribePolicies": MC.common ? MC.common.convert.convertScalingPolicy : {},
+      'resolveEC2Tag': MC.common ? MC.common.convert.resolveEC2Tag : {},
+      'removeAppId': MC.common ? MC.common.convert.removeAppId : {},
+      'resourceId2CompUid': MC.common ? MC.common.convert.resourceId2CompUid : {}
     };
     resolveVpcResourceResult = function(result) {
-      var app_json, asg, c, comp, comp_tmp, device, extend_asg, extend_asg_uid, i, idx, ignore_instances, ins, key_obj, keypair_name, layout, new_comp, new_layout, new_uid, nodes, originalId, ref_key, ref_res, region, remove_index, remove_uid, res, resource_comp, resource_type, subnet, subnets, subs, uid, uid_tmp, used_az, vpc_id, vpc_resource_layout_map, vpc_uid, zone, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _len7, _len8, _m, _n, _o, _p, _q, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+      var app_json, asg, c, comp, comp_tmp, default_kp, default_sg, device, extend_asg, extend_asg_uid, i, idx, ignore_instances, ins, key_obj, layout, new_comp, new_layout, new_uid, nodes, originalId, prefix, ref_key, ref_res, region, remove_index, remove_uid, res, resId, resKey, resource2uid, resource_comp, resource_type, subnet, subnets, subs, uid, uid_tmp, used_az, vpc_attr_data, vpc_id, vpc_resource_layout_map, vpc_tag, vpc_uid, zone, _comp, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _p, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9, _uid;
       vpc_resource_layout_map = {
         'AWS.EC2.AvailabilityZone': MC.canvas.AZ_JSON,
         'AWS.EC2.Instance': MC.canvas.INSTANCE_JSON,
@@ -5754,6 +5770,56 @@
         nodes = res[region];
         MC.aws.aws.cacheResource(nodes, region, false);
         app_json.region = region;
+        app_json.username = $.cookie('usercode');
+        app_json.owner = $.cookie('usercode');
+        app_json.state = "Running";
+        app_json.stack_id = "";
+        app_json.description = "This app is created by visualops";
+        app_json.history = {
+          event: {},
+          time: {
+            created: Math.round(new Date().getTime() / 1000),
+            last: Math.round(new Date().getTime() / 1000),
+            run: 0,
+            terminate: ""
+          }
+        };
+        default_sg = {};
+        default_kp = null;
+        vpc_tag = {};
+        resource2uid = {};
+        vpc_attr_data = null;
+        for (resource_type in nodes) {
+          resource_comp = nodes[resource_type];
+          if (resource_type !== "DescribeVpcs" && resource_type !== "DescribeVpcAttribute") {
+            continue;
+          }
+          if (resource_comp && resource_type === "DescribeVpcs") {
+            vpc_id = resource_comp[0].vpcId;
+            vpc_tag = vpc_resource_map["resolveEC2Tag"](resource_comp[0].tagSet);
+          } else if (resource_comp && resource_type === "DescribeVpcAttribute") {
+            vpc_attr_data = resource_comp;
+          }
+        }
+        if (vpc_id && MC.data.app_info && MC.data.app_info[vpc_id]) {
+          resource2uid = vpc_resource_map["resourceId2CompUid"](MC.data.app_info[vpc_id].component);
+          app_json = $.extend(true, {}, MC.data.app_info[vpc_id]);
+          app_json.id = "";
+          app_json.component = {};
+          app_json.layout = {
+            component: {
+              group: {},
+              node: {}
+            }
+          };
+          _ref = MC.data.app_info[vpc_id].component;
+          for (_uid in _ref) {
+            _comp = _ref[_uid];
+            if (_comp.type === 'AWS.EC2.KeyPair' && _comp.name === 'DefaultKP') {
+              default_kp = _comp;
+            }
+          }
+        }
         for (resource_type in nodes) {
           resource_comp = nodes[resource_type];
           if (resource_type === 'DescribeInstanceHealth') {
@@ -5761,38 +5827,21 @@
           }
           if (resource_comp) {
             if (resource_type === 'DescribeAvailabilityZones') {
-              _ref = resource_comp.item;
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                comp = _ref[_i];
+              _ref1 = resource_comp.item;
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                comp = _ref1[_i];
                 c = vpc_resource_map[resource_type](comp);
+                resKey = constant.AWS_RESOURCE_KEY[c.type];
+                resId = c.resource[resKey];
+                if (resKey && resId && resource2uid[resId]) {
+                  c.uid = resource2uid[resId];
+                }
                 app_json.component[c.uid] = c;
               }
             } else {
-              if (resource_type === 'DescribeInstances') {
-                keypair_name = [];
+              if (resource_type === 'DescribeLaunchConfigurations') {
                 for (_j = 0, _len1 = resource_comp.length; _j < _len1; _j++) {
                   comp = resource_comp[_j];
-                  if (!comp.keyName) {
-                    comp.keyName = "DefaultKP";
-                  }
-                  if (_ref1 = comp.keyName, __indexOf.call(keypair_name, _ref1) < 0) {
-                    keypair_name.push(comp.keyName);
-                    key_obj = {};
-                    key_obj.keyName = comp.keyName;
-                    key_obj.keyFingerprint = 'resource_import';
-                    c = vpc_resource_map["DescribeKeyPairs"](key_obj);
-                    if (c) {
-                      app_json.component[c.uid] = c;
-                    }
-                  }
-                }
-              }
-              if (resource_type === "DescribeVpcs") {
-                vpc_id = resource_comp[0].vpcId;
-              }
-              if (resource_type === 'DescribeLaunchConfigurations') {
-                for (_k = 0, _len2 = resource_comp.length; _k < _len2; _k++) {
-                  comp = resource_comp[_k];
                   remove_index = [];
                   if (comp.BlockDeviceMappings) {
                     _ref2 = comp.BlockDeviceMappings.member;
@@ -5804,33 +5853,89 @@
                     }
                   }
                   remove_index = remove_index.sort().reverse();
-                  for (_l = 0, _len3 = remove_index.length; _l < _len3; _l++) {
-                    i = remove_index[_l];
+                  for (_k = 0, _len2 = remove_index.length; _k < _len2; _k++) {
+                    i = remove_index[_k];
                     comp.BlockDeviceMappings.member.splice(i, 1);
                   }
                 }
               }
               if (resource_type === 'DescribeAutoScalingGroups') {
-                for (_m = 0, _len4 = resource_comp.length; _m < _len4; _m++) {
-                  asg = resource_comp[_m];
+                for (_l = 0, _len3 = resource_comp.length; _l < _len3; _l++) {
+                  asg = resource_comp[_l];
                   if (asg.Instances) {
                     _ref3 = asg.Instances.member;
-                    for (_n = 0, _len5 = _ref3.length; _n < _len5; _n++) {
-                      ins = _ref3[_n];
+                    for (_m = 0, _len4 = _ref3.length; _m < _len4; _m++) {
+                      ins = _ref3[_m];
                       ignore_instances.push(ins.InstanceId);
                     }
                   }
                 }
               }
-              for (_o = 0, _len6 = resource_comp.length; _o < _len6; _o++) {
-                comp = resource_comp[_o];
-                c = vpc_resource_map[resource_type](comp);
+              for (_n = 0, _len5 = resource_comp.length; _n < _len5; _n++) {
+                comp = resource_comp[_n];
+                if (!vpc_resource_map[resource_type]) {
+                  console.warn("[resolveVpcResourceResult] not found resource_type " + resource_type + " in vpc_resource_map");
+                  continue;
+                }
+                if (resource_type === "DescribeVpcs") {
+                  c = vpc_resource_map[resource_type](comp, vpc_attr_data);
+                } else if (resource_type === "DescribeVolumes") {
+                  c = vpc_resource_map[resource_type](comp, region);
+                } else if (resource_type === "DescribeInstances") {
+                  c = vpc_resource_map[resource_type](comp, default_kp);
+                } else {
+                  c = vpc_resource_map[resource_type](comp);
+                }
                 if (c) {
+                  resKey = constant.AWS_RESOURCE_KEY[c.type];
+                  resId = c.resource[resKey];
+                  if (resKey && resId && resource2uid[resId]) {
+                    c.uid = resource2uid[resId];
+                  }
                   app_json.component[c.uid] = c;
+                  if (resource_type === "DescribeInstances") {
+                    if (vpc_tag.isApp && MC.data.app_info && MC.data.app_info[vpc_id] && MC.data.app_info[vpc_id].component[c.uid]) {
+                      c.state = MC.data.app_info[vpc_id].component[c.uid].state;
+                    }
+                  }
+                  if (resource_type === 'DescribeSecurityGroups') {
+                    if (vpc_tag.isApp) {
+                      prefix = "VPC-" + vpc_tag.app + "-";
+                      c.name = c.resource.GroupName.substr(0, c.resource.GroupName.lastIndexOf("-app-")).substr(prefix.length);
+                    }
+                    if (c.resource.GroupName.indexOf("DefaultSG") !== -1) {
+                      default_sg["DefaultSG"] = c.uid;
+                    } else if (c.resource.GroupName === "default") {
+                      default_sg["default"] = c.uid;
+                    }
+                  }
                 }
               }
             }
           }
+        }
+        if (default_sg["DefaultSG"]) {
+          app_json.component[default_sg["DefaultSG"]].resource.Default = true;
+          app_json.component[default_sg["DefaultSG"]].name = "DefaultSG";
+          if (default_sg["default"]) {
+            delete app_json.component[default_sg["default"]];
+          }
+        } else if (default_sg["default"]) {
+          app_json.component[default_sg["default"]].resource.Default = true;
+          app_json.component[default_sg["default"]].resource.GroupName = "DefaultSG";
+          app_json.component[default_sg["default"]].name = "DefaultSG";
+        }
+        if (!default_kp) {
+          key_obj = {};
+          key_obj.keyName = '';
+          key_obj.keyFingerprint = '';
+          c = vpc_resource_map["DescribeKeyPairs"](key_obj);
+        } else {
+          c = default_kp;
+        }
+        if (c) {
+          c.name = "DefaultKP";
+          app_json.component[c.uid] = c;
         }
       }
       app_json.name = app_json.id = vpc_id;
@@ -5861,8 +5966,8 @@
           remove_uid.push(c.uid);
         }
       }
-      for (_p = 0, _len7 = remove_uid.length; _p < _len7; _p++) {
-        uid = remove_uid[_p];
+      for (_o = 0, _len6 = remove_uid.length; _o < _len6; _o++) {
+        uid = remove_uid[_o];
         delete app_json.component[uid];
       }
       ref_res = MC.aws.aws.collectReference(app_json.component);
@@ -5888,8 +5993,8 @@
               subnets = [];
               if (c.resource.VPCZoneIdentifier) {
                 subs = c.resource.VPCZoneIdentifier.split(',');
-                for (_q = 0, _len8 = subs.length; _q < _len8; _q++) {
-                  subnet = subs[_q];
+                for (_p = 0, _len7 = subs.length; _p < _len7; _p++) {
+                  subnet = subs[_p];
                   if (subnet[0] !== "@") {
                     subnets.push(MC.extractID(ref_key[subnet]));
                   } else {
