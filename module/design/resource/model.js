@@ -676,10 +676,10 @@
         if (MC.data.config[regionName] && MC.data.config[regionName].ami_list) {
           MC.data.config[regionName].ami_list = null;
         }
-        if (MC.data.config[regionName] && MC.data.config[regionName].snapshot_list) {
+        if (MC.data.config[regionName] && MC.data.config[regionName].my_ami) {
           MC.data.config[regionName].my_ami = null;
         }
-        if (MC.data.config[regionName] && MC.data.config[regionName].snapshot_list) {
+        if (MC.data.config[regionName] && MC.data.config[regionName].favorite_ami) {
           MC.data.config[regionName].favorite_ami = null;
         }
         if (MC.data.config[regionName] && MC.data.config[regionName].snapshot_list) {
@@ -698,7 +698,7 @@
         if (refreshResourceCount >= 0) {
           that.set('refresh_resource_count', ++refreshResourceCount);
         }
-        if (refreshResourceCount === 5) {
+        if ((refreshResourceCount === 5) || (window.App && (!App.user.hasCredential()) && refreshResourceCount === 2)) {
           that.trigger('refresh_resource_finish');
           return that.set('refresh_resource_count', null);
         }

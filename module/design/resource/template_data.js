@@ -72,6 +72,22 @@ TEMPLATE.availability_zone_data=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<li class=\"tooltip resource-item\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VOLUME", {hash:{},data:data}))
+    + "' data-component-type=\"node\" data-type=\"AWS.EC2.EBS.Volume\" data-option='' >\n	<div class=\"resource-icon resource-icon-volume\"></div>\n	<div class=\"resource-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL", {hash:{},data:data}))
+    + "</div>\n</li>";
+  return buffer;
+  };
+TEMPLATE.resoruce_snapshot_new_data=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {

@@ -219,13 +219,13 @@ Refer to kpView.coffee
       },
       __handleSlide: function(event) {
         var $activeButton, $button, $slidebox, activeButton, button;
-        if (this.__slideRejct()) {
-          return this;
-        }
         $button = $(event.currentTarget);
         $slidebox = this.$('.slidebox');
         button = $button.data('btn');
         if (button === 'refresh') {
+          return this;
+        }
+        if (this.__slideRejct()) {
           return this;
         }
         $activeButton = this.$('.toolbar .active');
@@ -348,16 +348,19 @@ Refer to kpView.coffee
         return this;
       },
       __renderContent: function() {
-        var data;
-        data = this.options;
-        data.buttons = _.reject(data.buttons, function(btn) {
-          if (btn.type === 'create') {
-            data.btnValueCreate = btn.name;
-            return true;
-          }
-        });
-        this.$('.content-wrap').html(template.content(data));
-        return this;
+        var $contentWrap, data;
+        $contentWrap = this.$('.content-wrap');
+        if (!$contentWrap.find('.toolbar').size()) {
+          data = this.options;
+          data.buttons = _.reject(data.buttons, function(btn) {
+            if (btn.type === 'create') {
+              data.btnValueCreate = btn.name;
+              return true;
+            }
+          });
+          this.$('.content-wrap').html(template.content(data));
+          return this;
+        }
       },
       render: function(refresh) {
         var tpl;
@@ -1064,9 +1067,7 @@ return TEMPLATE; });
         return this.modal.cancel();
       },
       refresh: function() {
-        if (!this.needDownload()) {
-          return this.model.getKeys();
-        }
+        return this.model.getKeys();
       },
       renderSlides: function(which, checked) {
         var slides, tpl, _ref;
@@ -3857,7 +3858,9 @@ return TEMPLATE; });
       tagName: 'section',
       initCol: function() {
         this.sslCertCol = CloudResources(constant.RESTYPE.IAM);
-        this.sslCertCol.fetch();
+        if (App.user.hasCredential()) {
+          this.sslCertCol.fetch();
+        }
         this.sslCertCol.on('update', this.processCol, this);
         return this.sslCertCol.on('change', this.processCol, this);
       },
@@ -4070,7 +4073,11 @@ return TEMPLATE; });
       },
       render: function() {
         this.modal.render();
-        this.processCol();
+        if (App.user.hasCredential()) {
+          this.processCol();
+        } else {
+          this.modal.render('nocredential');
+        }
         return this;
       },
       processCol: function() {
@@ -4154,6 +4161,7 @@ return TEMPLATE; });
       },
       show: function() {
         if (App.user.hasCredential()) {
+          this.sslCertCol.fetch();
           return this.processCol();
         } else {
           return this.renderNoCredential();
@@ -4201,7 +4209,7 @@ return TEMPLATE; });
         return new sslCertManage().render().quickCreate();
       },
       render: function() {
-        var data, selectionName;
+        var selectionName;
         selectionName = this.sslCertName || 'None';
         this.el = this.dropdown.el;
         if (selectionName === 'None') {
@@ -4209,29 +4217,27 @@ return TEMPLATE; });
           this.sslCertCol.fetch();
         }
         this.dropdown.setSelection(selectionName);
+        return this;
+      },
+      setDefault: function() {
+        var data;
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
-          if (data && data[0]) {
+          if (data && data[0] && this.uid) {
             if (this.dropdown.getSelection() === 'None') {
               this.dropdown.trigger('change', data[0].id);
               this.dropdown.setSelection(data[0].Name);
-              $(this.el).removeClass('empty');
+              Design.instance().component(this.uid).setSSLCert(this.listenerNum, data[0].id);
+              return $(this.el).removeClass('empty');
             }
           }
         }
-        return this;
       },
       processCol: function(filter, keyword) {
         var data, len;
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
-          if (data && data[0]) {
-            if (this.dropdown.getSelection() === 'None') {
-              this.dropdown.trigger('change', data[0].id);
-              this.dropdown.setSelection(data[0].Name);
-              $(this.el).removeClass('empty');
-            }
-          }
+          this.setDefault();
           if (filter) {
             len = keyword.length;
             data = _.filter(data, function(d) {
@@ -4272,12 +4278,8 @@ return TEMPLATE; });
         return new sslCertManage().render();
       },
       set: function(id, data) {
-        var sslCertData, sslCertName;
-        sslCertData = this.sslCertCol.get(id);
-        if (sslCertData && sslCertData.get('Name')) {
-          sslCertName = sslCertData.get('Name');
-          $(this.el).find('.combo-dd-list .item').removeClass('selected');
-          return $(this.el).find(".combo-dd-list .item[data-name='" + sslCertName + "']").addClass('selected');
+        if (this.uid && id) {
+          return Design.instance().component(this.uid).setSSLCert(this.listenerNum, id);
         }
       },
       filter: function(keyword) {

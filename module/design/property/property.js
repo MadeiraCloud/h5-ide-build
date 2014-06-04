@@ -6217,20 +6217,17 @@ function program3(depth0,data) {
         elbModel = Design.instance().component(this.get("uid"));
         return elbModel.setPolicyProxyProtocol(enable, portAry);
       },
-      initNewSSLCertDropDown: function(idx) {
+      initNewSSLCertDropDown: function(idx, $listenerItem) {
         var elbModel, sslCertDropDown, sslCertModel, that;
         that = this;
         elbModel = Design.instance().component(this.get("uid"));
         sslCertDropDown = new SSLCertDropdown();
+        sslCertDropDown.uid = this.get('uid');
+        sslCertDropDown.listenerNum = idx;
         sslCertModel = elbModel.getSSLCert(idx);
         if (sslCertModel) {
           sslCertDropDown.sslCertName = sslCertModel.get('name');
         }
-        sslCertDropDown.dropdown.on('change', function(sslCertId) {
-          var listenerNum;
-          listenerNum = $(this.el).parents('.elb-property-listener').index();
-          return Design.instance().component(that.get("uid")).setSSLCert(listenerNum, sslCertId);
-        }, sslCertDropDown);
         return sslCertDropDown;
       }
     });
@@ -6646,13 +6643,15 @@ function program32(depth0,data) {
         this.$el.html(template(this.model.attributes));
         this.updateSlider($('#elb-property-slider-unhealthy'), this.model.get('unHealthyThreshold') - 2);
         this.updateSlider($('#elb-property-slider-healthy'), this.model.get('healthyThreshold') - 2);
-        this.updateCertView();
         _.each(this.$('.sslcert-placeholder'), function(sslCertPlaceHolder, idx) {
-          var $sslCertPlaceHolder, sslCertDropDown;
+          var $listenerItem, $sslCertPlaceHolder, sslCertDropDown;
           $sslCertPlaceHolder = $(sslCertPlaceHolder);
+          $listenerItem = $sslCertPlaceHolder.parents('.elb-property-listener');
           sslCertDropDown = that.model.initNewSSLCertDropDown(idx);
+          $listenerItem.data('sslCertDropDown', sslCertDropDown);
           return $sslCertPlaceHolder.html(sslCertDropDown.render().el);
         });
+        this.updateCertView();
         return this.model.attributes.name;
       },
       elbNameChange: function(event) {
@@ -6751,18 +6750,22 @@ function program32(depth0,data) {
         }
       },
       listenerItemAddClicked: function(event) {
-        var $li, $selectbox, $sslCertPlaceHolder, sslCertDropDown, that;
+        var $li, $listenerItem, $portInput, $selectbox, $sslCertPlaceHolder, sslCertDropDown, that;
         that = this;
         $li = $("#elb-property-listener-list").children().eq(0).clone();
         $li.find(".elb-property-listener-item-remove").show();
         $selectbox = $li.find("ul");
+        $portInput = $li.find('input.input');
+        $portInput.val('80');
         $selectbox.children(".selected").removeClass("selected");
         $selectbox.children(":first-child").addClass("selected");
         $selectbox.prev(".selection").text("HTTP");
         $('#elb-property-listener-list').append($li);
         this.updateListener($li);
         $sslCertPlaceHolder = $li.find('.sslcert-placeholder');
+        $listenerItem = $sslCertPlaceHolder.parents('.elb-property-listener');
         sslCertDropDown = that.model.initNewSSLCertDropDown($li.index());
+        $listenerItem.data('sslCertDropDown', sslCertDropDown);
         $sslCertPlaceHolder.html(sslCertDropDown.render().el);
         return false;
       },
@@ -6956,10 +6959,15 @@ function program32(depth0,data) {
       },
       updateCertView: function() {
         $("#elb-property-listener-list").children().each(function() {
-          var $certPanel, protocol;
+          var $certPanel, $listenerItem, protocol, sslCertDropDown;
           protocol = $(this).find(".elb-property-elb-protocol .selected").text();
           $certPanel = $(this).find(".sslcert-select");
           if (protocol === "HTTPS" || protocol === "SSL") {
+            $listenerItem = $(this);
+            sslCertDropDown = $listenerItem.data('sslCertDropDown');
+            if (sslCertDropDown) {
+              sslCertDropDown.setDefault();
+            }
             return $certPanel.show();
           } else {
             return $certPanel.hide();

@@ -15,6 +15,7 @@
       render: function() {
         console.log('resource render');
         $('#resource-panel').html(template());
+        $('.resoruce-snapshot').html(template_data.resoruce_snapshot_new_data({}));
         ide_event.trigger(ide_event.DESIGN_SUB_COMPLETE);
         this.recalcAccordion();
         return null;
@@ -226,7 +227,8 @@
         if (!this.model.attributes.resource_snapshot) {
           return;
         }
-        $('.resoruce-snapshot').html(template_data.resoruce_snapshot_data(this.model.attributes));
+        $('.resoruce-snapshot').html(template_data.resoruce_snapshot_new_data({}));
+        $('.resoruce-snapshot').append(template_data.resoruce_snapshot_data(this.model.attributes));
         return null;
       },
       quickstartAmiRender: function() {

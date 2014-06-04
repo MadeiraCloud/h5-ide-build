@@ -10,7 +10,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
     + "\n	<i class=\"js-toggle-dropdown menu-manage-shard-res icon-resources\"></i>\n	<ul class=\"dropdown-menu resources-dropdown-wrapper\">\n		<li data-action=\"keypair\">Manage Key Pairs...</li>\n		<li data-action=\"snapshot\">Manage EBS Snapshots...</li>\n		<li data-action=\"sns\">Manage SNS Topic & Subscriptions...</li>\n		<li data-action=\"sslcert\">Manage Server Certificates...</li>\n		<li data-action=\"dhcp\">Manage DHCP Option Sets...</li>\n	</ul>\n	<i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</div>\n\n<div class=\"fixedaccordion accordion-default\">\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AZ", {hash:{},data:data}))
-    + "</div>\n		<div class=\"accordion-body\">\n			<ul class=\"availability-zone resource-list clearfix\">loading...</ul>\n		</div>\n	</div>\n\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
+    + "</div>\n		<div class=\"accordion-body\">\n			<ul class=\"availability-zone resource-list clearfix\"></ul>\n		</div>\n	</div>\n\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AMI", {hash:{},data:data}))
     + "</div>\n		<div class=\"selectbox resource-select dark\" id=\"resource-select\">\n			<div class=\"selection\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_QUICK_START_AMI", {hash:{},data:data}))
@@ -20,13 +20,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_MY_AMI", {hash:{},data:data}))
     + "</li>\n				<li class=\"item\" data-id=\"favorite-ami\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_FAVORITE_AMI", {hash:{},data:data}))
-    + "</li>\n			</ul>\n		</div>\n		<div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n			<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n			<div class=\"item-wrap scroll-content\">\n				<ul class=\"quickstart-ami-list resource-list\">loading...</ul>\n				<ul class=\"my-ami-list resource-list hide\">loading...</ul>\n				<ul class=\"favorite-ami-list resource-list hide\">loading...</ul>\n			</div>\n			<div class=\"community-ami\">loading...</div>\n		</div>\n	</div>\n\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
+    + "</li>\n			</ul>\n		</div>\n		<div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n			<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n			<div class=\"item-wrap scroll-content\">\n				<ul class=\"quickstart-ami-list resource-list\"></ul>\n				<ul class=\"my-ami-list resource-list hide\"></ul>\n				<ul class=\"favorite-ami-list resource-list hide\"></ul>\n			</div>\n			<div class=\"community-ami\"></div>\n		</div>\n	</div>\n\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_VOL", {hash:{},data:data}))
-    + "</div>\n		<div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n			<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n			<div class=\"item-wrap scroll-content\">\n				<ul class=\"resoruce-snapshot resource-list\">\n					<li class=\"tooltip resource-item\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VOLUME", {hash:{},data:data}))
-    + "' data-component-type=\"node\" data-type=\"AWS.EC2.EBS.Volume\" data-option='' >\n						<div class=\"resource-icon resource-icon-volume\"></div>\n						<div class=\"resource-label\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL", {hash:{},data:data}))
-    + "</div>\n					</li>\n				</ul>\n			</div>\n            <div class=\"btn btn-primary\" id=\"btn-snapshot-manager\">"
+    + "</div>\n		<div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n			<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n			<div class=\"item-wrap scroll-content\">\n				<ul class=\"resoruce-snapshot resource-list\">\n				</ul>\n			</div>\n            <div class=\"btn btn-primary\" id=\"btn-snapshot-manager\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_SNAPSHOT_MANAGE", {hash:{},data:data}))
     + "</div>\n		</div>\n	</div>\n	<div class=\"accordion-group\">\n		<div class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_ELB_ASG", {hash:{},data:data}))
