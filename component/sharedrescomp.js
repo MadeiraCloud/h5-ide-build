@@ -1245,6 +1245,9 @@ Refer to kpView.coffee
         this.$('.selection').html(dom);
         return this;
       },
+      getSelection: function(dom) {
+        return $.trim(this.$('.selection').text());
+      },
       setContent: function(dom) {
         this.$('.combo-dd-content').html(template.listframe);
         this.$('.combo-dd-list').html(dom);
@@ -2224,7 +2227,7 @@ return TEMPLATE; });
         }
         this.initCol();
         this.initDropdown();
-        if (!this.selection && App.user.hasCredential()) {
+        if (App.user.hasCredential()) {
           this.topicCol.fetch();
           return this.subCol.fetch();
         }
@@ -2849,7 +2852,13 @@ return TEMPLATE; });
         return this.renderManager();
       },
       renderManager: function() {
-        var initManager;
+        var initManager, _ref;
+        if (!App.user.hasCredential()) {
+          if ((_ref = this.manager) != null) {
+            _ref.render('nocredential');
+          }
+          return false;
+        }
         initManager = this.initManager.bind(this);
         if (!fetched && !fetching) {
           fetching = true;
@@ -3300,11 +3309,7 @@ return TEMPLATE; });
         return Backbone.View.prototype.remove.call(this);
       },
       render: function() {
-        if (App.user.hasCredential()) {
-          return this.renderManager();
-        } else {
-          return this.renderNoCredential();
-        }
+        return this.renderManager();
       },
       renderDropdown: function() {
         var option, selection;
@@ -3409,13 +3414,8 @@ return TEMPLATE; });
       selectRegion: function(e) {
         return this.manager.$el.find('[data-action="duplicate"]').prop('disabled', false);
       },
-      renderNoCredential: function() {
-        return new modalPlus({
-          title: lang.ide.SETTINGS_CRED_DEMO_SETUP,
-          template: lang.ide.SETTINGS_CRED_DEMO_TIT
-        });
-      },
       renderManager: function() {
+        var _ref;
         this.manager = new toolbar_modal(this.getModalOptions());
         this.manager.on('refresh', this.refresh, this);
         this.manager.on("slidedown", this.renderSlides, this);
@@ -3426,6 +3426,12 @@ return TEMPLATE; });
           };
         })(this));
         this.manager.render();
+        if (!App.user.hasCredential()) {
+          if ((_ref = this.manager) != null) {
+            _ref.render('nocredential');
+          }
+          return false;
+        }
         return this.initManager();
       },
       refresh: function() {
@@ -4206,9 +4212,11 @@ return TEMPLATE; });
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0]) {
-            this.dropdown.trigger('change', data[0].id);
-            this.dropdown.setSelection(data[0].Name);
-            $(this.el).removeClass('empty');
+            if (this.dropdown.getSelection() === 'None') {
+              this.dropdown.trigger('change', data[0].id);
+              this.dropdown.setSelection(data[0].Name);
+              $(this.el).removeClass('empty');
+            }
           }
         }
         return this;
@@ -4218,9 +4226,11 @@ return TEMPLATE; });
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0]) {
-            this.dropdown.trigger('change', data[0].id);
-            this.dropdown.setSelection(data[0].Name);
-            $(this.el).removeClass('empty');
+            if (this.dropdown.getSelection() === 'None') {
+              this.dropdown.trigger('change', data[0].id);
+              this.dropdown.setSelection(data[0].Name);
+              $(this.el).removeClass('empty');
+            }
           }
           if (filter) {
             len = keyword.length;
@@ -4233,7 +4243,15 @@ return TEMPLATE; });
         return false;
       },
       renderDropdownList: function(data) {
+        var selection;
         if (data.length) {
+          selection = this.dropdown.getSelection();
+          _.each(data, function(d) {
+            if (d.Name && d.Name === selection) {
+              d.selected = true;
+            }
+            return null;
+          });
           return this.dropdown.setContent(template.dropdown_list(data)).toggleControls(true);
         } else {
           return this.dropdown.setContent(template.no_sslcert({})).toggleControls(true);
@@ -4253,7 +4271,15 @@ return TEMPLATE; });
       manage: function() {
         return new sslCertManage().render();
       },
-      set: function() {},
+      set: function(id, data) {
+        var sslCertData, sslCertName;
+        sslCertData = this.sslCertCol.get(id);
+        if (sslCertData && sslCertData.get('Name')) {
+          sslCertName = sslCertData.get('Name');
+          $(this.el).find('.combo-dd-list .item').removeClass('selected');
+          return $(this.el).find(".combo-dd-list .item[data-name='" + sslCertName + "']").addClass('selected');
+        }
+      },
       filter: function(keyword) {
         return this.processCol(true, keyword);
       }
