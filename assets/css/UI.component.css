@@ -1,6 +1,6 @@
-@import url("./component/toolbar-modal.css");
-@import url("./component/combo-dropdown.css");
-@import url("./component/drop-zone.css");
+@import url("./component/toolbar-modal.css?v=c9c7fc55");
+@import url("./component/combo-dropdown.css?v=81ddc937");
+@import url("./component/drop-zone.css?v=f1f65bce");
 
 /* Table */
 .table {
@@ -1776,7 +1776,7 @@ textarea {
 	right: 5px;
 	width: 16px;
 	height: 16px;
-	background: url('../images/ide/btn-fav-ami-unfaved-normal.png');
+	background: url('../images/ide/btn-fav-ami-unfaved-normal.png?v=906b4a87');
 }
 
 .toggle-fav:hover {
@@ -1784,15 +1784,15 @@ textarea {
 	right: 3px;
 	width: 20px;
 	height: 20px;
-	background: url('../images/ide/btn-fav-ami-unfaved-hover.png');
+	background: url('../images/ide/btn-fav-ami-unfaved-hover.png?v=6093bd2a');
 }
 
 .toggle-fav.faved {
-	background: url('../images/ide/btn-fav-ami-faved-normal.png');
+	background: url('../images/ide/btn-fav-ami-faved-normal.png?v=24c08ed2');
 }
 
 .toggle-fav.faved:hover {
-	background: url('../images/ide/btn-fav-ami-faved-hover.png');
+	background: url('../images/ide/btn-fav-ami-faved-hover.png?v=f2a87dfd');
 }
 
 /* searchbar */
@@ -2263,7 +2263,7 @@ input.parsley-error {
   height   : 40px;
 
   opacity : .8;
-  background : url("../images/ide/gearbig.svg");
+  background : url("../images/ide/gearbig.svg?v=3d55f265");
   background-size : 100% 100%;
 
   -webkit-animation : gear 2s linear infinite;
@@ -2279,7 +2279,7 @@ input.parsley-error {
   width     : 30px;
   height    : 30px;
   opacity   : .6;
-  background-image : url("../images/ide/gearsmall.svg");
+  background-image : url("../images/ide/gearsmall.svg?v=d0a553c0");
 
   -webkit-animation : smallgear 1.5s linear infinite;
      -moz-animation : smallgear 1.5s linear infinite;
