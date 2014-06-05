@@ -2397,33 +2397,75 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n            <label for=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n        </div>\n    </td>\n    <td>"
+    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\"></div>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n    <td>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0['domain-name'])),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0['domain-name'])),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0['domain-name-servers'])),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0['ntp-servers'])),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0['netbios-name-servers'])),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0['netbios-node-type']), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n</tr>\n";
   return buffer;
   }
 function program2(depth0,data) {
   
-  var stack1;
+  var buffer = "", stack1;
+  buffer += "domain-name = ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0['domain-name']), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ";";
+  return buffer;
   }
 function program3(depth0,data) {
   
   var buffer = "";
   buffer += escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "&nbsp;&nbsp;&nbsp;&nbsp;";
+    + " ";
   return buffer;
   }
 
 function program5(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "domain-name-servers = ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0['domain-name-servers']), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ";";
+  return buffer;
+  }
+
+function program7(depth0,data) {
   
-  return "&nbsp;Not set";
+  var buffer = "", stack1;
+  buffer += "ntp-servers = ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0['ntp-servers']), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ";";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "netbios-name-servers = ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0['netbios-name-servers']), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ";";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "netbios-node-type = "
+    + escapeExpression(((stack1 = (depth0 && depth0['netbios-node-type'])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  return buffer;
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.items), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -3092,8 +3134,8 @@ return TEMPLATE; });
               name: 'Name'
             }, {
               sortable: true,
-              width: "60%",
-              name: 'Domain-name'
+              width: "70%",
+              name: 'Options'
             }
           ]
         };
@@ -3119,10 +3161,14 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" tabindex=\"-1\">";
+    + "\" tabindex=\"-1\"><div class=\"manager-content-main\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</li>\n";
+  buffer += "</div><div class=\"manager-content-sub\">Size: "
+    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " &nbsp;&nbsp;&nbsp;&nbsp;Device: "
+    + escapeExpression(((stack1 = ((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.device)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div></li>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -4220,15 +4266,19 @@ return TEMPLATE; });
         return this;
       },
       setDefault: function() {
-        var data;
+        var currentListenerObj, data, listenerAry, _ref;
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0] && this.uid) {
             if (this.dropdown.getSelection() === 'None') {
-              this.dropdown.trigger('change', data[0].id);
-              this.dropdown.setSelection(data[0].Name);
-              Design.instance().component(this.uid).setSSLCert(this.listenerNum, data[0].id);
-              return $(this.el).removeClass('empty');
+              listenerAry = Design.instance().component(this.uid).get('listeners');
+              currentListenerObj = listenerAry[this.listenerNum];
+              if (currentListenerObj && ((_ref = currentListenerObj.protocol) === 'HTTPS' || _ref === 'SSL')) {
+                Design.instance().component(this.uid).setSSLCert(this.listenerNum, data[0].id);
+                this.dropdown.trigger('change', data[0].id);
+                this.dropdown.setSelection(data[0].Name);
+                return $(this.el).removeClass('empty');
+              }
             }
           }
         }
@@ -4278,8 +4328,13 @@ return TEMPLATE; });
         return new sslCertManage().render();
       },
       set: function(id, data) {
+        var currentListenerObj, listenerAry, _ref;
         if (this.uid && id) {
-          return Design.instance().component(this.uid).setSSLCert(this.listenerNum, id);
+          listenerAry = Design.instance().component(this.uid).get('listeners');
+          currentListenerObj = listenerAry[this.listenerNum];
+          if (currentListenerObj && ((_ref = currentListenerObj.protocol) === 'HTTPS' || _ref === 'SSL')) {
+            return Design.instance().component(this.uid).setSSLCert(this.listenerNum, id);
+          }
         }
       },
       filter: function(keyword) {

@@ -214,7 +214,7 @@
           this.setFlag(old_id, 'CREATE_STACK', data);
           MC.common.other.canvasData.origin(data);
           ide_event.trigger(ide_event.UPDATE_DESIGN_TAB, new_id, name + ' - stack', old_id);
-          return ide_event.trigger(ide_event.UPDATE_STATUS_BAR_SAVE_TIME);
+          ide_event.trigger(ide_event.UPDATE_STATUS_BAR_SAVE_TIME);
         } else {
           if (item_state_map && item_state_map[old_id]) {
             item_state_map[new_id] = $.extend(true, {}, item_state_map[old_id]);
@@ -223,8 +223,9 @@
             item_state_map[new_id].is_delete = true;
             delete item_state_map[old_id];
           }
-          return ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", name, region, result.resolved_data);
+          ide_event.trigger(ide_event.OPEN_DESIGN_TAB, "OPEN_STACK", name, region, result.resolved_data);
         }
+        return new_id;
       },
       saveStackCallback: function(id, name, region) {
         console.log('saveStackCallback', id, name, region);
@@ -453,7 +454,7 @@
           }
           if (_.isFunction(func)) {
             func(src, $.cookie('usercode'), $.cookie('session_id'), region, data, function(aws_result) {
-              var name;
+              var name, newStackId;
               if (!aws_result.is_error) {
                 console.log('stack_service api');
                 region = aws_result.param[3];
@@ -462,10 +463,10 @@
                 name = data.name;
                 if (id.split('-')[0] === 'stack') {
                   me.saveStackCallback(id, name, region);
-                  return deferred.resolve(name);
+                  return deferred.resolve(id);
                 } else if (id.split('-')[0] === 'new') {
-                  me.createStackCallback(aws_result, id, name, region);
-                  return deferred.resolve(name);
+                  newStackId = me.createStackCallback(aws_result, id, name, region);
+                  return deferred.resolve(newStackId);
                 }
               } else {
                 console.error('stack_service.save_stack, error is ' + aws_result.error_message);

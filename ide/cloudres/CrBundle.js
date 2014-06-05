@@ -87,7 +87,7 @@
         return SubCollections[id];
       },
 
-      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             env:dev:end */
       extend: function(protoProps, staticProps) {
         var subClass;
         console.assert(protoProps.type, "Subclass of CloudResourceCollection does not specifying a type");
@@ -223,7 +223,7 @@
       }
     }, {
 
-      /* env:dev                                                      env:dev:end */
+      /* env:dev                                                        env:dev:end */
     });
   });
 
@@ -233,7 +233,7 @@
   define('ide/cloudres/CrModelDhcp',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                           env:dev:end */
+      /* env:dev                                             env:dev:end */
       defaults: function() {
         return {
           "domain-name": [],
@@ -312,7 +312,7 @@
   define('ide/cloudres/CrModelKeypair',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       defaults: {
         keyName: "",
         keyData: "",
@@ -361,7 +361,7 @@
   define('ide/cloudres/CrModelSslcert',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       taggable: false,
       defaults: {
         Path: "",
@@ -430,7 +430,7 @@
   define('ide/cloudres/CrModelTopic',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       taggable: false,
       defaults: {
         Name: "",
@@ -494,7 +494,7 @@
     var CrSubscriptionModel;
     CrSubscriptionModel = CrModel.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       taggable: false,
       defaults: {
         Endpoint: "",
@@ -572,7 +572,7 @@
   define('ide/cloudres/CrModelSnapshot',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       defaults: {
         volumeId: "",
         status: "pending",
@@ -685,7 +685,7 @@
     /* Dhcp */
     CrCollection.extend({
 
-      /* env:dev                                                env:dev:end */
+      /* env:dev                                                  env:dev:end */
       type: constant.RESTYPE.DHCP,
       model: CrDhcpModel,
       doFetch: function() {
@@ -712,7 +712,7 @@
     /* Keypair */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.KP,
       model: CrKeypairModel,
       doFetch: function() {
@@ -738,7 +738,7 @@
     /* Ssl cert */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
@@ -769,7 +769,7 @@
     /* Sns Topic */
     CrCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: constant.RESTYPE.TOPIC,
       model: CrTopicModel,
       constructor: function() {
@@ -829,7 +829,7 @@
     /* Sns Subscription */
     CrCollection.extend({
 
-      /* env:dev                                                        env:dev:end */
+      /* env:dev                                                          env:dev:end */
       type: constant.RESTYPE.SUBSCRIPTION,
       model: CrSubscriptionModel,
       doFetch: function() {
@@ -855,7 +855,7 @@
     /* Snapshot */
     return CrCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       type: constant.RESTYPE.SNAP,
       model: CrSnapshotModel,
       initialize: function() {
@@ -953,7 +953,7 @@
     EmptyArr = [];
     CrCommonCollection = CrCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       model: CrModel,
       type: "CrCommonCollection",
       __selfParseData: true,
@@ -1007,7 +1007,7 @@
     /* Elb */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ELB,
       modelIdAttribute: "LoadBalancerName",
       parseFetchData: function(data) {
@@ -1019,7 +1019,7 @@
     /* VPN */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VPN,
       modelIdAttribute: "vpnConnectionId",
       parseFetchData: function(data) {
@@ -1031,7 +1031,7 @@
     /* EIP */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.EIP,
       modelIdAttribute: "allocationId",
       parseFetchData: function(data) {
@@ -1043,7 +1043,7 @@
     /* VOLUME */
     CrCommonCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: constant.RESTYPE.VOL,
       modelIdAttribute: "volumeId",
       parseFetchData: function(data) {
@@ -1055,7 +1055,7 @@
     /* VPC */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VPC,
       modelIdAttribute: "vpcId",
       parseFetchData: function(data) {
@@ -1067,7 +1067,7 @@
     /* AMI */
     return CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.INSTANCE,
       modelIdAttribute: "instanceId",
       parseFetchData: function(data) {

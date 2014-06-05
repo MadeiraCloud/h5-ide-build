@@ -1257,6 +1257,7 @@ define({
         "RELOAD_STATE_NETWORKERROR": "",
         "RELOAD_STATE_INTERNAL_SERVER_ERROR": "",
         "RELOAD_STATE_SUCCESS": "",
+        "RELOAD_STATE_NOT_READY": "",
         "TIP_KEYPAIR_USED_DEFAULT_KP": ""
     },
     "service": {

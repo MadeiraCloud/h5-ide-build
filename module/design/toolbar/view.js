@@ -8,7 +8,7 @@
 
     /* env:debug:end */
 
-    /* env:dev                                         env:dev:end */
+    /* env:dev                                           env:dev:end */
     API_URL = "https://" + API_HOST + "/v1/apps/";
     ToolbarView = Backbone.View.extend({
       el: document,
@@ -204,7 +204,7 @@
           region = MC.common.other.canvasData.get('region');
           canvasData = MC.common.other.canvasData.data();
           that = this;
-          return me.model.syncSaveStack(region, canvasData).then(function() {
+          return me.model.syncSaveStack(region, canvasData).then(function(stackId) {
             var data, usage;
             if (!me.modalPlus || !me.modalPlus.isOpen) {
               return;
@@ -217,6 +217,7 @@
             if (usage) {
               data.usage = usage;
             }
+            data.id = stackId;
             me.model.runStack(data);
             MC.data.app_list[region].push(app_name);
             return me.modalPlus && me.modalPlus.close();
@@ -412,6 +413,10 @@
             404: function() {
               console.log(404, arguments);
               return notification('error', lang.ide.RELOAD_STATE_NETWORKERROR);
+            },
+            429: function() {
+              console.log(429, arguments);
+              return notification('error', lang.ide.RELOAD_STATE_NOT_READY);
             },
             500: function() {
               console.log(500, arguments);
