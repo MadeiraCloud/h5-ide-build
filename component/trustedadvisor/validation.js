@@ -885,7 +885,7 @@
       }
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
       dhcpId = vpc.get('dhcp').get('appId');
-      if (dhcpId) {
+      if (dhcpId !== 'default') {
         return null;
       }
       return Helper.message.warning(vpc.id, i18n.TA_MSG_WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
@@ -899,7 +899,7 @@
         return;
       }
       dhcpCol = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
-      dhcpCol.fetch().fin(function() {
+      dhcpCol.fetchForce().fin(function() {
         if (dhcpCol.get(dhcpId)) {
           return callback(null);
         } else {
@@ -1344,8 +1344,9 @@
               }
             });
             _.each(elbNotExistCertMap, function(sslCertNameAry, elbName) {
-              var tipInfo;
-              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, sslCertNameAry.join(', '));
+              var tipInfo, uniqSSLCertNameAry;
+              uniqSSLCertNameAry = _.uniq(sslCertNameAry);
+              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, uniqSSLCertNameAry.join(', '));
               return validResultAry.push({
                 level: constant.TA.ERROR,
                 info: tipInfo,
@@ -1799,7 +1800,7 @@
       region = Design.instance().region();
       topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
       result = [];
-      return topicCol.fetch().fin(function() {
+      return topicCol.fetchForce().fin(function() {
         var obj, ta, _k, _len2;
         for (_k = 0, _len2 = needTa.length; _k < _len2; _k++) {
           ta = needTa[_k];
@@ -2993,7 +2994,6 @@ This file use for validate component about state.
               if (!snaphostMap[snaphostId]) {
                 snaphostMap[snaphostId] = [];
               }
-              snaphostMap[snaphostId].push(MC.extractID(instanceUID));
             }
           }
           if (compObj.type === constant.RESTYPE.LC) {
@@ -3003,9 +3003,8 @@ This file use for validate component about state.
                 instanceUID = compObj.uid;
                 if (snaphostId && instanceUID) {
                   if (!snaphostMap[snaphostId]) {
-                    snaphostMap[snaphostId] = [];
+                    return snaphostMap[snaphostId] = [];
                   }
-                  return snaphostMap[snaphostId].push(instanceUID);
                 }
               }
             });
@@ -3036,22 +3035,28 @@ This file use for validate component about state.
                 if (__indexOf.call(awsSnapshotIdAry, snapshotId) >= 0) {
                   instanceUIDAry = snaphostMap[snapshotId];
                   _.each(instanceUIDAry, function(instanceUID) {
-                    var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
+                    var infoObjType, infoTagType, instanceId, instanceName, instanceObj, instanceType, tipInfo;
                     instanceObj = MC.canvas_data.component[instanceUID];
                     instanceType = instanceObj.type;
                     instanceName = instanceObj.name;
                     infoObjType = 'Instance';
                     infoTagType = 'instance';
+                    instanceId = null;
                     if (instanceType === constant.RESTYPE.LC) {
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
+                      instanceId = instanceObj.resource.LaunchConfigurationARN;
+                    } else {
+                      instanceId = instanceObj.resource.InstanceId;
                     }
-                    tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
-                    tipInfoAry.push({
-                      level: constant.TA.ERROR,
-                      info: tipInfo,
-                      uid: instanceUID
-                    });
+                    if (!instanceId) {
+                      tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
+                      tipInfoAry.push({
+                        level: constant.TA.ERROR,
+                        info: tipInfo,
+                        uid: instanceUID
+                      });
+                    }
                     return null;
                   });
                 }
@@ -3129,6 +3134,9 @@ This file use for validate component about state.
       results = [];
       for (_i = 0, _len = instanceLike.length; _i < _len; _i++) {
         i = instanceLike[_i];
+        if (i.type === constant.RESTYPE.INSTANCE && i.get('appId') && i.get('count') === i.groupMembers().length + 1) {
+          continue;
+        }
         keyName = i.get('keyName');
         if (keyName && keyName[0] !== '@' && !i.connectionTargets("KeypairUsage").length) {
           needValidate.push(i);

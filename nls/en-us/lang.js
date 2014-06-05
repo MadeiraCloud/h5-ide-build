@@ -1093,7 +1093,7 @@ define({
         "STATE_TIP_REFRESH_STATE_LOG": "Refresh State Log",
         "STATE_TIP_SYSTEM_LOG": "System Log",
         "STATE_TIP_SELECT_ALL_STATES": "Select All States",
-        "STATE_UNKNOWN_DISTRO_LBL": "The AMI's distro cannot be recognised. Some state modules may not apply to this AMI.",
+        "STATE_UNKNOWN_DISTRO_LBL": "The instance's distro cannot be recognised. Some state modules may not apply to this instance.",
         "STATE_NO_STATE_LBL": "No state configured yet.",
         "STATE_NO_STATE_ADD_BTN": "Add a State",
         "STATE_TOOL_ADD_STATE": "Add State",

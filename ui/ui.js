@@ -1314,7 +1314,7 @@ define('UI.table',["jquery"], function(){
 				order = target.hasClass('desc-sort') ? 'DESC' : 'ASC',
 				fragment = document.createDocumentFragment(),
 				stack = [],
-				is_datetime = false,
+				rowType = '',
 				tbody,
 				rows;
 
@@ -1345,23 +1345,22 @@ define('UI.table',["jquery"], function(){
 				});
 			});
 
-			if (target.data('row-type') === 'datetime')
-			{
-				is_datetime = true;
-			}
+			rowType = target.data('rowType')
 
 			if (order === 'DESC')
 			{
 				stack.sort(function (a, b)
 				{
-					if (is_datetime)
+					if (rowType === 'datetime')
 					{
 						return new Date(a.value) - new Date(b.value);
 					}
 
-					if (!isNaN(parseInt(a.value)))
+					intA = parseInt(a.value)
+					intB = parseInt(b.value)
+					if (rowType !== 'string' && !isNaN(intA) && !isNaN(intB))
 					{
-						return a.value - b.value;
+						return intA - intB;
 					}
 
 					if (typeof a.value === 'string')
@@ -1375,14 +1374,16 @@ define('UI.table',["jquery"], function(){
 			{
 				stack.sort(function (a, b)
 				{
-					if (is_datetime)
+					if (rowType === 'datetime')
 					{
 						return new Date(b.value) - new Date(a.value);
 					}
 
-					if (!isNaN(parseInt(a.value)))
+					intA = parseInt(a.value)
+					intB = parseInt(b.value)
+					if (rowType !== 'string' && !isNaN(intA) && !isNaN(intB))
 					{
-						return b.value - a.value;
+						return intB - intA;
 					}
 
 					if (typeof a.value === 'string')

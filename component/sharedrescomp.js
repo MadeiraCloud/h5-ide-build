@@ -55,8 +55,11 @@ function program6(depth0,data) {
   buffer += "\n                    <th class=\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sortable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-row-type=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rowType), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -71,6 +74,18 @@ function program7(depth0,data) {
 
 function program9(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.rowType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program11(depth0,data) {
+  
+  
+  return "string";
+  }
+
+function program13(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "width:"
     + escapeExpression(((stack1 = (depth0 && depth0.width)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -78,11 +93,11 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <th style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"><div class=\"th-inner\"></div></th>\n                            ";
   return buffer;
@@ -100,7 +115,7 @@ function program11(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </tr>\n            </thead>\n        </table>\n        <div class=\"scroll-wrap\">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </div>\n</div>";
   return buffer;
@@ -3272,9 +3287,11 @@ function program11(depth0,data) {
 function program13(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    "
+  buffer += "\n    <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n    ";
+    + "</div>\n    ";
   return buffer;
   }
 
@@ -3425,11 +3442,12 @@ TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
 return TEMPLATE; });
 (function() {
   define('snapshotManager',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdown', "UI.modalplus", 'toolbar_modal', "i18n!nls/lang.js", './component/snapshot/snapshot_template.js'], function(CloudResources, ApiRequest, constant, combo_dropdown, modalPlus, toolbar_modal, lang, template) {
-    var deleteCount, deleteErrorCount, fetched, fetching, snapshotRes;
+    var deleteCount, deleteErrorCount, fetched, fetching, regionsMark, snapshotRes;
     fetched = false;
     deleteCount = 0;
     deleteErrorCount = 0;
     fetching = false;
+    regionsMark = {};
     snapshotRes = Backbone.View.extend({
       constructor: function() {
         this.collection = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
@@ -3482,8 +3500,9 @@ return TEMPLATE; });
         currentRegion = Design.instance().get('region');
         data = _.map(this.regions, function(region) {
           return {
-            name: region,
-            selected: region === currentRegion
+            name: constant.REGION_LABEL[region] + " - " + constant.REGION_SHORT_LABEL[region],
+            selected: region === currentRegion,
+            region: region
           };
         });
         dataSet = {
@@ -3596,10 +3615,12 @@ return TEMPLATE; });
         return (_ref = this.manager) != null ? _ref.setContent(content) : void 0;
       },
       initManager: function() {
-        var setContent;
+        var currentRegion, setContent;
         setContent = this.setContent.bind(this);
-        if (!fetched && !fetching) {
+        currentRegion = Design.instance().get('region');
+        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
           fetching = true;
+          regionsMark[currentRegion] = true;
           return this.collection.fetchForce().then(setContent, setContent);
         } else if (!fetching) {
           return this.setContent();
@@ -3692,7 +3713,7 @@ return TEMPLATE; });
       do_duplicate: function(invalid, checked) {
         var afterDuplicate, description, newName, sourceSnapshot, targetRegion;
         sourceSnapshot = checked[0];
-        targetRegion = $('#property-region-choose').find('.selectbox .selection').text().trim();
+        targetRegion = $('#property-region-choose').find('.selectbox .selection .manager-content-main').data('id');
         if ((this.regions.indexOf(targetRegion)) < 0) {
           return false;
         }
@@ -3792,10 +3813,12 @@ return TEMPLATE; });
               name: 'Name'
             }, {
               sortable: true,
+              rowType: 'number',
               width: "10%",
               name: 'Capicity'
             }, {
               sortable: true,
+              rowType: 'datetime',
               width: "40%",
               name: 'status'
             }, {
@@ -4037,6 +4060,7 @@ return TEMPLATE; });
               name: 'Name'
             }, {
               sortable: true,
+              rowType: 'datetime',
               width: "33%",
               name: 'Upload Date'
             }, {
@@ -4356,7 +4380,7 @@ return TEMPLATE; });
         return this;
       },
       setDefault: function() {
-        var currentListenerObj, data, listenerAry, _ref;
+        var compModel, currentListenerObj, data, listenerAry, _ref;
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0] && this.uid) {
@@ -4364,10 +4388,13 @@ return TEMPLATE; });
               listenerAry = Design.instance().component(this.uid).get('listeners');
               currentListenerObj = listenerAry[this.listenerNum];
               if (currentListenerObj && ((_ref = currentListenerObj.protocol) === 'HTTPS' || _ref === 'SSL')) {
-                Design.instance().component(this.uid).setSSLCert(this.listenerNum, data[0].id);
-                this.dropdown.trigger('change', data[0].id);
-                this.dropdown.setSelection(data[0].Name);
-                return $(this.el).removeClass('empty');
+                compModel = Design.instance().component(this.uid);
+                if (compModel) {
+                  compModel.setSSLCert(this.listenerNum, data[0].id);
+                  this.dropdown.trigger('change', data[0].id);
+                  this.dropdown.setSelection(data[0].Name);
+                  return $(this.el).removeClass('empty');
+                }
               }
             }
           }
