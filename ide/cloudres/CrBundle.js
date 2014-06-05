@@ -269,7 +269,7 @@
         _ref = this.attributes;
         for (key in _ref) {
           value = _ref[key];
-          if (key !== "id" && key !== "tagSet") {
+          if (key !== "id" && key !== "tagSet" && (value.length > 0)) {
             awsAttr.push({
               Name: key,
               Value: value

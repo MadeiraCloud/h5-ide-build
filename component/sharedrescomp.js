@@ -2391,7 +2391,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<tr class=\"item\" data-id=\"\">\n    <td>\n        <div class=\"checkbox\">\n            <input id=\""
+  buffer += "\n<tr class=\"item\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n    <td>\n        <div class=\"checkbox\">\n            <input id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" value=\"None\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -2410,7 +2412,7 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   stack1 = helpers['if'].call(depth0, (depth0 && depth0['netbios-node-type']), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n</tr>\n";
+  buffer += "</td>\n    <td class=\"show-detail icon-toolbar-cloudformation\"></td>\n</tr>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -2725,6 +2727,36 @@ function program22(depth0,data) {
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "<br>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"detail-info\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>Domain Name</label>\n            <div>";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0['domain-name']), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Domain Name Server</label>\n            <div>";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0['domain-name-servers']), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>NTP Server</label>\n            <div>";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0['ntp-servers']), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n        </section>\n        <section class=\"property-control-group\">\n\n            <label>NetBIOS Node Type</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0['netbios-node-type'])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.detail_info=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 (function() {
   define('dhcp',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!nls/lang.js', './component/dhcp/dhcp_template.js'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
@@ -2815,19 +2847,21 @@ return TEMPLATE; });
       },
       renderDropdown: function(keys) {
         var content, data, datas, selected, _ref;
-        selected = (_ref = this.resModel) != null ? _ref.toJSON().dhcp.dhcpOptionsId : void 0;
+        selected = (_ref = this.resModel) != null ? _ref.toJSON().dhcp.appId : void 0;
         data = this.collection.toJSON();
+        datas = {
+          isRuntime: false,
+          keys: data
+        };
         if (selected) {
           _.each(data, function(key) {
             if (key.id === selected) {
               key.selected = true;
             }
           });
+        } else {
+          datas.auto = true;
         }
-        datas = {
-          isRuntime: false,
-          keys: data
-        };
         if (selected === "") {
           datas.auto = true;
         } else if (selected && selected === 'default') {
@@ -2836,6 +2870,9 @@ return TEMPLATE; });
         if (keys) {
           datas.keys = keys;
           datas.hideDefaultNoKey = true;
+        }
+        if (Design.instance().modeIsApp() || Design.instance().modeIsAppEdit()) {
+          datas.isRunTime = true;
         }
         content = template.keys(datas);
         this.dropdown.toggleControls(true);
@@ -2881,6 +2918,7 @@ return TEMPLATE; });
         this.manager.on('refresh', this.refreshManager, this);
         this.manager.on('slidedown', this.renderSlides, this);
         this.manager.on('action', this.doAction, this);
+        this.manager.on('detail', this.detail, this);
         this.manager.on('close', (function(_this) {
           return function() {
             return _this.manager.remove();
@@ -2924,6 +2962,14 @@ return TEMPLATE; });
         tpl = template['slide_' + which];
         slides = this.getSlides();
         return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
+      },
+      detail: function(event, data, $tr) {
+        var detailTpl, dhcpData, dhcpId, that;
+        that = this;
+        dhcpId = data.id;
+        dhcpData = this.collection.get(dhcpId).toJSON();
+        detailTpl = template['detail_info'];
+        return this.manager.setDetail($tr, detailTpl(dhcpData));
       },
       getSlides: function() {
         return {
@@ -3018,15 +3064,21 @@ return TEMPLATE; });
             "netbios-node-type": [parseInt($("#property-netbios-type .selection").html(), 10) || 0]
           };
           validate = function(value, key) {
+            if (key === 'netbios-node-type') {
+              return false;
+            }
             if (value.length < 1) {
-              notification('error', key + " value can't be empty.");
               return false;
             } else {
               return true;
             }
           };
-          if (!_.every(data, validate)) {
+          if (!_.some(data, validate)) {
+            notification('error', "You should fill at least one blank.");
             return false;
+          }
+          if (data['netbios-node-type'][0] === 0) {
+            data['netbios-node-type'] = [];
           }
           this.switchAction('processing');
           afterCreated = this.afterCreated.bind(this);
@@ -3130,12 +3182,16 @@ return TEMPLATE; });
           columns: [
             {
               sortable: true,
-              width: "30%",
+              width: "200px",
               name: 'Name'
             }, {
-              sortable: true,
-              width: "70%",
+              sortable: false,
+              width: "480px",
               name: 'Options'
+            }, {
+              sortable: false,
+              width: "56px",
+              name: "Details"
             }
           ]
         };
@@ -3161,14 +3217,10 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" tabindex=\"-1\"><div class=\"manager-content-main\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+    + "\" tabindex=\"-1\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(13, program13, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div><div class=\"manager-content-sub\">Size: "
-    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " &nbsp;&nbsp;&nbsp;&nbsp;Device: "
-    + escapeExpression(((stack1 = ((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1.item)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.device)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div></li>\n";
+  buffer += "\n</li>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -3179,14 +3231,51 @@ function program2(depth0,data) {
 
 function program4(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n    <div class=\"manager-content-sub\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " &nbsp;&nbsp;&nbsp;&nbsp;Size: "
+    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " GiB</div>\n    ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.tagSet)),stack1 == null || stack1 === false ? stack1 : stack1.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program7(depth0,data) {
+  
+  
+  return "&lt;No Name&gt;";
+  }
+
+function program9(depth0,data) {
+  
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program6(depth0,data) {
+function program11(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    "
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n    ";
+  return buffer;
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -3345,6 +3434,7 @@ return TEMPLATE; });
       constructor: function() {
         this.collection = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
         this.collection.on('update', this.onChange.bind(this));
+        this.collection.on('change', this.onChange.bind(this));
         return this;
       },
       onChange: function() {
@@ -3571,7 +3661,7 @@ return TEMPLATE; });
       do_create: function(validate, checked) {
         var afterCreated, data, volume;
         volume = this.volumes.findWhere({
-          'id': $('#property-volume-choose').find('.selectbox .selection').text()
+          'id': $('#property-volume-choose').find('.selectbox .selection .manager-content-main').data('id')
         });
         if (!volume) {
           return false;
@@ -3602,7 +3692,7 @@ return TEMPLATE; });
       do_duplicate: function(invalid, checked) {
         var afterDuplicate, description, newName, sourceSnapshot, targetRegion;
         sourceSnapshot = checked[0];
-        targetRegion = $('#property-region-choose').find('.selectbox .selection').text();
+        targetRegion = $('#property-region-choose').find('.selectbox .selection').text().trim();
         if ((this.regions.indexOf(targetRegion)) < 0) {
           return false;
         }
@@ -3630,7 +3720,7 @@ return TEMPLATE; });
           notification('error', "Duplicate failed because of: " + result.msg);
           return false;
         }
-        if (result.region === currentRegion) {
+        if (result.attributes.region === currentRegion) {
           this.collection.add(result);
           return notification('info', "New Snapshot is duplicated successfully!");
         } else {

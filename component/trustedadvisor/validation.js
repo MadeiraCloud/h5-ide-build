@@ -815,8 +815,32 @@
 
 (function() {
   define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
-    var i18n, isVPCAbleConnectToOutside, isVPCUsingNonexistentDhcp;
+    var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, __hasState;
     i18n = Helper.i18n.short();
+    __hasState = function(uid) {
+      var component, had, state;
+      if (Design.instance().get('agent').enabled === false) {
+        return false;
+      }
+      if (uid) {
+        component = Design.instance().component(uid);
+        if (component) {
+          state = component.get('state');
+          return state && state.length;
+        } else {
+          return false;
+        }
+      } else {
+        had = false;
+        Design.instance().eachComponent(function(component) {
+          if (__hasState(component.id)) {
+            had = true;
+            return false;
+          }
+        });
+        return had;
+      }
+    };
     isVPCAbleConnectToOutside = function() {
       var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo;
       isHaveVPN = false;
@@ -854,26 +878,40 @@
         info: tipInfo
       };
     };
+    isVPCUsingNoneDHCPAndVisualops = function(uid) {
+      var dhcpId, vpc;
+      if (!__hasState()) {
+        return null;
+      }
+      vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
+      dhcpId = vpc.get('dhcp').get('appId');
+      if (dhcpId) {
+        return null;
+      }
+      return Helper.message.warning(vpc.id, i18n.TA_MSG_WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
+    };
     isVPCUsingNonexistentDhcp = function(callback) {
       var dhcpCol, dhcpId, vpc;
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-      dhcpId = vpc.get('dhcp').get('dhcpOptionsId');
+      dhcpId = vpc.get('dhcp').get('appId');
       if (!dhcpId || dhcpId === 'default') {
         callback(null);
         return;
       }
       dhcpCol = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
-      return dhcpCol.fetch().fin(function() {
+      dhcpCol.fetch().fin(function() {
         if (dhcpCol.get(dhcpId)) {
           return callback(null);
         } else {
           return callback(Helper.message.error(vpc.id, i18n.TA_MSG_ERROR_VPC_DHCP_NONEXISTENT));
         }
       });
+      return null;
     };
     return {
       isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
-      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp
+      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp,
+      isVPCUsingNoneDHCPAndVisualops: isVPCUsingNoneDHCPAndVisualops
     };
   });
 
@@ -1736,10 +1774,11 @@
         notiValid = false;
         if (!notification || !notification.isEffective()) {
           notiValid = true;
-        }
-        topic = notification.getTopic();
-        if (!topic) {
-          notiValid = true;
+        } else {
+          topic = notification.getTopic();
+          if (!topic) {
+            notiValid = true;
+          }
         }
         if (!notiValid) {
           needTa.push([topic, asg, notification]);
@@ -1769,9 +1808,9 @@
           obj = ta[2];
           if (!topicCol.get(topic.get('appId'))) {
             if (obj.type === constant.RESTYPE.SP) {
-              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTIENT, asg.get('name'), obj.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTENT, asg.get('name'), obj.get('name'), topic.get('name')));
             } else if (obj.type === constant.RESTYPE.NC) {
-              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTIENT, asg.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT, asg.get('name'), topic.get('name')));
             }
           }
         }

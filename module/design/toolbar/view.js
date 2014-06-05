@@ -400,6 +400,7 @@
           method: "POST",
           data: JSON.stringify(data),
           dataType: 'json',
+          jsonp: false,
           statusCode: {
             200: function() {
               console.log(200, arguments);

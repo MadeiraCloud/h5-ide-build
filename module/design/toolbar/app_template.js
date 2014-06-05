@@ -296,8 +296,17 @@ function program38(depth0,data) {
   }
 function program39(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\r\n    ";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_app_updating), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n";
+  return buffer;
+  }
+function program40(depth0,data) {
   
-  return "\r\n<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">Reload States</button>\r\n";
+  
+  return "\r\n        <button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">Reload States</button>\r\n    ";
   }
 
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.item_flags)),stack1 == null || stack1 === false ? stack1 : stack1.is_app_updating), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
