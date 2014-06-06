@@ -463,11 +463,10 @@
         }
       },
       refreshResourcePanel: function(event) {
-        var $refreshBtn, regionName, resourceView;
+        var $refreshBtn, regionName;
         $refreshBtn = $('.sidebar-title .refresh-resource-panel');
         if (!$refreshBtn.hasClass('disabled')) {
-          resourceView = event.data;
-          regionName = resourceView.region;
+          regionName = MC.canvas_data.region;
           this.model.refreshResourceList(regionName);
           return $refreshBtn.addClass('disabled');
         }
