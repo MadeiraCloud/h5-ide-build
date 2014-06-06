@@ -608,7 +608,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         _ref = $svg_canvas_element[0].children || $svg_canvas_element[0].childNodes;
         for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
           ch = _ref[_k];
-          if (ch.tagName.toLowerCase() !== "g") {
+          if ((!ch.tagName) || (ch.tagName.toLowerCase() !== "g")) {
             continue;
           }
           bbox = ch.getBBox();
@@ -901,7 +901,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       signature = j.signature;
       delete j.signature;
 
-      /* env:dev                          env:dev:end */
+      /* env:dev                            env:dev:end */
 
       /* env:debug */
       return j;

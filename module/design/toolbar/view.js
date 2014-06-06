@@ -8,7 +8,7 @@
 
     /* env:debug:end */
 
-    /* env:dev                                         env:dev:end */
+    /* env:dev                                           env:dev:end */
     API_URL = "https://" + API_HOST + "/v1/apps/";
     ToolbarView = Backbone.View.extend({
       el: document,
