@@ -2852,7 +2852,14 @@ function program53(depth0,data) {
         region = Design.instance().region();
         instance_data = MC.data.resource_list[region][appId];
         if (instance_data && instance_data.imageId) {
-          os_type = MC.data.dict_ami[instance_data.imageId].osType;
+          if (MC.data.dict_ami[instance_data.imageId]) {
+            os_type = MC.data.dict_ami[instance_data.imageId].osType;
+          }
+          if (instance_data.platform && instance_data.platform === 'windows') {
+            os_type = 'windows';
+          } else {
+            os_type = 'linux-other';
+          }
         }
         if (!os_type) {
           return;

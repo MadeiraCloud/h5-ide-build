@@ -5687,6 +5687,7 @@
             aws_result.is_error = true;
             aws_result.error_message = "Failed to visualize VPC. Try to refresh resources or contact VisualOps.";
             aws_result.return_code = 15;
+            console.error(aws_result.error_message, error.message ? error.message : error);
           }
         }
       }
@@ -6531,8 +6532,17 @@
               return src.sender.trigger('EC2_AMI_DESC_IMAGES_RETURN', aws_result);
             }
           } else {
-            console.log('ami.DescribeImages failed, error is ' + aws_result.error_message);
-            return me.pub(aws_result);
+            if (aws_result.aws_error_code !== "InvalidAMIID.NotFound") {
+              console.log('ami.DescribeImages failed, error is ' + aws_result.error_message);
+              return me.pub(aws_result);
+            } else {
+              aws_result.is_error = false;
+              aws_result.resolved_data = [];
+              aws_result.return_code = 0;
+              if (src.sender && src.sender.trigger) {
+                return src.sender.trigger('EC2_AMI_DESC_IMAGES_RETURN', aws_result);
+              }
+            }
           }
         });
       }
