@@ -596,7 +596,7 @@ define({
         "PROP_MSG_SG_CREATE_MULTI": "%d条规则被创建到 %s 并且 %s 来允许 %s %s %s.",
         "PROP_MSG_SG_CREATE_SELF": "%d条规则被创建到 %s 来允许 %s 它内部的收发通信.",
         "PROP_SNAPSHOT_FILTER_REGION": "",
-        "PROP_SNAPSHOT_FILTER_SNAPSHOT": "",
+        "PROP_SNAPSHOT_FILTER_VOLUME": "",
         "PROP_VOLUME_DEVICE_NAME": "挂载设备名",
         "PROP_VOLUME_SIZE": "磁盘大小",
         "PROP_VOLUME_ID": "磁盘ID",

@@ -8724,7 +8724,7 @@ function program9(depth0,data) {
     var VPCAppModel;
     VPCAppModel = PropertyModel.extend({
       init: function(vpc_uid) {
-        var AclModel, RtbModel, TYPE_ACL, TYPE_RTB, appData, dhcp, dhcpData, i, idx, j, myVPCComponent, tmp, vpc, _i, _j, _len, _len1, _ref, _ref1;
+        var AclModel, RtbModel, TYPE_ACL, TYPE_RTB, appData, dhcp, dhcpData, dhcpOptionsId, i, idx, j, myVPCComponent, tmp, vpc, _i, _j, _len, _len1, _ref, _ref1;
         myVPCComponent = Design.instance().component(vpc_uid);
         appData = MC.data.resource_list[Design.instance().region()];
         vpc = appData[myVPCComponent.get('appId')];
@@ -8749,11 +8749,13 @@ function program9(depth0,data) {
           if (!appData[vpc.dhcpOptionsId]) {
             vpc.default_dhcp = true;
           } else {
-            dhcpData = (_ref = appData[myVPCComponent.toJSON().dhcp.toJSON().appId]) != null ? _ref.dhcpConfigurationSet.item : void 0;
-            vpc.dhcpOptionsId = myVPCComponent.toJSON().dhcp.toJSON().appId;
-            dhcp = null;
+            dhcpOptionsId = myVPCComponent.get('dhcp').get('appId');
+            dhcpData = (_ref = appData[vpc.dhcpOptionsId]) != null ? _ref.dhcpConfigurationSet.item : void 0;
+            dhcp = {
+              dhcpOptionsId: dhcpOptionsId || vpc.dhcpOptionsId
+            };
+            vpc.dhcpOptionsId = dhcpOptionsId;
             if (dhcpData) {
-              dhcp = {};
               for (_i = 0, _len = dhcpData.length; _i < _len; _i++) {
                 i = dhcpData[_i];
                 if (i.key === 'domain-name-servers') {
@@ -8820,38 +8822,51 @@ function program6(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_OPTION_SET_ID", {hash:{},data:data}))
-    + "</dt>\n    <dd>"
-    + escapeExpression(((stack1 = (depth0 && depth0.dhcpOptionsId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+    + "</dt>\n    <dd>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dhcpOptionsId), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\n\n    ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNodeType), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNodeType), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  </dl>\n  ";
   return buffer;
   }
 function program7(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.dhcpOptionsId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program9(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.dhcpOptionsId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program11(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
     + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n    ";
   return buffer;
   }
-function program8(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
@@ -8860,43 +8875,43 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
     + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </dd>\n    ";
-  return buffer;
-  }
-
-function program12(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
-    + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </dd>\n    ";
-  return buffer;
-  }
-
-function program14(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
-    + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dd>\n    ";
   return buffer;
   }
 
 function program16(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
+    + "</dt>\n    <dd>";
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </dd>\n    ";
+  return buffer;
+  }
+
+function program18(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
+    + "</dt>\n    <dd>";
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </dd>\n    ";
+  return buffer;
+  }
+
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <dt>"

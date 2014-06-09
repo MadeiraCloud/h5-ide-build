@@ -596,7 +596,7 @@ define({
         "PROP_MSG_SG_CREATE_MULTI": "%d rules have been created in %s and %s to allow %s %s %s.",
         "PROP_MSG_SG_CREATE_SELF": "%d rules have been created in %s to allow %s send and receive traffic within itself.",
         "PROP_SNAPSHOT_FILTER_REGION": "Filter by region name",
-        "PROP_SNAPSHOT_FILTER_SNAPSHOT": "Filter by Snapshot id",
+        "PROP_SNAPSHOT_FILTER_VOLUME": "Filter by Volume ID",
         "PROP_VOLUME_DEVICE_NAME": "Device Name",
         "PROP_VOLUME_SIZE": "Volume Size",
         "PROP_VOLUME_ID": "Volume ID",

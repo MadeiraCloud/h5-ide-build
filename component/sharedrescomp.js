@@ -3095,7 +3095,7 @@ return TEMPLATE; });
             }
           };
           if (!_.some(data, validate)) {
-            notification('error', "You should fill at least one blank.");
+            this.manager.error("Please provide at least one field.");
             return false;
           }
           if (data['netbios-node-type'][0] === 0) {
@@ -3136,12 +3136,13 @@ return TEMPLATE; });
         }
       },
       afterCreated: function(result) {
-        this.manager.cancel();
         if (result.error) {
-          notification('error', "Create failed because of: " + result.awsResult);
+          this.manager.error("Create failed because of: " + (result.awsResult || result.msg));
+          this.switchAction();
           return false;
         }
-        return notification('info', "New DHCP Option is created successfully");
+        notification('info', "New DHCP Option is created successfully");
+        return this.manager.cancel();
       },
       validate: function(action) {
         switch (action) {
@@ -3324,14 +3325,15 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n            <label for=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\">"
+    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div><span class=\"manager-content-sub\">"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"manager-content-sub\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span></td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.volumeSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " GiB</td>\n    <td>\n        <div class=\"manager-content-main\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.completed), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.completed), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n        <span class=\"manager-content-sub\">Started: "
     + escapeExpression(((stack1 = (depth0 && depth0.started)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3342,11 +3344,23 @@ function program1(depth0,data) {
   }
 function program2(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "&lt;No Name&gt;";
+  }
+
+function program6(depth0,data) {
+  
   
   return "<i class=\"status status-green icon-label\"></i> Completed";
   }
 
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<i class=\"status status-yellow icon-label\"></i> Pending - "
@@ -3399,15 +3413,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name-create\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME_TIP", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\" placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
+    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\" placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_VOLUME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-volume-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc-create\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input tooltip\" placeholder=\"Up to 255 characters\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC_TIP", {hash:{},data:data}))
-    + "\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
+    + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -3425,17 +3435,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>\n                </div>\n            </div>\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_THE_NEW_SNAPSHOT_NAME", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
+    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "-copy\" data-ignore=\"true\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC_TIP", {hash:{},data:data}))
-    + "\" value=\"[Copied "
+    + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input\" value=\"[Copied "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " from "
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3475,8 +3481,7 @@ return TEMPLATE; });
       renderDropdown: function() {
         var option, selection;
         option = {
-          manageBtnValue: lang.ide.PROP_VPC_MANAGE_SNAPSHOT,
-          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_SNAPSHOT
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
         this.volumes = CloudResources(constant.RESTYPE.VOL, Design.instance().region());
