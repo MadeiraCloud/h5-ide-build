@@ -2809,9 +2809,10 @@ TEMPLATE.detail_info=Handlebars.template(__TEMPLATE__);
 return TEMPLATE; });
 (function() {
   define('dhcp',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!nls/lang.js', './component/dhcp/dhcp_template.js'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
-    var deleteCount, deleteErrorCount, dhcpView, fetched, fetching, mapFilterInput, updateAmazonCB;
+    var deleteCount, deleteErrorCount, dhcpView, fetched, fetching, mapFilterInput, regionsMark, updateAmazonCB;
     fetched = false;
     fetching = false;
+    regionsMark = {};
     updateAmazonCB = function() {
       var rowLength;
       rowLength = $("#property-domain-server").children().length;
@@ -2982,7 +2983,7 @@ return TEMPLATE; });
         return this.renderManager();
       },
       renderManager: function() {
-        var initManager, _ref;
+        var currentRegion, initManager, _ref;
         if (!App.user.hasCredential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
@@ -2990,8 +2991,10 @@ return TEMPLATE; });
           return false;
         }
         initManager = this.initManager.bind(this);
-        if (!fetched && !fetching) {
+        currentRegion = Design.instance().get('region');
+        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
           fetching = true;
+          regionsMark[currentRegion] = true;
           return this.collection.fetchForce().then(initManager, initManager);
         } else if (!fetching) {
           return initManager();
