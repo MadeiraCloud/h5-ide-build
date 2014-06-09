@@ -3159,6 +3159,7 @@ return TEMPLATE; });
           } else {
             notification('info', "Delete Successfully");
           }
+          this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
           return this.manager.cancel();
         }
@@ -3807,6 +3808,7 @@ return TEMPLATE; });
           } else {
             notification('info', "Delete Successfully");
           }
+          this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
           return this.manager.cancel();
         }
