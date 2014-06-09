@@ -324,7 +324,7 @@ Refer to kpView.coffee
       __processDelBtn: function(enable) {
         var that;
         if (arguments.length === 1) {
-          return that.$('[data-btn=delete]').prop(enable);
+          return this.$('[data-btn=delete]').prop('disabled', !enable);
         } else {
           that = this;
           return _.defer(function() {
@@ -1946,7 +1946,7 @@ return TEMPLATE; });
           } else if (success.length > 1) {
             notification('info', "Selected " + success.length + " SNS topic are deleted.");
           }
-          if (!that.topicCol.length) {
+          if (!error.length) {
             that.modal.unCheckSelectAll();
           }
           return _.each(error, function(s) {
