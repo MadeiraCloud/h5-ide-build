@@ -321,21 +321,20 @@ Refer to kpView.coffee
       __triggerChecked: function(param) {
         return this.trigger('checked', param, this.getChecked());
       },
-      __processDelBtn: function() {
+      __processDelBtn: function(enable) {
         var that;
-        that = this;
-        return _.defer(function() {
-          if (that.$('.one-cb:checked').length) {
-            that.$('[data-btn=delete]').prop('disabled', false);
-          } else {
-            that.$('[data-btn=delete]').prop('disabled', true);
-          }
-          if (that.$('.one-cb:checked').length === 1) {
-            return that.$('[data-btn=duplicate]').prop('disabled', false);
-          } else {
-            return that.$('[data-btn=duplicate]').prop('disabled', true);
-          }
-        });
+        if (arguments.length === 1) {
+          return that.$('[data-btn=delete]').prop(enable);
+        } else {
+          that = this;
+          return _.defer(function() {
+            if (that.$('.one-cb:checked').length) {
+              return that.$('[data-btn=delete]').prop('disabled', false);
+            } else {
+              return that.$('[data-btn=delete]').prop('disabled', true);
+            }
+          });
+        }
       },
       __stopPropagation: function(event) {
         var exception;
@@ -422,6 +421,10 @@ Refer to kpView.coffee
         $activeButton.removeClass('active');
         $slidebox.removeClass('show');
         return this;
+      },
+      unCheckSelectAll: function() {
+        this.$('#t-m-select-all').get(0).checked = false;
+        return this.__processDelBtn(false);
       },
       delegate: function(events, context) {
         var eventName, key, match, method, selector, _i, _len;
@@ -1691,7 +1694,7 @@ function program1(depth0,data) {
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <div>\n          <label>Select Topic</label>\n            <div class=\"selectbox dd-topic-name\">\n                <div class=\"selection\">New Topic</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                  <li class=\"item selected new-topic\" data-id=\"@new\">New Topic</li>\n                  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" data-trigger=\"change\" placeholder=\"example@mail.com\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
+  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" placeholder=\"example@mail.com\" data-event-trigger=\"false\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -1943,8 +1946,8 @@ return TEMPLATE; });
           } else if (success.length > 1) {
             notification('info', "Selected " + success.length + " SNS topic are deleted.");
           }
-          if (!that.modal.getChecked().length) {
-            that.M$('#t-m-select-all').get(0).checked = false;
+          if (!that.topicCol.length) {
+            that.modal.unCheckSelectAll();
           }
           return _.each(error, function(s) {
             return console.log(s);
@@ -1960,14 +1963,14 @@ return TEMPLATE; });
         };
       },
       errorHandler: function(awsError) {
-        return notification('error', awsError.awsResult);
+        return this.modal.error(awsError.awsResult);
       },
       create: function(invalid) {
         var createSub, displayName, endpoint, protocol, that, topicId, topicModel, topicName;
         that = this;
         this.switchAction('processing');
         topicId = this.M$('.dd-topic-name .selected').data('id');
-        protocol = this.M$('.dd-protocol .selection').text();
+        protocol = this.M$('.dd-protocol .selected ').data('id');
         topicName = this.M$('#create-topic-name').val();
         displayName = this.M$('#create-display-name').val();
         endpoint = this.M$('#create-endpoint').val();
@@ -1981,8 +1984,7 @@ return TEMPLATE; });
             notification('info', 'Create Subscription Succeed');
             return that.modal.cancel();
           }).fail(function(awsError) {
-            that.modal.cancel();
-            return errorHandler(awsError);
+            return that.errorHandler(awsError);
           });
         };
         if (topicId === '@new') {
@@ -1990,8 +1992,7 @@ return TEMPLATE; });
             Name: topicName,
             DisplayName: displayName
           }).save().then(createSub).fail(function(awsError) {
-            that.modal.cancel();
-            return errorHandler(awsError);
+            return that.errorHandler(awsError);
           });
         } else {
           topicModel = this.topicCol.get(topicId);
@@ -2132,30 +2133,35 @@ return TEMPLATE; });
                   return errorMsg;
                 }
               });
-              if (endPoint.val().length) {
-                endPoint.parsley('validate');
-              }
               return null;
             };
             updateEndpoint('email');
-            that.M$('#create-topic-name').parsley('custom', function(value) {
+            that.M$('#create-display-name').parsley('custom', function(value) {
               var selectedProto;
               selectedProto = that.M$('.dd-protocol .selected').data('id');
-              if (selectedProto === 'sms') {
+              if (selectedProto === 'sms' && !value) {
                 return 'Display Name is required if subscription uses SMS protocol.';
               }
               return null;
             });
             allTextBox = that.M$('.slide-create input[type=text]');
-            processCreateBtn = function(event) {
-              if ($(event.currentTarget).parsley('validateForm', false)) {
+            processCreateBtn = function(event, showError) {
+              var $target;
+              $target = event && $(event.currentTarget) || $('#create-topic-name');
+              if (!showError) {
+                showError = false;
+              }
+              if ($target.parsley('validateForm', showError)) {
                 return that.M$('.slide-create .do-action').prop('disabled', false);
               } else {
                 return that.M$('.slide-create .do-action').prop('disabled', true);
               }
             };
             allTextBox.on('keyup', processCreateBtn);
-            that.M$('.dd-protocol').off('OPTION_CHANGE').on('OPTION_CHANGE', updateEndpoint);
+            that.M$('.dd-protocol').off('OPTION_CHANGE').on('OPTION_CHANGE', function(id) {
+              updateEndpoint(id);
+              return processCreateBtn(null, true);
+            });
             return that.M$('.dd-topic-name').off('OPTION_CHANGE').on('OPTION_CHANGE', function(event, id, data) {
               if (id === '@new') {
                 return that.M$('.create-sns-topic').show();
@@ -3581,6 +3587,7 @@ return TEMPLATE; });
             return _this.manager.remove();
           };
         })(this));
+        this.manager.on('checked', this.processDuplicate, this);
         this.manager.render();
         if (!App.user.hasCredential()) {
           if ((_ref = this.manager) != null) {
@@ -3589,6 +3596,13 @@ return TEMPLATE; });
           return false;
         }
         return this.initManager();
+      },
+      processDuplicate: function(event, checked) {
+        if (checked.length === 1) {
+          return this.M$('[data-btn=duplicate]').prop('disabled', false);
+        } else {
+          return this.M$('[data-btn=duplicate]').prop('disabled', true);
+        }
       },
       refresh: function() {
         fetched = false;

@@ -5549,6 +5549,7 @@ define('UI.parsley',["jquery"], function(){
       this.val = this.$element.val();
       this.isRequired = false;
       this.isRequiredRollback = false;
+      this.hasCustom = false;
       this.constraints = {};
 
       // overriden by ParsleyItemMultiple if radio or checkbox input
@@ -5792,6 +5793,10 @@ define('UI.parsley',["jquery"], function(){
               this.isRequired = true;
             }
 
+            if ( name === 'custom' ) {
+              this.hasCustom = true;
+            }
+
             this.addCustomConstraintMessage( name );
           }
         }
@@ -6026,7 +6031,7 @@ define('UI.parsley',["jquery"], function(){
       }
 
       // reset Parsley validation if onFieldValidate returns true, or if field is empty and not required
-      if ( this.options.listeners.onFieldValidate( this.element, this ) || ( '' === val && !this.isRequired && !this.isRequiredRollback ) ) {
+      if ( this.options.listeners.onFieldValidate( this.element, this ) || ( '' === val && !this.isRequired && !this.isRequiredRollback && !this.hasCustom ) ) {
         this.reset();
         //return null;
         return true;
