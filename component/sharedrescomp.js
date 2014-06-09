@@ -1931,7 +1931,7 @@ return TEMPLATE; });
       validate: function(action) {
         switch (action) {
           case 'create':
-            return true;
+            return !this.M$('#create-topic-name').parsley('validateForm');
         }
       },
       genDeleteFinish: function(times) {
@@ -1967,6 +1967,9 @@ return TEMPLATE; });
       },
       create: function(invalid) {
         var createSub, displayName, endpoint, protocol, that, topicId, topicModel, topicName;
+        if (invalid) {
+          return false;
+        }
         that = this;
         this.switchAction('processing');
         topicId = this.M$('.dd-topic-name .selected').data('id');
@@ -2085,7 +2088,7 @@ return TEMPLATE; });
         modal = this.modal;
         return {
           create: function(tpl, checked) {
-            var allTextBox, processCreateBtn, updateEndpoint;
+            var $allTextBox, processCreateBtn, updateEndpoint, validateRequired;
             modal.setSlide(tpl(this.processCol(true)));
             updateEndpoint = function(protocol) {
               var endPoint, errorMsg, placeholder, selectedProto, type;
@@ -2144,20 +2147,45 @@ return TEMPLATE; });
               }
               return null;
             });
-            allTextBox = that.M$('.slide-create input[type=text]');
+            that.M$('#create-topic-name').parsley('custom', function(value) {
+              if (that.topicCol.where({
+                Name: value
+              }).length) {
+                return 'Topic name is already taken.';
+              }
+              return null;
+            });
+            $allTextBox = that.M$('.slide-create input[type=text]');
+            validateRequired = function() {
+              var pass;
+              pass = true;
+              $allTextBox.each(function() {
+                var selectedProto;
+                if (this.id === 'create-display-name') {
+                  selectedProto = that.M$('.dd-protocol .selected').data('id');
+                  if (selectedProto === 'sms') {
+                    if (!this.value.trim().length) {
+                      return pass = false;
+                    }
+                  }
+                } else {
+                  if (!this.value.trim().length) {
+                    return pass = false;
+                  }
+                }
+              });
+              return pass;
+            };
             processCreateBtn = function(event, showError) {
               var $target;
               $target = event && $(event.currentTarget) || $('#create-topic-name');
-              if (!showError) {
-                showError = false;
-              }
-              if ($target.parsley('validateForm', showError)) {
+              if (validateRequired()) {
                 return that.M$('.slide-create .do-action').prop('disabled', false);
               } else {
                 return that.M$('.slide-create .do-action').prop('disabled', true);
               }
             };
-            allTextBox.on('keyup', processCreateBtn);
+            $allTextBox.on('keyup', processCreateBtn);
             that.M$('.dd-protocol').off('OPTION_CHANGE').on('OPTION_CHANGE', function(id) {
               updateEndpoint(id);
               return processCreateBtn(null, true);
