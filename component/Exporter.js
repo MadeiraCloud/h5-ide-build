@@ -954,4 +954,4 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
 }).call(this);
 
 
-define("component/exporter/Exporter", function(){});
+define("component/Exporter", function(){});

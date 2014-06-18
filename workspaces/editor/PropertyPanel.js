@@ -15192,7 +15192,11 @@ function program49(depth0,data) {
         supports = false;
         design = this.workspace.design;
         if (type === "component_server_group" || type === CONST.RESTYPE.LC || type === CONST.RESTYPE.INSTANCE) {
-          supports = true;
+          if (Design.instance().attributes.agent.enabled) {
+            supports = true;
+          } else {
+            supports = false;
+          }
           if (design.modeIsApp()) {
             if (type === "component_server_group") {
               supports = false;

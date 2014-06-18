@@ -678,3 +678,5 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
 
 }).call(this);
 
+
+define("api/api", function(){});

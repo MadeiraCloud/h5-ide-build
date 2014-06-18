@@ -373,3 +373,5 @@ return TEMPLATE; });
 
 }).call(this);
 
+
+define("component/StateStatus", function(){});

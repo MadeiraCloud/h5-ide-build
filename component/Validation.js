@@ -3711,3 +3711,5 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }).call(this);
 
+
+define("component/Validation", function(){});

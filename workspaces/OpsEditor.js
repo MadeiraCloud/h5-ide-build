@@ -3825,7 +3825,10 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   buffer += "<tr class=\"item\" data-id=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n  <td><div class=\"toggle-fav tooltip\" data-tooltip=\""
+    + "\">\n  <td><div class=\"toggle-fav ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.faved), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_TOGGLE_FAVORITE", {hash:{},data:data}))
     + "\"></div></td>\n  <td>"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3834,7 +3837,7 @@ function program1(depth0,data) {
     + "</span>\n    <div class=\"ami-meta "
     + escapeExpression(((stack1 = (depth0 && depth0.osType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " icon-ami-os\"> ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.isPublic), "true", {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.isPublic), "true", {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " | "
     + escapeExpression(((stack1 = (depth0 && depth0.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3848,10 +3851,16 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   
-  return "public";
+  return "fav";
   }
 
 function program4(depth0,data) {
+  
+  
+  return "public";
+  }
+
+function program6(depth0,data) {
   
   
   return "private";
@@ -3866,6 +3875,8 @@ TEMPLATE.amiItem=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   define('workspaces/editor/subviews/AmiBrowser',['../template/TplAmiBrowser', 'i18n!nls/lang.js', 'UI.modalplus', "ApiRequest", 'CloudResources', 'backbone', 'jqpagination'], function(TplAmiBrowser, lang, Modal, ApiRequest, CloudResources) {
     return Backbone.View.extend({
       events: {
@@ -3969,6 +3980,7 @@ return TEMPLATE; });
           }
         }).then(function(result) {
           var _ref;
+          result = self.addFavStar(result);
           self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
           return self.communityAmiRender(result);
         }, function(result) {
@@ -3993,6 +4005,19 @@ return TEMPLATE; });
           return;
         }
         return this.doSearch();
+      },
+      addFavStar: function(result) {
+        var dumpObj, favAmis, favIds;
+        favAmis = CloudResources("FavoriteAmi", this.region).getModels() || [];
+        dumpObj = _.clone(result.ami.result);
+        favIds = _.pluck(_.pluck(favAmis, "attributes"), "id");
+        _.each(dumpObj, function(e, k) {
+          if (__indexOf.call(favIds, k) >= 0) {
+            return e.faved = true;
+          }
+        });
+        result.ami.result = dumpObj;
+        return result;
       },
       communityAmiRender: function(data) {
         var totalNum;
@@ -4254,9 +4279,29 @@ return TEMPLATE; });
               'id': data.id
             })) != null ? _ref.toJSON() : void 0;
             amiData.imageSize = amiData.imageSize || amiData.blockDeviceMapping[amiData.rootDeviceName].volumeSize;
+            amiData.instanceType = _this.addInstanceType(amiData).join(", ");
             return MC.template.bubbleAMIInfo(amiData);
           };
         })(this);
+      },
+      addInstanceType: function(ami) {
+        var data, e, region;
+        region = this.workspace.opsModel.get('region');
+        if (!ami || !region) {
+          return [];
+        }
+        data = App.model.getOsFamilyConfig(region);
+        try {
+          data = data[ami.osFamily] || data[constant.OS_TYPE_MAPPING[ami.osType]];
+          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance store'];
+          data = ami.architecture === "x86_64" ? data["64"] : data["32"];
+          data = data[ami.virtualizationType || "paravirtual"];
+        } catch (_error) {
+          e = _error;
+          console.error("Invalid instance type list data", ami, App.model.getOsFamilyConfig(region));
+          data = [];
+        }
+        return data || [];
       },
       updateDisableItems: function() {
         if (!this.workspace.isAwake()) {
@@ -5255,8 +5300,14 @@ return TEMPLATE; });
 (function() {
   define('workspaces/editor/diff/DiffTree',[], function() {
     var DiffTree;
-    DiffTree = function() {
+    DiffTree = function(option) {
       var getType, isArray, typeofReal, _compare, _diffAry;
+      if (!option) {
+        option = {};
+      }
+      if (!option.filterMap) {
+        option.filterMap = {};
+      }
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
       };
@@ -5298,7 +5349,7 @@ return TEMPLATE; });
             _results2 = [];
             for (j = _k = 0, _len1 = _ref3.length; _k < _len1; j = ++_k) {
               v = _ref3[j];
-              if (!_compare(a[i], b[j], '', [], [])) {
+              if (!_compare.call(this, a[i], b[j], '', null, [])) {
                 tmp = b[i];
                 b[i] = b[j];
                 _results2.push(b[j] = tmp);
@@ -5307,16 +5358,32 @@ return TEMPLATE; });
               }
             }
             return _results2;
-          })());
+          }).call(this));
         }
         return _results;
       };
       _compare = function(a, b, key, path, resultJSON) {
-        var aString, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, pathStr, typeA, typeB, v, value1, value2, _i, _len;
-        if (key) {
-          path.push(key);
+        var aString, attrPath, attrPathAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, typeA, typeB, v, value1, value2, _i, _len;
+        if (path) {
+          if (key) {
+            path = path.concat([key]);
+          }
+          if (path.length > 2) {
+            attrPathAry = path.slice(2);
+            attrPathAry = _.map(attrPathAry, function(path) {
+              var num;
+              num = Number(path);
+              if (num >= 0) {
+                return 'n';
+              }
+              return path;
+            });
+            attrPath = attrPathAry.join('.');
+            if (option.filterMap[attrPath]) {
+              return;
+            }
+          }
         }
-        pathStr = path.join('.');
         if (!a && !b) {
           return;
         }
@@ -5350,9 +5417,9 @@ return TEMPLATE; });
           if (typeA === 'array' && typeB === 'array') {
             diffAryResult = {};
             if (a.length < b.length) {
-              _diffAry(a, b);
+              _diffAry.call(this, a, b);
             } else {
-              _diffAry(b, a);
+              _diffAry.call(this, b, a);
             }
           }
           keys = [];
@@ -5372,7 +5439,7 @@ return TEMPLATE; });
             if (keys[i] === keys[i - 1]) {
               continue;
             }
-            hasDiff = _compare(a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
+            hasDiff = _compare.call(this, a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
             if (hasDiff) {
               isEqual = false;
             }
@@ -5382,6 +5449,9 @@ return TEMPLATE; });
             delete resultJSON[key];
           }
         } else {
+          if (path) {
+            path.length = 0;
+          }
           if (a !== b) {
             haveDiff = true;
             resultJSON[key] = {
@@ -5398,7 +5468,7 @@ return TEMPLATE; });
       this.compare = function(json1, json2) {
         var resultJSON;
         resultJSON = {};
-        _compare(json1, json2, 'result', [], resultJSON);
+        _compare.call(this, json1, json2, 'result', [], resultJSON);
         return resultJSON.result;
       };
       return null;
@@ -5486,7 +5556,9 @@ return TEMPLATE; });
           switch (parentKey) {
             case 'BlockDeviceMapping':
               deviceObj = childNode.DeviceName;
-              data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
+              if (deviceObj) {
+                data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
+              }
               break;
             case 'GroupSet':
               data.key = 'SecurityGroup';
@@ -5606,6 +5678,9 @@ return TEMPLATE; });
         'click .item .type': '_toggleTab',
         'click .head': '_toggleItem'
       },
+      _filterMap: {
+        'resource.PrivateIpAddressSet.n.AutoAssign': true
+      },
       _toggleItem: function(e) {
         var $target;
         $target = $(e.currentTarget).closest('.group');
@@ -5641,8 +5716,7 @@ return TEMPLATE; });
           return this.modal.close();
         }, this);
         this.$el.html(template.frame());
-        this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);
-        return this.modal.resize();
+        return this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);
       },
       _genDiffInfo: function(oldComps, newComps) {
         var diffTree, that, unionNewComps, unionOldComps;
@@ -5667,7 +5741,9 @@ return TEMPLATE; });
           }
           return null;
         });
-        diffTree = new DiffTree();
+        diffTree = new DiffTree({
+          filterMap: that._filterMap
+        });
         that.modifiedComps = diffTree.compare(unionOldComps, unionNewComps);
         if (!that.modifiedComps) {
           return that.modifiedComps = {};
@@ -5678,17 +5754,17 @@ return TEMPLATE; });
         that = this;
         groupData = [
           {
-            title: 'New',
+            title: 'New Resource',
             diffComps: that.addedComps,
             closed: true,
             type: 'added'
           }, {
-            title: 'Removed',
+            title: 'Removed Resource',
             diffComps: that.removedComps,
             closed: true,
             type: 'removed'
           }, {
-            title: 'Modified',
+            title: 'Modified Resource',
             diffComps: that.modifiedComps,
             closed: false,
             type: 'modified'

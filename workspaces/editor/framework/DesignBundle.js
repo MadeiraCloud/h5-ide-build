@@ -1235,16 +1235,16 @@
         return this.get('__parent') || null;
       },
       x: function() {
-        return this.attributes.x || 0;
+        return this.get('x') || 0;
       },
       y: function() {
-        return this.attributes.y || 0;
+        return this.get('y') || 0;
       },
       width: function() {
-        return this.attributes.width || 0;
+        return this.get('width') || 0;
       },
       height: function() {
-        return this.attributes.height || 0;
+        return this.get('height') || 0;
       }
     }, {
       extend: function(protoProps, staticProps) {
@@ -4091,13 +4091,20 @@
       type: constant.RESTYPE.ASG,
       newNameTmpl: "asg",
       constructor: function(attributes, options) {
-        var dolly, lc;
+        var conn, dolly, lc, _i, _len, _ref;
         GroupModel.prototype.constructor.apply(this, arguments);
         if (attributes.lcId) {
           lc = Design.instance().component(attributes.lcId);
           dolly = lc.clone();
           this.addChild(dolly);
           dolly.draw(true);
+          _ref = dolly.connections();
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            conn = _ref[_i];
+            if (conn.isVisual() || conn.type === 'SgAsso') {
+              conn.draw();
+            }
+          }
         }
         return this;
       },
@@ -6867,14 +6874,6 @@
         x: 2,
         y: 3
       },
-      x: function() {
-        var _ref;
-        return ((_ref = this.parent()) != null ? _ref.x() : void 0) + this.offset.x;
-      },
-      y: function() {
-        var _ref;
-        return ((_ref = this.parent()) != null ? _ref.y() : void 0) + this.offset.y;
-      },
       defaults: function() {
         return {
           x: 0,
@@ -6987,15 +6986,35 @@
         }
         return this;
       },
-      set: function() {
+      set: function(attr) {
         var context;
-        context = this.getContext(arguments[0]);
+        context = this.getContext(attr);
         return ComplexResModel.prototype.set.apply(context, arguments);
       },
-      get: function() {
+      get: function(attr) {
+        var context, _ref, _ref1;
+        context = this.getContext(attr);
+        if (attr === 'x') {
+          return ((_ref = this.parent()) != null ? _ref.x() : void 0) + this.offset.x;
+        } else if (attr === 'y') {
+          return ((_ref1 = this.parent()) != null ? _ref1.y() : void 0) + this.offset.y;
+        } else {
+          return ComplexResModel.prototype.get.apply(context, arguments);
+        }
+      },
+      toJSON: function() {
+        return ComplexResModel.prototype.toJSON.apply(this.__bigBrother || this);
+      },
+      setName: function(name) {
         var context;
-        context = this.getContext(arguments[0]);
-        return ComplexResModel.prototype.get.apply(context, arguments);
+        if (this.get("name") === name) {
+          return;
+        }
+        this.set("name", name);
+        context = this.getBigBrother() || this;
+        context.draw();
+        _.invoke(context.__brothers, 'draw');
+        return null;
       },
       initialize: function(attr, option) {
         var KpModel, SgAsso, defaultSg;
@@ -7341,12 +7360,16 @@
       type: "KeypairUsage",
       oneToMany: constant.RESTYPE.KP,
       serialize: function(components) {
-        var groupMembers, kp, member, otherTarget, ref, _i, _len;
+        var groupMembers, kp, member, otherTarget, otherTargetComp, ref, _i, _len;
         kp = this.getTarget(constant.RESTYPE.KP);
         if (kp) {
           otherTarget = this.getOtherTarget(kp);
+          otherTargetComp = components[otherTarget.id];
+          if (!otherTargetComp) {
+            return;
+          }
           ref = kp.createRef("KeyName");
-          components[otherTarget.id].resource.KeyName = ref;
+          otherTargetComp.resource.KeyName = ref;
           groupMembers = otherTarget.groupMembers ? otherTarget.groupMembers() : [];
           for (_i = 0, _len = groupMembers.length; _i < _len; _i++) {
             member = groupMembers[_i];

@@ -274,8 +274,6 @@
           silent: true
         });
         this.add(awsData, extraAttr);
-        return;
-        return data;
       },
       parseFetchData: function(res) {
         return res;
@@ -2621,12 +2619,19 @@
       };
 
       ConverterData.prototype.addAz = function(azName) {
-        var az;
+        var az, azRes;
         az = this.azs[azName];
         if (az) {
           return az;
         }
-        az = this.add("AZ", this.getOriginalComp(azName, 'AZ'));
+        azRes = this.getOriginalComp(azName, 'AZ');
+        if (!azRes) {
+          azRes = {
+            "RegionName": this.region,
+            "ZoneName": azName
+          };
+        }
+        az = this.add("AZ", azRes, azName);
         this.addLayout(az, true, this.theVpc);
         this.azs[azName] = az;
         return az;
@@ -3368,9 +3373,17 @@
             "VpcId": "",
             "LoadBalancerName": "",
             "AvailabilityZones": [],
-            "CrossZoneLoadBalancing": ""
+            "CrossZoneLoadBalancing": "",
+            "ConnectionDraining": {
+              "Enabled": false,
+              "Timeout": null
+            }
           };
           elbRes = this._mapProperty(aws_elb, elbRes);
+          elbRes.ConnectionDraining.Enabled = aws_elb.ConnectionDraining.Enabled;
+          if (aws_elb.ConnectionDraining.Enabled) {
+            elbRes.ConnectionDraining.Timeout = Number(aws_elb.ConnectionDraining.Timeout);
+          }
           if (elbRes.CanonicalHostedZoneName) {
             delete elbRes.CanonicalHostedZoneName;
           }
@@ -3564,7 +3577,12 @@
         _ref = this.getResourceByType("NC");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_nc = _ref[_i];
-          ncRes = aws_nc.toJSON();
+          aws_nc = aws_nc.attributes;
+          ncRes = {
+            "AutoScalingGroupName": aws_nc.AutoScalingGroupName,
+            "NotificationType": aws_nc.NotificationType,
+            "TopicARN": aws_nc.TopicARN
+          };
           asgComp = this.asgs[ncRes.AutoScalingGroupName];
           if (asgComp) {
             ncRes.AutoScalingGroupName = CREATE_REF(asgComp, 'resource.AutoScalingGroupName');
