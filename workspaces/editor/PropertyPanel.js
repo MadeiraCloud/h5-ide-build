@@ -849,15 +849,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         'click .sg-list-delete-btn': 'deleteAcl'
       },
       render: function() {
-        var str, t, title;
-        t = template;
+        var title;
         if (this.model.isApp || this.model.isAppEdit) {
-          if (this.model.attributes.isImport) {
-            str = '<header class="property-sidebar-title sidebar-title truncate property-title">Visualization - ' + this.model.attributes.vpcid + '<i class="icon-info tooltip property-header-info" data-tooltip="Currently you can rearrange the layout of visualisation and export it as PNG image file. Future version will include the feature to import VPC resource as an app. "></i></header>';
-            $("#OEPanelRight").find('.property-title').html(str);
-          } else {
-            title = "App - " + (this.model.get('name'));
-          }
+          title = "App - " + (this.model.get('name'));
         } else {
           title = "Stack - " + (this.model.get('name'));
         }
@@ -9695,7 +9689,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       getAppData: function(vpnAppId) {
         var vpn, vpncfg, vpncfg_str;
-        vpn = CloudResources(constant.RESTYPE.VPN, Desing.instance().region()).get(vpnAppId);
+        vpn = CloudResources(constant.RESTYPE.VPN, Design.instance().region()).get(vpnAppId);
         vpn = _.clone(vpn);
         if (vpn) {
           vpncfg_str = generateDownload([
@@ -10591,7 +10585,7 @@ function program14(depth0,data) {
     var EniAppModel;
     EniAppModel = PropertyModel.extend({
       init: function(uid) {
-        var allEni, appData, e, eni, eni_comp, formated_group, group, i, index, m, mIndex, memberIndex, myEniComponent, myEniComponentJSON, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+        var allEni, appData, e, eni, eni_comp, formated_group, group, i, index, m, mIndex, memberIndex, myEniComponent, myEniComponentJSON, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         group = [];
         myEniComponent = Design.instance().component(uid);
         if (!myEniComponent) {
@@ -10627,8 +10621,8 @@ function program14(depth0,data) {
         formated_group = [];
         for (index in group) {
           eni_comp = group[index];
-          if (appData) {
-            eni = $.extend(true, {}, appData);
+          if ((_ref2 = appData.get(eni_comp.appId)) != null ? _ref2.toJSON() : void 0) {
+            eni = $.extend(true, {}, appData.get(eni_comp.appId).toJSON());
           } else {
             eni = {
               privateIpAddressesSet: {
@@ -10636,9 +10630,9 @@ function program14(depth0,data) {
               }
             };
           }
-          _ref2 = eni.privateIpAddressesSet.item;
-          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-            i = _ref2[_j];
+          _ref3 = eni.privateIpAddressesSet.item;
+          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+            i = _ref3[_j];
             i.primary = i.primary === true;
           }
           eni.id = eni_comp.appId;

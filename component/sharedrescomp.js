@@ -717,33 +717,20 @@ return TEMPLATE; });
         if (!options) {
           options = {};
         }
-        this.model = options.model || new kpModel({
-          resModel: options.resModel
-        });
+        this.model = options.model;
         this.resModel = options.resModel;
         this.collection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
+        this.initModal();
         if (App.user.hasCredential()) {
           that = this;
+          this.modal.render();
           this.collection.fetch().then(function() {
-            return that.render();
+            return that.renderKeys();
           });
-        }
-        this.initModal();
-        this.collection.on('change', this.renderKeys, this);
-        return this.collection.on('update', this.renderKeys, this);
-      },
-      render: function(refresh) {
-        this.modal.render();
-        if (App.user.hasCredential()) {
-          this.collection.fetch().then((function(_this) {
-            return function() {
-              return _this.renderKeys();
-            };
-          })(this));
         } else {
           this.modal.render('nocredential');
         }
-        return this;
+        return this.collection.on('change', this.renderKeys, this);
       },
       renderKeys: function() {
         var data;
@@ -869,7 +856,6 @@ return TEMPLATE; });
         that = this;
         return _.each(checked, (function(_this) {
           return function(c) {
-            console.log(c);
             return _this.collection.findWhere({
               keyName: c.data.name.toString()
             }).destroy().then(onDeleteFinish, onDeleteFinish);

@@ -104,10 +104,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     OpsProgress = (function(_super) {
       __extends(OpsProgress, _super);
 
-      OpsProgress.prototype.isFixed = function() {
-        return false;
-      };
-
       OpsProgress.prototype.isWorkingOn = function(attribute) {
         return this.opsModel === attribute;
       };
@@ -2604,16 +2600,10 @@ return TEMPLATE; });
       render: function() {
         var ami, attr, btn, btns, opsModel, tpl, _i, _len;
         opsModel = this.workspace.opsModel;
-        if (opsModel.isImported()) {
-          btns = ["BtnActionPng", "BtnZoom", "BtnLinestyle"];
-        } else if (opsModel.isStack()) {
+        if (opsModel.isStack()) {
           btns = ["BtnRunStack", "BtnStackOps", "BtnZoom", "BtnExport", "BtnLinestyle", "BtnSwitchStates"];
         } else {
-          if (this.__editMode) {
-            btns = ["BtnApply", "BtnZoom", "BtnPng", "BtnLinestyle", "BtnReloadRes", "BtnSwitchStates"];
-          } else {
-            btns = ["BtnEditApp", "BtnAppOps", "BtnZoom", "BtnPng", "BtnLinestyle", "BtnReloadRes"];
-          }
+          btns = ["BtnEditApp", "BtnAppOps", "BtnZoom", "BtnPng", "BtnLinestyle", "BtnSwitchStates"];
         }
         tpl = "";
         for (_i = 0, _len = btns.length; _i < _len; _i++) {
@@ -2646,10 +2636,12 @@ return TEMPLATE; });
           this.$el.children(".icon-apply-app, .icon-cancel-update-app").toggle(isAppEdit);
           if (isAppEdit) {
             this.$el.children(".icon-terminate, .icon-stop, .icon-play, .icon-refresh, .icon-save-app, .icon-reload").hide();
+            this.$el.children(".toolbar-visual-ops-switch").show();
           } else {
             this.$el.children(".icon-terminate, .icon-refresh, .icon-save-app, .icon-reload").show();
             this.$el.children(".icon-stop").toggle(opsModel.get("stoppable") && opsModel.testState(OpsModel.State.Running));
             this.$el.children(".icon-play").toggle(opsModel.testState(OpsModel.State.Stopped));
+            this.$el.children(".toolbar-visual-ops-switch").hide();
           }
         }
         if (this.__saving) {
@@ -3349,7 +3341,7 @@ return TEMPLATE; });
           if (err.error === ApiRequest.Errors.MissingDataInServer) {
             return;
           }
-          notification("error", "Fail to load data, please retry.");
+          notification("error", "Failed to load data, please retry.");
           return self.remove();
         });
         return Workspace.apply(this, arguments);
@@ -3368,7 +3360,7 @@ return TEMPLATE; });
           self.__hasAdditionalData = true;
           return self.switchToReady();
         }, function() {
-          notification("error", "Fail to load aws data, please retry.");
+          notification("error", "Failed to load aws data, please retry.");
           return self.remove();
         });
       };
@@ -3695,79 +3687,6 @@ TEMPLATE.reuse_lc=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('workspaces/editor/UnmanagedView',["./OpsViewBase", "./template/TplLeftPanel", "./template/TplCanvas", "OpsModel", "backbone", "UI.selectbox", "MC.canvas"], function(OpsViewBase, LeftPanelTpl, CanvasTpl, OpsModel) {
-    return OpsViewBase.extend({
-      createTpl: function() {
-        return CanvasTpl({
-          noLeftPane: true,
-          noBottomPane: true
-        });
-      },
-      bindUserEvent: function() {
-        this.$el.find(".OEPanelCenter").on('mousedown', '.instance-volume, .instanceList-item-volume, .asgList-item-volume', MC.canvas.volume.show).on('mousedown', '.AWS-AutoScaling-LaunchConfiguration .instance-number-group', MC.canvas.asgList.show).on('mousedown', '.dragable', MC.canvas.event.dragable.mousedown).on('mousedown', '.group-resizer', MC.canvas.event.groupResize.mousedown).on('mouseenter mouseleave', '.node', MC.canvas.event.nodeHover).on('click', '.line', MC.canvas.event.selectLine).on('mousedown', '#svg_canvas', MC.canvas.event.clickBlank).on('mousedown', MC.canvas.event.clearSelected).on('mousedown', MC.canvas.event.ctrlMove.mousedown).on('selectstart', false);
-        $("#canvas_body").addClass("canvas_state_appview");
-      },
-      renderSubviews: function() {}
-    });
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('workspaces/editor/UnmanagedViewer',["./OpsEditorBase", "./UnmanagedView", "Design"], function(OpsEditorBase, UnmanagedView, Design) {
-
-    /*
-      UnmanagedViewer is mainly used to show visualize vpc
-     */
-    var UnmanagedViewer;
-    UnmanagedViewer = (function(_super) {
-      __extends(UnmanagedViewer, _super);
-
-      function UnmanagedViewer() {
-        return UnmanagedViewer.__super__.constructor.apply(this, arguments);
-      }
-
-      UnmanagedViewer.prototype.title = function() {
-        return this.opsModel.get("importVpcId") + " - app";
-      };
-
-      UnmanagedViewer.prototype.tabClass = function() {
-        return "icon-visualization-tabbar";
-      };
-
-
-      /*
-        Override these methods to implement subclasses.
-       */
-
-      UnmanagedViewer.prototype.createView = function() {
-        return new UnmanagedView({
-          opsModel: this.opsModel,
-          workspace: this
-        });
-      };
-
-      UnmanagedViewer.prototype.initDesign = function() {
-        MC.canvas.analysis();
-        this.design.finishDeserialization();
-      };
-
-      UnmanagedViewer.prototype.isReady = function() {
-        return this.opsModel.hasJsonData();
-      };
-
-      return UnmanagedViewer;
-
-    })(OpsEditorBase);
-    return UnmanagedViewer;
-  });
-
-}).call(this);
-
 define('workspaces/editor/template/TplAmiBrowser',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -4273,12 +4192,12 @@ return TEMPLATE; });
         region = this.workspace.opsModel.get('region');
         return MC.template.bubbleAMIMongoInfo = (function(_this) {
           return function(data) {
-            var amiData, models, _ref;
+            var amiData, models, _ref, _ref1;
             models = CloudResources(_this.__amiType, region).getModels();
             amiData = (_ref = _.findWhere(models, {
               'id': data.id
             })) != null ? _ref.toJSON() : void 0;
-            amiData.imageSize = amiData.imageSize || amiData.blockDeviceMapping[amiData.rootDeviceName].volumeSize;
+            amiData.imageSize = amiData.imageSize || ((_ref1 = amiData.blockDeviceMapping[amiData.rootDeviceName]) != null ? _ref1.volumeSize : void 0);
             amiData.instanceType = _this.addInstanceType(amiData).join(", ");
             return MC.template.bubbleAMIInfo(amiData);
           };
@@ -5272,7 +5191,7 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<span class=\"to\"> -></span><span class=\""
+  buffer += "<span class=\"name to\"> -></span><span class=\"name "
     + escapeExpression(((stack1 = (depth0 && depth0.type1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.value1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -5936,6 +5855,9 @@ return TEMPLATE; });
           if (self.isRemoved()) {
             return;
           }
+          if (self.opsModel.isImported()) {
+            return;
+          }
           newJson = self.opsModel.generateJsonFromRes();
           self.differ = new ResDiff({
             old: self.opsModel.getJsonData(),
@@ -5959,11 +5881,14 @@ return TEMPLATE; });
       };
 
       AppEditor.prototype.initDesign = function() {
-        StackEditor.prototype.initDesign.call(this);
+        if (this.opsModel.isImported()) {
+          MC.canvas.analysis();
+        }
         if (this.differ) {
           this.differ.render();
           this.differ = null;
         }
+        this.design.finishDeserialization();
       };
 
       AppEditor.prototype.refreshResource = function() {};
@@ -6061,14 +5986,11 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('workspaces/OpsEditor',["./editor/ProgressViewer", "./editor/UnmanagedViewer", "./editor/StackEditor", "./editor/AppEditor", './editor/framework/DesignBundle'], function(ProgressViewer, UnmanagedViewer, StackEditor, AppEditor) {
+  define('workspaces/OpsEditor',["./editor/ProgressViewer", "./editor/StackEditor", "./editor/AppEditor", './editor/framework/DesignBundle'], function(ProgressViewer, StackEditor, AppEditor) {
     var OpsEditor;
     OpsEditor = function(opsModel) {
       if (!opsModel) {
         throw new Error("Cannot find opsmodel while openning workspace.");
-      }
-      if (opsModel.isImported()) {
-        return new UnmanagedViewer(opsModel);
       }
       if (opsModel.isProcessing()) {
         return new ProgressViewer(opsModel);

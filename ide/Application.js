@@ -1672,7 +1672,7 @@ return TEMPLATE; });
           name: model.get("name")
         }));
         $("#forceTerminateApp").on("click", function() {
-          model.terminate().fail(function(err) {
+          model.terminate(true).fail(function(err) {
             var error;
             error = err.awsError ? err.error + "." + err.awsError : err.error;
             return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
@@ -1809,7 +1809,7 @@ return TEMPLATE; });
         }
         self = this;
         if (this.isImported()) {
-          return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetch().then(function() {
+          return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
             var json;
             json = self.generateJsonFromRes();
             self.__setJsonData(json);
@@ -2577,6 +2577,7 @@ return TEMPLATE; });
           return m;
         }
         m = new OpsModel({
+          name: vpcId,
           importVpcId: vpcId,
           region: region,
           state: OpsModel.State.Running

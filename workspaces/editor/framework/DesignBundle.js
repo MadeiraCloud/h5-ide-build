@@ -6914,6 +6914,9 @@
         _ref = this.connections();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           conn = _ref[_i];
+          if (conn.type === 'ElbAmiAsso') {
+            continue;
+          }
           connClass = Design.modelClassForType(conn.type);
           target = conn.getOtherTarget(this.type);
           new connClass(dolly, target);
@@ -6922,6 +6925,9 @@
       },
       syncBorthersConn: function(conn, add) {
         var c, connClass, otherTarget, syncTarget, target, targetConn, _i, _len, _results;
+        if (conn.type === 'ElbAmiAsso') {
+          return;
+        }
         syncTarget = [];
         if (this.isClone()) {
           syncTarget.push(this.getBigBrother());
@@ -7126,6 +7132,7 @@
           }
           this.__brothers[0].__bigBrother = null;
           this.__brothers[0].__brothers = [];
+          this.__brothers[0].__isClone = false;
           _ref1 = this.__brothers;
           for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
             brother = _ref1[i];
@@ -9912,7 +9919,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeAsg',["./CanvasElement", 'i18n!nls/lang.js', "constant", "Design", "CanvasManager"], function(CanvasElement, lang, constant, Design, CanvasManager) {
+  define('workspaces/editor/framework/canvasview/CeAsg',["event", "./CanvasElement", "i18n!nls/lang.js", "constant", "Design", "CanvasManager"], function(ide_event, CanvasElement, lang, constant, Design, CanvasManager) {
     var CeAsg, CeAsgProto;
     CeAsg = function() {
       return CanvasElement.apply(this, arguments);
@@ -9921,7 +9928,48 @@
     CeAsgProto = CeAsg.prototype;
     CeAsgProto.PATH_ASG_TITLE = "M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z";
     CeAsgProto.isRemovable = function() {
-      return this.model.isRemovable();
+      var asg, asgName, lc, lcName;
+      asg = this.model;
+      lc = asg.get('lc');
+      if (!lc || lc.__brothers.length > 0 || lc.isClone()) {
+        return true;
+      } else {
+        asgName = asg.get('name');
+        lcName = lc.get('name');
+        return sprintf(lang.ide.CVS_CFM_DEL_ASG, lcName, asgName, asgName, lcName);
+      }
+    };
+    CanvasElement.prototype.remove = function() {
+      var comp, comp_name, res, template;
+      if (this.model.isRemoved()) {
+        return;
+      }
+      res = this.isRemovable();
+      comp = this.model;
+      comp_name = comp.get("name");
+      if (_.isString(res)) {
+        template = MC.template.canvasOpConfirm({
+          title: sprintf(lang.ide.CVS_CFM_DEL, comp_name),
+          content: res
+        });
+        modal(template, true);
+        $("#canvas-op-confirm").one("click", function() {
+          if (!comp.isRemoved()) {
+            comp.remove();
+            $canvas.selected_node().length = 0;
+            ide_event.trigger(ide_event.OPEN_PROPERTY);
+          }
+          return null;
+        });
+      } else if (res.error) {
+        notification("error", res.error);
+      } else if (res === true) {
+        comp.remove();
+        $canvas.selected_node().length = 0;
+        ide_event.trigger(ide_event.OPEN_PROPERTY);
+        return true;
+      }
+      return false;
     };
     CeAsgProto.asgExpand = function(parentId, x, y) {
       var ExpandedAsgModel, comp, design, res, target, targetName;
@@ -10746,6 +10794,14 @@
       if (el) {
         return MC.canvas.position(el, this.model.x(), this.model.y());
       }
+    };
+    ChildElementProto.isRemovable = function() {
+      var lc;
+      lc = this.model;
+      if (lc.__brothers.length > 0 || lc.isClone()) {
+        return true;
+      }
+      return sprintf(lang.ide.CVS_CFM_DEL_LC, lc.get('name'));
     };
     return null;
   });

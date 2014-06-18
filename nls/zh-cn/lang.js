@@ -180,7 +180,7 @@ define({
         "CVS_CFM_DEL_IGW": "面向互联网的负载均衡器和公网IP需要一个互联网网关才能工作。",
         "CVS_CFM_DEL_GROUP": "删除 %s 会同时删除其中的所有资源， 确定要删除它吗？",
         "CVS_CFM_DEL_LC": "",
-        "CVS_CFM_DEL_ASG": "删除它会删除整个 %s，确定要删除它吗?",
+        "CVS_CFM_DEL_ASG": "",
         "CVS_CFM_ADD_IGW": "必须要有一个互联网网关",
         "CVS_CFM_ADD_IGW_MSG": "为设置EIP，自动添加了一个互联网网关",
         "CVS_MSG_ERR_ZOOMED_DROP_ERROR": "在添加新资源前，请重设缩放至100%。",

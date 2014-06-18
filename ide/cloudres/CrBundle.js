@@ -245,7 +245,7 @@
         this.__fetchPromise = null;
         return this.fetch();
       },
-      __parseExternalData: function(awsData, extraAttr) {
+      __parseExternalData: function(awsData, extraAttr, category) {
         var d, e, toAddIds, _i, _len;
         try {
           if (this.parseExternalData) {
@@ -264,6 +264,7 @@
         toAddIds = [];
         for (_i = 0, _len = awsData.length; _i < _len; _i++) {
           d = awsData[_i];
+          d.category = category;
           if (this.modelIdAttribute) {
             d.id = d[this.modelIdAttribute];
             delete d[this.modelIdAttribute];
@@ -2064,6 +2065,23 @@
         this.__region = region;
         return this;
       },
+      fetchForceDedup: function() {
+        var p;
+        this.__forceDedup = false;
+        p = this.fetchForce();
+        this.__forceDedup = true;
+        return p;
+      },
+      fetchForce: function() {
+        var d;
+        if (this.__forceDedup) {
+          this.__forceDedup = false;
+          d = Q.defer();
+          d.resolve();
+          d.promise;
+        }
+        return CrCollection.prototype.fetchForce.call(this);
+      },
       doFetch: function() {
         console.assert(this.__region, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
         return ApiRequest("resource_vpc_resource", {
@@ -2084,7 +2102,7 @@
             console.warn("Cannot find cloud resource collection for type:", type);
             continue;
           }
-          cln.__parseExternalData(d, extraAttr);
+          cln.__parseExternalData(d, extraAttr, this.__region);
         }
       }
     });
