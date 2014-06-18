@@ -16,29 +16,29 @@
 #canvas_body {
 	font-size  : 0; /* A hack to make sure #canvas_body.scrollHeight is correct. */
 	min-height : 100%;
-	background : #fff url('../images/ide/grid_x1.png?v=7c0c3514');
+	background : #fff url('../images/ide/grid_x1.png');
 }
 
-#canvas_body.zoomlevel_1_2 { background-image : url('../images/ide/grid_x1.2.png?v=2aa36346'); }
-#canvas_body.zoomlevel_1_4 { background-image : url('../images/ide/grid_x1.4.png?v=79c19a37'); }
-#canvas_body.zoomlevel_1_6 { background-image : url('../images/ide/grid_x1.6.png?v=5af1426f'); }
+#canvas_body.zoomlevel_1_2 { background-image : url('../images/ide/grid_x1.2.png'); }
+#canvas_body.zoomlevel_1_4 { background-image : url('../images/ide/grid_x1.4.png'); }
+#canvas_body.zoomlevel_1_6 { background-image : url('../images/ide/grid_x1.6.png'); }
 
 
 @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
 	#canvas_body {
-		background-image : url('../images/ide/grid_x1@2x.png?v=f4bd57a6');
+		background-image : url('../images/ide/grid_x1@2x.png');
 		background-size  : 80px 80px;
 	}
 	#canvas_body.zoomlevel_1_2 {
-		background-image : url('../images/ide/grid_x1.2@2x.png?v=c9bce207');
+		background-image : url('../images/ide/grid_x1.2@2x.png');
 		background-size  : 64px 64px;
 	}
 	#canvas_body.zoomlevel_1_4 {
-		background-image : url('../images/ide/grid_x1.4@2x.png?v=a2ecc74f');
+		background-image : url('../images/ide/grid_x1.4@2x.png');
 		background-size  : 48px 48px;
 	}
 	#canvas_body.zoomlevel_1_6 {
-		background-image : url('../images/ide/grid_x1.6@2x.png?v=99bf34ed');
+		background-image : url('../images/ide/grid_x1.6@2x.png');
 		background-size  : 32px 32px;
 	}
 }
@@ -714,19 +714,19 @@
 }
 
 .volume_item {
-	background-image: url('../images/ide/icon/volume-volume-bubble.png?v=80f313dc');
+	background-image: url('../images/ide/icon/volume-volume-bubble.png');
 }
 
 .volume_item.deleted {
-	background-image: url('../images/ide/icon/volume-volume-bubble-deleted.png?v=4d1329ec');
+	background-image: url('../images/ide/icon/volume-volume-bubble-deleted.png');
 }
 
 .snapshot_item {
-	background-image: url('../images/ide/icon/ebs-snapshot-volume-bubble.png?v=b9344f2a');
+	background-image: url('../images/ide/icon/ebs-snapshot-volume-bubble.png');
 }
 
 .snapshot_item.deleted {
-	background-image: url('../images/ide/icon/ebs-snapshot-volume-bubble-deleted.png?v=e77929bc');
+	background-image: url('../images/ide/icon/ebs-snapshot-volume-bubble-deleted.png');
 }
 
 .volume_item:hover,
@@ -890,11 +890,11 @@
 	border: 2px solid rgba(255, 255, 255, 0);
 	width: 98px;
 	height: 98px;
-	background: url('../images/ide/icon/instance-canvas.png?v=6c2a25c7') 18px 10px no-repeat;
+	background: url('../images/ide/icon/instance-canvas.png') 18px 10px no-repeat;
 }
 
 .deleted.instanceList-item {
-	background: url('../images/ide/icon/instance-canvas-deleted.png?v=926f3365') 18px 10px no-repeat;
+	background: url('../images/ide/icon/instance-canvas-deleted.png') 18px 10px no-repeat;
 }
 
 .eniList-item {
@@ -903,11 +903,11 @@
 	border: 2px solid rgba(255, 255, 255, 0);
 	width: 98px;
 	height: 98px;
-	background: url('../images/ide/icon/eni-canvas-attached.png?v=06a77720') 20px 20px no-repeat;
+	background: url('../images/ide/icon/eni-canvas-attached.png') 20px 20px no-repeat;
 }
 
 .deleted.eniList-item {
-	background: url('../images/ide/icon/eni-canvas-deleted.png?v=259bcead') 20px 20px no-repeat;
+	background: url('../images/ide/icon/eni-canvas-deleted.png') 20px 20px no-repeat;
 }
 
 .eniList-item-eip-status {
@@ -917,11 +917,11 @@
 	width: 12px;
 	height: 14px;
 	display: block;
-	/*background: url('../images/ide/icon/eip-off.png?v=738aed88') 0px 0px no-repeat;*/
+	/*background: url('../images/ide/icon/eip-off.png') 0px 0px no-repeat;*/
 }
 
 .eniList-item-eip-status.on {
-	/*background: url('../images/ide/icon/eip-on.png?v=f52b7ea4') 0px 0px no-repeat;*/
+	/*background: url('../images/ide/icon/eip-on.png') 0px 0px no-repeat;*/
 }
 
 .asgList-item.selected,
@@ -956,7 +956,7 @@
 	left: 37px;
 	width: 29px;
 	height: 24px;
-	background: url('../images/ide/icon/instance-volume-not-attached.png?v=fb618bd3') no-repeat;
+	background: url('../images/ide/icon/instance-volume-not-attached.png') no-repeat;
 	text-align: center;
 }
 
