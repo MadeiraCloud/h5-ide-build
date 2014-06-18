@@ -2344,6 +2344,7 @@ function program14(depth0,data) {
       },
       fetchAwsResources: function(region) {
         if (!region) {
+          CloudResources(constant.RESTYPE.INSTANCE).fetch();
           CloudResources(constant.RESTYPE.EIP).fetch();
           CloudResources(constant.RESTYPE.VOL).fetch();
           CloudResources(constant.RESTYPE.ELB).fetch();

@@ -3158,23 +3158,18 @@ return TEMPLATE; });
 
 (function() {
   define('ide/subviews/WorkspaceView',["backbone", "jquerysort"], function() {
-    var noPropagate;
-    noPropagate = function(event) {
-      event.stopPropagation();
-    };
     return Backbone.View.extend({
       el: $("#tabbar-wrapper")[0],
       events: {
         "click li": "onClick",
-        "click .icon-close": "onClose",
-        "mousedown .icon-close": noPropagate
+        "click .icon-close": "onClose"
       },
       initialize: function(options) {
         var self;
         self = this;
         this.$el.find("#ws-tabs").dragsort({
           horizontal: true,
-          dragSelectorExclude: ".fixed",
+          dragSelectorExclude: ".fixed, .icon-close",
           dragEnd: function() {
             self.updateTabOrder();
           }

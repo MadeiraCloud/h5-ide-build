@@ -8862,6 +8862,9 @@
         _ref = this.connections();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           conn = _ref[_i];
+          if (conn.type === 'ElbAmiAsso') {
+            continue;
+          }
           connClass = Design.modelClassForType(conn.type);
           target = conn.getOtherTarget(this.type);
           new connClass(dolly, target);
@@ -8870,6 +8873,9 @@
       },
       syncBorthersConn: function(conn, add) {
         var c, connClass, otherTarget, syncTarget, target, targetConn, _i, _len, _results;
+        if (conn.type === 'ElbAmiAsso') {
+          return;
+        }
         syncTarget = [];
         if (this.isClone()) {
           syncTarget.push(this.getBigBrother());
@@ -12619,9 +12625,9 @@
       return list;
     };
     ChildElementProto.iconUrl = function(instanceId) {
-      var ami;
+      var ami, _ref;
       if (instanceId) {
-        ami = CloudResources(constant.RESTYPE.AMI, Design.instance().region()).get(instanceId).toJSON();
+        ami = (_ref = CloudResources(constant.RESTYPE.AMI, Design.instance().region()).get(instanceId)) != null ? _ref.toJSON() : void 0;
         if (ami) {
           ami = MC.data.dict_ami[ami.imageId];
         }
@@ -12636,7 +12642,7 @@
       }
     };
     ChildElementProto.draw = function(isCreate) {
-      var data, m, node, numberGroup, volumeCount, volumeImage;
+      var data, m, node, numberGroup, volumeCount, volumeImage, _ref;
       m = this.model;
       if (isCreate) {
         node = this.createNode({
@@ -12704,7 +12710,7 @@
       }
       CanvasManager.update(node.children(".volume-image"), volumeImage, "href");
       if (!m.design().modeIsStack() && m.parent()) {
-        data = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(m.parent().get('appId')).toJSON();
+        data = (_ref = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(m.parent().get('appId'))) != null ? _ref.toJSON() : void 0;
         numberGroup = node.children(".instance-number-group");
         if (data && data.Instances && data.Instances.member && data.Instances.member.length > 0) {
           CanvasManager.toggle(numberGroup, true);

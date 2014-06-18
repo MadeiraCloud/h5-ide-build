@@ -2882,7 +2882,7 @@ function program35(depth0,data) {
     + "</dd>\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_PRIMARY_PUBLIC_IP", {hash:{},data:data}))
     + "</dt>\n      <dd>"
-    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.ipAddress), {hash:{},data:data}))
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.publicIpAddress), {hash:{},data:data}))
     + "</dd>\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_PUBLIC_DNS", {hash:{},data:data}))
     + "</dt>\n      <dd class=\"click-select tooltip\" data-tooltip=\""
