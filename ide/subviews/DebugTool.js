@@ -1,5 +1,5 @@
 (function() {
-  define(["ApiRequest", "ApiRequestDefs", "vender/select2/select2"], function(ApiRequest, ApiRequestDefs) {
+  define(["ApiRequest", "ApiRequestDefs", "vender/select2/select2", "UI.modal"], function(ApiRequest, ApiRequestDefs) {
     var ApiDialog, DebugTool, SessionDialog, debugApi, debugSession, dispatchClick, tmpl;
     tmpl = "<div id=\"DebugTool\" class=\"debugToolBg\"><ul>\n<li id=\"DtDiff\" class=\"icon-toolbar-diff tooltip\" data-tooltip=\"Json Diff\"></li>\n<li id=\"DtView\" class=\"icon-toolbar-cloudformation tooltip\" data-tooltip=\"Json View\"></li>\n<li id=\"DtApi\" class=\"tooltip debugToolBg\" data-tooltip=\"Debug Api\"></li>\n<li id=\"DtSession\" class=\"icon-user tooltip\" data-tooltip=\"Share Session\"></li>\n</ul>\n<div id=\"DebugTooltip\">console输入man查看快捷debug</div>\n</div>";
     ApiDialog = "<div class=\"modal-header\"> <h3>Api Debugger</h3> <i class=\"modal-close\">×</i> </div>\n<div id=\"diffWrap\"><div id=\"ApiDebugger\">\n<button class=\"btn btn-blue\" id=\"ApiDebugSend\">Send Request</button>\n<section><label>Api : </label><select id=\"ApiSelect\" data-placeholder=\"Select an api\"></select></section>\n<section><label>Parameters :</label><section id=\"ApiParamsWrap\" class=\"clearfix\"></section></section>\n<section><label>Result :</label><pre id=\"ApiResult\"></pre></section>\n</div></div>";

@@ -80,14 +80,14 @@
       if (delete_obj) {
         MC.ta.list = _.without(MC.ta.list, delete_obj);
         if (delete_obj.level) {
-          ide_event.trigger(ide_event.UPDATE_STATUS_BAR, 'delete', delete_obj.level);
+          ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'delete', delete_obj.level);
         }
       }
       return null;
     };
     _add = function(result) {
       MC.ta.list.push(result);
-      return ide_event.trigger(ide_event.UPDATE_STATUS_BAR, 'add', result.level);
+      return ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'add', result.level);
     };
     _replace = function(result) {
       MC.ta.list = _.map(MC.ta.list, function(item) {
@@ -142,7 +142,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', '../result_vo'], function(constant, $, MC, lang, ApiRequest, stackService, amiService) {
+  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources", '../result_vo'], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
     var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
@@ -372,7 +372,7 @@
       }
     };
     isHaveNotExistAMI = function() {
-      var amiAry, awsAMIIdAry, instanceAMIMap, tipInfoAry;
+      var amiAry, amiCollection, instanceAMIMap, tipInfoAry;
       amiAry = [];
       instanceAMIMap = {};
       _.each(MC.canvas_data.component, function(compObj) {
@@ -395,17 +395,11 @@
         }
         return null;
       });
-      awsAMIIdAry = [];
-      _.each(MC.data.dict_ami, function(amiObj) {
-        var amiId;
-        amiId = amiObj.imageId;
-        awsAMIIdAry.push(amiId);
-        return null;
-      });
       tipInfoAry = [];
+      amiCollection = CloudResources(constant.RESTYPE.AMI, MC.canvas_data.region);
       _.each(amiAry, function(amiId) {
         var instanceUIDAry;
-        if (__indexOf.call(awsAMIIdAry, amiId) < 0) {
+        if (!amiCollection.get(amiId)) {
           instanceUIDAry = instanceAMIMap[amiId];
           _.each(instanceUIDAry, function(instanceUID) {
             var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
@@ -628,7 +622,7 @@
       haveProvisionedVolume = false;
       instanceUIDRef = lsgName = amiId = null;
       if (instanceComp) {
-        instanceUIDRef = MC.aws.aws.genResRef(instanceUID, 'resource.InstanceId');
+        instanceUIDRef = MC.genResRef(instanceUID, 'resource.InstanceId');
       } else {
         lsgName = instanceComp.resource.LaunchConfigurationName;
         amiId = instanceComp.resource.ImageId;
@@ -748,7 +742,7 @@
       var RTB, components, hasEIP, instance, instanceId, isConnectRTB, tipInfo;
       components = MC.canvas_data.component;
       instance = components[uid];
-      instanceId = MC.aws.aws.genResRef(uid, 'resource.InstanceId');
+      instanceId = MC.genResRef(uid, 'resource.InstanceId');
       RTB = '';
       isConnectRTB = _.some(components, function(component) {
         if (component.type === constant.RESTYPE.RT) {
@@ -803,7 +797,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'eni_service', '../result_vo'], function(constant, $, MC, lang, eniService) {
+  define('component/trustedadvisor/validation/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!nls/lang.js'], function(constant, $, MC, lang) {
     return {
       getAllAWSENIForAppEditAndDefaultVPC: function(callback) {
         return callback(null);
@@ -815,32 +809,8 @@
 
 (function() {
   define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
-    var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, __hasState;
+    var i18n, isVPCAbleConnectToOutside, isVPCUsingNonexistentDhcp;
     i18n = Helper.i18n.short();
-    __hasState = function(uid) {
-      var component, had, state;
-      if (Design.instance().get('agent').enabled === false) {
-        return false;
-      }
-      if (uid) {
-        component = Design.instance().component(uid);
-        if (component) {
-          state = component.get('state');
-          return state && state.length;
-        } else {
-          return false;
-        }
-      } else {
-        had = false;
-        Design.instance().eachComponent(function(component) {
-          if (__hasState(component.id)) {
-            had = true;
-            return false;
-          }
-        });
-        return had;
-      }
-    };
     isVPCAbleConnectToOutside = function() {
       var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo;
       isHaveVPN = false;
@@ -878,40 +848,26 @@
         info: tipInfo
       };
     };
-    isVPCUsingNoneDHCPAndVisualops = function(uid) {
-      var dhcpId, vpc;
-      if (!__hasState()) {
-        return null;
-      }
-      vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-      dhcpId = vpc.get('dhcp').get('appId');
-      if (dhcpId !== 'default') {
-        return null;
-      }
-      return Helper.message.warning(vpc.id, i18n.TA_MSG_WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
-    };
     isVPCUsingNonexistentDhcp = function(callback) {
       var dhcpCol, dhcpId, vpc;
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-      dhcpId = vpc.get('dhcp').get('appId');
+      dhcpId = vpc.get('dhcp').get('dhcpOptionsId');
       if (!dhcpId || dhcpId === 'default') {
         callback(null);
         return;
       }
       dhcpCol = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
-      dhcpCol.fetchForce().fin(function() {
+      return dhcpCol.fetch().fin(function() {
         if (dhcpCol.get(dhcpId)) {
           return callback(null);
         } else {
           return callback(Helper.message.error(vpc.id, i18n.TA_MSG_ERROR_VPC_DHCP_NONEXISTENT));
         }
       });
-      return null;
     };
     return {
       isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
-      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp,
-      isVPCUsingNoneDHCPAndVisualops: isVPCUsingNoneDHCPAndVisualops
+      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp
     };
   });
 
@@ -952,7 +908,7 @@
       elbComp = MC.canvas_data.component[elbUID];
       attachedInstanceNum = elbComp.resource.Instances.length;
       attachedASGNum = 0;
-      elbNameRef = MC.aws.aws.genResRef(elbUID, 'resource.LoadBalancerName');
+      elbNameRef = MC.genResRef(elbUID, 'resource.LoadBalancerName');
       _.each(MC.canvas_data.component, function(compObj) {
         var attachedELBAry, compType;
         compType = compObj.type;
@@ -1344,9 +1300,8 @@
               }
             });
             _.each(elbNotExistCertMap, function(sslCertNameAry, elbName) {
-              var tipInfo, uniqSSLCertNameAry;
-              uniqSSLCertNameAry = _.uniq(sslCertNameAry);
-              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, uniqSSLCertNameAry.join(', '));
+              var tipInfo;
+              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, sslCertNameAry.join(', '));
               return validResultAry.push({
                 level: constant.TA.ERROR,
                 info: tipInfo,
@@ -1800,7 +1755,7 @@
       region = Design.instance().region();
       topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
       result = [];
-      return topicCol.fetchForce().fin(function() {
+      return topicCol.fetch().fin(function() {
         var obj, ta, _k, _len2;
         for (_k = 0, _len2 = needTa.length; _k < _len2; _k++) {
           ta = needTa[_k];
@@ -1809,9 +1764,9 @@
           obj = ta[2];
           if (!topicCol.get(topic.get('appId'))) {
             if (obj.type === constant.RESTYPE.SP) {
-              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTENT, asg.get('name'), obj.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTIENT, asg.get('name'), obj.get('name'), topic.get('name')));
             } else if (obj.type === constant.RESTYPE.NC) {
-              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT, asg.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTIENT, asg.get('name'), topic.get('name')));
             }
           }
         }
@@ -1903,7 +1858,7 @@
       var components, isConnectRTB, tipInfo, vpn, vpnId;
       components = MC.canvas_data.component;
       vpn = components[uid];
-      vpnId = MC.aws.aws.genResRef(uid, 'resource.VpnGatewayId');
+      vpnId = MC.genResRef(uid, 'resource.VpnGatewayId');
       isConnectRTB = _.some(components, function(component) {
         if (component.type === constant.RESTYPE.RT) {
           return _.some(component.resource.RouteSet, function(rt) {
@@ -2037,7 +1992,7 @@
       var components, igw, igwId, isConnectRTB, tipInfo;
       components = MC.canvas_data.component;
       igw = components[uid];
-      igwId = MC.aws.aws.genResRef(uid, 'resource.InternetGatewayId');
+      igwId = MC.genResRef(uid, 'resource.InternetGatewayId');
       isConnectRTB = _.some(components, function(component) {
         if (component.type === constant.RESTYPE.RT) {
           return _.some(component.resource.RouteSet, function(rt) {
@@ -2577,12 +2532,9 @@ This file use for validate state.
         };
       },
       getModule: function() {
-        var agentData, modRepo, modTag, modVersion, module, moduleDataObj;
-        agentData = MC.common.other.canvasData.get('agent');
-        modRepo = agentData.module.repo;
-        modTag = agentData.module.tag;
-        modVersion = modRepo + ':' + modTag;
-        moduleDataObj = MC.data.state.module[modVersion];
+        var module, moduleDataObj, stateModuel;
+        stateModuel = Design.instance().get('agent').module;
+        moduleDataObj = App.model.getStateModule(stateModuel.repo, stateModuel.tag);
         module = {};
         _.each(moduleDataObj, function(obj, key) {
           return _.extend(module, obj);
@@ -2895,9 +2847,9 @@ This file use for validate component about state.
       lc = __getComp(uid, true);
       lcOld = __getComp(uid);
       result = [];
-      asg = lc.parent();
+      asg = lc.getAsg();
       expandedAsgs = asg.get('expandedList');
-      subnet = lc.parent().parent();
+      subnet = lc.getAsg().parent();
       subnetName = subnet.get('name');
       subnetId = subnet.id;
       isLcNatOut = __natOut(lc);
@@ -2994,6 +2946,7 @@ This file use for validate component about state.
               if (!snaphostMap[snaphostId]) {
                 snaphostMap[snaphostId] = [];
               }
+              snaphostMap[snaphostId].push(MC.extractID(instanceUID));
             }
           }
           if (compObj.type === constant.RESTYPE.LC) {
@@ -3003,8 +2956,9 @@ This file use for validate component about state.
                 instanceUID = compObj.uid;
                 if (snaphostId && instanceUID) {
                   if (!snaphostMap[snaphostId]) {
-                    return snaphostMap[snaphostId] = [];
+                    snaphostMap[snaphostId] = [];
                   }
+                  return snaphostMap[snaphostId].push(instanceUID);
                 }
               }
             });
@@ -3035,28 +2989,22 @@ This file use for validate component about state.
                 if (__indexOf.call(awsSnapshotIdAry, snapshotId) >= 0) {
                   instanceUIDAry = snaphostMap[snapshotId];
                   _.each(instanceUIDAry, function(instanceUID) {
-                    var infoObjType, infoTagType, instanceId, instanceName, instanceObj, instanceType, tipInfo;
+                    var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
                     instanceObj = MC.canvas_data.component[instanceUID];
                     instanceType = instanceObj.type;
                     instanceName = instanceObj.name;
                     infoObjType = 'Instance';
                     infoTagType = 'instance';
-                    instanceId = null;
                     if (instanceType === constant.RESTYPE.LC) {
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
-                      instanceId = instanceObj.resource.LaunchConfigurationARN;
-                    } else {
-                      instanceId = instanceObj.resource.InstanceId;
                     }
-                    if (!instanceId) {
-                      tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
-                      tipInfoAry.push({
-                        level: constant.TA.ERROR,
-                        info: tipInfo,
-                        uid: instanceUID
-                      });
-                    }
+                    tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
+                    tipInfoAry.push({
+                      level: constant.TA.ERROR,
+                      info: tipInfo,
+                      uid: instanceUID
+                    });
                     return null;
                   });
                 }
@@ -3134,9 +3082,6 @@ This file use for validate component about state.
       results = [];
       for (_i = 0, _len = instanceLike.length; _i < _len; _i++) {
         i = instanceLike[_i];
-        if (i.type === constant.RESTYPE.INSTANCE && i.get('appId') && i.get('count') === i.groupMembers().length + 1) {
-          continue;
-        }
         keyName = i.get('keyName');
         if (keyName && keyName[0] !== '@' && !i.connectionTargets("KeypairUsage").length) {
           needValidate.push(i);
@@ -3234,8 +3179,8 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('validation',['constant', 'event', 'component/trustedadvisor/config', 'component/trustedadvisor/validation/main', 'component/trustedadvisor/validation/result_vo', 'jquery', 'underscore'], function(constant, ide_event, config, validation_main, resultVO) {
-    var validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
+  define('validation',['constant', 'event', 'component/trustedadvisor/config', 'component/trustedadvisor/validation/main', 'component/trustedadvisor/validation/result_vo', 'jquery', 'underscore', "MC"], function(constant, ide_event, config, validation_main, resultVO) {
+    var V, validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
     _init = function() {
       return resultVO.reset();
     };
@@ -3402,11 +3347,365 @@ This file use for validate component about state.
       _validGlobal('all');
       return resultVO.result();
     };
-    return {
+    V = {
       validComp: validComp,
       validAll: validAll,
       validRun: validRun,
-      stateEditor: validation_main.stateEditor
+      stateEditor: validation_main.stateEditor,
+      list: [],
+      state_list: {}
+    };
+    MC.ta = V;
+    return V;
+  });
+
+}).call(this);
+
+define('component/trustedadvisor/template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "no-item";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						";
+  stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n					</div>\n\n				";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title empty\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						Good job! No error here.\n					</div>\n				";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						";
+  stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n					</div>\n				";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title empty\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						Good job! No warning here.\n					</div>\n				";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<div class=\"title empty\" data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						Good job! No notice here.\n					</div>\n				";
+  return buffer;
+  }
+
+  buffer += "<div class=\"validation-content\">\n	<ul class=\"tab\">\n		<li class=\"active ";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-tab-target=\"#item-error\">Error<span class=\"validation-counter validation-counter-error\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></li>\n		<li data-tab-target=\"#item-warning\" class=\"";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">Warning<span class=\"validation-counter validation-counter-warning\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></li>\n		<li data-tab-target=\"#item-notice\" class=\"";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">Notice<span class=\"validation-counter validation-counter-notice\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\n\n			</div>\n			<div id=\"item-warning\" class=\"content\">\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n			<div id=\"item-notice\" class=\"content\">\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.notice_list), {hash:{},inverse:self.program(11, program11, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n		</div>\n	</div>\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+define('component/trustedadvisor/modal_template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"modal-header\">\n	<h3>Validation</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div id=\"modal-validation-statusbar\">\n	</div>\n</div>";
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('component/trustedadvisor/view',['event', './template', './modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template, modal_template) {
+    var TrustedAdvisorView;
+    TrustedAdvisorView = Backbone.View.extend({
+      el: '.status-bar-modal',
+      events: {
+        'click .modal-close': 'closedPopup'
+      },
+      render: function(type, status) {
+        console.log('pop-up:trusted advisor run render', status);
+        if (type === 'stack') {
+          $('#stack-run-validation-container').html(template(this.model.attributes));
+          $('.validating').hide();
+          this.processDetails();
+          $('.stack-validation details').show();
+        } else if (type === 'statusbar') {
+          this.$el.html(modal_template());
+          this.$el.find('#modal-validation-statusbar').html(template(this.model.attributes));
+          this.processStatusBarDetails();
+          $('.status-bar-modal').show();
+        }
+        return null;
+      },
+      processStatusBarDetails: function() {
+        var $tabs, error, notice, warning;
+        error = this.model.get('error_list');
+        warning = this.model.get('warning_list');
+        notice = this.model.get('notice_list');
+        $tabs = this.$el.find('.tab li');
+        if (error.length) {
+
+        } else if (warning.length) {
+          return $tabs.eq(1).click();
+        } else if (notice.length) {
+          return $tabs.eq(2).click();
+        } else {
+          this.$el.find('.validation-content').text('Great job! No error, warning or notice here.');
+          return this.$el.find('.validation-content').addClass('empty');
+        }
+      },
+      processDetails: function() {
+        var $details, $nutshell, $summary, $tabs, bindSummary, error, notice, processNutshell, warning;
+        error = this.model.get('error_list');
+        warning = this.model.get('warning_list');
+        notice = this.model.get('notice_list');
+        $tabs = $('#modal-box .tab li');
+        $nutshell = $('#modal-box .nutshell');
+        $details = $nutshell.prev('details');
+        $summary = $details.find('summary');
+        bindSummary = function() {
+          return $summary.click(function() {
+            if ($details.attr('open') === 'open') {
+              return $nutshell.show();
+            } else {
+              return $nutshell.hide();
+            }
+          });
+        };
+        processNutshell = function(notShow) {
+          var content;
+          content = '';
+          if (error.length) {
+            content += "" + error.length + " error(s), ";
+            _.defer(function() {
+              return modal.position();
+            });
+          }
+          if (warning.length) {
+            content += "" + warning.length + " warning(s), ";
+          }
+          if (notice.length) {
+            content += "" + notice.length + " notice(s), ";
+          }
+          if (!content) {
+            content = 'No error, warning or notice.';
+          } else {
+            content = content.slice(0, -2);
+          }
+          $nutshell.find('label').text(content);
+          $nutshell.click(function() {
+            return $summary.click();
+          });
+          if (!notShow) {
+            return $nutshell.show();
+          }
+        };
+        if (error.length) {
+          bindSummary();
+          return processNutshell(true);
+        } else if (warning.length) {
+          $tabs.eq(1).click();
+          $details.removeAttr('open');
+          processNutshell();
+          return bindSummary();
+        } else if (notice.length) {
+          $tabs.eq(2).click();
+          $details.removeAttr('open');
+          processNutshell();
+          return bindSummary();
+        } else {
+          $details.removeAttr('open');
+          processNutshell();
+          bindSummary();
+          return $('.validation-content').text('Great job! No error, warning or notice here.');
+        }
+      },
+      restoreRun: function() {
+        return $('#btn-confirm, #confirm-update-app').removeAttr('disabled');
+      },
+      _clickCurrentTab: function(status) {
+        console.log('_clickCurrentTab, status = ' + status);
+        if (!status) {
+          return;
+        }
+        return _.each($('.tab').find('li'), function(item) {
+          if ($(item).attr('data-tab-target') === '#item-' + status) {
+            return $(item).trigger('click');
+          }
+        });
+      },
+      closedPopup: function() {
+        if (this.$el.html()) {
+          console.log('closedPopup');
+          this.$el.empty();
+          this.trigger('CLOSE_POPUP');
+          return $('.status-bar-modal').hide();
+        }
+      }
+    });
+    return TrustedAdvisorView;
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/model',['backbone', 'jquery', 'underscore', 'MC'], function() {
+    var TrustedAdvisorModel;
+    TrustedAdvisorModel = Backbone.Model.extend({
+      defaults: {
+        'notice_list': null,
+        'warning_list': null,
+        'error_list': null
+      },
+      createList: function() {
+        var error_list, notice_list, temp, warning_list;
+        console.log('createList');
+        notice_list = [];
+        warning_list = [];
+        error_list = [];
+        temp = {};
+        _.each(MC.ta.list, function(obj) {
+          temp = {
+            'info': obj.info,
+            'key': obj.key,
+            'type': obj.type
+          };
+          switch (obj.level) {
+            case 'NOTICE':
+              return notice_list.push(temp);
+            case 'WARNING':
+              return warning_list.push(temp);
+            case 'ERROR':
+              return error_list.push(temp);
+          }
+        });
+        this.set('notice_list', notice_list);
+        this.set('warning_list', warning_list);
+        this.set('error_list', error_list);
+        MC.ta.state_list = {
+          'notice_list': notice_list,
+          'warning_list': warning_list,
+          'error_list': error_list
+        };
+      }
+    });
+    return TrustedAdvisorModel;
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/main',['jquery', 'event', './view', './model'], function($, ide_event, View, Model) {
+    var loadModule, unLoadModule;
+    loadModule = function(type, status) {
+      var model, processBar, processRun, view;
+      view = new View();
+      model = new Model();
+      view.model = model;
+      view.on('CLOSE_POPUP', function() {
+        return unLoadModule(view, model);
+      });
+      processBar = function() {
+        ide_event.onLongListen(ide_event.UPDATE_TA_MODAL, function() {
+          return console.log('UPDATE_TA_MODAL');
+        });
+        model.createList();
+        return view.render(type, status);
+      };
+      processRun = function() {
+        var deferred;
+        deferred = Q.defer();
+        ide_event.onListen(ide_event.TA_SYNC_FINISH, function() {
+          console.log('TA_SYNC_FINISH');
+          model.createList();
+          view.render(type, status);
+          if (model.get('error_list').length === 0) {
+            return deferred.resolve();
+          } else {
+            return deferred.reject();
+          }
+        });
+        MC.ta.validRun();
+        return deferred.promise;
+      };
+      ide_event.onLongListen(ide_event.UNLOAD_TA_MODAL, function() {
+        console.log('UNLOAD_TA_MODAL');
+        return unLoadModule(view, model);
+      });
+      if (type === 'stack') {
+        view.closedPopup();
+        return processRun();
+      } else {
+        return processBar();
+      }
+    };
+    unLoadModule = function(view, model) {
+      console.log('trusted advisor run unLoadModule');
+      view.off();
+      model.off();
+      view.undelegateEvents();
+      view = null;
+      model = null;
+      ide_event.offListen(ide_event.UPDATE_TA_MODAL);
+      return ide_event.offListen(ide_event.UNLOAD_TA_MODAL);
+    };
+    return {
+      loadModule: loadModule,
+      unLoadModule: unLoadModule
     };
   });
 

@@ -1,4 +1,3 @@
-window.FileVersions={"api/ApiRequest.js":"e79c7ae2","component/amis/main.js":"e8594131","component/amis/model.js":"6dc5cf92","component/amis/template.js":"23a78846","component/amis/view.js":"226e580f","component/exporter/Exporter.js":"75594fc2","component/jsonviewer/JsonDiffLib.js":"6a66427a","component/jsonviewer/JsonViewer.js":"1679fcd9","component/jsonviewer/diff.js":"c48f397c","component/jsonviewer/jqUi.js":"61d7e808","component/jsonviewer/view.js":"3d847baf","component/sgrule/SGRulePopup.js":"517a3d93","component/sharedrescomp.js":"bf6c7328","component/stackrun/main.js":"746c8654","component/stackrun/model.js":"ecff69ba","component/stackrun/template.js":"9d4faf7a","component/stackrun/view.js":"1bf4dc52","component/stateeditor/lib/ace.js":"ea4bbd65","component/stateeditor/lib/markdown.js":"95ac7c1c","component/stateeditor/stateeditor.js":"be421f8c","component/statestatus/main.js":"56a4b1a5","component/statestatus/model.js":"01efba65","component/statestatus/template.js":"8c3363d2","component/statestatus/view.js":"9e689a54","component/trustedadvisor/main.js":"38a47818","component/trustedadvisor/modal_template.js":"ccb9a1d2","component/trustedadvisor/model.js":"494ccbce","component/trustedadvisor/template.js":"70522f5b","component/trustedadvisor/validation.js":"0e7a5e0f","component/trustedadvisor/view.js":"565d0de1","component/unmanagedvpc/main.js":"2d4665eb","component/unmanagedvpc/model.js":"00ea0c94","component/unmanagedvpc/template.js":"30338a35","component/unmanagedvpc/view.js":"9cf9871f","ide/Application.js":"c84ce553","ide/cloudres/CrBundle.js":"cc9a0083","ide/config.js":"b3e0d7c0","ide/deprecated/ide.js":"c4469ae3","ide/deprecated/view.js":"376515ad","ide/subviews/DebugTool.js":"31ca5ab2","lib/deprecated.js":"8a7a832d","lib/lib.js":"f1c6c2f0","model/aws/ec2/eip_model.js":"1e50b95e","model/aws/ec2/placementgroup_model.js":"83a03421","model/aws/ec2/securitygroup_model.js":"9462186b","model/aws/iam/iam_model.js":"68f81e79","model/aws/opsworks/opsworks_model.js":"c4302b59","model/aws/rds/instance_model.js":"41c62163","model/aws/rds/optiongroup_model.js":"99261e66","model/aws/rds/parametergroup_model.js":"c2b257ce","model/aws/rds/rds_model.js":"646f669b","model/aws/rds/reservedinstance_model.js":"d9354e8d","model/aws/rds/securitygroup_model.js":"2ee336e7","model/aws/rds/snapshot_model.js":"cbfb6d64","model/aws/rds/subnetgroup_model.js":"a7a5174c","model/aws/sdb/sdb_model.js":"6e10f113","model/aws/vpc/acl_model.js":"99fad138","model/aws/vpc/eni_model.js":"fd19f5ee","model/aws/vpc/internetgateway_model.js":"14fbc95c","model/aws/vpc/routetable_model.js":"6c830ff2","model/aws/vpc/vpn_model.js":"27f4b9b0","model/model.js":"2fc3a8e0","module/base/base_main.js":"a2c3981d","module/dashboard/main.js":"96d8b956","module/dashboard/overview/model.js":"8595b85e","module/dashboard/overview/template.js":"8657ee6a","module/dashboard/overview/template_data.js":"61fa68d9","module/dashboard/overview/view.js":"4bb360e8","module/design/canvas/main.js":"f062fc0b","module/design/canvas/template.js":"61740c12","module/design/canvas/view.js":"f21b51bf","module/design/framework/DesignBundle.js":"638d6204","module/design/framework/util/DesignDebugger.js":"070d5dca","module/design/main.js":"54fcbdde","module/design/model.js":"d53a9c89","module/design/property/acl/template/app.js":"1038cfbe","module/design/property/property.js":"60db247b","module/design/property/sgrule/template/app.js":"a7a2ae7d","module/design/resource/main.js":"9962f340","module/design/resource/model.js":"ad417d8e","module/design/resource/template.js":"f3824ec1","module/design/resource/template_data.js":"8479ec3f","module/design/resource/view.js":"1ed5eec4","module/design/template.js":"d59659ed","module/design/toolbar/app_template.js":"51fef376","module/design/toolbar/appview_template.js":"b79fdcc5","module/design/toolbar/main.js":"000a29a7","module/design/toolbar/model.js":"5690f0a4","module/design/toolbar/stack_template.js":"7e7cb0ba","module/design/toolbar/view.js":"0ad16b1d","module/design/view.js":"82b2e699","module/navigation/main.js":"7156a780","module/navigation/model.js":"db0c2eb0","module/navigation/template.js":"a11f4318","module/navigation/template_data.js":"cce18631","module/navigation/view.js":"06fcf63c","module/process/appview_template.js":"c6349e43","module/process/main.js":"ee651153","module/process/model.js":"7cc697e1","module/process/template.js":"8db35960","module/process/view.js":"5e123544","module/tabbar/main.js":"8043d4ec","module/tabbar/model.js":"ca3fc951","module/tabbar/template.js":"13327570","module/tabbar/view.js":"7ac225fd","nls/en-us/lang.js":"d0812828","nls/lang.js":"3093b83a","nls/zh-cn/lang.js":"e9a41e84","service/aws/opsworks/opsworks/opsworks_service.js":"7435f463","service/aws/rds/instance/instance_service.js":"c8300bfd","service/aws/rds/optiongroup/optiongroup_service.js":"513dc0e8","service/aws/rds/parametergroup/parametergroup_service.js":"b8f24400","service/aws/rds/rds/rds_service.js":"570b17ab","service/aws/rds/reservedinstance/reservedinstance_service.js":"9c50879f","service/aws/rds/securitygroup/securitygroup_service.js":"bc18ba2c","service/aws/rds/snapshot/snapshot_service.js":"1e9bc51b","service/aws/rds/subnetgroup/subnetgroup_service.js":"64230a7b","service/aws/sdb/sdb/sdb_service.js":"6aaeba91","ui/ui.js":"dac3a933","user/main.js":"811be1c5","vender/crypto-js/hmac-sha256.js":"c822cfb1","vender/handlebars/handlebars.js":"bec7085c","vender/jquery/jquery.1.0.js":"a202c669","vender/jquery/jquery.cookie.min.js":"35af54d1","vender/qunit/qunit.js":"302545f4","vender/requirejs/require.js":"374b3c99","vender/requirejs/requirelib.js":"35453d3b","vender/select2/select2.js":"a53745e4","vender/select2/select2.min.js":"f396992f","vender/select2/select2_locale_zh-CN.js":"6add3c52","vender/vender.js":"cc4b87bc"};
 (function() {
   (function() {
     var getCookie, ideHttps, l, s, scripts, shouldIdeHttps, version, _i, _len;
@@ -57,48 +56,8 @@ window.FileVersions={"api/ApiRequest.js":"e79c7ae2","component/amis/main.js":"e8
     waitSeconds: 30,
     locale: language,
     urlArgs: "v=" + version,
-    paths: {
 
-      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
-      'validation': 'component/trustedadvisor/validation',
-      'ApiRequest': 'api/ApiRequest',
-      'ApiRequestDefs': 'api/ApiRequestDefs',
-      'base_main': 'module/base/base_main',
-      'navigation': 'module/navigation/main',
-      'navigation_view': 'module/navigation/view',
-      'navigation_model': 'module/navigation/model',
-      'tabbar': 'module/tabbar/main',
-      'tabbar_view': 'module/tabbar/view',
-      'tabbar_model': 'module/tabbar/model',
-      'dashboard': 'module/dashboard/main',
-      'dashboard_view': 'module/dashboard/overview/view',
-      'dashboard_model': 'module/dashboard/overview/model',
-      'process': 'module/process/main',
-      'process_view': 'module/process/view',
-      'process_model': 'module/process/model',
-      'design_module': 'module/design/main',
-      'design_view': 'module/design/view',
-      'design_model': 'module/design/model',
-      'resource': 'module/design/resource/main',
-      'property': 'module/design/property/property',
-      'canvas': 'module/design/canvas/main',
-      'toolbar': 'module/design/toolbar/main',
-      'state_status': 'component/statestatus/main',
-      'kp_dropdown': 'component/kp/kpDropdown',
-      'kp_manage': 'component/kp/kpManage',
-      'kp_upload': 'component/kp/kpUpload',
-      'sns_dropdown': 'component/sns/snsDropdown',
-      'sns_manage': 'component/sns/snsManage',
-      'combo_dropdown': 'component/common/comboDropdown',
-      'toolbar_modal': 'component/common/toolbarModal',
-      'dhcp': 'component/dhcp/dhcp',
-      'snapshotManager': 'component/snapshot/snapshot',
-      'sslcert_manage': 'component/sslcert/sslCertManage',
-      'sslcert_dropdown': 'component/sslcert/sslCertDropdown',
-      'unmanagedvpc': 'component/unmanagedvpc/main',
-      'unmanagedvpc_view': 'component/unmanagedvpc/view',
-      'unmanagedvpc_model': 'component/unmanagedvpc/model'
-    },
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             env:dev:end */
     shim: {
       'canvon': {
         deps: ['jquery'],
@@ -113,22 +72,6 @@ window.FileVersions={"api/ApiRequest.js":"e79c7ae2","component/amis/main.js":"e8
       'Meteor': {
         deps: ['underscore'],
         exports: 'Meteor'
-      },
-      'navigation': {
-        deps: ['navigation_view', 'navigation_model', 'MC']
-      },
-      'tabbar': {
-        deps: ['tabbar_view', 'tabbar_model', 'MC']
-      },
-      'dashboard': {
-        deps: ['dashboard_view', 'dashboard_model', 'MC']
-      },
-      'process': {
-        deps: ['process_view', 'process_model', 'MC']
-      },
-      'select2': {
-        deps: ['jquery'],
-        exports: "$"
       }
     },
 
@@ -136,27 +79,31 @@ window.FileVersions={"api/ApiRequest.js":"e79c7ae2","component/amis/main.js":"e8
     bundles: {
       "vender/requirejs/requirelib": ["i18n"],
       "vender/vender": ["jquery", "backbone", "underscore", "handlebars", "sprintf", "Meteor", "canvon", "crypto", "q"],
-      "lib/lib": ["MC", "constant", "MC.canvas", "MC.canvas.constant", 'MC.validate', "canvas_layout", "lib/handlebarhelpers", "event"],
-      "lib/deprecated": ['aws_handle', 'forge_handle', 'common_handle'],
-      "ui/ui": ['UI.tooltip', 'UI.scrollbar', 'UI.tabbar', 'UI.bubble', 'UI.modal', 'UI.table', 'UI.tablist', 'UI.selectbox', 'UI.searchbar', 'UI.filter', 'UI.radiobuttons', 'UI.notification', 'UI.multiinputbox', 'UI.canvg', 'UI.sortable', 'UI.parsley', 'UI.errortip', 'UI.tour', "jqpagination", 'jquerysort', "UI.modalplus"],
+      "lib/lib": ["MC", "constant", "MC.canvas", "MC.canvas.constant", 'MC.validate', "lib/handlebarhelpers", "event"],
+      "ui/ui": ['UI.tooltip', 'UI.scrollbar', 'UI.bubble', 'UI.modal', 'UI.table', 'UI.tablist', 'UI.selectbox', 'UI.searchbar', 'UI.filter', 'UI.radiobuttons', 'UI.notification', 'UI.multiinputbox', 'UI.canvg', 'UI.sortable', 'UI.parsley', 'UI.errortip', 'UI.tour', "jqpagination", 'jquerysort', "UI.modalplus"],
       "ApiRequest": [],
-      "model/model": ['base_model', 'account_model', 'favorite_model', 'app_model', 'stack_model', 'state_model', 'ec2_model', 'vpc_model', 'aws_model', 'ami_model', 'ebs_model', 'elb_model', 'dhcp_model', 'customergateway_model', 'vpngateway_model', 'keypair_model', 'autoscaling_model', 'cloudwatch_model', 'sns_model', 'subnet_model', 'instance_model', 'result_vo', 'favorite_service', 'account_service', 'app_service', 'stack_service', 'aws_service', 'state_service', 'ami_service', 'ebs_service', 'ec2_service', 'eip_service', 'instance_service', 'keypair_service', 'placementgroup_service', 'securitygroup_service', 'acl_service', 'customergateway_service', 'dhcp_service', 'eni_service', 'internetgateway_service', 'routetable_service', 'subnet_service', 'vpc_service', 'vpngateway_service', 'vpn_service', 'elb_service', 'iam_service', 'autoscaling_service', 'cloudwatch_service', 'sns_service'],
+      "service/service": ['base_model', 'state_model', 'keypair_model', 'instance_model', 'result_vo', 'stack_service', 'state_service', 'ami_service', 'ebs_service', 'instance_service', 'keypair_service', 'customergateway_service'],
+      "component/exporter/Exporter": ["ThumbnailUtil", "JsonExporter"],
       "component/sgrule/SGRulePopup": [],
-      "component/exporter/Exporter": ["component/exporter/Download", "component/exporter/Thumbnail", "component/exporter/JsonExporter"],
-      "ide/cloudres/CrBundle": ["CloudResources"],
-      "ide/Application": [],
-      "module/design/framework/DesignBundle": ["Design", "CanvasManager"],
-      "validation": [],
+      "validation": ["component/trustedadvisor/main"],
+      "state_status": [],
       "component/stateeditor/stateeditor": [],
       "component/sharedrescomp": ['kp_dropdown', 'kp_manage', 'kp_upload', 'sns_dropdown', 'sns_manage', 'combo_dropdown', 'toolbar_modal', 'dhcp', 'snapshotManager', 'sslcert_manage', 'sslcert_dropdown'],
-      "property": []
+      "ide/cloudres/CrBundle": ["CloudResources"],
+      "ide/Application": ["Workspace", "OpsModel"],
+      "workspaces/Dashboard": [],
+      "workspaces/editor/PropertyPanel": ["workspaces/editor/subviews/PropertyPanel"],
+      "workspaces/editor/framework/DesignBundle": ["Design", "CanvasManager"],
+      "workspaces/OpsEditor": []
     },
     bundleExcludes: {
-      "lib/deprecated": ["Design"],
       "component/sgrule/SGRulePopup": ["Design"],
-      "component/stateeditor/stateeditor": ["component/stateeditor/lib/ace", "component/stateeditor/lib/markdown"],
-      "module/design/framework/DesignBundle": ["component/sgrule/SGRulePopup"],
-      "property": ["component/sgrule/SGRulePopup"]
+      "component/stateeditor/stateeditor": ["Design"],
+      "component/sharedrescomp": ["Design"],
+      "validation": ["Design"],
+      "workspaces/editor/PropertyPanel": ["Design"],
+      "workspaces/editor/framework/DesignBundle": ["Design", "CanvasManager"],
+      "workspaces/editor/subviews/PropertyPanel": ["component/sgrule/SGRulePopup"]
     }
 
     /* env:prod:end */
@@ -179,9 +126,10 @@ window.FileVersions={"api/ApiRequest.js":"e79c7ae2","component/amis/main.js":"e8
     }
   };
 
-  require(['ide/Application', 'ide/deprecated/ide', "ide/cloudres/CrBundle"], function(Application, ide) {
-    (new Application()).initialize().then(function() {
-      return ide.initialize();
+  require(['ide/Application', "ide/cloudres/CrBundle", "workspaces/Dashboard", "workspaces/OpsEditor", "MC", 'lib/aws'], function(Application, CrBundle, Dashboard, OpsEditor) {
+    window.OpsEditor = OpsEditor;
+    return (new Application()).initialize().then(function() {
+      new Dashboard();
     });
   }, function(err) {
     err = err || {

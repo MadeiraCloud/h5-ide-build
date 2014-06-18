@@ -509,8 +509,8 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
 });
 
 (function() {
-  define('component/exporter/Thumbnail',['UI.canvg', './Download'], function() {
-    var GridBackground, Href, ThumbGridBackground, cleanupThumbnail, exportBeforeRender, exportPNG, fixSVG, getThumbnail, removeThumbnail, saveThumbnail, saveThumbnailFinish, thumbBeforeRender;
+  define('ThumbnailUtil',['UI.canvg', 'component/exporter/Download'], function() {
+    var GridBackground, Href, ThumbGridBackground, cleanupThumbnail, createThumbnail, exportBeforeRender, exportPNG, fixSVG, getThumbnail, removeThumbnail, saveThumbnail, saveThumbnailFinish, thumbBeforeRender;
     GridBackground = void 0;
     ThumbGridBackground = void 0;
     Href = void 0;
@@ -534,18 +534,18 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       if (cHeight > 1000) {
         cWidth = 1000;
       }
-      ratio1 = 218 / cWidth;
-      ratio2 = 144 / cHeight;
+      ratio1 = 228 / cWidth;
+      ratio2 = 150 / cHeight;
       ratio = ratio1 <= ratio2 ? ratio2 : ratio1;
-      ctx.canvas.width = 218;
-      ctx.canvas.height = 144;
+      ctx.canvas.width = 228;
+      ctx.canvas.height = 150;
       ctx.fillStyle = ctx.createPattern(ThumbGridBackground, "repeat");
       ctx.fillRect(0, 0, cWidth, cHeight);
       ctx.scale(ratio, ratio);
       return null;
     };
     exportPNG = function($svg_canvas_element, data) {
-      var $wrap, bbox, beforeRender, canvas, ch, children, clone, head, line, name, origin, removeArray, replaceEl, size, svg, time, _i, _j, _k, _len, _len1, _len2, _ref;
+      var $wrap, bbox, beforeRender, canvas, ch, children, clone, firstDom, head, name, origin, removeArray, replaceEl, size, svg, time, _i, _j, _k, _len, _len1, _len2, _ref;
       if (!data.onFinish) {
         return;
       }
@@ -559,26 +559,13 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       if (!$wrap.length) {
         $wrap = $("<div id='export-png-wrap'></div>").appendTo("body").hide();
       }
-      $wrap.attr("class", $("#canvas_container").attr("class"));
-      if (_.isString($svg_canvas_element)) {
-        clone = $wrap.html($svg_canvas_element).children()[0];
-        clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-        clone.removeAttribute("id");
-        if (data.size) {
-          size = data.size;
-        } else {
-          $wrap.show();
-          size = clone.getBBox();
-          $wrap.hide();
-        }
-      } else {
-        clone = $svg_canvas_element[0].cloneNode(true);
-        size = $svg_canvas_element[0].getBBox();
-        clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-        clone.removeAttribute("id");
-        $wrap.append(clone);
-      }
-      line = clone.getElementById("svg_padding_line");
+      $wrap.attr("class", $svg_canvas_element.parents("#canvas_body").attr("class"));
+      clone = $svg_canvas_element[0].cloneNode(true);
+      size = $svg_canvas_element[0].getBBox();
+      clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+      clone.removeAttribute("id");
+      $wrap.append(clone);
+      firstDom = clone.getElementById("group_layer");
       removeArray = [clone];
       children = clone.children || clone.childNodes;
       for (_i = 0, _len = children.length; _i < _len; _i++) {
@@ -612,6 +599,9 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
             continue;
           }
           bbox = ch.getBBox();
+          if (!(bbox.x + bbox.y + bbox.width + bbox.height)) {
+            continue;
+          }
           if (bbox.x < origin.x) {
             origin.x = bbox.x;
           }
@@ -619,14 +609,13 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
             origin.y = bbox.y;
           }
         }
-        origin.x -= 5;
+        origin.x -= 30;
         origin.y -= 30;
         replaceEl = document.createElementNS("http://www.w3.org/2000/svg", "g");
         replaceEl.textContent = "PLACEHOLDER";
         replaceEl.setAttribute("transform", "translate(" + (-origin.x) + " " + (54 - origin.y) + ")");
-        clone.insertBefore(replaceEl, line);
+        clone.insertBefore(replaceEl, firstDom);
       }
-      clone.removeChild(line);
       svg = (new XMLSerializer()).serializeToString(clone).replace(/data-[^=<>]+="[^"]*?"/g, "");
       if (data.isExport) {
         if (Href === void 0) {
@@ -642,8 +631,8 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         svg = svg.replace("PLACEHOLDER</g>", head).replace("</svg>", "</g></svg>");
       }
       size = {
-        width: size.width + 50 - origin.x,
-        height: size.height + 30 - origin.y
+        width: size.width + 30 * 2,
+        height: size.height + 30 * 2
       };
       if (data.isExport) {
         size.height += 54;
@@ -790,12 +779,30 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       localStorage.setItem("tn/" + data.id, data.image);
       return null;
     };
-    saveThumbnail = function(id, $svg_element, size) {
+    createThumbnail = function($svg_element, size) {
+      var defer;
+      defer = Q.defer();
       exportPNG($svg_element, {
-        id: id,
         size: size,
-        onFinish: saveThumbnailFinish
+        onFinish: function(data) {
+          return defer.resolve(data.image || "");
+        }
       });
+      return defer.promise;
+    };
+    saveThumbnail = function(id, $svg_element, size) {
+      if (typeof $svg_element === "string") {
+        saveThumbnailFinish({
+          id: id,
+          image: $svg_element
+        });
+      } else {
+        exportPNG($svg_element, {
+          id: id,
+          size: size,
+          onFinish: saveThumbnailFinish
+        });
+      }
       return null;
     };
     getThumbnail = function(id) {
@@ -803,6 +810,9 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
     };
     removeThumbnail = function(id) {
       var cache;
+      if (!id) {
+        return;
+      }
       cache = localStorage.getItem("thumbnails") || "";
       localStorage.setItem("thumbnails", cache.replace("" + id + ",", ""));
       localStorage.removeItem("tn/" + id);
@@ -844,6 +854,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
     };
     return {
       exportPNG: exportPNG,
+      generate: createThumbnail,
       save: saveThumbnail,
       fetch: getThumbnail,
       remove: removeThumbnail,
@@ -854,7 +865,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
 }).call(this);
 
 (function() {
-  define('component/exporter/JsonExporter',['./Download', 'i18n!nls/lang.js', "crypto"], function(download, lang) {
+  define('JsonExporter',['component/exporter/Download', 'i18n!nls/lang.js', "crypto"], function(download, lang) {
     var ascii, exportJson, genericExport, importJson, key;
     ascii = function() {
       return String.fromCharCode.apply(String, arguments);
@@ -901,15 +912,12 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       signature = j.signature;
       delete j.signature;
 
-      /* env:dev                          env:dev:end */
-
-      /* env:debug */
-      return j;
-
-      /* env:debug:end */
+      /* env:prod */
       if (CryptoJS.HmacMD5(JSON.stringify(j), key).toString() !== signature) {
         return lang.ide.POP_IMPORT_MODIFIED_ERROR;
       }
+
+      /* env:prod:end */
       return j;
     };
     genericExport = function(aTag, contentJsonObject, fileName) {

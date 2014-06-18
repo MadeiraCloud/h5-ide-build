@@ -1,8 +1,0 @@
-define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<!-- Design Module Overlay -->\n<div id=\"overlay-panel\">\n</div>\n\n<!-- Resource Panel -->\n<div id=\"resource-panel\" class=\"sidebar\">\n	loading...\n</div>\n\n<!-- Property Panel -->\n<div id=\"property-panel\" class=\"sidebar transition\">\n	<a href=\"#\" id=\"hide-property-panel\" class=\"tooltip sidebar-hider icon-caret-right\" data-tooltip=\"Show/Hide Property Panel\">\n	</a>\n\n	<div class=\"property-wrap\">\n		<section class=\"property-switcher\">\n	      <div class=\"switch-btns\">\n	        <a href=\"javascript:void(0)\" class=\"btn-toolbar tooltip\" data-tooltip=\"\" id=\"btn-switch-property\">Property</a>\n	        <a href=\"javascript:void(0)\" class=\"btn-toolbar tooltip\" data-tooltip=\"\" id=\"btn-switch-state\">State <b class=\"count\"></b></a>\n	      </div>\n	    </section>\n		<div class=\"sub-property\"></div>\n		<div class=\"sub-stateeditor\"></div>\n	</div>\n</div>\n\n<!-- Canvas Panel -->\n<div id=\"canvas-panel\">\n\n	<!-- Toolbar -->\n	<div id=\"main-toolbar\"></div>\n\n	<!-- Canvas -->\n	<div id=\"canvas\" class=\"scroll-wrap canvas-svg-group\"></div>\n\n	<!-- Statusbar -->\n	<div id=\"main-statusbar\" class=\"clearfix\">\n		loading...\n	</div>\n\n</div>\n\n<!-- status bar modal -->\n<div id=\"status-bar-modal\" style=\"display: none;\"></div>";
-  }; return Handlebars.template(TEMPLATE); });

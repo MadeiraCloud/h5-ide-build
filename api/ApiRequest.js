@@ -31,57 +31,22 @@
     usercode
     session_id
      */
-    ApiRequestDefs = {};
-    ApiRequestDefs.Defs = {
-      login: {
-        url: "/session/",
-        method: "login",
-        params: ["username", "password"]
-      },
-      logout: {
-        url: "/session/",
-        method: "logout",
-        params: ["username", "session_id"]
-      },
-      updateCred: {
-        url: "/account/",
-        method: "set_credential",
-        params: ["username", "session_id", "access_key", "secret_key", "account_id", "force"]
-      },
-      validateCred: {
-        url: "/account/",
-        method: "validate_credential",
-        params: ["username", "session_id", "access_key", "secret_key"]
-      },
-      updateAccount: {
-        url: "/account/",
-        method: "update_account",
-        params: ["username", "session_id", "params"]
-      },
-      saveStack: {
-        url: "/stack/",
-        method: "save",
-        params: ["username", "session_id", "region_name", 'data']
-      },
-      createStack: {
-        url: "/stack/",
-        method: "create",
-        params: ["username", "session_id", "region_name", "data"]
-      }
-    };
+    ApiRequestDefs = {
+      Defs: {},
 
-    /*
-    Parsers are promise's success hanlder.
-    Thus, if the parser cannot parse a result, it should throw an error !!!
-    An example would be like : `throw McError( 300, "Cannot parse the result" )`
-     */
-    ApiRequestDefs.Parsers = {};
+      /*
+      Parsers are promise's success hanlder.
+      Thus, if the parser cannot parse a result, it should throw an error !!!
+      An example would be like : `throw McError( 300, "Cannot parse the result" )`
+       */
+      Parsers: {}
+    };
     ApiRequestDefs.AutoFill = function(paramter_name) {
       switch (paramter_name) {
         case "username":
-          return $.cookie('usercode');
+          return App.user.get("usercode");
         case "session_id":
-          return $.cookie('session_id');
+          return App.user.get("session");
         case "region_name":
           console.warn("Autofilling region_name:'us-east-1' for ApiRequest, this is for some api who requires region_name while it doesn't care about its value. %o", MC.prettyStackTrace(1));
           return "us-east-1";
@@ -106,6 +71,8 @@
       XhrFailure: -2,
       InvalidMethodCall: -3,
       InvalidAwsReturn: -4,
+      MissingDataInServer: -5,
+      OperationFailure: -6,
       Network404: -404,
       Network500: -500,
       InvalidSession: 19,
@@ -203,8 +170,15 @@
      * === Global Error Handlers ===
      * These handlers are used to handle specific errors for any ajax call
      */
-    var Handlers;
-    Handlers = {};
+    var AwsHandlers, Handlers;
+    AwsHandlers = {};
+    Handlers = {
+      AwsHandlers: AwsHandlers
+    };
+    AwsHandlers[401] = function(error) {
+      App.askForAwsCredential();
+      throw error;
+    };
     return Handlers;
   });
 
@@ -241,11 +215,15 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'opsbackend_verify'       : { url:'/opsbackend/',	method:'verify',	params:['username', 'token']   },
 		'request_init'            : { url:'/request/',	method:'init',	params:['username', 'session_id', 'region_name']   },
 		'request_update'          : { url:'/request/',	method:'update',	params:['username', 'session_id', 'region_name', 'timestamp']   },
+		'resource_change_detail'  : { url:'/resource/',	method:'change_detail',	params:['username', 'session_id', 'region_name', 'app_id']   },
+		'resource_vpc_resource'   : { url:'/resource/',	method:'vpc_resource',	params:['username', 'session_id', 'region_name', 'vpc_id']   },
+		'resource_check_change'   : { url:'/resource/',	method:'check_change',	params:['username', 'session_id', 'region_name', 'app_id']   },
 		'stack_create'            : { url:'/stack/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
 		'stack_remove'            : { url:'/stack/',	method:'remove',	params:['username', 'session_id', 'region_name', 'stack_id', 'stack_name']   },
 		'stack_save'              : { url:'/stack/',	method:'save',	params:['username', 'session_id', 'region_name', 'spec']   },
 		'stack_rename'            : { url:'/stack/',	method:'rename',	params:['username', 'session_id', 'region_name', 'stack_id', 'new_name', 'stack_name']   },
-		'stack_run'               : { url:'/stack/',	method:'run',	params:['username', 'session_id', 'region_name', 'stack_id', 'app_name', 'app_desc', 'app_component', 'app_property', 'app_layout', 'stack_name', 'usage']   },
+		'stack_run_v2'            : { url:'/stack/',	method:'run_v2',	params:['username', 'session_id', 'region_name', 'stack', 'app_name']   },
+		'stack_run'               : { url:'/stack/',	method:'run',	params:['username', 'session_id', 'region_name', 'stack']   },
 		'stack_save_as'           : { url:'/stack/',	method:'save_as',	params:['username', 'session_id', 'region_name', 'stack_id', 'new_name', 'stack_name']   },
 		'stack_info'              : { url:'/stack/',	method:'info',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
 		'stack_list'              : { url:'/stack/',	method:'list',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
@@ -309,6 +287,7 @@ define('api/define/aws/aws',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'aws_quickstart'     : { url:'/aws/',	method:'quickstart',	params:['username', 'session_id', 'region_name']   },
 		'aws_public'         : { url:'/aws/',	method:'public',	params:['username', 'session_id', 'region_name', 'filters']   },
 		'aws_property'       : { url:'/aws/',	method:'property',	params:['username', 'session_id']   },
+		'aws_aws'            : { url:'/aws/',	method:'aws',	params:['username', 'session_id', 'region_names', 'fields', 'filters']   },
 		'aws_resource'       : { url:'/aws/',	method:'resource',	params:['username', 'session_id', 'region_name', 'resources', 'addition', 'retry_times']   },
 	}
 
@@ -605,14 +584,14 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
       };
     };
     AjaxSuccessHandler = function(res) {
-      var awsresult, error, gloablHandler, _ref;
+      var awsresult, error, globalHandler, _ref;
       if (!res || !res.result || res.result.length !== 2) {
         logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
       }
       if (res.result[0] !== 0 && !((ApiErrors.AwsErrorAws <= (_ref = res.result[0]) && _ref <= ApiErrors.AwsErrorExternal))) {
-        gloablHandler = ApiHandlers[res.result[0]];
-        if (gloablHandler) {
-          return gloablHandler(res);
+        globalHandler = ApiHandlers[res.result[0]];
+        if (globalHandler) {
+          return globalHandler(res);
         }
         logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
       }
@@ -631,6 +610,10 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
           awsresult = tryParseAws(awsresult[1], true);
           error.awsErrorCode = "" + awsresult.error;
           error.awsResult = awsresult.result;
+          globalHandler = ApiHandlers.AwsHandlers[error.awsError];
+          if (globalHandler) {
+            return globalHandler(error);
+          }
           logAndThrow(error);
         }
       }
@@ -679,7 +662,6 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
         url: MC.API_HOST + ApiDef.url,
         dataType: "json",
         type: "POST",
-        jsonp: false,
         data: JSON.stringify(RequestData)
       });
       request = Q(ajax).then(AjaxSuccessHandler, AjaxErrorHandler);
