@@ -1254,6 +1254,7 @@ define({
         "TA_MSG_ERROR_CGW_CHECKING_IP_CONFLICT": "Checking Customer Gateway IP Address confliction with existing resource...",
         "TA_MSG_ERROR_CGW_IP_CONFLICT": "Customer Gateway <span class='validation-tag tag-cgw'>%s</span>'s IP <span class='validation-tag tag-ip'>%s</span> conflicts with existing <span class='validation-tag tag-cgw'>%s</span>'s IP <span class='validation-tag tag-ip'>%s</span>.",
         "TA_MSG_WARNING_CGW_IP_RANGE_ERROR": "Customer Gateway <span class='validation-tag tag-cgw'>%s</span>'s IP(%s) invalid.",
+        "TA_MSG_ERROR_CGW_MUST_ATTACH_VPN": "Customer Gateway %s must be attached to a VPN Gateway via VPN connection.",
         "TA_MSG_ERROR_VPN_NO_IP_FOR_STATIC_CGW": "VPN Connection of <span class='validation-tag tag-cgw'>%s</span> and <span class='validation-tag tag-vgw'>%s</span> is missing IP prefix.",
         "TA_MSG_ERROR_VPN_NOT_PUBLIC_IP": "VPN Connection <span class='validation-tag tag-vpn'>%s</span>'s IP prefix <span class='validation-tag tag-ip'>%s</span> is invalid.",
         "TA_MSG_ERROR_STACK_CHECKING_FORMAT_VALID": "Checking Stack data format validity...",
