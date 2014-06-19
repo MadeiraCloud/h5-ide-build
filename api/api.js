@@ -662,6 +662,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
         url: MC.API_HOST + ApiDef.url,
         dataType: "json",
         type: "POST",
+        jsonp: false,
         data: JSON.stringify(RequestData)
       });
       request = Q(ajax).then(AjaxSuccessHandler, AjaxErrorHandler);

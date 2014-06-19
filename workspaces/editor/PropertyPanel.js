@@ -3247,10 +3247,11 @@ function program35(depth0,data) {
         return null;
       },
       getGroupList: function() {
-        var appData, comp, count, eni, existingLength, group, idx, index, member, members, name, uid, _i, _j, _len, _len1, _ref, _ref1;
+        var appData, comp, count, eni, existingLength, group, idx, index, member, members, name, resource_list, uid, _i, _j, _len, _len1, _ref, _ref1;
         uid = this.get('uid');
         comp = Design.instance().component(uid);
-        appData = (_ref = CloudResources(constant.RESTYPE.AMI, Design.instance().region()).get(comp.get('appId'))) != null ? _ref.toJSON() : void 0;
+        resource_list = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region());
+        appData = (_ref = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region()).get(comp.get('appId'))) != null ? _ref.toJSON() : void 0;
         name = comp.get("name");
         group = [
           {
@@ -3271,7 +3272,7 @@ function program35(depth0,data) {
           group.push({
             name: name + "-" + (index + 1),
             appId: member.appId,
-            status: resource_list[member.appId] ? resource_list[member.appId].instanceState.name : "Unknown",
+            status: resource_list.get(member.appId) ? resource_list.get(member.appId).attributes.instanceState.name : "Unknown",
             isNew: !member.appId,
             isOld: member.appId && (index + 1 >= count)
           });
@@ -5330,9 +5331,10 @@ function program21(depth0,data) {
           appId = uid;
         }
         volume = CloudResources(constant.RESTYPE.VOL, Design.instance().region()).get(appId);
+        volume = volume.attributes;
         if (volume) {
           if (volume.attachmentSet) {
-            volume.name = volume.attachmentSet.item[0].device;
+            volume.name = volume.attachmentSet[0].device;
           }
         } else {
           return false;
@@ -5821,22 +5823,19 @@ function program16(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n		<li class=\"elb-property-listener\">\n			<div class=\"elb-property-listener-item-remove icon-remove tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_REMOVE_LISTENER", {hash:{},data:data}))
-    + "\" ";
-  stack1 = helpers.unless.call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "></div>\n\n			<div class=\"property-control-group listener-item clearfix\">\n				<div class=\"elb-property-listener-item-1\">\n					<label class=\"left\">Load Balancer Protocol</label>\n					<div class=\"selectbox elb-property-elb-protocol\">\n						<div class=\"selection\">"
+    + "\"></div>\n\n			<div class=\"property-control-group listener-item clearfix\">\n				<div class=\"elb-property-listener-item-1\">\n					<label class=\"left\">Load Balancer Protocol</label>\n					<div class=\"selectbox elb-property-elb-protocol\">\n						<div class=\"selection\">"
     + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n						<ul class=\"dropdown\">\n							<li data-id=\"HTTP\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">HTTP</li>\n							<li data-id=\"HTTPS\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "HTTPS", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "HTTPS", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">HTTPS</li>\n							<li data-id=\"TCP\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">TCP</li>\n							<li data-id=\"SSL\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.protocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">SSL</li>\n						</ul>\n					</div>\n				</div>\n				<div class=\"elb-property-listener-item-2\">\n					<label class=\"left\">Port</label>\n					<input class=\"input elb-property-elb-port tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_25_80_443OR1024TO65535", {hash:{},data:data}))
@@ -5845,16 +5844,16 @@ function program16(depth0,data) {
     + "\" data-ignore=\"true\" data-required=\"true\" data-type=\"digits\" maxlength=\"5\"/>\n				</div>\n			</div>\n\n			<div class=\"property-control-group listener-item clearfix\">\n				<div class=\"left elb-property-listener-item-1\">\n					<label class=\"left\">Instance Protocol</label>\n					<div class=\"selectbox elb-property-instance-protocol\">\n						<div class=\"selection\">"
     + escapeExpression(((stack1 = (depth0 && depth0.instanceProtocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n						<ul class=\"dropdown\">\n							<li data-id=\"HTTP\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">HTTP</li>\n							<li data-id=\"HTTPS\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "HTTPS", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "HTTPS", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">HTTPS</li>\n							<li data-id=\"TCP\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">TCP</li>\n							<li data-id=\"SSL\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.instanceProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">SSL</li>\n						</ul>\n					</div>\n				</div>\n				<div class=\"left elb-property-listener-item-2\">\n					<label class=\"left\">Port</label>\n					<input class=\"input elb-property-instance-port tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_1_65535", {hash:{},data:data}))
@@ -5868,49 +5867,43 @@ function program16(depth0,data) {
 function program17(depth0,data) {
   
   
-  return "style=\"display:none;\"";
+  return "selected";
   }
 
 function program19(depth0,data) {
   
   
-  return "selected";
+  return " selected";
   }
 
 function program21(depth0,data) {
   
-  
-  return " selected";
-  }
-
-function program23(depth0,data) {
-  
   var buffer = "", stack1;
   buffer += "\n								<li class=\"item";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.uid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n									"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disableCertEdit), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disableCertEdit), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"icon-remove\"></span>\n								</li>\n							";
   return buffer;
   }
-function program24(depth0,data) {
+function program22(depth0,data) {
   
   
   return "<span class=\"icon-edit\"></span>";
   }
 
-function program26(depth0,data) {
+function program24(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program28(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "";
   buffer += "\n	<div class=\"option-group-head expand\">"
@@ -5919,31 +5912,31 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n		";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	";
   return buffer;
   }
-function program31(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n		<div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_AVAILABILITY_ZONE", {hash:{},data:data}))
     + " </div>\n		<div class=\"option-group\" id=\"property-elb-az-cb-group\">\n			";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.azArray), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</div>\n		";
   return buffer;
   }
-function program32(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n			<section class=\"property-control-group\">\n				<div class=\"checkbox\">\n					<input class=\"property-elb-az-checkbox\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
@@ -6003,10 +5996,10 @@ function program32(depth0,data) {
     + "</a>\n<!-- 		<section class=\"property-control-group\" id=\"property-control-group-cert-setting\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_SERVER_CERTIFICATE", {hash:{},data:data}))
     + "</label>\n			<div class=\"selectbox\" id=\"sslcert-select\">\n				<div class=\"selection\"></div>\n				<div style=\"height: 120px; width:260px;\" class=\"dropdown scroll-wrap scrollbar-auto-hide  clearfix\">\n					<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n					<div class=\"scroll-content\">\n						<ul>\n							<li class=\"item";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSSLCert), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noSSLCert), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">None</li>\n							";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.sslCertItem), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.sslCertItem), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n						</ul>\n					</div>\n				</div>\n				<div class=\"editor\">\n					<a href=\"#\" class=\"editbtn\">Add New Certificate...</a>\n				</div>\n			</div>\n		</section> -->\n	</div>\n\n	<div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_CHECK_DETAILS", {hash:{},data:data}))
@@ -6015,16 +6008,16 @@ function program32(depth0,data) {
     + "</label>\n			<div class=\"selectbox mgt5\" id=\"elb-property-health-protocol-select\">\n				<div class=\"selection\">"
     + escapeExpression(((stack1 = (depth0 && depth0.pingProtocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n				<ul class=\"dropdown\" tabindex=\"-1\">\n					<li class=\"item";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\"TCP\">TCP</li>\n					<li class=\"item";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "HTTP", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\"HTTP\">HTTP</li>\n					<li class=\"item";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "HTTPS", {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "HTTPS", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\"HTTPS\">HTTPS</li>\n					<li class=\"item";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\"SSL\">SSL</li>\n				</ul>\n			</div>\n		</section>\n		<section class=\"property-control-group\" data-bind=\"true\">\n			<label for=\"property-elb-health-port\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_PING_PORT", {hash:{},data:data}))
@@ -6033,9 +6026,9 @@ function program32(depth0,data) {
     + "\" name=\"property-elb-health-port\" id=\"property-elb-health-port\" data-required=\"true\" data-type=\"digits\" data-ignore=\"true\" maxlength=\"5\"/>\n		</section>\n		<section class=\"property-control-group\">\n			<label for=\"property-elb-health-path\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_PING_PATH", {hash:{},data:data}))
     + "</label>\n			<div class=\"pos-r mgt5\">\n				<input class=\"input\" ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "SSL", {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.pingProtocol), "TCP", {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.pingPath)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -6056,7 +6049,7 @@ function program32(depth0,data) {
     + "</label>\n			<div class=\"slider\" id=\"elb-property-slider-unhealthy\">\n				<a class=\"thumb\"></a>\n				<ul class=\"marker\"><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li></ul>\n			</div>\n		</section>\n		<section class=\"property-control-group\">\n			<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_THRESHOLD", {hash:{},data:data}))
     + "</label>\n			<div class=\"slider\" id=\"elb-property-slider-healthy\">\n				<a class=\"thumb\"></a>\n				<ul class=\"marker\"><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li></ul>\n			</div>\n		</section>\n	</div>\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVpc), {hash:{},inverse:self.program(30, program30, data),fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVpc), {hash:{},inverse:self.program(28, program28, data),fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>";
   return buffer;
@@ -6234,7 +6227,6 @@ function program32(depth0,data) {
         var $li, $listenerItem, $portInput, $selectbox, $sslCertPlaceHolder, sslCertDropDown, that;
         that = this;
         $li = $("#elb-property-listener-list").children().eq(0).clone();
-        $li.find(".elb-property-listener-item-remove").show();
         $selectbox = $li.find("ul");
         $portInput = $li.find('input.input');
         $portInput.val('80');
@@ -6443,14 +6435,17 @@ function program32(depth0,data) {
           var $certPanel, $listenerItem, protocol, sslCertDropDown;
           protocol = $(this).find(".elb-property-elb-protocol .selected").text();
           $certPanel = $(this).find(".sslcert-select");
+          $listenerItem = $(this);
+          sslCertDropDown = $listenerItem.data('sslCertDropDown');
           if (protocol === "HTTPS" || protocol === "SSL") {
-            $listenerItem = $(this);
-            sslCertDropDown = $listenerItem.data('sslCertDropDown');
             if (sslCertDropDown) {
               sslCertDropDown.setDefault();
             }
             return $certPanel.show();
           } else {
+            if (sslCertDropDown) {
+              sslCertDropDown.dropdown.setSelection('None');
+            }
             return $certPanel.hide();
           }
         });
@@ -8203,7 +8198,7 @@ function program9(depth0,data) {
 define('workspaces/editor/property/vpc/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
   
@@ -8218,7 +8213,7 @@ function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.defaultDhcp), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.defaultDhcp), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  ";
   return buffer;
@@ -8228,58 +8223,60 @@ function program4(depth0,data) {
   var buffer = "";
   buffer += "\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_NONE", {hash:{},data:data}))
-    + "</p>\n </div>\n    ";
+    + "</p>\n  </div>\n  ";
   return buffer;
   }
 
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n\n  <dl class=\"dl-vertical\">\n    <dt>"
+  buffer += "\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_OPTION_SET_ID", {hash:{},data:data}))
-    + "</dt>\n    <dd>"
-    + escapeExpression(((stack1 = (depth0 && depth0.dhcpOptionsId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+    + "</dt>\n    <dd>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dhcpOptionsId), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\n\n    ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNodeType), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNodeType), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  </dl>\n\n  ";
+  buffer += "\n\n  </dl>\n  ";
   return buffer;
   }
 function program7(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n    <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
-    + "</dt>\n    <dd>"
-    + escapeExpression(((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName)),stack1 == null || stack1 === false ? stack1 : stack1[0])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    ";
-  return buffer;
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.dhcpOptionsId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
 function program9(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.dhcpOptionsId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program11(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n    <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
     + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainName), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </dd>\n    ";
+  buffer += "</dd>\n    ";
   return buffer;
   }
-function program10(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
@@ -8288,31 +8285,43 @@ function program10(depth0,data) {
   return buffer;
   }
 
-function program12(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
-    + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </dd>\n    ";
-  return buffer;
-  }
-
 function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
     + "</dt>\n    <dd>";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainNameServers), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dd>\n    ";
   return buffer;
   }
 
 function program16(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
+    + "</dt>\n    <dd>";
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </dd>\n    ";
+  return buffer;
+  }
+
+function program18(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
+    + "</dt>\n    <dd>";
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosNameServers), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </dd>\n    ";
+  return buffer;
+  }
+
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <dt>"
@@ -8355,6 +8364,9 @@ function program16(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIT_DHCP_OPTION", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n\n\n  <div class=\"property-control-group\">\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.autoDhcp), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n  ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.defaultDhcp), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  </div>\n</article>";
   return buffer;
@@ -13452,7 +13464,14 @@ function program4(depth0,data) {
         $("#asg-policy-adjust-type").on("OPTION_CHANGE", function() {
           var type;
           type = $(this).find(".selected").data("id");
-          $(".pecentcapcity").toggle(type === "PercentChangeInCapacity");
+          if (type === 'PercentChangeInCapacity') {
+            $(".pecentcapcity").toggle(true);
+            if ($('#asg-policy-step').val() === '') {
+              $('#asg-policy-step').val(1);
+            }
+          } else {
+            $(".pecentcapcity").toggle(false);
+          }
           return $("#asg-policy-adjust").attr("placeholder", adjustdefault[type]).data("tooltip", adjustTooltip[type]).trigger("change");
         });
         $("#asg-policy-adjust").on("change", function() {
@@ -13535,7 +13554,7 @@ function program4(depth0,data) {
           uid: $("#property-asg-policy").data("uid"),
           name: $("#asg-policy-name").val(),
           cooldown: $("#asg-policy-cooldown").val() * 60,
-          minAdjustStep: $("#asg-policy-step").val(),
+          minAdjustStep: "",
           adjustment: $("#asg-policy-adjust").val(),
           adjustmentType: $("#asg-policy-adjust-type .selected").data("id"),
           state: $("#asg-policy-trigger .selected").data("id"),
@@ -13549,6 +13568,9 @@ function program4(depth0,data) {
             threshold: $("#asg-policy-threshold").val()
           }
         };
+        if (data.adjustmentType === 'PercentChangeInCapacity') {
+          data.minAdjustStep = $("#asg-policy-step").val();
+        }
         if (data.sendNotification) {
           selectedTopicData = $('.policy-sns-placeholder .selected').data();
           if (selectedTopicData && selectedTopicData.id && selectedTopicData.name) {
@@ -13626,7 +13648,7 @@ function program4(depth0,data) {
           if (asg_data.TerminationPolicies && asg_data.TerminationPolicies.member) {
             this.set('term_policy_brief', asg_data.TerminationPolicies.member.join(" > "));
           }
-          this.handleInstance(asg_comp, (_ref1 = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region())) != null ? _ref1.toJSON() : void 0, asg_data);
+          this.handleInstance(asg_comp, (_ref1 = CloudResources(constant.RESTYPE.LC, Design.instance().region())) != null ? _ref1.toJSON() : void 0, asg_data);
         }
         if (!this.isAppEdit) {
           if (!asg_data) {
@@ -13668,10 +13690,9 @@ function program4(depth0,data) {
         instance_count = 0;
         instance_groups = [];
         instances_map = {};
-        console.debug(asg_comp, resource_list, asg_data);
-        if (asg_data.Instances && asg_data.Instances.member) {
-          instance_count = asg_data.Instances.member.length;
-          _ref = asg_data.Instances.member;
+        if (asg_data.Instances && asg_data.Instances) {
+          instance_count = asg_data.Instances.length;
+          _ref = asg_data.Instances;
           for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
             instance = _ref[idx];
             ami = {
@@ -14691,7 +14712,14 @@ function program49(depth0,data) {
         $("#asg-policy-adjust-type").on("OPTION_CHANGE", function() {
           var type;
           type = $(this).find(".selected").data("id");
-          $(".pecentcapcity").toggle(type === "PercentChangeInCapacity");
+          if (type === 'PercentChangeInCapacity') {
+            $(".pecentcapcity").toggle(true);
+            if ($('#asg-policy-step').val() === '') {
+              $('#asg-policy-step').val(1);
+            }
+          } else {
+            $(".pecentcapcity").toggle(false);
+          }
           return $("#asg-policy-adjust").attr("placeholder", adjustdefault[type]).data("tooltip", adjustTooltip[type]).trigger("change");
         });
         $("#asg-policy-adjust").on("change", function() {
@@ -14778,7 +14806,7 @@ function program49(depth0,data) {
           uid: $("#property-asg-policy").data("uid"),
           name: $("#asg-policy-name").val(),
           cooldown: $("#asg-policy-cooldown").val() * 60,
-          minAdjustStep: $("#asg-policy-step").val(),
+          minAdjustStep: "",
           adjustment: $("#asg-policy-adjust").val(),
           adjustmentType: $("#asg-policy-adjust-type .selected").data("id"),
           state: $("#asg-policy-trigger .selected").data("id"),
@@ -14792,6 +14820,9 @@ function program49(depth0,data) {
             threshold: $("#asg-policy-threshold").val()
           }
         };
+        if (data.adjustmentType === 'PercentChangeInCapacity') {
+          data.minAdjustStep = $("#asg-policy-step").val();
+        }
         if (data.sendNotification) {
           selectedTopicData = $('.policy-sns-placeholder .selected').data();
           if (selectedTopicData && selectedTopicData.id && selectedTopicData.name) {

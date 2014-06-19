@@ -2730,7 +2730,7 @@ return TEMPLATE; });
           this.timer = setInterval(function() {
             $item = $('.stack-save-time');
             return $item.text(MC.intervalDate($item.attr('data-save-time')));
-          }, 500);
+          }, 1000);
           return null;
         },
         click: function(event) {
@@ -2868,7 +2868,8 @@ return TEMPLATE; });
     });
     return Backbone.View.extend({
       initialize: function(options) {
-        return workspace = this.workspace = options.workspace;
+        workspace = this.workspace = options.workspace;
+        return null;
       },
       itemViews: [],
       render: function() {
@@ -2892,6 +2893,9 @@ return TEMPLATE; });
           _ref1 = item.events;
           for (type in _ref1) {
             event = _ref1[type];
+            if (_.isFunction(event)) {
+              event = event();
+            }
             if (!_.isArray(event)) {
               continue;
             }
@@ -3274,6 +3278,12 @@ return TEMPLATE; });
           } else {
             self.differ = void 0;
           }
+
+          /* env:dev */
+        }, function(err) {
+          return console.error(err);
+
+          /* env:dev */
         });
       };
 

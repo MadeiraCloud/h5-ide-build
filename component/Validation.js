@@ -809,8 +809,32 @@
 
 (function() {
   define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
-    var i18n, isVPCAbleConnectToOutside, isVPCUsingNonexistentDhcp;
+    var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, __hasState;
     i18n = Helper.i18n.short();
+    __hasState = function(uid) {
+      var component, had, state;
+      if (Design.instance().get('agent').enabled === false) {
+        return false;
+      }
+      if (uid) {
+        component = Design.instance().component(uid);
+        if (component) {
+          state = component.get('state');
+          return state && state.length;
+        } else {
+          return false;
+        }
+      } else {
+        had = false;
+        Design.instance().eachComponent(function(component) {
+          if (__hasState(component.id)) {
+            had = true;
+            return false;
+          }
+        });
+        return had;
+      }
+    };
     isVPCAbleConnectToOutside = function() {
       var isHaveEIP, isHavePubIP, isHaveVPN, tipInfo;
       isHaveVPN = false;
@@ -848,26 +872,40 @@
         info: tipInfo
       };
     };
+    isVPCUsingNoneDHCPAndVisualops = function(uid) {
+      var dhcpId, vpc;
+      if (!__hasState()) {
+        return null;
+      }
+      vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
+      dhcpId = vpc.get('dhcp').get('appId');
+      if (dhcpId !== 'default') {
+        return null;
+      }
+      return Helper.message.warning(vpc.id, i18n.TA_MSG_WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
+    };
     isVPCUsingNonexistentDhcp = function(callback) {
       var dhcpCol, dhcpId, vpc;
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-      dhcpId = vpc.get('dhcp').get('dhcpOptionsId');
+      dhcpId = vpc.get('dhcp').get('appId');
       if (!dhcpId || dhcpId === 'default') {
         callback(null);
         return;
       }
       dhcpCol = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
-      return dhcpCol.fetch().fin(function() {
+      dhcpCol.fetchForce().fin(function() {
         if (dhcpCol.get(dhcpId)) {
           return callback(null);
         } else {
           return callback(Helper.message.error(vpc.id, i18n.TA_MSG_ERROR_VPC_DHCP_NONEXISTENT));
         }
       });
+      return null;
     };
     return {
       isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
-      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp
+      isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp,
+      isVPCUsingNoneDHCPAndVisualops: isVPCUsingNoneDHCPAndVisualops
     };
   });
 
@@ -1300,8 +1338,9 @@
               }
             });
             _.each(elbNotExistCertMap, function(sslCertNameAry, elbName) {
-              var tipInfo;
-              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, sslCertNameAry.join(', '));
+              var tipInfo, uniqSSLCertNameAry;
+              uniqSSLCertNameAry = _.uniq(sslCertNameAry);
+              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, uniqSSLCertNameAry.join(', '));
               return validResultAry.push({
                 level: constant.TA.ERROR,
                 info: tipInfo,
@@ -1755,7 +1794,7 @@
       region = Design.instance().region();
       topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
       result = [];
-      return topicCol.fetch().fin(function() {
+      return topicCol.fetchForce().fin(function() {
         var obj, ta, _k, _len2;
         for (_k = 0, _len2 = needTa.length; _k < _len2; _k++) {
           ta = needTa[_k];
@@ -1764,9 +1803,9 @@
           obj = ta[2];
           if (!topicCol.get(topic.get('appId'))) {
             if (obj.type === constant.RESTYPE.SP) {
-              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTIENT, asg.get('name'), obj.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTENT, asg.get('name'), obj.get('name'), topic.get('name')));
             } else if (obj.type === constant.RESTYPE.NC) {
-              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTIENT, asg.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT, asg.get('name'), topic.get('name')));
             }
           }
         }
@@ -2946,7 +2985,6 @@ This file use for validate component about state.
               if (!snaphostMap[snaphostId]) {
                 snaphostMap[snaphostId] = [];
               }
-              snaphostMap[snaphostId].push(MC.extractID(instanceUID));
             }
           }
           if (compObj.type === constant.RESTYPE.LC) {
@@ -2956,9 +2994,8 @@ This file use for validate component about state.
                 instanceUID = compObj.uid;
                 if (snaphostId && instanceUID) {
                   if (!snaphostMap[snaphostId]) {
-                    snaphostMap[snaphostId] = [];
+                    return snaphostMap[snaphostId] = [];
                   }
-                  return snaphostMap[snaphostId].push(instanceUID);
                 }
               }
             });
@@ -2989,22 +3026,28 @@ This file use for validate component about state.
                 if (__indexOf.call(awsSnapshotIdAry, snapshotId) >= 0) {
                   instanceUIDAry = snaphostMap[snapshotId];
                   _.each(instanceUIDAry, function(instanceUID) {
-                    var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
+                    var infoObjType, infoTagType, instanceId, instanceName, instanceObj, instanceType, tipInfo;
                     instanceObj = MC.canvas_data.component[instanceUID];
                     instanceType = instanceObj.type;
                     instanceName = instanceObj.name;
                     infoObjType = 'Instance';
                     infoTagType = 'instance';
+                    instanceId = null;
                     if (instanceType === constant.RESTYPE.LC) {
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
+                      instanceId = instanceObj.resource.LaunchConfigurationARN;
+                    } else {
+                      instanceId = instanceObj.resource.InstanceId;
                     }
-                    tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
-                    tipInfoAry.push({
-                      level: constant.TA.ERROR,
-                      info: tipInfo,
-                      uid: instanceUID
-                    });
+                    if (!instanceId) {
+                      tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
+                      tipInfoAry.push({
+                        level: constant.TA.ERROR,
+                        info: tipInfo,
+                        uid: instanceUID
+                      });
+                    }
                     return null;
                   });
                 }
@@ -3082,6 +3125,9 @@ This file use for validate component about state.
       results = [];
       for (_i = 0, _len = instanceLike.length; _i < _len; _i++) {
         i = instanceLike[_i];
+        if (i.type === constant.RESTYPE.INSTANCE && i.get('appId') && i.get('count') === i.groupMembers().length + 1) {
+          continue;
+        }
         keyName = i.get('keyName');
         if (keyName && keyName[0] !== '@' && !i.connectionTargets("KeypairUsage").length) {
           needValidate.push(i);

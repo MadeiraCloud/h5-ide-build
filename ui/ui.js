@@ -1053,7 +1053,7 @@ define('UI.table',["jquery"], function(){
 				order = target.hasClass('desc-sort') ? 'DESC' : 'ASC',
 				fragment = document.createDocumentFragment(),
 				stack = [],
-				is_datetime = false,
+				rowType = '',
 				tbody,
 				rows;
 
@@ -1084,23 +1084,22 @@ define('UI.table',["jquery"], function(){
 				});
 			});
 
-			if (target.data('row-type') === 'datetime')
-			{
-				is_datetime = true;
-			}
+			rowType = target.data('rowType')
 
 			if (order === 'DESC')
 			{
 				stack.sort(function (a, b)
 				{
-					if (is_datetime)
+					if (rowType === 'datetime')
 					{
 						return new Date(a.value) - new Date(b.value);
 					}
 
-					if (!isNaN(parseInt(a.value)))
+					intA = parseInt(a.value)
+					intB = parseInt(b.value)
+					if (rowType !== 'string' && !isNaN(intA) && !isNaN(intB))
 					{
-						return a.value - b.value;
+						return intA - intB;
 					}
 
 					if (typeof a.value === 'string')
@@ -1114,14 +1113,16 @@ define('UI.table',["jquery"], function(){
 			{
 				stack.sort(function (a, b)
 				{
-					if (is_datetime)
+					if (rowType === 'datetime')
 					{
 						return new Date(b.value) - new Date(a.value);
 					}
 
-					if (!isNaN(parseInt(a.value)))
+					intA = parseInt(a.value)
+					intB = parseInt(b.value)
+					if (rowType !== 'string' && !isNaN(intA) && !isNaN(intB))
 					{
-						return b.value - a.value;
+						return intB - intA;
 					}
 
 					if (typeof a.value === 'string')
@@ -5287,6 +5288,7 @@ define('UI.parsley',["jquery"], function(){
       this.val = this.$element.val();
       this.isRequired = false;
       this.isRequiredRollback = false;
+      this.hasCustom = false;
       this.constraints = {};
 
       // overriden by ParsleyItemMultiple if radio or checkbox input
@@ -5530,6 +5532,10 @@ define('UI.parsley',["jquery"], function(){
               this.isRequired = true;
             }
 
+            if ( name === 'custom' ) {
+              this.hasCustom = true;
+            }
+
             this.addCustomConstraintMessage( name );
           }
         }
@@ -5764,7 +5770,7 @@ define('UI.parsley',["jquery"], function(){
       }
 
       // reset Parsley validation if onFieldValidate returns true, or if field is empty and not required
-      if ( this.options.listeners.onFieldValidate( this.element, this ) || ( '' === val && !this.isRequired && !this.isRequiredRollback ) ) {
+      if ( this.options.listeners.onFieldValidate( this.element, this ) || ( '' === val && !this.isRequired && !this.isRequiredRollback && !this.hasCustom ) ) {
         this.reset();
         //return null;
         return true;

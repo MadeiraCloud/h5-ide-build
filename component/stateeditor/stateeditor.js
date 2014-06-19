@@ -5128,7 +5128,7 @@ return Markdown;
         });
       },
       saveStateTextEditorContent: function() {
-        var $codeArea, codeEditor, codeEditorValue, originEditor, that;
+        var $codeArea, $paraItem, codeEditor, codeEditorValue, originEditor, that;
         that = this;
         if (that.readOnlyMode) {
           return modal.close();
@@ -5138,6 +5138,14 @@ return Markdown;
             $codeArea = $('#modal-state-text-expand .editable-area');
             codeEditor = $codeArea.data('editor');
             codeEditorValue = codeEditor.getValue();
+            $paraItem = $(originEditor.container).parents('.parameter-item');
+            if ($paraItem && $paraItem.hasClass('optional')) {
+              if (codeEditorValue) {
+                $paraItem.removeClass('disabled');
+              } else {
+                $paraItem.addClass('disabled');
+              }
+            }
             originEditor.setValue(codeEditorValue);
             originEditor.clearSelection();
             originEditor.focus();
@@ -5300,7 +5308,7 @@ return Markdown;
         return newCMDAllParaAry;
       },
       getResPlatformInfo: function() {
-        var amiExist, compData, imageId, imageObj, linuxDistroRange, osPlatform, osPlatformDistro, osType, that;
+        var amiExist, cachedAmi, compData, imageId, imageObj, layoutOSType, linuxDistroRange, osPlatform, osPlatformDistro, osType, that;
         that = this;
         compData = that.get('compData');
         imageId = compData.resource.ImageId;
@@ -5308,14 +5316,24 @@ return Markdown;
         osPlatform = null;
         osPlatformDistro = null;
         amiExist = true;
-        if (imageObj) {
+        layoutOSType = '';
+        cachedAmi = Design.instance().component(compData.uid).get('cachedAmi');
+        if (cachedAmi) {
+          layoutOSType = cachedAmi.osType;
           osType = imageObj.get('osType');
-          linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz', 'linux-other'];
+          if (!imageObj) {
+            imageObj = {};
+          }
+          osType = imageObj.osType || layoutOSType;
+          linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz'];
           if (osType === 'windows') {
             osPlatform = 'windows';
           } else if (__indexOf.call(linuxDistroRange, osType) >= 0) {
             osPlatform = 'linux';
             osPlatformDistro = osType;
+          } else if (__indexOf.call(linuxDistroRange, layoutOSType) >= 0) {
+            osPlatform = 'linux';
+            osPlatformDistro = layoutOSType;
           }
         } else {
           amiExist = false;

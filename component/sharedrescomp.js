@@ -55,8 +55,11 @@ function program6(depth0,data) {
   buffer += "\n                    <th class=\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sortable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-row-type=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rowType), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -71,6 +74,18 @@ function program7(depth0,data) {
 
 function program9(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.rowType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program11(depth0,data) {
+  
+  
+  return "string";
+  }
+
+function program13(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "width:"
     + escapeExpression(((stack1 = (depth0 && depth0.width)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -78,11 +93,11 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <th style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"><div class=\"th-inner\"></div></th>\n                            ";
   return buffer;
@@ -100,7 +115,7 @@ function program11(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </tr>\n            </thead>\n        </table>\n        <div class=\"scroll-wrap\">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </div>\n</div>";
   return buffer;
@@ -306,21 +321,20 @@ Refer to kpView.coffee
       __triggerChecked: function(param) {
         return this.trigger('checked', param, this.getChecked());
       },
-      __processDelBtn: function() {
+      __processDelBtn: function(enable) {
         var that;
-        that = this;
-        return _.defer(function() {
-          if (that.$('.one-cb:checked').length) {
-            that.$('[data-btn=delete]').prop('disabled', false);
-          } else {
-            that.$('[data-btn=delete]').prop('disabled', true);
-          }
-          if (that.$('.one-cb:checked').length === 1) {
-            return that.$('[data-btn=duplicate]').prop('disabled', false);
-          } else {
-            return that.$('[data-btn=duplicate]').prop('disabled', true);
-          }
-        });
+        if (arguments.length === 1) {
+          return this.$('[data-btn=delete]').prop('disabled', !enable);
+        } else {
+          that = this;
+          return _.defer(function() {
+            if (that.$('.one-cb:checked').length) {
+              return that.$('[data-btn=delete]').prop('disabled', false);
+            } else {
+              return that.$('[data-btn=delete]').prop('disabled', true);
+            }
+          });
+        }
       },
       __stopPropagation: function(event) {
         var exception;
@@ -407,6 +421,10 @@ Refer to kpView.coffee
         $activeButton.removeClass('active');
         $slidebox.removeClass('show');
         return this;
+      },
+      unCheckSelectAll: function() {
+        this.$('#t-m-select-all').get(0).checked = false;
+        return this.__processDelBtn(false);
       },
       delegate: function(events, context) {
         var eventName, key, match, method, selector, _i, _len;
@@ -1535,7 +1553,7 @@ function program1(depth0,data) {
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <div>\n          <label>Select Topic</label>\n            <div class=\"selectbox dd-topic-name\">\n                <div class=\"selection\">New Topic</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                  <li class=\"item selected new-topic\" data-id=\"@new\">New Topic</li>\n                  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" data-trigger=\"change\" placeholder=\"example@mail.com\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
+  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" placeholder=\"example@mail.com\" data-event-trigger=\"false\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -1772,7 +1790,7 @@ return TEMPLATE; });
       validate: function(action) {
         switch (action) {
           case 'create':
-            return true;
+            return !this.M$('#create-topic-name').parsley('validateForm');
         }
       },
       genDeleteFinish: function(times) {
@@ -1787,8 +1805,8 @@ return TEMPLATE; });
           } else if (success.length > 1) {
             notification('info', "Selected " + success.length + " SNS topic are deleted.");
           }
-          if (!that.modal.getChecked().length) {
-            that.M$('#t-m-select-all').get(0).checked = false;
+          if (!error.length) {
+            that.modal.unCheckSelectAll();
           }
           return _.each(error, function(s) {
             return console.log(s);
@@ -1804,14 +1822,17 @@ return TEMPLATE; });
         };
       },
       errorHandler: function(awsError) {
-        return notification('error', awsError.awsResult);
+        return this.modal.error(awsError.awsResult);
       },
       create: function(invalid) {
         var createSub, displayName, endpoint, protocol, that, topicId, topicModel, topicName;
+        if (invalid) {
+          return false;
+        }
         that = this;
         this.switchAction('processing');
         topicId = this.M$('.dd-topic-name .selected').data('id');
-        protocol = this.M$('.dd-protocol .selection').text();
+        protocol = this.M$('.dd-protocol .selected ').data('id');
         topicName = this.M$('#create-topic-name').val();
         displayName = this.M$('#create-display-name').val();
         endpoint = this.M$('#create-endpoint').val();
@@ -1825,8 +1846,7 @@ return TEMPLATE; });
             notification('info', 'Create Subscription Succeed');
             return that.modal.cancel();
           }).fail(function(awsError) {
-            that.modal.cancel();
-            return errorHandler(awsError);
+            return that.errorHandler(awsError);
           });
         };
         if (topicId === '@new') {
@@ -1834,8 +1854,7 @@ return TEMPLATE; });
             Name: topicName,
             DisplayName: displayName
           }).save().then(createSub).fail(function(awsError) {
-            that.modal.cancel();
-            return errorHandler(awsError);
+            return that.errorHandler(awsError);
           });
         } else {
           topicModel = this.topicCol.get(topicId);
@@ -1928,7 +1947,7 @@ return TEMPLATE; });
         modal = this.modal;
         return {
           create: function(tpl, checked) {
-            var allTextBox, processCreateBtn, updateEndpoint;
+            var $allTextBox, processCreateBtn, updateEndpoint, validateRequired;
             modal.setSlide(tpl(this.processCol(true)));
             updateEndpoint = function(protocol) {
               var endPoint, errorMsg, placeholder, selectedProto, type;
@@ -1976,30 +1995,60 @@ return TEMPLATE; });
                   return errorMsg;
                 }
               });
-              if (endPoint.val().length) {
-                endPoint.parsley('validate');
-              }
               return null;
             };
             updateEndpoint('email');
-            that.M$('#create-topic-name').parsley('custom', function(value) {
+            that.M$('#create-display-name').parsley('custom', function(value) {
               var selectedProto;
               selectedProto = that.M$('.dd-protocol .selected').data('id');
-              if (selectedProto === 'sms') {
+              if (selectedProto === 'sms' && !value) {
                 return 'Display Name is required if subscription uses SMS protocol.';
               }
               return null;
             });
-            allTextBox = that.M$('.slide-create input[type=text]');
-            processCreateBtn = function(event) {
-              if ($(event.currentTarget).parsley('validateForm', false)) {
+            that.M$('#create-topic-name').parsley('custom', function(value) {
+              if (that.topicCol.where({
+                Name: value
+              }).length) {
+                return 'Topic name is already taken.';
+              }
+              return null;
+            });
+            $allTextBox = that.M$('.slide-create input[type=text]');
+            validateRequired = function() {
+              var pass;
+              pass = true;
+              $allTextBox.each(function() {
+                var selectedProto;
+                if (this.id === 'create-display-name') {
+                  selectedProto = that.M$('.dd-protocol .selected').data('id');
+                  if (selectedProto === 'sms') {
+                    if (!this.value.trim().length) {
+                      return pass = false;
+                    }
+                  }
+                } else {
+                  if (!this.value.trim().length) {
+                    return pass = false;
+                  }
+                }
+              });
+              return pass;
+            };
+            processCreateBtn = function(event, showError) {
+              var $target;
+              $target = event && $(event.currentTarget) || $('#create-topic-name');
+              if (validateRequired()) {
                 return that.M$('.slide-create .do-action').prop('disabled', false);
               } else {
                 return that.M$('.slide-create .do-action').prop('disabled', true);
               }
             };
-            allTextBox.on('keyup', processCreateBtn);
-            that.M$('.dd-protocol').off('OPTION_CHANGE').on('OPTION_CHANGE', updateEndpoint);
+            $allTextBox.on('keyup', processCreateBtn);
+            that.M$('.dd-protocol').off('OPTION_CHANGE').on('OPTION_CHANGE', function(id) {
+              updateEndpoint(id);
+              return processCreateBtn(null, true);
+            });
             return that.M$('.dd-topic-name').off('OPTION_CHANGE').on('OPTION_CHANGE', function(event, id, data) {
               if (id === '@new') {
                 return that.M$('.create-sns-topic').show();
@@ -2619,9 +2668,10 @@ TEMPLATE.detail_info=Handlebars.template(__TEMPLATE__);
 return TEMPLATE; });
 (function() {
   define('dhcp',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!nls/lang.js', './component/dhcp/dhcp_template.js'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
-    var deleteCount, deleteErrorCount, dhcpView, fetched, fetching, mapFilterInput, updateAmazonCB;
+    var deleteCount, deleteErrorCount, dhcpView, fetched, fetching, mapFilterInput, regionsMark, updateAmazonCB;
     fetched = false;
     fetching = false;
+    regionsMark = {};
     updateAmazonCB = function() {
       var rowLength;
       rowLength = $("#property-domain-server").children().length;
@@ -2706,19 +2756,21 @@ return TEMPLATE; });
       },
       renderDropdown: function(keys) {
         var content, data, datas, selected, _ref;
-        selected = (_ref = this.resModel) != null ? _ref.toJSON().dhcp.dhcpOptionsId : void 0;
+        selected = (_ref = this.resModel) != null ? _ref.toJSON().dhcp.appId : void 0;
         data = this.collection.toJSON();
+        datas = {
+          isRuntime: false,
+          keys: data
+        };
         if (selected) {
           _.each(data, function(key) {
             if (key.id === selected) {
               key.selected = true;
             }
           });
+        } else {
+          datas.auto = true;
         }
-        datas = {
-          isRuntime: false,
-          keys: data
-        };
         if (selected === "") {
           datas.auto = true;
         } else if (selected && selected === 'default') {
@@ -2790,7 +2842,7 @@ return TEMPLATE; });
         return this.renderManager();
       },
       renderManager: function() {
-        var initManager, _ref;
+        var currentRegion, initManager, _ref;
         if (!App.user.hasCredential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
@@ -2798,8 +2850,10 @@ return TEMPLATE; });
           return false;
         }
         initManager = this.initManager.bind(this);
-        if (!fetched && !fetching) {
+        currentRegion = Design.instance().get('region');
+        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
           fetching = true;
+          regionsMark[currentRegion] = true;
           return this.collection.fetchForce().then(initManager, initManager);
         } else if (!fetching) {
           return initManager();
@@ -2921,15 +2975,21 @@ return TEMPLATE; });
             "netbios-node-type": [parseInt($("#property-netbios-type .selection").html(), 10) || 0]
           };
           validate = function(value, key) {
+            if (key === 'netbios-node-type') {
+              return false;
+            }
             if (value.length < 1) {
-              notification('error', key + " value can't be empty.");
               return false;
             } else {
               return true;
             }
           };
-          if (!_.every(data, validate)) {
+          if (!_.some(data, validate)) {
+            this.manager.error("Please provide at least one field.");
             return false;
+          }
+          if (data['netbios-node-type'][0] === 0) {
+            data['netbios-node-type'] = [];
           }
           this.switchAction('processing');
           afterCreated = this.afterCreated.bind(this);
@@ -2961,17 +3021,19 @@ return TEMPLATE; });
           } else {
             notification('info', "Delete Successfully");
           }
+          this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
           return this.manager.cancel();
         }
       },
       afterCreated: function(result) {
-        this.manager.cancel();
         if (result.error) {
-          notification('error', "Create failed because of: " + result.awsResult);
+          this.manager.error("Create failed because of: " + (result.awsResult || result.msg));
+          this.switchAction();
           return false;
         }
-        return notification('info', "New DHCP Option is created successfully");
+        notification('info', "New DHCP Option is created successfully");
+        return this.manager.cancel();
       },
       validate: function(action) {
         switch (action) {
@@ -3068,17 +3130,10 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" tabindex=\"-1\"><div class=\"manager-content-main\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+    + "\" tabindex=\"-1\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(13, program13, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div><div class=\"manager-content-sub\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " &nbsp;&nbsp;&nbsp;&nbsp;Size: "
-    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " GiB</div></li>\n";
+  buffer += "\n</li>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -3089,26 +3144,53 @@ function program2(depth0,data) {
 
 function program4(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n    <div class=\"manager-content-sub\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " &nbsp;&nbsp;&nbsp;&nbsp;Size: "
+    + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " GiB</div>\n    ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.tagSet)),stack1 == null || stack1 === false ? stack1 : stack1.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program6(depth0,data) {
+function program7(depth0,data) {
   
   
   return "&lt;No Name&gt;";
   }
 
-function program8(depth0,data) {
+function program9(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program10(depth0,data) {
+function program11(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    ";
+  return buffer;
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -3134,14 +3216,15 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n            <label for=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\">"
+    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div><span class=\"manager-content-sub\">"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"manager-content-sub\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span></td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.volumeSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " GiB</td>\n    <td>\n        <div class=\"manager-content-main\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.completed), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.completed), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n        <span class=\"manager-content-sub\">Started: "
     + escapeExpression(((stack1 = (depth0 && depth0.started)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3152,11 +3235,23 @@ function program1(depth0,data) {
   }
 function program2(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "&lt;No Name&gt;";
+  }
+
+function program6(depth0,data) {
+  
   
   return "<i class=\"status status-green icon-label\"></i> Completed";
   }
 
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<i class=\"status status-yellow icon-label\"></i> Pending - "
@@ -3209,15 +3304,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name-create\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME_TIP", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\" placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
+    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\" placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_VOLUME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-volume-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc-create\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input tooltip\" placeholder=\"Up to 255 characters\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC_TIP", {hash:{},data:data}))
-    + "\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
+    + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -3235,17 +3326,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>\n                </div>\n            </div>\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_THE_NEW_SNAPSHOT_NAME", {hash:{},data:data}))
-    + "\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
+    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "-copy\" data-ignore=\"true\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC_TIP", {hash:{},data:data}))
-    + "\" value=\"[Copied "
+    + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input\" value=\"[Copied "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " from "
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3258,15 +3345,17 @@ TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
 return TEMPLATE; });
 (function() {
   define('snapshotManager',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdown', "UI.modalplus", 'toolbar_modal', "i18n!nls/lang.js", './component/snapshot/snapshot_template.js'], function(CloudResources, ApiRequest, constant, combo_dropdown, modalPlus, toolbar_modal, lang, template) {
-    var deleteCount, deleteErrorCount, fetched, fetching, snapshotRes;
+    var deleteCount, deleteErrorCount, fetched, fetching, regionsMark, snapshotRes;
     fetched = false;
     deleteCount = 0;
     deleteErrorCount = 0;
     fetching = false;
+    regionsMark = {};
     snapshotRes = Backbone.View.extend({
       constructor: function() {
         this.collection = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
         this.collection.on('update', this.onChange.bind(this));
+        this.collection.on('change', this.onChange.bind(this));
         return this;
       },
       onChange: function() {
@@ -3283,8 +3372,7 @@ return TEMPLATE; });
       renderDropdown: function() {
         var option, selection;
         option = {
-          manageBtnValue: lang.ide.PROP_VPC_MANAGE_SNAPSHOT,
-          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_SNAPSHOT
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
         this.volumes = CloudResources(constant.RESTYPE.VOL, Design.instance().region());
@@ -3314,8 +3402,9 @@ return TEMPLATE; });
         currentRegion = Design.instance().get('region');
         data = _.map(this.regions, function(region) {
           return {
-            name: region,
-            selected: region === currentRegion
+            name: constant.REGION_LABEL[region] + " - " + constant.REGION_SHORT_LABEL[region],
+            selected: region === currentRegion,
+            region: region
           };
         });
         dataSet = {
@@ -3394,6 +3483,7 @@ return TEMPLATE; });
             return _this.manager.remove();
           };
         })(this));
+        this.manager.on('checked', this.processDuplicate, this);
         this.manager.render();
         if (!App.user.hasCredential()) {
           if ((_ref = this.manager) != null) {
@@ -3402,6 +3492,13 @@ return TEMPLATE; });
           return false;
         }
         return this.initManager();
+      },
+      processDuplicate: function(event, checked) {
+        if (checked.length === 1) {
+          return this.M$('[data-btn=duplicate]').prop('disabled', false);
+        } else {
+          return this.M$('[data-btn=duplicate]').prop('disabled', true);
+        }
       },
       refresh: function() {
         fetched = false;
@@ -3428,10 +3525,12 @@ return TEMPLATE; });
         return (_ref = this.manager) != null ? _ref.setContent(content) : void 0;
       },
       initManager: function() {
-        var setContent;
+        var currentRegion, setContent;
         setContent = this.setContent.bind(this);
-        if (!fetched && !fetching) {
+        currentRegion = Design.instance().get('region');
+        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
           fetching = true;
+          regionsMark[currentRegion] = true;
           return this.collection.fetchForce().then(setContent, setContent);
         } else if (!fetching) {
           return this.setContent();
@@ -3524,7 +3623,7 @@ return TEMPLATE; });
       do_duplicate: function(invalid, checked) {
         var afterDuplicate, description, newName, sourceSnapshot, targetRegion;
         sourceSnapshot = checked[0];
-        targetRegion = $('#property-region-choose').find('.selectbox .selection').text();
+        targetRegion = $('#property-region-choose').find('.selectbox .selection .manager-content-main').data('id');
         if ((this.regions.indexOf(targetRegion)) < 0) {
           return false;
         }
@@ -3552,7 +3651,7 @@ return TEMPLATE; });
           notification('error', "Duplicate failed because of: " + result.msg);
           return false;
         }
-        if (result.region === currentRegion) {
+        if (result.attributes.region === currentRegion) {
           this.collection.add(result);
           return notification('info', "New Snapshot is duplicated successfully!");
         } else {
@@ -3571,6 +3670,7 @@ return TEMPLATE; });
           } else {
             notification('info', "Delete Successfully");
           }
+          this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
           return this.manager.cancel();
         }
@@ -3624,10 +3724,12 @@ return TEMPLATE; });
               name: 'Name'
             }, {
               sortable: true,
+              rowType: 'number',
               width: "10%",
               name: 'Capicity'
             }, {
               sortable: true,
+              rowType: 'datetime',
               width: "40%",
               name: 'status'
             }, {
@@ -3869,6 +3971,7 @@ return TEMPLATE; });
               name: 'Name'
             }, {
               sortable: true,
+              rowType: 'datetime',
               width: "33%",
               name: 'Upload Date'
             }, {
@@ -3942,6 +4045,10 @@ return TEMPLATE; });
         $certPubkey = $('#ssl-cert-publickey-input');
         $certChain = $('#ssl-cert-chain-input');
         certName = $certName.val();
+        if (certName === 'None') {
+          notification('error', "Certificate name " + certName + " is invalid");
+          return;
+        }
         return this.sslCertCol.create({
           Name: certName,
           CertificateBody: $certPubkey.val(),
@@ -4188,7 +4295,7 @@ return TEMPLATE; });
         return this;
       },
       setDefault: function() {
-        var currentListenerObj, data, listenerAry, _ref;
+        var compModel, currentListenerObj, data, listenerAry, _ref;
         if (this.sslCertCol.isReady()) {
           data = this.sslCertCol.toJSON();
           if (data && data[0] && this.uid) {
@@ -4196,10 +4303,13 @@ return TEMPLATE; });
               listenerAry = Design.instance().component(this.uid).get('listeners');
               currentListenerObj = listenerAry[this.listenerNum];
               if (currentListenerObj && ((_ref = currentListenerObj.protocol) === 'HTTPS' || _ref === 'SSL')) {
-                Design.instance().component(this.uid).setSSLCert(this.listenerNum, data[0].id);
-                this.dropdown.trigger('change', data[0].id);
-                this.dropdown.setSelection(data[0].Name);
-                return $(this.el).removeClass('empty');
+                compModel = Design.instance().component(this.uid);
+                if (compModel) {
+                  compModel.setSSLCert(this.listenerNum, data[0].id);
+                  this.dropdown.trigger('change', data[0].id);
+                  this.dropdown.setSelection(data[0].Name);
+                  return $(this.el).removeClass('empty');
+                }
               }
             }
           }
@@ -4557,7 +4667,7 @@ return TEMPLATE; });
     helper = function(options) {
       return {
         getNodeMap: function(path) {
-          var newComp, newCompAttr, oldComp, oldCompAttr, retVal;
+          var newComp, newCompAttr, oldComp, oldCompAttr;
           if (_.isString(path)) {
             path = path.split('.');
           }
@@ -4575,13 +4685,14 @@ return TEMPLATE; });
             }
             if (newCompAttr) {
               if (_.isUndefined(newCompAttr[attr])) {
-                return newCompAttr = void 0;
+                newCompAttr = void 0;
               } else {
-                return newCompAttr = newCompAttr[attr];
+                newCompAttr = newCompAttr[attr];
               }
             }
+            return null;
           });
-          return retVal = {
+          return {
             oldAttr: oldCompAttr,
             newAttr: newCompAttr
           };

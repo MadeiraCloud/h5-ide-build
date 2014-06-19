@@ -864,15 +864,23 @@
     };
     $canvas.updateLineStyle = function(ls) {
       if (Design.__instance.shouldDraw()) {
-        _.each(Design.modelClassForType("SgRuleLine").allObjects(), function(cn) {
-          return cn.draw();
-        });
+        if (ls === 4) {
+          Canvon("#line_layer").addClass("hide-sg");
+        } else {
+          Canvon("#line_layer").removeClass("hide-sg");
+          _.each(Design.modelClassForType("SgRuleLine").allObjects(), function(cn) {
+            return cn.draw();
+          });
+        }
       }
       return null;
     };
     $canvas.lineStyle = function() {
       var ls;
       ls = parseInt(localStorage.getItem("canvas/lineStyle"));
+      if (Design.instance().modeIsApp() && ls === 4) {
+        return 2;
+      }
       if (isNaN(ls)) {
         return 2;
       } else {
@@ -8500,9 +8508,6 @@
       },
       removeListener: function(idx) {
         var listeners;
-        if (idx === 0) {
-          return;
-        }
         listeners = this.get("listeners");
         listeners.splice(idx, 1);
         this.set("listeners", listeners);
@@ -10669,10 +10674,10 @@
             ScalingAdjustment: this.get("adjustment"),
             PolicyName: this.get("name"),
             PolicyARN: this.get("appId"),
-            MinAdjustmentStep: this.get("minAdjustStep"),
             Cooldown: Math.round(this.get("cooldown") / 60) * 60,
             AutoScalingGroupName: this.__asg.createRef("AutoScalingGroupName"),
-            AdjustmentType: this.get("adjustmentType")
+            AdjustmentType: this.get("adjustmentType"),
+            MinAdjustmentStep: this.get("adjustmentType") === 'PercentChangeInCapacity' ? this.get("minAdjustStep") : ''
           }
         };
         alarmData = this.get("alarmData");
@@ -11959,12 +11964,10 @@
         }), Canvon.path(this.PATH_ASG_TITLE).attr({
           'class': 'asg-title'
         }));
-        if (!this.model.design().modeIsAppView()) {
-          node.append(Canvon.image(MC.IMG_URL + 'ide/icon/asg-resource-dragger.png', width - 21, 0, 22, 21).attr({
-            'class': 'asg-resource-dragger tooltip',
-            'data-tooltip': 'Expand the group by drag-and-drop in other availability zone.'
-          }));
-        }
+        node.append(Canvon.image(MC.IMG_URL + 'ide/icon/asg-resource-dragger.png', width - 21, 0, 22, 21).attr({
+          'class': 'asg-resource-dragger tooltip',
+          'data-tooltip': 'Expand the group by drag-and-drop in other availability zone.'
+        }));
         node.append(Canvon.group().append(Canvon.text(25, 45, 'Drop AMI from'), Canvon.text(20, 65, 'resource panel to'), Canvon.text(30, 85, 'create launch'), Canvon.text(30, 105, 'configuration')).attr({
           'class': 'prompt_text'
         }), Canvon.text(4, 14, MC.truncate(m.get("name"), 15)).attr({
@@ -11984,7 +11987,6 @@
       }
       hasLC = !!m.get("lc");
       CanvasManager.toggle(node.children(".prompt_text"), !hasLC);
-      CanvasManager.toggle(node.children(".asg-resource-dragger"));
       return null;
     };
     CeAsgProto.__drawExpandedAsg = function() {

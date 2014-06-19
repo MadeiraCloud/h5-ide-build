@@ -1909,6 +1909,10 @@ return TEMPLATE; });
           return d.promise;
         }
         api = this.get("id") ? "stack_save" : "stack_create";
+        if (newJson.state !== "Enabled") {
+          console.warn("The json's state isnt `Enabled` when saving the stack", this, newJson);
+          newJson.state = "Enabled";
+        }
         self = this;
         return ApiRequest(api, {
           region_name: this.get("region"),
@@ -2122,6 +2126,10 @@ return TEMPLATE; });
           return this.__saveAppDefer;
         }
         newJson.changed = false;
+        if (newJson.state !== this.getStateDesc()) {
+          console.warn("The new app json's state isnt the same as the app", this, newJson);
+          newJson.state = this.getStateDesc();
+        }
         oldState = this.get("state");
         this.set("state", OpsModelState.Saving);
         this.attributes.progress = 0;

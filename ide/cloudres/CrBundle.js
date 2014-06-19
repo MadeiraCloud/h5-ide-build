@@ -489,7 +489,7 @@
         _ref = this.attributes;
         for (key in _ref) {
           value = _ref[key];
-          if (key !== "id" && key !== "tagSet") {
+          if (key !== "id" && key !== "tagSet" && (value.length > 0)) {
             awsAttr.push({
               Name: key,
               Value: value
@@ -3134,34 +3134,42 @@
           }
           insRes.InstanceId = aws_ins.id;
           insRes.EbsOptimized = aws_ins.ebsOptimized;
+          originComp = this.getOriginalComp(aws_ins.id, 'INSTANCE');
           keyPairComp = this.getOriginalComp(aws_ins.keyName, 'KP');
           if (!keyPairComp) {
             if (aws_ins.keyName) {
               insRes.KeyName = aws_ins.keyName;
             }
           } else {
-            originComp = this.getOriginalComp(aws_ins.id, 'INSTANCE');
             if (originComp) {
-              insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
               insRes.KeyName = originComp.resource.KeyName;
             } else {
               insRes.KeyName = CREATE_REF(keyPairComp, "resource.KeyName");
             }
           }
           vol_in_instance = [];
-          _.each(aws_ins.blockDeviceMapping || [], function(e, key) {
-            var volComp, volRes;
-            volComp = me.volumes[e.ebs.volumeId];
-            if (!volComp) {
-              return;
-            }
-            volRes = volComp.resource;
-            if (aws_ins.rootDeviceName.indexOf(e.deviceName) === -1) {
-              insRes.BlockDeviceMapping = _.union(insRes.BlockDeviceMapping, ["#" + volComp.uid]);
-              me.component[volComp.uid] = volComp;
-              return vol_in_instance.push(volComp.uid);
-            }
-          });
+          if (originComp) {
+            insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
+            insRes.BlockDeviceMapping = _.filter(insRes.BlockDeviceMapping, function(bdm) {
+              if (_.isString(bdm)) {
+                return false;
+              }
+              return true;
+            });
+            _.each(aws_ins.blockDeviceMapping || [], function(e, key) {
+              var volComp;
+              if (aws_ins.rootDeviceName.indexOf(e.deviceName) === -1) {
+                volComp = me.volumes[e.ebs.volumeId];
+                if (volComp) {
+                  insRes.BlockDeviceMapping = _.union(insRes.BlockDeviceMapping, ["#" + volComp.uid]);
+                  me.component[volComp.uid] = volComp;
+                  return vol_in_instance.push(volComp.uid);
+                }
+              }
+            });
+          } else {
+            insRes.BlockDeviceMapping = aws_ins.blockDeviceMapping;
+          }
           insComp = this.add("INSTANCE", insRes);
           _.each(vol_in_instance, function(e, key) {
             var volComp;
@@ -3791,48 +3799,50 @@
         func = Converters[_i];
         func.call(cd);
       }
-      changedServerGroupUidMap = {};
-      diffTree = new DiffTree();
-      originComps = cd.originAppJSON.component;
-      _.each(cd.instances, function(insComp) {
-        var diffResult;
-        if (originComps[insComp.uid]) {
-          if (insComp.number && insComp.number > 1) {
-            diffResult = diffTree.compare(originComps[insComp.uid], insComp);
-            if (diffResult) {
-              changedServerGroupUidMap[insComp.serverGroupUid] = true;
-            }
-          }
-        }
-        return null;
-      });
-      _.each(cd.enis, function(insComp) {
-        var attachedInsRef, diffResult, instanceUid;
-        if (originComps[insComp.uid]) {
-          if (insComp.number && insComp.number > 1) {
-            if (diffResult) {
+      if (cd.originAppJSON) {
+        changedServerGroupUidMap = {};
+        diffTree = new DiffTree();
+        originComps = cd.originAppJSON.component;
+        _.each(cd.instances, function(insComp) {
+          var diffResult;
+          if (originComps[insComp.uid]) {
+            if (insComp.number && insComp.number > 1) {
               diffResult = diffTree.compare(originComps[insComp.uid], insComp);
-              changedServerGroupUidMap[insComp.serverGroupUid] = true;
-              attachedInsRef = insComp.resource.Attachment.InstanceId;
-              if (attachedInsRef) {
-                instanceUid = MC.extractID(attachedInsRef);
-                insComp = originComps[instanceUid];
+              if (diffResult) {
                 changedServerGroupUidMap[insComp.serverGroupUid] = true;
               }
             }
           }
-        }
-        return null;
-      });
-      _.each(cd.instances, function(insComp) {
-        if (insComp.serverGroupUid && changedServerGroupUidMap[insComp.serverGroupUid]) {
-          insComp.serverGroupName = insComp.name;
-          insComp.number = 1;
-          insComp.index = 0;
-          insComp.serverGroupUid = insComp.uid;
-        }
-        return null;
-      });
+          return null;
+        });
+        _.each(cd.enis, function(insComp) {
+          var attachedInsRef, diffResult, instanceUid;
+          if (originComps[insComp.uid]) {
+            if (insComp.number && insComp.number > 1) {
+              if (diffResult) {
+                diffResult = diffTree.compare(originComps[insComp.uid], insComp);
+                changedServerGroupUidMap[insComp.serverGroupUid] = true;
+                attachedInsRef = insComp.resource.Attachment.InstanceId;
+                if (attachedInsRef) {
+                  instanceUid = MC.extractID(attachedInsRef);
+                  insComp = originComps[instanceUid];
+                  changedServerGroupUidMap[insComp.serverGroupUid] = true;
+                }
+              }
+            }
+          }
+          return null;
+        });
+        _.each(cd.instances, function(insComp) {
+          if (insComp.serverGroupUid && changedServerGroupUidMap[insComp.serverGroupUid]) {
+            insComp.serverGroupName = insComp.name;
+            insComp.number = 1;
+            insComp.index = 0;
+            insComp.serverGroupUid = insComp.uid;
+          }
+          return null;
+        });
+      }
       if (DEFAULT_SG["DefaultSG"]) {
         default_sg = cd.component[DEFAULT_SG["DefaultSG"].uid];
         if (default_sg) {
