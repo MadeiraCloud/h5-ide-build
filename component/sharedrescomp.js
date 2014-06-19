@@ -4495,7 +4495,8 @@ return TEMPLATE; });
         'resource.AssociatePublicIpAddress': true,
         'resource.KeyName': true,
         'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId',
-        'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping'
+        'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping',
+        'resource.VolumeSize': 'resource.VolumeSize'
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
@@ -4745,6 +4746,7 @@ return TEMPLATE; });
           switch (parentKey) {
             case 'BlockDeviceMapping':
               deviceObj = childNode.DeviceName;
+              data.key = 'Device';
               if (deviceObj) {
                 data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
               }
