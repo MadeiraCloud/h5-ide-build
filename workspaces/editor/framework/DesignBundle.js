@@ -781,7 +781,7 @@
       return null;
     };
     CanvasElement.prototype.updatexGWAppState = function() {
-      var data, design, el, m, res_list;
+      var data, design, el, m, res_list, _ref;
       m = this.model;
       design = m.design();
       if (m.design().modeIsStack() || !m.get("appId")) {
@@ -799,7 +799,7 @@
             CanvasManager.addClass(el, "deleted");
           }
         } else if (m.get("appId").indexOf("vgw-") === 0) {
-          if (!(data.get("state") === "available" && data.get("attachmentState") === "attached" && data.get("vpcId") === m.parent().get("appId"))) {
+          if (!(data.get("state") === "available" && ((_ref = data.get("attachmentState")) === "attaching" || _ref === "attached") && data.get("vpcId") === m.parent().get("appId"))) {
             CanvasManager.addClass(el, "deleted");
           }
         } else if (m.get("appId").indexOf("cgw-") === 0) {
@@ -8857,8 +8857,10 @@
         }
         return ComplexResModel.call(this, attr, option);
       },
+      privacyAttrs: ['__parent', '__connections', 'x', 'y'],
       clone: function() {
-        var conn, connClass, dolly, target, _i, _len, _ref;
+        var conn, connClass, dolly, isRun, target, _i, _len, _ref;
+        isRun = !!this.get('appId');
         dolly = new Model(null, {
           clone: true
         });
@@ -8937,9 +8939,7 @@
         return brother.stopListening();
       },
       getContext: function(attr) {
-        var exception;
-        exception = ['__parent', '__connections', 'x', 'y'];
-        if (this.__bigBrother && __indexOf.call(exception, attr) < 0 && !(_.intersection(_.keys(exception), attr)).length) {
+        if (this.__bigBrother && __indexOf.call(this.privacyAttrs, attr) < 0 && !(_.intersection(_.keys(this.privacyAttrs), attr)).length) {
           return this.__bigBrother;
         }
         return this;

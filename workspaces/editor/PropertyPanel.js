@@ -2336,11 +2336,11 @@ function program53(depth0,data) {
         'id': null
       },
       setOsTypeAndLoginCmd: function(appId) {
-        var cmd_line, instance_data, instance_state, login_user, os_type, region, _ref;
+        var cmd_line, instance_data, instance_state, login_user, os_type, region, _ref, _ref1;
         region = Design.instance().region();
         instance_data = (_ref = CloudResources(constant.RESTYPE.INSTANCE, region).get(appId)) != null ? _ref.toJSON() : void 0;
         if (instance_data) {
-          os_type = CloudResources(constant.RESTYPE.AMI, region).get(instance_data.imageId);
+          os_type = (_ref1 = CloudResources(constant.RESTYPE.AMI, region).get(instance_data.imageId)) != null ? _ref1.toJSON() : void 0;
           if (os_type) {
             os_type = os_type.osType;
           }

@@ -3559,8 +3559,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         error = this.model.get('error_list');
         warning = this.model.get('warning_list');
         notice = this.model.get('notice_list');
-        $tabs = $('#modal-box .tab li');
-        $nutshell = $('#modal-box .nutshell');
+        $tabs = $('.modal-box .tab li');
+        $nutshell = $('.modal-box .nutshell');
         $details = $nutshell.prev('details');
         $summary = $details.find('summary');
         bindSummary = function() {

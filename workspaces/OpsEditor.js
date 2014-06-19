@@ -2204,7 +2204,7 @@ return TEMPLATE; });
         allLc = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
         for (_i = 0, _len = allLc.length; _i < _len; _i++) {
           lc = allLc[_i];
-          if (!lc.isClone()) {
+          if (!lc.isClone() && !lc.get('appId')) {
             new this.reuseLc({
               model: lc,
               parent: this
@@ -2215,7 +2215,7 @@ return TEMPLATE; });
       },
       subEventForUpdateReuse: function() {
         return Design.on(Design.EVENT.AddResource, function(resModel) {
-          if (resModel.type === constant.RESTYPE.LC && !resModel.isClone()) {
+          if (resModel.type === constant.RESTYPE.LC && !resModel.isClone() && !resModel.get('appId')) {
             return new this.reuseLc({
               model: resModel,
               parent: this
@@ -2757,6 +2757,9 @@ return TEMPLATE; });
         },
         click: function(event) {
           return null;
+        },
+        remove: function() {
+          return clearInterval(this.timer);
         }
       }, {
         name: 'ta',
@@ -2900,9 +2903,10 @@ return TEMPLATE; });
         return this;
       },
       renderItem: function() {
-        var e, event, index, item, that, type, view, wrap$, wrapToggle, wrapUpdate, wrapVisible, _i, _j, _len, _len1, _ref, _ref1;
+        var e, event, index, item, that, type, view, wrap$, wrapToggle, wrapUpdate, wrapVisible, _i, _j, _len, _len1, _ref, _ref1, _results;
         that = this;
-        _ref = items.reverse();
+        _ref = _.clone(items).reverse();
+        _results = [];
         for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
           item = _ref[index];
           view = new itemView();
@@ -2948,6 +2952,9 @@ return TEMPLATE; });
               }
             }
           }
+          if (item.remove) {
+            view.clearGarbage.push(_.bind(item.remove, item));
+          }
           if (_.isFunction(item.visible)) {
             item.visible(view.toggle);
           } else {
@@ -2956,21 +2963,20 @@ return TEMPLATE; });
           this.itemViews.push(view);
           null;
           this.$('ul').append(view.render().el);
-          this;
+          _results.push(this);
         }
-        return {
-          remove: function() {
-            var _k, _len2, _ref2;
-            this.$el.remove();
-            this.stopListening();
-            _ref2 = this.itemViews;
-            for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-              view = _ref2[_k];
-              view.remove();
-            }
-            return this;
-          }
-        };
+        return _results;
+      },
+      remove: function() {
+        var view, _i, _len, _ref;
+        this.$el.remove();
+        this.stopListening();
+        _ref = this.itemViews;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          view = _ref[_i];
+          view.remove();
+        }
+        return this;
       }
     });
   });
@@ -3001,6 +3007,7 @@ return TEMPLATE; });
       },
       removeSubviews: function() {
         this.resourcePanel.remove();
+        this.statusbar.remove();
       },
       saveStack: function() {
         return this.toolbar.$el.find(".icon-save").trigger("click");
