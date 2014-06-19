@@ -4,25 +4,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<div class='ops-process'>\r\n  <section class=\"processing\">\r\n  	<header>"
+  buffer += "<div class='ops-process'>\n  <section class=\"processing\">\n  	<header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_TITLE", {hash:{},data:data}))
     + "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\r\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\r\n  	<div class=\"progress\"> <div class=\"bar\" style=\"width:"
+    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n  	<div class=\"progress\"> <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div> </div>\r\n  </section>\r\n\r\n  <section class=\"success hide\">\r\n    <p class=\"title\">"
+    + "%;\"></div> </div>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
-    + "</p>\r\n    <p class=\"sub-title\">"
+    + "</p>\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\r\n  </section>\r\n\r\n  <section class=\"fail hide error-info-block\">\r\n    <header>"
+    + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
-    + "</header>\r\n    <p class=\"sub-title\">"
+    + "</header>\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\r\n    <div class=\"result-error-info\">\r\n      <p class=\"title\">"
+    + "</p>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_ERR_INFO", {hash:{},data:data}))
-    + "</p>\r\n      <p class=\"detail\"></p>\r\n    </div>\r\n    <button class=\"btn btn-silver btn-close-process right\">"
+    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n    <button class=\"btn btn-silver btn-close-process right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
-    + "</button>\r\n  </section>\r\n</div>";
+    + "</button>\n  </section>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -177,25 +177,25 @@ function program3(depth0,data) {
   return "<div class=\"OEPanelBottom\"></div>";
   }
 
-  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\r\n	";
+  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noLeftPane), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n	<aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\r\n\r\n<div class=\"OEMiddleWrap\">\r\n	<nav class=\"OEPanelTop\"></nav>\r\n	";
+  buffer += "\n	<aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\n\n<div class=\"OEMiddleWrap\">\n	<nav class=\"OEPanelTop\"></nav>\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noBottomPane), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n	<section class=\"OEPanelCenter scroll-wrap\">\r\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"scrollbar-horizontal-wrap\"><div class=\"scrollbar-horizontal-thumb\"></div></div>\r\n\r\n		<div id=\"canvas_body\" class=\"canvas-view-normal pos-r scroll-content\">\r\n			<button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
+  buffer += "\n\n	<section class=\"OEPanelCenter scroll-wrap\">\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"scrollbar-horizontal-wrap\"><div class=\"scrollbar-horizontal-thumb\"></div></div>\n\n		<div id=\"canvas_body\" class=\"canvas-view-normal pos-r scroll-content\">\n			<button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('height', 'expand')\"></button>\r\n			<button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('height', 'expand')\"></button>\n			<button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('height', 'shrink')\"></button>\r\n			<button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('height', 'shrink')\"></button>\n			<button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('width', 'expand')\"></button>\r\n			<button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('width', 'expand')\"></button>\n			<button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('width', 'shrink')\"></button>\r\n\r\n			<svg id=\"svg_canvas\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\">\r\n				<g id=\"group_layer\">\r\n					<g id=\"vpc_layer\"></g>\r\n					<g id=\"az_layer\"></g>\r\n					<g id=\"subnet_layer\"></g>\r\n					<g id=\"asg_layer\"></g>\r\n				</g>\r\n				<g id=\"line_layer\"></g>\r\n				<g id=\"node_layer\"></g>\r\n			</svg>\r\n		</div>\r\n	</section>\r\n</div>\r\n</div>";
+  buffer += "' onclick=\"MC.canvas.resize('width', 'shrink')\"></button>\n\n			<svg id=\"svg_canvas\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\">\n				<g id=\"group_layer\">\n					<g id=\"vpc_layer\"></g>\n					<g id=\"az_layer\"></g>\n					<g id=\"subnet_layer\"></g>\n					<g id=\"asg_layer\"></g>\n				</g>\n				<g id=\"line_layer\"></g>\n				<g id=\"node_layer\"></g>\n			</svg>\n		</div>\n	</section>\n</div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/editor/template/TplOpsEditor',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={"toolbar":{},"confirm":{},"export":{},"modal":{}};
@@ -599,15 +599,23 @@ TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
+  
+
+
+  return "<p class=\"modal-text-major\">Your app's vpc seems to be deleted. Do you want to remove the app?</p>";
+  };
+TEMPLATE.modal.confirmRemoveApp=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <div id=\"replace_stack\" style=\"padding: 10px 0\">\n            <div class=\"radio\">\n                <input id=\"radio-replace-stack\" type=\"radio\" name=\"save-stack-type\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                <label for=\"radio-replace-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-replace-stack\">"
+  buffer += "\n        <div id=\"replace_stack\" style=\"padding: 10px 0\">\n            <div class=\"radio\">\n                <input id=\"radio-replace-stack\" type=\"radio\" name=\"save-stack-type\" checked>\n                <label for=\"radio-replace-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-replace-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK", {hash:{},data:data}))
     + "</label>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                "
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO", {hash:{},data:data}))
@@ -615,26 +623,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.input)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" "
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO_END", {hash:{},data:data}))
-    + "\n            </div>\n        </div>\n        ";
-  return buffer;
-  }
-function program2(depth0,data) {
-  
-  
-  return "checked";
-  }
-
-  buffer += "<p class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_1", {hash:{},data:data}))
-    + "</p>\n<p class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_2", {hash:{},data:data}))
-    + "</p>\n<div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div id=\"save_new_stack\">\n            <div class=\"radio\">\n                <input id=\"radio-new-stack\" type=\"radio\" name=\"save-stack-type\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                <label for=\"radio-new-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-new-stack\">"
+    + "\n            </div>\n        </div>\n        <div id=\"save_new_stack\">\n            <div class=\"radio\">\n                <input id=\"radio-new-stack\" type=\"radio\" name=\"save-stack-type\">\n                <label for=\"radio-new-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_NEW_STACK", {hash:{},data:data}))
     + "</label>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction hide\">\n                <p>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
@@ -642,7 +631,31 @@ function program2(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.stackName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"text\" style=\"width: 400px\"/>\n                <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_STACK_NAME_ERROR", {hash:{},data:data}))
-    + "</div>\n            </div>\n        </div>\n    </div>\n</div>";
+    + "</div>\n            </div>\n        </div>\n        ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <div id=\"name_new_stack\">\n            <input id=\"radio-new-stack\" type=\"hidden\" name=\"save-stack-type\" checked>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
+    + "</p>\n                <input class=\"input\" id=\"modal-input-value\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.stackName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"text\" style=\"width: 400px\"/>\n                <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_STACK_NAME_ERROR", {hash:{},data:data}))
+    + "</div>\n            </div>\n        </div>\n        ";
+  return buffer;
+  }
+
+  buffer += "<p class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_1", {hash:{},data:data}))
+    + "</p>\n<p class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_2", {hash:{},data:data}))
+    + "</p>\n<div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.saveAppToStack=Handlebars.template(__TEMPLATE__);
@@ -659,7 +672,7 @@ return TEMPLATE; });
 
     /* env:debug:end */
 
-    /* env:dev                                       env:dev:end */
+    /* env:dev                                     env:dev:end */
     API_URL = "https://" + API_HOST + "/v1/apps/";
     return Backbone.View.extend({
       events: {
@@ -994,7 +1007,7 @@ return TEMPLATE; });
           return function() {
             var isNew, newJson, newOps;
             MC.Analytics.increase("app_to_stack");
-            isNew = appToStackModal.tpl.find("input[name='save-stack-type']:checked").attr('id') === "radio-new-stack";
+            isNew = !(appToStackModal.tpl.find("input[name='save-stack-type']:checked").attr('id') === "replace_stack");
             if (isNew) {
               newOps = App.model.createStackByJson(_this.workspace.design.serializeAsStack(appToStackModal.tpl.find('#modal-input-value').val()));
               appToStackModal.close();
@@ -1335,7 +1348,7 @@ return TEMPLATE; });
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('workspaces/editor/OpsEditorBase',["Workspace", "./OpsViewBase", "./template/TplOpsEditor", "ThumbnailUtil", "OpsModel", "Design", "ApiRequest"], function(Workspace, OpsEditorView, OpsEditorTpl, Thumbnail, OpsModel, Design, ApiRequest) {
+  define('workspaces/editor/OpsEditorBase',["Workspace", "./OpsViewBase", "./template/TplOpsEditor", "ThumbnailUtil", "OpsModel", "Design", "ApiRequest", "UI.modalplus"], function(Workspace, OpsEditorView, OpsEditorTpl, Thumbnail, OpsModel, Design, ApiRequest, Modal) {
     var LoadingView, OpsEditorBase;
     LoadingView = Backbone.View.extend({
       isLoadingView: true,
@@ -1344,6 +1357,23 @@ return TEMPLATE; });
       },
       setText: function(text) {
         return this.$el.find(".processing").text(text);
+      },
+      showVpcNotExist: function(name, onConfirm) {
+        var modal, self;
+        self = this;
+        return modal = new Modal({
+          title: "Confirm to remove the app " + name + "?",
+          template: OpsEditorTpl.modal.confirmRemoveApp(),
+          confirm: {
+            text: "Confirm",
+            color: "red"
+          },
+          disableClose: true,
+          onConfirm: function() {
+            onConfirm();
+            return modal.close();
+          }
+        });
       }
     });
 
@@ -3342,6 +3372,15 @@ return TEMPLATE; });
           if (result.hasResChange) {
             self.opsModel.__setJsonData(newJson);
           }
+        }, function(err) {
+          if (err.error === 286) {
+            self.view.showVpcNotExist(self.opsModel.get("name"), function() {
+              return self.opsModel.terminate(true);
+            });
+            self.remove();
+            return;
+          }
+          throw err;
         });
       };
 
