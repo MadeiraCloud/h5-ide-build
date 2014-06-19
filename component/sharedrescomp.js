@@ -4857,6 +4857,9 @@ return TEMPLATE; });
       initialize: function(option) {
         this.oldAppJSON = option.old;
         this.newAppJSON = option["new"];
+        if (option.callback) {
+          this.callback = option.callback;
+        }
         this.prepare = new Prepare({
           oldAppJSON: this.oldAppJSON,
           newAppJSON: this.newAppJSON
@@ -4881,7 +4884,8 @@ return TEMPLATE; });
         return $target.toggleClass('closed');
       },
       render: function() {
-        var options;
+        var options, that;
+        that = this;
         options = {
           template: this.el,
           title: 'App Changes',
@@ -4899,7 +4903,17 @@ return TEMPLATE; });
         };
         this.modal = new modalplus(options);
         this.modal.on('confirm', function() {
-          return this.modal.close();
+          var promise;
+          if (that.callback) {
+            promise = that.callback();
+            return promise.then(function() {
+              return that.modal.close();
+            }, function(error) {
+              return notification('error', error);
+            });
+          } else {
+            return that.modal.close();
+          }
         }, this);
         this.$el.html(template.frame());
         this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);
