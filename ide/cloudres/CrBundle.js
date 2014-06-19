@@ -264,16 +264,21 @@
         for (_i = 0, _len = awsData.length; _i < _len; _i++) {
           d = awsData[_i];
           d.category = category;
-          if (d.tags) {
-            d.tagSet = d.tags;
+          if (d.tags || d.Tags) {
+            d.tagSet = d.tags || d.Tags;
             delete d.tags;
+            delete d.Tags;
           }
           if (_.isArray(d.tagSet)) {
             ts = {};
             _ref = d.tagSet;
             for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
               i = _ref[_j];
-              ts[i.key] = i.value;
+              if (i.key) {
+                ts[i.key] = i.value;
+              } else if (i.Key) {
+                ts[i.Key] = i.Value;
+              }
             }
             d.tagSet = ts;
           }
@@ -2634,7 +2639,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('ide/cloudres/CloudImportVpc',["CloudResources", "ide/cloudres/CrCollection", "constant", "ApiRequest", "DiffTree"], function(CloudResources, CrCollection, constant, ApiRequest, DiffTree) {
-    var AWS_ID, CREATE_REF, ConverterData, Converters, DEFAULT_KP, DEFAULT_SG, UID, convertResToJson, __createRequestParam;
+    var AWS_ID, CREATE_REF, ConverterData, Converters, DEFAULT_KP, DEFAULT_SG, TAG_NAME, UID, convertResToJson, __createRequestParam;
     CREATE_REF = function(compOrUid, attr) {
       if (!compOrUid) {
         return '';
@@ -2652,6 +2657,14 @@
       var key;
       key = constant.AWS_RESOURCE_KEY[type];
       return dict[key] || dict.resource && dict.resource[key];
+    };
+    TAG_NAME = function(res) {
+      var name;
+      name = null;
+      if (res.tagSet) {
+        name = res.tagSet.name || res.tagSet.Name;
+      }
+      return name;
     };
     ConverterData = (function() {
       ConverterData.prototype.CrPartials = function(type) {
@@ -2929,7 +2942,7 @@
           InstanceTenancy: vpc.attributes.instanceTenancy,
           EnableDnsHostnames: vpc.attributes.enableDnsHostnames,
           EnableDnsSupport: vpc.attributes.enableDnsSupport
-        });
+        }, TAG_NAME(vpc.attributes));
         this.addLayout(vpcComp, true);
       }, function() {
         var azComp, idx, sb, sbComp, _i, _len, _ref;
@@ -2945,7 +2958,7 @@
             CidrBlock: sb.cidrBlock,
             SubnetId: sb.id,
             VpcId: CREATE_REF(this.theVpc, "resource.VpcId")
-          });
+          }, TAG_NAME(sb));
           this.subnets[sb.id] = sbComp;
           this.addLayout(sbComp, true, azComp);
         }
@@ -3013,7 +3026,7 @@
             "IpAddress": aws_cgw.ipAddress,
             "Type": aws_cgw.type
           };
-          cgwComp = this.add("CGW", cgwRes, aws_cgw.id);
+          cgwComp = this.add("CGW", cgwRes, TAG_NAME(aws_cgw));
           delete this.component[cgwComp.uid];
           this.gateways[aws_cgw.id] = cgwComp;
         }
@@ -3057,7 +3070,7 @@
               });
             }
           }
-          vpnComp = this.add("VPN", vpnRes, aws_vpn.id);
+          vpnComp = this.add("VPN", vpnRes, TAG_NAME(aws_vpn));
           this.component[cgwComp.uid] = cgwComp;
           this.addLayout(cgwComp, false);
         }
@@ -3140,7 +3153,7 @@
               genRules.call(this, sg_rule, sgRes.IpPermissionsEgress, selfSGId);
             }
           }
-          sgComp = this.add("SG", sgRes, aws_sg.groupName);
+          sgComp = this.add("SG", sgRes, TAG_NAME(aws_sg) || aws_sg.groupName);
           if (aws_sg.groupName === "default") {
             DEFAULT_SG["default"] = sgComp;
           } else if (aws_sg.groupName.indexOf("-DefaultSG-app-") !== -1) {
@@ -3297,7 +3310,7 @@
               });
             });
           }
-          insComp = this.add("INSTANCE", insRes);
+          insComp = this.add("INSTANCE", insRes, TAG_NAME(aws_ins));
           _.each(vol_in_instance, function(e, key) {
             var volComp;
             volComp = me.component[e];
@@ -3376,7 +3389,7 @@
               "GroupName": CREATE_REF(this.sgs[group.groupId], 'resource.GroupName')
             });
           }
-          eniComp = this.add("ENI", eniRes);
+          eniComp = this.add("ENI", eniRes, TAG_NAME(aws_eni));
           this.enis[aws_eni.id] = eniComp;
           if (!aws_eni.attachment || !((_ref5 = aws_eni.attachment.deviceIndex) === "0" || _ref5 === 0)) {
             this.addLayout(eniComp, false, subnetComp);
@@ -3474,7 +3487,7 @@
               rtbRes.PropagatingVgwSet.push(CREATE_REF(gwComp, 'resource.VpnGatewayId'));
             }
           }
-          rtbComp = this.add("RT", rtbRes);
+          rtbComp = this.add("RT", rtbRes, TAG_NAME(aws_rtb));
           this.addLayout(rtbComp, true, this.theVpc);
         }
       }, function() {
