@@ -3316,6 +3316,9 @@ return TEMPLATE; });
       AppEditor.prototype.initDesign = function() {
         if (this.opsModel.isImported() || (this.differ && this.differ.getChangeInfo().needUpdateLayout)) {
           MC.canvas.analysis();
+          if (!this.opsModel.isImported()) {
+            this.opsModel.saveApp(this.design.serialize());
+          }
         }
         this.design.finishDeserialization();
       };

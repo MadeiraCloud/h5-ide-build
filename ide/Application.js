@@ -2081,8 +2081,9 @@ return TEMPLATE; });
         if (!this.isApp()) {
           return this.__returnErrorPromise();
         }
-        if (this.__saveAppDefer) {
-          return this.__saveAppDefer;
+        if (this.__updateAppDefer) {
+          console.error("The app is already updating!");
+          return this.__updateAppDefer.promise;
         }
         oldState = this.get("state");
         this.set("state", OpsModelState.Updating);
@@ -2123,7 +2124,8 @@ return TEMPLATE; });
           return this.__returnErrorPromise();
         }
         if (this.__saveAppDefer) {
-          return this.__saveAppDefer;
+          console.error("The app is already saving!");
+          return this.__saveAppDefer.promise;
         }
         newJson.changed = false;
         if (newJson.state !== this.getStateDesc()) {
@@ -2139,13 +2141,14 @@ return TEMPLATE; });
           spec: newJson
         }).then(function(res) {
           if (!self.id) {
-            self.requestId = res[0];
+            self.attributes.requestId = res[0];
           }
         }, function(error) {
           return self.__saveAppDefer.reject(error);
         });
         return this.__saveAppDefer.promise.then(function() {
           self.__jsonData = newJson;
+          self.attributes.requestId = void 0;
           self.set({
             name: newJson.name,
             state: oldState
@@ -2153,6 +2156,7 @@ return TEMPLATE; });
           self.__saveAppDefer = null;
         }, function(error) {
           self.__saveAppDefer = null;
+          self.attributes.requestId = void 0;
           self.attributes.progress = 0;
           self.set({
             state: oldState
@@ -2825,6 +2829,9 @@ return TEMPLATE; });
           return;
         }
         this.__handleRequestChange(item);
+        if (item.operation === "save") {
+          return;
+        }
         info_list = this.attributes.notification;
         for (idx = _i = 0, _len = info_list.length; _i < _len; idx = ++_i) {
           i = info_list[idx];

@@ -10631,7 +10631,7 @@ function program14(depth0,data) {
               }
             };
           }
-          _ref2 = eni.privateIpAddressesSet.item;
+          _ref2 = eni.privateIpAddressesSet;
           for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
             i = _ref2[_j];
             i.primary = i.primary === true;

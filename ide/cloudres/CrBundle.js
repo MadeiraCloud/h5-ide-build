@@ -1616,13 +1616,16 @@
         return (_ref = data.DescribeRouteTablesResponse.routeTableSet) != null ? _ref.item : void 0;
       },
       parseFetchData: function(rtbs) {
-        var found, idx, local_rt, rt, rtb, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        var assoc, found, idx, local_rt, main_rt, rt, rtb, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
         for (_i = 0, _len = rtbs.length; _i < _len; _i++) {
           rtb = rtbs[_i];
+          rtb.routeSet = ((_ref = rtb.routeSet) != null ? _ref.item : void 0) || [];
+          rtb.associationSet = ((_ref1 = rtb.associationSet) != null ? _ref1.item : void 0) || [];
+          rtb.propagatingVgwSet = (_ref2 = rtb.propagatingVgwSet) != null ? _ref2.item([]) : void 0;
           found = -1;
-          _ref = rtb.routeSet;
-          for (idx = _j = 0, _len1 = _ref.length; _j < _len1; idx = ++_j) {
-            rt = _ref[idx];
+          _ref3 = rtb.routeSet;
+          for (idx = _j = 0, _len1 = _ref3.length; _j < _len1; idx = ++_j) {
+            rt = _ref3[idx];
             if (rt.gatewayId === 'local') {
               found = idx;
             }
@@ -1631,15 +1634,24 @@
             local_rt = rtb.routeSet.splice(found, 1);
             rtb.routeSet.splice(0, 0, local_rt[0]);
           }
-          rtb.routeSet = ((_ref1 = rtb.routeSet) != null ? _ref1.item : void 0) || [];
-          rtb.associationSet = ((_ref2 = rtb.associationSet) != null ? _ref2.item : void 0) || [];
-          rtb.propagatingVgwSet = (_ref3 = rtb.propagatingVgwSet) != null ? _ref3.item([]) : void 0;
+          found = -1;
+          _ref4 = rtb.associationSet;
+          for (idx = _k = 0, _len2 = _ref4.length; _k < _len2; idx = ++_k) {
+            assoc = _ref4[idx];
+            if (assoc.main && found === -1) {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            main_rt = rtb.associationSet.splice(found, 1);
+            rtb.routeSet.splice(0, 0, main_rt[0]);
+          }
           rtb.id = rtb.routeTableId;
         }
         return rtbs;
       },
       parseExternalData: function(data) {
-        var found, idx, local_rt, rt, rtb, _i, _j, _len, _len1, _ref;
+        var assoc, found, idx, local_rt, main_rt, rt, rtb, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         this.unifyApi(data, this.type);
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           rtb = data[_i];
@@ -1647,13 +1659,25 @@
           _ref = rtb.routeSet;
           for (idx = _j = 0, _len1 = _ref.length; _j < _len1; idx = ++_j) {
             rt = _ref[idx];
-            if (rt.gatewayId === 'local') {
+            if (rt.gatewayId === 'local' && found === -1) {
               found = idx;
             }
           }
           if (found > 0) {
             local_rt = rtb.routeSet.splice(found, 1);
             rtb.routeSet.splice(0, 0, local_rt[0]);
+          }
+          found = -1;
+          _ref1 = rtb.associationSet;
+          for (idx = _k = 0, _len2 = _ref1.length; _k < _len2; idx = ++_k) {
+            assoc = _ref1[idx];
+            if (assoc.main && found === -1) {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            main_rt = rtb.associationSet.splice(found, 1);
+            rtb.routeSet.splice(0, 0, main_rt[0]);
           }
           rtb.id = rtb.routeTableId;
         }

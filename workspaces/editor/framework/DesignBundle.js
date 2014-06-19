@@ -565,7 +565,7 @@
       }
     };
     CanvasElement.prototype.list = function() {
-      var component, id, idx, instance_data, list, member, members, name, resource_list, state, _i, _len, _ref, _ref1;
+      var component, id, idx, instance_data, list, member, members, name, resource_list, state, _i, _len, _ref, _ref1, _ref2;
       component = this.model;
       members = this.model.members ? this.model.members() : this.model.groupMembers();
       if (members.length === 0) {
@@ -589,7 +589,7 @@
             name: name,
             appId: this.model.get("appId"),
             state: state || "",
-            deleted: resource_list[this.model.get("appId")] ? "" : " deleted"
+            deleted: resource_list.get(this.model.get("appId")) ? "" : " deleted"
           }
         ];
         list.id = id;
@@ -604,7 +604,8 @@
         member = _ref1[idx];
         state = "";
         if (this.type === constant.RESTYPE.INSTANCE || this.type === constant.RESTYPE.LC) {
-          instance_data = resource_list[member.appId];
+          resource_list = CloudResources(constant.RESTYPE.INSTANCE, this.model.design().region());
+          instance_data = (_ref2 = resource_list.get(member.appId)) != null ? _ref2.toJSON() : void 0;
           state = instance_data ? instance_data.instanceState.name : "unknown";
         }
         list.push({
@@ -612,7 +613,7 @@
           name: name,
           appId: member.appId,
           state: state,
-          deleted: !this.model.design().modeIsStack() && !resource_list[this.model.get("appId")] ? " deleted" : ""
+          deleted: !this.model.design().modeIsStack() && !resource_list.get(this.model.get("appId")) ? " deleted" : ""
         });
       }
       return list;
@@ -9055,11 +9056,11 @@
       },
       groupMembers: function() {
         var amis, i, resource, resource_list, _i, _len, _ref, _ref1;
-        resource_list = (_ref = CloudResources(constant.RESTYPE.LC, Design.instance().region())) != null ? _ref.toJSON() : void 0;
+        resource_list = CloudResources(constant.RESTYPE.ASG, Design.instance().region());
         if (!resource_list) {
           return [];
         }
-        resource = resource_list[this.parent().get("appId")];
+        resource = (_ref = resource_list.get(this.parent().get("appId"))) != null ? _ref.toJSON() : void 0;
         if (resource && resource.Instances && resource.Instances.length) {
           amis = [];
           _ref1 = resource.Instances;
