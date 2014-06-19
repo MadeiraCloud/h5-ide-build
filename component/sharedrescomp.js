@@ -4300,11 +4300,11 @@ return TEMPLATE; });
           data = this.sslCertCol.toJSON();
           if (data && data[0] && this.uid) {
             if (this.dropdown.getSelection() === 'None') {
-              listenerAry = Design.instance().component(this.uid).get('listeners');
-              currentListenerObj = listenerAry[this.listenerNum];
-              if (currentListenerObj && ((_ref = currentListenerObj.protocol) === 'HTTPS' || _ref === 'SSL')) {
-                compModel = Design.instance().component(this.uid);
-                if (compModel) {
+              compModel = Design.instance().component(this.uid);
+              if (compModel) {
+                listenerAry = compModel.get('listeners');
+                currentListenerObj = listenerAry[this.listenerNum];
+                if (currentListenerObj && ((_ref = currentListenerObj.protocol) === 'HTTPS' || _ref === 'SSL')) {
                   compModel.setSSLCert(this.listenerNum, data[0].id);
                   this.dropdown.trigger('change', data[0].id);
                   this.dropdown.setSelection(data[0].Name);
@@ -4494,7 +4494,8 @@ return TEMPLATE; });
         'resource.PrivateIpAddressSet.n.AutoAssign': true,
         'resource.AssociatePublicIpAddress': true,
         'resource.KeyName': true,
-        'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId'
+        'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId',
+        'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping'
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
