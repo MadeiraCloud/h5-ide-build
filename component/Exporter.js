@@ -555,9 +555,9 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         ThumbGridBackground = document.createElement("img");
         ThumbGridBackground.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAMAAABh9kWNAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF9fX1////0eouzwAAABRJREFUeNpiYGBkZGBkYABhgAADAAApAAUR1P0IAAAAAElFTkSuQmCC";
       }
-      $wrap = $("#export-png-wrap");
+      $wrap = $("#ExportPngWrap");
       if (!$wrap.length) {
-        $wrap = $("<div id='export-png-wrap'></div>").appendTo("body").hide();
+        $wrap = $("<div id='ExportPngWrap'></div>").appendTo("body").hide();
       }
       $wrap.attr("class", $svg_canvas_element.parents("#canvas_body").attr("class"));
       clone = $svg_canvas_element[0].cloneNode(true);

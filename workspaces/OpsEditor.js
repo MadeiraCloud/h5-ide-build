@@ -219,7 +219,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"ops-process\">\n  <header class=\"processing\">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "<span class=\"process-info\">0%</span></header>\n  <header class=\"processing rolling-back-content\">Rolling back.</header>\n  <section class=\"loading-spinner\"></section>\n  <div class=\"progress\"> <div class=\"bar\" style=\"width:0%;\"></div> </div>\n</div>";
+    + "<span class=\"process-info\">0%</span></header>\n  <header class=\"processing rolling-back-content\">Rolling back...</header>\n  <section class=\"loading-spinner\"></section>\n  <div class=\"progress\"> <div class=\"bar\" style=\"width:0%;\"></div> </div>\n</div>";
   return buffer;
   };
 TEMPLATE.appProcessing=Handlebars.template(__TEMPLATE__);
@@ -578,6 +578,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return "<div class=\"modal-text-wraper\"> <div class=\"modal-center-align-helper\">\n  <div class=\"modal-text-major\">This app has been changed.</div>\n  <div class=\"modal-text-major\">Do you conﬁrm to discard the changes?</div>\n</div> </div>";
   };
 TEMPLATE.modal.cancelUpdate=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<p class=\"modal-text-major\">Well done! Your VPC "
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " has been successfully imported as VisualOps app.</p>\n<p class=\"modal-text-major\">Give this app an appropriate name.</p>\n<div class=\"modal-control-group\">\n<label for=\"ImportSaveAppName\">App Name</label> <input id=\"ImportSaveAppName\" class=\"input\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"string\" autofocus> </div>\n<p>Now you can easily manage the resources and lifecycle of the app within VisualOps.</p>";
+  return buffer;
+  };
+TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -1423,7 +1439,7 @@ return TEMPLATE; });
           this.view = null;
         }
         if (this.isAwake() && !this.__inited) {
-          this.initEditor();
+          this.__initEditor();
         }
       };
 
@@ -1437,7 +1453,7 @@ return TEMPLATE; });
           return;
         }
         if (!this.__inited) {
-          this.initEditor();
+          this.__initEditor();
         } else {
           this.design.use();
           this.showEditor();
@@ -1453,7 +1469,7 @@ return TEMPLATE; });
         return !!this.__inited;
       };
 
-      OpsEditorBase.prototype.initEditor = function() {
+      OpsEditorBase.prototype.__initEditor = function() {
         this.__inited = true;
         this.design = new Design(this.opsModel);
         this.listenTo(this.design, "change:name", this.updateTab);
@@ -1463,10 +1479,13 @@ return TEMPLATE; });
         this.hideOtherEditor();
         this.view.render();
         this.initDesign();
+        this.initEditor();
         if (this.opsModel.isPresisted() && !this.opsModel.getThumbnail()) {
           this.saveThumbnail();
         }
       };
+
+      OpsEditorBase.prototype.initEditor = function() {};
 
       OpsEditorBase.prototype.saveThumbnail = function() {
         return Thumbnail.generate($("#svg_canvas")).then((function(_this) {
@@ -3070,7 +3089,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/AppView',["./StackView", "OpsModel", "./template/TplOpsEditor"], function(StackView, OpsModel, OpsEditorTpl) {
+  define('workspaces/editor/AppView',["./StackView", "OpsModel", "./template/TplOpsEditor", "UI.modalplus"], function(StackView, OpsModel, OpsEditorTpl, Modal) {
     return StackView.extend({
       bindUserEvent: function() {
         if (this.workspace.isAppEditMode()) {
@@ -3078,6 +3097,36 @@ return TEMPLATE; });
         } else {
           this.$el.find(".OEPanelCenter").removeClass('canvas_state_appedit').addClass("canvas_state_app").off(".CANVAS_EVENT").on('mousedown.CANVAS_EVENT', '.instance-volume, .instanceList-item-volume, .asgList-item-volume', MC.canvas.volume.show).on('click.CANVAS_EVENT', '.line', MC.canvas.event.selectLine).on('mousedown.CANVAS_EVENT', MC.canvas.event.clearSelected).on('mousedown.CANVAS_EVENT', '#svg_canvas', MC.canvas.event.clickBlank).on('selectstart.CANVAS_EVENT', false).on('mousedown.CANVAS_EVENT', '.dragable', MC.canvas.event.selectNode).on('mousedown.CANVAS_EVENT', '.AWS-AutoScaling-LaunchConfiguration .instance-number-group', MC.canvas.asgList.show).on('mousedown.CANVAS_EVENT', '.AWS-EC2-Instance .instance-number-group', MC.canvas.instanceList.show).on('mousedown.CANVAS_EVENT', '.AWS-VPC-NetworkInterface .eni-number-group', MC.canvas.eniList.show).on('mousedown.CANVAS_EVENT', MC.canvas.event.ctrlMove.mousedown).on('mousedown.CANVAS_EVENT', '#node-action-wrap', MC.canvas.nodeAction.popup).on('mouseenter.CANVAS_EVENT mouseleave.CANVAS_EVENT', '.node', MC.canvas.event.nodeHover);
         }
+      },
+      confirmImport: function() {
+        var modal, self;
+        self = this;
+        modal = new Modal({
+          title: "App Imported",
+          template: OpsEditorTpl.modal.confirmImport({
+            name: this.workspace.opsModel.get("name")
+          }),
+          confirm: {
+            text: "Done"
+          },
+          cancel: {
+            hide: true
+          },
+          disableClose: true,
+          hideClose: true,
+          onConfirm: function() {
+            var json;
+            modal.tpl.find(".modal-confirm").attr("disabled", "disabled");
+            json = self.workspace.design.serialize();
+            json.name = $("#ImportSaveAppName").val();
+            return self.workspace.opsModel.saveApp(json).then(function() {
+              return modal.close();
+            }, function(err) {
+              notification("error", err.msg);
+              modal.tpl.find(".modal-confirm").removeAttr("disabled");
+            });
+          }
+        });
       },
       renderSubviews: function() {
         if (this.workspace.isAppEditMode()) {
@@ -3163,707 +3212,11 @@ return TEMPLATE; });
 
 }).call(this);
 
-define('workspaces/editor/diff/resDiffTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"scroll-wrap scroll-wrap-res-diff\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"content_wrap scroll-content\">\n		<p>Resources of this app has been externally changed. The change has been synced to app. The diagram may be re-generated to reflect the change.</p>\n		<h5>What has been changed:</h5>\n		<article></article>\n	</div>\n</div>";
-  };
-TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"group "
-    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n	<div class=\"head\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "<span class=\"count\">("
-    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</span></div>\n	<div class=\"content\"></div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.resDiffGroup=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<ul class=\"tree\"></ul>";
-  };
-TEMPLATE.resDiffTree=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
-
-function program1(depth0,data) {
-  
-  
-  return "closed";
-  }
-
-  buffer += "<li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.closed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n	<div class=\"meta\">\n		<span class=\"type\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n		<span class=\"name\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n	</div>\n</li>";
-  return buffer;
-  };
-TEMPLATE.resDiffTreeItem=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var stack1;
-  return escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "<span class=\"name to\"> -></span><span class=\"name "
-    + escapeExpression(((stack1 = (depth0 && depth0.type1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>";
-  return buffer;
-  }
-
-  buffer += "<div class=\"meta\">\n	<span class=\"type\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n	<span class=\"name ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.value1), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
-  return buffer;
-  };
-TEMPLATE.resDiffTreeMeta=Handlebars.template(__TEMPLATE__);
-
-
-return TEMPLATE; });
-(function() {
-  define('workspaces/editor/diff/DiffTree',[], function() {
-    var DiffTree;
-    DiffTree = function(option) {
-      var getType, isArray, typeofReal, _compare, _diffAry;
-      if (!option) {
-        option = {};
-      }
-      if (!option.filterMap) {
-        option.filterMap = {};
-      }
-      isArray = function(value) {
-        return value && typeof value === 'object' && value.constructor === Array;
-      };
-      typeofReal = function(value) {
-        if (isArray(value)) {
-          return 'array';
-        } else {
-          if (value === null) {
-            return 'null';
-          } else {
-            return typeof value;
-          }
-        }
-      };
-      getType = function(value) {
-        if (typeA === 'object' || typeA === 'array') {
-          return '';
-        } else {
-          return String(a) + ' ';
-        }
-      };
-      _diffAry = function(a, b) {
-        var i, j, tmp, v, _i, _j, _len, _ref, _ref1, _results, _results1;
-        _ref1 = (function() {
-          _results1 = [];
-          for (var _j = 0, _ref = a.length; 0 <= _ref ? _j < _ref : _j > _ref; 0 <= _ref ? _j++ : _j--){ _results1.push(_j); }
-          return _results1;
-        }).apply(this);
-        _results = [];
-        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-          v = _ref1[i];
-          _results.push((function() {
-            var _k, _l, _len1, _ref2, _ref3, _results2, _results3;
-            _ref3 = (function() {
-              _results3 = [];
-              for (var _l = 0, _ref2 = b.length; 0 <= _ref2 ? _l < _ref2 : _l > _ref2; 0 <= _ref2 ? _l++ : _l--){ _results3.push(_l); }
-              return _results3;
-            }).apply(this);
-            _results2 = [];
-            for (j = _k = 0, _len1 = _ref3.length; _k < _len1; j = ++_k) {
-              v = _ref3[j];
-              if (!_compare.call(this, a[i], b[j], '', null, [])) {
-                tmp = b[i];
-                b[i] = b[j];
-                _results2.push(b[j] = tmp);
-              } else {
-                _results2.push(void 0);
-              }
-            }
-            return _results2;
-          }).call(this));
-        }
-        return _results;
-      };
-      _compare = function(a, b, key, path, resultJSON) {
-        var aString, attrPath, attrPathAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, typeA, typeB, v, value1, value2, _i, _len;
-        if (path) {
-          if (key) {
-            path = path.concat([key]);
-          }
-          if (path.length > 2) {
-            attrPathAry = path.slice(2);
-            attrPathAry = _.map(attrPathAry, function(path) {
-              var num;
-              num = Number(path);
-              if (num >= 0) {
-                return 'n';
-              }
-              return path;
-            });
-            attrPath = attrPathAry.join('.');
-            if (option.filterMap[attrPath]) {
-              return;
-            }
-          }
-        }
-        if (!a && !b) {
-          return;
-        }
-        haveDiff = false;
-        typeA = typeofReal(a);
-        typeB = typeofReal(b);
-        aString = typeA === 'object' || typeA === 'array' ? '' : String(a) + '';
-        bString = typeB === 'object' || typeB === 'array' ? '' : String(b) + '';
-        if (!aString) {
-          aString = '';
-        }
-        if (!bString) {
-          bString = '';
-        }
-        changeType = value1 = value2 = '';
-        if (a === void 0) {
-          changeType = 'added';
-          value2 = bString;
-        } else if (b === void 0) {
-          changeType = 'removed';
-          value1 = aString;
-        } else if (typeA !== typeB || (typeA !== 'object' && typeA !== 'array' && a !== b)) {
-          changeType = 'changed';
-          value1 = aString;
-          value2 = bString;
-        } else {
-          value1 = aString;
-        }
-        resultJSON[key] = {};
-        if (typeA === 'object' || typeA === 'array' || typeB === 'object' || typeB === 'array') {
-          if (typeA === 'array' && typeB === 'array') {
-            diffAryResult = {};
-            if (a.length < b.length) {
-              _diffAry.call(this, a, b);
-            } else {
-              _diffAry.call(this, b, a);
-            }
-          }
-          keys = [];
-          for (v in a) {
-            keys.push(v);
-          }
-          for (v in b) {
-            keys.push(v);
-          }
-          keys.sort();
-          isEqual = true;
-          if (typeA === 'array' && typeB === 'array') {
-            console.log(keys);
-          }
-          for (i = _i = 0, _len = keys.length; _i < _len; i = ++_i) {
-            v = keys[i];
-            if (keys[i] === keys[i - 1]) {
-              continue;
-            }
-            hasDiff = _compare.call(this, a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
-            if (hasDiff) {
-              isEqual = false;
-            }
-          }
-          haveDiff = !isEqual;
-          if (isEqual) {
-            delete resultJSON[key];
-          }
-        } else {
-          if (path) {
-            path.length = 0;
-          }
-          if (a !== b) {
-            haveDiff = true;
-            resultJSON[key] = {
-              type: changeType,
-              __old__: a,
-              __new__: b
-            };
-          } else {
-            delete resultJSON[key];
-          }
-        }
-        return haveDiff;
-      };
-      this.compare = function(json1, json2) {
-        var resultJSON;
-        resultJSON = {};
-        _compare.call(this, json1, json2, 'result', [], resultJSON);
-        return resultJSON.result;
-      };
-      return null;
-    };
-    return DiffTree;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/diff/prepare',['constant'], function(constant) {
-    var Prepare, helper, prepareNode;
-    helper = function(options) {
-      return {
-        getNodeMap: function(path) {
-          var newComp, newCompAttr, oldComp, oldCompAttr, retVal;
-          if (_.isString(path)) {
-            path = path.split('.');
-          }
-          oldComp = options.oldAppJSON.component;
-          newComp = options.newAppJSON.component;
-          oldCompAttr = _.extend(oldComp, {});
-          newCompAttr = _.extend(newComp, {});
-          _.each(path, function(attr) {
-            if (oldCompAttr) {
-              if (_.isUndefined(oldCompAttr[attr])) {
-                oldCompAttr = void 0;
-              } else {
-                oldCompAttr = oldCompAttr[attr];
-              }
-            }
-            if (newCompAttr) {
-              if (_.isUndefined(newCompAttr[attr])) {
-                return newCompAttr = void 0;
-              } else {
-                return newCompAttr = newCompAttr[attr];
-              }
-            }
-          });
-          return retVal = {
-            oldAttr: oldCompAttr,
-            newAttr: newCompAttr
-          };
-        },
-        genValue: function(type, oldValue, newValue) {
-          var result;
-          result = '';
-          if (type === 'changed') {
-            if (!oldValue) {
-              oldValue = 'none';
-            }
-            if (!newValue) {
-              newValue = 'none';
-            }
-          }
-          if (oldValue) {
-            result = oldValue;
-            if (newValue && oldValue !== newValue) {
-              result += ' -> ' + newValue;
-            }
-          } else {
-            result = newValue;
-          }
-          return result;
-        },
-        getNodeData: function(path) {
-          return this.getNewest(this.getNodeMap(path));
-        },
-        getNewest: function(attrMap) {
-          return attrMap.newAttr || attrMap.oldAttr;
-        },
-        pluralToSingular: function(str) {
-          return str.slice(0, -1);
-        },
-        setToElement: function(str) {
-          return str.slice(0, -3);
-        },
-        replaceArrayIndex: function(path, data) {
-          var childNode, component, componentMap, deviceObj, parentKey, type;
-          componentMap = this.getNodeMap(path[0]);
-          component = this.getNewest(componentMap);
-          type = component.type;
-          parentKey = path[path.length - 2];
-          childNode = data.originValue;
-          switch (parentKey) {
-            case 'BlockDeviceMapping':
-              deviceObj = childNode.DeviceName;
-              if (deviceObj) {
-                data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
-              }
-              break;
-            case 'GroupSet':
-              data.key = 'SecurityGroup';
-              break;
-            case 'IpPermissions':
-            case 'IpPermissionsEgress':
-            case 'EntrySet':
-              data.key = 'Rule';
-              break;
-            case 'AssociationSet':
-            case 'AttachmentSet':
-            case 'PrivateIpAddressSet':
-              data.key = this.setToElement(parentKey);
-              break;
-            case 'Dimensions':
-            case 'AlarmActions':
-              data.key = this.pluralToSingular(parentKey);
-              break;
-            case 'NotificationType':
-              data = data;
-          }
-          if (path.length === 1) {
-            data.key = constant.RESNAME[data.key] || data.key;
-          }
-          return data;
-        }
-      };
-    };
-    prepareNode = function(path, data) {
-      var compAttrObj, compUID, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, valueRef, _getRef, _ref;
-      _getRef = function(value) {
-        var refMatchAry, refName, refRegex, refUID;
-        if (_.isString(value) && value.indexOf('@{') === 0) {
-          refRegex = /@\{.*\}/g;
-          refMatchAry = value.match(refRegex);
-          if (refMatchAry && refMatchAry.length) {
-            refName = value.slice(2, value.length - 1);
-            refUID = refName.split('.')[0];
-            if (refUID) {
-              return "" + refUID + ".name";
-            }
-          }
-        }
-        return null;
-      };
-      if (_.isObject(data.value)) {
-        newValue = data.value;
-        oldRef = _getRef(newValue.__old__);
-        newRef = _getRef(newValue.__new__);
-        if (oldRef) {
-          newValue.__old__ = this.h.getNodeMap(oldRef).oldAttr;
-        }
-        if (newRef) {
-          newValue.__new__ = this.h.getNodeMap(newRef).newAttr;
-        }
-        data.value = {
-          type: newValue.type,
-          old: newValue.__old__,
-          "new": newValue.__new__
-        };
-      } else {
-        compAttrObj = this.h.getNodeMap(path);
-        oldAttr = compAttrObj.oldAttr;
-        newAttr = compAttrObj.newAttr;
-        valueRef = _getRef(data.value);
-        if (valueRef) {
-          data.value = this.h.getNodeMap(valueRef).oldAttr;
-        }
-        if (path.length === 1) {
-          compUID = path[0];
-          oldCompName = (oldAttr ? oldAttr.name : void 0) || '';
-          newCompName = (newAttr ? newAttr.name : void 0) || '';
-          if (oldAttr) {
-            data.key = oldAttr.type;
-          } else {
-            data.key = newAttr.type;
-          }
-          data.value = this.h.genValue(null, oldCompName, newCompName);
-        }
-        data = this.h.replaceArrayIndex(path, data);
-      }
-      if (path.length === 2) {
-        if ((_ref = path[1]) === 'type' || _ref === 'uid' || _ref === 'name') {
-          delete data.key;
-        } else if (path[1] === 'resource') {
-          data.skip = true;
-        }
-      }
-      return data;
-    };
-    Prepare = function(options) {
-      _.extend(this, options);
-      this.h = helper(options);
-      return this;
-    };
-    Prepare.prototype.node = prepareNode;
-    return Prepare;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/diff/ResDiff',['UI.modalplus', './resDiffTpl', './DiffTree', './prepare'], function(modalplus, template, DiffTree, Prepare) {
-    return Backbone.View.extend({
-      className: 'res_diff_tree',
-      tagName: 'section',
-      initialize: function(option) {
-        this.oldAppJSON = option.old;
-        this.newAppJSON = option["new"];
-        this.prepare = new Prepare({
-          oldAppJSON: this.oldAppJSON,
-          newAppJSON: this.newAppJSON
-        });
-        return this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
-      },
-      events: {
-        'click .item .type': '_toggleTab',
-        'click .head': '_toggleItem'
-      },
-      _filterMap: {
-        'resource.PrivateIpAddressSet.n.AutoAssign': true
-      },
-      _toggleItem: function(e) {
-        var $target;
-        $target = $(e.currentTarget).closest('.group');
-        return $target.toggleClass('closed');
-      },
-      _toggleTab: function(e) {
-        var $target;
-        $target = $(e.currentTarget).closest('.item');
-        if ($target.hasClass('end')) {
-          return;
-        }
-        return $target.toggleClass('closed');
-      },
-      render: function() {
-        var options;
-        options = {
-          template: this.el,
-          title: 'App Changes',
-          hideClose: true,
-          disableClose: true,
-          disableCancel: true,
-          cancel: {
-            hide: true
-          },
-          confirm: {
-            text: 'OK, got it'
-          },
-          width: '608px',
-          compact: true
-        };
-        this.modal = new modalplus(options);
-        this.modal.on('confirm', function() {
-          return this.modal.close();
-        }, this);
-        this.$el.html(template.frame());
-        return this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);
-      },
-      _genDiffInfo: function(oldComps, newComps) {
-        var diffTree, that, unionNewComps, unionOldComps;
-        that = this;
-        that.addedComps = {};
-        that.removedComps = {};
-        that.modifiedComps = {};
-        unionOldComps = {};
-        unionNewComps = {};
-        _.each(oldComps, function(comp, uid) {
-          if (newComps[uid]) {
-            unionOldComps[uid] = oldComps[uid];
-            unionNewComps[uid] = newComps[uid];
-          } else {
-            that.removedComps[uid] = oldComps[uid];
-          }
-          return null;
-        });
-        _.each(_.keys(newComps), function(uid) {
-          if (!oldComps[uid]) {
-            that.addedComps[uid] = newComps[uid];
-          }
-          return null;
-        });
-        diffTree = new DiffTree({
-          filterMap: that._filterMap
-        });
-        that.modifiedComps = diffTree.compare(unionOldComps, unionNewComps);
-        if (!that.modifiedComps) {
-          return that.modifiedComps = {};
-        }
-      },
-      _genResGroup: function() {
-        var $group, compCount, data, groupData, that, _i, _len, _results;
-        that = this;
-        groupData = [
-          {
-            title: 'New Resource',
-            diffComps: that.addedComps,
-            closed: true,
-            type: 'added'
-          }, {
-            title: 'Removed Resource',
-            diffComps: that.removedComps,
-            closed: true,
-            type: 'removed'
-          }, {
-            title: 'Modified Resource',
-            diffComps: that.modifiedComps,
-            closed: false,
-            type: 'modified'
-          }
-        ];
-        _results = [];
-        for (_i = 0, _len = groupData.length; _i < _len; _i++) {
-          data = groupData[_i];
-          compCount = _.keys(data.diffComps).length;
-          if (compCount) {
-            $group = $(template.resDiffGroup({
-              type: data.type,
-              title: data.title,
-              count: compCount
-            })).appendTo(this.$('article'));
-            _results.push(this._genResTree($group.find('.content'), data.diffComps, data.closed));
-          } else {
-            _results.push(void 0);
-          }
-        }
-        return _results;
-      },
-      _genResTree: function($container, diffComps, closed) {
-        var that, _genTree;
-        that = this;
-        _genTree = function(value, key, path, $parent) {
-          var $diffTree, $treeItem, changeType, data, nextPath, type, type1, value1, __value, _key, _results, _value;
-          if (_.isObject(value)) {
-            if (_.isUndefined(value.__new__) && _.isUndefined(value.__old__)) {
-              $diffTree = $(template.resDiffTree({})).appendTo($parent);
-              _results = [];
-              for (_key in value) {
-                _value = value[_key];
-                __value = _.isObject(_value) ? '' : _value;
-                nextPath = path.concat([_key]);
-                data = this.prepare.node(nextPath, {
-                  key: _key,
-                  value: __value,
-                  originValue: _value
-                });
-                if (data.key) {
-                  if (data.skip) {
-                    $treeItem = $parent;
-                    $diffTree.remove();
-                  } else {
-                    $treeItem = $(template.resDiffTreeItem({
-                      key: data.key,
-                      value: data.value,
-                      closed: closed
-                    })).appendTo($diffTree);
-                    if (!_.isObject(_value)) {
-                      $treeItem.addClass('end');
-                    }
-                  }
-                  if (_.isArray(_value) && _value.length === 0) {
-                    _results.push($treeItem.remove());
-                  } else {
-                    _results.push(_genTree.call(that, _value, _key, nextPath, $treeItem));
-                  }
-                } else {
-                  _results.push(void 0);
-                }
-              }
-              return _results;
-            } else {
-              changeType = value.type;
-              data = this.prepare.node(path, {
-                key: key,
-                value: value
-              });
-              if (data.key) {
-                type = value1 = type1 = '';
-                if (_.isObject(data.value)) {
-                  if (data.value.type === 'added') {
-                    value = data.value["new"];
-                    type = 'new';
-                  } else if (data.value.type === 'removed') {
-                    value = data.value.old;
-                    type = 'old';
-                  } else if (data.value.type === 'changed') {
-                    value = data.value.old;
-                    value1 = data.value["new"];
-                    type = 'old';
-                    type1 = 'new';
-                  }
-                } else {
-                  value = data.value;
-                }
-                $parent.html(template.resDiffTreeMeta({
-                  key: data.key,
-                  value: value,
-                  type: type,
-                  value1: value1,
-                  type1: type1,
-                  closed: closed
-                }));
-                $parent.addClass('end');
-                return $parent.addClass(changeType);
-              } else {
-                return $parent.remove();
-              }
-            }
-          }
-        };
-        return _genTree.call(that, diffComps, null, [], $container);
-      },
-      getChangeInfo: function() {
-        var hasResChange, that;
-        that = this;
-        hasResChange = false;
-        if (_.keys(that.addedComps).length || _.keys(that.removedComps).length || _.keys(that.modifiedComps).length) {
-          hasResChange = true;
-        }
-        return {
-          hasResChange: hasResChange,
-          needUpdateLayout: true
-        };
-      }
-    });
-  });
-
-}).call(this);
-
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('workspaces/editor/AppEditor',["./StackEditor", "./AppView", "./diff/ResDiff", "OpsModel", "Design", "CloudResources", "constant"], function(StackEditor, AppView, ResDiff, OpsModel, Design, CloudResources, constant) {
+  define('workspaces/editor/AppEditor',["./StackEditor", "./AppView", "ResDiff", "OpsModel", "Design", "CloudResources", "constant"], function(StackEditor, AppView, ResDiff, OpsModel, Design, CloudResources, constant) {
     var AppEditor;
     AppEditor = (function(_super) {
       __extends(AppEditor, _super);
@@ -3917,7 +3270,7 @@ return TEMPLATE; });
           });
           result = self.differ.getChangeInfo();
           if (result.hasResChange) {
-            return self.opsModel.saveApp(newJson);
+
           } else {
             self.differ = void 0;
           }
@@ -3933,14 +3286,21 @@ return TEMPLATE; });
       };
 
       AppEditor.prototype.initDesign = function() {
-        if (this.opsModel.isImported()) {
+        if (this.opsModel.isImported() || (this.differ && this.differ.needUpdateLayout)) {
           MC.canvas.analysis();
         }
+        this.design.finishDeserialization();
+      };
+
+      AppEditor.prototype.initEditor = function() {
         if (this.differ) {
           this.differ.render();
           this.differ = null;
         }
-        this.design.finishDeserialization();
+        if (this.opsModel.isImported()) {
+          this.updateTab();
+          this.view.confirmImport();
+        }
       };
 
       AppEditor.prototype.refreshResource = function() {};
@@ -4012,6 +3372,9 @@ return TEMPLATE; });
 
       AppEditor.prototype.onOpsModelStateChanged = function() {
         if (!this.isInited()) {
+          return;
+        }
+        if (this.opsModel.testState(OpsModel.State.Saving)) {
           return;
         }
         this.updateTab();

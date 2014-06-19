@@ -6731,8 +6731,8 @@ function program32(depth0,data) {
         elb.HealthCheck.path = target.replace(/[^\/]+\//, "/");
         elb.CrossZone = myElbComponent.get('crossZone') ? "Enabled" : "Disabled";
         elb.listenerDisplay = [];
-        if (elb.ListenerDescriptions.member) {
-          $.each(elb.ListenerDescriptions.member, function(i, listener) {
+        if (elb.ListenerDescriptions) {
+          $.each(elb.ListenerDescriptions, function(i, listener) {
             elb.listenerDisplay.push(listener);
             if (listener.Listener.SSLCertificateId) {
               listener.Listener.server_certificate = listener.Listener.SSLCertificateId.split('/')[1];
@@ -6868,50 +6868,61 @@ function program6(depth0,data) {
 function program8(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_INSTANCES", {hash:{},data:data}))
+    + "</div>\n  <ul class=\"option-group property-list\">\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  </ul>\n  ";
+  return buffer;
+  }
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n      <li>\n        <div class=\"list-row\">\n            <i class=\"status status-";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.health), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " icon-label\"></i>\n            <span class=\"app-panel-li-main\">"
     + escapeExpression(((stack1 = (depth0 && depth0.zone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n        </div>\n        <div class=\"list-row\">\n          <ul class=\"elb-property-instance-list\">\n            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          </ul>\n        </div>\n      </li>\n    ";
   return buffer;
   }
-function program9(depth0,data) {
+function program10(depth0,data) {
   
   
   return "green";
   }
 
-function program11(depth0,data) {
+function program12(depth0,data) {
   
   
   return "red";
   }
 
-function program13(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n              <li>\n                <div class=\"instance-info\">\n                  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                  <div class=\"instance-id ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_name), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">("
     + escapeExpression(((stack1 = (depth0 && depth0.instance_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</div>\n                </div>\n                <div class=\"instance-state\">\n                  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.instance_state), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </div>\n              </li>\n            ";
   return buffer;
   }
-function program14(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<div class=\"instance-name\">"
@@ -6920,25 +6931,25 @@ function program14(depth0,data) {
   return buffer;
   }
 
-function program16(depth0,data) {
+function program17(depth0,data) {
   
   
   return "instance-id-down";
   }
 
-function program18(depth0,data) {
+function program19(depth0,data) {
   
   
   return "InService";
   }
 
-function program20(depth0,data) {
+function program21(depth0,data) {
   
   
   return "OutOfService";
   }
 
-function program22(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<a class=\"elb-info-icon tooltip icon-info\" data-tooltip=\""
@@ -6947,7 +6958,7 @@ function program22(depth0,data) {
   return buffer;
   }
 
-function program24(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "";
   buffer += "\n  <div class=\"option-group-head\">"
@@ -7028,13 +7039,11 @@ function program24(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HEALTH_THRESHOLD", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.HealthCheck)),stack1 == null || stack1 === false ? stack1 : stack1.HealthyThreshold)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      </dl>\n  </div>\n\n  <div class=\"option-group-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_INSTANCES", {hash:{},data:data}))
-    + "</div>\n  <ul class=\"option-group property-list\">\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.distribution), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+    + "</dd>\n      </dl>\n  </div>\n\n  ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.distribution)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </ul>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  buffer += "\n\n  ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isclassic), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>";
   return buffer;
@@ -7221,7 +7230,7 @@ function program2(depth0,data) {
         'isAppEdit': false
       },
       init: function(uid) {
-        var ACLModel, defaultACL, defaultRT, linkedRT, networkACLs, routeTable, subnet, subnet_acl, subnet_component;
+        var ACLModel, defaultACL, defaultRT, linkedRT, networkACLs, routeTable, subnet, subnet_acl, subnet_component, _ref;
         subnet_component = Design.instance().component(uid);
         if (!subnet_component) {
           return false;
@@ -7257,7 +7266,7 @@ function program2(depth0,data) {
           isAppEdit: this.isAppEdit
         });
         if (this.isAppEdit) {
-          subnet = CloudResources(constant.RESTYPE.ACL, Design.instance().region()).get(subnet_component.get('appId'));
+          subnet = (_ref = CloudResources(constant.RESTYPE.SUBNET, Design.instance().region()).get(subnet_component.get('appId'))) != null ? _ref.toJSON() : void 0;
           subnet = _.clone(subnet);
           routeTable = subnet_component.connectionTargets('RTB_Asso')[0];
           linkedRT = routeTable.get('appId');
@@ -7594,9 +7603,9 @@ function program4(depth0,data) {
     var SubnetAppModel;
     SubnetAppModel = PropertyModel.extend({
       init: function(uid) {
-        var defaultRT, linkedRT, mySubnetComponent, routeTable, subnet;
+        var defaultRT, linkedRT, mySubnetComponent, routeTable, subnet, _ref;
         mySubnetComponent = Design.instance().component(uid);
-        subnet = CloudResources(constant.RESTYPE.SUBNET, Design.instance().region()).get(mySubnetComponent.get('appId'));
+        subnet = (_ref = CloudResources(constant.RESTYPE.SUBNET, Design.instance().region()).get(mySubnetComponent.get('appId'))) != null ? _ref.toJSON() : void 0;
         if (!subnet) {
           return false;
         }
@@ -8145,9 +8154,9 @@ function program9(depth0,data) {
     var VPCAppModel;
     VPCAppModel = PropertyModel.extend({
       init: function(vpc_uid) {
-        var AclModel, RtbModel, TYPE_ACL, TYPE_RTB, appData, dhcp, dhcpData, i, myVPCComponent, vpc, _ref, _ref1, _ref2, _ref3;
+        var AclModel, RtbModel, TYPE_ACL, TYPE_RTB, appData, dhcp, dhcpData, i, myVPCComponent, vpc, _ref, _ref1, _ref2, _ref3, _ref4;
         myVPCComponent = Design.instance().component(vpc_uid);
-        vpc = CloudResources(constant.RESTYPE.VPC, Design.instance().region()).get(myVPCComponent.get('appId')).attributes;
+        vpc = (_ref = CloudResources(constant.RESTYPE.VPC, Design.instance().region()).get(myVPCComponent.get('appId'))) != null ? _ref.attributes : void 0;
         appData = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
         if (!vpc) {
           return false;
@@ -8170,8 +8179,8 @@ function program9(depth0,data) {
           if (!appData.get(vpc.dhcpOptionsId)) {
             vpc.default_dhcp = true;
           } else {
-            dhcpData = (_ref = appData.get(myVPCComponent != null ? (_ref1 = myVPCComponent.toJSON().dhcp) != null ? _ref1.toJSON().appId : void 0 : void 0)) != null ? _ref.attributes : void 0;
-            vpc.dhcpOptionsId = myVPCComponent != null ? (_ref2 = myVPCComponent.toJSON().dhcp) != null ? (_ref3 = _ref2.toJSON()) != null ? _ref3.appId : void 0 : void 0 : void 0;
+            dhcpData = (_ref1 = appData.get(myVPCComponent != null ? (_ref2 = myVPCComponent.toJSON().dhcp) != null ? _ref2.toJSON().appId : void 0 : void 0)) != null ? _ref1.attributes : void 0;
+            vpc.dhcpOptionsId = myVPCComponent != null ? (_ref3 = myVPCComponent.toJSON().dhcp) != null ? (_ref4 = _ref3.toJSON()) != null ? _ref4.appId : void 0 : void 0 : void 0;
             dhcp = null;
             if (dhcpData) {
               dhcp = {};
@@ -9102,43 +9111,23 @@ function program11(depth0,data) {
     var StaticModel;
     StaticModel = PropertyModel.extend({
       init: function(id) {
-        var appId, component, data, isIGW, item, vpc, vpcId, _ref, _ref1;
+        var appId, component, data, isIGW, _ref;
         component = Design.instance().component(id);
         isIGW = component.type === constant.RESTYPE.IGW;
         this.set("isIGW", isIGW);
         if (this.isApp) {
           this.set("readOnly", true);
           appId = component.get("appId");
-          data = (_ref = CloudResources(constant.RESTYPE.IGW, Design.instance().region()).get(appId)) != null ? _ref.toJSON() : void 0;
-          console.debug(data);
-          if (data) {
-            if (isIGW) {
-              if (data.attachmentSet && data.attachmentSet.length) {
-                item = data.attachmentSet[0];
-              }
-            } else {
-              item = data;
-            }
+          data = (_ref = CloudResources(component.type, Design.instance().region()).get(appId)) != null ? _ref.toJSON() : void 0;
+        }
+        if (data) {
+          if (data.attachments && data.attachments.length) {
+            data.attachment_state = data.attachments[0].state;
+          } else if (data.attachmentSet && data.attachmentSet.length) {
+            data.attachment_state = data.attachmentSet[0].state;
           }
-          if (item) {
-            if (item.attachments && item.attachments.item && item.attachments.item.length) {
-              this.set("state", item.state);
-              this.set("attachment_state", item.attachments.item[0].state);
-              vpcId = item.attachments.item[0].vpcId;
-            } else {
-              this.set("state", item.state);
-              vpcId = item.vpcId;
-            }
-          } else {
-            this.set("state", "unavailable");
-          }
-          vpc = (_ref1 = CloudResources(constant.RESTYPE.VPC, Design.instance().region()).get(vpcId)) != null ? _ref1.attributes : void 0;
-          if (vpc) {
-            vpcId += " (" + vpc.cidrBlock + ")";
-          }
-          this.set("id", id);
-          this.set("appId", component.get("appId"));
-          this.set("vpc", vpcId);
+          this.set(data);
+          this.set('appId', data.id);
         }
         return null;
       }
@@ -9168,7 +9157,7 @@ function program1(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.type), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    <dt>VPC</dt>\n    <dd>"
-    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.vpc), {hash:{},data:data}))
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.vpcId), {hash:{},data:data}))
     + "</dd>\n  </dl>\n";
   return buffer;
   }
@@ -9688,8 +9677,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return null;
       },
       getAppData: function(vpnAppId) {
-        var vpn, vpncfg, vpncfg_str;
-        vpn = CloudResources(constant.RESTYPE.VPN, Design.instance().region()).get(vpnAppId);
+        var vpn, vpncfg, vpncfg_str, _ref;
+        vpn = (_ref = CloudResources(constant.RESTYPE.VPN, Design.instance().region()).get(vpnAppId)) != null ? _ref.toJSON() : void 0;
         vpn = _.clone(vpn);
         if (vpn) {
           vpncfg_str = generateDownload([
@@ -10585,7 +10574,7 @@ function program14(depth0,data) {
     var EniAppModel;
     EniAppModel = PropertyModel.extend({
       init: function(uid) {
-        var allEni, appData, e, eni, eni_comp, formated_group, group, i, index, m, mIndex, memberIndex, myEniComponent, myEniComponentJSON, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        var allEni, appData, e, eni, eni_comp, formated_group, group, i, index, m, mIndex, memberIndex, myEniComponent, myEniComponentJSON, _i, _j, _len, _len1, _ref, _ref1, _ref2;
         group = [];
         myEniComponent = Design.instance().component(uid);
         if (!myEniComponent) {
@@ -10612,7 +10601,7 @@ function program14(depth0,data) {
         } else {
           myEniComponentJSON = myEniComponent != null ? myEniComponent.toJSON() : void 0;
         }
-        appData = (_ref1 = CloudResources(constant.RESTYPE.ENI, Design.instance().region()).get(eni_comp.appId)) != null ? _ref1.toJSON() : void 0;
+        appData = CloudResources(constant.RESTYPE.ENI, Design.instance().region());
         if (this.isGroupMode) {
           group = [myEniComponentJSON].concat(myEniComponent.groupMembers());
         } else {
@@ -10621,7 +10610,7 @@ function program14(depth0,data) {
         formated_group = [];
         for (index in group) {
           eni_comp = group[index];
-          if ((_ref2 = appData.get(eni_comp.appId)) != null ? _ref2.toJSON() : void 0) {
+          if ((_ref1 = appData.get(eni_comp.appId)) != null ? _ref1.toJSON() : void 0) {
             eni = $.extend(true, {}, appData.get(eni_comp.appId).toJSON());
           } else {
             eni = {
@@ -10630,9 +10619,9 @@ function program14(depth0,data) {
               }
             };
           }
-          _ref3 = eni.privateIpAddressesSet.item;
-          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-            i = _ref3[_j];
+          _ref2 = eni.privateIpAddressesSet.item;
+          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+            i = _ref2[_j];
             i.primary = i.primary === true;
           }
           eni.id = eni_comp.appId;
@@ -13616,7 +13605,7 @@ function program4(depth0,data) {
     var ASGModel;
     ASGModel = PropertyModel.extend({
       init: function(uid) {
-        var asg_comp, asg_data, component, data, lc, n, resource_list, _ref;
+        var asg_comp, asg_data, component, data, lc, n, resource_list, _ref, _ref1, _ref2, _ref3;
         asg_comp = component = Design.instance().component(uid);
         data = {
           uid: uid,
@@ -13632,12 +13621,12 @@ function program4(depth0,data) {
         if (asg_data) {
           this.set('hasData', true);
           this.set('awsResName', asg_data.AutoScalingGroupName);
-          this.set('arn', asg_data.AutoScalingGroupARN);
+          this.set('arn', asg_data.id);
           this.set('createTime', asg_data.CreatedTime);
           if (asg_data.TerminationPolicies && asg_data.TerminationPolicies.member) {
             this.set('term_policy_brief', asg_data.TerminationPolicies.member.join(" > "));
           }
-          this.handleInstance(asg_comp, resource_list != null ? resource_list.toJSON() : void 0, asg_data);
+          this.handleInstance(asg_comp, (_ref1 = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region())) != null ? _ref1.toJSON() : void 0, asg_data);
         }
         if (!this.isAppEdit) {
           if (!asg_data) {
@@ -13647,8 +13636,8 @@ function program4(depth0,data) {
           this.set('cooldown', asg_data.DefaultCooldown);
           this.set('healCheckType', asg_data.HealthCheckType);
           this.set('healthCheckGracePeriod', asg_data.HealthCheckGracePeriod);
-          this.handlePolicy(asg_comp, resource_list != null ? resource_list.toJSON() : void 0, asg_data);
-          this.handleNotify(asg_comp, resource_list != null ? resource_list.toJSON() : void 0, asg_data);
+          this.handlePolicy(asg_comp, (_ref2 = CloudResources(constant.RESTYPE.SP, Design.instance().region())) != null ? _ref2.toJSON() : void 0, asg_data);
+          this.handleNotify(asg_comp, (_ref3 = CloudResources(constant.RESTYPE.NC, Design.instance().region())) != null ? _ref3.toJSON() : void 0, asg_data);
         } else {
           data = component != null ? component.toJSON() : void 0;
           data.uid = uid;
@@ -13679,6 +13668,7 @@ function program4(depth0,data) {
         instance_count = 0;
         instance_groups = [];
         instances_map = {};
+        console.debug(asg_comp, resource_list, asg_data);
         if (asg_data.Instances && asg_data.Instances.member) {
           instance_count = asg_data.Instances.member.length;
           _ref = asg_data.Instances.member;
@@ -14865,6 +14855,7 @@ function program49(depth0,data) {
           data.term_policy_brief = data.terminationPolicies.join(" > ");
           data.can_add_policy = data.policies.length < 25;
         }
+        console.debug(data);
         this.$el.html(template(data));
         this.processNotiTopic(null, true);
         return data.name;

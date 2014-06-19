@@ -876,7 +876,7 @@
       if (isNaN(ls)) {
         return 2;
       } else {
-        return 0;
+        return ls;
       }
     };
     $canvas.node = function() {
@@ -5319,7 +5319,7 @@
         return null;
       },
       attachTo: function(owner, options) {
-        var oldOwner, vl;
+        var oldOwner, vl, volumeList;
         if (!owner) {
           return false;
         }
@@ -5328,7 +5328,7 @@
         }
         oldOwner = this.attributes.owner;
         if (oldOwner) {
-          vl = oldOwner.attributes.volumeList;
+          vl = oldOwner.get('volumeList');
           vl.splice(vl.indexOf(this), 1);
           oldOwner.draw();
         }
@@ -5339,10 +5339,11 @@
             return false;
           }
         }
-        if (owner.attributes.volumeList) {
-          owner.attributes.volumeList.push(this);
+        volumeList = owner.get('volumeList');
+        if (volumeList) {
+          volumeList.push(this);
         } else {
-          owner.attributes.volumeList = [this];
+          owner.set('volumeList', [this]);
         }
         owner.draw();
         return true;
@@ -5991,10 +5992,10 @@
         this.get("originalAsg").__addExpandedAsg(this);
         return null;
       },
-      getLc: function() {
+      getLc: function(origin) {
         var lc;
         lc = this.attributes.originalAsg.get("lc");
-        return lc.getBigBrother() || lc;
+        return !origin && lc.getBigBrother() || lc;
       },
       serialize: function() {
         var layout;
@@ -8336,7 +8337,7 @@
         return null;
       },
       remove: function(option) {
-        var asg, eAsg, elb, expAsg, lc, reason, _i, _j, _len, _len1, _ref, _ref1;
+        var asg, eAsg, elb, expAsg, lc, reason, _i, _len, _ref;
         if (option && option.reason.type !== constant.RESTYPE.LC) {
           ConnectionModel.prototype.remove.apply(this, arguments);
           return;
@@ -8354,14 +8355,11 @@
           reason = {
             reason: this
           };
-          _ref = lc.parent();
+          asg = lc.parent();
+          _ref = asg.get("expandedList");
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            asg = _ref[_i];
-            _ref1 = asg.get("expandedList");
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              eAsg = _ref1[_j];
-              (new ElbAmiAsso(elb, eAsg)).remove(reason);
-            }
+            eAsg = _ref[_i];
+            (new ElbAmiAsso(elb, eAsg)).remove(reason);
           }
         }
         ConnectionModel.prototype.remove.apply(this, arguments);
@@ -8959,16 +8957,21 @@
       toJSON: function() {
         return ComplexResModel.prototype.toJSON.apply(this.__bigBrother || this);
       },
-      setName: function(name) {
-        var context;
-        if (this.get("name") === name) {
-          return;
+      draw: function(isCreate) {
+        var brother, context, _i, _len, _ref, _results;
+        if (isCreate) {
+          return ComplexResModel.prototype.draw.apply(this, arguments);
+        } else {
+          context = this.getBigBrother() || this;
+          ComplexResModel.prototype.draw.apply(context, arguments);
+          _ref = context.__brothers;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            brother = _ref[_i];
+            _results.push(ComplexResModel.prototype.draw.apply(brother, arguments));
+          }
+          return _results;
         }
-        this.set("name", name);
-        context = this.getBigBrother() || this;
-        context.draw();
-        _.invoke(context.__brothers, 'draw');
-        return null;
       },
       initialize: function(attr, option) {
         var KpModel, SgAsso, defaultSg;
@@ -9089,11 +9092,12 @@
               this.__brothers[0].__brothers.push(brother);
             }
           }
-        }
-        _ref2 = (this.get("volumeList") || emptyArray).slice(0);
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          v = _ref2[_j];
-          v.remove();
+        } else {
+          _ref2 = (this.get("volumeList") || emptyArray).slice(0);
+          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+            v = _ref2[_j];
+            v.remove();
+          }
         }
         ComplexResModel.prototype.remove.call(this);
         return null;
@@ -10468,9 +10472,9 @@
       },
       get: function(appId, name) {
         var topic;
-        topic = _.findWhere(this.allObjects(), {
-          appId: appId
-        });
+        topic = _.first(_.filter(this.allObjects(), function(m) {
+          return m.get('appId') === appId;
+        }));
         return topic || new TopicModel({
           appId: appId,
           name: name
@@ -11980,7 +11984,7 @@
       }
       hasLC = !!m.get("lc");
       CanvasManager.toggle(node.children(".prompt_text"), !hasLC);
-      CanvasManager.toggle(node.children(".asg-resource-dragger"), !Design.instance().modeIsApp());
+      CanvasManager.toggle(node.children(".asg-resource-dragger"));
       return null;
     };
     CeAsgProto.__drawExpandedAsg = function() {
@@ -12642,7 +12646,7 @@
       }
     };
     ChildElementProto.draw = function(isCreate) {
-      var data, m, node, numberGroup, volumeCount, volumeImage, _ref;
+      var asg, data, m, node, numberGroup, volumeCount, volumeImage;
       m = this.model;
       if (isCreate) {
         node = this.createNode({
@@ -12709,8 +12713,9 @@
         volumeImage = 'ide/icon/instance-volume-not-attached.png';
       }
       CanvasManager.update(node.children(".volume-image"), volumeImage, "href");
-      if (!m.design().modeIsStack() && m.parent()) {
-        data = (_ref = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(m.parent().get('appId'))) != null ? _ref.toJSON() : void 0;
+      asg = m.parent();
+      if (!m.design().modeIsStack() && asg && asg.get('appId')) {
+        data = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(asg.get('appId')).toJSON();
         numberGroup = node.children(".instance-number-group");
         if (data && data.Instances && data.Instances.member && data.Instances.member.length > 0) {
           CanvasManager.toggle(numberGroup, true);

@@ -106,16 +106,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
+  
+  return "class=\"hide\"";
+  }
+
+function program3(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n  <h4>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RECENT_LAUNCHED_STACK", {hash:{},data:data}))
     + "</h4>\n  <ul>";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</ul>\n";
   return buffer;
   }
-function program2(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<li class=\"recent-list-item\" data-id=\""
@@ -123,7 +129,7 @@ function program2(depth0,data) {
     + "\">\n    <h5>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</h5>\n    <span>"
     + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -132,7 +138,7 @@ function program2(depth0,data) {
     + "</span>\n  </li>";
   return buffer;
   }
-function program3(depth0,data) {
+function program5(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<i class=\"right icon-app-type-"
@@ -141,24 +147,24 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
+function program7(depth0,data) {
   
   
   return "\n  <span class=\"empty-text\">No recently launched app in 30 days</span>\n";
   }
 
-function program7(depth0,data) {
+function program9(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <h4>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RECENT_EDITED_STACK", {hash:{},data:data}))
     + "</h4>\n  <ul>";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</ul>\n";
   return buffer;
   }
-function program8(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<li class=\"recent-list-item\" data-id=\""
@@ -173,17 +179,23 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program12(depth0,data) {
   
   
   return "\n  <span class=\"empty-text\">No recently edited stack in 30 days</span>\n";
   }
 
-  buffer += "<section class=\"hide\">\n";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.apps)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(5, program5, data),fn:self.program(1, program1, data),data:data});
+  buffer += "<section ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</section>\n<section>\n";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.stacks)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(10, program10, data),fn:self.program(7, program7, data),data:data});
+  buffer += ">\n";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.apps)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(7, program7, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</section>\n<section ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.stacks)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(12, program12, data),fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</section>";
   return buffer;
@@ -1629,7 +1641,7 @@ function program14(depth0,data) {
         rendering
        */
       updateOpsList: function() {
-        var $tabs, apps, r, regionsMap, stacks, _i, _j, _len, _len1, _ref, _ref1;
+        var $tabs, apps, isStack, r, regionsMap, stacks, _i, _j, _len, _len1, _ref, _ref1;
         regionsMap = {};
         _ref = App.model.stackList().groupByRegion();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1659,9 +1671,11 @@ function program14(depth0,data) {
         $tabs = $("#global-region-status-widget").find(".global-region-status-tab");
         $tabs.eq(0).children("span").text(apps.length);
         $tabs.eq(1).children("span").text(stacks.length);
+        isStack = $tabs.filter(".on").hasClass("stack");
         $('#global-region-recent-list').html(tplPartials.recent({
           stacks: stacks,
-          apps: apps
+          apps: apps,
+          isStack: isStack
         }));
         this.updateRegionAppStack();
       },
@@ -1992,7 +2006,7 @@ function program14(depth0,data) {
             return {
               "title": data.Name,
               "Name": data.Name,
-              "Availability Zone": data.AvailabilityZones.member.join(", "),
+              "Availability Zone": data.AvailabilityZones.join(", "),
               "Create Time": data.CreatedTime,
               "Default Cooldown": data.DefaultCooldown,
               "Desired Capacity": data.DesiredCapacity,
@@ -2001,7 +2015,7 @@ function program14(depth0,data) {
               "HealthCheck Grace Period": data.HealthCheckGracePeriod,
               "Health Check Type": data.HealthCheckType,
               "Launch Configuration": data.LaunchConfigurationName,
-              "Termination Policy": data.TerminationPolicies.member.join(", "),
+              "Termination Policy": data.TerminationPolicies.join(", "),
               "Arn": data.id
             };
           case "ELB":

@@ -4267,5 +4267,703 @@ return TEMPLATE; });
 
 }).call(this);
 
+define('component/common/diff/resDiffTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"scroll-wrap scroll-wrap-res-diff\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"content_wrap scroll-content\">\n		<p>Resources of this app has been externally changed. The change has been synced to app. The diagram may be re-generated to reflect the change.</p>\n		<h5>What has been changed:</h5>\n		<article></article>\n	</div>\n</div>";
+  };
+TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"group "
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n	<div class=\"head\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "<span class=\"count\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</span></div>\n	<div class=\"content\"></div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.resDiffGroup=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<ul class=\"tree\"></ul>";
+  };
+TEMPLATE.resDiffTree=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  
+  return "closed";
+  }
+
+  buffer += "<li class=\"item ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.closed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n	<div class=\"meta\">\n		<span class=\"type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n		<span class=\"name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	</div>\n</li>";
+  return buffer;
+  };
+TEMPLATE.resDiffTreeItem=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<span class=\"name to\"> -></span><span class=\"name "
+    + escapeExpression(((stack1 = (depth0 && depth0.type1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"meta\">\n	<span class=\"type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	<span class=\"name ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.value1), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.resDiffTreeMeta=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  define('DiffTree',[], function() {
+    var DiffTree;
+    DiffTree = function(option) {
+      var getType, isArray, typeofReal, _compare, _diffAry;
+      if (!option) {
+        option = {};
+      }
+      option.filterMap = {
+        'resource.PrivateIpAddressSet.n.AutoAssign': true,
+        'resource.AssociatePublicIpAddress': true
+      };
+      isArray = function(value) {
+        return value && typeof value === 'object' && value.constructor === Array;
+      };
+      typeofReal = function(value) {
+        if (isArray(value)) {
+          return 'array';
+        } else {
+          if (value === null) {
+            return 'null';
+          } else {
+            return typeof value;
+          }
+        }
+      };
+      getType = function(value) {
+        if (typeA === 'object' || typeA === 'array') {
+          return '';
+        } else {
+          return String(a) + ' ';
+        }
+      };
+      _diffAry = function(a, b) {
+        var i, j, tmp, v, _i, _j, _len, _ref, _ref1, _results, _results1;
+        _ref1 = (function() {
+          _results1 = [];
+          for (var _j = 0, _ref = a.length; 0 <= _ref ? _j < _ref : _j > _ref; 0 <= _ref ? _j++ : _j--){ _results1.push(_j); }
+          return _results1;
+        }).apply(this);
+        _results = [];
+        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+          v = _ref1[i];
+          _results.push((function() {
+            var _k, _l, _len1, _ref2, _ref3, _results2, _results3;
+            _ref3 = (function() {
+              _results3 = [];
+              for (var _l = 0, _ref2 = b.length; 0 <= _ref2 ? _l < _ref2 : _l > _ref2; 0 <= _ref2 ? _l++ : _l--){ _results3.push(_l); }
+              return _results3;
+            }).apply(this);
+            _results2 = [];
+            for (j = _k = 0, _len1 = _ref3.length; _k < _len1; j = ++_k) {
+              v = _ref3[j];
+              if (!_compare.call(this, a[i], b[j], '', null, [])) {
+                tmp = b[i];
+                b[i] = b[j];
+                _results2.push(b[j] = tmp);
+              } else {
+                _results2.push(void 0);
+              }
+            }
+            return _results2;
+          }).call(this));
+        }
+        return _results;
+      };
+      _compare = function(a, b, key, path, resultJSON) {
+        var aString, attrPath, attrPathAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, typeA, typeB, v, value1, value2, _i, _len;
+        if (path) {
+          if (key) {
+            path = path.concat([key]);
+          }
+          if (path.length > 2) {
+            attrPathAry = path.slice(2);
+            attrPathAry = _.map(attrPathAry, function(path) {
+              var num;
+              num = Number(path);
+              if (num >= 0) {
+                return 'n';
+              }
+              return path;
+            });
+            attrPath = attrPathAry.join('.');
+            if (option.filterMap[attrPath]) {
+              return;
+            }
+          }
+        }
+        if (!a && !b) {
+          return;
+        }
+        haveDiff = false;
+        typeA = typeofReal(a);
+        typeB = typeofReal(b);
+        aString = typeA === 'object' || typeA === 'array' ? '' : String(a) + '';
+        bString = typeB === 'object' || typeB === 'array' ? '' : String(b) + '';
+        if (!aString) {
+          aString = '';
+        }
+        if (!bString) {
+          bString = '';
+        }
+        changeType = value1 = value2 = '';
+        if (a === void 0) {
+          changeType = 'added';
+          value2 = bString;
+        } else if (b === void 0) {
+          changeType = 'removed';
+          value1 = aString;
+        } else if (typeA !== typeB || (typeA !== 'object' && typeA !== 'array' && a !== b)) {
+          changeType = 'changed';
+          value1 = aString;
+          value2 = bString;
+        } else {
+          value1 = aString;
+        }
+        resultJSON[key] = {};
+        if (typeA === 'object' || typeA === 'array' || typeB === 'object' || typeB === 'array') {
+          if (typeA === 'array' && typeB === 'array') {
+            diffAryResult = {};
+            if (a.length < b.length) {
+              _diffAry.call(this, a, b);
+            } else {
+              _diffAry.call(this, b, a);
+            }
+          }
+          keys = [];
+          for (v in a) {
+            keys.push(v);
+          }
+          for (v in b) {
+            keys.push(v);
+          }
+          keys.sort();
+          isEqual = true;
+          for (i = _i = 0, _len = keys.length; _i < _len; i = ++_i) {
+            v = keys[i];
+            if (keys[i] === keys[i - 1]) {
+              continue;
+            }
+            hasDiff = _compare.call(this, a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
+            if (hasDiff) {
+              isEqual = false;
+            }
+          }
+          haveDiff = !isEqual;
+          if (isEqual) {
+            delete resultJSON[key];
+          }
+        } else {
+          if (path) {
+            path.length = 0;
+          }
+          if (a !== b) {
+            haveDiff = true;
+            resultJSON[key] = {
+              type: changeType,
+              __old__: a,
+              __new__: b
+            };
+          } else {
+            delete resultJSON[key];
+          }
+        }
+        return haveDiff;
+      };
+      this.compare = function(json1, json2) {
+        var resultJSON;
+        resultJSON = {};
+        _compare.call(this, json1, json2, 'result', [], resultJSON);
+        return resultJSON.result;
+      };
+      return null;
+    };
+    return DiffTree;
+  });
+
+}).call(this);
+
+(function() {
+  define('component/common/diff/prepare',['constant'], function(constant) {
+    var Prepare, helper, prepareNode;
+    helper = function(options) {
+      return {
+        getNodeMap: function(path) {
+          var newComp, newCompAttr, oldComp, oldCompAttr, retVal;
+          if (_.isString(path)) {
+            path = path.split('.');
+          }
+          oldComp = options.oldAppJSON.component;
+          newComp = options.newAppJSON.component;
+          oldCompAttr = _.extend(oldComp, {});
+          newCompAttr = _.extend(newComp, {});
+          _.each(path, function(attr) {
+            if (oldCompAttr) {
+              if (_.isUndefined(oldCompAttr[attr])) {
+                oldCompAttr = void 0;
+              } else {
+                oldCompAttr = oldCompAttr[attr];
+              }
+            }
+            if (newCompAttr) {
+              if (_.isUndefined(newCompAttr[attr])) {
+                return newCompAttr = void 0;
+              } else {
+                return newCompAttr = newCompAttr[attr];
+              }
+            }
+          });
+          return retVal = {
+            oldAttr: oldCompAttr,
+            newAttr: newCompAttr
+          };
+        },
+        genValue: function(type, oldValue, newValue) {
+          var result;
+          result = '';
+          oldValue = String(oldValue);
+          newValue = String(newValue);
+          if (type === 'changed') {
+            if (!oldValue) {
+              oldValue = 'none';
+            }
+            if (!newValue) {
+              newValue = 'none';
+            }
+          }
+          if (oldValue) {
+            result = oldValue;
+            if (newValue && oldValue !== newValue) {
+              result += ' -> ' + newValue;
+            }
+          } else {
+            result = newValue;
+          }
+          return result;
+        },
+        getNodeData: function(path) {
+          return this.getNewest(this.getNodeMap(path));
+        },
+        getNewest: function(attrMap) {
+          return attrMap.newAttr || attrMap.oldAttr;
+        },
+        pluralToSingular: function(str) {
+          return str.slice(0, -1);
+        },
+        setToElement: function(str) {
+          return str.slice(0, -3);
+        },
+        replaceArrayIndex: function(path, data) {
+          var childNode, component, componentMap, deviceObj, parentKey, type;
+          componentMap = this.getNodeMap(path[0]);
+          component = this.getNewest(componentMap);
+          type = component.type;
+          parentKey = path[path.length - 2];
+          childNode = data.originValue;
+          switch (parentKey) {
+            case 'BlockDeviceMapping':
+              deviceObj = childNode.DeviceName;
+              if (deviceObj) {
+                data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
+              }
+              break;
+            case 'GroupSet':
+              data.key = 'SecurityGroup';
+              break;
+            case 'IpPermissions':
+            case 'IpPermissionsEgress':
+            case 'EntrySet':
+              data.key = 'Rule';
+              break;
+            case 'AssociationSet':
+            case 'AttachmentSet':
+            case 'PrivateIpAddressSet':
+              data.key = this.setToElement(parentKey);
+              break;
+            case 'Dimensions':
+            case 'AlarmActions':
+              data.key = this.pluralToSingular(parentKey);
+              break;
+            case 'NotificationType':
+              data = data;
+          }
+          if (path.length === 1) {
+            data.key = constant.RESNAME[data.key] || data.key;
+          }
+          return data;
+        }
+      };
+    };
+    prepareNode = function(path, data) {
+      var compAttrObj, compUID, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, valueRef, _getRef, _ref;
+      _getRef = function(value) {
+        var refMatchAry, refName, refRegex, refUID;
+        if (_.isString(value) && value.indexOf('@{') === 0) {
+          refRegex = /@\{.*\}/g;
+          refMatchAry = value.match(refRegex);
+          if (refMatchAry && refMatchAry.length) {
+            refName = value.slice(2, value.length - 1);
+            refUID = refName.split('.')[0];
+            if (refUID) {
+              return "" + refUID + ".name";
+            }
+          }
+        }
+        return null;
+      };
+      if (_.isObject(data.value)) {
+        newValue = data.value;
+        oldRef = _getRef(newValue.__old__);
+        newRef = _getRef(newValue.__new__);
+        if (oldRef) {
+          newValue.__old__ = this.h.getNodeMap(oldRef).oldAttr;
+        }
+        if (newRef) {
+          newValue.__new__ = this.h.getNodeMap(newRef).newAttr;
+        }
+        data.value = {
+          type: newValue.type,
+          old: newValue.__old__,
+          "new": newValue.__new__
+        };
+      } else {
+        compAttrObj = this.h.getNodeMap(path);
+        oldAttr = compAttrObj.oldAttr;
+        newAttr = compAttrObj.newAttr;
+        valueRef = _getRef(data.value);
+        if (valueRef) {
+          data.value = this.h.getNodeMap(valueRef).oldAttr;
+        }
+        if (path.length === 1) {
+          compUID = path[0];
+          oldCompName = (oldAttr ? oldAttr.name : void 0) || '';
+          newCompName = (newAttr ? newAttr.name : void 0) || '';
+          if (oldAttr) {
+            data.key = oldAttr.type;
+          } else {
+            data.key = newAttr.type;
+          }
+          data.value = this.h.genValue(null, oldCompName, newCompName);
+        }
+        data = this.h.replaceArrayIndex(path, data);
+      }
+      if (path.length === 2) {
+        if ((_ref = path[1]) === 'type' || _ref === 'uid' || _ref === 'name' || _ref === 'index' || _ref === 'number' || _ref === 'serverGroupUid') {
+          delete data.key;
+        } else if (path[1] === 'resource') {
+          data.skip = true;
+        }
+      }
+      return data;
+    };
+    Prepare = function(options) {
+      _.extend(this, options);
+      this.h = helper(options);
+      return this;
+    };
+    Prepare.prototype.node = prepareNode;
+    return Prepare;
+  });
+
+}).call(this);
+
+(function() {
+  define('ResDiff',['UI.modalplus', './component/common/diff/resDiffTpl', 'DiffTree', './component/common/diff/prepare'], function(modalplus, template, DiffTree, Prepare) {
+    return Backbone.View.extend({
+      className: 'res_diff_tree',
+      tagName: 'section',
+      initialize: function(option) {
+        this.oldAppJSON = option.old;
+        this.newAppJSON = option["new"];
+        this.prepare = new Prepare({
+          oldAppJSON: this.oldAppJSON,
+          newAppJSON: this.newAppJSON
+        });
+        return this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
+      },
+      events: {
+        'click .item .type': '_toggleTab',
+        'click .head': '_toggleItem'
+      },
+      _toggleItem: function(e) {
+        var $target;
+        $target = $(e.currentTarget).closest('.group');
+        return $target.toggleClass('closed');
+      },
+      _toggleTab: function(e) {
+        var $target;
+        $target = $(e.currentTarget).closest('.item');
+        if ($target.hasClass('end')) {
+          return;
+        }
+        return $target.toggleClass('closed');
+      },
+      render: function() {
+        var options;
+        options = {
+          template: this.el,
+          title: 'App Changes',
+          hideClose: true,
+          disableClose: true,
+          disableCancel: true,
+          cancel: {
+            hide: true
+          },
+          confirm: {
+            text: 'OK, got it'
+          },
+          width: '608px',
+          compact: true
+        };
+        this.modal = new modalplus(options);
+        this.modal.on('confirm', function() {
+          return this.modal.close();
+        }, this);
+        this.$el.html(template.frame());
+        this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);
+        return this.modal.resize();
+      },
+      _genDiffInfo: function(oldComps, newComps) {
+        var diffTree, that, unionNewComps, unionOldComps;
+        that = this;
+        that.addedComps = {};
+        that.removedComps = {};
+        that.modifiedComps = {};
+        unionOldComps = {};
+        unionNewComps = {};
+        _.each(oldComps, function(comp, uid) {
+          if (newComps[uid]) {
+            unionOldComps[uid] = oldComps[uid];
+            unionNewComps[uid] = newComps[uid];
+          } else {
+            that.removedComps[uid] = oldComps[uid];
+          }
+          return null;
+        });
+        _.each(_.keys(newComps), function(uid) {
+          if (!oldComps[uid]) {
+            that.addedComps[uid] = newComps[uid];
+          }
+          return null;
+        });
+        diffTree = new DiffTree({});
+        that.modifiedComps = diffTree.compare(unionOldComps, unionNewComps);
+        if (!that.modifiedComps) {
+          return that.modifiedComps = {};
+        }
+      },
+      _genResGroup: function() {
+        var $group, compCount, data, groupData, that, _i, _len, _results;
+        that = this;
+        groupData = [
+          {
+            title: 'New Resource',
+            diffComps: that.addedComps,
+            closed: true,
+            type: 'added',
+            needDiff: false
+          }, {
+            title: 'Removed Resource',
+            diffComps: that.removedComps,
+            closed: true,
+            type: 'removed',
+            needDiff: false
+          }, {
+            title: 'Modified Resource',
+            diffComps: that.modifiedComps,
+            closed: false,
+            type: 'modified',
+            needDiff: true
+          }
+        ];
+        _results = [];
+        for (_i = 0, _len = groupData.length; _i < _len; _i++) {
+          data = groupData[_i];
+          compCount = _.keys(data.diffComps).length;
+          if (compCount) {
+            $group = $(template.resDiffGroup({
+              type: data.type,
+              title: data.title,
+              count: compCount
+            })).appendTo(this.$('article'));
+            _results.push(this._genResTree($group.find('.content'), data.diffComps, data.closed, data.needDiff));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      },
+      _genResTree: function($container, diffComps, closed, needDiff) {
+        var that, _genTree;
+        that = this;
+        _genTree = function(value, key, path, $parent) {
+          var $diffTree, $treeItem, changeType, data, nextPath, type, type1, value1, __value, _key, _results, _value;
+          if (_.isObject(value)) {
+            if (_.isUndefined(value.__new__) && _.isUndefined(value.__old__)) {
+              $diffTree = $(template.resDiffTree({})).appendTo($parent);
+              _results = [];
+              for (_key in value) {
+                _value = value[_key];
+                __value = _.isObject(_value) ? '' : _value;
+                nextPath = path.concat([_key]);
+                data = this.prepare.node(nextPath, {
+                  key: _key,
+                  value: __value,
+                  originValue: _value
+                });
+                if (data.key) {
+                  if (data.skip) {
+                    $treeItem = $parent;
+                    $diffTree.remove();
+                  } else {
+                    $treeItem = $(template.resDiffTreeItem({
+                      key: data.key,
+                      value: data.value,
+                      closed: closed
+                    })).appendTo($diffTree);
+                    if (!_.isObject(_value)) {
+                      $treeItem.addClass('end');
+                    }
+                  }
+                  if (_.isArray(_value) && _value.length === 0) {
+                    _results.push($treeItem.remove());
+                  } else {
+                    _results.push(_genTree.call(that, _value, _key, nextPath, $treeItem));
+                  }
+                } else {
+                  _results.push(void 0);
+                }
+              }
+              return _results;
+            } else {
+              changeType = value.type;
+              data = this.prepare.node(path, {
+                key: key,
+                value: value
+              });
+              if (data.key) {
+                type = value1 = type1 = '';
+                if (_.isObject(data.value)) {
+                  if (data.value.type === 'added') {
+                    value = data.value["new"];
+                    type = 'new';
+                  } else if (data.value.type === 'removed') {
+                    value = data.value.old;
+                    type = 'old';
+                  } else if (data.value.type === 'changed') {
+                    value = data.value.old;
+                    value1 = data.value["new"];
+                    type = 'old';
+                    type1 = 'new';
+                  }
+                } else {
+                  value = data.value;
+                }
+                $parent.html(template.resDiffTreeMeta({
+                  key: data.key,
+                  value: value,
+                  type: type,
+                  value1: value1,
+                  type1: type1,
+                  closed: closed
+                }));
+                $parent.addClass('end');
+                return $parent.addClass(changeType);
+              } else {
+                return $parent.remove();
+              }
+            }
+          }
+        };
+        return _genTree.call(that, diffComps, null, [], $container);
+      },
+      getChangeInfo: function() {
+        var hasResChange, needUpdateLayout, that;
+        that = this;
+        hasResChange = false;
+        if (_.size(that.addedComps) || _.size(that.removedComps) || _.size(that.modifiedComps)) {
+          hasResChange = true;
+        }
+        needUpdateLayout = _.some(that.addedComps, function(comp) {
+          return that.newAppJSON.layout[comp.uid];
+        });
+        return {
+          hasResChange: hasResChange,
+          needUpdateLayout: needUpdateLayout
+        };
+      }
+    });
+  });
+
+}).call(this);
+
 
 define("component/sharedrescomp", function(){});

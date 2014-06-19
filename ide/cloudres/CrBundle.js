@@ -104,9 +104,6 @@
         blockDeviceMappings: 'blockDeviceMapping',
         publicDnsName: 'dnsName'
       },
-      ELB: {
-        GroupSet: 'SecurityGroups'
-      },
       VOL: {
         attachments: 'attachmentSet'
       },
@@ -124,6 +121,9 @@
       },
       IGW: {
         attachments: "attachmentSet"
+      },
+      LC: {
+        blockDeviceMappings: "BlockDeviceMapping"
       },
       ALL: {
         associations: 'associationSet',
@@ -1600,21 +1600,45 @@
         return (_ref = data.DescribeRouteTablesResponse.routeTableSet) != null ? _ref.item : void 0;
       },
       parseFetchData: function(rtbs) {
-        var rtb, _i, _len, _ref, _ref1, _ref2;
+        var found, idx, local_rt, rt, rtb, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         for (_i = 0, _len = rtbs.length; _i < _len; _i++) {
           rtb = rtbs[_i];
-          rtb.routeSet = ((_ref = rtb.routeSet) != null ? _ref.item : void 0) || [];
-          rtb.associationSet = ((_ref1 = rtb.associationSet) != null ? _ref1.item : void 0) || [];
-          rtb.propagatingVgwSet = (_ref2 = rtb.propagatingVgwSet) != null ? _ref2.item([]) : void 0;
+          found = -1;
+          _ref = rtb.routeSet;
+          for (idx = _j = 0, _len1 = _ref.length; _j < _len1; idx = ++_j) {
+            rt = _ref[idx];
+            if (rt.gatewayId === 'local') {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            local_rt = rtb.routeSet.splice(found, 1);
+            rtb.routeSet.splice(0, 0, local_rt[0]);
+          }
+          rtb.routeSet = ((_ref1 = rtb.routeSet) != null ? _ref1.item : void 0) || [];
+          rtb.associationSet = ((_ref2 = rtb.associationSet) != null ? _ref2.item : void 0) || [];
+          rtb.propagatingVgwSet = (_ref3 = rtb.propagatingVgwSet) != null ? _ref3.item([]) : void 0;
           rtb.id = rtb.routeTableId;
         }
         return rtbs;
       },
       parseExternalData: function(data) {
-        var rtb, _i, _len;
+        var found, idx, local_rt, rt, rtb, _i, _j, _len, _len1, _ref;
         this.unifyApi(data, this.type);
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           rtb = data[_i];
+          found = -1;
+          _ref = rtb.routeSet;
+          for (idx = _j = 0, _len1 = _ref.length; _j < _len1; idx = ++_j) {
+            rt = _ref[idx];
+            if (rt.gatewayId === 'local') {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            local_rt = rtb.routeSet.splice(found, 1);
+            rtb.routeSet.splice(0, 0, local_rt[0]);
+          }
           rtb.id = rtb.routeTableId;
         }
         return data;
@@ -1656,6 +1680,9 @@
           ins.blockDeviceMapping = ((_ref1 = ins.blockDeviceMapping) != null ? _ref1.item : void 0) || [];
           ins.networkInterfaceSet = ((_ref2 = ins.networkInterfaceSet) != null ? _ref2.item : void 0) || [];
           ins.groupSet = ((_ref3 = ins.groupSet) != null ? _ref3.item : void 0) || [];
+          if (ins.blockDeviceMapping && ins.blockDeviceMapping.length > 1) {
+            ins.blockDeviceMapping = ins.blockDeviceMapping.sort(MC.createCompareFn("deviceName"));
+          }
         }
         return data;
       },
@@ -1684,6 +1711,9 @@
               };
               delete eni.groups;
             }
+          }
+          if (ins.blockDeviceMapping && ins.blockDeviceMapping.length > 1) {
+            ins.blockDeviceMapping = ins.blockDeviceMapping.sort(MC.createCompareFn("deviceName"));
           }
         }
         return data;
@@ -1749,10 +1779,13 @@
         var lc, _i, _len, _ref, _ref1;
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           lc = data[_i];
+          lc.BlockDeviceMapping = ((_ref = lc.BlockDeviceMappings) != null ? _ref.member : void 0) || [];
+          lc.SecurityGroups = ((_ref1 = lc.SecurityGroups) != null ? _ref1.member : void 0) || [];
+          if (lc.BlockDeviceMapping && lc.BlockDeviceMapping.length > 1) {
+            lc.BlockDeviceMapping = lc.BlockDeviceMapping.sort(MC.createCompareFn("DeviceName"));
+          }
           lc.id = lc.LaunchConfigurationARN;
           lc.Name = lc.LaunchConfigurationName;
-          lc.BlockDeviceMappings = ((_ref = lc.BlockDeviceMappings) != null ? _ref.member : void 0) || [];
-          lc.SecurityGroups = ((_ref1 = lc.SecurityGroups) != null ? _ref1.member : void 0) || [];
         }
         return data;
       },
@@ -1762,6 +1795,9 @@
         this.camelToPascal(data);
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           lc = data[_i];
+          if (lc.BlockDeviceMapping && lc.BlockDeviceMapping.length > 1) {
+            lc.BlockDeviceMapping = lc.BlockDeviceMapping.sort(MC.createCompareFn("DeviceName"));
+          }
           lc.id = lc.LaunchConfigurationARN;
           lc.Name = lc.LaunchConfigurationName;
         }
@@ -2535,8 +2571,8 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('ide/cloudres/CloudImportVpc',["CloudResources", "ide/cloudres/CrCollection", "constant", "ApiRequest"], function(CloudResources, CrCollection, constant, ApiRequest) {
-    var AWS_ID, CREATE_REF, ConverterData, Converters, DEFAULT_SG, UID, convertResToJson, __createRequestParam;
+  define('ide/cloudres/CloudImportVpc',["CloudResources", "ide/cloudres/CrCollection", "constant", "ApiRequest", "DiffTree"], function(CloudResources, CrCollection, constant, ApiRequest, DiffTree) {
+    var AWS_ID, CREATE_REF, ConverterData, Converters, DEFAULT_KP, DEFAULT_SG, UID, convertResToJson, __createRequestParam;
     CREATE_REF = function(compOrUid, attr) {
       if (attr) {
         return "@{" + (compOrUid.uid || compOrUid) + "." + attr + "}";
@@ -2546,6 +2582,7 @@
     };
     UID = MC.guid;
     DEFAULT_SG = {};
+    DEFAULT_KP = null;
     AWS_ID = function(dict, type) {
       var key;
       key = constant.AWS_RESOURCE_KEY[type];
@@ -2587,6 +2624,7 @@
           component: [],
           layout: []
         }, originalJson);
+        this.originAppJSON = originalJson;
         this.COMPARISONOPERATOR = {
           "GreaterThanOrEqualToThreshold": ">=",
           "GreaterThanThreshold": ">",
@@ -2764,7 +2802,7 @@
     Converters = [
       function() {
         var com, compJson, retainList, uid, _ref, _ref1;
-        retainList = ['AWS.EC2.Tag', constant.RESTYPE.KP, constant.RESTYPE.TOPIC, constant.RESTYPE.SUBSCRIPTION, constant.RESTYPE.IAM, constant.RESTYPE.DHCP];
+        retainList = ['AWS.EC2.Tag', 'AWS.AutoScaling.Tag', constant.RESTYPE.KP, constant.RESTYPE.TOPIC, constant.RESTYPE.SUBSCRIPTION, constant.RESTYPE.IAM, constant.RESTYPE.DHCP];
         _ref = this.originalJson.component;
         for (uid in _ref) {
           com = _ref[uid];
@@ -2772,6 +2810,10 @@
             compJson = this.add(null, com);
             if (com.type === constant.RESTYPE.IAM) {
               this.iams[com.resource.ServerCertificateMetadata.Arn] = compJson;
+            } else if (com.type === constant.RESTYPE.KP) {
+              if (com.name === "DefaultKP") {
+                DEFAULT_KP = com;
+              }
             }
           }
           null;
@@ -3080,6 +3122,7 @@
           insRes.SubnetId = CREATE_REF(subnetComp, 'resource.SubnetId');
           insRes.VpcId = CREATE_REF(this.theVpc, 'resource.VpcId');
           insRes.Placement.AvailabilityZone = CREATE_REF(azComp, 'resource.ZoneName');
+          insRes.Placement.Tenancy = aws_ins.placement.tenancy;
           if (aws_ins.monitoring && aws_ins.monitoring) {
             insRes.Monitoring = aws_ins.monitoring.state;
           }
@@ -3091,16 +3134,22 @@
           }
           insRes.InstanceId = aws_ins.id;
           insRes.EbsOptimized = aws_ins.ebsOptimized;
-          keyPairComp = this.getOriginalComp(insRes.KeyName, 'KP');
-          if (keyPairComp) {
-            insRes.KeyName = CREATE_REF(keyPairComp, 'resource.KeyName');
-          }
-          originComp = this.getOriginalComp(insRes.InstanceId, 'INSTANCE');
-          if (originComp) {
-            insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
+          keyPairComp = this.getOriginalComp(aws_ins.keyName, 'KP');
+          if (!keyPairComp) {
+            if (aws_ins.keyName) {
+              insRes.KeyName = aws_ins.keyName;
+            }
+          } else {
+            originComp = this.getOriginalComp(aws_ins.id, 'INSTANCE');
+            if (originComp) {
+              insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
+              insRes.KeyName = originComp.resource.KeyName;
+            } else {
+              insRes.KeyName = CREATE_REF(keyPairComp, "resource.KeyName");
+            }
           }
           vol_in_instance = [];
-          _.each(aws_ins.blockDeviceMapping, function(e, key) {
+          _.each(aws_ins.blockDeviceMapping || [], function(e, key) {
             var volComp, volRes;
             volComp = me.volumes[e.ebs.volumeId];
             if (!volComp) {
@@ -3466,7 +3515,7 @@
           this.elbs[aws_elb.Name] = elbComp;
         }
       }, function() {
-        var aws_lc, bdm, lcComp, lcRes, me, sg, _i, _len, _ref;
+        var aws_lc, bdm, keyPairComp, lcComp, lcRes, me, originComp, sg, _i, _len, _ref;
         me = this;
         _ref = this.getResourceByType('LC');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3503,7 +3552,7 @@
           }
           lcRes.SecurityGroups = sg;
           bdm = lcRes.BlockDeviceMapping;
-          _.each(aws_lc.BlockDeviceMappings, function(e, key) {
+          _.each(aws_lc.BlockDeviceMapping || [], function(e, key) {
             var data;
             data = {
               "DeviceName": e.DeviceName,
@@ -3520,6 +3569,19 @@
             }
             return bdm.push(data);
           });
+          keyPairComp = this.getOriginalComp(aws_lc.KeyName, 'KP');
+          if (!keyPairComp) {
+            if (aws_lc.KeyName) {
+              lcRes.KeyName = aws_lc.KeyName;
+            }
+          } else {
+            originComp = this.getOriginalComp(aws_lc.id, 'LC');
+            if (originComp) {
+              lcRes.KeyName = originComp.resource.KeyName;
+            } else {
+              lcRes.KeyName = CREATE_REF(keyPairComp, "resource.KeyName");
+            }
+          }
           lcComp = this.add("LC", lcRes, aws_lc.Name);
           this.addLayout(lcComp);
           delete this.component[aws_lc.id];
@@ -3720,7 +3782,7 @@
       }
     ];
     convertResToJson = function(region, vpcId, originalJson) {
-      var cd, default_sg, func, _i, _len;
+      var cd, changedServerGroupUidMap, default_sg, diffTree, func, originComps, _i, _len;
       console.log(["VOL", "INSTANCE", "SG", "ELB", "ACL", "CGW", "ENI", "IGW", "RT", "SUBNET", "VPC", "VPN", "VGW", "ASG", "LC", "NC", "SP", "IAM", "RETAIN"].map(function(t) {
         return CloudResources(constant.RESTYPE[t], region);
       }));
@@ -3729,6 +3791,48 @@
         func = Converters[_i];
         func.call(cd);
       }
+      changedServerGroupUidMap = {};
+      diffTree = new DiffTree();
+      originComps = cd.originAppJSON.component;
+      _.each(cd.instances, function(insComp) {
+        var diffResult;
+        if (originComps[insComp.uid]) {
+          if (insComp.number && insComp.number > 1) {
+            diffResult = diffTree.compare(originComps[insComp.uid], insComp);
+            if (diffResult) {
+              changedServerGroupUidMap[insComp.serverGroupUid] = true;
+            }
+          }
+        }
+        return null;
+      });
+      _.each(cd.enis, function(insComp) {
+        var attachedInsRef, diffResult, instanceUid;
+        if (originComps[insComp.uid]) {
+          if (insComp.number && insComp.number > 1) {
+            if (diffResult) {
+              diffResult = diffTree.compare(originComps[insComp.uid], insComp);
+              changedServerGroupUidMap[insComp.serverGroupUid] = true;
+              attachedInsRef = insComp.resource.Attachment.InstanceId;
+              if (attachedInsRef) {
+                instanceUid = MC.extractID(attachedInsRef);
+                insComp = originComps[instanceUid];
+                changedServerGroupUidMap[insComp.serverGroupUid] = true;
+              }
+            }
+          }
+        }
+        return null;
+      });
+      _.each(cd.instances, function(insComp) {
+        if (insComp.serverGroupUid && changedServerGroupUidMap[insComp.serverGroupUid]) {
+          insComp.serverGroupName = insComp.name;
+          insComp.number = 1;
+          insComp.index = 0;
+          insComp.serverGroupUid = insComp.uid;
+        }
+        return null;
+      });
       if (DEFAULT_SG["DefaultSG"]) {
         default_sg = cd.component[DEFAULT_SG["DefaultSG"].uid];
         if (default_sg) {

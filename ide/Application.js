@@ -1705,9 +1705,10 @@ return TEMPLATE; });
       Updating: 5,
       Stopping: 6,
       Terminating: 7,
-      Destroyed: 8
+      Destroyed: 8,
+      Saving: 9
     };
-    OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", ""];
+    OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
     OpsModel = Backbone.Model.extend({
       defaults: function() {
         return {
@@ -1813,6 +1814,7 @@ return TEMPLATE; });
             var json;
             json = self.generateJsonFromRes();
             self.__setJsonData(json);
+            self.attributes.name = json.name;
             return self;
           });
         } else if (this.isStack()) {
@@ -1868,6 +1870,9 @@ return TEMPLATE; });
           json.version = "2013-09-13";
         }
         this.__jsonData = json;
+        if (this.attributes.name !== json.name) {
+          this.set("name", json.name);
+        }
         return this;
       },
       generateJsonFromRes: function() {
@@ -1886,14 +1891,15 @@ return TEMPLATE; });
         }
         json.component = res.component;
         json.layout = res.layout;
+        json.name = this.get("name") || res.theVpc.name;
         return json;
       },
       save: function(newJson, thumbnail) {
         var api, d, nameClash, self;
-        if (this.isApp() && this.__saving) {
+        if (this.isApp() || this.testState(OpsModelState.Saving)) {
           return this.__returnErrorPromise();
         }
-        this.__saving = true;
+        this.set("state", OpsModelState.Saving);
         nameClash = this.collection.where({
           name: newJson.name
         }) || [];
@@ -1912,7 +1918,8 @@ return TEMPLATE; });
           attr = {
             name: newJson.name,
             updateTime: +(new Date()),
-            stoppable: newJson.property.stoppable
+            stoppable: newJson.property.stoppable,
+            state: OpsModelState.UnRun
           };
           if (!self.get("id")) {
             attr.id = res;
@@ -1923,14 +1930,13 @@ return TEMPLATE; });
           }
           self.set(attr);
           self.__jsonData = newJson;
-          self.__saving = false;
           self.trigger("jsonDataSaved", self);
           if (attr.id) {
             self.collection.__triggerUpdate(self);
           }
           return self;
         }, function(err) {
-          self.__saving = false;
+          self.set("state", OpsModelState.UnRun);
           throw err;
         });
       },
@@ -2068,40 +2074,83 @@ return TEMPLATE; });
         if (!this.isApp()) {
           return this.__returnErrorPromise();
         }
+        if (this.__saveAppDefer) {
+          return this.__saveAppDefer;
+        }
         oldState = this.get("state");
         this.set("state", OpsModelState.Updating);
         this.attributes.progress = 0;
+        this.__updateAppDefer = Q.defer();
         self = this;
-        errorHandler = function(err) {
-          self.attributes.progress = 0;
-          self.set({
-            state: oldState
-          });
-          throw err;
-        };
-        return ApiRequest("app_update", {
+        ApiRequest("app_update", {
           region_name: this.get("region"),
           spec: newJson,
           app_id: this.get("id"),
           fast_update: fastUpdate
-        }).then(function() {
-          var d;
-          self.__updateAppDefer = d = Q.defer();
-          return d.promise.then(function() {
-            self.__jsonData = newJson;
+        }).fail(function(error) {
+          return self.__updateAppDefer.reject(error);
+        });
+        errorHandler = function(error) {
+          self.__updateAppDefer = null;
+          self.attributes.progress = 0;
+          self.set({
+            state: oldState
+          });
+          throw error;
+        };
+        return this.__updateAppDefer.promise.then(function() {
+          self.__jsonData = null;
+          return self.fetchJsonData().then(function() {
+            self.__updateAppDefer = null;
             return self.set({
               name: newJson.name,
               state: OpsModelState.Running
             });
-          }, errorHandler);
-        }, errorHandler);
+          }, function() {
+            return errorHandler;
+          });
+        }, function() {
+          return errorHandler;
+        });
       },
       saveApp: function(newJson) {
-        var d, self;
-        d = Q.defer();
-        d.resolve();
+        var oldState, self;
+        if (!this.isApp()) {
+          return this.__returnErrorPromise();
+        }
+        if (this.__saveAppDefer) {
+          return this.__saveAppDefer;
+        }
+        newJson.changed = false;
+        oldState = this.get("state");
+        this.set("state", OpsModelState.Saving);
+        this.attributes.progress = 0;
+        this.__saveAppDefer = Q.defer();
         self = this;
-        return newJson.changed = false;
+        ApiRequest("app_save_info", {
+          spec: newJson
+        }).then(function(res) {
+          if (!self.id) {
+            self.requestId = res[0];
+          }
+        }, function(error) {
+          return self.__saveAppDefer.reject(error);
+        });
+        return this.__saveAppDefer.promise.then(function() {
+          self.__jsonData = newJson;
+          self.set({
+            name: newJson.name,
+            state: oldState
+          });
+          self.__saveAppDefer = null;
+        }, function(error) {
+          self.__saveAppDefer = null;
+          self.attributes.progress = 0;
+          self.set({
+            state: oldState
+          });
+          throw error;
+        });
       },
       setStatusProgress: function(steps, totalSteps) {
         var progress;
@@ -2114,13 +2163,13 @@ return TEMPLATE; });
       isProcessing: function() {
         var state;
         state = this.attributes.state;
-        return state === OpsModelState.Initializing || state === OpsModelState.Stopping || state === OpsModelState.Updating || state === OpsModelState.Terminating || state === OpsModelState.Starting;
+        return state === OpsModelState.Initializing || state === OpsModelState.Stopping || state === OpsModelState.Updating || state === OpsModelState.Terminating || state === OpsModelState.Starting || state === OpsModelState.Saving;
       },
       setStatusWithApiResult: function(state) {
         return this.set("state", OpsModelState[state]);
       },
       setStatusWithWSEvent: function(operation, state, error) {
-        var d, toState;
+        var d, self, toState;
         switch (operation) {
           case "launch":
             if (state.completed) {
@@ -2140,13 +2189,28 @@ return TEMPLATE; });
             if (!this.__updateAppDefer) {
               console.warn("UpdateAppDefer is null when setStatusWithWSEvent with `update` event.");
             } else {
-              d = this.__updateAppDefer;
-              this.__updateAppDefer = null;
-              if (state.completed) {
-                d.resolve();
-              } else {
+              if (!state.completed) {
+                d = this.__updateAppDefer;
+                this.__updateAppDefer = null;
                 d.reject(McError(ApiRequest.Errors.OperationFailure, error));
+              } else {
+                this.__jsonData = null;
+                self = this;
+                this.fetchJsonData().then(function() {
+                  d = self.__updateAppDefer;
+                  self.__updateAppDefer = null;
+                  return d.resolve();
+                });
               }
+            }
+            return;
+          case "save":
+            d = this.__saveAppDefer;
+            this.__saveAppDefer = null;
+            if (state.completed) {
+              d.resolve();
+            } else {
+              d.reject(McError(ApiRequest.Errors.OperationFailure, error));
             }
             break;
           case "terminate":
@@ -2577,7 +2641,7 @@ return TEMPLATE; });
           return m;
         }
         m = new OpsModel({
-          name: vpcId,
+          name: "",
           importVpcId: vpcId,
           region: region,
           state: OpsModel.State.Running
@@ -2764,12 +2828,11 @@ return TEMPLATE; });
         if (same_req && _.isEqual(same_req.state, item.state)) {
           return;
         }
-        if (App.WS.isReady() && App.workspaces) {
+        item.readed = !App.WS.isReady();
+        if (!item.readed && App.workspaces) {
           space = App.workspaces.getAwakeSpace();
           ops = this.appList().get(item.targetId) || this.stackList().get(item.targetId);
           item.readed = space.isWorkingOn(ops);
-        } else {
-          item.readed = false;
         }
         info_list.splice(idx, 1);
         info_list.splice(0, 0, item);
