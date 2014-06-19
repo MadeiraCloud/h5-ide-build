@@ -4905,12 +4905,15 @@ return TEMPLATE; });
         };
         this.modal = new modalplus(options);
         this.modal.on('confirm', function() {
-          var promise;
+          var $confirmBtn, promise;
+          $confirmBtn = that.modal.tpl.find('.modal-confirm');
           if (that.callback) {
+            $confirmBtn.addClass('disabled');
             promise = that.callback();
             return promise.then(function() {
               return that.modal.close();
             }, function(error) {
+              $confirmBtn.removeClass('disabled');
               return notification('error', error);
             });
           } else {
