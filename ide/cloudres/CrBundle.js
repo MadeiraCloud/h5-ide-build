@@ -3757,10 +3757,14 @@
             "Cooldown": 0,
             "MinAdjustmentStep": "",
             "PolicyARN": "",
-            "PolicyName": ""
+            "PolicyName": "",
+            "ScalingAdjustment": ""
           };
           spRes = this._mapProperty(aws_sp, spRes);
           asgComp = this.asgs[aws_sp.AutoScalingGroupName];
+          if (spRes.ScalingAdjustment) {
+            spRes.ScalingAdjustment = String(spRes.ScalingAdjustment);
+          }
           if (asgComp) {
             spRes.AutoScalingGroupName = CREATE_REF(asgComp, 'resource.AutoScalingGroupName');
           } else {

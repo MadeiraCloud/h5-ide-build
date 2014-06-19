@@ -12649,7 +12649,7 @@
       }
     };
     ChildElementProto.draw = function(isCreate) {
-      var asg, data, m, node, numberGroup, volumeCount, volumeImage;
+      var asg, data, m, node, numberGroup, volumeCount, volumeImage, _ref;
       m = this.model;
       if (isCreate) {
         node = this.createNode({
@@ -12718,7 +12718,7 @@
       CanvasManager.update(node.children(".volume-image"), volumeImage, "href");
       asg = m.parent();
       if (!m.design().modeIsStack() && asg && asg.get('appId')) {
-        data = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(asg.get('appId')).toJSON();
+        data = (_ref = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(asg.get('appId'))) != null ? _ref.toJSON() : void 0;
         numberGroup = node.children(".instance-number-group");
         if (data && data.Instances && data.Instances.length) {
           CanvasManager.toggle(numberGroup, true);
