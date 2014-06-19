@@ -857,7 +857,7 @@ return TEMPLATE; });
             return that.M$('.after-create').find('span').text(res.attributes.keyName).end().show();
           }, function(err) {
             console.log(err);
-            that.modal.error(err.resion || err.msg);
+            that.modal.error(err.reason || err.msg);
             return that.switchAction();
           });
         }
@@ -900,9 +900,9 @@ return TEMPLATE; });
             console.log(res);
             notification('info', "" + keyName + " is imported.");
             return that.cancel();
-          })["catch"](function(err) {
+          }, function(err) {
             console.log(err);
-            that.modal.error(err.error_message);
+            that.modal.error(err.error_message || err.reason || err.msg);
             return that.switchAction('ready');
           });
         }
