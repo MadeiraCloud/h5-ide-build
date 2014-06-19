@@ -215,7 +215,7 @@ define({
         "TOOL_POP_BTN_SAVE_TO_STACK": "Save",
         "TOOL_TIP_CREATE_STACK": "Create New Stack",
         "TOOL_TIP_ZOOM_IN": "Zoom In",
-        "TOOL_TIP_SAVE_APP_TO_STACK": "Save pp as Stack",
+        "TOOL_TIP_SAVE_APP_TO_STACK": "Save App as Stack",
         "TOOL_TIP_ZOOM_OUT": "Zoom Out",
         "TOOL_EXPORT": "Export...",
         "TOOL_EXPORT_AS_JSON": "Export to JSON",
