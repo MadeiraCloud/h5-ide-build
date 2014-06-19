@@ -444,6 +444,22 @@
         return cln.fetchForce();
       }));
     };
+    CloudResources.clearWhere = function(detect, category) {
+      var Collection, cln, find, id, realCate;
+      if (_.isFunction(detect)) {
+        find = "filter";
+      } else {
+        find = "where";
+      }
+      for (id in CachedCollections) {
+        cln = CachedCollections[id];
+        Collection = CrCollection.getClassByType(cln.type);
+        realCate = Collection.category(category);
+        if (cln.category === realCate) {
+          cln.remove(cln[find](detect));
+        }
+      }
+    };
     return CloudResources;
   });
 
@@ -2119,6 +2135,11 @@
         return CrCollection.prototype.fetchForce.call(this);
       },
       doFetch: function() {
+        var self;
+        self = this;
+        CloudResources.clearWhere((function(m) {
+          return m.RES_TAG === self.category;
+        }), this.__region);
         console.assert(this.__region, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
         return ApiRequest("resource_vpc_resource", {
           region_name: this.__region,
@@ -3176,6 +3197,9 @@
             var volComp;
             volComp = me.component[e];
             if (volComp) {
+              if (!volComp.resource.AttachmentSet) {
+                volComp.resource.AttachmentSet = {};
+              }
               return volComp.resource.AttachmentSet.InstanceId = CREATE_REF(insComp, "resource.InstanceId");
             }
           });

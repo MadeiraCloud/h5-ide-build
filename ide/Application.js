@@ -2109,6 +2109,7 @@ return TEMPLATE; });
           self.__jsonData = null;
           return self.fetchJsonData().then(function() {
             self.__updateAppDefer = null;
+            self.importVpcId = void 0;
             return self.set({
               name: newJson.name,
               state: OpsModelState.Running

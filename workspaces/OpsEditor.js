@@ -3252,7 +3252,7 @@ return TEMPLATE; });
       }
 
       AppEditor.prototype.title = function() {
-        return (this.design || this.opsModel).get("name") + " - app";
+        return ((this.design || this.opsModel).get("name") || this.opsModel.get("importVpcId")) + " - app";
       };
 
       AppEditor.prototype.createView = function() {
@@ -3301,11 +3301,7 @@ return TEMPLATE; });
             self.differ = void 0;
           }
 
-          /* env:dev */
-        }, function(err) {
-          return console.error(err);
-
-          /* env:dev */
+          /* env:dev                                                             env:dev:end */
         });
       };
 
@@ -3318,7 +3314,7 @@ return TEMPLATE; });
       };
 
       AppEditor.prototype.initDesign = function() {
-        if (this.opsModel.isImported() || (this.differ && this.differ.needUpdateLayout)) {
+        if (this.opsModel.isImported() || (this.differ && this.differ.getChangeInfo().needUpdateLayout)) {
           MC.canvas.analysis();
         }
         this.design.finishDeserialization();
