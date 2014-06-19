@@ -2061,7 +2061,7 @@ function program14(depth0,data) {
               "AMI Launch Index": data.amiLaunchIndex,
               "Instance Type": data.instanceType,
               "Block Device Type": data.rootDeviceType,
-              "Block Devices": this.formartDetail("BlockDevice", data.blockDeviceMapping, "deviceName"),
+              "Block Devices": data.blockDeviceMapping ? this.formartDetail("BlockDevice", data.blockDeviceMapping, "deviceName") : null,
               "Network Interface": this.formartDetail("ENI", data.networkInterfaceSet, "networkInterfaceId")
             };
           case 'EIP':
@@ -2089,7 +2089,7 @@ function program14(depth0,data) {
             return {
               'Alarm Name': data.Name,
               'Comparison Operator': data.ComparisonOperator,
-              'Dimensions': this.formartDetail('Dimensions', data.Dimensions.member, 'Dimensions', true),
+              'Dimensions': this.formartDetail('Dimensions', data.Dimensions, 'Dimensions', true),
               'Evaluation Periods': data.EvaluationPeriods,
               'Insufficient Data Actions': data.InsufficientDataActions,
               'Metric Name': data.MetricName,

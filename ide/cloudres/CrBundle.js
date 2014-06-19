@@ -3313,7 +3313,7 @@
             "AssociatePublicIpAddress": false,
             "Attachment": {
               "AttachmentId": "",
-              "DeviceIndex": "",
+              "DeviceIndex": "1",
               "InstanceId": ""
             },
             "AvailabilityZone": "",
