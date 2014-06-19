@@ -1866,6 +1866,9 @@ return TEMPLATE; });
           newLayout.size = json.layout.size;
           json.layout = newLayout;
         }
+        if (json.layout && !json.layout.size) {
+          json.layout.size = [240, 240];
+        }
         if ((json.version || "").split("-").length < 3) {
           json.version = "2013-09-13";
         }
@@ -2110,12 +2113,8 @@ return TEMPLATE; });
               name: newJson.name,
               state: OpsModelState.Running
             });
-          }, function() {
-            return errorHandler;
-          });
-        }, function() {
-          return errorHandler;
-        });
+          }, errorHandler);
+        }, errorHandler);
       },
       saveApp: function(newJson) {
         var oldState, self;

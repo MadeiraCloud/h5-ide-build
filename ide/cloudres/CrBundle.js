@@ -2574,6 +2574,9 @@
   define('ide/cloudres/CloudImportVpc',["CloudResources", "ide/cloudres/CrCollection", "constant", "ApiRequest", "DiffTree"], function(CloudResources, CrCollection, constant, ApiRequest, DiffTree) {
     var AWS_ID, CREATE_REF, ConverterData, Converters, DEFAULT_KP, DEFAULT_SG, UID, convertResToJson, __createRequestParam;
     CREATE_REF = function(compOrUid, attr) {
+      if (!compOrUid) {
+        return '';
+      }
       if (attr) {
         return "@{" + (compOrUid.uid || compOrUid) + "." + attr + "}";
       } else {
@@ -3136,15 +3139,13 @@
           insRes.EbsOptimized = aws_ins.ebsOptimized;
           originComp = this.getOriginalComp(aws_ins.id, 'INSTANCE');
           keyPairComp = this.getOriginalComp(aws_ins.keyName, 'KP');
-          if (!keyPairComp) {
+          if (keyPairComp) {
+            insRes.KeyName = CREATE_REF(keyPairComp, "resource.KeyName");
+          } else {
             if (aws_ins.keyName) {
               insRes.KeyName = aws_ins.keyName;
-            }
-          } else {
-            if (originComp) {
-              insRes.KeyName = originComp.resource.KeyName;
             } else {
-              insRes.KeyName = CREATE_REF(keyPairComp, "resource.KeyName");
+              insRes.KeyName = CREATE_REF(DEFAULT_KP, "resource.KeyName");
             }
           }
           vol_in_instance = [];

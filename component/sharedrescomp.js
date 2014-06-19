@@ -4492,7 +4492,9 @@ return TEMPLATE; });
       }
       option.filterMap = {
         'resource.PrivateIpAddressSet.n.AutoAssign': true,
-        'resource.AssociatePublicIpAddress': true
+        'resource.AssociatePublicIpAddress': true,
+        'resource.KeyName': true,
+        'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId'
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;

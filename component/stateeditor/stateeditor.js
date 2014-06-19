@@ -5320,11 +5320,9 @@ return Markdown;
         cachedAmi = Design.instance().component(compData.uid).get('cachedAmi');
         if (cachedAmi) {
           layoutOSType = cachedAmi.osType;
-          osType = imageObj.get('osType');
-          if (!imageObj) {
-            imageObj = {};
-          }
-          osType = imageObj.osType || layoutOSType;
+        }
+        if (imageObj) {
+          osType = imageObj.get('osType') || layoutOSType;
           linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz'];
           if (osType === 'windows') {
             osPlatform = 'windows';
@@ -5797,7 +5795,7 @@ return Markdown;
               $.each(CloudResources(constant.RESTYPE.ASG, Design.instance().region()).toJSON(), function(idx, resObj) {
                 if (resObj && resObj.AutoScalingGroupName && resObj.Instances) {
                   if (resObj.AutoScalingGroupName === asgName) {
-                    return $.each(resObj.Instances.member, function(idx, instanceObj) {
+                    return $.each(resObj.Instances, function(idx, instanceObj) {
                       var instanceId;
                       instanceId = instanceObj.InstanceId;
                       return dataAry.push({

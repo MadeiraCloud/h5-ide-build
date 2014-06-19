@@ -13645,8 +13645,8 @@ function program4(depth0,data) {
           this.set('awsResName', asg_data.AutoScalingGroupName);
           this.set('arn', asg_data.id);
           this.set('createTime', asg_data.CreatedTime);
-          if (asg_data.TerminationPolicies && asg_data.TerminationPolicies.member) {
-            this.set('term_policy_brief', asg_data.TerminationPolicies.member.join(" > "));
+          if (asg_data.TerminationPolicies && asg_data.TerminationPolicies) {
+            this.set('term_policy_brief', asg_data.TerminationPolicies.join(" > "));
           }
           this.handleInstance(asg_comp, (_ref1 = CloudResources(constant.RESTYPE.LC, Design.instance().region())) != null ? _ref1.toJSON() : void 0, asg_data);
         }

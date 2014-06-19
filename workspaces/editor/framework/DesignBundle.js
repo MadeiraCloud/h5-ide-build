@@ -9060,9 +9060,9 @@
           return [];
         }
         resource = resource_list[this.parent().get("appId")];
-        if (resource && resource.Instances && resource.Instances.member) {
+        if (resource && resource.Instances && resource.Instances.length) {
           amis = [];
-          _ref1 = resource.Instances.member;
+          _ref1 = resource.Instances;
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             i = _ref1[_i];
             amis.push({
@@ -12719,9 +12719,9 @@
       if (!m.design().modeIsStack() && asg && asg.get('appId')) {
         data = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(asg.get('appId')).toJSON();
         numberGroup = node.children(".instance-number-group");
-        if (data && data.Instances && data.Instances.member && data.Instances.member.length > 0) {
+        if (data && data.Instances && data.Instances.length) {
           CanvasManager.toggle(numberGroup, true);
-          CanvasManager.update(numberGroup.children("text"), data.Instances.member.length);
+          CanvasManager.update(numberGroup.children("text"), data.Instances.length);
         } else {
           CanvasManager.toggle(numberGroup, false);
         }

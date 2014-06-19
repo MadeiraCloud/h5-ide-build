@@ -219,7 +219,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"ops-process\">\n  <header class=\"processing\">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "<span class=\"process-info\">0%</span></header>\n  <header class=\"processing rolling-back-content\">Rolling back...</header>\n  <section class=\"loading-spinner\"></section>\n  <div class=\"progress\"> <div class=\"bar\" style=\"width:0%;\"></div> </div>\n</div>";
+    + "<span class=\"process-info\">0%</span></header>\n  <header class=\"processing rolling-back-content\">Rolling back...</header>\n  <section class=\"loading-spinner\"></section>\n  <section class=\"progress\"> <div class=\"bar\" style=\"width:0%;\"></div> </section>\n</div>";
   return buffer;
   };
 TEMPLATE.appProcessing=Handlebars.template(__TEMPLATE__);
@@ -599,14 +599,15 @@ TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
 
-
-  buffer += "<p class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_1", {hash:{},data:data}))
-    + "</p>\n<p class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_2", {hash:{},data:data}))
-    + "</p>\n<div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n        <div id=\"replace_stack\" style=\"padding: 10px 0\">\n            <div class=\"radio\">\n                <input id=\"radio-replace-stack\" type=\"radio\" name=\"save-stack-type\" checked>\n                <label for=\"radio-replace-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-replace-stack\">"
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <div id=\"replace_stack\" style=\"padding: 10px 0\">\n            <div class=\"radio\">\n                <input id=\"radio-replace-stack\" type=\"radio\" name=\"save-stack-type\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                <label for=\"radio-replace-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-replace-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK", {hash:{},data:data}))
     + "</label>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                "
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO", {hash:{},data:data}))
@@ -614,7 +615,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.input)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" "
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO_END", {hash:{},data:data}))
-    + "\n            </div>\n        </div>\n        <div id=\"save_new_stack\">\n            <div class=\"radio\">\n                <input id=\"radio-new-stack\" type=\"radio\" name=\"save-stack-type\">\n                <label for=\"radio-new-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-new-stack\">"
+    + "\n            </div>\n        </div>\n        ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "checked";
+  }
+
+  buffer += "<p class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_1", {hash:{},data:data}))
+    + "</p>\n<p class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_2", {hash:{},data:data}))
+    + "</p>\n<div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <div id=\"save_new_stack\">\n            <div class=\"radio\">\n                <input id=\"radio-new-stack\" type=\"radio\" name=\"save-stack-type\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                <label for=\"radio-new-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_NEW_STACK", {hash:{},data:data}))
     + "</label>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction hide\">\n                <p>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
@@ -966,12 +986,13 @@ return TEMPLATE; });
         })(this));
       },
       appToStack: function(event) {
-        var appToStackModal, name, newName, onConfirm;
+        var appToStackModal, name, newName, onConfirm, originStackExist, stack;
         name = this.workspace.design.attributes.name;
         newName = this.getStackNameFromApp(name);
+        stack = App.model.stackList().get(this.workspace.design.attributes.stack_id);
         onConfirm = (function(_this) {
           return function() {
-            var isNew, newJson, newOps, stack;
+            var isNew, newJson, newOps;
             MC.Analytics.increase("app_to_stack");
             isNew = appToStackModal.tpl.find("input[name='save-stack-type']:checked").attr('id') === "radio-new-stack";
             if (isNew) {
@@ -982,8 +1003,7 @@ return TEMPLATE; });
               newJson = Design.instance().serializeAsStack();
               newJson.id = _this.workspace.design.attributes.stack_id;
               appToStackModal.close();
-              stack = App.model.stackList().get(_this.workspace.design.attributes.stack_id);
-              newJson.name = stack.attributes.name;
+              newJson.name = stack.get("name");
               return stack.save(newJson).then(function() {
                 notification("info", sprintf(lang.ide.TOOL_MSG_INFO_HDL_SUCCESS, lang.ide.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
                 return App.openOps(stack, true);
@@ -993,11 +1013,13 @@ return TEMPLATE; });
             }
           };
         })(this);
+        originStackExist = !!stack;
         appToStackModal = new Modal({
           title: lang.ide.TOOL_POP_TIT_APP_TO_STACK,
           template: OpsEditorTpl.saveAppToStack({
             input: name,
-            stackName: newName
+            stackName: newName,
+            orignStackExist: originStackExist
           }),
           confirm: {
             text: lang.ide.TOOL_POP_BTN_SAVE_TO_STACK
@@ -2268,7 +2290,7 @@ return TEMPLATE; });
             amiData = (_ref = _.findWhere(models, {
               'id': data.id
             })) != null ? _ref.toJSON() : void 0;
-            amiData.imageSize = amiData.imageSize || ((_ref1 = amiData.blockDeviceMapping[amiData.rootDeviceName]) != null ? _ref1.volumeSize : void 0);
+            amiData.imageSize = (amiData != null ? amiData.imageSize : void 0) || ((_ref1 = amiData.blockDeviceMapping[amiData.rootDeviceName]) != null ? _ref1.volumeSize : void 0);
             amiData.instanceType = _this.addInstanceType(amiData).join(", ");
             return MC.template.bubbleAMIInfo(amiData);
           };
@@ -3274,7 +3296,7 @@ return TEMPLATE; });
           });
           result = self.differ.getChangeInfo();
           if (result.hasResChange) {
-
+            return self.opsModel.saveApp(newJson);
           } else {
             self.differ = void 0;
           }
