@@ -3188,8 +3188,12 @@
           aws_eni = _ref[_i];
           aws_eni = aws_eni.attributes;
           azComp = this.addAz(aws_eni.availabilityZone);
-          insComp = this.instances[aws_eni.attachment.instanceId];
-          if (!insComp) {
+          if (aws_eni.attachment) {
+            insComp = this.instances[aws_eni.attachment.instanceId];
+            if (!insComp) {
+              continue;
+            }
+          } else {
             continue;
           }
           subnetComp = this.subnets[aws_eni.subnetId];
