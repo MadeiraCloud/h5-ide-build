@@ -3415,8 +3415,8 @@ return TEMPLATE; });
           oldJson = self.opsModel.getJsonData();
           newJson = self.opsModel.generateJsonFromRes();
           self.differ = new ResDiff({
-            old: newJson,
-            "new": oldJson,
+            old: oldJson,
+            "new": newJson,
             callback: function(confirm) {
               if (confirm) {
                 return self.opsModel.saveApp(self.design.serialize());

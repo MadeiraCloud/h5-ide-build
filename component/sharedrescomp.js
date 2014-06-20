@@ -4500,13 +4500,21 @@ return TEMPLATE; });
         option = {};
       }
       option.filterMap = {
+        'type': true,
+        'uid': true,
+        'name': true,
+        'index': true,
+        'number': true,
+        'serverGroupUid': true,
+        'serverGroupName': true,
+        'state': true,
         'resource.PrivateIpAddressSet.n.AutoAssign': true,
         'resource.AssociatePublicIpAddress': true,
         'resource.KeyName': true,
-        'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId',
-        'resource.AssociationSet.n.NetworkAclAssociationId': 'resource.AssociationSet.n.NetworkAclAssociationId',
-        'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping',
-        'resource.VolumeSize': 'resource.VolumeSize'
+        'resource.AssociationSet.n.RouteTableAssociationId': true,
+        'resource.AssociationSet.n.NetworkAclAssociationId': true,
+        'resource.BlockDeviceMapping': true,
+        'resource.VolumeSize': true
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
@@ -4655,6 +4663,12 @@ return TEMPLATE; });
           if (typeofReal(b) === 'number') {
             b = String(b);
           }
+          if (typeofReal(a) === 'boolean') {
+            a = String(a);
+          }
+          if (typeofReal(b) === 'boolean') {
+            b = String(b);
+          }
           if (a !== b) {
             haveDiff = true;
             resultJSON[key] = {
@@ -4799,8 +4813,8 @@ return TEMPLATE; });
       };
     };
     prepareNode = function(path, data) {
-      var attrObj, compAttrObj, compUID, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, oldValue, valueRef, _getRef, _ref;
-      _getRef = function(value) {
+      var attrObj, compAttrObj, compUID, needName, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, oldValue, valueRef, _getRef;
+      _getRef = function(value, needName) {
         var refMatchAry, refName, refRegex, refUID;
         if (_.isString(value) && value.indexOf('@{') === 0) {
           refRegex = /@\{.*\}/g;
@@ -4808,8 +4822,12 @@ return TEMPLATE; });
           if (refMatchAry && refMatchAry.length) {
             refName = value.slice(2, value.length - 1);
             refUID = refName.split('.')[0];
-            if (refUID) {
-              return "" + refUID + ".name";
+            if (needName) {
+              if (refUID) {
+                return "" + refUID + ".name";
+              }
+            } else {
+              return refName;
             }
           }
         }
@@ -4817,8 +4835,14 @@ return TEMPLATE; });
       };
       if (_.isObject(data.value)) {
         newValue = data.value;
-        oldRef = _getRef(newValue.__old__);
-        newRef = _getRef(newValue.__new__);
+        needName = true;
+        if (data.key) {
+          if (data.key.substr(data.key.lastIndexOf('Id')) === 'Id') {
+            needName = false;
+          }
+        }
+        oldRef = _getRef(newValue.__old__, needName);
+        newRef = _getRef(newValue.__new__, needName);
         if (oldRef) {
           newValue.__old__ = this.h.getNodeMap(oldRef).oldAttr;
         }
@@ -4855,9 +4879,7 @@ return TEMPLATE; });
         data = this.h.replaceArrayIndex(path, data);
       }
       if (path.length === 2) {
-        if ((_ref = path[1]) === 'type' || _ref === 'uid' || _ref === 'name' || _ref === 'index' || _ref === 'number' || _ref === 'serverGroupUid') {
-          delete data.key;
-        } else if (path[1] === 'resource') {
+        if (path[1] === 'resource') {
           data.skip = true;
         }
       }
