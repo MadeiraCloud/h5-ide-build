@@ -1416,7 +1416,7 @@ return TEMPLATE; });
       showVpcNotExist: function(name, onConfirm) {
         var modal, self;
         self = this;
-        return modal = new Modal({
+        modal = new Modal({
           title: "Confirm to remove the app " + name + "?",
           template: OpsEditorTpl.modal.confirmRemoveApp(),
           confirm: {

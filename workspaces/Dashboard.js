@@ -2221,6 +2221,7 @@ function program18(depth0,data) {
         var region, _i, _len, _ref, _results;
         this.listenTo(App.WS, "visualizeUpdate", this.onVisualizeUpdated);
         this.listenTo(CloudResources(constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
+        this.listenTo(CloudResources(constant.RESTYPE.ENI), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(constant.RESTYPE.ELB), "update", this.onGlobalResChanged);
