@@ -1121,12 +1121,16 @@ return TEMPLATE; });
             return hideKpError('kp');
           });
           modal.tpl.find('.default-kp-group').show();
-          this.modal.on('close', function() {
-            return keyPairDropdown.remove();
-          });
-          this.updateModal.on('close', function() {
-            return keyPairDropdown.remove();
-          });
+          if (this.modal) {
+            this.modal.on('close', function() {
+              return keyPairDropdown.remove();
+            });
+          }
+          if (this.updateModal) {
+            this.updateModal.on('close', function() {
+              return keyPairDropdown.remove();
+            });
+          }
         }
         return null;
       },
