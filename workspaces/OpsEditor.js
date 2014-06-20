@@ -3416,9 +3416,9 @@ return TEMPLATE; });
             "new": self.opsModel.generateJsonFromRes(),
             callback: function(confirm) {
               if (confirm) {
-                self.opsModel.saveApp(self.design.serialize());
+                return self.opsModel.saveApp(self.design.serialize());
               } else {
-                self.remove();
+                return self.remove();
               }
             }
           });
