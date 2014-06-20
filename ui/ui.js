@@ -7810,7 +7810,10 @@ define('jquerysort',["jquery"], function($) {
             if (typeof (_base = _this.option).onCancel === "function") {
               _base.onCancel(_this.tpl, e);
             }
-            return (_ref = modalGroup[0]) != null ? _ref.back() : void 0;
+            _this.trigger('cancel', _this);
+            if (!(_this.option.preventClose || _this.option.disableClose)) {
+              return (_ref = modalGroup[0]) != null ? _ref.back() : void 0;
+            }
           };
         })(this));
         this.tpl.find("i.modal-close").click(function(e) {

@@ -8881,6 +8881,9 @@
         if (conn.type === 'ElbAmiAsso') {
           return;
         }
+        if (conn.type === 'SgRuleLine') {
+          return;
+        }
         syncTarget = [];
         if (this.isClone()) {
           syncTarget.push(this.getBigBrother());
@@ -9128,51 +9131,12 @@
         this.syncBorthersConn(cn);
         return null;
       },
-      getStateData: function() {
-        return this.get("state");
-      },
-      setStateData: function(stateAryData) {
-        return this.set("state", stateAryData);
-      },
-      setKey: function(keyName, defaultKey) {
-        var KpModel, defaultKp, kp;
-        KpModel = Design.modelClassForType(constant.RESTYPE.KP);
-        defaultKp = KpModel.getDefaultKP();
-        if (defaultKey) {
-          if (defaultKp) {
-            return defaultKp.assignTo(this);
-          } else {
-            return console.error("No DefaultKP found when initialize InstanceModel");
-          }
-        } else {
-          kp = this.connectionTargets("KeypairUsage")[0];
-          kp && kp.dissociate(this);
-          return this.set('keyName', keyName);
-        }
-      },
-      getKeyName: function() {
-        var kp;
-        kp = this.connectionTargets("KeypairUsage")[0];
-        if (kp) {
-          if (kp.isDefault()) {
-            return '$DefaultKeyPair';
-          } else {
-            return kp.get('name');
-          }
-        } else {
-          return this.get('keyName') || 'No Key Pair';
-        }
-      },
-      isDefaultKey: function() {
-        var kp;
-        kp = this.connectionTargets("KeypairUsage")[0];
-        return kp && kp.isDefault();
-      },
-      isNoKey: function() {
-        var kp;
-        kp = this.connectionTargets("KeypairUsage")[0];
-        return !kp && !this.get('keyName');
-      },
+      getStateData: InstanceModel.prototype.getStateData,
+      setStateData: InstanceModel.prototype.setStateData,
+      setKey: InstanceModel.prototype.setKey,
+      getKeyName: InstanceModel.prototype.getKeyName,
+      isDefaultKey: InstanceModel.prototype.isDefaultKey,
+      isNoKey: InstanceModel.prototype.setAmi,
       setAmi: InstanceModel.prototype.setAmi,
       getAmi: InstanceModel.prototype.getAmi,
       getOSFamily: InstanceModel.prototype.getOSFamily,
@@ -12303,13 +12267,13 @@
       var data, design, resource_list, v, vl, volume, _i, _len, _ref, _ref1, _ref2;
       vl = [];
       design = this.model.design();
-      resource_list = CloudResources(this.model.type, design.region());
+      resource_list = CloudResources(constant.RESTYPE.INSTANCE, design.region());
       if (!resource_list) {
         return vl;
       }
       data = (_ref = resource_list.get(appId)) != null ? _ref.toJSON() : void 0;
-      if (data && data.blockDeviceMapping && data.blockDeviceMapping.item) {
-        _ref1 = data.blockDeviceMapping.item;
+      if (data && data.blockDeviceMapping) {
+        _ref1 = data.blockDeviceMapping;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           v = _ref1[_i];
           if (data.rootDeviceName.indexOf(v.deviceName) !== -1) {

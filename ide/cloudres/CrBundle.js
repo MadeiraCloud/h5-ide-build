@@ -1810,6 +1810,7 @@
       },
       parseExternalData: function(data) {
         var vol, _i, _len;
+        this.convertNumTimeToString(data);
         this.unifyApi(data, this.type);
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           vol = data[_i];
@@ -2131,11 +2132,11 @@
           sgRuls = sg.ipPermissions.concat(sg.ipPermissionsEgress);
           _.each(sgRuls, function(rule, idx) {
             if (rule.ipRanges && rule.ipRanges.length) {
-              rule.ipRanges = [
-                {
-                  cidrIp: rule.ipRanges[0]
-                }
-              ];
+              rule.ipRanges = _.map(rule.ipRanges, function(cidr) {
+                return {
+                  cidrIp: cidr
+                };
+              });
             }
             rule.groups = [];
             if (rule.userIdGroupPairs) {
@@ -3075,35 +3076,47 @@
           this.addLayout(cgwComp, false);
         }
       }, function() {
-        var aws_sg, genRules, groupId, originSGComp, selfSGId, sgComp, sgRefMap, sgRes, sg_rule, vpcComp, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        var aws_sg, genRules, groupId, originSGComp, sgComp, sgRefMap, sgRes, sg_rule, that, vpcComp, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        that = this;
         sgRefMap = {};
-        genRules = function(sg_rule, new_ruls, selfSGId) {
-          var ipranges, originSGComp, sgComp, sgId;
-          ipranges = '';
-          if (sg_rule.groups.length > 0 && sg_rule.groups[0].groupId) {
-            sgId = sg_rule.groups[0].groupId;
-            sgComp = sgRefMap[sgId];
-            if (sgComp) {
-              ipranges = CREATE_REF(sgComp, 'resource.GroupId');
-            } else {
-              if (selfSGId) {
-                originSGComp = this.getOriginalComp(selfSGId, 'SG');
-                ipranges = CREATE_REF(originSGComp, 'resource.GroupId');
-              }
-            }
-          } else if (sg_rule.ipRanges && sg_rule.ipRanges.length > 0) {
-            ipranges = sg_rule.ipRanges[0].cidrIp;
-          }
+        genRules = function(sg_rule, new_ruls) {
+          var ipranges;
+          that = this;
           if (String(sg_rule.ipProtocol) === '-1') {
             sg_rule.fromPort = '0';
             sg_rule.toPort = '65535';
           }
-          return new_ruls.push({
-            "FromPort": String(sg_rule.fromPort ? sg_rule.fromPort : ""),
-            "IpProtocol": String(sg_rule.ipProtocol),
-            "IpRanges": ipranges,
-            "ToPort": String(sg_rule.toPort ? sg_rule.toPort : "")
-          });
+          if (sg_rule.groups && sg_rule.groups.length > 0) {
+            return _.each(sg_rule.groups, function(group) {
+              var iprange, sgComp, sgId;
+              if (group.groupId) {
+                iprange = '';
+                sgId = group.groupId;
+                sgComp = sgRefMap[sgId];
+                if (sgComp) {
+                  iprange = CREATE_REF(sgComp, 'resource.GroupId');
+                } else {
+                  iprange = group.groupId;
+                }
+                return new_ruls.push({
+                  "FromPort": String(sg_rule.fromPort ? sg_rule.fromPort : ""),
+                  "IpProtocol": String(sg_rule.ipProtocol),
+                  "IpRanges": iprange,
+                  "ToPort": String(sg_rule.toPort ? sg_rule.toPort : "")
+                });
+              }
+            });
+          } else if (sg_rule.ipRanges && sg_rule.ipRanges.length > 0) {
+            ipranges = sg_rule.ipRanges;
+            return _.each(ipranges, function(iprange) {
+              return new_ruls.push({
+                "FromPort": String(sg_rule.fromPort ? sg_rule.fromPort : ""),
+                "IpProtocol": String(sg_rule.ipProtocol),
+                "IpRanges": iprange.cidrIp,
+                "ToPort": String(sg_rule.toPort ? sg_rule.toPort : "")
+              });
+            });
+          }
         };
         _ref = this.getResourceByType("SG");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3128,10 +3141,8 @@
             "VpcId": ""
           };
           sgRes = this._mapProperty(aws_sg, sgRes);
-          selfSGId = '';
           originSGComp = this.getOriginalComp(aws_sg.id, 'SG');
           if (originSGComp) {
-            selfSGId = aws_sg.id;
             sgRes.GroupName = originSGComp.resource.GroupName;
           }
           vpcComp = this.getOriginalComp(aws_sg.vpcId, 'VPC');
@@ -3143,14 +3154,14 @@
             _ref2 = aws_sg.ipPermissions || [];
             for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
               sg_rule = _ref2[_k];
-              genRules.call(this, sg_rule, sgRes.IpPermissions, selfSGId);
+              genRules.call(this, sg_rule, sgRes.IpPermissions);
             }
           }
           if (aws_sg.ipPermissionsEgress) {
             _ref3 = aws_sg.ipPermissionsEgress || [];
             for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
               sg_rule = _ref3[_l];
-              genRules.call(this, sg_rule, sgRes.IpPermissionsEgress, selfSGId);
+              genRules.call(this, sg_rule, sgRes.IpPermissionsEgress);
             }
           }
           sgComp = this.add("SG", sgRes, TAG_NAME(aws_sg) || aws_sg.groupName);
@@ -3161,6 +3172,28 @@
           }
           this.sgs[aws_sg.id] = sgComp;
         }
+        _.each(that.sgs, function(sgComp) {
+          _.each(sgComp.resource.IpPermissions, function(rule) {
+            var ref, refComp;
+            if (rule.IpRanges && rule.IpRanges.indexOf('sg-') === 0) {
+              refComp = that.sgs[rule.IpRanges];
+              if (refComp) {
+                ref = CREATE_REF(refComp, 'resource.GroupId');
+                return rule.IpRanges = ref;
+              }
+            }
+          });
+          return _.each(sgComp.resource.IpPermissionsEgress, function(rule) {
+            var ref, refComp;
+            if (rule.IpRanges && rule.IpRanges.indexOf('sg-') === 0) {
+              refComp = that.sgs[rule.IpRanges];
+              if (refComp) {
+                ref = CREATE_REF(refComp, 'resource.GroupId');
+                return rule.IpRanges = ref;
+              }
+            }
+          });
+        });
       }, function() {
         var aws_vol, az, instance, volComp, volRes, _i, _len, _ref;
         _ref = this.getResourceByType("VOL");

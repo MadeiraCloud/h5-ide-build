@@ -7768,7 +7768,7 @@ function program1(depth0,data) {
         'isAppEdit': false
       },
       init: function(uid) {
-        var AclModel, RtbModel, TYPE_ACL, TYPE_RTB, component, data, dhcp, dhcp_comp, myVPCComponent, vpc;
+        var AclModel, RtbModel, TYPE_ACL, TYPE_RTB, component, data, dhcp, dhcp_comp, myVPCComponent, vpc, _ref;
         component = Design.instance().component(uid);
         dhcp_comp = component.get("dhcp");
         dhcp = $.extend({}, dhcp_comp.attributes);
@@ -7787,7 +7787,7 @@ function program1(depth0,data) {
         };
         if (this.isAppEdit) {
           myVPCComponent = Design.instance().component(uid);
-          vpc = CloudResources(constant.RESTYPE.VPC, Design.instance().region()).get(myVPCComponent.get('appId'));
+          vpc = (_ref = CloudResources(constant.RESTYPE.VPC, Design.instance().region()).get(myVPCComponent.get('appId'))) != null ? _ref.toJSON() : void 0;
           vpc = _.clone(vpc);
           TYPE_RTB = constant.RESTYPE.RT;
           TYPE_ACL = constant.RESTYPE.ACL;

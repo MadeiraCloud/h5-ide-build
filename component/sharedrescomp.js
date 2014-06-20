@@ -4748,7 +4748,11 @@ return TEMPLATE; });
               deviceObj = childNode.DeviceName;
               data.key = 'Device';
               if (deviceObj) {
-                data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
+                if (_.isObject(deviceObj)) {
+                  data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
+                } else {
+                  data.key = deviceObj;
+                }
               }
               break;
             case 'GroupSet':
@@ -4891,12 +4895,6 @@ return TEMPLATE; });
         options = {
           template: this.el,
           title: 'App Changes',
-          hideClose: true,
-          disableClose: true,
-          disableCancel: true,
-          cancel: {
-            hide: true
-          },
           confirm: {
             text: 'OK, got it'
           },
@@ -4909,16 +4907,22 @@ return TEMPLATE; });
           $confirmBtn = that.modal.tpl.find('.modal-confirm');
           if (that.callback) {
             $confirmBtn.addClass('disabled');
-            promise = that.callback();
+            $confirmBtn.text('Saving...');
+            promise = that.callback(true);
             return promise.then(function() {
               return that.modal.close();
             }, function(error) {
+              $confirmBtn.text('OK, got it');
               $confirmBtn.removeClass('disabled');
               return notification('error', error);
             });
           } else {
             return that.modal.close();
           }
+        }, this);
+        this.modal.on('cancel', function() {
+          alert(1);
+          return that.modal.close();
         }, this);
         this.$el.html(template.frame());
         this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);

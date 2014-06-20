@@ -900,6 +900,9 @@ return TEMPLATE; });
           var btn;
           btn = modal.tpl.find("a.btn-blue").text(lang.ide.TOOL_POP_BTN_EXPORT_CF).removeClass("disabled");
           JsonExporter.genericExport(btn, data, "" + name + ".json");
+          btn.click(function() {
+            return modal.close();
+          });
         }, function(err) {
           modal.tpl.find("a.btn-blue").text("Fail to export...");
           notification("error", "Fail to export to AWS CloudFormation Template, Error code:" + err.error);
@@ -1535,7 +1538,9 @@ return TEMPLATE; });
       OpsEditorBase.prototype.cleanup = function() {
         MC.canvas.volume.close();
         this.stopListening();
-        this.view.remove();
+        if (this.view) {
+          this.view.remove();
+        }
       };
 
       OpsEditorBase.prototype.isInited = function() {

@@ -849,7 +849,10 @@ function program3(depth0,data) {
           disableClose: true,
           disableFooter: true,
           compact: true,
-          hideClose: true
+          hideClose: true,
+          cancel: {
+            hide: true
+          }
         });
         this.modal.tpl.find(".context-wrap").attr("id", "WelcomeDialog");
         this.setElement(this.modal.tpl);
