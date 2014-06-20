@@ -1418,6 +1418,10 @@ return TEMPLATE; });
         return new kpManage({
           model: that.data
         });
+      },
+      remove: function() {
+        this.dropdown.remove();
+        return Backbone.View.prototype.remove.apply(this, arguments);
       }
     }, {
       hasResourceWithDefaultKp: function() {
@@ -2090,8 +2094,6 @@ return TEMPLATE; });
           return this.renderNoCredential();
         }
       },
-      manage: function() {},
-      set: function() {},
       filter: function(keyword) {
         return this.processCol(true, keyword);
       }
@@ -2234,6 +2236,10 @@ return TEMPLATE; });
       },
       filter: function(keyword) {
         return this.processCol(true, keyword);
+      },
+      remove: function() {
+        this.dropdown.remove();
+        return Backbone.View.prototype.remove.apply(this, arguments);
       }
     });
   });

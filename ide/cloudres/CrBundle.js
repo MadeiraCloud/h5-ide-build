@@ -82,7 +82,7 @@
       }
     }, {
 
-      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
     });
   });
 
@@ -309,7 +309,7 @@
         return this.category;
       },
 
-      /* env:dev                                                                                                                                                                                                                                                                                                            env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                                                                                                     env:dev:end */
       where: function(option, first) {
         var hasOtherAttr, key, res;
         if (option.category && option.category === this.category) {
@@ -486,7 +486,7 @@
   define('ide/cloudres/CrModelDhcp',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                           env:dev:end */
+      /* env:dev                                             env:dev:end */
       defaults: function() {
         return {
           "domain-name": [],
@@ -565,7 +565,7 @@
   define('ide/cloudres/CrModelKeypair',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       defaults: {
         keyName: "",
         keyData: "",
@@ -618,7 +618,7 @@
   define('ide/cloudres/CrModelSslcert',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       taggable: false,
       defaults: {
         Path: "",
@@ -687,7 +687,7 @@
   define('ide/cloudres/CrModelTopic',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       taggable: false,
       defaults: {
         Name: "",
@@ -751,7 +751,7 @@
     var CrSubscriptionModel;
     CrSubscriptionModel = CrModel.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       taggable: false,
       defaults: {
         Endpoint: "",
@@ -830,7 +830,7 @@
   define('ide/cloudres/CrModelSnapshot',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       defaults: {
         volumeId: "",
         status: "pending",
@@ -943,7 +943,7 @@
     /* Dhcp */
     CrCollection.extend({
 
-      /* env:dev                                                env:dev:end */
+      /* env:dev                                                  env:dev:end */
       type: constant.RESTYPE.DHCP,
       model: CrDhcpModel,
       doFetch: function() {
@@ -968,7 +968,7 @@
     /* Keypair */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.KP,
       model: CrKeypairModel,
       doFetch: function() {
@@ -993,7 +993,7 @@
     /* Ssl cert */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
@@ -1023,7 +1023,7 @@
     /* Sns Topic */
     CrCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: constant.RESTYPE.TOPIC,
       model: CrTopicModel,
       constructor: function() {
@@ -1082,7 +1082,7 @@
     /* Sns Subscription */
     CrCollection.extend({
 
-      /* env:dev                                                        env:dev:end */
+      /* env:dev                                                          env:dev:end */
       type: constant.RESTYPE.SUBSCRIPTION,
       model: CrSubscriptionModel,
       doFetch: function() {
@@ -1107,7 +1107,7 @@
     /* Snapshot */
     return CrCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       type: constant.RESTYPE.SNAP,
       model: CrSnapshotModel,
       initialize: function() {
@@ -1204,7 +1204,7 @@
     EmptyArr = [];
     CrCommonCollection = CrCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       model: CrModel,
       type: "CrCommonCollection",
       __selfParseData: true,
@@ -1309,7 +1309,7 @@
     /* Elb */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ELB,
       trAwsXml: function(data) {
         var _ref;
@@ -1367,7 +1367,7 @@
     /* VPN */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VPN,
       trAwsXml: function(data) {
         var _ref;
@@ -1398,7 +1398,7 @@
     /* EIP */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.EIP,
       trAwsXml: function(data) {
         var _ref;
@@ -1426,7 +1426,7 @@
     /* VPC */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VPC,
       trAwsXml: function(data) {
         var _ref;
@@ -1454,7 +1454,7 @@
     /* ASG */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ASG,
       modelIdAttribute: "AutoScalingGroupARN",
       trAwsXml: function(data) {
@@ -1497,7 +1497,7 @@
     /* CloudWatch */
     CrCommonCollection.extend({
 
-      /* env:dev                                                      env:dev:end */
+      /* env:dev                                                        env:dev:end */
       type: constant.RESTYPE.CW,
       trAwsXml: function(data) {
         var _ref;
@@ -1530,7 +1530,7 @@
     /* CGW */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.CGW,
       trAwsXml: function(data) {
         var _ref;
@@ -1558,7 +1558,7 @@
     /* VGW */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VGW,
       trAwsXml: function(data) {
         var _ref;
@@ -1594,7 +1594,7 @@
     /* IGW */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.IGW,
       trAwsXml: function(data) {
         var _ref;
@@ -1631,7 +1631,7 @@
     /* RTB */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.RT,
       trAwsXml: function(data) {
         var _ref;
@@ -1710,7 +1710,7 @@
     /* INSTANCE */
     CrCommonCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       initialize: function() {
         this.listenTo(this, "add", function(m) {
           return CloudResources(constant.RESTYPE.AMI, m.attributes.category).fetchAmi(m.attributes.imageId);
@@ -1785,7 +1785,7 @@
     /* VOLUME */
     CrCommonCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: constant.RESTYPE.VOL,
       trAwsXml: function(data) {
         var _ref;
@@ -1831,7 +1831,7 @@
     /* LC */
     CrCommonCollection.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: constant.RESTYPE.LC,
       AwsResponseType: "DescribeLaunchConfigurationsResponse",
       trAwsXml: function(data) {
@@ -1871,7 +1871,7 @@
     /* ScalingPolicy */
     CrCommonCollection.extend({
 
-      /* env:dev                                                         env:dev:end */
+      /* env:dev                                                           env:dev:end */
       type: constant.RESTYPE.SP,
       AwsResponseType: "DescribePoliciesResponse",
       trAwsXml: function(data) {
@@ -1903,7 +1903,7 @@
     /* AvailabilityZone */
     CrCommonCollection.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: constant.RESTYPE.AZ,
       AwsResponseType: "DescribeAvailabilityZonesResponse",
       trAwsXml: function(data) {
@@ -1932,7 +1932,7 @@
     /* NotificationConfiguartion */
     CrCommonCollection.extend({
 
-      /* env:dev                                                        env:dev:end */
+      /* env:dev                                                          env:dev:end */
       type: constant.RESTYPE.NC,
       AwsResponseType: "DescribeNotificationConfigurationsResponse",
       trAwsXml: function(data) {
@@ -1940,18 +1940,24 @@
         return (_ref = data.DescribeNotificationConfigurationsResponse.DescribeNotificationConfigurationsResult.NotificationConfigurations) != null ? _ref.member : void 0;
       },
       parseFetchData: function(ncs) {
-        var first, item, nc, newNcList, _i, _len;
+        var id, item, nc, ncMap, newNcList, _i, _len;
         newNcList = [];
-        first = ncs[0];
+        ncMap = {};
         for (_i = 0, _len = ncs.length; _i < _len; _i++) {
           nc = ncs[_i];
-          item = {
-            AutoScalingGroupName: first.AutoScalingGroupName,
-            TopicARN: first.TopicARN,
-            NotificationType: _.pluck(nc, 'NotificationType')
-          };
-          item.id = item.AutoScalingGroupName + "-" + item.TopicARN;
-          newNcList.push(item);
+          id = item.AutoScalingGroupName + "-" + item.TopicARN;
+          item = ncMap[id] || (ncMap[id] = {});
+          if (!item) {
+            item = ncMap[id] = {
+              id: id,
+              AutoScalingGroupName: nc.AutoScalingGroupName,
+              TopicARN: nc.TopicARN,
+              NotificationType: [nc.NotificationType]
+            };
+            newNcList.push(item);
+          } else {
+            item.NotificationType.push(nc.NotificationType);
+          }
         }
         return newNcList;
       },
@@ -1978,7 +1984,7 @@
     /* ACL */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ACL,
       AwsResponseType: "DescribeNetworkAclsResponse",
       trAwsXml: function(data) {
@@ -2015,7 +2021,7 @@
     /* ENI */
     CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ENI,
       AwsResponseType: "DescribeNetworkInterfacesResponse",
       doFetch: function() {
@@ -2055,7 +2061,7 @@
     /* SUBNET */
     CrCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: constant.RESTYPE.SUBNET,
       doFetch: function() {
         return ApiRequest("subnet_DescribeSubnets", {
@@ -2084,7 +2090,7 @@
     /* SG */
     return CrCollection.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: constant.RESTYPE.SG,
       AwsResponseType: "DescribeSecurityGroupsResponse",
       doFetch: function() {
@@ -2158,7 +2164,7 @@
     /* This Connection is used to fetch all the resource of an vpc */
     return CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: "OpsResource",
       init: function(region) {
         this.__region = region;
@@ -2298,7 +2304,7 @@
     /* This Collection is used to fetch generic ami */
     CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.AMI,
       __selfParseData: true,
       initialize: function() {
@@ -2435,7 +2441,7 @@
     });
     SpecificAmiCollection = CrCollection.extend({
 
-      /* env:dev                                                       env:dev:end */
+      /* env:dev                                                         env:dev:end */
       type: "SpecificAmiCollection",
       initialize: function() {
         this.__models = [];
@@ -2460,7 +2466,7 @@
     /* This Collection is used to fetch quickstart ami */
     SpecificAmiCollection.extend({
 
-      /* env:dev                                                         env:dev:end */
+      /* env:dev                                                           env:dev:end */
       type: "QuickStartAmi",
       doFetch: function() {
         return ApiRequest("aws_quickstart", {
@@ -2485,7 +2491,7 @@
     /* This Collection is used to fetch my ami */
     SpecificAmiCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: "MyAmi",
       doFetch: function() {
         var self, selfParam1, selfParam2;
@@ -2555,7 +2561,7 @@
     /* This Collection is used to fetch favorite ami */
     return SpecificAmiCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: "FavoriteAmi",
       doFetch: function() {
         return ApiRequest("favorite_info", {
@@ -3914,7 +3920,7 @@
           this.sps[aws_sp.id] = spComp;
         }
       }, function() {
-        var alarmActionAry, aws_cw, cwComp, cwRes, dimension, me, _i, _len, _ref;
+        var alarmActionAry, aws_cw, cwComp, cwRes, dimension, me, okActionAry, reg_asg, reg_topic, _i, _len, _ref;
         me = this;
         _ref = this.getResourceByType("CW");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3955,11 +3961,11 @@
             continue;
           }
           cwRes.Dimensions = dimension;
+          reg_asg = /arn:aws:autoscaling:.*:.*:scalingPolicy/g;
+          reg_topic = /arn:aws:sns:.*:.*:.*/g;
           alarmActionAry = [];
           _.each(aws_cw.AlarmActions, function(e, key) {
-            var reg_asg, reg_topic, spComp, topicComp;
-            reg_asg = /arn:aws:autoscaling:.*:.*:scalingPolicy/g;
-            reg_topic = /arn:aws:sns:.*:.*:.*/g;
+            var spComp, topicComp;
             if (reg_topic.test(e)) {
               topicComp = me.addTopic(e);
               if (topicComp) {
@@ -3973,6 +3979,17 @@
             }
           });
           cwRes.AlarmActions = alarmActionAry;
+          okActionAry = [];
+          _.each(aws_cw.Okactions, function(e, key) {
+            var spComp;
+            if (reg_asg.test(e)) {
+              spComp = me.sps[e];
+              if (spComp) {
+                return okActionAry.push(CREATE_REF(spComp, "resource.PolicyARN"));
+              }
+            }
+          });
+          cwRes.OKAction = okActionAry;
           cwRes.Threshold = String(aws_cw.Threshold);
           cwRes.EvaluationPeriods = String(aws_cw.EvaluationPeriods);
           if (aws_cw.ComparisonOperator) {
