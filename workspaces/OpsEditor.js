@@ -1575,7 +1575,7 @@ return TEMPLATE; });
       OpsEditorBase.prototype.initEditor = function() {};
 
       OpsEditorBase.prototype.saveThumbnail = function() {
-        if (this.opsModel.isPresisted()) {
+        if (this.opsModel.isPersisted()) {
           return Thumbnail.generate($("#svg_canvas")).then((function(_this) {
             return function(thumbnail) {
               return _this.opsModel.saveThumbnail(thumbnail);
@@ -3195,13 +3195,13 @@ return TEMPLATE; });
 
       StackEditor.prototype.cleanup = function() {
         OpsEditorBase.prototype.cleanup.call(this);
-        if (!this.opsModel.isPresisted()) {
+        if (!this.opsModel.isPersisted()) {
           this.opsModel.remove();
         }
       };
 
       StackEditor.prototype.isModified = function() {
-        if (!this.opsModel.isPresisted()) {
+        if (!this.opsModel.isPersisted()) {
           return true;
         }
         return this.design && this.design.isModified();
@@ -3249,7 +3249,6 @@ return TEMPLATE; });
               if (!MC.validate('awsName', val)) {
                 return lang.ide.PARSLEY_SHOULD_BE_A_VALID_STACK_NAME;
               }
-              debugger;
               apps = App.model.appList().where({
                 name: val
               });
@@ -3264,6 +3263,7 @@ return TEMPLATE; });
             modal.tpl.find(".modal-confirm").attr("disabled", "disabled");
             json = self.workspace.design.serialize();
             json.name = $ipt.val();
+            self.workspace.opsModel.set("name", json.name);
             return self.workspace.opsModel.saveApp(json).then(function() {
               return modal.close();
             }, function(err) {

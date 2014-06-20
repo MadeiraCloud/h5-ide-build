@@ -2107,14 +2107,17 @@ return TEMPLATE; });
     topicCol = CloudResources(constant.RESTYPE.TOPIC, 'us-east-1');
     return Backbone.View.extend({
       tagName: 'section',
+      remove: function() {
+        return Backbone.View.prototype.remove.call(this);
+      },
       initCol: function() {
         var region;
         region = Design.instance().region();
         this.subCol = CloudResources(constant.RESTYPE.SUBSCRIPTION, region);
         this.topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
-        this.topicCol.on('update', this.processCol, this);
-        this.topicCol.on('change', this.processCol, this);
-        return this.subCol.on('update', this.processCol, this);
+        this.listenTo(this.topicCol, 'update', this.processCol);
+        this.listenTo(this.topicCol, 'change', this.processCol);
+        return this.listenTo(this.subCol, 'update', this.processCol);
       },
       initDropdown: function() {
         var options;
@@ -3354,8 +3357,8 @@ return TEMPLATE; });
     snapshotRes = Backbone.View.extend({
       constructor: function() {
         this.collection = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
-        this.collection.on('update', this.onChange.bind(this));
-        this.collection.on('change', this.onChange.bind(this));
+        this.listenTo(this.collection, 'update', this.onChange.bind(this));
+        this.listenTo(this.collection, 'change', this.onChange.bind(this));
         return this;
       },
       onChange: function() {

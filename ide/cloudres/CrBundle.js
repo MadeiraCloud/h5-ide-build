@@ -1643,7 +1643,7 @@
           rtb = rtbs[_i];
           rtb.routeSet = ((_ref = rtb.routeSet) != null ? _ref.item : void 0) || [];
           rtb.associationSet = ((_ref1 = rtb.associationSet) != null ? _ref1.item : void 0) || [];
-          rtb.propagatingVgwSet = (_ref2 = rtb.propagatingVgwSet) != null ? _ref2.item([]) : void 0;
+          rtb.propagatingVgwSet = ((_ref2 = rtb.propagatingVgwSet) != null ? _ref2.item : void 0) || [];
           found = -1;
           _ref3 = rtb.routeSet;
           for (idx = _j = 0, _len1 = _ref3.length; _j < _len1; idx = ++_j) {
@@ -1942,9 +1942,9 @@
       parseFetchData: function(ncs) {
         var first, item, nc, newNcList, _i, _len;
         newNcList = [];
+        first = ncs[0];
         for (_i = 0, _len = ncs.length; _i < _len; _i++) {
           nc = ncs[_i];
-          first = nc[0];
           item = {
             AutoScalingGroupName: first.AutoScalingGroupName,
             TopicARN: first.TopicARN,

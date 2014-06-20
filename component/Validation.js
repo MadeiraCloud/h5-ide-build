@@ -2897,9 +2897,9 @@ This file use for validate component about state.
       lc = __getComp(uid, true);
       lcOld = __getComp(uid);
       result = [];
-      asg = lc.getAsg();
+      asg = lc.parent();
       expandedAsgs = asg.get('expandedList');
-      subnet = lc.getAsg().parent();
+      subnet = lc.parent().parent();
       subnetName = subnet.get('name');
       subnetId = subnet.id;
       isLcNatOut = __natOut(lc);

@@ -487,6 +487,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   define('workspaces/editor/property/base/view',['constant', 'i18n!nls/lang.js', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', 'UI.multiinputbox', 'UI.modal', 'UI.selectbox', 'MC.validate', 'UI.parsley', 'UI.tooltip', 'UI.sortable', 'UI.tablist'], function(constant, lang) {
 
     /*
@@ -513,8 +515,41 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * forceShow :
         description : Call this method before focusing a input of property panel. This method ensure the property panel is not hidden.
      */
-    var PropertyView;
+    var PropertyView, subViews, trash;
+    trash = [];
+    subViews = [];
     PropertyView = Backbone.View.extend({
+      __addToTrash: function(garbage) {
+        if (__indexOf.call(trash, garbage) < 0) {
+          return trash.push(garbage);
+        }
+      },
+      __clearTrash: function() {
+        var t, _i, _len;
+        for (_i = 0, _len = trash.length; _i < _len; _i++) {
+          t = trash[_i];
+          if (_.isObject(t) && t.remove) {
+            t.__removeSubView();
+          }
+        }
+        trash = [];
+        return this;
+      },
+      __removeSubView: function() {
+        var subView, _i, _len;
+        for (_i = 0, _len = subViews.length; _i < _len; _i++) {
+          subView = subViews[_i];
+          if (_.isObject(subView) && _.isFunction(subView.remove)) {
+            subView.remove();
+          }
+        }
+        return subViews = [];
+      },
+      addSubView: function(view) {
+        if (__indexOf.call(subViews, view) < 0) {
+          return subViews.push(view);
+        }
+      },
       setTitle: function(title) {
         $("#OEPanelRight").find(this._isSub ? ".property-second-title" : ".property-title").text(title);
       },
@@ -566,6 +601,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       _load: function() {
         var $new_panel, $panel;
+        this.__clearTrash();
+        this.__addToTrash(this);
         $panel = $("#OEPanelRight").find(".property-first-panel").find(".property-details");
         $new_panel = $("<div class='scroll-content property-content property-details'></div>").insertAfter($panel);
         $panel.empty().remove();
@@ -2078,12 +2115,14 @@ function program53(depth0,data) {
         return null;
       },
       render: function() {
-        var instanceModel, me;
+        var instanceModel, kpDropdown, me;
         this.$el.html(template(this.model.attributes));
         instanceModel = Design.instance().component(this.model.get('uid'));
-        this.$('#kp-placeholder').html(new kp({
+        kpDropdown = new kp({
           resModel: instanceModel
-        }).render().el);
+        });
+        this.$('#kp-placeholder').html(kpDropdown.render().el);
+        this.addSubView(kpDropdown);
         this.refreshIPList();
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
@@ -13124,6 +13163,7 @@ function program4(depth0,data) {
           selection: selectTopicName
         });
         this.snsNotiDropdown.on('change', this.model.setNotificationTopic, this.model);
+        this.addSubView(this.snsNotiDropdown);
         data = this.model.toJSON();
         _ref = data.policies;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -13164,6 +13204,7 @@ function program4(depth0,data) {
         dropdown = new snsDropdown({
           selection: selection
         });
+        this.addSubView(dropdown);
         if (display) {
           $('.policy-sns-placeholder').html(dropdown.render(needInit).el);
           return $('.sns-policy-field').show();

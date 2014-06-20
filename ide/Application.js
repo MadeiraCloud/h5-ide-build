@@ -1580,7 +1580,7 @@ return TEMPLATE; });
           var opsModel, p;
           opsModel = App.model.stackList().get(id);
           p = opsModel.remove();
-          if (opsModel.isPresisted()) {
+          if (opsModel.isPersisted()) {
             return p.then(function() {
               return notification("info", sprintf(lang.ide.TOOL_MSG_ERR_DEL_STACK_SUCCESS, name));
             }, function() {
@@ -1755,7 +1755,7 @@ return TEMPLATE; });
         }
         return o;
       },
-      isPresisted: function() {
+      isPersisted: function() {
         return !!this.get("id");
       },
       isExisting: function() {
@@ -2913,6 +2913,9 @@ return TEMPLATE; });
             }
             break;
           case constant.OPS_STATE.OPS_STATE_DONE:
+            if (request.operation === "save") {
+              request.targetId = req.data;
+            }
             request.state = {
               completed: true,
               terminated: req.code === 'Forge.App.Terminate'
