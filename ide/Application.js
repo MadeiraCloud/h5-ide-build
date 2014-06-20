@@ -3430,6 +3430,12 @@ return TEMPLATE; });
         if (_.isString(workspace)) {
           workspace = this.__spacesById[workspace];
         }
+        if (this.__awakeSpace === workspace) {
+          return;
+        }
+        if (workspace.isRemoved()) {
+          return;
+        }
         if (this.__awakeSpace) {
           this.__awakeSpace.sleep();
         }
@@ -3620,8 +3626,8 @@ return TEMPLATE; });
         console.warn("The OpsModel is not found when opening.");
         return;
       }
-      if (opsModel.isProcessing() && !opsModel.testState(OpsModel.State.Initializing)) {
-        console.warn("Avoiding opening a processing OpsModel.");
+      if (opsModel.testState(OpsModel.State.Destroyed)) {
+        console.error("The OpsModel is destroyed", opsModel);
         return;
       }
       editor = this.workspaces.find(opsModel);
@@ -3767,8 +3773,11 @@ return TEMPLATE; });
       };
 
       Workspace.prototype.cleanup = function() {
-        console.assert(this.view, "Cannot find @view when workspace is about to remove:", this);
-        return this.view.remove();
+        if (this.view) {
+          this.view.remove();
+        } else {
+          console.warn("Cannot find @view when workspace is about to remove:", this);
+        }
       };
 
       Workspace.prototype.isRemovable = function() {

@@ -3416,7 +3416,7 @@
             ip = _ref3[_j];
             eniRes.PrivateIpAddressSet.push({
               "PrivateIpAddress": ip.privateIpAddress,
-              "AutoAssign": true,
+              "AutoAssign": false,
               "Primary": ip.primary
             });
           }
@@ -3530,7 +3530,7 @@
           this.addLayout(rtbComp, true, this.theVpc);
         }
       }, function() {
-        var acl, aclComp, aclName, aclRes, aws_acl, egress, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        var acl, aclComp, aclName, aclRes, aws_acl, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         _ref = this.getResourceByType("ACL") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_acl = _ref[_i];
@@ -3554,14 +3554,6 @@
           _ref1 = aws_acl.entries;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             acl = _ref1[_j];
-            egress = acl.egress;
-            if (_.isString(egress)) {
-              if (egress === 'true') {
-                egress = true;
-              } else {
-                egress = false;
-              }
-            }
             aclRes.EntrySet.push({
               "RuleAction": acl.ruleAction,
               "Protocol": Number(acl.protocol),
@@ -4039,8 +4031,8 @@
           var attachedInsRef, diffResult, instanceUid;
           if (originComps[insComp.uid]) {
             if (insComp.number && insComp.number > 1) {
-              diffResult = diffTree.compare(originComps[insComp.uid], insComp);
               if (diffResult) {
+                diffResult = diffTree.compare(originComps[insComp.uid], insComp);
                 changedServerGroupUidMap[insComp.serverGroupUid] = true;
                 attachedInsRef = insComp.resource.Attachment.InstanceId;
                 if (attachedInsRef) {
