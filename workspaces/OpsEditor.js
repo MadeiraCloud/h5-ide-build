@@ -1567,7 +1567,7 @@ return TEMPLATE; });
         this.view.render();
         this.initDesign();
         this.initEditor();
-        if (this.opsModel.isPresisted() && !this.opsModel.getThumbnail()) {
+        if (!this.opsModel.getThumbnail()) {
           this.saveThumbnail();
         }
       };
@@ -1575,11 +1575,13 @@ return TEMPLATE; });
       OpsEditorBase.prototype.initEditor = function() {};
 
       OpsEditorBase.prototype.saveThumbnail = function() {
-        return Thumbnail.generate($("#svg_canvas")).then((function(_this) {
-          return function(thumbnail) {
-            return _this.opsModel.saveThumbnail(thumbnail);
-          };
-        })(this));
+        if (this.opsModel.isPresisted()) {
+          return Thumbnail.generate($("#svg_canvas")).then((function(_this) {
+            return function(thumbnail) {
+              return _this.opsModel.saveThumbnail(thumbnail);
+            };
+          })(this));
+        }
       };
 
       OpsEditorBase.prototype.showEditor = function() {
@@ -3214,7 +3216,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/AppView',["./StackView", "OpsModel", "./template/TplOpsEditor", "UI.modalplus"], function(StackView, OpsModel, OpsEditorTpl, Modal) {
+  define('workspaces/editor/AppView',["./StackView", "OpsModel", "./template/TplOpsEditor", "UI.modalplus", "i18n!nls/lang.js"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang) {
     return StackView.extend({
       bindUserEvent: function() {
         if (this.workspace.isAppEditMode()) {
@@ -3240,10 +3242,28 @@ return TEMPLATE; });
           disableClose: true,
           hideClose: true,
           onConfirm: function() {
-            var json;
+            var $ipt, json;
+            $ipt = modal.tpl.find("#ImportSaveAppName");
+            $ipt.parsley('custom', function(val) {
+              var apps;
+              if (!MC.validate('awsName', val)) {
+                return lang.ide.PARSLEY_SHOULD_BE_A_VALID_STACK_NAME;
+              }
+              debugger;
+              apps = App.model.appList().where({
+                name: val
+              });
+              if (apps.length === 1 && apps[0] === self.workspace.opsModel || apps.length === 0) {
+                return;
+              }
+              return sprintf(lang.ide.PARSLEY_TYPE_NAME_CONFLICT, 'App', val);
+            });
+            if (!$ipt.parsley('validate')) {
+              return;
+            }
             modal.tpl.find(".modal-confirm").attr("disabled", "disabled");
             json = self.workspace.design.serialize();
-            json.name = $("#ImportSaveAppName").val();
+            json.name = $ipt.val();
             return self.workspace.opsModel.saveApp(json).then(function() {
               return modal.close();
             }, function(err) {
@@ -3385,25 +3405,23 @@ return TEMPLATE; });
         region = this.opsModel.get("region");
         stateModule = this.opsModel.getJsonData().agent.module;
         return Q.all([App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources(constant.RESTYPE.DHCP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), CloudResources("OpsResource", this.opsModel.getVpcId()).init(this.opsModel.get("region")).fetchForce(), this.fetchAmiData()]).then(function() {
-          var newJson, result;
           if (self.isRemoved()) {
             return;
           }
           if (self.opsModel.isImported()) {
             return;
           }
-          newJson = self.opsModel.generateJsonFromRes();
-          self.differ = new ResDiff({
+          return self.differ = new ResDiff({
             old: self.opsModel.getJsonData(),
-            "new": newJson,
-            callback: function() {
-              return self.opsModel.saveApp(self.design.serialize());
+            "new": self.opsModel.generateJsonFromRes(),
+            callback: function(confirm) {
+              if (confirm) {
+                self.opsModel.saveApp(self.design.serialize());
+              } else {
+                self.remove();
+              }
             }
           });
-          result = self.differ.getChangeInfo();
-          if (result.hasResChange) {
-            self.opsModel.__setJsonData(newJson);
-          }
         }, function(err) {
           if (err.error === 286) {
             self.view.showVpcNotExist(self.opsModel.get("name"), function() {

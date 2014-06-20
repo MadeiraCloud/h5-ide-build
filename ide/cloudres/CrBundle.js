@@ -1471,7 +1471,7 @@
           asg.Instances = ((_ref1 = asg.Instances) != null ? _ref1.member : void 0) || [];
           asg.LoadBalancerNames = ((_ref2 = asg.LoadBalancerNames) != null ? _ref2.member : void 0) || [];
           asg.TerminationPolicies = ((_ref3 = asg.TerminationPolicies) != null ? _ref3.member : void 0) || [];
-          asg.Subnets = (asg.VPCZoneIdentifier || asg.VpczoneIdentifier).split(",");
+          asg.Subnets = (asg.VPCZoneIdentifier || asg.VpczoneIdentifier || "").split(",");
         }
         return asgs;
       },

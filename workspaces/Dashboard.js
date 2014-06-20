@@ -1430,7 +1430,7 @@ return TEMPLATE; });
 define('workspaces/dashboard/VisualizeVpcTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
@@ -1457,7 +1457,7 @@ function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n		";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(14, program14, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(18, program18, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	";
   return buffer;
@@ -1496,9 +1496,10 @@ function program9(depth0,data) {
   buffer += "\"\n					";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n					<h5>"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h5>\n					<ol class=\"tac\">\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+  buffer += ">\n					<h5>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</h5>\n					<ol class=\"tac\">\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subnet)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">subnet</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1531,6 +1532,22 @@ function program12(depth0,data) {
   }
 
 function program14(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ("
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")";
+  return buffer;
+  }
+
+function program16(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program18(depth0,data) {
   
   
   return "<div class=\"unmanaged-vpc-empty\">There is no VPC to import.</div>";
@@ -2316,21 +2333,17 @@ function program14(depth0,data) {
           for (vpc in vpcMap) {
             resources = vpcMap[vpc];
             try {
+              tags = {};
               if (resources.Tag && resources.Tag.item && resources.Tag.item.length) {
-                tags = [];
                 _ref = resources.Tag.item;
                 for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                   t = _ref[_i];
-                  if (t) {
-                    tags.push(t.key);
-                  }
-                }
-                if (tags.indexOf("Created by") >= 0 && tags.indexOf("app-id") >= 0) {
-                  continue;
+                  tags[t.key] = t.value;
                 }
               }
               obj = {
                 id: vpc,
+                name: tags["Name"] || tags["name"],
                 subnet: resourceMap(resources["AWS|VPC|Subnet"]),
                 ami: instanceMap(resources["AWS|EC2|Instance"]),
                 stopped: instanceMap(resources["AWS|EC2|Instance"], true),
