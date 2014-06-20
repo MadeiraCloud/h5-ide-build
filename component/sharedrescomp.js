@@ -4495,6 +4495,7 @@ return TEMPLATE; });
         'resource.AssociatePublicIpAddress': true,
         'resource.KeyName': true,
         'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId',
+        'resource.AssociationSet.n.NetworkAclAssociationId': 'resource.AssociationSet.n.NetworkAclAssociationId',
         'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping',
         'resource.VolumeSize': 'resource.VolumeSize'
       };
@@ -4922,7 +4923,7 @@ return TEMPLATE; });
             }, function(error) {
               $confirmBtn.text('OK, got it');
               $confirmBtn.removeClass('disabled');
-              return notification('error', error);
+              return notification('error', error.msg);
             });
           } else {
             return that.modal.close();
