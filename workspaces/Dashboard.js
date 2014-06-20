@@ -280,7 +280,7 @@ TEMPLATE.globalResources=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
@@ -303,18 +303,18 @@ function program5(depth0,data) {
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n";
+  buffer += "\n<li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(11, program11, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "</li>\n";
   return buffer;
   }
 function program8(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<li class=\"disabled\" data-appid=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    <div class=\"thumbnail app-thumbnail\"></div>\n    <div class=\"region-resource-progess";
+  buffer += "\n    <div class=\"thumbnail app-thumbnail\"></div>\n    <div class=\"region-resource-progess";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" style=\"width:"
@@ -323,7 +323,7 @@ function program8(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " - "
     + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "...\n    </div>\n</li>\n";
+    + "...\n    </div>\n";
   return buffer;
   }
 function program9(depth0,data) {
@@ -335,9 +335,7 @@ function program9(depth0,data) {
 function program11(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<li data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n  ";
+  buffer += "\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  <div class=\"thumbnail app-thumbnail\"> <img src=\""
@@ -353,7 +351,7 @@ function program11(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n  </div>\n</li>\n";
+    + "</span>\n  </div>\n";
   return buffer;
   }
 function program12(depth0,data) {

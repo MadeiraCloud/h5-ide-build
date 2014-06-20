@@ -748,10 +748,13 @@ return TEMPLATE; });
         } else {
           this.modal.render('nocredential');
         }
-        return this.collection.on('change', this.renderKeys, this);
+        return this.collection.on('update', this.renderKeys, this);
       },
       renderKeys: function() {
         var data;
+        if (!this.collection.isReady()) {
+          return false;
+        }
         data = {
           keys: this.collection.toJSON()
         };

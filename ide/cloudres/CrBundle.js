@@ -2921,7 +2921,7 @@
     })();
     Converters = [
       function() {
-        var com, compJson, retainList, uid, _ref, _ref1;
+        var com, compJson, kpRes, retainList, uid, _ref, _ref1;
         retainList = ['AWS.EC2.Tag', 'AWS.AutoScaling.Tag', constant.RESTYPE.KP, constant.RESTYPE.TOPIC, constant.RESTYPE.SUBSCRIPTION, constant.RESTYPE.IAM, constant.RESTYPE.DHCP];
         _ref = this.originalJson.component;
         for (uid in _ref) {
@@ -2937,6 +2937,13 @@
             }
           }
           null;
+        }
+        if (!DEFAULT_KP) {
+          kpRes = {
+            "KeyFingerprint": "",
+            "KeyName": "DefaultKP"
+          };
+          this.add("KP", kpRes, "DefaultKP");
         }
         return null;
       }, function() {
@@ -3416,7 +3423,7 @@
             ip = _ref3[_j];
             eniRes.PrivateIpAddressSet.push({
               "PrivateIpAddress": ip.privateIpAddress,
-              "AutoAssign": true,
+              "AutoAssign": false,
               "Primary": ip.primary
             });
           }

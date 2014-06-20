@@ -8004,7 +8004,7 @@
           id: data.uid,
           appId: data.resource.GroupId,
           groupName: data.resource.GroupName,
-          description: data.name === "DefaultSG" ? "default VPC security group" : data.resource.GroupDescription
+          description: data.resource.GroupDescription
         }, {
           isDeserialize: true
         });

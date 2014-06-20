@@ -6733,11 +6733,15 @@ function program30(depth0,data) {
         'id': null
       },
       init: function(uid) {
-        var elb, elbDistrMap, instanceStateObj, myElbComponent, port, splitIndex, target, _ref;
+        var elb, elbDistrMap, instanceStateObj, myElbComponent, port, splitIndex, target;
         this.set('id', uid);
         this.set('uid', uid);
         myElbComponent = Design.instance().component(uid);
-        elb = (_ref = CloudResources(constant.RESTYPE.ELB, Design.instance().region()).get(myElbComponent.get("appId"))) != null ? _ref.toJSON() : void 0;
+        elb = CloudResources(constant.RESTYPE.ELB, Design.instance().region()).get(myElbComponent.get("appId"));
+        if (!elb) {
+          return false;
+        }
+        elb = elb.toJSON();
         if (elb.ConnectionDraining) {
           if (elb.ConnectionDraining.Enabled) {
             elb.ConnectionDrainingInfo = "Enabled; Timeout: " + elb.ConnectionDraining.Timeout + " seconds";
@@ -6747,10 +6751,6 @@ function program30(depth0,data) {
         } else {
           elb.ConnectionDrainingInfo = 'Disabled';
         }
-        if (!elb) {
-          return false;
-        }
-        elb = $.extend(true, {}, elb);
         elb.name = myElbComponent.get('name');
         elb.isInternet = elb.Scheme === 'internet-facing';
         target = elb.HealthCheck.Target;
@@ -7013,15 +7013,15 @@ function program25(depth0,data) {
     + "</dt>\n        <dd>\n          <div class=\"click-select tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_SELECT_ALL", {hash:{},data:data}))
     + "\">(A)"
-    + escapeExpression(((stack1 = (depth0 && depth0.DNSName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.Dnsname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n          <div class=\"click-select tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_SELECT_ALL", {hash:{},data:data}))
     + "\">(AAAA)ipv6."
-    + escapeExpression(((stack1 = (depth0 && depth0.DNSName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.Dnsname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n          <div class=\"click-select tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_TIP_CLICK_TO_SELECT_ALL", {hash:{},data:data}))
     + "\">(A/AAAA)dualstack."
-    + escapeExpression(((stack1 = (depth0 && depth0.DNSName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.Dnsname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_HOST_ZONE_ID", {hash:{},data:data}))
     + "</dt>\n        <dd>"
