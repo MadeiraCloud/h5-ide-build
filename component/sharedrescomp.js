@@ -4639,6 +4639,12 @@ return TEMPLATE; });
           if (path) {
             path.length = 0;
           }
+          if (typeofReal(a) === 'number') {
+            a = String(a);
+          }
+          if (typeofReal(b) === 'number') {
+            b = String(b);
+          }
           if (a !== b) {
             haveDiff = true;
             resultJSON[key] = {
@@ -4895,11 +4901,13 @@ return TEMPLATE; });
         options = {
           template: this.el,
           title: 'App Changes',
+          disableClose: true,
           confirm: {
             text: 'OK, got it'
           },
           width: '608px',
-          compact: true
+          compact: true,
+          preventClose: true
         };
         this.modal = new modalplus(options);
         this.modal.on('confirm', function() {
@@ -4921,7 +4929,9 @@ return TEMPLATE; });
           }
         }, this);
         this.modal.on('cancel', function() {
-          alert(1);
+          if (that.callback) {
+            that.callback(false);
+          }
           return that.modal.close();
         }, this);
         this.$el.html(template.frame());

@@ -1471,11 +1471,6 @@
           asg.Instances = ((_ref1 = asg.Instances) != null ? _ref1.member : void 0) || [];
           asg.LoadBalancerNames = ((_ref2 = asg.LoadBalancerNames) != null ? _ref2.member : void 0) || [];
           asg.TerminationPolicies = ((_ref3 = asg.TerminationPolicies) != null ? _ref3.member : void 0) || [];
-          asg.DefaultCooldown = Number(asg.DefaultCooldown);
-          asg.DesiredCapacity = Number(asg.DesiredCapacity);
-          asg.HealthCheckGracePeriod = Number(asg.HealthCheckGracePeriod);
-          asg.MaxSize = Number(asg.MaxSize);
-          asg.MinSize = Number(asg.MinSize);
           asg.Subnets = (asg.VPCZoneIdentifier || asg.VpczoneIdentifier).split(",");
         }
         return asgs;
@@ -1488,6 +1483,11 @@
           asg = data[_i];
           asg.id = asg.AutoScalingGroupARN;
           asg.Name = asg.AutoScalingGroupName;
+          asg.DefaultCooldown = String(asg.DefaultCooldown);
+          asg.DesiredCapacity = String(asg.DesiredCapacity);
+          asg.HealthCheckGracePeriod = String(asg.HealthCheckGracePeriod);
+          asg.MaxSize = String(asg.MaxSize);
+          asg.MinSize = String(asg.MinSize);
           asg.Subnets = (asg.VPCZoneIdentifier || asg.VpczoneIdentifier).split(",");
         }
         return data;
@@ -2663,7 +2663,7 @@
       var name;
       name = null;
       if (res.tagSet) {
-        name = res.tagSet.name || res.tagSet.Name;
+        name = res.tagSet.name || res.tagSet.Name || res.tagSet["aws:cloudformation:logical-id"];
       }
       return name;
     };
@@ -3524,7 +3524,7 @@
           this.addLayout(rtbComp, true, this.theVpc);
         }
       }, function() {
-        var acl, aclComp, aclRes, aws_acl, defaultName, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        var acl, aclComp, aclName, aclRes, aws_acl, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         _ref = this.getResourceByType("ACL") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_acl = _ref[_i];
@@ -3541,7 +3541,9 @@
           aclRes.NetworkAclId = aws_acl.id;
           if (aws_acl["default"]) {
             aclRes.Default = aws_acl["default"];
-            defaultName = "DefaultACL";
+            aclName = "DefaultACL";
+          } else {
+            aclName = TAG_NAME(aws_acl);
           }
           _ref1 = aws_acl.entries;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -3574,7 +3576,7 @@
               "SubnetId": CREATE_REF(subnetComp, 'resource.SubnetId')
             });
           }
-          aclComp = this.add("ACL", aclRes, defaultName);
+          aclComp = this.add("ACL", aclRes, aclName);
         }
       }, function() {
         var aws_elb, data, elbComp, elbRes, iamComp, instanceId, listener, me, sgId, sslCertRef, subnetId, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
@@ -3791,14 +3793,14 @@
             "AutoScalingGroupARN": "",
             "AutoScalingGroupName": "",
             "AvailabilityZones": [],
-            "DefaultCooldown": 0,
-            "DesiredCapacity": 0,
-            "HealthCheckGracePeriod": 0,
+            "DefaultCooldown": "0",
+            "DesiredCapacity": "0",
+            "HealthCheckGracePeriod": "0",
             "HealthCheckType": "",
             "LaunchConfigurationName": "",
             "LoadBalancerNames": [],
-            "MaxSize": 0,
-            "MinSize": 0,
+            "MaxSize": "0",
+            "MinSize": "0",
             "TerminationPolicies": [],
             "VPCZoneIdentifier": ""
           };
@@ -3838,7 +3840,7 @@
             return az.push(CREATE_REF(azComp, "resource.ZoneName"));
           });
           asgRes.AvailabilityZones = az;
-          asgComp = this.add("ASG", asgRes, aws_asg.Name);
+          asgComp = this.add("ASG", asgRes, TAG_NAME(aws_asg) || aws_asg.Name);
           this.addLayout(asgComp, true, firstSubnetComp);
           _.each(aws_asg.Subnets, function(e, key) {
             var subnetComp;

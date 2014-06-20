@@ -1193,6 +1193,7 @@ return TEMPLATE; });
               if (!_this.defaultKpIsSet()) {
                 return false;
               }
+              result = _this.workspace.applyAppEdit();
               _this.workspace.applyAppEdit(result, true);
               return (_ref = _this.updateModal) != null ? _ref.close() : void 0;
             };
