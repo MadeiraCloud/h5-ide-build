@@ -1,37 +1,16 @@
 define('workspaces/editor/template/TplProgress',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
-function program1(depth0,data) {
-  
-  
-  return "has-progess";
-  }
 
-function program3(depth0,data) {
-  
-  var stack1;
-  return escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  }
-
-function program5(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PROC_TITLE", {hash:{},data:data}));
-  }
-
-  buffer += "<div class='ops-process ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'>\n  <section class=\"processing-wrap\">\n    <header class=\"processing\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.title), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "<span class=\"process-info\">"
+  buffer += "<div class='ops-process'>\n  <section class=\"processing\">\n  	<header>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROC_TITLE", {hash:{},data:data}))
+    + "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
+    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n  	<div class=\"progress\"> <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div> </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
+    + "%;\"></div> </div>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
     + "</p>\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
@@ -57,17 +36,10 @@ function program5(depth0,data) {
         "click .btn-close-process": "close"
       },
       initialize: function() {
-        var data;
         this.listenTo(this.model, "destroy", this.updateState);
         this.listenTo(this.model, "change:state", this.updateState);
         this.listenTo(this.model, "change:progress", this.updateProgress);
-        data = {
-          progress: this.model.get("progress")
-        };
-        if (!this.model.testState(OpsModel.State.Initializing)) {
-          data.title = this.model.getStateDesc() + " your app...";
-        }
-        this.setElement($(OpsProgressTpl(data)).appendTo("#main"));
+        this.setElement($(OpsProgressTpl(this.model.toJSON())).appendTo("#main"));
         this.__progress = 0;
       },
       switchToDone: function() {
@@ -75,7 +47,7 @@ function program5(depth0,data) {
         this.$el.find(".success").show();
         self = this;
         setTimeout(function() {
-          self.$el.find(".processing-wrap").addClass("fadeout");
+          self.$el.find(".processing").addClass("fadeout");
           self.$el.find(".success").addClass("fadein");
         }, 10);
         setTimeout(function() {
@@ -85,7 +57,6 @@ function program5(depth0,data) {
       updateState: function() {
         switch (this.model.get("state")) {
           case OpsModel.State.Running:
-          case OpsModel.State.Stopped:
             if (this.__awake) {
               this.switchToDone();
             } else {
@@ -104,7 +75,6 @@ function program5(depth0,data) {
       updateProgress: function() {
         var pp, pro;
         pp = this.model.get("progress");
-        this.$el.toggleClass("has-progess", true);
         if (this.__progress > pp) {
           this.$el.toggleClass("rolling-back", true);
         }
@@ -151,9 +121,9 @@ function program5(depth0,data) {
           this.remove();
           throw new Error("Cannot find opsmodel while openning workspace.");
         }
-        if (opsModel.testState(OpsModel.State.Saving) || opsModel.testState(OpsModel.State.Terminating)) {
-          console.warn("Avoiding opening a saving/terminating OpsModel.");
+        if (!opsModel.testState(OpsModel.State.Initializing)) {
           this.remove();
+          console.warn("The OpsModel is not an starting app.");
           return;
         }
         this.opsModel = opsModel;
@@ -747,7 +717,7 @@ return TEMPLATE; });
         if (opsModel.isStack()) {
           btns = ["BtnRunStack", "BtnStackOps", "BtnZoom", "BtnExport", "BtnLinestyle", "BtnSwitchStates"];
         } else {
-          btns = ["BtnEditApp", "BtnAppOps", "BtnZoom", "BtnPng", "BtnLinestyle"];
+          btns = ["BtnEditApp", "BtnAppOps", "BtnZoom", "BtnPng", "BtnLinestyle", "BtnSwitchStates"];
         }
         tpl = "";
         for (_i = 0, _len = btns.length; _i < _len; _i++) {
@@ -780,10 +750,12 @@ return TEMPLATE; });
           this.$el.children(".icon-apply-app, .icon-cancel-update-app").toggle(isAppEdit);
           if (isAppEdit) {
             this.$el.children(".icon-terminate, .icon-stop, .icon-play, .icon-refresh, .icon-save-app, .icon-reload").hide();
+            this.$el.children(".toolbar-visual-ops-switch").show();
           } else {
             this.$el.children(".icon-terminate, .icon-refresh, .icon-save-app, .icon-reload").show();
             this.$el.children(".icon-stop").toggle(opsModel.get("stoppable") && opsModel.testState(OpsModel.State.Running));
             this.$el.children(".icon-play").toggle(opsModel.testState(OpsModel.State.Stopped));
+            this.$el.children(".toolbar-visual-ops-switch").hide();
           }
         }
         if (this.__saving) {
@@ -2909,12 +2881,13 @@ return TEMPLATE; });
         changeVisible: true,
         update: function($, workspace) {
           var data;
-          data = this.renderData(true);
+          data = this.renderData(true, workspace);
           $('.state-success b').text(data.successCount);
           return $('.state-failed b').text(data.failCount);
         },
-        renderData: function(visible) {
+        renderData: function(visible, workspace) {
           var failed, state, stateList, status, succeed, _i, _j, _len, _len1, _ref;
+          this.workspace = workspace;
           if (!visible) {
             return {};
           }
@@ -3054,7 +3027,7 @@ return TEMPLATE; });
             view.toggle(item.visible);
             isVisible = item.visible;
           }
-          view.data = (typeof item.renderData === "function" ? item.renderData(isVisible) : void 0) || {};
+          view.data = (typeof item.renderData === "function" ? item.renderData(isVisible, this.workspace) : void 0) || {};
           if (item.remove) {
             view.clearGarbage.push(_.bind(item.remove, item));
           }

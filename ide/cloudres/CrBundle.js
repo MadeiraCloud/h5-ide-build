@@ -3416,7 +3416,7 @@
             ip = _ref3[_j];
             eniRes.PrivateIpAddressSet.push({
               "PrivateIpAddress": ip.privateIpAddress,
-              "AutoAssign": false,
+              "AutoAssign": true,
               "Primary": ip.primary
             });
           }
