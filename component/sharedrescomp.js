@@ -4495,6 +4495,7 @@ return TEMPLATE; });
         'resource.AssociatePublicIpAddress': true,
         'resource.KeyName': true,
         'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId',
+        'resource.AssociationSet.n.NetworkAclAssociationId': 'resource.AssociationSet.n.NetworkAclAssociationId',
         'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping',
         'resource.VolumeSize': 'resource.VolumeSize'
       };
@@ -4789,7 +4790,7 @@ return TEMPLATE; });
       };
     };
     prepareNode = function(path, data) {
-      var compAttrObj, compUID, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, valueRef, _getRef, _ref;
+      var attrObj, compAttrObj, compUID, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, oldValue, valueRef, _getRef, _ref;
       _getRef = function(value) {
         var refMatchAry, refName, refRegex, refUID;
         if (_.isString(value) && value.indexOf('@{') === 0) {
@@ -4826,7 +4827,10 @@ return TEMPLATE; });
         newAttr = compAttrObj.newAttr;
         valueRef = _getRef(data.value);
         if (valueRef) {
-          data.value = this.h.getNodeMap(valueRef).oldAttr;
+          attrObj = this.h.getNodeMap(valueRef);
+          oldValue = attrObj.oldAttr;
+          newValue = attrObj.newAttr;
+          data.value = oldValue || newValue;
         }
         if (path.length === 1) {
           compUID = path[0];
@@ -4922,7 +4926,7 @@ return TEMPLATE; });
             }, function(error) {
               $confirmBtn.text('OK, got it');
               $confirmBtn.removeClass('disabled');
-              return notification('error', error);
+              return notification('error', error.msg);
             });
           } else {
             return that.modal.close();
