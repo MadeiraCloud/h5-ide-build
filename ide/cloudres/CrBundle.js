@@ -3852,7 +3852,7 @@
           this.asgs[aws_asg.Name] = asgComp;
         }
       }, function() {
-        var asgComp, aws_nc, ncComp, ncRes, snsComp, _i, _len, _ref;
+        var asgComp, aws_nc, ncComp, ncRes, topicComp, _i, _len, _ref;
         _ref = this.getResourceByType("NC");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_nc = _ref[_i];
@@ -3868,13 +3868,18 @@
           } else {
             continue;
           }
-          snsComp = _.first(_.filter(this.originalJson.component, function(com) {
+          topicComp = _.first(_.filter(this.originalJson.component, function(com) {
             if (com.type === constant.RESTYPE.TOPIC) {
               return com.resource.TopicArn === ncRes.TopicARN;
             }
           }));
-          if (snsComp) {
-            ncRes.TopicARN = CREATE_REF(snsComp, 'resource.TopicArn');
+          if (topicComp) {
+            ncRes.TopicARN = CREATE_REF(topicComp, 'resource.TopicArn');
+          } else {
+            topicComp = this.addTopic(ncRes.TopicARN);
+            if (topicComp) {
+              ncRes.TopicARN = CREATE_REF(topicComp, 'resource.TopicArn');
+            }
           }
           ncComp = this.add("NC", ncRes, "SnsNotification");
         }

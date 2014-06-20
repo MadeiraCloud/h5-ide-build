@@ -498,17 +498,10 @@ TEMPLATE.toolbar.BtnSwitchStates=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, self=this;
-
-function program1(depth0,data) {
   
-  
-  return "\n<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">\n    Reload States\n</button>\n";
-  }
 
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.reloadOn), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
+
+  return "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">Reload States</button>";
   };
 TEMPLATE.toolbar.BtnReloadStates=Handlebars.template(__TEMPLATE__);
 
@@ -736,12 +729,12 @@ return TEMPLATE; });
         }
         if (this.workspace.opsModel.isApp()) {
           ami = [].concat(this.workspace.design.componentsOfType(constant.RESTYPE.INSTANCE), this.workspace.design.componentsOfType(constant.RESTYPE.LC));
-          tpl += OpsEditorTpl.toolbar.BtnReloadStates({
-            reloadOn: _.find(ami, function(comp) {
-              var _ref;
-              return comp && (((_ref = comp.attributes.state) != null ? _ref.length : void 0) > 0);
-            })
-          });
+          if (_.find(ami, function(comp) {
+            var _ref;
+            return comp && (((_ref = comp.attributes.state) != null ? _ref.length : void 0) > 0);
+          })) {
+            tpl += OpsEditorTpl.toolbar.BtnReloadStates();
+          }
         }
         this.setElement(this.workspace.view.$el.find(".OEPanelTop").html(tpl));
         this.updateTbBtns();
