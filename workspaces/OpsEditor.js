@@ -121,6 +121,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.remove();
           throw new Error("Cannot find opsmodel while openning workspace.");
         }
+        if (!opsModel.testState(OpsModel.State.Initializing)) {
+          this.remove();
+          console.warn("The OpsModel is not an starting app.");
+          return;
+        }
         this.opsModel = opsModel;
         return Workspace.apply(this, arguments);
       }

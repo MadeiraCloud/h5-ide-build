@@ -967,7 +967,7 @@ TEMPLATE.navigation=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
@@ -987,38 +987,32 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "<li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"truncate nav-truncate icon-app-";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  buffer += "\" title=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ["
+    + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "]\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</li>\n  ";
+  buffer += "</li>";
   return buffer;
   }
 function program3(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n  <li class=\"truncate nav-truncate icon-app-pending\" title=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " ["
-    + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]\">";
-  return buffer;
+  
+  return "pending";
   }
 
 function program5(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n  <li data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"truncate nav-truncate icon-app-"
-    + escapeExpression(helpers.tolower.call(depth0, (depth0 && depth0.stateDesc), {hash:{},data:data}))
-    + "\" title=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " ["
-    + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]\">";
-  return buffer;
+  
+  return escapeExpression(helpers.tolower.call(depth0, (depth0 && depth0.stateDesc), {hash:{},data:data}));
   }
 
 function program7(depth0,data) {
@@ -3510,7 +3504,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "JsonExporter", "constant", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, JsonExporter, constant) {
+  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -3608,7 +3602,7 @@ return TEMPLATE; });
       return this.openOps(this.model.createStackByJson(result));
     };
     VisualOps.prototype.openOps = function(opsModel, refresh) {
-      var editor, space;
+      var editor;
       if (!opsModel) {
         return;
       }
@@ -3619,22 +3613,20 @@ return TEMPLATE; });
         console.warn("The OpsModel is not found when opening.");
         return;
       }
-      space = this.workspaces.find(opsModel);
-      if (space) {
-        if (refresh) {
-          space.remove();
-          editor = new OpsEditor(opsModel);
-          editor.activate();
-          return editor;
-        } else {
-          space.activate();
-          return space;
-        }
-      } else {
-        editor = new OpsEditor(opsModel);
-        editor.activate();
-        return editor;
+      if (opsModel.isProcessing() && !opsModel.testState(OpsModel.State.Initializing)) {
+        console.warn("Avoiding opening a processing OpsModel.");
+        return;
       }
+      editor = this.workspaces.find(opsModel);
+      if (editor && refresh) {
+        editor.remove();
+        editor = null;
+      }
+      if (!editor) {
+        editor = new OpsEditor(opsModel);
+      }
+      editor.activate();
+      return editor;
     };
     VisualOps.prototype.createOps = function(region) {
       var editor;

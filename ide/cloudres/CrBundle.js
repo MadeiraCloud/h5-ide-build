@@ -3495,7 +3495,7 @@
             route = {
               "DestinationCidrBlock": i.destinationCidrBlock,
               "GatewayId": "",
-              "InstanceId": i.instanceId && insComp ? CREATE_REF(insComp, 'resource.InstanceId') : "",
+              "InstanceId": "",
               "NetworkInterfaceId": i.networkInterfaceId && eniComp ? CREATE_REF(eniComp, 'resource.NetworkInterfaceId') : "",
               "Origin": i.gatewayId === "local" ? i.origin : ""
             };

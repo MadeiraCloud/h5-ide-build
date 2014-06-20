@@ -12264,14 +12264,15 @@
       return vl;
     };
     ChildElementProto.listVolume = function(appId) {
-      var data, design, resource_list, v, vl, volume, _i, _len, _ref, _ref1, _ref2;
+      var data, design, instanceList, v, vl, volume, volumeList, _i, _len, _ref, _ref1, _ref2;
       vl = [];
       design = this.model.design();
-      resource_list = CloudResources(constant.RESTYPE.INSTANCE, design.region());
-      if (!resource_list) {
+      instanceList = CloudResources(constant.RESTYPE.INSTANCE, design.region());
+      volumeList = CloudResources(constant.RESTYPE.VOL, design.region());
+      if (!instanceList) {
         return vl;
       }
-      data = (_ref = resource_list.get(appId)) != null ? _ref.toJSON() : void 0;
+      data = (_ref = instanceList.get(appId)) != null ? _ref.toJSON() : void 0;
       if (data && data.blockDeviceMapping) {
         _ref1 = data.blockDeviceMapping;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -12279,7 +12280,10 @@
           if (data.rootDeviceName.indexOf(v.deviceName) !== -1) {
             continue;
           }
-          volume = (_ref2 = resource_list.get(v.ebs.volumeId)) != null ? _ref2.attributes : void 0;
+          volume = (_ref2 = volumeList.get(v.ebs.volumeId)) != null ? _ref2.attributes : void 0;
+          if (!volume) {
+            continue;
+          }
           if (volume) {
             vl.push({
               name: v.deviceName,
