@@ -1336,8 +1336,8 @@ return TEMPLATE; });
       initialize: function(options) {
         this.resModel = options ? options.resModel : null;
         this.collection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
-        this.collection.on('change', this.renderKeys, this);
-        this.collection.on('update', this.renderKeys, this);
+        this.listenTo(this.collection, 'update', this.renderKeys);
+        this.listenTo(this.collection, 'change', this.renderKeys);
         if (!this.resModel) {
           this.__mode = 'runtime';
         }
@@ -4495,7 +4495,6 @@ return TEMPLATE; });
         'resource.AssociatePublicIpAddress': true,
         'resource.KeyName': true,
         'resource.AssociationSet.n.RouteTableAssociationId': 'resource.AssociationSet.n.RouteTableAssociationId',
-        'resource.AssociationSet.n.NetworkAclAssociationId': 'resource.AssociationSet.n.NetworkAclAssociationId',
         'resource.BlockDeviceMapping': 'resource.BlockDeviceMapping',
         'resource.VolumeSize': 'resource.VolumeSize'
       };
@@ -4923,7 +4922,7 @@ return TEMPLATE; });
             }, function(error) {
               $confirmBtn.text('OK, got it');
               $confirmBtn.removeClass('disabled');
-              return notification('error', error.msg);
+              return notification('error', error);
             });
           } else {
             return that.modal.close();
