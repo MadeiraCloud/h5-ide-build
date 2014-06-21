@@ -2287,7 +2287,6 @@
         ami = amiArray[_i];
         ami.id = ami.imageId;
         delete ami.imageId;
-        delete ami.json;
         bdm = {};
         _ref1 = ((_ref = ami.blockDeviceMapping) != null ? _ref.item : void 0) || [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {

@@ -1818,9 +1818,11 @@ function program1(depth0,data,depth1) {
 function program2(depth0,data,depth2) {
   
   var buffer = "", stack1;
-  buffer += "\n<li class=\"bubble resource-item instance\" data-bubble-template=\"bubbleAMIInfo\" data-bubble-data='"
-    + escapeExpression(((stack1 = (depth0 && depth0.json)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "' data-type=\"INSTANCE\" data-option='{\"imageId\":\""
+  buffer += "\n<li class=\"bubble resource-item instance\" data-bubble-template=\"resPanelAmiInfo\" data-bubble-data='{\"region\":\""
+    + escapeExpression(((stack1 = (depth2 && depth2.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\",\"imageId\":\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"}' data-type=\"INSTANCE\" data-option='{\"imageId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"}'>\n  ";
   stack1 = helpers['if'].call(depth0, (depth2 && depth2.fav), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -2199,6 +2201,34 @@ return TEMPLATE; });
         return $("#OpsEditor").filter(":visible").children(".OEPanelLeft").trigger("RECALC");
       }, 150);
     });
+    MC.template.resPanelAmiInfo = function(data) {
+      var ami, config, e, _ref;
+      try {
+        data = JSON.parse(data);
+      } catch (_error) {
+        e = _error;
+      }
+      if (!data.region || !data.imageId) {
+        return;
+      }
+      ami = CloudResources(constant.RESTYPE.AMI, data.region).get(data.imageId);
+      if (!ami) {
+        return;
+      }
+      ami = ami.toJSON();
+      ami.imageSize = ami.imageSize || ((_ref = ami.blockDeviceMapping[ami.rootDeviceName]) != null ? _ref.volumeSize : void 0);
+      try {
+        config = App.model.getOsFamilyConfig(data.region);
+        config = config[ami.osFamily] || config[constant.OS_TYPE_MAPPING[ami.osType]];
+        config = ami.rootDeviceType === "ebs" ? config.ebs : config['instance store'];
+        config = ami.architecture === "x86_64" ? config["64"] : config["32"];
+        config = config[ami.virtualizationType || "paravirtual"];
+        ami.instanceType = config.join(", ");
+      } catch (_error) {
+        e = _error;
+      }
+      return MC.template.bubbleAMIInfo(ami);
+    };
     return Backbone.View.extend({
       events: {
         "click .btn-fav-ami": "toggleFav",
@@ -2372,36 +2402,9 @@ return TEMPLATE; });
           }
         });
         ms.fav = this.__amiType === "FavoriteAmi";
-        ms = _.map(ms, (function(_this) {
-          return function(ami, index) {
-            var _ref;
-            ami.attributes.imageSize = (ami != null ? ami.attributes.imageSize : void 0) || ((_ref = ami.attributes.blockDeviceMapping[ami.attributes.rootDeviceName]) != null ? _ref.volumeSize : void 0);
-            ami.attributes.instanceType = _this.addInstanceType(ami.attributes).join(",");
-            ami.attributes.json = JSON.stringify(ami.toJSON());
-            return ami;
-          };
-        })(this));
+        ms.region = this.workspace.opsModel.get("region");
         html = LeftPanelTpl.ami(ms);
         return this.$el.find(".resource-list-ami").html(html);
-      },
-      addInstanceType: function(ami) {
-        var data, e, region;
-        region = this.workspace.opsModel.get('region');
-        if (!ami || !region) {
-          return [];
-        }
-        data = App.model.getOsFamilyConfig(region);
-        try {
-          data = data[ami.osFamily] || data[constant.OS_TYPE_MAPPING[ami.osType]];
-          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance store'];
-          data = ami.architecture === "x86_64" ? data["64"] : data["32"];
-          data = data[ami.virtualizationType || "paravirtual"];
-        } catch (_error) {
-          e = _error;
-          console.error("Invalid instance type list data", ami, App.model.getOsFamilyConfig(region));
-          data = [];
-        }
-        return data || [];
       },
       updateDisableItems: function() {
         if (!this.workspace.isAwake()) {

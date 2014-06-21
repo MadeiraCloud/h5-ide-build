@@ -4467,7 +4467,19 @@ return TEMPLATE; });
         return _results;
       };
       _compare = function(a, b, key, path, resultJSON) {
-        var aString, attrPath, attrPathAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, typeA, typeB, v, value1, value2, _i, _len;
+        var aAry, aString, attrPath, attrPathAry, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, typeA, typeB, v, value1, value2, _i, _len;
+        if (key === 'VPCZoneIdentifier') {
+          aAry = a.split(',');
+          bAry = b.split(',');
+          aAry = _.map(aAry, function(ref) {
+            return $.trim(ref);
+          });
+          bAry = _.map(bAry, function(ref) {
+            return $.trim(ref);
+          });
+          a = aAry;
+          b = bAry;
+        }
         if (path) {
           if (key) {
             path = path.concat([key]);
