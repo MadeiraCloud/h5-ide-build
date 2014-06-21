@@ -2646,7 +2646,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('ide/cloudres/CloudImportVpc',["CloudResources", "ide/cloudres/CrCollection", "constant", "ApiRequest", "DiffTree"], function(CloudResources, CrCollection, constant, ApiRequest, DiffTree) {
-    var AWS_ID, CREATE_REF, ConverterData, Converters, DEFAULT_KP, DEFAULT_SG, TAG_NAME, UID, convertResToJson, processServerGroup, __createRequestParam;
+    var AWS_ID, CREATE_REF, ConverterData, Converters, TAG_NAME, UID, convertResToJson, processServerGroup, __createRequestParam;
     CREATE_REF = function(compOrUid, attr) {
       if (!compOrUid) {
         return '';
@@ -2658,8 +2658,6 @@
       }
     };
     UID = MC.guid;
-    DEFAULT_SG = {};
-    DEFAULT_KP = null;
     AWS_ID = function(dict, type) {
       var key;
       key = constant.AWS_RESOURCE_KEY[type];
@@ -2710,6 +2708,7 @@
           layout: []
         }, originalJson);
         this.originAppJSON = originalJson;
+        this.DEFAULT_KP = null;
         this.COMPARISONOPERATOR = {
           "GreaterThanOrEqualToThreshold": ">=",
           "GreaterThanThreshold": ">",
@@ -2931,13 +2930,14 @@
               this.iams[com.resource.ServerCertificateMetadata.Arn] = compJson;
             } else if (com.type === constant.RESTYPE.KP) {
               if (com.name === "DefaultKP") {
-                DEFAULT_KP = com;
+                this.DEFAULT_KP = jQuery.extend(true, {}, com);
+                this.component[com.uid] = this.DEFAULT_KP;
               }
             }
           }
           null;
         }
-        if (!DEFAULT_KP) {
+        if (!this.DEFAULT_KP) {
           kpRes = {
             "KeyFingerprint": "",
             "KeyName": "DefaultKP"
@@ -3088,7 +3088,7 @@
           this.addLayout(cgwComp, false);
         }
       }, function() {
-        var aws_sg, genRules, groupId, originSGComp, sgComp, sgRefMap, sgRes, sg_rule, that, vpcComp, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        var aws_sg, defaultSg, defaultSgComp, genRules, groupId, originSGComp, sgComp, sgRefMap, sgRes, sg_rule, that, visualopsDefaultSg, vpcComp, vpcDefaultSg, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         that = this;
         sgRefMap = {};
         genRules = function(sg_rule, new_ruls) {
@@ -3139,6 +3139,8 @@
             sgRefMap[groupId] = sgComp;
           }
         }
+        vpcDefaultSg = null;
+        visualopsDefaultSg = null;
         _ref1 = this.getResourceByType("SG");
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           aws_sg = _ref1[_j];
@@ -3178,11 +3180,25 @@
           }
           sgComp = this.add("SG", sgRes, TAG_NAME(aws_sg) || aws_sg.groupName);
           if (aws_sg.groupName === "default") {
-            DEFAULT_SG["default"] = sgComp;
+            vpcDefaultSg = aws_sg;
           } else if (aws_sg.groupName.indexOf("-DefaultSG-app-") !== -1) {
-            DEFAULT_SG["DefaultSG"] = sgComp;
+            visualopsDefaultSg = aws_sg;
           }
           this.sgs[aws_sg.id] = sgComp;
+        }
+        if (visualopsDefaultSg && vpcDefaultSg) {
+          defaultSgComp = this.sgs[vpcDefaultSg.id];
+          delete this.sgs[vpcDefaultSg.id];
+          delete this.component[defaultSgComp.uid];
+          vpcDefaultSg = null;
+        }
+        defaultSg = visualopsDefaultSg || vpcDefaultSg;
+        if (defaultSg) {
+          defaultSg = this.sgs[defaultSg.id];
+        }
+        if (defaultSg) {
+          defaultSg.name = "DefaultSG";
+          defaultSg.resource.Default = true;
         }
         _.each(that.sgs, function(sgComp) {
           _.each(sgComp.resource.IpPermissions, function(rule) {
@@ -4044,7 +4060,7 @@
       originComps = cd.originAppJSON.component;
       newComps = cd.component;
       getRelatedInstanceGroupUID = function(comp) {
-        var eniComp, eniRef, eniUID, instanceComp, instanceRef, instanceUID, resType;
+        var eniComp, eniRef, eniUID, instanceComp, instanceRef, instanceUID, resType, serverGroupUid;
         resType = comp.type;
         if (resType === constant.RESTYPE.INSTANCE) {
           return comp.serverGroupUid;
@@ -4056,6 +4072,14 @@
             instanceComp = originComps[instanceUID];
             if (instanceComp) {
               return instanceComp.serverGroupUid;
+            }
+          } else {
+            serverGroupUid = comp.serverGroupUid;
+            if (serverGroupUid !== comp.uid) {
+              eniComp = originComps[serverGroupUid];
+              if (eniComp) {
+                return getRelatedInstanceGroupUID(eniComp);
+              }
             }
           }
         }
@@ -4220,7 +4244,7 @@
       }
     };
     convertResToJson = function(region, vpcId, originalJson) {
-      var cd, default_sg, err, func, _i, _len;
+      var cd, err, func, _i, _len;
       console.log(["VOL", "INSTANCE", "SG", "ELB", "ACL", "CGW", "ENI", "IGW", "RT", "SUBNET", "VPC", "VPN", "VGW", "ASG", "LC", "NC", "SP", "IAM", "RETAIN"].map(function(t) {
         return CloudResources(constant.RESTYPE[t], region);
       }));
@@ -4235,24 +4259,6 @@
         } catch (_error) {
           err = _error;
           console.info('Server Group process exception when convert app json');
-        }
-      }
-      if (DEFAULT_SG["DefaultSG"]) {
-        default_sg = cd.component[DEFAULT_SG["DefaultSG"].uid];
-        if (default_sg) {
-          default_sg.name = "DefaultSG";
-          default_sg.resource.Default = true;
-        }
-        if (DEFAULT_SG["default"] && cd.component[DEFAULT_SG["default"].uid]) {
-          delete cd.component[DEFAULT_SG["default"].uid];
-        }
-      } else if (DEFAULT_SG["default"]) {
-        default_sg = cd.component[DEFAULT_SG["default"].uid];
-        if (default_sg) {
-          default_sg.name = "DefaultSG";
-          default_sg.resource.Default = true;
-        } else {
-          console.warn("can not found default sg in component");
         }
       }
       return cd;

@@ -1948,14 +1948,14 @@ return TEMPLATE; });
       },
       remove: function() {
         var d, self;
+        if (this.isPersisted() && this.isApp()) {
+          return this.__returnErrorPromise();
+        }
         this.__destroy();
         if (!this.get("id")) {
           d = Q.defer();
           d.resolve();
           return d.promise;
-        }
-        if (this.isApp()) {
-          return this.__returnErrorPromise();
         }
         self = this;
         return ApiRequest("stack_remove", {

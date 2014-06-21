@@ -4411,7 +4411,8 @@ return TEMPLATE; });
         'resource.BlockDeviceMapping': true,
         'resource.VolumeSize': true,
         'resource.GroupDescription': true,
-        'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true
+        'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
+        'resource.Attachment.AttachmentId': true
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
@@ -5197,6 +5198,16 @@ return TEMPLATE; });
         });
         newComps = that.newAppJSON.component;
         oldComps = that.oldAppJSON.component;
+        _.each(that.modifiedComps, function(comp, uid) {
+          var originComp, _ref;
+          originComp = oldComps[uid];
+          if (originComp && ((_ref = originComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL)) {
+            if (originComp && originComp.number > 1) {
+              needUpdateLayout = true;
+            }
+          }
+          return null;
+        });
         _.each(that.modifiedComps, function(comp, uid) {
           var instanceAry;
           if (oldComps[uid] && oldComps[uid].type === constant.RESTYPE.ELB) {

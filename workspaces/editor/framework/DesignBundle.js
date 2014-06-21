@@ -5095,7 +5095,7 @@
           return;
         }
         attachment = data.resource.Attachment;
-        embed = attachment && attachment.DeviceIndex === "0";
+        embed = attachment && (attachment.DeviceIndex === "0" || attachment.DeviceIndex === 0);
         instance = attachment && attachment.InstanceId ? resolve(MC.extractID(attachment.InstanceId)) : null;
         attr = {
           id: data.uid,
@@ -11205,6 +11205,10 @@
             break;
           case 'AWS.AutoScaling.ScalingPolicy':
             _results.push(compo.resource.PolicyARN = "");
+            break;
+          case 'AWS.CloudWatch.CloudWatch':
+            compo.resource.AlarmArn = "";
+            _results.push(compo.resource.AlarmName = compo.name);
             break;
         }
       }
