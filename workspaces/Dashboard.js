@@ -217,35 +217,35 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<li class=\"instances\">\n  <hgroup><span class=\"resource-count\">"
+  buffer += "\n<li class=\"instances\" data-type=\"INSTANCE\">\n  <hgroup><span class=\"resource-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.instances)),stack1 == null || stack1 === false ? stack1 : stack1.totalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RUNNING_INSTANCE", {hash:{},data:data}))
     + "</h5></hgroup>\n  <ul>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n</li>\n<li class=\"eips\">\n  <hgroup><span class=\"resource-count\">"
+  buffer += "</ul>\n</li>\n<li class=\"eips\" data-type=\"EIP\">\n  <hgroup><span class=\"resource-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eips)),stack1 == null || stack1 === false ? stack1 : stack1.totalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ELASTIC_IP", {hash:{},data:data}))
     + "</h5></hgroup>\n  <ul>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.eips), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n</li>\n<li class=\"volumes\">\n  <hgroup><span class=\"resource-count\">"
+  buffer += "</ul>\n</li>\n<li class=\"volumes\" data-type=\"VOL\">\n  <hgroup><span class=\"resource-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.volumes)),stack1 == null || stack1 === false ? stack1 : stack1.totalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VOLUME", {hash:{},data:data}))
     + "</h5></hgroup>\n  <ul>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.volumes), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n</li>\n<li class=\"elbs\">\n  <hgroup><span class=\"resource-count\">"
+  buffer += "</ul>\n</li>\n<li class=\"elbs\" data-type=\"ELB\">\n  <hgroup><span class=\"resource-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.elbs)),stack1 == null || stack1 === false ? stack1 : stack1.totalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LOAD_BALANCER", {hash:{},data:data}))
     + "</h5></hgroup>\n  <ul>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.elbs), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n</li>\n<li class=\"vpns\">\n  <hgroup><span class=\"resource-count\">"
+  buffer += "</ul>\n</li>\n<li class=\"vpns\" data-type=\"VPN\">\n  <hgroup><span class=\"resource-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.vpns)),stack1 == null || stack1 === false ? stack1 : stack1.totalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VPN", {hash:{},data:data}))
@@ -1591,6 +1591,7 @@ function program18(depth0,data) {
         'click #region-switch-list li': 'switchRegion',
         'click #region-resource-tab li': 'switchAppStack',
         'click .resource-tab': 'switchResource',
+        "click .global-resource-li": "gotoRegionResource",
         'click #ImportStack': 'importJson',
         'click #VisualizeVPC': 'visualizeVPC',
         'click .show-credential': 'showCredential',
@@ -1744,10 +1745,18 @@ function program18(depth0,data) {
       /*
         View logics
        */
+      gotoRegionResource: function(evt) {
+        var type;
+        this.gotoRegionFromMap(evt);
+        type = $(evt.currentTarget).parent().parent().attr("data-type");
+        $("#RegionResourceNav").children("[data-type='" + type + "']").click();
+        return false;
+      },
       gotoRegionFromMap: function(evt) {
-        var $tgt, region;
+        var $li, $tgt, region;
         $tgt = $(evt.currentTarget);
-        region = $(evt.currentTarget).closest("li").attr("id");
+        $li = $(evt.currentTarget).closest("li");
+        region = $li.attr("id") || $li.attr("data-region");
         $("#region-switch-list li[data-region=" + region + "]").click();
         Helper.scrollToResource();
         $("#region-resource-tab").children().eq($tgt.hasClass("app") ? 0 : 1).click();
