@@ -4044,7 +4044,7 @@
       originComps = cd.originAppJSON.component;
       newComps = cd.component;
       getRelatedInstanceGroupUID = function(comp) {
-        var instanceComp, instanceRef, instanceUID, resType;
+        var eniComp, eniRef, eniUID, instanceComp, instanceRef, instanceUID, resType;
         resType = comp.type;
         if (resType === constant.RESTYPE.INSTANCE) {
           return comp.serverGroupUid;
@@ -4066,6 +4066,16 @@
             instanceComp = originComps[instanceUID];
             if (instanceComp) {
               return instanceComp.serverGroupUid;
+            }
+          }
+        }
+        if (resType === constant.RESTYPE.EIP) {
+          eniRef = comp.resource.NetworkInterfaceId;
+          if (eniRef) {
+            eniUID = MC.extractID(eniRef);
+            eniComp = originComps[eniUID];
+            if (eniComp) {
+              return getRelatedInstanceGroupUID(eniComp);
             }
           }
         }
@@ -4166,7 +4176,7 @@
       oldAddRemoveComps = {};
       _.each(newComps, function(insComp) {
         var _ref;
-        if ((_ref = insComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP) {
+        if ((_ref = insComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL) {
           if (!originComps[insComp.uid]) {
             return newAddRemoveComps[insComp.uid] = insComp;
           }
@@ -4174,7 +4184,7 @@
       });
       _.each(originComps, function(insComp) {
         var _ref;
-        if ((_ref = insComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP) {
+        if ((_ref = insComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL) {
           if (!newComps[insComp.uid]) {
             oldAddRemoveComps[insComp.uid] = insComp;
           }

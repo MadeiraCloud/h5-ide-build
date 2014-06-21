@@ -4955,6 +4955,7 @@ return TEMPLATE; });
           template: this.el,
           title: 'App Changes',
           disableClose: true,
+          hideClose: true,
           confirm: {
             text: okText
           },
@@ -5145,6 +5146,45 @@ return TEMPLATE; });
         };
         return _genTree.call(that, diffComps, null, [], $container);
       },
+      getRelatedInstanceGroupUID: function(originComps, comp) {
+        var eniComp, eniRef, eniUID, instanceComp, instanceRef, instanceUID, resType, that;
+        that = this;
+        resType = comp.type;
+        if (resType === constant.RESTYPE.INSTANCE) {
+          return comp.serverGroupUid;
+        }
+        if (resType === constant.RESTYPE.ENI) {
+          instanceRef = comp.resource.Attachment.InstanceId;
+        }
+        if (instanceRef) {
+          instanceUID = MC.extractID(instanceRef);
+          instanceComp = originComps[instanceUID];
+          if (instanceComp) {
+            return instanceComp.serverGroupUid;
+          }
+        }
+        if (resType === constant.RESTYPE.VOL) {
+          instanceRef = comp.resource.AttachmentSet.InstanceId;
+        }
+        if (instanceRef) {
+          instanceUID = MC.extractID(instanceRef);
+          instanceComp = originComps[instanceUID];
+          if (instanceComp) {
+            return instanceComp.serverGroupUid;
+          }
+        }
+        if (resType === constant.RESTYPE.EIP) {
+          eniRef = comp.resource.NetworkInterfaceId;
+        }
+        if (eniRef) {
+          eniUID = MC.extractID(eniRef);
+          eniComp = originComps[eniUID];
+          if (eniComp) {
+            return that.getRelatedInstanceGroupUID(originComps, eniComp);
+          }
+        }
+        return '';
+      },
       getChangeInfo: function() {
         var hasResChange, needUpdateLayout, newComps, oldComps, that;
         that = this;
@@ -5155,6 +5195,7 @@ return TEMPLATE; });
         needUpdateLayout = _.some(that.addedComps, function(comp) {
           return that.newAppJSON.layout[comp.uid];
         });
+        newComps = that.newAppJSON.component;
         oldComps = that.oldAppJSON.component;
         _.each(that.modifiedComps, function(comp, uid) {
           var instanceAry;
@@ -5184,13 +5225,23 @@ return TEMPLATE; });
           }
           return null;
         });
-        newComps = that.newAppJSON.component;
         _.each(that.modifiedComps, function(comp, uid) {
           if (newComps[uid] && newComps[uid].type === constant.RESTYPE.ASG) {
             if (comp && comp.resource && comp.resource.AvailabilityZones) {
               needUpdateLayout = true;
             }
             if (comp && comp.resource && comp.resource.VPCZoneIdentifier) {
+              needUpdateLayout = true;
+            }
+          }
+          return null;
+        });
+        _.each(that.removedComps, function(comp) {
+          var originComp, serverGroupUid, _ref;
+          if ((_ref = comp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL) {
+            serverGroupUid = that.getRelatedInstanceGroupUID(oldComps, comp);
+            originComp = oldComps[serverGroupUid];
+            if (originComp && originComp.number > 1) {
               needUpdateLayout = true;
             }
           }
