@@ -1,0 +1,1 @@
+(function(){define(["./Application","OpsModel","Workspace"],function(e){return e})}).call(this);
