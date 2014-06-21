@@ -863,30 +863,20 @@
         return null;
       }
     };
-    $canvas.updateLineStyle = function(ls) {
-      if (Design.__instance.shouldDraw()) {
-        if (ls === "4") {
-          Canvon("#line_layer").addClass("hide-sg");
-        } else {
-          Canvon("#line_layer").removeClass("hide-sg");
-          _.each(Design.modelClassForType("SgRuleLine").allObjects(), function(cn) {
-            return cn.draw();
-          });
-        }
-      }
-      return null;
+    $canvas.setLineStyle = function(ls) {
+      localStorage.setItem("canvas/lineStyle", ls);
+      return Design.instance().canvas.setLineStyle(ls);
     };
     $canvas.lineStyle = function() {
-      var ls;
-      ls = parseInt(localStorage.getItem("canvas/lineStyle"));
-      if (Design.instance().modeIsApp() && ls === 4) {
-        return 2;
+      var ls, _ref;
+      ls = (_ref = Design.instance()) != null ? _ref.canvas.ls : void 0;
+      if (ls === void 0) {
+        ls = parseInt(localStorage.getItem("canvas/lineStyle"));
+        if (isNaN(ls)) {
+          ls = 2;
+        }
       }
-      if (isNaN(ls)) {
-        return 2;
-      } else {
-        return ls;
-      }
+      return ls;
     };
     $canvas.node = function() {
       var comp, id, nodes, _ref;
@@ -1092,6 +1082,7 @@
       };
       $('#svg_canvas').attr(attr);
       $('#canvas_body').css(attr);
+      this.setLineStyle(localStorage.getItem("canvas/lineStyle"));
     };
     Canvas.prototype.scale = function(ratio) {
       if (ratio === void 0) {
@@ -1114,6 +1105,20 @@
       }
       this.sizeAry[0] = w;
       this.sizeAry[1] = h;
+      return null;
+    };
+    Canvas.prototype.setLineStyle = function(ls) {
+      this.ls = parseInt(ls) || 0;
+      if (this.ls === 4) {
+        Canvon("#line_layer").addClass("hide-sg");
+      } else {
+        Canvon("#line_layer").removeClass("hide-sg");
+      }
+      if (Design.__instance.shouldDraw() && this.ls !== 4) {
+        _.each(Design.modelClassForType("SgRuleLine").allObjects(), function(cn) {
+          return cn.draw();
+        });
+      }
       return null;
     };
     Canvas.setDesign = function(design) {

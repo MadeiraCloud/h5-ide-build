@@ -796,8 +796,7 @@ return TEMPLATE; });
         this.updateZoomButtons();
       },
       setTbLineStyle: function(ls, attr) {
-        localStorage.setItem("canvas/lineStyle", attr[0]);
-        return $canvas.updateLineStyle(attr[0]);
+        return $canvas.setLineStyle(attr[0]);
       },
       saveStack: function(evt) {
         var newJson, self;
