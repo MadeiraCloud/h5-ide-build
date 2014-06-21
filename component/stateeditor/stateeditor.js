@@ -5681,11 +5681,11 @@ return Markdown;
         return resultUID;
       },
       getResState: function(resId) {
-        var resObj, resState, _ref;
-        resObj = (_ref = CloudResources(this.get("resModel").type, Design.instance().region()).get(resId)) != null ? _ref.attributes : void 0;
+        var resModel, resState, _ref;
+        resModel = CloudResources('AWS.EC2.Instance').get(resId);
         resState = 'unknown';
-        if (resObj && resObj.instanceState && resObj.instanceState.name) {
-          resState = resObj.instanceState.name;
+        if (resModel) {
+          resState = (_ref = resModel.get('instanceState')) != null ? _ref.name : void 0;
         }
         this.set('resState', resState);
         return null;

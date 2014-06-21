@@ -5146,7 +5146,7 @@ return TEMPLATE; });
         return _genTree.call(that, diffComps, null, [], $container);
       },
       getChangeInfo: function() {
-        var hasResChange, needUpdateLayout, oldComps, that;
+        var hasResChange, needUpdateLayout, newComps, oldComps, that;
         that = this;
         hasResChange = false;
         if (_.size(that.addedComps) || _.size(that.removedComps) || _.size(that.modifiedComps)) {
@@ -5158,7 +5158,7 @@ return TEMPLATE; });
         oldComps = that.oldAppJSON.component;
         _.each(that.modifiedComps, function(comp, uid) {
           var instanceAry;
-          if (oldComps[uid] && oldComps[uid].type === constant.RESTYPE['ELB']) {
+          if (oldComps[uid] && oldComps[uid].type === constant.RESTYPE.ELB) {
             if (comp && comp.resource && comp.resource.Instances) {
               instanceAry = [];
               _.map(comp.resource.Instances, function(refObj) {
@@ -5180,6 +5180,18 @@ return TEMPLATE; });
                 }
                 return null;
               });
+            }
+          }
+          return null;
+        });
+        newComps = that.newAppJSON.component;
+        _.each(that.modifiedComps, function(comp, uid) {
+          if (newComps[uid] && newComps[uid].type === constant.RESTYPE.ASG) {
+            if (comp && comp.resource && comp.resource.AvailabilityZones) {
+              needUpdateLayout = true;
+            }
+            if (comp && comp.resource && comp.resource.VPCZoneIdentifier) {
+              needUpdateLayout = true;
             }
           }
           return null;

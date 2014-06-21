@@ -5642,6 +5642,7 @@
         console.assert(rule.number !== void 0 && rule.protocol !== void 0 && rule.egress !== void 0 && rule.action !== void 0 && rule.cidr !== void 0 && rule.port !== void 0, "Invalid ACL Rule data");
         rule.protocol = parseInt(rule.protocol, 10);
         rule.number = parseInt(rule.number, 10);
+        rule.cidr = MC.getValidCIDR(rule.cidr);
         currentRules = this.get("rules");
         for (_i = 0, _len = currentRules.length; _i < _len; _i++) {
           r = currentRules[_i];
@@ -7714,7 +7715,7 @@
         return false;
       },
       createIpTarget: function(ipAddress) {
-        return new SgTargetModel(ipAddress);
+        return new SgTargetModel(MC.getValidCIDR(ipAddress));
       },
       getNewName: function() {
         var myKinds;
@@ -9814,19 +9815,7 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('workspaces/editor/framework/resource/SubnetModel',["constant", "Design", "../GroupModel", "../connection/RtbAsso", "i18n!nls/lang.js"], function(constant, Design, GroupModel, RtbAsso, lang) {
-    var Model, _getCidrBinStr;
-    _getCidrBinStr = function(ipCidr) {
-      var cutAry, ipAddr, ipAddrAry, ipAddrBinAry, prefix, suffix;
-      cutAry = ipCidr.split('/');
-      ipAddr = cutAry[0];
-      suffix = Number(cutAry[1]);
-      prefix = 32 - suffix;
-      ipAddrAry = ipAddr.split('.');
-      ipAddrBinAry = ipAddrAry.map(function(value) {
-        return MC.leftPadString(parseInt(value).toString(2), 8, "0");
-      });
-      return ipAddrBinAry.join('');
-    };
+    var Model;
     Model = GroupModel.extend({
       type: constant.RESTYPE.SUBNET,
       newNameTmpl: "subnet",
@@ -9857,7 +9846,7 @@
       },
       setCidr: function(cidr) {
         var validCIDR;
-        validCIDR = Design.modelClassForType(constant.RESTYPE.SUBNET).getValidCIDR(cidr);
+        validCIDR = MC.getValidCIDR(cidr);
         this.set("cidr", validCIDR);
         this.draw();
         return null;
@@ -10069,9 +10058,9 @@
         subnetIPAry = subnetCIDR.split('/');
         subnetSuffix = Number(subnetIPAry[1]);
         subnetAddrAry = subnetIPAry[0].split('.');
-        subnetIPBinStr = _getCidrBinStr(subnetIPAry[0]);
+        subnetIPBinStr = MC.getCidrBinStr(subnetIPAry[0]);
         subnetIPBinStrDiv = subnetIPBinStr.slice(0, subnetSuffix);
-        ipAddrBinStr = _getCidrBinStr(ipAddr);
+        ipAddrBinStr = MC.getCidrBinStr(ipAddr);
         ipAddrBinStrDiv = ipAddrBinStr.slice(0, subnetSuffix);
         ipAddrBinStrDivAnti = ipAddrBinStr.slice(subnetSuffix);
         suffixLength = 32 - subnetSuffix;
@@ -10109,8 +10098,8 @@
       },
       isCidrConflict: function(ipCidr1, ipCidr2) {
         var ipCidr1BinStr, ipCidr1Suffix, ipCidr2BinStr, ipCidr2Suffix, minIpCidrSuffix;
-        ipCidr1BinStr = _getCidrBinStr(ipCidr1);
-        ipCidr2BinStr = _getCidrBinStr(ipCidr2);
+        ipCidr1BinStr = MC.getCidrBinStr(ipCidr1);
+        ipCidr2BinStr = MC.getCidrBinStr(ipCidr2);
         ipCidr1Suffix = Number(ipCidr1.split('/')[1]);
         ipCidr2Suffix = Number(ipCidr2.split('/')[1]);
         if (ipCidr1Suffix === 0 && (ipCidr1Suffix === ipCidr2Suffix)) {
@@ -10134,7 +10123,7 @@
       },
       isValidSubnetCIDR: function(subnetCIDR) {
         var subnetCidrBinStr, subnetCidrSuffix, suffixIPBinStr, suffixNum;
-        subnetCidrBinStr = _getCidrBinStr(subnetCIDR);
+        subnetCidrBinStr = MC.getCidrBinStr(subnetCIDR);
         subnetCidrSuffix = Number(subnetCIDR.split('/')[1]);
         suffixIPBinStr = subnetCidrBinStr.slice(subnetCidrSuffix);
         suffixNum = parseInt(suffixIPBinStr);
@@ -10143,30 +10132,11 @@
         }
         return false;
       },
-      getValidCIDR: function(cidr) {
-        var newCIDRStr, newIPAry, newIPBinStr, newIPStr, prefixIPBinStr, subnetCidrBinStr, subnetCidrSuffix, suffixIPBinStr, suffixNum;
-        subnetCidrBinStr = _getCidrBinStr(cidr);
-        subnetCidrSuffix = Number(cidr.split('/')[1]);
-        suffixIPBinStr = subnetCidrBinStr.slice(subnetCidrSuffix);
-        suffixNum = parseInt(suffixIPBinStr);
-        if ((suffixNum === 0) || (suffixIPBinStr === '')) {
-          return cidr;
-        } else {
-          prefixIPBinStr = subnetCidrBinStr.slice(0, subnetCidrSuffix);
-          newIPBinStr = prefixIPBinStr + MC.rightPadString('', suffixIPBinStr.length, '0');
-          newIPAry = _.map([0, 8, 16, 24], function(value) {
-            return parseInt(newIPBinStr.slice(value, value + 8), 2);
-          });
-          newIPStr = newIPAry.join('.');
-          newCIDRStr = newIPStr + '/' + subnetCidrSuffix;
-          return newCIDRStr;
-        }
-      },
       autoAssignAllCIDR: function(vpcCIDR, subnetCount) {
         var binSeq, i, needBinNum, newIPAry, newIPStr, newSubnetAry, newSubnetBinStr, newSubnetStr, newSubnetSuffix, vpcIPBinLeftStr, vpcIPBinStr, vpcIPSuffix;
         needBinNum = Math.ceil((Math.log(subnetCount)) / (Math.log(2)));
         vpcIPSuffix = Number(vpcCIDR.split('/')[1]);
-        vpcIPBinStr = _getCidrBinStr(vpcCIDR);
+        vpcIPBinStr = MC.getCidrBinStr(vpcCIDR);
         vpcIPBinLeftStr = vpcIPBinStr.slice(0, vpcIPSuffix);
         newSubnetSuffix = vpcIPSuffix + needBinNum;
         newSubnetAry = [];

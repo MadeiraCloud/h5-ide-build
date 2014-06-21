@@ -772,6 +772,9 @@
     isNatCheckedSourceDest = function(uid) {
       var connectedRt, enis, hasUncheck, instance;
       instance = Design.instance().component(uid);
+      if (!instance) {
+        return null;
+      }
       connectedRt = instance.connectionTargets('RTB_Route');
       if (connectedRt && connectedRt.length) {
         enis = instance.connectionTargets('EniAttachment');

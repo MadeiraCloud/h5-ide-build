@@ -3802,7 +3802,7 @@
           this.lcs[aws_lc.Name] = lcComp;
         }
       }, function() {
-        var asgComp, asgRes, aws_asg, az, elb, firstSubnetComp, me, originASGComp, vpcZoneIdentifier, _i, _len, _ref;
+        var addOriginal, asgComp, asgRes, aws_asg, az, elb, me, origSubnetComp, origSubnetLayout, originASGComp, vpcZoneIdentifier, _i, _len, _ref;
         me = this;
         _ref = this.getResourceByType("ASG");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3833,14 +3833,10 @@
           asgRes.TerminationPolicies = aws_asg.TerminationPolicies;
           asgRes.LaunchConfigurationName = CREATE_REF(this.lcs[aws_asg.LaunchConfigurationName], "resource.LaunchConfigurationName");
           vpcZoneIdentifier = [];
-          firstSubnetComp = "";
           _.each(aws_asg.Subnets, function(e, key) {
             var subnetComp;
             subnetComp = me.subnets[e];
             if (subnetComp) {
-              if (!firstSubnetComp) {
-                firstSubnetComp = subnetComp;
-              }
               return vpcZoneIdentifier.push(CREATE_REF(subnetComp, "resource.SubnetId"));
             }
           });
@@ -3863,11 +3859,16 @@
           });
           asgRes.AvailabilityZones = az;
           asgComp = this.add("ASG", asgRes, TAG_NAME(aws_asg) || aws_asg.Name);
-          this.addLayout(asgComp, true, firstSubnetComp);
+          origSubnetComp = "";
+          origSubnetLayout = this.originalJson.layout[asgComp.uid];
+          addOriginal = false;
           _.each(aws_asg.Subnets, function(e, key) {
             var subnetComp;
             subnetComp = me.subnets[e];
-            if (subnetComp.uid !== firstSubnetComp.uid) {
+            if ((!addOriginal) && ((origSubnetLayout && origSubnetLayout.groupUId === subnetComp.uid) || (!origSubnetLayout))) {
+              me.addLayout(asgComp, true, subnetComp);
+              return addOriginal = true;
+            } else {
               return me.addExpandedAsg(asgComp, subnetComp);
             }
           });
