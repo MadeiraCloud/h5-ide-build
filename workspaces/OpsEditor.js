@@ -2975,7 +2975,11 @@ return TEMPLATE; });
         _ref = this.clearGarbage;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           garbage = _ref[_i];
-          garbage();
+          if (_.isArray(garbage)) {
+            garbage[1].apply(garbage[0], garbage.slice(2));
+          } else {
+            garbage();
+          }
         }
         return this;
       },
@@ -3034,9 +3038,7 @@ return TEMPLATE; });
               if (type === 'update') {
                 if (e.obj === ide_event) {
                   ide_event.onLongListen(e.event, wrapUpdate);
-                  view.clearGarbage.push(function() {
-                    return ide_event.offListen(e.event, wrapUpdate);
-                  });
+                  view.clearGarbage.push([ide_event, ide_event.offListen, e.event, wrapUpdate]);
                 } else {
                   view.listenTo(e.obj, e.event, wrapUpdate);
                 }

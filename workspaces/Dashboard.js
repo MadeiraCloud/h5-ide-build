@@ -1632,24 +1632,26 @@ function program18(depth0,data) {
         return tplPartials.bubbleResourceSub(renderData);
       },
       dashboardBubble: function(data) {
-        var _ref;
-        data.data = (_ref = this.model.getAwsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0;
-        data.id = data.data.id;
-        _.each(data.data, function(e, key) {
+        var d, _ref;
+        d = {
+          id: data.id,
+          data: (_ref = this.model.getAwsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0
+        };
+        _.each(d.data, function(e, key) {
           if (_.isBoolean(e)) {
-            data.data[key] = e.toString();
+            d.data[key] = e.toString();
           }
           if (e === "") {
-            data.data[key] = "None";
+            d.data[key] = "None";
           }
           if ((_.isArray(e)) && e.length === 0) {
-            data.data[key] = ['None'];
+            d.data[key] = ['None'];
           }
           if ((_.isObject(e)) && (!_.isArray(e))) {
-            return delete data.data[key];
+            return delete d.data[key];
           }
         });
-        return tplPartials.bubbleResourceInfo(data);
+        return tplPartials.bubbleResourceInfo(d);
       },
 
       /*
@@ -2221,7 +2223,6 @@ function program18(depth0,data) {
         var region, _i, _len, _ref, _results;
         this.listenTo(App.WS, "visualizeUpdate", this.onVisualizeUpdated);
         this.listenTo(CloudResources(constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(constant.RESTYPE.ENI), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(constant.RESTYPE.ELB), "update", this.onGlobalResChanged);
@@ -2404,7 +2405,7 @@ function program18(depth0,data) {
           case constant.RESTYPE.VPC:
             return CloudResources(type).isReady() && CloudResources(constant.RESTYPE.DHCP, region).isReady();
           case constant.RESTYPE.INSTANCE:
-            return CloudResources(type).isReady() && CloudResources(constant.RESTYPE.ENI, region).isReady();
+            return CloudResources(type).isReady();
           case constant.RESTYPE.VPN:
             return CloudResources(type).isReady() && CloudResources(constant.RESTYPE.VGW, region).isReady() && CloudResources(constant.RESTYPE.CGW, region).isReady();
           default:

@@ -2112,9 +2112,6 @@ return TEMPLATE; });
     topicCol = CloudResources(constant.RESTYPE.TOPIC, 'us-east-1');
     return Backbone.View.extend({
       tagName: 'section',
-      remove: function() {
-        return Backbone.View.prototype.remove.call(this);
-      },
       initCol: function() {
         var region;
         region = Design.instance().region();

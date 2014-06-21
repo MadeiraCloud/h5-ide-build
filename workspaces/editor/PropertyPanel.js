@@ -8242,7 +8242,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\n    <p>"
+  buffer += "\n  <div class=\"property-control-group\">\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_DEFAULT", {hash:{},data:data}))
     + "</p>\n  ";
   return buffer;
@@ -8401,7 +8401,7 @@ function program20(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.defaultACL)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n  </div>\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIT_DHCP_OPTION", {hash:{},data:data}))
-    + "</div>\n  <div class=\"option-group\">\n\n\n  <div class=\"property-control-group\">\n  ";
+    + "</div>\n  <div class=\"option-group\">\n\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.autoDhcp), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  </div>\n\n  ";
@@ -12594,7 +12594,6 @@ function program6(depth0,data) {
         this.notiObject = component.getNotiObject();
         this.set("policies", _.map(data.policies, function(p) {
           data = $.extend(true, {}, p.attributes);
-          data.cooldown = Math.round(data.cooldown / 60);
           data.alarmData.period = Math.round(data.alarmData.period / 60);
           return data;
         }));
@@ -12671,7 +12670,6 @@ function program6(depth0,data) {
       getPolicy: function(uid) {
         var data;
         data = $.extend(true, {}, Design.instance().component(uid).attributes);
-        data.cooldown = Math.round(data.cooldown / 60);
         data.alarmData.period = Math.round(data.alarmData.period / 60);
         return data;
       },
@@ -13033,7 +13031,7 @@ function program5(depth0,data) {
     + "\" maxlength=\"5\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_DEFAULT_COOL_DOWN", {hash:{},data:data}))
     + "\" data-ignore=\"true\" data-type=\"digits\" id=\"asg-policy-cooldown\">\n					<span>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_UNIT_MINS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_UNIT_SECONDS", {hash:{},data:data}))
     + "</span>\n				</div>\n\n				<div id=\"asg-policy-step-wrapper\" class=\"hide clearfix pecentcapcity\">\n					<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_ASG_ADD_POLICY_ADVANCED_MIN_ADJUST_STEP", {hash:{},data:data}))
     + "</label>\n					<input type=\"text\" class=\"input tooltip\" data-tooltip=\""
@@ -13546,8 +13544,8 @@ function program4(depth0,data) {
           }
           if (val < 0) {
             val = 0;
-          } else if (val > 1440) {
-            val = 1440;
+          } else if (val > 86400) {
+            val = 86400;
           }
           return $this.val(val);
         });
@@ -13594,7 +13592,7 @@ function program4(depth0,data) {
         data = {
           uid: $("#property-asg-policy").data("uid"),
           name: $("#asg-policy-name").val(),
-          cooldown: $("#asg-policy-cooldown").val() * 60,
+          cooldown: $("#asg-policy-cooldown").val(),
           minAdjustStep: "",
           adjustment: $("#asg-policy-adjust").val(),
           adjustmentType: $("#asg-policy-adjust-type .selected").data("id"),
@@ -13668,7 +13666,7 @@ function program4(depth0,data) {
     var ASGModel;
     ASGModel = PropertyModel.extend({
       init: function(uid) {
-        var asg_comp, asg_data, component, data, lc, n, resource_list, _ref, _ref1, _ref2, _ref3;
+        var asg_comp, asg_data, component, data, lc, n, region, _ref;
         asg_comp = component = Design.instance().component(uid);
         data = {
           uid: uid,
@@ -13679,8 +13677,8 @@ function program4(depth0,data) {
           isEditable: this.isAppEdit
         };
         this.set(data);
-        resource_list = CloudResources(constant.RESTYPE.ASG, Design.instance().region());
-        asg_data = (_ref = resource_list.get(asg_comp.get('appId'))) != null ? _ref.toJSON() : void 0;
+        region = Design.instance().region();
+        asg_data = (_ref = CloudResources(constant.RESTYPE.ASG, region).get(asg_comp.get('appId'))) != null ? _ref.toJSON() : void 0;
         if (asg_data) {
           this.set('hasData', true);
           this.set('awsResName', asg_data.AutoScalingGroupName);
@@ -13689,7 +13687,7 @@ function program4(depth0,data) {
           if (asg_data.TerminationPolicies && asg_data.TerminationPolicies) {
             this.set('term_policy_brief', asg_data.TerminationPolicies.join(" > "));
           }
-          this.handleInstance(asg_comp, (_ref1 = CloudResources(constant.RESTYPE.LC, Design.instance().region())) != null ? _ref1.toJSON() : void 0, asg_data);
+          this.handleInstance(asg_comp, asg_data);
         }
         if (!this.isAppEdit) {
           if (!asg_data) {
@@ -13699,8 +13697,8 @@ function program4(depth0,data) {
           this.set('cooldown', asg_data.DefaultCooldown);
           this.set('healCheckType', asg_data.HealthCheckType);
           this.set('healthCheckGracePeriod', asg_data.HealthCheckGracePeriod);
-          this.handlePolicy(asg_comp, (_ref2 = CloudResources(constant.RESTYPE.SP, Design.instance().region())) != null ? _ref2.toJSON() : void 0, asg_data);
-          this.handleNotify(asg_comp, (_ref3 = CloudResources(constant.RESTYPE.NC, Design.instance().region())) != null ? _ref3.toJSON() : void 0, asg_data);
+          this.handlePolicy(asg_comp, asg_data);
+          this.handleNotify(asg_comp, asg_data);
         } else {
           data = component != null ? component.toJSON() : void 0;
           data.uid = uid;
@@ -13719,14 +13717,13 @@ function program4(depth0,data) {
           this.notiObject = component.getNotiObject();
           this.set("policies", _.map(data.policies, function(p) {
             data = $.extend(true, {}, p.attributes);
-            data.cooldown = Math.round(data.cooldown / 60);
             data.alarmData.period = Math.round(data.alarmData.period / 60);
             return data;
           }));
         }
         return null;
       },
-      handleInstance: function(asg_comp, resource_list, asg_data) {
+      handleInstance: function(asg_comp, asg_data) {
         var ami, az, idx, instance, instance_count, instance_groups, instances, instances_map, _i, _len, _ref;
         instance_count = 0;
         instance_groups = [];
@@ -13761,8 +13758,12 @@ function program4(depth0,data) {
         this.set('instance_groups', instance_groups);
         return this.set('instance_count', instance_count);
       },
-      handleNotify: function(asg_comp, notifications, asg_data) {
-        var nc_array, nc_map, notification, sendNotify, _i, _len, _ref;
+      handleNotify: function(asg_comp, asg_data) {
+        var nc_array, nc_map, notification, region, sendNotify, t, _i, _len, _ref;
+        region = Design.instance().region();
+        notification = CloudResources(constant.RESTYPE.NC, region).findWhere({
+          AutoScalingGroupName: asg_data.AutoScalingGroupName
+        });
         sendNotify = false;
         nc_array = [false, false, false, false, false];
         nc_map = {
@@ -13772,27 +13773,29 @@ function program4(depth0,data) {
           "autoscaling:EC2_INSTANCE_TERMINATE_ERROR": 3,
           "autoscaling:TEST_NOTIFICATION": 4
         };
-        _ref = notifications || [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          notification = _ref[_i];
-          if (notification.AutoScalingGroupName === asg_data.AutoScalingGroupName) {
-            nc_array[nc_map[notification.NotificationType]] = true;
+        if (notification) {
+          _ref = notification.get("NotificationType");
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            t = _ref[_i];
+            nc_array[nc_map[t]] = true;
             sendNotify = true;
           }
         }
         this.set('notifies', nc_array);
         return this.set('sendNotify', sendNotify);
       },
-      handlePolicy: function(asg_comp, resource_list, asg_data) {
-        var action, actions, actions_arr, alarm_data, cloudWatchPolicyMap, comp_uid, idx, policies, policy, policy_data, sp, trigger_arr, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      handlePolicy: function(asg_comp, asg_data) {
+        var action, actions, actions_arr, alarm_data, cloudWatchPolicyMap, cwCln, idx, policies, policy, policy_data, region, sp, spCln, trigger_arr, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
         policies = [];
         cloudWatchPolicyMap = {};
+        region = Design.instance().region();
+        spCln = CloudResources(constant.RESTYPE.SP, region);
+        cwCln = CloudResources(constant.RESTYPE.CW, region);
         _ref = asg_comp.get("policies");
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sp = _ref[_i];
-          comp_uid = sp.id;
-          policy_data = resource_list[sp.get('appId')];
+          policy_data = (_ref1 = spCln.get(sp.get('appId'))) != null ? _ref1.toJSON() : void 0;
           if (!policy_data) {
             continue;
           }
@@ -13804,7 +13807,7 @@ function program4(depth0,data) {
             name: policy_data.PolicyName,
             arn: sp.get('appId')
           };
-          alarm_data = resource_list[sp.get("alarmData").appId];
+          alarm_data = (_ref2 = cwCln.get(sp.get("alarmData").appId)) != null ? _ref2.toJSON() : void 0;
           if (alarm_data) {
             actions_arr = [alarm_data.InsufficientDataActions, alarm_data.OKActions, alarm_data.AlarmActions];
             trigger_arr = ['INSUFFICIANT_DATA', 'OK', 'ALARM'];
@@ -13813,9 +13816,8 @@ function program4(depth0,data) {
               if (!actions) {
                 continue;
               }
-              _ref1 = actions.member;
-              for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-                action = _ref1[_k];
+              for (_k = 0, _len2 = actions.length; _k < _len2; _k++) {
+                action = actions[_k];
                 if (action !== policy.arn) {
                   continue;
                 }
@@ -13918,7 +13920,6 @@ function program4(depth0,data) {
       getPolicy: function(uid) {
         var data;
         data = $.extend(true, {}, Design.instance().component(uid).attributes);
-        data.cooldown = Math.round(data.cooldown / 60);
         data.alarmData.period = Math.round(data.alarmData.period / 60);
         return data;
       },
@@ -14792,8 +14793,8 @@ function program49(depth0,data) {
           }
           if (val < 0) {
             val = 0;
-          } else if (val > 1440) {
-            val = 1440;
+          } else if (val > 86400) {
+            val = 86400;
           }
           return $this.val(val);
         });
@@ -14844,7 +14845,7 @@ function program49(depth0,data) {
         data = {
           uid: $("#property-asg-policy").data("uid"),
           name: $("#asg-policy-name").val(),
-          cooldown: $("#asg-policy-cooldown").val() * 60,
+          cooldown: $("#asg-policy-cooldown").val(),
           minAdjustStep: "",
           adjustment: $("#asg-policy-adjust").val(),
           adjustmentType: $("#asg-policy-adjust-type .selected").data("id"),
@@ -15027,7 +15028,7 @@ function program49(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/subviews/PropertyPanel',["../template/TplRightPanel", "../property/base/main", 'component/stateeditor/stateeditor', "constant", "Design", "OpsModel", "event", "backbone", '../property/stack/main', '../property/instance/main', '../property/servergroup/main', '../property/connection/main', '../property/staticsub/main', '../property/missing/main', '../property/sg/main', '../property/sgrule/main', '../property/volume/main', '../property/elb/main', '../property/az/main', '../property/subnet/main', '../property/vpc/main', '../property/rtb/main', '../property/static/main', '../property/cgw/main', '../property/vpn/main', '../property/eni/main', '../property/acl/main', '../property/launchconfig/main', '../property/asg/main'], function(RightPanelTpl, PropertyBaseModule, stateeditor, CONST, Design, OpsModel, ide_event) {
+  define('workspaces/editor/subviews/PropertyPanel',["../template/TplRightPanel", "../property/base/main", 'component/stateeditor/stateeditor', "constant", "Design", "OpsModel", "event", 'CloudResources', "backbone", '../property/stack/main', '../property/instance/main', '../property/servergroup/main', '../property/connection/main', '../property/staticsub/main', '../property/missing/main', '../property/sg/main', '../property/sgrule/main', '../property/volume/main', '../property/elb/main', '../property/az/main', '../property/subnet/main', '../property/vpc/main', '../property/rtb/main', '../property/static/main', '../property/cgw/main', '../property/vpn/main', '../property/eni/main', '../property/acl/main', '../property/launchconfig/main', '../property/asg/main'], function(RightPanelTpl, PropertyBaseModule, stateeditor, CONST, Design, OpsModel, ide_event, CloudResources) {
     var trimmedJqEventHandler;
     ide_event.onLongListen(ide_event.REFRESH_PROPERTY, function() {
       $("#OEPanelRight").trigger("REFRESH");
@@ -15263,7 +15264,7 @@ function program49(depth0,data) {
         }
         this.$el.toggleClass("no-state", !supports);
         if (supports) {
-          count = design.component(uid);
+          count = design.component(uid) || design.component(PropertyBaseModule.activeModule().model.attributes.uid);
           count = (count != null ? (_ref = count.get("state")) != null ? _ref.length : void 0 : void 0) || 0;
           $('#btn-switch-state').find("b").text("(" + count + ")");
         }
@@ -15290,7 +15291,12 @@ function program49(depth0,data) {
           uid = PropertyBaseModule.activeModule().uid;
         }
         design = this.workspace.design;
-        comp = design.component(uid);
+        comp = design.component(uid) || CloudResources(CONST.RESTYPE.INSTANCE, Design.instance().get('region')).findWhere({
+          id: uid
+        }).attributes;
+        if (!comp.type) {
+          comp.type = CONST.RESTYPE.INSTANCE;
+        }
         if (!comp) {
           return;
         }

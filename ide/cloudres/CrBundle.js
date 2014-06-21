@@ -1945,8 +1945,8 @@
         ncMap = {};
         for (_i = 0, _len = ncs.length; _i < _len; _i++) {
           nc = ncs[_i];
-          id = item.AutoScalingGroupName + "-" + item.TopicARN;
           item = ncMap[id] || (ncMap[id] = {});
+          id = item.AutoScalingGroupName + "-" + item.TopicARN;
           if (!item) {
             item = ncMap[id] = {
               id: id,
@@ -3463,7 +3463,7 @@
           eipComp = this.add("EIP", eipRes);
         }
       }, function() {
-        var asso, aws_rtb, eniComp, gwComp, i, insComp, route, rtbComp, rtbRes, subnetComp, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        var asso, aws_rtb, eniComp, gwComp, i, insComp, route, rtbComp, rtbRes, subnetComp, xgw_in_route, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         _ref = this.CrPartials("RT").where({
           vpcId: this.vpcId
         }) || [];
@@ -3494,6 +3494,7 @@
             }
             rtbRes.AssociationSet.push(asso);
           }
+          xgw_in_route = {};
           _ref2 = aws_rtb.routeSet;
           for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
             i = _ref2[_k];
@@ -3514,6 +3515,7 @@
               "Origin": i.gatewayId === "local" ? i.origin : ""
             };
             if (i.gatewayId) {
+              xgw_in_route[route.GatewayId] = true;
               if (i.gatewayId !== "local" && gwComp) {
                 if (gwComp.type === "AWS.VPC.VPNGateway") {
                   route.GatewayId = CREATE_REF(gwComp, 'resource.VpnGatewayId');
@@ -3530,7 +3532,7 @@
           for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
             i = _ref3[_l];
             gwComp = this.gateways[i.gatewayId];
-            if (gwComp) {
+            if (gwComp && xgw_in_route[i.gatewayId]) {
               rtbRes.PropagatingVgwSet.push(CREATE_REF(gwComp, 'resource.VpnGatewayId'));
             }
           }

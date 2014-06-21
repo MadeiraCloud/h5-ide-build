@@ -4638,7 +4638,7 @@
         return null;
       },
       canAddIp: function() {
-        var instance, ips, maxIp, result, subent;
+        var instance, ips, maxIp, result, subnet;
         instance = this.attachedInstance();
         if (!instance) {
           return false;
@@ -4648,12 +4648,12 @@
         if (ips.length >= maxIp) {
           return sprintf(lang.ide.PROP_MSG_WARN_ENI_IP_EXTEND, instance.get("instanceType"), maxIp);
         }
-        subent = this.__embedInstance ? this.__embedInstance.parent() : this.parent();
+        subnet = this.__embedInstance ? this.__embedInstance.parent() : this.parent();
         result = true;
         ips.push({
           ip: "fake"
         });
-        if (!subent.isCidrEnoughForIps()) {
+        if (!subnet.isCidrEnoughForIps()) {
           result = "Ip count limit has reached in " + (subnet.get('name'));
         }
         ips.length = ips.length - 1;
@@ -8307,7 +8307,7 @@
         }
       ],
       constructor: function(p1Comp, p2Comp, attr, option) {
-        if ((p1Comp.type === constant.RESTYPE.LC && p1Comp.get('appId')) || (p2Comp.type === constant.RESTYPE.LC && p2Comp.get('appId'))) {
+        if (p1Comp.design().modeIsAppEdit() && ((p1Comp.type === constant.RESTYPE.LC && p1Comp.get('appId')) || (p2Comp.type === constant.RESTYPE.LC && p2Comp.get('appId')))) {
           notification("error", lang.ide.NOTIFY_MSG_WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH);
           return;
         }
@@ -10648,7 +10648,7 @@
             ScalingAdjustment: this.get("adjustment"),
             PolicyName: this.get("name"),
             PolicyARN: this.get("appId"),
-            Cooldown: Math.round(this.get("cooldown") / 60) * 60,
+            Cooldown: this.get("cooldown"),
             AutoScalingGroupName: this.__asg.createRef("AutoScalingGroupName"),
             AdjustmentType: this.get("adjustmentType"),
             MinAdjustmentStep: this.get("adjustmentType") === 'PercentChangeInCapacity' ? this.get("minAdjustStep") : ''
