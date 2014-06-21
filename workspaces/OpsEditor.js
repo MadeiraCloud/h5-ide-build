@@ -2206,11 +2206,6 @@ return TEMPLATE; });
     });
     MC.template.resPanelAmiInfo = function(data) {
       var ami, config, e, _ref;
-      try {
-        data = JSON.parse(data);
-      } catch (_error) {
-        e = _error;
-      }
       if (!data.region || !data.imageId) {
         return;
       }
