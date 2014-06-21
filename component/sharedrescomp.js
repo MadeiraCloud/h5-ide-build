@@ -4410,7 +4410,8 @@ return TEMPLATE; });
         'resource.AssociationSet.n.NetworkAclAssociationId': true,
         'resource.BlockDeviceMapping': true,
         'resource.VolumeSize': true,
-        'resource.GroupDescription': true
+        'resource.GroupDescription': true,
+        'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;

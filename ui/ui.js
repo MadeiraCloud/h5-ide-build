@@ -7864,7 +7864,7 @@ define('jquerysort',["jquery"], function($) {
           })(this));
           $(document).mousemove((function(_this) {
             return function(e) {
-              if (dragable) {
+              if (dragable && _this.getLast()) {
                 _this.getLast().tpl.css({
                   top: e.clientY + diffY,
                   left: e.clientX + diffX
