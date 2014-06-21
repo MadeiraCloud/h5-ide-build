@@ -5681,14 +5681,11 @@ return Markdown;
         return resultUID;
       },
       getResState: function(resId) {
-        var resObj, resState;
-        resObj = CloudResources(this.get("resModel").type, Design.instance().region()).get(resId);
+        var resObj, resState, _ref;
+        resObj = (_ref = CloudResources(this.get("resModel").type, Design.instance().region()).get(resId)) != null ? _ref.attributes : void 0;
         resState = 'unknown';
-        if (resObj) {
-          resObj = resObj.attributes;
-          if (resObj.instanceState && resObj.instanceState.name) {
-            resState = resObj.instanceState.name;
-          }
+        if (resObj && resObj.instanceState && resObj.instanceState.name) {
+          resState = resObj.instanceState.name;
         }
         this.set('resState', resState);
         return null;

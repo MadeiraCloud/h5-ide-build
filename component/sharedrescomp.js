@@ -4386,111 +4386,6 @@ return TEMPLATE; });
 
 }).call(this);
 
-define('component/common/diff/resDiffTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"scroll-wrap scroll-wrap-res-diff\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"content_wrap scroll-content\">\n		<p>Resources of this app has been externally changed. The change has been synced to app. The diagram may be re-generated to reflect the change.</p>\n		<h5>What has been changed:</h5>\n		<article></article>\n	</div>\n</div>";
-  };
-TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"group "
-    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n	<div class=\"head\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "<span class=\"count\">("
-    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</span></div>\n	<div class=\"content\"></div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.resDiffGroup=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<ul class=\"tree\"></ul>";
-  };
-TEMPLATE.resDiffTree=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
-
-function program1(depth0,data) {
-  
-  
-  return "closed";
-  }
-
-  buffer += "<li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.closed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n	<div class=\"meta\">\n		<span class=\"type\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n		<span class=\"name\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n	</div>\n</li>";
-  return buffer;
-  };
-TEMPLATE.resDiffTreeItem=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var stack1;
-  return escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "<span class=\"name to\"> -></span><span class=\"name "
-    + escapeExpression(((stack1 = (depth0 && depth0.type1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>";
-  return buffer;
-  }
-
-  buffer += "<div class=\"meta\">\n	<span class=\"type\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n	<span class=\"name ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.value1), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
-  return buffer;
-  };
-TEMPLATE.resDiffTreeMeta=Handlebars.template(__TEMPLATE__);
-
-
-return TEMPLATE; });
 (function() {
   define('DiffTree',[], function() {
     var DiffTree;
@@ -4514,7 +4409,8 @@ return TEMPLATE; });
         'resource.AssociationSet.n.RouteTableAssociationId': true,
         'resource.AssociationSet.n.NetworkAclAssociationId': true,
         'resource.BlockDeviceMapping': true,
-        'resource.VolumeSize': true
+        'resource.VolumeSize': true,
+        'resource.GroupDescription': true
       };
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
@@ -4695,6 +4591,111 @@ return TEMPLATE; });
 
 }).call(this);
 
+define('component/common/diff/resDiffTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"scroll-wrap scroll-wrap-res-diff\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"content_wrap scroll-content\">\n		<p>Resources of this app has been externally changed. The change has been synced to app. The diagram may be re-generated to reflect the change.</p>\n		<h5>What has been changed:</h5>\n		<article></article>\n	</div>\n</div>";
+  };
+TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"group "
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n	<div class=\"head\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "<span class=\"count\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</span></div>\n	<div class=\"content\"></div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.resDiffGroup=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<ul class=\"tree\"></ul>";
+  };
+TEMPLATE.resDiffTree=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  
+  return "closed";
+  }
+
+  buffer += "<li class=\"item ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.closed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n	<div class=\"meta\">\n		<span class=\"type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n		<span class=\"name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	</div>\n</li>";
+  return buffer;
+  };
+TEMPLATE.resDiffTreeItem=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<span class=\"name to\"> -></span><span class=\"name "
+    + escapeExpression(((stack1 = (depth0 && depth0.type1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"meta\">\n	<span class=\"type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	<span class=\"name ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.value1), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.resDiffTreeMeta=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
 (function() {
   define('component/common/diff/prepare',['constant'], function(constant) {
     var Prepare, helper, prepareNode;
@@ -4900,7 +4901,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('ResDiff',['UI.modalplus', './component/common/diff/resDiffTpl', 'DiffTree', './component/common/diff/prepare'], function(modalplus, template, DiffTree, Prepare) {
+  define('ResDiff',['UI.modalplus', 'DiffTree', './component/common/diff/resDiffTpl', './component/common/diff/prepare', 'constant'], function(modalplus, DiffTree, template, Prepare, constant) {
     return Backbone.View.extend({
       className: 'res_diff_tree',
       tagName: 'section',
@@ -5132,7 +5133,7 @@ return TEMPLATE; });
         return _genTree.call(that, diffComps, null, [], $container);
       },
       getChangeInfo: function() {
-        var hasResChange, needUpdateLayout, that;
+        var hasResChange, needUpdateLayout, oldComps, that;
         that = this;
         hasResChange = false;
         if (_.size(that.addedComps) || _.size(that.removedComps) || _.size(that.modifiedComps)) {
@@ -5140,6 +5141,35 @@ return TEMPLATE; });
         }
         needUpdateLayout = _.some(that.addedComps, function(comp) {
           return that.newAppJSON.layout[comp.uid];
+        });
+        oldComps = that.oldAppJSON.component;
+        _.each(that.modifiedComps, function(comp, uid) {
+          var instanceAry;
+          if (oldComps[uid] && oldComps[uid].type === constant.RESTYPE['ELB']) {
+            if (comp && comp.resource && comp.resource.Instances) {
+              instanceAry = [];
+              _.map(comp.resource.Instances, function(refObj) {
+                var _refObj;
+                _refObj = refObj.InstanceId;
+                if (_refObj) {
+                  if (_refObj.__old__) {
+                    instanceAry.push(_refObj.__old__);
+                  }
+                  if (_refObj.__new__) {
+                    return instanceAry.push(_refObj.__new__);
+                  }
+                }
+              });
+              _.each(instanceAry, function(uidRef) {
+                uid = MC.extractID(uidRef);
+                if (oldComps[uid] && oldComps[uid].number > 1) {
+                  needUpdateLayout = true;
+                }
+                return null;
+              });
+            }
+          }
+          return null;
         });
         return {
           hasResChange: hasResChange,
