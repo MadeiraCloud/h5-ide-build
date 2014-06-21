@@ -15600,7 +15600,7 @@ Canvon.fn = Canvon.prototype = {
 	init: function (selector)
 	{
 		var elem = $(selector);
-		
+
 		$.each(Canvon.prototype, function (name, fn)
 		{
 			elem[ name ] = fn;
@@ -15658,6 +15658,7 @@ Canvon.fn = Canvon.prototype = {
 
 		if (data)
 		{
+			this.drawn = null;
 			this.drewGroup = null;
 
 			return data;
@@ -15889,7 +15890,7 @@ Canvon.fn = Canvon.prototype = {
 			{
 				elem[ prop_name[ i ] ].baseVal.value = prop_to_value[ i ];
 			}
-			
+
 			if (callback)
 			{
 				callback.call(elem);
@@ -15978,6 +15979,7 @@ $.each(Canvon.prototype, function (name, fn)
 window.Canvon = Canvon;
 
 })();
+
 define("canvon", ["jquery"], (function (global) {
     return function () {
         var ret, fn;
