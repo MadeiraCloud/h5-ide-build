@@ -13761,9 +13761,8 @@ function program4(depth0,data) {
         this.set('instance_groups', instance_groups);
         return this.set('instance_count', instance_count);
       },
-      handleNotify: function(asg_comp, resource_list, asg_data) {
-        var nc_array, nc_map, notification, notifications, sendNotify, _i, _len;
-        notifications = resource_list.NotificationConfigurations;
+      handleNotify: function(asg_comp, notifications, asg_data) {
+        var nc_array, nc_map, notification, sendNotify, _i, _len, _ref;
         sendNotify = false;
         nc_array = [false, false, false, false, false];
         nc_map = {
@@ -13773,13 +13772,12 @@ function program4(depth0,data) {
           "autoscaling:EC2_INSTANCE_TERMINATE_ERROR": 3,
           "autoscaling:TEST_NOTIFICATION": 4
         };
-        if (notifications) {
-          for (_i = 0, _len = notifications.length; _i < _len; _i++) {
-            notification = notifications[_i];
-            if (notification.AutoScalingGroupName === asg_data.AutoScalingGroupName) {
-              nc_array[nc_map[notification.NotificationType]] = true;
-              sendNotify = true;
-            }
+        _ref = notifications || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          notification = _ref[_i];
+          if (notification.AutoScalingGroupName === asg_data.AutoScalingGroupName) {
+            nc_array[nc_map[notification.NotificationType]] = true;
+            sendNotify = true;
           }
         }
         this.set('notifies', nc_array);

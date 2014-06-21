@@ -366,6 +366,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_QUADRATIC_BELZIER", {hash:{},data:data}))
     + "</span></li>\n    <li class='item' data-id=\"3\"><span class=\"icon-bezier-qt\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
+    + "</span></li>\n    <li class='item' data-id=\"4\"><span class=\"icon-hide-sg\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_HIDE_SG", {hash:{},data:data}))
     + "</span></li>\n  </ul>\n</div>";
   return buffer;
   };
@@ -2909,12 +2911,13 @@ return TEMPLATE; });
         changeVisible: true,
         update: function($, workspace) {
           var data;
-          data = this.renderData(true);
+          data = this.renderData(true, workspace);
           $('.state-success b').text(data.successCount);
           return $('.state-failed b').text(data.failCount);
         },
-        renderData: function(visible) {
+        renderData: function(visible, workspace) {
           var failed, state, stateList, status, succeed, _i, _j, _len, _len1, _ref;
+          this.workspace = workspace;
           if (!visible) {
             return {};
           }
@@ -3054,7 +3057,7 @@ return TEMPLATE; });
             view.toggle(item.visible);
             isVisible = item.visible;
           }
-          view.data = (typeof item.renderData === "function" ? item.renderData(isVisible) : void 0) || {};
+          view.data = (typeof item.renderData === "function" ? item.renderData(isVisible, this.workspace) : void 0) || {};
           if (item.remove) {
             view.clearGarbage.push(_.bind(item.remove, item));
           }

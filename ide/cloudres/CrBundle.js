@@ -2287,6 +2287,7 @@
         ami = amiArray[_i];
         ami.id = ami.imageId;
         delete ami.imageId;
+        delete ami.json;
         bdm = {};
         _ref1 = ((_ref = ami.blockDeviceMapping) != null ? _ref.item : void 0) || [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -3537,7 +3538,7 @@
           this.addLayout(rtbComp, true, this.theVpc);
         }
       }, function() {
-        var acl, aclComp, aclName, aclRes, aws_acl, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        var acl, aclComp, aclName, aclRes, aws_acl, egress, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         _ref = this.getResourceByType("ACL") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_acl = _ref[_i];
@@ -3561,6 +3562,14 @@
           _ref1 = aws_acl.entries;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             acl = _ref1[_j];
+            egress = acl.egress;
+            if (_.isString(egress)) {
+              if (egress === 'true') {
+                egress = true;
+              } else {
+                egress = false;
+              }
+            }
             aclRes.EntrySet.push({
               "RuleAction": acl.ruleAction,
               "Protocol": Number(acl.protocol),
@@ -4009,7 +4018,7 @@
       }
     ];
     convertResToJson = function(region, vpcId, originalJson) {
-      var cd, changedServerGroupUidMap, default_sg, diffTree, func, originComps, _i, _len;
+      var cd, default_sg, diffRet, diffTree, func, getRelatedInstanceGroupUID, newServerGroupComps, originComps, originServerGroupComps, _i, _len;
       console.log(["VOL", "INSTANCE", "SG", "ELB", "ACL", "CGW", "ENI", "IGW", "RT", "SUBNET", "VPC", "VPN", "VGW", "ASG", "LC", "NC", "SP", "IAM", "RETAIN"].map(function(t) {
         return CloudResources(constant.RESTYPE[t], region);
       }));
@@ -4019,47 +4028,124 @@
         func.call(cd);
       }
       if (cd.originAppJSON) {
-        changedServerGroupUidMap = {};
         diffTree = new DiffTree();
         originComps = cd.originAppJSON.component;
-        _.each(cd.instances, function(insComp) {
-          var diffResult;
-          if (originComps[insComp.uid]) {
-            if (insComp.number && insComp.number > 1) {
-              diffResult = diffTree.compare(originComps[insComp.uid], insComp);
-              if (diffResult) {
-                changedServerGroupUidMap[insComp.serverGroupUid] = true;
+        getRelatedInstanceGroupUID = function(comp) {
+          var instanceComp, instanceRef, instanceUID, resType;
+          resType = comp.type;
+          if (resType === constant.RESTYPE.INSTANCE) {
+            return comp.serverGroupUid;
+          }
+          if (resType === constant.RESTYPE.ENI) {
+            instanceRef = comp.resource.Attachment.InstanceId;
+            if (instanceRef) {
+              instanceUID = MC.extractID(instanceRef);
+              instanceComp = originComps[instanceUID];
+              if (instanceComp) {
+                return instanceComp.serverGroupUid;
               }
             }
           }
+          if (resType === constant.RESTYPE.VOL) {
+            instanceRef = comp.resource.AttachmentSet.InstanceId;
+            if (instanceRef) {
+              instanceUID = MC.extractID(instanceRef);
+              instanceComp = originComps[instanceUID];
+              if (instanceComp) {
+                return instanceComp.serverGroupUid;
+              }
+            }
+          }
+          return '';
+        };
+        originServerGroupComps = {};
+        _.each(originComps, function(comp) {
+          if (comp.number && comp.number > 1) {
+            return originServerGroupComps[comp.uid] = comp;
+          }
+        });
+        newServerGroupComps = {};
+        _.each(cd.component, function(comp) {
+          if (originServerGroupComps[comp.uid]) {
+            newServerGroupComps[comp.uid] = comp;
+          }
           return null;
         });
-        _.each(cd.enis, function(insComp) {
-          var attachedInsRef, diffResult, instanceUid;
-          if (originComps[insComp.uid]) {
-            if (insComp.number && insComp.number > 1) {
-              if (diffResult) {
-                diffResult = diffTree.compare(originComps[insComp.uid], insComp);
-                changedServerGroupUidMap[insComp.serverGroupUid] = true;
-                attachedInsRef = insComp.resource.Attachment.InstanceId;
-                if (attachedInsRef) {
-                  instanceUid = MC.extractID(attachedInsRef);
-                  insComp = originComps[instanceUid];
-                  changedServerGroupUidMap[insComp.serverGroupUid] = true;
+        diffRet = diffTree.compare(originServerGroupComps, newServerGroupComps);
+        if (diffRet) {
+          _.each(diffRet, function(comp, uid) {
+            var newCompObj, serverGroupUID;
+            newCompObj = newServerGroupComps[uid];
+            if (newCompObj) {
+              serverGroupUID = getRelatedInstanceGroupUID(newCompObj);
+              if (serverGroupUID) {
+                return _.each(newServerGroupComps, function(newComp) {
+                  if (getRelatedInstanceGroupUID(newComp) === serverGroupUID) {
+                    if (newComp.serverGroupName) {
+                      newComp.serverGroupName = newComp.name;
+                    }
+                    if (newComp.number) {
+                      newComp.number = 1;
+                    }
+                    if (newComp.index) {
+                      newComp.index = 0;
+                    }
+                    if (newComp.serverGroupUid) {
+                      return newComp.serverGroupUid = newComp.uid;
+                    }
+                  }
+                });
+              }
+            }
+          });
+        }
+        _.each(cd.elbs, function(insComp) {
+          var diffElbInstance, diffInstanceAry, instanceAry, originComp, originInstanceAry;
+          instanceAry = _.map(insComp.resource.Instances, function(refObj) {
+            return MC.extractID(refObj.InstanceId);
+          });
+          originComp = originComps[insComp.uid];
+          if (originComp) {
+            originInstanceAry = _.map(originComp.resource.Instances, function(refObj) {
+              return MC.extractID(refObj.InstanceId);
+            });
+            diffElbInstance = diffTree.compare(instanceAry, originInstanceAry);
+            if (diffElbInstance) {
+              diffInstanceAry = [];
+              _.each(diffElbInstance, function(comp) {
+                if (comp.__old__) {
+                  diffInstanceAry.push(comp.__old__);
                 }
-              }
+                if (comp.__new__) {
+                  diffInstanceAry.push(comp.__new__);
+                }
+                return null;
+              });
+              return _.each(diffInstanceAry, function(instanceUID) {
+                var serverGroupInstanceComp, serverGroupUID;
+                serverGroupInstanceComp = newServerGroupComps[instanceUID];
+                serverGroupUID = serverGroupInstanceComp.serverGroupUid;
+                return _.each(newServerGroupComps, function(comp, uid) {
+                  var _serverGroupUID;
+                  _serverGroupUID = getRelatedInstanceGroupUID(comp);
+                  if (_serverGroupUID === serverGroupUID) {
+                    if (comp.serverGroupName) {
+                      comp.serverGroupName = comp.name;
+                    }
+                    if (comp.number) {
+                      comp.number = 1;
+                    }
+                    if (comp.index) {
+                      comp.index = 0;
+                    }
+                    if (comp.serverGroupUid) {
+                      return comp.serverGroupUid = comp.uid;
+                    }
+                  }
+                });
+              });
             }
           }
-          return null;
-        });
-        _.each(cd.instances, function(insComp) {
-          if (insComp.serverGroupUid && changedServerGroupUidMap[insComp.serverGroupUid]) {
-            insComp.serverGroupName = insComp.name;
-            insComp.number = 1;
-            insComp.index = 0;
-            insComp.serverGroupUid = insComp.uid;
-          }
-          return null;
         });
       }
       if (DEFAULT_SG["DefaultSG"]) {

@@ -804,6 +804,7 @@ define({
         "NOTIFY_MSG_INFO_STATE_PARSE_COMMAND_FAILED": "The states are from a different version. Some module may be incompatible.",
         "NOTIFY_MSG_INFO_STATE_PARSE_REFRENCE_FAILED": "The states contains @references which cannot pass on. Validate to see details.",
         "NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET": "This operation is not supported yet.",
+        "NOTIFY_MSG_WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH": "Auto Scaling Group can only register with Load Balancer on launch.",
         "NOTIFY_MSG_WARN_AMI_NOT_EXIST_TRY_USE_OTHER": "The AMI(%s) is not exist now, try to use another AMI.",
         "NOTIFY_MSG_WARN_ATTACH_VOLUME_REACH_INSTANCE_LIMIT": "Attached volume has reached instance limit.",
         "NOTIFY_MSG_WARN_KEYPAIR_NAME_ALREADY_EXISTS": "KeyPair with the same name already exists.",

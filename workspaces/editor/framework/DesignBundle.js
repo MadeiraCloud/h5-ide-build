@@ -865,7 +865,7 @@
     };
     $canvas.updateLineStyle = function(ls) {
       if (Design.__instance.shouldDraw()) {
-        if (ls === 4) {
+        if (ls === "4") {
           Canvon("#line_layer").addClass("hide-sg");
         } else {
           Canvon("#line_layer").removeClass("hide-sg");
@@ -8306,6 +8306,13 @@
           }
         }
       ],
+      constructor: function(p1Comp, p2Comp, attr, option) {
+        if ((p1Comp.type === constant.RESTYPE.LC && p1Comp.get('appId')) || (p2Comp.type === constant.RESTYPE.LC && p2Comp.get('appId'))) {
+          notification("error", lang.ide.NOTIFY_MSG_WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH);
+          return;
+        }
+        return ConnectionModel.prototype.constructor.apply(this, arguments);
+      },
       initialize: function(attibutes, option) {
         var ami, asg, connectedSbs, elb, foundSubnet, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
         if (option && option.createByUser) {

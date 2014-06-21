@@ -2489,7 +2489,7 @@ return Markdown;
         $logPanel = $('#state-log');
         if (that.currentState === 'stack') {
           $logPanelToggle.hide();
-        } else if ((_ref1 = that.currentState) === 'app' || _ref1 === 'appedit') {
+        } else if ((_ref1 = that.currentState) === 'app') {
           currentAppState = Design.instance().get('state');
           if (currentAppState === 'Stopped') {
             $logPanelToggle.hide();
