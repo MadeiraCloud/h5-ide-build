@@ -2123,6 +2123,7 @@
             });
           });
           sg.id = sg.groupId;
+          sg.Name = sg.groupName;
         }
         return sgs;
       },
@@ -2133,6 +2134,7 @@
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           sg = data[_i];
           sg.id = sg.groupId;
+          sg.Name = sg.groupName;
           sg.ipPermissions = sg.ipPermissions || [];
           sg.ipPermissionsEgress = sg.ipPermissionsEgress || [];
           sgRuls = sg.ipPermissions.concat(sg.ipPermissionsEgress);
@@ -2805,7 +2807,7 @@
         if (iamComp) {
           return iamComp;
         }
-        reg_iam = /arn:aws:iam::.*:server-certificate\/cf-test/g;
+        reg_iam = /arn:aws:iam::.*:server-certificate\/.*/g;
         if (!arn.match(reg_iam)) {
           console.error("[addIam] not a valid iam arn");
           return null;
@@ -2914,6 +2916,16 @@
         return compMap;
       };
 
+      ConverterData.prototype._removeAppId = function(name) {
+        var reg_app, rlt;
+        reg_app = /app-[a-z0-9]{8}$/g;
+        rlt = name.match(reg_app);
+        if (rlt && rlt.length === 1) {
+          name = name.replace(rlt[0], "");
+        }
+        return name;
+      };
+
       return ConverterData;
 
     })();
@@ -2955,13 +2967,11 @@
           InstanceTenancy: vpc.attributes.instanceTenancy,
           EnableDnsHostnames: vpc.attributes.enableDnsHostnames,
           EnableDnsSupport: vpc.attributes.enableDnsSupport
-        }, TAG_NAME(vpc.attributes));
+        }, TAG_NAME(vpc.attributes) || this.vpcId);
         this.addLayout(vpcComp, true);
       }, function() {
         var azComp, idx, sb, sbComp, _i, _len, _ref;
-        _ref = this.CrPartials("SUBNET").where({
-          vpcId: this.vpcId
-        }) || [];
+        _ref = this.getResourceByType("SUBNET") || [];
         for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
           sb = _ref[idx];
           sb = sb.attributes;
@@ -2971,15 +2981,13 @@
             CidrBlock: sb.cidrBlock,
             SubnetId: sb.id,
             VpcId: CREATE_REF(this.theVpc, "resource.VpcId")
-          }, TAG_NAME(sb));
+          }, TAG_NAME(sb) || sb.id);
           this.subnets[sb.id] = sbComp;
           this.addLayout(sbComp, true, azComp);
         }
       }, function() {
         var aws_igw, igwComp, igwRes, _i, _len, _ref;
-        _ref = this.CrPartials("IGW").where({
-          vpcId: this.vpcId
-        }) || [];
+        _ref = this.getResourceByType("IGW") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_igw = _ref[_i];
           aws_igw = aws_igw.attributes;
@@ -3178,7 +3186,7 @@
               genRules.call(this, sg_rule, sgRes.IpPermissionsEgress);
             }
           }
-          sgComp = this.add("SG", sgRes, TAG_NAME(aws_sg) || aws_sg.groupName);
+          sgComp = this.add("SG", sgRes, TAG_NAME(aws_sg) || this._removeAppId(aws_sg.groupName));
           if (aws_sg.groupName === "default") {
             vpcDefaultSg = aws_sg;
           } else if (aws_sg.groupName.indexOf("-DefaultSG-app-") !== -1) {
@@ -3478,9 +3486,7 @@
         }
       }, function() {
         var asso, aws_rtb, eniComp, gwComp, i, insComp, route, rtbComp, rtbRes, subnetComp, xgw_in_route, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
-        _ref = this.CrPartials("RT").where({
-          vpcId: this.vpcId
-        }) || [];
+        _ref = this.getResourceByType("RT") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_rtb = _ref[_i];
           aws_rtb = aws_rtb.attributes;

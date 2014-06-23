@@ -864,6 +864,9 @@
       }
     };
     $canvas.setLineStyle = function(ls) {
+      if (ls === !4 && Design.instance() && Design.instance().mode() === "appview") {
+        ls = 4;
+      }
       localStorage.setItem("canvas/lineStyle", ls);
       return Design.instance().canvas.setLineStyle(ls);
     };
