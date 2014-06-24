@@ -1068,6 +1068,7 @@ define({
         "UPDATE_APP_MODAL_TITLE": "Update App",
         "UPDATE_APP_CONFIRM_BTN": "Update App",
         "RUN_STACK": "run stack",
+        "UPDATE_APP_MODAL_NEED_CREDENTIAL": "Please set Up Credential First",
         "START_APP": "start app",
         "STOP_APP": "stop app",
         "TERMINATE_APP": "terminate app",
