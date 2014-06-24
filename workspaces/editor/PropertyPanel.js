@@ -340,7 +340,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/base/model',['backbone', 'Design'], function(Backbone, Design) {
+  define('workspaces/editor/property/base/model',['backbone', 'Design', "constant"], function(Backbone, Design, constant) {
 
     /*
     
@@ -376,6 +376,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return false;
           }
         });
+        return dup;
+      },
+      isOldName: function(newName) {
+        var dup, originJson;
+        originJson = Design.instance().__opsModel.getJsonData();
+        dup = false;
+        if (originJson.component) {
+          _.each(originJson.component, function(comp, key) {
+            if (comp.type === constant.RESTYPE.ELB && comp.name === newName) {
+              dup = true;
+              return false;
+            }
+          });
+        }
         return dup;
       },
       isReservedName: function(newName) {
@@ -586,6 +600,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           error = sprintf(lang.ide.PARSLEY_THIS_VALUE_SHOULD_BE_A_VALID_TYPE_NAME, type);
         }
         if (!error && this.model.isNameDup(name)) {
+          error = sprintf(lang.ide.PARSLEY_TYPE_NAME_CONFLICT, type, name);
+        }
+        if (!error && this.model.isOldName(name)) {
           error = sprintf(lang.ide.PARSLEY_TYPE_NAME_CONFLICT, type, name);
         }
         if (!error && this.model.isReservedName(name)) {
@@ -6119,7 +6136,7 @@ function program30(depth0,data) {
     };
     ElbView = PropertyView.extend({
       events: {
-        'change #property-elb-name': 'elbNameChange',
+        'keyup #property-elb-name': 'elbNameChange',
         'change #elb-scheme-select1': "schemeSelectChange",
         'change #elb-scheme-select2': "schemeSelectChange",
         'OPTION_CHANGE #elb-property-health-protocol-select': "healthProtocolSelect",

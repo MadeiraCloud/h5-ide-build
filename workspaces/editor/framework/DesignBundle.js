@@ -1968,7 +1968,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/ResourceModel',["Design", "event", "backbone", 'CloudResources'], function(Design, ideEvent, Backbone, CloudResources) {
+  define('workspaces/editor/framework/ResourceModel',["Design", "event", "backbone", 'CloudResources', "constant"], function(Design, ideEvent, Backbone, CloudResources, constant) {
     var ResourceModel, deepClone, __detailExtend, __emptyObj;
     deepClone = function(base) {
       var a, idx, key, target, value, _i, _len;
@@ -2148,6 +2148,12 @@
             nameMap[comp.get("name")] = true;
           }
           return null;
+        });
+        _.each((this.design().__opsModel.getJsonData() || []).component, function(comp) {
+          var _ref;
+          if ((_ref = comp.type) === constant.RESTYPE.ELB || _ref === constant.RESTYPE.ASG || _ref === constant.RESTYPE.LC || _ref === constant.RESTYPE.SP || _ref === constant.RESTYPE.SA || _ref === constant.RESTYPE.CW) {
+            return nameMap[comp.name] = true;
+          }
         });
         while (true) {
           newName = this.newNameTmpl + base;
