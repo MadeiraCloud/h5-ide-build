@@ -1826,12 +1826,19 @@ return TEMPLATE; });
                 j.name = self.collection.getNewName(j.name);
               }
               self.attributes.region = j.region;
-              self.set("name", j.name);
               self.__setJsonData(j);
             } catch (_error) {
               e = _error;
+              j = null;
               self.attributes.region = "us-east-1";
               self.__initJsonData();
+            }
+            if (j) {
+              try {
+                self.set("name", j.name);
+              } catch (_error) {
+                e = _error;
+              }
             }
             return self;
           });

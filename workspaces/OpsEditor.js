@@ -1518,6 +1518,7 @@ return TEMPLATE; });
         this.opsModel = opsModel;
         this.listenTo(this.opsModel, "destroy", this.onOpsModelStateChanged);
         this.listenTo(this.opsModel, "change:state", this.onOpsModelStateChanged);
+        this.listenTo(this.opsModel, "change:name", this.updateTab);
         this.listenTo(this.opsModel, "change:id", function() {
           this.updateUrl();
           if (this.design) {
