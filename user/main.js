@@ -1,5 +1,5 @@
 (function() {
-  var API_HOST, API_PROTO, ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, goto500, guid, handleErrorCode, handleNetError, i18n, ideHttps, init, l, langType, loadLang, render, sendEmail, setCredit, shouldIdeHttps, showErrorMessage, userRoute, validPassword, xhr;
+  var API_HOST, API_PROTO, ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, ideHttps, init, l, langType, loadLang, loadPageVar, render, sendEmail, setCredit, shouldIdeHttps, showErrorMessage, userRoute, validPassword, xhr;
 
   API_HOST = "api.visualops.io";
 
@@ -119,9 +119,27 @@
     return (typeof i18n === "function" ? i18n(str) : void 0) || str;
   });
 
+  loadPageVar = function(sVar) {
+    return decodeURI(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURI(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+  };
+
+  getRef = function() {
+    var ref;
+    ref = loadPageVar('ref');
+    if (ref.charAt(0) === "/") {
+      return ref;
+    } else {
+      return "/";
+    }
+  };
+
+  getSearch = function() {
+    return window.location.search || "";
+  };
+
   loadLang = function(cb) {
     return $.ajax({
-      url: './nls/' + langType() + '/lang.js',
+      url: '/nls/' + langType() + '/lang.js',
       jsonp: false,
       dataType: "jsonp",
       jsonpCallback: "define",
@@ -203,14 +221,18 @@
             }
           });
         } else if (hashTarget === "expire") {
-          return render('#expire-template');
+          render('#expire-template');
+          return $(".account-instruction a").attr("href", "/login" + getSearch());
         } else if (hashTarget === "email") {
           render("#email-template");
           return $('form.box-body').find('input').eq(0).focus();
         } else if (hashTarget === "success") {
-          return render("#success-template");
+          render("#success-template");
+          return $(".account-instruction a").attr("href", "/login" + getSearch());
         } else {
           render('#default-template');
+          $(".title-link").find("a").eq(0).attr("href", "/register/" + getSearch());
+          $(".title-link").find("a").eq(1).attr("href", "/login/" + getSearch());
           $("#reset-pw-email").focus();
           $('#reset-pw-email').keyup(function() {
             if (this.value) {
@@ -232,10 +254,12 @@
       'login': function(pathArray, hashArray) {
         var $password, $user, checkValid, submitBtn;
         if (checkAllCookie()) {
-          window.location = '/';
+          window.location = getRef();
         }
         deepth = 'login';
         render("#login-template");
+        $(".account-btn-wrap a").attr("href", "/reset/" + getSearch());
+        $("#login-register").find("a").attr("href", "/register/" + getSearch());
         $user = $("#login-user");
         $password = $("#login-password");
         submitBtn = $("#login-btn").attr('disabled', false);
@@ -279,14 +303,15 @@
         if (hashArray[0] === 'success') {
           render("#success-template");
           $('#register-get-start').click(function() {
-            window.location = "/";
+            window.location = getRef();
           });
           return false;
         }
         if (checkAllCookie()) {
-          window.location = '/';
+          window.location = getRef();
         }
         render('#register-template');
+        $(".title-link a").attr("href", "/login/" + getSearch());
         $form = $("#register-form");
         $form.find('input').eq(0).focus();
         $username = $('#register-username');
@@ -622,7 +647,7 @@
       success: function(result, statusCode) {
         if (!statusCode) {
           setCredit(result);
-          window.location = '/';
+          window.location = getRef();
         } else {
           return errorCB(statusCode);
         }

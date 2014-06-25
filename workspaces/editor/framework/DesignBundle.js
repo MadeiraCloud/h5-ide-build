@@ -1146,9 +1146,33 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('Design',["constant", "OpsModel", "workspaces/editor/framework/canvasview/CanvasAdaptor", 'CloudResources'], function(constant, OpsModel, CanvasAdaptor, CloudResources) {
+    var Design, DesignImpl, PropertyDefination, createRecursiveCheck, diffHelper, noop;
+    PropertyDefination = {
+      policy: {
+        ha: ""
+      },
+      lease: {
+        action: "",
+        length: null,
+        due: null
+      },
+      schedule: {
+        stop: {
+          run: null,
+          when: null,
+          during: null
+        },
+        backup: {
+          when: null,
+          day: null
+        },
+        start: {
+          when: null
+        }
+      }
+    };
 
     /* env:prod */
-    var Design, DesignImpl, createRecursiveCheck, diffHelper, noop;
     createRecursiveCheck = function() {
       return createRecursiveCheck.o || (createRecursiveCheck.o = {
         check: function() {}
@@ -1246,6 +1270,7 @@
       this.attributes = $.extend(true, {}, canvas_data);
       canvas_data.component = component;
       canvas_data.layout = layout;
+      this.on(Design.EVENT.AwsResourceUpdated, this.onAwsResourceUpdated);
       return null;
     };
     Design.TYPE = {
@@ -1262,7 +1287,8 @@
     };
     Design.EVENT = {
       Deserialized: "DESERIALIZED",
-      ChangeResource: "CHANGE_RESOURCE",
+      AwsResourceUpdated: "AWS_RESOURCE_UPDATED",
+      AzUpdated: "AZ_UPDATED",
       AddResource: "ADD_RESOURCE",
       RemoveResource: "REMOVE_RESOURCE"
     };
@@ -1694,8 +1720,9 @@
         visitor(component_data, layout_data, options);
       }
       data.layout.size = this.canvas.sizeAry;
-      data.property = this.attributes.property || {};
-      data.property.stoppable = this.isStoppable();
+      data.property = $.extend({
+        stoppable: this.isStoppable()
+      }, PropertyDefination);
       data.version = "2014-02-17";
       data.state = this.__opsModel.getStateDesc() || "Enabled";
       data.id = this.__opsModel.get("id");
@@ -1888,6 +1915,23 @@
       }
       return true;
     };
+    DesignImpl.prototype.onAwsResourceUpdated = function() {
+      var comp, uid, _ref;
+      if (this.modeIsStack()) {
+        return;
+      }
+      _ref = this.__componentMap;
+      for (uid in _ref) {
+        comp = _ref[uid];
+        if (comp.node_line || comp.node_group) {
+          continue;
+        }
+        if (comp.draw) {
+          comp.draw();
+        }
+      }
+      return null;
+    };
     DesignImpl.prototype.instancesNoUserData = function() {
       var instanceModels, lcModels, result;
       result = true;
@@ -1904,6 +1948,12 @@
       return result;
     };
     _.extend(DesignImpl.prototype, Backbone.Events);
+    DesignImpl.prototype.on = function(event) {
+      if (event === Design.EVENT.AwsResourceUpdated && this.modeIsStack()) {
+        return;
+      }
+      return Backbone.Events.on.apply(this, arguments);
+    };
     CanvasAdaptor.setDesign(Design);
 
     /* env:dev                                            env:dev:end */
@@ -2080,11 +2130,7 @@
         }
         Design.trigger(Design.EVENT.AddResource, this);
         design.trigger(Design.EVENT.AddResource, this);
-        this.listenTo(this, "change", this.__triggerChangeInDesign);
         return this;
-      },
-      __triggerChangeInDesign: function() {
-        this.design().trigger(Design.EVENT.ChangeResource, this);
       },
       getNewName: function(base) {
         var myKinds, nameMap, newName;
@@ -6682,6 +6728,10 @@
         }
         this.draw(true);
         return null;
+      },
+      setName: function() {
+        GroupModel.prototype.setName.apply(this, arguments);
+        this.design().trigger(Design.EVENT.AzUpdated);
       },
       isRemovable: function() {
         if (this.children().length > 0) {
