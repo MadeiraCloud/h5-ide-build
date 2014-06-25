@@ -2735,7 +2735,7 @@ return TEMPLATE; });
       createStackByJson: function(json) {
         var m;
         if (!this.attributes.stackList.isNameAvailable(json.name)) {
-          json.name = this.stackList().getNewName();
+          json.name = this.stackList().getNewName(json.name);
         }
         m = new OpsModel({
           name: json.name,
