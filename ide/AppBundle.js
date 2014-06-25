@@ -1,5 +1,5 @@
 (function() {
-  define(["./Application", "OpsModel", "Workspace"], function(Application) {
+  define(["./Application", "OpsModel", "Workspace", "./Router"], function(Application) {
     return Application;
   });
 
