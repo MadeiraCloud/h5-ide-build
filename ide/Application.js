@@ -143,7 +143,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('ide/subviews/SessionDialog',['i18n!nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
+  define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
     var CurrentSessionDialog, SessionDialogView;
     CurrentSessionDialog = null;
     SessionDialogView = Backbone.View.extend({
@@ -372,7 +372,7 @@ function program3(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('ide/subviews/SettingsDialog',["./SettingsDialogTpl", 'i18n!nls/lang.js', "ApiRequest", "backbone"], function(SettingsTpl, lang, ApiRequest) {
+  define('ide/subviews/SettingsDialog',["./SettingsDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "backbone"], function(SettingsTpl, lang, ApiRequest) {
     var SettingsDialog;
     SettingsDialog = Backbone.View.extend({
       events: {
@@ -820,7 +820,7 @@ function program3(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('ide/subviews/WelcomeDialog',["./WelcomeTpl", "UI.modalplus", 'i18n!nls/lang.js', "backbone"], function(WelcomeTpl, Modal, lang) {
+  define('ide/subviews/WelcomeDialog',["./WelcomeTpl", "UI.modalplus", 'i18n!/nls/lang.js', "backbone"], function(WelcomeTpl, Modal, lang) {
     var WelcomeDialog;
     WelcomeDialog = Backbone.View.extend({
       events: {
@@ -1466,7 +1466,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", 'i18n!nls/lang.js'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, lang) {
+  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", 'i18n!/nls/lang.js'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, lang) {
     return Backbone.View.extend({
       el: $("body")[0],
       events: {
@@ -1725,6 +1725,13 @@ return TEMPLATE; });
           }
         }
       },
+      url: function() {
+        if (this.get("id")) {
+          return "ops/" + (this.get('id'));
+        } else {
+          return "ops/" + this.cid + "/unsaved";
+        }
+      },
       isStack: function() {
         return this.attributes.state === OpsModelState.UnRun;
       },
@@ -1801,14 +1808,33 @@ return TEMPLATE; });
         return this.__jsonData;
       },
       fetchJsonData: function() {
-        var d, self;
+        var d, sampleId, self;
         if (this.__jsonData) {
           d = Q.defer();
           d.resolve(this);
           return d.promise;
         }
         self = this;
-        if (this.isImported()) {
+        if (this.get("sampleId")) {
+          sampleId = this.get("sampleId");
+          return ApiRequest('stackstore_fetch_stackstore', {
+            sub_path: "master/stack/" + sampleId + "/" + sampleId + ".json"
+          }).then(function(result) {
+            var e, j;
+            try {
+              j = JSON.parse(result);
+              delete j.id;
+              delete j.signature;
+              self.attributes.region = j.region;
+              self.__setJsonData(j);
+            } catch (_error) {
+              e = _error;
+              self.attributes.region = "us-east-1";
+              self.__initJsonData();
+            }
+            return self;
+          });
+        } else if (this.isImported()) {
           return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
             var json;
             json = self.generateJsonFromRes();
@@ -1901,6 +1927,9 @@ return TEMPLATE; });
         if (this.isApp() || this.testState(OpsModelState.Saving)) {
           return this.__returnErrorPromise();
         }
+        if (!newJson) {
+          newJson = this.__jsonData;
+        }
         this.set("state", OpsModelState.Saving);
         nameClash = this.collection.where({
           name: newJson.name
@@ -1915,6 +1944,7 @@ return TEMPLATE; });
           console.warn("The json's state isnt `Enabled` when saving the stack", this, newJson);
           newJson.state = "Enabled";
         }
+        newJson.id = this.get("id");
         self = this;
         return ApiRequest(api, {
           region_name: this.get("region"),
@@ -1969,6 +1999,8 @@ return TEMPLATE; });
       run: function(toRunJson, appName) {
         var region;
         region = this.get("region");
+        toRunJson.id = "";
+        toRunJson.stack_id = this.get("id") || "";
         return ApiRequest("stack_run_v2", {
           region_name: region,
           stack: toRunJson,
@@ -2310,6 +2342,7 @@ return TEMPLATE; });
             }
           },
           property: {
+            stoppable: true,
             policy: {
               ha: ""
             },
@@ -2336,15 +2369,18 @@ return TEMPLATE; });
         };
       },
       __initJsonData: function() {
-        var comp, component, id, json, l, layout;
+        var comp, component, id, json, l, layout, vpcId, vpcRef;
         json = this.__createRawJson();
+        vpcId = MC.guid();
+        vpcRef = "@{" + vpcId + ".resource.VpcId}";
         layout = {
           VPC: {
             coordinate: [5, 3],
             size: [60, 60]
           },
           RTB: {
-            coordinate: [50, 5]
+            coordinate: [50, 5],
+            groupUId: vpcId
           }
         };
         component = {
@@ -2352,7 +2388,8 @@ return TEMPLATE; });
             type: "AWS.EC2.KeyPair",
             name: "DefaultKP",
             resource: {
-              KeyName: "DefaultKP"
+              KeyName: "DefaultKP",
+              KeyFingerprint: ""
             }
           },
           SG: {
@@ -2364,14 +2401,7 @@ return TEMPLATE; });
                   IpProtocol: "tcp",
                   IpRanges: "0.0.0.0/0",
                   FromPort: "22",
-                  ToPort: "22",
-                  Groups: [
-                    {
-                      "GroupId": "",
-                      "UserId": "",
-                      "GroupName": ""
-                    }
-                  ]
+                  ToPort: "22"
                 }
               ],
               IpPermissionsEgress: [
@@ -2382,15 +2412,21 @@ return TEMPLATE; });
                   ToPort: "65535"
                 }
               ],
-              Default: "true",
+              Default: true,
+              GroupId: "",
               GroupName: "DefaultSG",
-              GroupDescription: 'default VPC security group'
+              GroupDescription: 'default VPC security group',
+              VpcId: vpcRef
             }
           },
           ACL: {
             type: "AWS.VPC.NetworkAcl",
             name: "DefaultACL",
             resource: {
+              AssociationSet: [],
+              Default: true,
+              NetworkAclId: "",
+              VpcId: vpcRef,
               EntrySet: [
                 {
                   RuleAction: "allow",
@@ -2455,19 +2491,33 @@ return TEMPLATE; });
           VPC: {
             type: "AWS.VPC.VPC",
             name: "vpc",
-            resource: {}
+            resource: {
+              VpcId: "",
+              CidrBlock: "10.0.0.0/16",
+              DhcpOptionsId: "",
+              EnableDnsHostnames: false,
+              EnableDnsSupport: true,
+              InstanceTenancy: "default"
+            }
           },
           RTB: {
             type: "AWS.VPC.RouteTable",
+            name: "RT-0",
             resource: {
+              VpcId: vpcRef,
+              RouteTableId: "",
               AssociationSet: [
                 {
-                  Main: "true"
+                  Main: "true",
+                  SubnetId: "",
+                  RouteTableAssociationId: ""
                 }
               ],
+              PropagatingVgwSet: [],
               RouteSet: [
                 {
-                  State: 'active',
+                  InstanceId: "",
+                  NetworkInterfaceId: "",
                   Origin: 'CreateRouteTable',
                   GatewayId: 'local',
                   DestinationCidrBlock: '10.0.0.0/16'
@@ -2478,7 +2528,11 @@ return TEMPLATE; });
         };
         for (id in component) {
           comp = component[id];
-          comp.uid = MC.guid();
+          if (id === "VPC") {
+            comp.uid = vpcId;
+          } else {
+            comp.uid = MC.guid();
+          }
           json.component[comp.uid] = comp;
           if (layout[id]) {
             l = layout[id];
@@ -2679,11 +2733,20 @@ return TEMPLATE; });
         this.attributes.appList.add(m);
         return m;
       },
+      createSampleOps: function(sampleId) {
+        var m;
+        m = new OpsModel({
+          name: this.stackList().getNewName(),
+          sampleId: sampleId
+        });
+        this.attributes.stackList.add(m);
+        return m;
+      },
       createStack: function(region) {
         var m;
         console.assert(constant.REGION_KEYS.indexOf(region) >= 0, "Region is not recongnised when creating stack:", region);
         m = new OpsModel({
-          name: this.attributes.stackList.getNewName(),
+          name: this.stackList().getNewName(),
           region: region
         }, {
           initJsonData: true
@@ -2694,7 +2757,7 @@ return TEMPLATE; });
       createStackByJson: function(json) {
         var m;
         if (!this.attributes.stackList.isNameAvailable(json.name)) {
-          json.name = this.attributes.stackList.getNewName();
+          json.name = this.stackList().getNewName();
         }
         m = new OpsModel({
           name: json.name,
@@ -3440,6 +3503,7 @@ return TEMPLATE; });
           this.__awakeSpace.sleep();
         }
         this.__awakeSpace = workspace;
+        this.__updateUrl();
         this.view.activateTab(workspace.id);
         promise = workspace.awake();
         if (promise && promise.then && promise.isFulfilled && !promise.isFulfilled()) {
@@ -3457,6 +3521,9 @@ return TEMPLATE; });
       WorkspaceManager.prototype.update = function(workspace) {
         if (!workspace) {
           return;
+        }
+        if (workspace === this.__awakeSpace) {
+          this.__updateUrl(true);
         }
         this.view.updateTab(workspace.id, workspace.title(), workspace.tabClass());
         return workspace;
@@ -3495,6 +3562,15 @@ return TEMPLATE; });
       WorkspaceManager.prototype.hasUnsaveSpaces = function() {
         return this.__spaces.some(function(ws) {
           return ws.isModified();
+        });
+      };
+
+      WorkspaceManager.prototype.__updateUrl = function(replace) {
+        if (replace == null) {
+          replace = false;
+        }
+        return Router.navigate(this.__awakeSpace.url(), {
+          replace: replace
         });
       };
 
@@ -3786,6 +3862,14 @@ return TEMPLATE; });
 
       Workspace.prototype.isWorkingOn = function(attributes) {
         return false;
+      };
+
+      Workspace.prototype.updateUrl = function() {
+        if (this.isAwake()) {
+          Router.navigate(this.url(), {
+            replace: true
+          });
+        }
       };
 
       return Workspace;

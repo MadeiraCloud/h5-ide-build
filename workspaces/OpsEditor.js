@@ -93,6 +93,10 @@ function program5(depth0,data) {
             }
             break;
           case OpsModel.State.Destroyed:
+            if (this.done) {
+              this.close();
+              return;
+            }
             this.$el.children().hide();
             this.$el.find(".fail").show();
             this.$el.find(".detail").text(this.model.get("opsActionError"));
@@ -146,6 +150,10 @@ function program5(depth0,data) {
         return this.opsModel.get("name") + " - app";
       };
 
+      OpsProgress.prototype.url = function() {
+        return this.opsModel.url();
+      };
+
       function OpsProgress(opsModel) {
         if (!opsModel) {
           this.remove();
@@ -166,6 +174,9 @@ function program5(depth0,data) {
           model: this.opsModel
         });
         this.view.workspace = this;
+        this.listenTo(this.opsModel, "change:id", function() {
+          this.updateUrl();
+        });
         self = this;
         this.view.on("close", function() {
           return self.remove();
@@ -708,7 +719,7 @@ TEMPLATE.saveAppToStack=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('workspaces/editor/subviews/Toolbar',["OpsModel", "../template/TplOpsEditor", "ThumbnailUtil", "JsonExporter", "ApiRequest", "i18n!nls/lang.js", "UI.modalplus", 'kp_dropdown', 'constant', 'event', 'component/trustedadvisor/main', "UI.notification", "backbone"], function(OpsModel, OpsEditorTpl, Thumbnail, JsonExporter, ApiRequest, lang, Modal, kpDropdown, constant, ide_event, TA) {
+  define('workspaces/editor/subviews/Toolbar',["OpsModel", "../template/TplOpsEditor", "ThumbnailUtil", "JsonExporter", "ApiRequest", "i18n!/nls/lang.js", "UI.modalplus", 'kp_dropdown', 'constant', 'event', 'component/trustedadvisor/main', "UI.notification", "backbone"], function(OpsModel, OpsEditorTpl, Thumbnail, JsonExporter, ApiRequest, lang, Modal, kpDropdown, constant, ide_event, TA) {
     var API_HOST, API_URL;
     API_HOST = "api.visualops.io";
 
@@ -811,7 +822,7 @@ return TEMPLATE; });
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             return notification("info", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_SUCCESS, newJson.name));
-          }, function() {
+          }, function(err) {
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             return notification("error", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name));
@@ -1043,7 +1054,7 @@ return TEMPLATE; });
           };
         })(this));
       },
-      appToStack: function() {
+      appToStack: function(event) {
         var appToStackModal, name, newName, onConfirm, originStackExist, stack;
         name = this.workspace.design.attributes.name;
         newName = this.getStackNameFromApp(name);
@@ -1065,7 +1076,7 @@ return TEMPLATE; });
               return stack.save(newJson).then(function() {
                 notification("info", sprintf(lang.ide.TOOL_MSG_INFO_HDL_SUCCESS, lang.ide.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
                 return App.openOps(stack, true);
-              }, function() {
+              }, function(err) {
                 return notification('error', sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name));
               });
             }
@@ -1077,7 +1088,7 @@ return TEMPLATE; });
           template: OpsEditorTpl.saveAppToStack({
             input: name,
             stackName: newName,
-            originStackExist: originStackExist
+            orignStackExist: originStackExist
           }),
           confirm: {
             text: lang.ide.TOOL_POP_BTN_SAVE_TO_STACK
@@ -1100,7 +1111,7 @@ return TEMPLATE; });
           idx = Number(app_name.substr(app_name.lastIndexOf("-") + 1));
           copy_name = prefix;
         } else {
-          if (app_name.charAt(app_name.length - 1) === "-") {
+          if (app_name.charAt(name.length - 1) === "-") {
             copy_name = app_name.substr(0, app_name.length - 1);
           } else {
             copy_name = app_name;
@@ -1457,6 +1468,10 @@ return TEMPLATE; });
         return "icon-stack-tabbar";
       };
 
+      OpsEditorBase.prototype.url = function() {
+        return this.opsModel.url();
+      };
+
       OpsEditorBase.prototype.fetchAdditionalData = function() {
         var d;
         d = Q.defer();
@@ -1504,8 +1519,9 @@ return TEMPLATE; });
         this.listenTo(this.opsModel, "destroy", this.onOpsModelStateChanged);
         this.listenTo(this.opsModel, "change:state", this.onOpsModelStateChanged);
         this.listenTo(this.opsModel, "change:id", function() {
+          this.updateUrl();
           if (this.design) {
-            return this.design.set("id", this.opsModel.get("id"));
+            this.design.set("id", this.opsModel.get("id"));
           }
         });
         self = this;
@@ -1830,7 +1846,7 @@ function program2(depth0,data,depth2) {
     + "\"}'>\n  ";
   stack1 = helpers['if'].call(depth0, (depth2 && depth2.fav), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  <div class=\"resource-icon-instance\"><img src=\"assets/images/ide/ami/"
+  buffer += "\n  <div class=\"resource-icon-instance\"><img src=\"/assets/images/ide/ami/"
     + escapeExpression(((stack1 = (depth0 && depth0.osType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "."
     + escapeExpression(((stack1 = (depth0 && depth0.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1865,7 +1881,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"resource-icon resource-icon-instance\" >\n    <img src=\"assets/images/ide/ami/"
+  buffer += "<div class=\"resource-icon resource-icon-instance\" >\n    <img src=\"/assets/images/ide/ami/"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.cachedAmi)),stack1 == null || stack1 === false ? stack1 : stack1.osType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "."
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.cachedAmi)),stack1 == null || stack1 === false ? stack1 : stack1.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1989,7 +2005,7 @@ return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/subviews/AmiBrowser',['../template/TplAmiBrowser', 'i18n!nls/lang.js', 'UI.modalplus', "ApiRequest", 'CloudResources', 'backbone', 'jqpagination'], function(TplAmiBrowser, lang, Modal, ApiRequest, CloudResources) {
+  define('workspaces/editor/subviews/AmiBrowser',['../template/TplAmiBrowser', 'i18n!/nls/lang.js', 'UI.modalplus', "ApiRequest", 'CloudResources', 'backbone', 'jqpagination'], function(TplAmiBrowser, lang, Modal, ApiRequest, CloudResources) {
     return Backbone.View.extend({
       events: {
         'click .ami-option-group .ami-option-wrap .btn': 'clickOptionBtn',
@@ -2193,7 +2209,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/subviews/ResourcePanel',["CloudResources", "Design", "../template/TplLeftPanel", "constant", 'dhcp', 'snapshotManager', 'sslcert_manage', 'sns_manage', 'kp_manage', './AmiBrowser', 'i18n!nls/lang.js', 'ApiRequest', "backbone", 'UI.radiobuttons'], function(CloudResources, Design, LeftPanelTpl, constant, dhcpManager, snapshotManager, sslCertManager, snsManager, keypairManager, AmiBrowser, lang, ApiRequest) {
+  define('workspaces/editor/subviews/ResourcePanel',["CloudResources", "Design", "../template/TplLeftPanel", "constant", 'dhcp', 'snapshotManager', 'sslcert_manage', 'sns_manage', 'kp_manage', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', "backbone", 'UI.radiobuttons'], function(CloudResources, Design, LeftPanelTpl, constant, dhcpManager, snapshotManager, sslCertManager, snsManager, keypairManager, AmiBrowser, lang, ApiRequest) {
     var __resizeAccdTO;
     __resizeAccdTO = null;
     $(window).on("resize", function() {
@@ -3185,7 +3201,7 @@ return TEMPLATE; });
 
       StackEditor.prototype.isReady = function() {
         var region, stateModule;
-        if (!this.opsModel.hasJsonData()) {
+        if (!this.opsModel.hasJsonData() || !this.opsModel.isPersisted()) {
           return false;
         }
         region = this.opsModel.get("region");
@@ -3193,11 +3209,15 @@ return TEMPLATE; });
         return CloudResources(constant.RESTYPE.AZ, region).isReady() && CloudResources(constant.RESTYPE.SNAP, region).isReady() && CloudResources("QuickStartAmi", region).isReady() && CloudResources("MyAmi", region).isReady() && CloudResources("FavoriteAmi", region).isReady() && !!App.model.getStateModule(stateModule.repo, stateModule.tag) && this.hasAmiData();
       };
 
+      StackEditor.prototype.initialize = function() {
+        this.listenTo(this.opsModel, "change:id", this.updateUrl);
+      };
+
       StackEditor.prototype.fetchAdditionalData = function() {
         var region, stateModule;
         region = this.opsModel.get("region");
         stateModule = this.opsModel.getJsonData().agent.module;
-        return Q.all([App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.fetchAmiData()]);
+        return Q.all([this.opsModel.save(), App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.fetchAmiData()]);
       };
 
       StackEditor.prototype.hasAmiData = function() {
@@ -3257,7 +3277,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/AppView',["./StackView", "OpsModel", "./template/TplOpsEditor", "UI.modalplus", "i18n!nls/lang.js"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang) {
+  define('workspaces/editor/AppView',["./StackView", "OpsModel", "./template/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang) {
     return StackView.extend({
       bindUserEvent: function() {
         if (this.workspace.isAppEditMode()) {

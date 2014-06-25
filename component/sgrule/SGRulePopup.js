@@ -98,7 +98,7 @@ function program11(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('component/sgrule/SGRulePopupView',['./template', 'i18n!nls/lang.js', "Design"], function(template, lang, Design) {
+  define('component/sgrule/SGRulePopupView',['./template', 'i18n!/nls/lang.js', "Design"], function(template, lang, Design) {
     var SGRulePopupView;
     SGRulePopupView = Backbone.View.extend({
       events: {

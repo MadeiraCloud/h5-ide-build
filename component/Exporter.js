@@ -865,7 +865,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
 }).call(this);
 
 (function() {
-  define('JsonExporter',['component/exporter/Download', 'i18n!nls/lang.js', "crypto"], function(download, lang) {
+  define('JsonExporter',['component/exporter/Download', 'i18n!/nls/lang.js', "crypto"], function(download, lang) {
     var ascii, exportJson, genericExport, importJson, key;
     ascii = function() {
       return String.fromCharCode.apply(String, arguments);

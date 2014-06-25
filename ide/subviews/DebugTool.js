@@ -5,7 +5,7 @@
     ApiDialog = "<div class=\"modal-header\"> <h3>Api Debugger</h3> <i class=\"modal-close\">×</i> </div>\n<div id=\"diffWrap\"><div id=\"ApiDebugger\">\n<button class=\"btn btn-blue\" id=\"ApiDebugSend\">Send Request</button>\n<section><label>Api : </label><select id=\"ApiSelect\" data-placeholder=\"Select an api\"></select></section>\n<section><label>Parameters :</label><section id=\"ApiParamsWrap\" class=\"clearfix\"></section></section>\n<section><label>Result :</label><pre id=\"ApiResult\"></pre></section>\n</div></div>";
     SessionDialog = "<div class=\"modal-header\"> <h3>Share Session</h3> <i class=\"modal-close\">×</i> </div>\n<div class=\"modal-body\" style=\"width:500px\">\n  <h5>Paste & run this code to share session.</h5>\n  <textarea id=\"DebugShareSession\" spellcheck=\"false\"></textarea>\n</div>";
     DebugTool = function() {
-      $("head").append('<link rel="stylesheet" href="./assets/css/debugger.css"></link>');
+      $("head").append('<link rel="stylesheet" href="/assets/css/debugger.css"></link>');
       $(tmpl).appendTo("body");
       return $("#DebugTool").on("click", "li", dispatchClick);
     };
@@ -126,7 +126,7 @@
     };
     debugSession = function() {
       var session;
-      session = "(function(){var o = {expires:30,path:'/'}, a = " + (JSON.stringify($.cookie())) + ",k;for (k in a) { $.cookie(k,a[k],o); } window.location.reload(); })();";
+      session = "(function(){var o = {expires:30,path:'/'}, a = " + (JSON.stringify($.cookie())) + ",k;for (k in a) { $.cookie(k,a[k],o); } window.location.href = '" + window.location.href + "'; })();";
       modal(SessionDialog);
       $("#DebugShareSession").html(session).select();
     };

@@ -724,7 +724,7 @@ return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/stateeditor/validate',['Design', 'validation', 'constant', 'i18n!nls/lang.js', 'jquery', 'underscore', 'MC', 'UI.errortip'], function(Design, validationTA, constant, lang) {
+  define('component/stateeditor/validate',['Design', 'validation', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC', 'UI.errortip'], function(Design, validationTA, constant, lang) {
     var Action, Helper, Message, Setup, TA, Validator, validate;
     TA = validationTA.state;
     Message = {};
@@ -2321,7 +2321,7 @@ return Markdown;
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/stateeditor/view',['event', 'i18n!nls/lang.js', './template', './validate', 'constant', 'instance_model', './lib/markdown', 'UI.errortip'], function(ide_event, lang, template, validate, constant, instance_model, Markdown) {
+  define('component/stateeditor/view',['event', 'i18n!/nls/lang.js', './template', './validate', 'constant', 'instance_model', './lib/markdown', 'UI.errortip'], function(ide_event, lang, template, validate, constant, instance_model, Markdown) {
     var StateClipboard, StateEditorView, id, tpl;
     StateClipboard = [];
     for (id in template) {

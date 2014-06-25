@@ -208,7 +208,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CanvasElement',["CanvasManager", "event", "constant", "i18n!nls/lang.js", "CloudResources", "MC.canvas.constant"], function(CanvasManager, ide_event, constant, lang, CloudResources) {
+  define('workspaces/editor/framework/canvasview/CanvasElement',["CanvasManager", "event", "constant", "i18n!/nls/lang.js", "CloudResources", "MC.canvas.constant"], function(CanvasManager, ide_event, constant, lang, CloudResources) {
     var CanvasElement, CanvasElementConstructors, Design;
     Design = null;
     CanvasElementConstructors = {};
@@ -825,7 +825,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CanvasAdaptor',["./CanvasElement", "event", 'i18n!nls/lang.js', "constant", "UI.notification"], function(CanvasElement, ide_event, lang, constant) {
+  define('workspaces/editor/framework/canvasview/CanvasAdaptor',["./CanvasElement", "event", 'i18n!/nls/lang.js', "constant", "UI.notification"], function(CanvasElement, ide_event, lang, constant) {
     var $canvas, Canvas, CanvasEvent, Design;
     Design = null;
 
@@ -1968,7 +1968,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/ResourceModel',["Design", "event", "backbone", 'CloudResources', "constant"], function(Design, ideEvent, Backbone, CloudResources, constant) {
+  define('workspaces/editor/framework/ResourceModel',["Design", "event", "backbone", 'CloudResources'], function(Design, ideEvent, Backbone, CloudResources) {
     var ResourceModel, deepClone, __detailExtend, __emptyObj;
     deepClone = function(base) {
       var a, idx, key, target, value, _i, _len;
@@ -2148,12 +2148,6 @@
             nameMap[comp.get("name")] = true;
           }
           return null;
-        });
-        _.each((this.design().__opsModel.getJsonData() || []).component, function(comp) {
-          var _ref;
-          if ((_ref = comp.type) === constant.RESTYPE.ELB || _ref === constant.RESTYPE.ASG || _ref === constant.RESTYPE.LC || _ref === constant.RESTYPE.SP || _ref === constant.RESTYPE.SA || _ref === constant.RESTYPE.CW) {
-            return nameMap[comp.name] = true;
-          }
         });
         while (true) {
           newName = this.newNameTmpl + base;
@@ -2773,7 +2767,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/connection/EniAttachment',["constant", "../ConnectionModel", "i18n!nls/lang.js"], function(constant, ConnectionModel, lang) {
+  define('workspaces/editor/framework/connection/EniAttachment',["constant", "../ConnectionModel", "i18n!/nls/lang.js"], function(constant, ConnectionModel, lang) {
     var C;
     C = ConnectionModel.extend({
       type: "EniAttachment",
@@ -3243,7 +3237,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/InstanceModel',["../ComplexResModel", "Design", "constant", "i18n!nls/lang.js", 'CloudResources'], function(ComplexResModel, Design, constant, lang, CloudResources) {
+  define('workspaces/editor/framework/resource/InstanceModel',["../ComplexResModel", "Design", "constant", "i18n!/nls/lang.js", 'CloudResources'], function(ComplexResModel, Design, constant, lang, CloudResources) {
     var Model, emptyArray;
     emptyArray = [];
     Model = ComplexResModel.extend({
@@ -4333,7 +4327,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/framework/resource/EniModel',["../ComplexResModel", "Design", "../connection/SgAsso", "../connection/EniAttachment", "constant", 'i18n!nls/lang.js'], function(ComplexResModel, Design, SgAsso, EniAttachment, constant, lang) {
+  define('workspaces/editor/framework/resource/EniModel',["../ComplexResModel", "Design", "../connection/SgAsso", "../connection/EniAttachment", "constant", 'i18n!/nls/lang.js'], function(ComplexResModel, Design, SgAsso, EniAttachment, constant, lang) {
 
     /*
     IpObject is used to represent an ip in Eni
@@ -5212,7 +5206,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/VolumeModel',["i18n!nls/lang.js", "../ComplexResModel", "constant"], function(lang, ComplexResModel, constant) {
+  define('workspaces/editor/framework/resource/VolumeModel',["i18n!/nls/lang.js", "../ComplexResModel", "constant"], function(lang, ComplexResModel, constant) {
     var Model;
     Model = ComplexResModel.extend({
       defaults: {
@@ -5863,7 +5857,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/AsgModel',["../ResourceModel", "../ComplexResModel", "../GroupModel", "Design", "constant", "i18n!nls/lang.js"], function(ResourceModel, ComplexResModel, GroupModel, Design, constant, lang) {
+  define('workspaces/editor/framework/resource/AsgModel',["../ResourceModel", "../ComplexResModel", "../GroupModel", "Design", "constant", "i18n!/nls/lang.js"], function(ResourceModel, ComplexResModel, GroupModel, Design, constant, lang) {
     var ExpandedAsgModel, Model, NotificationModel;
     NotificationModel = ComplexResModel.extend({
       type: constant.RESTYPE.NC,
@@ -6711,7 +6705,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/AzModel',["../GroupModel", "./VpcModel", "constant", "i18n!nls/lang.js", "Design", "CloudResources"], function(GroupModel, VpcModel, constant, lang, Design, CloudResources) {
+  define('workspaces/editor/framework/resource/AzModel',["../GroupModel", "./VpcModel", "constant", "i18n!/nls/lang.js", "Design", "CloudResources"], function(GroupModel, VpcModel, constant, lang, Design, CloudResources) {
     var Model;
     Model = GroupModel.extend({
       type: constant.RESTYPE.AZ,
@@ -8191,7 +8185,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/connection/ElbAsso',["constant", "../ConnectionModel", "i18n!nls/lang.js", "Design", "component/sgrule/SGRulePopup"], function(constant, ConnectionModel, lang, Design, SGRulePopup) {
+  define('workspaces/editor/framework/connection/ElbAsso',["constant", "../ConnectionModel", "i18n!/nls/lang.js", "Design", "component/sgrule/SGRulePopup"], function(constant, ConnectionModel, lang, Design, SGRulePopup) {
     var ElbAmiAsso, ElbSubnetAsso;
     ElbSubnetAsso = ConnectionModel.extend({
       type: "ElbSubnetAsso",
@@ -8847,7 +8841,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/framework/resource/LcModel',["../ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", 'i18n!nls/lang.js', 'CloudResources'], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources) {
+  define('workspaces/editor/framework/resource/LcModel',["../ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", 'i18n!/nls/lang.js', 'CloudResources'], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources) {
     var Model, emptyArray;
     emptyArray = [];
     Model = ComplexResModel.extend({
@@ -9650,7 +9644,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/RtbModel',["../ComplexResModel", "Design", "../connection/Route", "../connection/RtbAsso", "./VpcModel", "constant", "i18n!nls/lang.js"], function(ComplexResModel, Design, Route, RtbAsso, VpcModel, constant, lang) {
+  define('workspaces/editor/framework/resource/RtbModel',["../ComplexResModel", "Design", "../connection/Route", "../connection/RtbAsso", "./VpcModel", "constant", "i18n!/nls/lang.js"], function(ComplexResModel, Design, Route, RtbAsso, VpcModel, constant, lang) {
     var Model;
     Model = ComplexResModel.extend({
       defaults: {
@@ -9829,7 +9823,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/framework/resource/SubnetModel',["constant", "Design", "../GroupModel", "../connection/RtbAsso", "i18n!nls/lang.js"], function(constant, Design, GroupModel, RtbAsso, lang) {
+  define('workspaces/editor/framework/resource/SubnetModel',["constant", "Design", "../GroupModel", "../connection/RtbAsso", "i18n!/nls/lang.js"], function(constant, Design, GroupModel, RtbAsso, lang) {
     var Model;
     Model = GroupModel.extend({
       type: constant.RESTYPE.SUBNET,
@@ -10220,7 +10214,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/IgwModel',["../ComplexResModel", "./VpcModel", "Design", "constant", "i18n!nls/lang.js"], function(ComplexResModel, VpcModel, Design, constant, lang) {
+  define('workspaces/editor/framework/resource/IgwModel',["../ComplexResModel", "./VpcModel", "Design", "constant", "i18n!/nls/lang.js"], function(ComplexResModel, VpcModel, Design, constant, lang) {
     var Model;
     Model = ComplexResModel.extend({
       defaults: {
@@ -11423,7 +11417,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('workspaces/editor/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeSubnet, ChildElementProto;
     CeSubnet = function() {
       return CanvasElement.apply(this, arguments);
@@ -11509,7 +11503,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('workspaces/editor/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeCgw, ChildElementProto;
     CeCgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11558,7 +11552,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeIgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
+  define('workspaces/editor/framework/canvasview/CeIgw',["./CanvasElement", "constant", "i18n!/nls/lang.js"], function(CanvasElement, constant, lang) {
     var CeIgw, ChildElementProto;
     CeIgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11604,7 +11598,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeVgw',["./CanvasElement", "constant", "i18n!nls/lang.js"], function(CanvasElement, constant, lang) {
+  define('workspaces/editor/framework/canvasview/CeVgw',["./CanvasElement", "constant", "i18n!/nls/lang.js"], function(CanvasElement, constant, lang) {
     var CeVgw, ChildElementProto;
     CeVgw = function() {
       return CanvasElement.apply(this, arguments);
@@ -11658,7 +11652,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('workspaces/editor/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeRtb, ChildElementProto;
     CeRtb = function() {
       return CanvasElement.apply(this, arguments);
@@ -11748,7 +11742,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('workspaces/editor/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeElb, ChildElementProto;
     CeElb = function() {
       return CanvasElement.apply(this, arguments);
@@ -11824,7 +11818,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeAsg',["event", "./CanvasElement", "i18n!nls/lang.js", "constant", "Design", "CanvasManager"], function(ide_event, CanvasElement, lang, constant, Design, CanvasManager) {
+  define('workspaces/editor/framework/canvasview/CeAsg',["event", "./CanvasElement", "i18n!/nls/lang.js", "constant", "Design", "CanvasManager"], function(ide_event, CanvasElement, lang, constant, Design, CanvasManager) {
     var CeAsg, CeAsgProto;
     CeAsg = function() {
       return CanvasElement.apply(this, arguments);
@@ -11952,7 +11946,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager", "./CeAsg", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, CeAsg, lang) {
+  define('workspaces/editor/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager", "./CeAsg", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, CeAsg, lang) {
     var CeExpandedAsg, ChildElementProto;
     CeExpandedAsg = function() {
       CanvasElement.apply(this, arguments);
@@ -12050,7 +12044,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeInstance',["i18n!nls/lang.js", "./CanvasElement", "constant", "CanvasManager", "Design", "CloudResources"], function(lang, CanvasElement, constant, CanvasManager, Design, CloudResources) {
+  define('workspaces/editor/framework/canvasview/CeInstance',["i18n!/nls/lang.js", "./CanvasElement", "constant", "CanvasManager", "Design", "CloudResources"], function(lang, CanvasElement, constant, CanvasManager, Design, CloudResources) {
     var CeInstance, ChildElementProto;
     CeInstance = function() {
       return CanvasElement.apply(this, arguments);
@@ -12379,7 +12373,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeVolume',["i18n!nls/lang.js", "./CanvasElement", "constant", "CanvasManager", "event"], function(lang, CanvasElement, constant, CanvasManager, ide_event) {
+  define('workspaces/editor/framework/canvasview/CeVolume',["i18n!/nls/lang.js", "./CanvasElement", "constant", "CanvasManager", "event"], function(lang, CanvasElement, constant, CanvasManager, ide_event) {
     var CeVolume, ChildElementProto;
     CeVolume = function(component) {
       if (_.isString(component)) {
@@ -12417,7 +12411,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager", "i18n!nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('workspaces/editor/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     var CeEni, ChildElementProto;
     CeEni = function() {
       return CanvasElement.apply(this, arguments);
@@ -12548,7 +12542,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeLc',["./CanvasElement", "./CeInstance", "constant", "CanvasManager", 'i18n!nls/lang.js', "CloudResources"], function(CanvasElement, CeInstance, constant, CanvasManager, lang, CloudResources) {
+  define('workspaces/editor/framework/canvasview/CeLc',["./CanvasElement", "./CeInstance", "constant", "CanvasManager", 'i18n!/nls/lang.js', "CloudResources"], function(CanvasElement, CeInstance, constant, CanvasManager, lang, CloudResources) {
     var CeLc, ChildElementProto;
     CeLc = function() {
       return CanvasElement.apply(this, arguments);

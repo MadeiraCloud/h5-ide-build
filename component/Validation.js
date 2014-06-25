@@ -142,7 +142,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources", '../result_vo'], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
+  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources", '../result_vo'], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
     var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
@@ -435,7 +435,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/helper',['constant', 'MC', 'i18n!nls/lang.js', 'Design', 'underscore'], function(CONST, MC, LANG, Design, _) {
+  define('component/trustedadvisor/helper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'], function(CONST, MC, LANG, Design, _) {
     var Helper, Inside;
     Inside = {
       taReturn: function(type, tip, uid) {
@@ -800,7 +800,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!nls/lang.js'], function(constant, $, MC, lang) {
+  define('component/trustedadvisor/validation/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js'], function(constant, $, MC, lang) {
     return {
       getAllAWSENIForAppEditAndDefaultVPC: function(callback) {
         return callback(null);
@@ -811,7 +811,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
+  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
     var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, __hasState;
     i18n = Helper.i18n.short();
     __hasState = function(uid) {
@@ -917,7 +917,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!nls/lang.js', '../../helper', 'CloudResources'], function(constant, MC, lang, taHelper, CloudResources) {
+  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', '../../helper', 'CloudResources'], function(constant, MC, lang, taHelper, CloudResources) {
     var isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
     isHaveIGWForInternetELB = function(elbUID) {
       var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
@@ -1387,7 +1387,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/securitygroup',['constant', 'MC', 'i18n!nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/ec2/securitygroup',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var getAllRefComp, isAssociatedSGNumExceedLimit, isELBDefaultSG, isHaveFullZeroOutboundRule, isHaveFullZeroSourceToHTTPRule, isHaveUsingAllProtocolRule, isHaveUsingPort22Rule, isSGRuleExceedFitNum, isStackUsingOnlyOneSG;
     getAllRefComp = function(sgUID) {
       var refCompAry, refNum, sgAry;
@@ -1705,7 +1705,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo', '../../helper', 'CloudResources'], function(constant, MC, lang, resultVO, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo', '../../helper', 'CloudResources'], function(constant, MC, lang, resultVO, Helper, CloudResources) {
     var i18n, isELBHasHealthCheck, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
     i18n = Helper.i18n.short();
     isHasLaunchConfiguration = function(uid) {
@@ -1827,7 +1827,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/eip',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/ec2/eip',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isHasIGW, _hasType;
     isHasIGW = function() {
       var tipInfo;
@@ -1855,7 +1855,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/az',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/ec2/az',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isAZAlone;
     isAZAlone = function() {
       var count, instanceCount, tipInfo;
@@ -1894,7 +1894,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vgw',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/vgw',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isConnectToRTB;
     isConnectToRTB = function(uid) {
       var components, isConnectRTB, tipInfo, vpn, vpnId;
@@ -1930,7 +1930,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpn',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/vpn',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isVPNHaveIPForStaticCGW, isVPNPrefixIPNotValid;
     isVPNHaveIPForStaticCGW = function(uid) {
       var bgpAsn, cgwComp, cgwName, cgwRef, cgwUID, isHaveNoEmptyRoute, isStaticCGW, returnObj, routeAry, tipInfo, vgwComp, vgwName, vgwRef, vgwUID, vpnComp;
@@ -2028,7 +2028,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/igw',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/igw',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isConnectToRTB;
     isConnectToRTB = function(uid) {
       var components, igw, igwId, isConnectRTB, tipInfo;
@@ -2064,7 +2064,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/networkacl',['constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/networkacl',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
     var isConnectSubnetButNoAllowRule;
     isConnectSubnetButNoAllowRule = function(uid) {
       var HasAllowACLRule, acl, components, connectSubnet, tipInfo;
@@ -2096,7 +2096,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'customergateway_service', '../../helper', '../result_vo'], function(constant, $, MC, lang, cgwService, Helper) {
+  define('component/trustedadvisor/validation/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'customergateway_service', '../../helper', '../result_vo'], function(constant, $, MC, lang, cgwService, Helper) {
     var i18n, isAttachVGW, isCGWHaveIPConflict, isValidCGWIP;
     i18n = Helper.i18n.short();
     isCGWHaveIPConflict = function(callback) {
@@ -2199,7 +2199,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/eni',['constant', 'MC', 'i18n!nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/vpc/eni',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isENIAttachToInstance;
     isENIAttachToInstance = function(eniUID) {
       var attachedInstanceId, eniComp, eniName, tipInfo;
@@ -2292,7 +2292,7 @@ This file use for validate state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/stateeditor/validation/reference',['constant', 'MC', 'i18n!nls/lang.js'], function(CONST, MC, lang) {
+  define('component/trustedadvisor/validation/stateeditor/validation/reference',['constant', 'MC', 'i18n!/nls/lang.js'], function(CONST, MC, lang) {
     var Message, checkRefExist, takeplace, __componentTipMap, __findReference, __genError, __getComp, __getCompTip, __getRef, __isUid, __legalExist, __legalState, __refState;
     __componentTipMap = {
       'AWS.EC2.Instance': lang.ide.TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,
@@ -2436,7 +2436,7 @@ This file use for validate state.
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stateeditor/validation/format',['Design', 'constant', 'i18n!nls/lang.js', 'jquery', 'underscore', 'MC'], function(Design, constant, lang) {
+  define('component/trustedadvisor/validation/stateeditor/validation/format',['Design', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC'], function(Design, constant, lang) {
     var Helper, Message, Validator, checkFormat, __matchModule;
     Message = {};
     Validator = {
@@ -2639,7 +2639,7 @@ This file use for validate state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/stateeditor/main',['./register', 'constant', 'MC', 'i18n!nls/lang.js', '../result_vo'], function(validators, constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/stateeditor/main',['./register', 'constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(validators, constant, MC, lang, resultVO) {
     var isStateValid, __checkState, __modifyUid;
     __modifyUid = function(result, uid, index) {
       var r, _i, _len, _ref;
@@ -2980,7 +2980,7 @@ This file use for validate component about state.
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!nls/lang.js', 'ebs_service', '../result_vo'], function(constant, $, MC, lang, ebsService) {
+  define('component/trustedadvisor/validation/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ebs_service', '../result_vo'], function(constant, $, MC, lang, ebsService) {
     var isSnapshotExist;
     isSnapshotExist = function(callback) {
       var currentRegion, err, snaphostAry, snaphostMap;

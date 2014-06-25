@@ -65,7 +65,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CLOUDWATCH_ALARM", {hash:{},data:data}))
     + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab snss\" data-type=\"SUBSCRIPTION\">\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SNS_SUBSCRIPTION", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		</nav>\n		<div id=\"RegionResourceData\" class=\"table-head-fix\"></div>\n		</div>\n	</section><!-- Region view -->\n\n	<div id=\"DashboardDemo\">\n	  <div class=\"enter-credential\">\n	    This is only sample data of global resource sumary.</br>\n	    <a class=\"show-credential\">Provide your AWS Credential</a> to see real data\n	  </div>\n	  <img src=\"./assets/images/ide/global-demo.png\"/>\n	</div>\n</section>\n\n</div></div></div>\n\n</div>";
+    + "</span><span class=\"count-bubble\"></span></div>\n		</nav>\n		<div id=\"RegionResourceData\" class=\"table-head-fix\"></div>\n		</div>\n	</section><!-- Region view -->\n\n	<div id=\"DashboardDemo\">\n	  <div class=\"enter-credential\">\n	    This is only sample data of global resource sumary.</br>\n	    <a class=\"show-credential\">Provide your AWS Credential</a> to see real data\n	  </div>\n	  <img src=\"/assets/images/ide/global-demo.png\"/>\n	</div>\n</section>\n\n</div></div></div>\n\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/dashboard/DashboardTplData',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -1558,7 +1558,7 @@ function program18(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!nls/lang.js", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang) {
+  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang) {
     var Helper;
     Helper = {
       scrollToResource: function() {
@@ -1707,7 +1707,7 @@ function program18(depth0,data) {
         var $li;
         if (model.get("region") === this.region && this.regionOpsTab === "app") {
           console.log("Dashboard Updated due to app progress changes.");
-          $li = $("#region-resource-app-wrap").children("[data-appid='" + model.id + "']");
+          $li = $("#region-resource-app-wrap").children("[data-id='" + model.id + "']");
           if (!$li.length) {
             return;
           }
@@ -2356,7 +2356,7 @@ function program18(depth0,data) {
               }
               obj = {
                 id: vpc,
-                name: tags["Name"] || tags["name"],
+                name: tags.Name || tags.name,
                 subnet: resourceMap(resources["AWS|VPC|Subnet"]),
                 ami: instanceMap(resources["AWS|EC2|Instance"]),
                 stopped: instanceMap(resources["AWS|EC2|Instance"], true),
@@ -2518,6 +2518,10 @@ function program18(depth0,data) {
 
       Dashboard.prototype.title = function() {
         return "Dashboard";
+      };
+
+      Dashboard.prototype.url = function() {
+        return "/";
       };
 
       Dashboard.prototype.initialize = function() {

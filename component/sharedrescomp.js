@@ -177,7 +177,7 @@ Refer to kpView.coffee
  */
 
 (function() {
-  define('toolbar_modal',['./component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', 'UI.notification'], function(template, Backbone, $, modalplus) {
+  define('toolbar_modal',['component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', 'UI.notification'], function(template, Backbone, $, modalplus) {
     return Backbone.View.extend({
       tagName: 'section',
       __slide: null,
@@ -651,7 +651,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('kp_manage',['toolbar_modal', './component/kp/kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'JsonExporter', "CloudResources", 'i18n!nls/lang.js', 'UI.notification'], function(toolbar_modal, template, upload, Backbone, $, constant, JsonExporter, CloudResources, lang) {
+  define('kp_manage',['toolbar_modal', 'component/kp/kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'JsonExporter', "CloudResources", 'i18n!/nls/lang.js', 'UI.notification'], function(toolbar_modal, template, upload, Backbone, $, constant, JsonExporter, CloudResources, lang) {
     var download;
     download = JsonExporter.download;
     return Backbone.View.extend({
@@ -1044,7 +1044,7 @@ Refer to kpView.coffee
  */
 
 (function() {
-  define('combo_dropdown',['./component/common/comboDropdownTpl', 'backbone', 'jquery'], function(template, Backbone, $) {
+  define('combo_dropdown',['component/common/comboDropdownTpl', 'backbone', 'jquery'], function(template, Backbone, $) {
     return Backbone.View.extend({
       tagName: 'section',
       events: {
@@ -1270,7 +1270,7 @@ TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('kp_dropdown',['Design', 'kp_manage', 'combo_dropdown', './component/kp/kpTpl', 'backbone', 'jquery', 'constant', 'i18n!nls/lang.js', 'CloudResources'], function(Design, kpManage, comboDropdown, template, Backbone, $, constant, lang, CloudResources) {
+  define('kp_dropdown',['Design', 'kp_manage', 'combo_dropdown', 'component/kp/kpTpl', 'backbone', 'jquery', 'constant', 'i18n!/nls/lang.js', 'CloudResources'], function(Design, kpManage, comboDropdown, template, Backbone, $, constant, lang, CloudResources) {
     var regions;
     regions = {};
     return Backbone.View.extend({
@@ -1651,7 +1651,7 @@ TEMPLATE.nosns=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('sns_manage',['constant', 'CloudResources', 'toolbar_modal', './component/sns/snsTpl', 'i18n!nls/lang.js'], function(constant, CloudResources, toolbar_modal, template, lang) {
+  define('sns_manage',['constant', 'CloudResources', 'toolbar_modal', './component/sns/snsTpl', 'i18n!/nls/lang.js'], function(constant, CloudResources, toolbar_modal, template, lang) {
     return Backbone.View.extend({
       tagName: 'section',
       initCol: function() {
@@ -2106,7 +2106,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('sns_dropdown',['constant', 'CloudResources', 'sns_manage', 'combo_dropdown', './component/sns/snsTpl', 'i18n!nls/lang.js'], function(constant, CloudResources, snsManage, comboDropdown, template, lang) {
+  define('sns_dropdown',['constant', 'CloudResources', 'sns_manage', 'combo_dropdown', './component/sns/snsTpl', 'i18n!/nls/lang.js'], function(constant, CloudResources, snsManage, comboDropdown, template, lang) {
     var subCol, topicCol;
     subCol = CloudResources(constant.RESTYPE.SUBSCRIPTION, 'us-east-1');
     topicCol = CloudResources(constant.RESTYPE.TOPIC, 'us-east-1');
@@ -2246,7 +2246,7 @@ return TEMPLATE; });
 
 }).call(this);
 
-define('component/dhcp/dhcp_template.js',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+define('component/dhcp/dhcp_template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -2676,7 +2676,7 @@ TEMPLATE.detail_info=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('dhcp',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!nls/lang.js', './component/dhcp/dhcp_template.js'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
+  define('dhcp',["CloudResources", 'constant', 'combo_dropdown', 'UI.modalplus', 'toolbar_modal', 'i18n!/nls/lang.js', 'component/dhcp/dhcp_template'], function(CloudResources, constant, comboDropdown, modalPlus, toolbarModal, lang, template) {
     var deleteCount, deleteErrorCount, dhcpView, fetched, fetching, mapFilterInput, regionsMark, updateAmazonCB;
     fetched = false;
     fetching = false;
@@ -3124,7 +3124,7 @@ return TEMPLATE; });
 
 }).call(this);
 
-define('component/snapshot/snapshot_template.js',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+define('component/snapshot/snapshot_template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -3353,7 +3353,7 @@ TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('snapshotManager',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdown', "UI.modalplus", 'toolbar_modal', "i18n!nls/lang.js", './component/snapshot/snapshot_template.js'], function(CloudResources, ApiRequest, constant, combo_dropdown, modalPlus, toolbar_modal, lang, template) {
+  define('snapshotManager',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdown', "UI.modalplus", 'toolbar_modal', "i18n!/nls/lang.js", 'component/snapshot/snapshot_template'], function(CloudResources, ApiRequest, constant, combo_dropdown, modalPlus, toolbar_modal, lang, template) {
     var deleteCount, deleteErrorCount, fetched, fetching, regionsMark, snapshotRes;
     fetched = false;
     deleteCount = 0;
@@ -3932,7 +3932,7 @@ TEMPLATE.no_sslcert=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('sslcert_manage',['constant', 'CloudResources', 'toolbar_modal', './component/sslcert/sslCertTpl', 'i18n!nls/lang.js', 'event'], function(constant, CloudResources, toolbar_modal, template, lang, ide_event) {
+  define('sslcert_manage',['constant', 'CloudResources', 'toolbar_modal', './component/sslcert/sslCertTpl', 'i18n!/nls/lang.js', 'event'], function(constant, CloudResources, toolbar_modal, template, lang, ide_event) {
     return Backbone.View.extend({
       tagName: 'section',
       initCol: function() {
@@ -4262,7 +4262,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('sslcert_dropdown',['constant', 'CloudResources', 'sslcert_manage', 'combo_dropdown', './component/sslcert/sslCertTpl', 'i18n!nls/lang.js'], function(constant, CloudResources, sslCertManage, comboDropdown, template, lang) {
+  define('sslcert_dropdown',['constant', 'CloudResources', 'sslcert_manage', 'combo_dropdown', './component/sslcert/sslCertTpl', 'i18n!/nls/lang.js'], function(constant, CloudResources, sslCertManage, comboDropdown, template, lang) {
     var sslCertCol;
     sslCertCol = CloudResources(constant.RESTYPE.IAM);
     window.sslCertCol = sslCertCol;
@@ -4915,7 +4915,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('ResDiff',['UI.modalplus', 'DiffTree', './component/common/diff/resDiffTpl', './component/common/diff/prepare', 'constant'], function(modalplus, DiffTree, template, Prepare, constant) {
+  define('ResDiff',['UI.modalplus', 'DiffTree', 'component/common/diff/resDiffTpl', 'component/common/diff/prepare', 'constant'], function(modalplus, DiffTree, template, Prepare, constant) {
     return Backbone.View.extend({
       className: 'res_diff_tree',
       tagName: 'section',

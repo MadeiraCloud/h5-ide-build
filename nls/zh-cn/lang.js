@@ -1068,7 +1068,6 @@ define({
         "UPDATE_APP_MODAL_TITLE": "更新 App",
         "UPDATE_APP_CONFIRM_BTN": "",
         "RUN_STACK": "运行",
-        "UPDATE_APP_MODAL_NEED_CREDENTIAL": "请先设置 AWS 凭证",
         "START_APP": "启动APP",
         "STOP_APP": "停止APP",
         "TERMINATE_APP": "删除APP",

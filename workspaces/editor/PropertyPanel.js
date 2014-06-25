@@ -340,7 +340,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/base/model',['backbone', 'Design', "constant"], function(Backbone, Design, constant) {
+  define('workspaces/editor/property/base/model',['backbone', 'Design'], function(Backbone, Design) {
 
     /*
     
@@ -376,20 +376,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return false;
           }
         });
-        return dup;
-      },
-      isOldName: function(newName) {
-        var dup, originJson;
-        originJson = Design.instance().__opsModel.getJsonData();
-        dup = false;
-        if (originJson.component) {
-          _.each(originJson.component, function(comp, key) {
-            if (comp.type === constant.RESTYPE.ELB && comp.name === newName) {
-              dup = true;
-              return false;
-            }
-          });
-        }
         return dup;
       },
       isReservedName: function(newName) {
@@ -503,7 +489,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/property/base/view',['constant', 'i18n!nls/lang.js', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', 'UI.multiinputbox', 'UI.modal', 'UI.selectbox', 'MC.validate', 'UI.parsley', 'UI.tooltip', 'UI.sortable', 'UI.tablist'], function(constant, lang) {
+  define('workspaces/editor/property/base/view',['constant', 'i18n!/nls/lang.js', 'backbone', 'jquery', 'handlebars', 'UI.selectbox', 'UI.notification', 'UI.multiinputbox', 'UI.modal', 'UI.selectbox', 'MC.validate', 'UI.parsley', 'UI.tooltip', 'UI.sortable', 'UI.tablist'], function(constant, lang) {
 
     /*
     
@@ -600,9 +586,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           error = sprintf(lang.ide.PARSLEY_THIS_VALUE_SHOULD_BE_A_VALID_TYPE_NAME, type);
         }
         if (!error && this.model.isNameDup(name)) {
-          error = sprintf(lang.ide.PARSLEY_TYPE_NAME_CONFLICT, type, name);
-        }
-        if (!error && this.model.isOldName(name)) {
           error = sprintf(lang.ide.PARSLEY_TYPE_NAME_CONFLICT, type, name);
         }
         if (!error && this.model.isReservedName(name)) {
@@ -892,7 +875,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/stack/view',['../base/view', './template/stack', './template/acl', './template/sub', 'event', 'i18n!nls/lang.js'], function(PropertyView, template, acl_template, sub_template, ide_event, lang) {
+  define('workspaces/editor/property/stack/view',['../base/view', './template/stack', './template/acl', './template/sub', 'event', 'i18n!/nls/lang.js'], function(PropertyView, template, acl_template, sub_template, ide_event, lang) {
     var StackView;
     StackView = PropertyView.extend({
       events: {
@@ -1459,7 +1442,7 @@ function program9(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/instance/model',['../base/model', 'constant', 'event', 'i18n!nls/lang.js'], function(PropertyModel, constant, ide_event, lang) {
+  define('workspaces/editor/property/instance/model',['../base/model', 'constant', 'event', 'i18n!/nls/lang.js'], function(PropertyModel, constant, ide_event, lang) {
     var InstanceModel;
     InstanceModel = PropertyModel.extend({
       init: function(uid) {
@@ -2050,7 +2033,7 @@ function program53(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/instance/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'constant', 'kp_dropdown'], function(PropertyView, template, lang, constant, kp) {
+  define('workspaces/editor/property/instance/view',['../base/view', './template/stack', 'i18n!/nls/lang.js', 'constant', 'kp_dropdown'], function(PropertyView, template, lang, constant, kp) {
     var InstanceView, noop;
     noop = function() {
       return null;
@@ -2385,7 +2368,7 @@ function program53(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/instance/app_model',['../base/model', 'keypair_model', 'keypair_service', 'instance_model', 'instance_service', 'constant', 'i18n!nls/lang.js', 'Design', 'CloudResources'], function(PropertyModel, keypair_model, keypair_service, instance_model, instance_service, constant, lang, Design, CloudResources) {
+  define('workspaces/editor/property/instance/app_model',['../base/model', 'keypair_model', 'keypair_service', 'instance_model', 'instance_service', 'constant', 'i18n!/nls/lang.js', 'Design', 'CloudResources'], function(PropertyModel, keypair_model, keypair_service, instance_model, instance_service, constant, lang, Design, CloudResources) {
     var AppInstanceModel;
     AppInstanceModel = PropertyModel.extend({
       defaults: {
@@ -3002,7 +2985,7 @@ function program35(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/instance/app_view',['../base/view', './template/app', 'i18n!nls/lang.js', 'instance_model', 'kp_upload', 'Design', 'JsonExporter'], function(PropertyView, template, lang, instance_model, kp_upload, Design, JsonExporter) {
+  define('workspaces/editor/property/instance/app_view',['../base/view', './template/app', 'i18n!/nls/lang.js', 'instance_model', 'kp_upload', 'Design', 'JsonExporter'], function(PropertyView, template, lang, instance_model, kp_upload, Design, JsonExporter) {
     var InstanceAppView, download, genDownload;
     download = JsonExporter.download;
     genDownload = function(name, str) {
@@ -3256,7 +3239,7 @@ function program35(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/servergroup/app_model',['../base/model', '../instance/model', 'constant', 'i18n!nls/lang.js', 'Design', 'CloudResources'], function(PropertyModel, instance_model, constant, lang, Design, CloudResources) {
+  define('workspaces/editor/property/servergroup/app_model',['../base/model', '../instance/model', 'constant', 'i18n!/nls/lang.js', 'Design', 'CloudResources'], function(PropertyModel, instance_model, constant, lang, Design, CloudResources) {
     var ServerGroupModel;
     ServerGroupModel = PropertyModel.extend({
       init: function(uid) {
@@ -3758,7 +3741,7 @@ function program12(depth0,data) {
   else { return ''; }
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/servergroup/app_view',['../base/view', '../instance/view', './template/app', './template/ami_list', 'i18n!nls/lang.js'], function(PropertyView, instance_view, template, ami_list_template, lang) {
+  define('workspaces/editor/property/servergroup/app_view',['../base/view', '../instance/view', './template/app', './template/ami_list', 'i18n!/nls/lang.js'], function(PropertyView, instance_view, template, ami_list_template, lang) {
     var InstanceView;
     InstanceView = PropertyView.extend({
       events: {
@@ -4114,7 +4097,7 @@ function program5(depth0,data) {
   buffer += "\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <div class=\"property-control-group tac\">\n            <button id=\"changeAmi\" class=\"btn btn-blue\"><i class=\"icon-edit icon-label\"></i>Change AMI</button>\n        </div>\n    </div>\n    <div class=\"property-control-group hide\" id=\"changeAmiPanel\">\n        <p>Drag image from Resource Panel and drop below to change AMI.</p>\n        <div id=\"changeAmiDropZone\">\n            <p>Drop AMI Here</p>\n            <div class=\"resource-icon resource-icon-instance\">\n                <img src=\"assets/images/ide/ami/amazon.i386.ebs.png\" width=\"39\" height=\"27\">\n                <div class=\"resource-label\"></div>\n            </div>\n        </div>\n        <div class=\"hide\" id=\"confirmChangeAmiWrap\">\n            <p id=\"changeAmiWarning\"></p>\n            <button id=\"confirmChangeAmi\" class=\"btn btn-blue\">Confirm Change AMI</button>\n        </div>\n        <button id=\"cancelChangeAmi\" class=\"btn-link\">Cancel</button>\n    </div>\n";
+  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <div class=\"property-control-group tac\">\n            <button id=\"changeAmi\" class=\"btn btn-blue\"><i class=\"icon-edit icon-label\"></i>Change AMI</button>\n        </div>\n    </div>\n    <div class=\"property-control-group hide\" id=\"changeAmiPanel\">\n        <p>Drag image from Resource Panel and drop below to change AMI.</p>\n        <div id=\"changeAmiDropZone\">\n            <p>Drop AMI Here</p>\n            <div class=\"resource-icon resource-icon-instance\">\n                <img src=\"/assets/images/ide/ami/amazon.i386.ebs.png\" width=\"39\" height=\"27\">\n                <div class=\"resource-label\"></div>\n            </div>\n        </div>\n        <div class=\"hide\" id=\"confirmChangeAmiWrap\">\n            <p id=\"changeAmiWarning\"></p>\n            <button id=\"confirmChangeAmi\" class=\"btn btn-blue\">Confirm Change AMI</button>\n        </div>\n        <button id=\"cancelChangeAmi\" class=\"btn-link\">Cancel</button>\n    </div>\n";
   return buffer;
   }
 function program6(depth0,data) {
@@ -4587,7 +4570,7 @@ function program1(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/sg/view',['../base/view', './template/stack', './template/app', 'constant', 'i18n!nls/lang.js'], function(PropertyView, template, app_template, constant, lang) {
+  define('workspaces/editor/property/sg/view',['../base/view', './template/stack', './template/app', 'constant', 'i18n!/nls/lang.js'], function(PropertyView, template, app_template, constant, lang) {
     var SgView;
     SgView = PropertyView.extend({
       events: {
@@ -5263,7 +5246,7 @@ function program21(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/volume/view',['../base/view', './template/stack', 'event', 'i18n!nls/lang.js'], function(PropertyView, template, ide_event, lang) {
+  define('workspaces/editor/property/volume/view',['../base/view', './template/stack', 'event', 'i18n!/nls/lang.js'], function(PropertyView, template, ide_event, lang) {
     var VolumeView;
     VolumeView = PropertyView.extend({
       events: {
@@ -6113,7 +6096,7 @@ function program30(depth0,data) {
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/property/elb/view',['../base/view', './template/stack', 'event', 'i18n!nls/lang.js'], function(PropertyView, template, ide_event, lang) {
+  define('workspaces/editor/property/elb/view',['../base/view', './template/stack', 'event', 'i18n!/nls/lang.js'], function(PropertyView, template, ide_event, lang) {
     var ElbView, Helper;
     Helper = {
       makeInRange: function(value, range, $target, deflt) {
@@ -6136,7 +6119,7 @@ function program30(depth0,data) {
     };
     ElbView = PropertyView.extend({
       events: {
-        'keyup #property-elb-name': 'elbNameChange',
+        'change #property-elb-name': 'elbNameChange',
         'change #elb-scheme-select1': "schemeSelectChange",
         'change #elb-scheme-select2': "schemeSelectChange",
         'OPTION_CHANGE #elb-property-health-protocol-select': "healthProtocolSelect",
@@ -8053,7 +8036,7 @@ function program9(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/vpc/view',['../base/view', './template/stack', 'i18n!nls/lang.js', 'dhcp', 'UI.modalplus'], function(PropertyView, template, lang, dhcp, modalPlus) {
+  define('workspaces/editor/property/vpc/view',['../base/view', './template/stack', 'i18n!/nls/lang.js', 'dhcp', 'UI.modalplus'], function(PropertyView, template, lang, dhcp, modalPlus) {
     var VPCView, mapFilterInput;
     mapFilterInput = function(selector) {
       var $inputs, ipt, result, _i, _len;
@@ -8277,9 +8260,9 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "";
-  buffer += "\n    <dl class=\"dl-vertical\">\n        <dd>"
+  buffer += "\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_LBL_NONE", {hash:{},data:data}))
-    + "</dd>\n    </dl>\n  </div>\n  ";
+    + "</p>\n  </div>\n  ";
   return buffer;
   }
 
@@ -9442,7 +9425,7 @@ function program3(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/cgw/view',['i18n!nls/lang.js', '../base/view', './template/stack', 'constant', "Design"], function(lang, PropertyView, template, constant, Design) {
+  define('workspaces/editor/property/cgw/view',['i18n!/nls/lang.js', '../base/view', './template/stack', 'constant', "Design"], function(lang, PropertyView, template, constant, Design) {
     var CGWView;
     CGWView = PropertyView.extend({
       events: {
@@ -9739,7 +9722,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         _.each(ipset, function(ipCidr, idx) {
           var validCIDR;
           validCIDR = MC.getValidCIDR(ipCidr);
-          ipset[idx] = validCIDR;
+          return ipset[idx] = validCIDR;
         });
         Design.instance().component(this.get("uid")).set("routes", ipset);
         return null;
@@ -10167,7 +10150,7 @@ function program29(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/eni/model',['../base/model', 'constant', "Design", 'i18n!nls/lang.js', 'CloudResources'], function(PropertyModel, constant, Design, lang, CloudResources) {
+  define('workspaces/editor/property/eni/model',['../base/model', 'constant', "Design", 'i18n!/nls/lang.js', 'CloudResources'], function(PropertyModel, constant, Design, lang, CloudResources) {
     var ENIModel;
     ENIModel = PropertyModel.extend({
       defaults: {
@@ -10498,7 +10481,7 @@ function program14(depth0,data) {
   else { return ''; }
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/eni/view',['../base/view', './template/stack', './template/eni_list', 'i18n!nls/lang.js'], function(PropertyView, template, list_template, lang) {
+  define('workspaces/editor/property/eni/view',['../base/view', './template/stack', './template/eni_list', 'i18n!/nls/lang.js'], function(PropertyView, template, list_template, lang) {
     var ENIView, noop;
     noop = function() {
       return null;
@@ -10960,7 +10943,7 @@ function program17(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/acl/model',['../base/model', "Design", 'constant', 'i18n!nls/lang.js'], function(PropertyModel, Design, constant, lang) {
+  define('workspaces/editor/property/acl/model',['../base/model', "Design", 'constant', 'i18n!/nls/lang.js'], function(PropertyModel, Design, constant, lang) {
     var ACLModel, icmpCodeMap, icmpTypeMap;
     icmpTypeMap = {
       "0": "Echo Reply(0)",
@@ -11455,7 +11438,7 @@ function program3(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/acl/view',['../base/view', 'Design', 'constant', './template/stack', './template/rule_item', './template/dialog', 'i18n!nls/lang.js'], function(PropertyView, Design, constant, htmlTpl, ruleTpl, rulePopupTpl, lang) {
+  define('workspaces/editor/property/acl/view',['../base/view', 'Design', 'constant', './template/stack', './template/rule_item', './template/dialog', 'i18n!/nls/lang.js'], function(PropertyView, Design, constant, htmlTpl, ruleTpl, rulePopupTpl, lang) {
     var ACLView;
     ACLView = PropertyView.extend({
       events: {
@@ -12214,7 +12197,7 @@ function program30(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/launchconfig/view',['../base/view', './template/stack', 'event', 'constant', 'i18n!nls/lang.js', 'kp_dropdown'], function(PropertyView, template, ide_event, constant, lang, kp) {
+  define('workspaces/editor/property/launchconfig/view',['../base/view', './template/stack', 'event', 'constant', 'i18n!/nls/lang.js', 'kp_dropdown'], function(PropertyView, template, ide_event, constant, lang, kp) {
     var LanchConfigView;
     LanchConfigView = PropertyView.extend({
       events: {
@@ -13121,7 +13104,7 @@ function program4(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/asg/view',['../base/view', './template/stack', './template/policy', './template/term', 'i18n!nls/lang.js', 'sns_dropdown', 'UI.modalplus'], function(PropertyView, template, policy_template, term_template, lang, snsDropdown, modalplus) {
+  define('workspaces/editor/property/asg/view',['../base/view', './template/stack', './template/policy', './template/term', 'i18n!/nls/lang.js', 'sns_dropdown', 'UI.modalplus'], function(PropertyView, template, policy_template, term_template, lang, snsDropdown, modalplus) {
     var InstanceView, adjustMap, adjustTooltip, adjustdefault, metricMap, unitMap;
     metricMap = {
       "CPUUtilization": "CPU Utilization",
@@ -14484,7 +14467,7 @@ function program49(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/editor/property/asg/app_view',['../base/view', './template/app', './template/policy', './template/term', 'i18n!nls/lang.js', 'sns_dropdown', 'UI.modalplus'], function(PropertyView, template, policy_template, term_template, lang, snsDropdown, modalplus) {
+  define('workspaces/editor/property/asg/app_view',['../base/view', './template/app', './template/policy', './template/term', 'i18n!/nls/lang.js', 'sns_dropdown', 'UI.modalplus'], function(PropertyView, template, policy_template, term_template, lang, snsDropdown, modalplus) {
     var ASGAppEditView, adjustMap, adjustTooltip, adjustdefault, metricMap, unitMap;
     metricMap = {
       "CPUUtilization": "CPU Utilization",
