@@ -1821,6 +1821,10 @@ return TEMPLATE; });
               j = JSON.parse(result);
               delete j.id;
               delete j.signature;
+              if (!this.collection.isNameAvailable(j.name)) {
+                j.name = this.collection.getNewName(j.name);
+              }
+              self.attributes.name = j.name;
               self.attributes.region = j.region;
               self.__setJsonData(j);
             } catch (_error) {
@@ -2714,7 +2718,6 @@ return TEMPLATE; });
       createSampleOps: function(sampleId) {
         var m;
         m = new OpsModel({
-          name: this.stackList().getNewName(),
           sampleId: sampleId
         });
         this.attributes.stackList.add(m);
