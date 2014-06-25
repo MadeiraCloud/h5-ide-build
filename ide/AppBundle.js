@@ -1708,7 +1708,8 @@ return TEMPLATE; });
           updateTime: +(new Date()),
           region: "",
           state: OpsModelState.UnRun,
-          stoppable: true
+          stoppable: true,
+          name: ""
         };
       },
       initialize: function(attr, options) {
@@ -1821,11 +1822,11 @@ return TEMPLATE; });
               j = JSON.parse(result);
               delete j.id;
               delete j.signature;
-              if (!this.collection.isNameAvailable(j.name)) {
-                j.name = this.collection.getNewName(j.name);
+              if (!self.collection.isNameAvailable(j.name)) {
+                j.name = self.collection.getNewName(j.name);
               }
-              self.attributes.name = j.name;
               self.attributes.region = j.region;
+              self.set("name", j.name);
               self.__setJsonData(j);
             } catch (_error) {
               e = _error;
