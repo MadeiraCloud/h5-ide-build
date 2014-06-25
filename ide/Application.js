@@ -889,8 +889,7 @@ function program3(depth0,data) {
         }
       },
       close: function() {
-        this.modal.close();
-        return App.openSampleStack(true);
+        return this.modal.close();
       },
       updateSubmitBtn: function() {
         var accesskey, account, privatekey;
@@ -1488,9 +1487,6 @@ return TEMPLATE; });
         /* env:debug:end */
         $(window).on("beforeunload", this.checkUnload);
         $(document).on('keydown', this.globalKeyEvent);
-        $(window).one('focus', function() {
-          return App.openSampleStack();
-        });
       },
       checkUnload: function() {
         if (App.canQuit()) {
@@ -3186,10 +3182,8 @@ return TEMPLATE; });
         _ref = $.cookie();
         for (ckey in _ref) {
           cValue = _ref[ckey];
-          if (ckey !== 'stack_store_id_local' && ckey !== 'stack_store_id') {
-            $.removeCookie(ckey, domain);
-            $.removeCookie(ckey);
-          }
+          $.removeCookie(ckey, domain);
+          $.removeCookie(ckey);
         }
       },
       changePassword: function(oldPwd, newPwd) {
@@ -3648,8 +3642,17 @@ return TEMPLATE; });
       return this.__view.showSessionDialog();
     };
     VisualOps.prototype.logout = function() {
+      var p;
       App.user.logout();
-      window.location.href = "/login/";
+      p = window.location.pathname;
+      if (p === "/") {
+        p = window.location.hash.replace("#", "/");
+      }
+      if (p && p !== "/") {
+        window.location.href = "/login?ref=" + p;
+      } else {
+        window.location.href = "/login";
+      }
     };
     VisualOps.prototype.canQuit = function() {
       return !this.workspaces.hasUnsaveSpaces();
@@ -3725,34 +3728,6 @@ return TEMPLATE; });
       editor = new OpsEditor(this.model.createStack(region));
       editor.activate();
       return editor;
-    };
-    VisualOps.prototype.openSampleStack = function(fromWelcome) {
-      var err, gitBranch, isFirstVisit, localStackStoreIdStamp, stackStoreId, stackStoreIdStamp, that;
-      that = this;
-      try {
-        isFirstVisit = this.user.isFirstVisit();
-        if ((isFirstVisit && fromWelcome) || (!isFirstVisit && !fromWelcome)) {
-          stackStoreIdStamp = $.cookie('stack_store_id') || '';
-          localStackStoreIdStamp = $.cookie('stack_store_id_local') || '';
-          stackStoreId = stackStoreIdStamp.split('#')[0];
-          if (stackStoreId && stackStoreIdStamp !== localStackStoreIdStamp) {
-            $.cookie('stack_store_id_local', stackStoreIdStamp, {
-              expires: 30
-            });
-            gitBranch = 'master';
-            return ApiRequest('stackstore_fetch_stackstore', {
-              sub_path: "" + gitBranch + "/stack/" + stackStoreId + "/" + stackStoreId + ".json"
-            }).then(function(result) {
-              var jsonDataStr;
-              jsonDataStr = result;
-              return that.importJson(jsonDataStr);
-            });
-          }
-        }
-      } catch (_error) {
-        err = _error;
-        return console.log('Open store stack failed');
-      }
     };
     return VisualOps;
   });
