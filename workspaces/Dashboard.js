@@ -36,7 +36,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
     + "</button>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
-    + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"scroll-wrap\">\n<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n\n<div class=\"scroll-content\">\n	<!-- Global Map -->\n	<div id=\"global-region-map-wrap\"> <div id=\"global-region-map-content\" class=\"clearfix\">\n		<ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n		<div id=\"global-region-status-widget\">\n			<header class=\"clearfix\">\n			  <div class=\"global-region-status-tab\">\n			    <span>0</span><h5>"
+    + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n	<div id=\"global-region-map-wrap\"> <div id=\"global-region-map-content\" class=\"clearfix\">\n		<ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n		<div id=\"global-region-status-widget\">\n			<header class=\"clearfix\">\n			  <div class=\"global-region-status-tab\">\n			    <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
     + "</h5>\n			  </div>\n			  <div class=\"global-region-status-tab on stack\">\n		      <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}))
@@ -1558,23 +1558,7 @@ function program18(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang) {
-    var Helper;
-    Helper = {
-      scrollToResource: function() {
-        var scrollContent, scrollTo;
-        scrollContent = $('#global-region-wrap .scroll-content');
-        scrollContent.addClass('scroll-transition');
-        setTimeout(function() {
-          scrollContent.removeClass('scroll-transition');
-          return null;
-        }, 100);
-        scrollTo = $('#global-region-map-wrap').height() + 7;
-        return scrollbar.scrollTo($('#global-region-wrap'), {
-          'top': scrollTo
-        });
-      }
-    };
+  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang) {
     return Backbone.View.extend({
       events: {
         "click .global-map-item": "gotoRegionFromMap",
@@ -1611,7 +1595,7 @@ function program18(depth0,data) {
             shortName: constant.REGION_SHORT_LABEL[id]
           };
         });
-        this.setElement($(template(data)).appendTo("#main"));
+        this.setElement($(template(data)).eq(0).appendTo("#main"));
         this.updateOpsList();
         this.updateDemoView();
         this.updateGlobalResources();
@@ -1623,6 +1607,12 @@ function program18(depth0,data) {
         }, 1000 * 60);
         MC.template.dashboardBubble = _.bind(this.dashboardBubble, this);
         MC.template.dashboardBubbleSub = _.bind(this.dashboardBubbleSub, this);
+      },
+      awake: function() {
+        this.$el.show().children("#global-region-wrap").nanoScroller();
+      },
+      sleep: function() {
+        return this.$el.hide();
       },
       dashboardBubbleSub: function(data) {
         var renderData;
@@ -1758,7 +1748,9 @@ function program18(depth0,data) {
         $li = $(evt.currentTarget).closest("li");
         region = $li.attr("id") || $li.attr("data-region");
         $("#region-switch-list li[data-region=" + region + "]").click();
-        Helper.scrollToResource();
+        $("#global-region-wrap").nanoScroller({
+          scrollTop: $('#global-region-map-wrap').height()
+        });
         $("#region-resource-tab").children().eq($tgt.hasClass("app") ? 0 : 1).click();
         return false;
       },
@@ -2566,7 +2558,7 @@ function program18(depth0,data) {
 
       Dashboard.prototype.sleep = function() {
         this.__renderControlMap = {};
-        this.view.$el.hide();
+        this.view.sleep();
       };
 
       Dashboard.prototype.awake = function() {
@@ -2575,7 +2567,7 @@ function program18(depth0,data) {
           this.view[method]();
         }
         this.__renderControlMap = null;
-        this.view.$el.show();
+        this.view.awake();
       };
 
       Dashboard.prototype.__renderControl = function(method, args) {

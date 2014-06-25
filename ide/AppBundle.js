@@ -1869,6 +1869,11 @@ return TEMPLATE; });
             }
           };
         }
+        if (!json.property) {
+          json.property = {
+            stoppable: true
+          };
+        }
 
         /*
         Old JSON will have structure like :
@@ -1995,8 +2000,7 @@ return TEMPLATE; });
       run: function(toRunJson, appName) {
         var region;
         region = this.get("region");
-        toRunJson.id = "";
-        toRunJson.stack_id = this.get("id") || "";
+        toRunJson.id = this.get("id") || "";
         return ApiRequest("stack_run_v2", {
           region_name: region,
           stack: toRunJson,
@@ -2338,29 +2342,7 @@ return TEMPLATE; });
             }
           },
           property: {
-            stoppable: true,
-            policy: {
-              ha: ""
-            },
-            lease: {
-              action: "",
-              length: null,
-              due: null
-            },
-            schedule: {
-              stop: {
-                run: null,
-                when: null,
-                during: null
-              },
-              backup: {
-                when: null,
-                day: null
-              },
-              start: {
-                when: null
-              }
-            }
+            stoppable: true
           }
         };
       },
@@ -3009,7 +2991,7 @@ return TEMPLATE; });
       },
       __handleRequestChange: function(request) {
         var theApp;
-        if (!App.WS.isReady()) {
+        if (!App.WS.isReady() && !request.state.processing) {
           return;
         }
         if (request.state.pending) {

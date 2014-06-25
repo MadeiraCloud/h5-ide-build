@@ -1983,7 +1983,7 @@ function program53(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_AMI", {hash:{},data:data}))
     + "</label>\n			<div id=\"property-ami\" class=\"property-block-wrap clearfix\" data-uid='"
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "'>\n				<img class=\"property-ami-icon left\" src=\"./assets/images/ide/ami/"
+    + "'>\n				<img class=\"property-ami-icon left\" src=\"/assets/images/ide/ami/"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n				<div class=\"property-ami-label\" ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
@@ -3443,7 +3443,7 @@ function program8(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_AMI", {hash:{},data:data}))
     + "</label>\n      <div id=\"property-ami\" class=\"property-block-wrap clearfix\" data-uid='"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "'>\n        <img class=\"property-ami-icon left\" src=\"./assets/images/ide/ami/"
+    + "'>\n        <img class=\"property-ami-icon left\" src=\"/assets/images/ide/ami/"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" / >\n        <div class=\"property-ami-label\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -4214,7 +4214,7 @@ function program10(depth0,data) {
           $("#confirmChangeAmi").hide();
         }
         $("#changeAmiDropZone").children().show().filter("p").hide();
-        $("#changeAmiDropZone").find("img").attr("src", "./assets/images/ide/ami/" + this.model.getAmiPngName(amiId) + ".png");
+        $("#changeAmiDropZone").find("img").attr("src", "/assets/images/ide/ami/" + this.model.getAmiPngName(amiId) + ".png");
         $("#changeAmiDropZone").find(".resource-label").html(this.model.getAmiName(amiId));
         return null;
       },
@@ -12150,7 +12150,7 @@ function program30(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_AMI", {hash:{},data:data}))
     + "</label>\n			<div id=\"property-ami\" class=\"property-block-wrap clearfix\" data-uid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n				<img class=\"property-ami-icon left\" src=\"./assets/images/ide/ami/"
+    + "\">\n				<img class=\"property-ami-icon left\" src=\"/assets/images/ide/ami/"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" / >\n				<div class=\"property-ami-label\" ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});

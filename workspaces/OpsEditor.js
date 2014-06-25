@@ -2265,7 +2265,7 @@ return TEMPLATE; });
         this.listenTo(CloudResources(constant.RESTYPE.AZ, region), "update", this.updateAZ);
         this.listenTo(CloudResources(constant.RESTYPE.SNAP, region), "update", this.updateSnapshot);
         design = this.workspace.design;
-        this.listenTo(design, Design.EVENT.AzUpdated, this.updateDisableItems);
+        this.listenTo(design, Design.EVENT.ChangeResource, this.onResChanged);
         this.listenTo(design, Design.EVENT.AddResource, this.updateDisableItems);
         this.listenTo(design, Design.EVENT.RemoveResource, this.updateDisableItems);
         this.subEventForUpdateReuse();
@@ -2361,6 +2361,15 @@ return TEMPLATE; });
             }).render());
           }
         }, this);
+      },
+      onResChanged: function(resModel) {
+        if (!resModel) {
+          return;
+        }
+        if (resModel.type !== constant.RESTYPE.AZ) {
+          return;
+        }
+        this.updateAZ();
       },
       updateAZ: function() {
         var region;
@@ -3581,7 +3590,7 @@ return TEMPLATE; });
         }
         self = this;
         this.__applyingUpdate = true;
-        fastUpdate = !modfied.component;
+        fastUpdate = !modfied.component && !this.opsModel.testState(OpsModel.State.Stopped);
         this.opsModel.update(modfied.newData, fastUpdate).then(function() {
           if (fastUpdate) {
             return self.onAppEditDone();
