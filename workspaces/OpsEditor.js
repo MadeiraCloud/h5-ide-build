@@ -24,26 +24,26 @@ function program5(depth0,data) {
   buffer += "<div class='ops-process ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'>\n  <section class=\"processing-wrap\">\n    <header class=\"processing\">";
+  buffer += "'>\r\n  <section class=\"processing-wrap\">\r\n    <header class=\"processing\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.title), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
+    + "%</span></header>\r\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\r\n    <section class=\"loading-spinner\"></section>\r\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div> </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
+    + "%;\"></div> </section>\r\n  </section>\r\n\r\n  <section class=\"success hide\">\r\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
-    + "</p>\n    <p class=\"sub-title\">"
+    + "</p>\r\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
+    + "</p>\r\n  </section>\r\n\r\n  <section class=\"fail hide error-info-block\">\r\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
-    + "</header>\n    <p class=\"sub-title\">"
+    + "</header>\r\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
+    + "</p>\r\n    <div class=\"result-error-info\">\r\n      <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_ERR_INFO", {hash:{},data:data}))
-    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n    <button class=\"btn btn-silver btn-close-process right\">"
+    + "</p>\r\n      <p class=\"detail\"></p>\r\n    </div>\r\n    <button class=\"btn btn-silver btn-close-process right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
-    + "</button>\n  </section>\n</div>";
+    + "</button>\r\n  </section>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -223,25 +223,25 @@ function program3(depth0,data) {
   return "<div class=\"OEPanelBottom\"></div>";
   }
 
-  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\n	";
+  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\r\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noLeftPane), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	<aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\n\n<div class=\"OEMiddleWrap\">\n	<nav class=\"OEPanelTop\"></nav>\n	";
+  buffer += "\r\n	<aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\r\n\r\n<div class=\"OEMiddleWrap\">\r\n	<nav class=\"OEPanelTop\"></nav>\r\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noBottomPane), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n	<section class=\"OEPanelCenter scroll-wrap\">\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"scrollbar-horizontal-wrap\"><div class=\"scrollbar-horizontal-thumb\"></div></div>\n\n		<div id=\"canvas_body\" class=\"canvas-view-normal pos-r scroll-content\">\n			<button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
+  buffer += "\r\n\r\n	<section class=\"OEPanelCenter scroll-wrap\">\r\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"scrollbar-horizontal-wrap\"><div class=\"scrollbar-horizontal-thumb\"></div></div>\r\n\r\n		<div id=\"canvas_body\" class=\"canvas-view-normal pos-r scroll-content\">\r\n			<button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('height', 'expand')\"></button>\n			<button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('height', 'expand')\"></button>\r\n			<button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('height', 'shrink')\"></button>\n			<button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('height', 'shrink')\"></button>\r\n			<button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('width', 'expand')\"></button>\n			<button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('width', 'expand')\"></button>\r\n			<button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('width', 'shrink')\"></button>\n\n			<svg id=\"svg_canvas\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\">\n				<g id=\"group_layer\">\n					<g id=\"vpc_layer\"></g>\n					<g id=\"az_layer\"></g>\n					<g id=\"subnet_layer\"></g>\n					<g id=\"asg_layer\"></g>\n				</g>\n				<g id=\"line_layer\"></g>\n				<g id=\"node_layer\"></g>\n			</svg>\n		</div>\n	</section>\n</div>\n</div>";
+  buffer += "' onclick=\"MC.canvas.resize('width', 'shrink')\"></button>\r\n\r\n			<svg id=\"svg_canvas\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\">\r\n				<g id=\"group_layer\">\r\n					<g id=\"vpc_layer\"></g>\r\n					<g id=\"az_layer\"></g>\r\n					<g id=\"subnet_layer\"></g>\r\n					<g id=\"asg_layer\"></g>\r\n				</g>\r\n				<g id=\"line_layer\"></g>\r\n				<g id=\"node_layer\"></g>\r\n			</svg>\r\n		</div>\r\n	</section>\r\n</div>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/editor/template/TplOpsEditor',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={"toolbar":{},"confirm":{},"export":{},"modal":{}};
@@ -728,7 +728,7 @@ return TEMPLATE; });
 
     /* env:debug:end */
 
-    /* env:dev                                     env:dev:end */
+    /* env:dev                                       env:dev:end */
     API_URL = "https://" + API_HOST + "/v1/apps/";
     return Backbone.View.extend({
       events: {
@@ -822,7 +822,7 @@ return TEMPLATE; });
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             return notification("info", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_SUCCESS, newJson.name));
-          }, function(err) {
+          }, function() {
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             return notification("error", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name));
@@ -1054,7 +1054,7 @@ return TEMPLATE; });
           };
         })(this));
       },
-      appToStack: function(event) {
+      appToStack: function() {
         var appToStackModal, name, newName, onConfirm, originStackExist, stack;
         name = this.workspace.design.attributes.name;
         newName = this.getStackNameFromApp(name);
@@ -1076,7 +1076,7 @@ return TEMPLATE; });
               return stack.save(newJson).then(function() {
                 notification("info", sprintf(lang.ide.TOOL_MSG_INFO_HDL_SUCCESS, lang.ide.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
                 return App.openOps(stack, true);
-              }, function(err) {
+              }, function() {
                 return notification('error', sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name));
               });
             }
@@ -1088,7 +1088,7 @@ return TEMPLATE; });
           template: OpsEditorTpl.saveAppToStack({
             input: name,
             stackName: newName,
-            orignStackExist: originStackExist
+            originStackExist: originStackExist
           }),
           confirm: {
             text: lang.ide.TOOL_POP_BTN_SAVE_TO_STACK
@@ -1111,7 +1111,7 @@ return TEMPLATE; });
           idx = Number(app_name.substr(app_name.lastIndexOf("-") + 1));
           copy_name = prefix;
         } else {
-          if (app_name.charAt(name.length - 1) === "-") {
+          if (app_name.charAt(app_name.length - 1) === "-") {
             copy_name = app_name.substr(0, app_name.length - 1);
           } else {
             copy_name = app_name;
@@ -1518,6 +1518,7 @@ return TEMPLATE; });
         this.opsModel = opsModel;
         this.listenTo(this.opsModel, "destroy", this.onOpsModelStateChanged);
         this.listenTo(this.opsModel, "change:state", this.onOpsModelStateChanged);
+        this.listenTo(this.opsModel, "change:name", this.updateTab);
         this.listenTo(this.opsModel, "change:id", function() {
           this.updateUrl();
           if (this.design) {
@@ -1798,16 +1799,33 @@ function program2(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"size\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.volumeSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"}' data-type=\"VOL\" data-option='{\"volumeSize\":"
+    + "\",\"encrypted\":\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.encrypted), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"}' data-type=\"VOL\" data-option='{\"volumeSize\":"
     + escapeExpression(((stack1 = (depth0 && depth0.volumeSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ", \"snapshotId\": \""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"}'><div class=\"ebs-size\">"
+    + "\", \"encrypted\": \"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.encrypted), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"}'><div class=\"ebs-size\">"
     + escapeExpression(((stack1 = (depth0 && depth0.volumeSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " GB</div>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</li>";
   return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  return "true";
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "false";
   }
 
   buffer += "<li class=\"tooltip resource-item resource-icon-volume\" data-tooltip='"
@@ -2265,7 +2283,7 @@ return TEMPLATE; });
         this.listenTo(CloudResources(constant.RESTYPE.AZ, region), "update", this.updateAZ);
         this.listenTo(CloudResources(constant.RESTYPE.SNAP, region), "update", this.updateSnapshot);
         design = this.workspace.design;
-        this.listenTo(design, Design.EVENT.AzUpdated, this.updateDisableItems);
+        this.listenTo(design, Design.EVENT.ChangeResource, this.onResChanged);
         this.listenTo(design, Design.EVENT.AddResource, this.updateDisableItems);
         this.listenTo(design, Design.EVENT.RemoveResource, this.updateDisableItems);
         this.subEventForUpdateReuse();
@@ -2361,6 +2379,15 @@ return TEMPLATE; });
             }).render());
           }
         }, this);
+      },
+      onResChanged: function(resModel) {
+        if (!resModel) {
+          return;
+        }
+        if (resModel.type !== constant.RESTYPE.AZ) {
+          return;
+        }
+        this.updateAZ();
       },
       updateAZ: function() {
         var region;
@@ -3281,9 +3308,9 @@ return TEMPLATE; });
     return StackView.extend({
       bindUserEvent: function() {
         if (this.workspace.isAppEditMode()) {
-          this.$el.find(".OEPanelCenter").removeClass('canvas_state_app').addClass("canvas_state_appedit").off(".CANVAS_EVENT").on('mousedown.CANVAS_EVENT', '.instance-volume, .instanceList-item-volume', MC.canvas.volume.show).on('mousedown.CANVAS_EVENT', '.port', MC.canvas.event.appDrawConnection).on('mousedown.CANVAS_EVENT', '.dragable', MC.canvas.event.dragable.mousedown).on('mousedown.CANVAS_EVENT', '.group-resizer', MC.canvas.event.groupResize.mousedown).on('click.CANVAS_EVENT', '.line', MC.canvas.event.selectLine).on('mousedown.CANVAS_EVENT', MC.canvas.event.clearSelected).on('mousedown.CANVAS_EVENT', '#svg_canvas', MC.canvas.event.clickBlank).on('mouseenter.CANVAS_EVENT mouseleave.CANVAS_EVENT', '.node', MC.canvas.event.nodeHover).on('selectstart.CANVAS_EVENT', false).on('mousedown.CANVAS_EVENT', MC.canvas.event.ctrlMove.mousedown).on('mousedown.CANVAS_EVENT', '#node-action-wrap', MC.canvas.nodeAction.popup);
+          this.$el.find(".OEPanelCenter").removeClass('canvas_state_app').addClass("canvas_state_appedit").off(".CANVAS_EVENT").on('mousedown.CANVAS_EVENT', '.instance-volume, .instanceList-item-volume, .asgList-item-volume', MC.canvas.volume.show).on('mousedown.CANVAS_EVENT', '.port', MC.canvas.event.appDrawConnection).on('mousedown.CANVAS_EVENT', '.dragable', MC.canvas.event.dragable.mousedown).on('mousedown.CANVAS_EVENT', '.group-resizer', MC.canvas.event.groupResize.mousedown).on('click.CANVAS_EVENT', '.line', MC.canvas.event.selectLine).on('mousedown.CANVAS_EVENT', MC.canvas.event.clearSelected).on('mousedown.CANVAS_EVENT', '#svg_canvas', MC.canvas.event.clickBlank).on('mouseenter.CANVAS_EVENT mouseleave.CANVAS_EVENT', '.node', MC.canvas.event.nodeHover).on('selectstart.CANVAS_EVENT', false).on('mousedown.CANVAS_EVENT', MC.canvas.event.ctrlMove.mousedown).on('mousedown.CANVAS_EVENT', '#node-action-wrap', MC.canvas.nodeAction.popup);
         } else {
-          this.$el.find(".OEPanelCenter").removeClass('canvas_state_appedit').addClass("canvas_state_app").off(".CANVAS_EVENT").on('mousedown.CANVAS_EVENT', '.instance-volume, .instanceList-item-volume', MC.canvas.volume.show).on('click.CANVAS_EVENT', '.line', MC.canvas.event.selectLine).on('mousedown.CANVAS_EVENT', MC.canvas.event.clearSelected).on('mousedown.CANVAS_EVENT', '#svg_canvas', MC.canvas.event.clickBlank).on('selectstart.CANVAS_EVENT', false).on('mousedown.CANVAS_EVENT', '.dragable', MC.canvas.event.selectNode).on('mousedown.CANVAS_EVENT', '.AWS-AutoScaling-LaunchConfiguration .instance-number-group', MC.canvas.asgList.show).on('mousedown.CANVAS_EVENT', '.AWS-EC2-Instance .instance-number-group', MC.canvas.instanceList.show).on('mousedown.CANVAS_EVENT', '.AWS-VPC-NetworkInterface .eni-number-group', MC.canvas.eniList.show).on('mousedown.CANVAS_EVENT', MC.canvas.event.ctrlMove.mousedown).on('mousedown.CANVAS_EVENT', '#node-action-wrap', MC.canvas.nodeAction.popup).on('mouseenter.CANVAS_EVENT mouseleave.CANVAS_EVENT', '.node', MC.canvas.event.nodeHover);
+          this.$el.find(".OEPanelCenter").removeClass('canvas_state_appedit').addClass("canvas_state_app").off(".CANVAS_EVENT").on('mousedown.CANVAS_EVENT', '.instance-volume, .instanceList-item-volume, .asgList-item-volume', MC.canvas.volume.show).on('click.CANVAS_EVENT', '.line', MC.canvas.event.selectLine).on('mousedown.CANVAS_EVENT', MC.canvas.event.clearSelected).on('mousedown.CANVAS_EVENT', '#svg_canvas', MC.canvas.event.clickBlank).on('selectstart.CANVAS_EVENT', false).on('mousedown.CANVAS_EVENT', '.dragable', MC.canvas.event.selectNode).on('mousedown.CANVAS_EVENT', '.AWS-AutoScaling-LaunchConfiguration .instance-number-group', MC.canvas.asgList.show).on('mousedown.CANVAS_EVENT', '.AWS-EC2-Instance .instance-number-group', MC.canvas.instanceList.show).on('mousedown.CANVAS_EVENT', '.AWS-VPC-NetworkInterface .eni-number-group', MC.canvas.eniList.show).on('mousedown.CANVAS_EVENT', MC.canvas.event.ctrlMove.mousedown).on('mousedown.CANVAS_EVENT', '#node-action-wrap', MC.canvas.nodeAction.popup).on('mouseenter.CANVAS_EVENT mouseleave.CANVAS_EVENT', '.node', MC.canvas.event.nodeHover);
         }
       },
       confirmImport: function() {
@@ -3581,7 +3608,7 @@ return TEMPLATE; });
         }
         self = this;
         this.__applyingUpdate = true;
-        fastUpdate = !modfied.component;
+        fastUpdate = !modfied.component && !this.opsModel.testState(OpsModel.State.Stopped);
         this.opsModel.update(modfied.newData, fastUpdate).then(function() {
           if (fastUpdate) {
             return self.onAppEditDone();

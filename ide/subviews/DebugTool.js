@@ -1,7 +1,7 @@
 (function() {
-  define(["ApiRequest", "ApiRequestDefs", "vender/select2/select2", "UI.modal"], function(ApiRequest, ApiRequestDefs) {
-    var ApiDialog, DebugTool, SessionDialog, debugApi, debugSession, dispatchClick, tmpl;
-    tmpl = "<div id=\"DebugTool\" class=\"debugToolBg\"><ul>\n<li id=\"DtDiff\" class=\"icon-toolbar-diff tooltip\" data-tooltip=\"Json Diff\"></li>\n<li id=\"DtView\" class=\"icon-toolbar-cloudformation tooltip\" data-tooltip=\"Json View\"></li>\n<li id=\"DtApi\" class=\"tooltip debugToolBg\" data-tooltip=\"Debug Api\"></li>\n<li id=\"DtSession\" class=\"icon-user tooltip\" data-tooltip=\"Share Session\"></li>\n</ul>\n<div id=\"DebugTooltip\">console输入man查看快捷debug</div>\n</div>";
+  define(["ApiRequest", "ApiRequestDefs", "UI.modalplus", "vender/select2/select2", "UI.modal"], function(ApiRequest, ApiRequestDefs, Modal) {
+    var ApiDialog, DebugTool, SessionDialog, clearApp, clearStack, debugApi, debugSession, dispatchClick, tmpl;
+    tmpl = "<div id=\"DebugTool\" class=\"debugToolBg\"><ul>\n<li id=\"DtDiff\" class=\"icon-toolbar-diff tooltip\" data-tooltip=\"Json Diff\"></li>\n<li id=\"DtView\" class=\"icon-toolbar-cloudformation tooltip\" data-tooltip=\"Json View\"></li>\n<li id=\"DtApi\" class=\"tooltip debugToolBg\" data-tooltip=\"Debug Api\"></li>\n<li id=\"DtSession\" class=\"icon-user tooltip\" data-tooltip=\"Share Session\"></li>\n<li id=\"DtClearStack\" class=\"icon-delete tooltip\" data-tooltip=\"Clear Stacks\"></li>\n<li id=\"DtClearApp\" class=\"icon-terminate tooltip\" data-tooltip=\"Terminate Apps\"></li>\n</ul>\n<div id=\"DebugTooltip\">console输入man查看快捷debug</div>\n</div>";
     ApiDialog = "<div class=\"modal-header\"> <h3>Api Debugger</h3> <i class=\"modal-close\">×</i> </div>\n<div id=\"diffWrap\"><div id=\"ApiDebugger\">\n<button class=\"btn btn-blue\" id=\"ApiDebugSend\">Send Request</button>\n<section><label>Api : </label><select id=\"ApiSelect\" data-placeholder=\"Select an api\"></select></section>\n<section><label>Parameters :</label><section id=\"ApiParamsWrap\" class=\"clearfix\"></section></section>\n<section><label>Result :</label><pre id=\"ApiResult\"></pre></section>\n</div></div>";
     SessionDialog = "<div class=\"modal-header\"> <h3>Share Session</h3> <i class=\"modal-close\">×</i> </div>\n<div class=\"modal-body\" style=\"width:500px\">\n  <h5>Paste & run this code to share session.</h5>\n  <textarea id=\"DebugShareSession\" spellcheck=\"false\"></textarea>\n</div>";
     DebugTool = function() {
@@ -21,7 +21,37 @@
           return debugApi();
         case "DtSession":
           return debugSession();
+        case "DtClearApp":
+          return clearApp();
+        case "DtClearStack":
+          return clearStack();
       }
+    };
+    clearStack = function() {
+      var m;
+      return m = new Modal({
+        title: "删除所有Stack",
+        template: "你确定要删除所有的Stack吗？是所有哦！！！！！！",
+        onConfirm: function() {
+          App.model.stackList().models.slice(0).forEach(function(m) {
+            return m.remove();
+          });
+          return m.close();
+        }
+      });
+    };
+    clearApp = function() {
+      var m;
+      return m = new Modal({
+        title: "一键删除所有App",
+        template: "删除APP？删除APP？删除APP？删除APP？删除APP？删除APP？删除APP？删除APP？删除APP？删除APP？",
+        onConfirm: function() {
+          App.model.appList().models.slice(0).forEach(function(m) {
+            return m.terminate();
+          });
+          return m.close();
+        }
+      });
     };
     debugApi = function() {
       var d, def, defName, g, gg, group, groupName, option, _i, _len, _ref;

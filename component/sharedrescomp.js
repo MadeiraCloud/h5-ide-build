@@ -4394,7 +4394,7 @@ return TEMPLATE; });
       if (!option) {
         option = {};
       }
-      option.filterMap = {
+      option.filterAttrMap = {
         'type': true,
         'uid': true,
         'name': true,
@@ -4412,8 +4412,15 @@ return TEMPLATE; });
         'resource.VolumeSize': true,
         'resource.GroupDescription': true,
         'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
-        'resource.Attachment.AttachmentId': true
+        'resource.Attachment.AttachmentId': true,
+        'resource.Iops': true
       };
+      option.filterResMap = {};
+      if (option.state === 'stop') {
+        option.filterResMap = {
+          'AWS.AutoScaling.Group': true
+        };
+      }
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
       };
@@ -4469,7 +4476,7 @@ return TEMPLATE; });
         return _results;
       };
       _compare = function(a, b, key, path, resultJSON) {
-        var aAry, aString, attrPath, attrPathAry, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, typeA, typeB, v, value1, value2, _i, _len;
+        var aAry, aString, attrPath, attrPathAry, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resType, resUID, typeA, typeB, v, value1, value2, _i, _len;
         if (key === 'VPCZoneIdentifier') {
           aAry = a.split(',');
           bAry = b.split(',');
@@ -4486,7 +4493,18 @@ return TEMPLATE; });
           if (key) {
             path = path.concat([key]);
           }
-          if (path.length > 2) {
+          if (path.length === 2) {
+            resUID = path[1];
+            if (a && a.type) {
+              resType = a.type;
+              if (option.filterResMap[resType]) {
+                return;
+              }
+            }
+          } else if (path.length > 2) {
+            if (_.isArray(a)) {
+              b = [];
+            }
             attrPathAry = path.slice(2);
             attrPathAry = _.map(attrPathAry, function(path) {
               var num;
@@ -4497,7 +4515,7 @@ return TEMPLATE; });
               return path;
             });
             attrPath = attrPathAry.join('.');
-            if (option.filterMap[attrPath]) {
+            if (option.filterAttrMap[attrPath]) {
               return;
             }
           }
@@ -4711,6 +4729,8 @@ TEMPLATE.resDiffTreeMeta=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   define('component/common/diff/prepare',['constant'], function(constant) {
     var Prepare, helper, prepareNode;
     helper = function(options) {
@@ -4782,12 +4802,13 @@ return TEMPLATE; });
           return str.slice(0, -3);
         },
         replaceArrayIndex: function(path, data) {
-          var childNode, component, componentMap, deviceObj, parentKey, type;
+          var childNode, component, componentMap, deviceObj, parentKey, pluralKeys, type;
           componentMap = this.getNodeMap(path[0]);
           component = this.getNewest(componentMap);
           type = component.type;
           parentKey = path[path.length - 2];
           childNode = data.originValue;
+          pluralKeys = ['Dimensions', 'AlarmActions', 'Instances', 'Attachments', 'AvailabilityZones', 'LoadBalancerNames', 'TerminationPolicies', 'ListenerDescriptions', 'SecurityGroups', 'Subnets', 'Routes'];
           switch (parentKey) {
             case 'BlockDeviceMapping':
               deviceObj = childNode.DeviceName;
@@ -4813,15 +4834,14 @@ return TEMPLATE; });
             case 'PrivateIpAddressSet':
               data.key = this.setToElement(parentKey);
               break;
-            case 'Dimensions':
-            case 'AlarmActions':
-              data.key = this.pluralToSingular(parentKey);
-              break;
             case 'NotificationType':
-              data = data;
+              data.key = 'Type';
               break;
-            case 'Instances':
-              data.key = 'Instance';
+            case 'VPCZoneIdentifier':
+              data.key = 'Subnet';
+          }
+          if (__indexOf.call(pluralKeys, parentKey) >= 0) {
+            data.key = this.pluralToSingular(parentKey);
           }
           if (path.length === 1) {
             data.key = constant.RESNAME[data.key] || data.key;
@@ -4929,7 +4949,8 @@ return TEMPLATE; });
           oldAppJSON: this.oldAppJSON,
           newAppJSON: this.newAppJSON
         });
-        return this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
+        this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
+        return this.state = option.state;
       },
       events: {
         'click .item .type': '_toggleTab',
@@ -5016,7 +5037,9 @@ return TEMPLATE; });
           }
           return null;
         });
-        diffTree = new DiffTree({});
+        diffTree = new DiffTree({
+          state: that.state
+        });
         that.modifiedComps = diffTree.compare(unionOldComps, unionNewComps);
         if (!that.modifiedComps) {
           return that.modifiedComps = {};

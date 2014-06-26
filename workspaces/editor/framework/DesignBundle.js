@@ -1146,33 +1146,9 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('Design',["constant", "OpsModel", "workspaces/editor/framework/canvasview/CanvasAdaptor", 'CloudResources'], function(constant, OpsModel, CanvasAdaptor, CloudResources) {
-    var Design, DesignImpl, PropertyDefination, createRecursiveCheck, diffHelper, noop;
-    PropertyDefination = {
-      policy: {
-        ha: ""
-      },
-      lease: {
-        action: "",
-        length: null,
-        due: null
-      },
-      schedule: {
-        stop: {
-          run: null,
-          when: null,
-          during: null
-        },
-        backup: {
-          when: null,
-          day: null
-        },
-        start: {
-          when: null
-        }
-      }
-    };
 
     /* env:prod */
+    var Design, DesignImpl, createRecursiveCheck, diffHelper, noop;
     createRecursiveCheck = function() {
       return createRecursiveCheck.o || (createRecursiveCheck.o = {
         check: function() {}
@@ -1181,7 +1157,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
     noop = function() {};
 
     /*
@@ -1270,7 +1246,6 @@
       this.attributes = $.extend(true, {}, canvas_data);
       canvas_data.component = component;
       canvas_data.layout = layout;
-      this.on(Design.EVENT.AwsResourceUpdated, this.onAwsResourceUpdated);
       return null;
     };
     Design.TYPE = {
@@ -1287,8 +1262,7 @@
     };
     Design.EVENT = {
       Deserialized: "DESERIALIZED",
-      AwsResourceUpdated: "AWS_RESOURCE_UPDATED",
-      AzUpdated: "AZ_UPDATED",
+      ChangeResource: "CHANGE_RESOURCE",
       AddResource: "ADD_RESOURCE",
       RemoveResource: "REMOVE_RESOURCE"
     };
@@ -1720,9 +1694,8 @@
         visitor(component_data, layout_data, options);
       }
       data.layout.size = this.canvas.sizeAry;
-      data.property = $.extend({
-        stoppable: this.isStoppable()
-      }, PropertyDefination);
+      data.property = this.attributes.property || {};
+      data.property.stoppable = this.isStoppable();
       data.version = "2014-02-17";
       data.state = this.__opsModel.getStateDesc() || "Enabled";
       data.id = this.__opsModel.get("id");
@@ -1915,23 +1888,6 @@
       }
       return true;
     };
-    DesignImpl.prototype.onAwsResourceUpdated = function() {
-      var comp, uid, _ref;
-      if (this.modeIsStack()) {
-        return;
-      }
-      _ref = this.__componentMap;
-      for (uid in _ref) {
-        comp = _ref[uid];
-        if (comp.node_line || comp.node_group) {
-          continue;
-        }
-        if (comp.draw) {
-          comp.draw();
-        }
-      }
-      return null;
-    };
     DesignImpl.prototype.instancesNoUserData = function() {
       var instanceModels, lcModels, result;
       result = true;
@@ -1948,15 +1904,9 @@
       return result;
     };
     _.extend(DesignImpl.prototype, Backbone.Events);
-    DesignImpl.prototype.on = function(event) {
-      if (event === Design.EVENT.AwsResourceUpdated && this.modeIsStack()) {
-        return;
-      }
-      return Backbone.Events.on.apply(this, arguments);
-    };
     CanvasAdaptor.setDesign(Design);
 
-    /* env:dev                                            env:dev:end */
+    /* env:dev                                              env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -1968,7 +1918,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/ResourceModel',["Design", "event", "backbone", 'CloudResources'], function(Design, ideEvent, Backbone, CloudResources) {
+  define('workspaces/editor/framework/ResourceModel',["Design", "event", "backbone", 'CloudResources', "constant"], function(Design, ideEvent, Backbone, CloudResources, constant) {
     var ResourceModel, deepClone, __detailExtend, __emptyObj;
     deepClone = function(base) {
       var a, idx, key, target, value, _i, _len;
@@ -1997,7 +1947,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
 
     /*
       -------------------------------
@@ -2118,7 +2068,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                             env:dev:end */
+        /* env:dev                                                                               env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2130,7 +2080,11 @@
         }
         Design.trigger(Design.EVENT.AddResource, this);
         design.trigger(Design.EVENT.AddResource, this);
+        this.listenTo(this, "change", this.__triggerChangeInDesign);
         return this;
+      },
+      __triggerChangeInDesign: function() {
+        this.design().trigger(Design.EVENT.ChangeResource, this);
       },
       getNewName: function(base) {
         var myKinds, nameMap, newName;
@@ -2148,6 +2102,12 @@
             nameMap[comp.get("name")] = true;
           }
           return null;
+        });
+        _.each((this.design().__opsModel.getJsonData() || []).component, function(comp) {
+          var _ref;
+          if ((_ref = comp.type) === constant.RESTYPE.ELB || _ref === constant.RESTYPE.ASG || _ref === constant.RESTYPE.LC || _ref === constant.RESTYPE.SP || _ref === constant.RESTYPE.SA || _ref === constant.RESTYPE.CW) {
+            return nameMap[comp.name] = true;
+          }
         });
         while (true) {
           newName = this.newNameTmpl + base;
@@ -2193,7 +2153,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                          env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2404,7 +2364,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                           env:dev:end */
+        /* env:dev                                                                                              env:dev:end */
 
         /* jshint -W083 */
 
@@ -2493,7 +2453,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                           env:dev:end */
+        /* env:dev                                                                                                                                                                                                             env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -3104,7 +3064,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this, containerId);
 
-          /* env:dev                                                                                                                                                             env:dev:end */
+          /* env:dev                                                                                                                                                                env:dev:end */
         }
         return this.__view;
       },
@@ -3257,6 +3217,7 @@
         userData: "",
         rdSize: 0,
         rdIops: 0,
+        rdType: 'gp2',
         cachedAmi: null,
         state: null
       },
@@ -3558,13 +3519,12 @@
               Ebs: {
                 SnapshotId: rdEbs.snapshotId,
                 VolumeSize: this.get("rdSize") || rdEbs.volumeSize,
-                VolumeType: "standard"
+                VolumeType: this.get('rdType')
               }
             }
           ];
           if (this.get("rdIops") && parseInt(this.get("rdSize"), 10) >= 10) {
             blockDeviceMapping[0].Ebs.Iops = this.get("rdIops");
-            blockDeviceMapping[0].Ebs.VolumeType = "io1";
           }
         }
         return blockDeviceMapping || [];
@@ -3678,13 +3638,22 @@
         return !!EbsMap[this.get("instanceType")];
       },
       setInstanceType: function(type) {
-        var eni, enis, _i, _len;
+        var eni, enis, volumeList, _i, _len;
         if (type === "t1.micro" && !this.isDefaultTenancy()) {
           type = "m1.small";
         }
         this.set("instanceType", type);
         if (!this.isEbsOptimizedEnabled()) {
           this.set("ebsOptimized", false);
+        }
+        volumeList = this.get('volumeList');
+        if (volumeList) {
+          _.each(volumeList, function(vol) {
+            if (!vol.isSupportEncrypted()) {
+              vol.set('encrypted', false);
+            }
+            return null;
+          });
         }
         if (this.getEmbedEni) {
           enis = this.connectionTargets("EniAttachment");
@@ -4171,6 +4140,7 @@
           userData: data.resource.UserData.Data || "",
           rdSize: rootDevice.Ebs.VolumeSize,
           rdIops: rootDevice.Ebs.Iops,
+          rdType: rootDevice.Ebs.VolumeType,
           parent: resolve(layout_data.groupUId),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
@@ -5206,6 +5176,8 @@
 }).call(this);
 
 (function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   define('workspaces/editor/framework/resource/VolumeModel',["i18n!/nls/lang.js", "../ComplexResModel", "constant"], function(lang, ComplexResModel, constant) {
     var Model;
     Model = ComplexResModel.extend({
@@ -5215,8 +5187,9 @@
         volumeSize: 1,
         snapshotId: '',
         appId: '',
-        volumeType: 'standard',
-        iops: ''
+        volumeType: 'gp2',
+        iops: '',
+        encrypted: false
       },
       type: constant.RESTYPE.VOL,
       constructor: function(attributes, options) {
@@ -5362,6 +5335,9 @@
             return false;
           }
         }
+        if (!this.isSupportEncrypted()) {
+          this.attributes.encrypted = false;
+        }
         volumeList = owner.get('volumeList');
         if (volumeList) {
           volumeList.push(this);
@@ -5370,6 +5346,17 @@
         }
         owner.draw();
         return true;
+      },
+      isSupportEncrypted: function() {
+        var instanceType, owner, supportEncrypted, supportedEncryptedType;
+        supportedEncryptedType = ['m3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge', 'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge', 'cr1.8xlarge', 'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge', 'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge', 'g2.2xlarge'];
+        owner = this.attributes.owner;
+        instanceType = owner.get('instanceType');
+        supportEncrypted = false;
+        if ((__indexOf.call(supportedEncryptedType, instanceType) >= 0)) {
+          supportEncrypted = true;
+        }
+        return supportEncrypted;
       },
       getDeviceName: function(owner) {
         var ami_info, deviceName, imageId, volumeList;
@@ -5471,7 +5458,8 @@
             AttachmentSet: {
               InstanceId: instanceId,
               Device: this.get("name")
-            }
+            },
+            Encrypted: this.get("encrypted")
           }
         };
       },
@@ -5533,7 +5521,8 @@
           snapshotId: data.resource.SnapshotId,
           volumeType: data.resource.VolumeType,
           iops: data.resource.Iops,
-          appId: data.resource.VolumeId
+          appId: data.resource.VolumeId,
+          encrypted: data.resource.Encrypted
         };
         model = new Model(attr, {
           noNeedGenName: true
@@ -6728,10 +6717,6 @@
         }
         this.draw(true);
         return null;
-      },
-      setName: function() {
-        GroupModel.prototype.setName.apply(this, arguments);
-        this.design().trigger(Design.EVENT.AzUpdated);
       },
       isRemovable: function() {
         if (this.children().length > 0) {
@@ -8863,7 +8848,8 @@
           publicIp: false,
           state: null,
           rdSize: 0,
-          rdIops: ""
+          rdIops: "",
+          rdType: 'gp2'
         };
       },
       type: constant.RESTYPE.LC,
@@ -9275,6 +9261,7 @@
           if (rd && volume.DeviceName === rd.DeviceName) {
             model.set("rdSize", volume.Ebs.VolumeSize);
             model.set("rdIops", volume.Ebs.Iops);
+            model.set("rdType", volume.Ebs.VolumeType);
           } else {
             _attr = {
               name: volume.DeviceName,
@@ -11145,7 +11132,13 @@
             _results.push(compo.resource.Attachment.AttachmentId = "");
             break;
           case 'AWS.EC2.Instance':
-            _results.push(compo.resource.InstanceId = "");
+            compo.resource.InstanceId = "";
+            _results.push(_.each(compo.resource.BlockDeviceMapping, function(e) {
+              var _ref;
+              if (((_ref = e.Ebs) != null ? _ref.VolumeType : void 0) && e.Ebs.VolumeType !== "io1" && e.Ebs.Iops) {
+                return compo.Ebs.Iops = "";
+              }
+            }));
             break;
           case 'AWS.VPC.Subnet':
             _results.push(compo.resource.SubnetId = "");
@@ -11182,6 +11175,15 @@
           case 'AWS.VPC.CustomerGateway':
             _results.push(compo.resource.CustomerGatewayId = "");
             break;
+          case "AWS.EC2.EBS.Volume":
+            compo.resource.VolumeId = "";
+            if (compo.resource.VolumeType && compo.resource.VolumeType !== "io1" && compo.resource.Iops) {
+              compo.resource.Iops = "";
+              _results.push(null);
+            } else {
+              _results.push(void 0);
+            }
+            break;
           case 'AWS.EC2.Tag':
             _results.push(delete components[comp]);
             break;
@@ -11194,7 +11196,14 @@
             break;
           case 'AWS.AutoScaling.LaunchConfiguration':
             compo.resource.LaunchConfigurationARN = "";
-            _results.push(compo.resource.LaunchConfigurationName = compo.name);
+            compo.resource.LaunchConfigurationName = compo.name;
+            _results.push(_.each(compo.resource.BlockDeviceMapping, function(e) {
+              var _ref;
+              if (((_ref = e.Ebs) != null ? _ref.VolumeType : void 0) && e.Ebs.VolumeType !== 'io1' && e.Ebs.Iops) {
+                e.Ebs.Iops = "";
+                return null;
+              }
+            }));
             break;
           case 'AWS.AutoScaling.Group':
             compo.resource.AutoScalingGroupARN = "";
@@ -12328,6 +12337,9 @@
         notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
         return false;
       }
+      if (attribute && _.isString(attribute.encrypted)) {
+        attribute.encrypted = attribute.encrypted === 'true';
+      }
       attribute = $.extend({}, attribute);
       attribute.owner = this.model;
       VolumeModel = Design.modelClassForType(constant.RESTYPE.VOL);
@@ -12703,7 +12715,7 @@
 (function() {
   define('workspaces/editor/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                                 env:dev:end */
+    /* env:dev                                                                                   env:dev:end */
 
     /* env:debug */
     require(["./workspaces/editor/framework/util/DesignDebugger"], function() {});
