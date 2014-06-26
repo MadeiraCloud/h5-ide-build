@@ -4502,9 +4502,11 @@ return TEMPLATE; });
               }
             }
           } else if (path.length > 2) {
-            if (_.isArray(a)) {
-              b = [];
-            }
+
+            /*
+            if _.isArray(a)
+                b = []
+             */
             attrPathAry = path.slice(2);
             attrPathAry = _.map(attrPathAry, function(path) {
               var num;
@@ -4839,6 +4841,9 @@ return TEMPLATE; });
               break;
             case 'VPCZoneIdentifier':
               data.key = 'Subnet';
+              break;
+            case 'RouteSet':
+              data.key = 'Route';
           }
           if (__indexOf.call(pluralKeys, parentKey) >= 0) {
             data.key = this.pluralToSingular(parentKey);
@@ -4887,6 +4892,7 @@ return TEMPLATE; });
         if (newRef) {
           newValue.__new__ = this.h.getNodeMap(newRef).newAttr;
         }
+        data = this.h.replaceArrayIndex(path, data);
         data.value = {
           type: newValue.type,
           old: newValue.__old__,
