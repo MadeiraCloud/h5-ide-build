@@ -24,26 +24,26 @@ function program5(depth0,data) {
   buffer += "<div class='ops-process ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'>\r\n  <section class=\"processing-wrap\">\r\n    <header class=\"processing\">";
+  buffer += "'>\n  <section class=\"processing-wrap\">\n    <header class=\"processing\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.title), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\r\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\r\n    <section class=\"loading-spinner\"></section>\r\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
+    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div> </section>\r\n  </section>\r\n\r\n  <section class=\"success hide\">\r\n    <p class=\"title\">"
+    + "%;\"></div> </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
-    + "</p>\r\n    <p class=\"sub-title\">"
+    + "</p>\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\r\n  </section>\r\n\r\n  <section class=\"fail hide error-info-block\">\r\n    <header>"
+    + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
-    + "</header>\r\n    <p class=\"sub-title\">"
+    + "</header>\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\r\n    <div class=\"result-error-info\">\r\n      <p class=\"title\">"
+    + "</p>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_ERR_INFO", {hash:{},data:data}))
-    + "</p>\r\n      <p class=\"detail\"></p>\r\n    </div>\r\n    <button class=\"btn btn-silver btn-close-process right\">"
+    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n    <button class=\"btn btn-silver btn-close-process right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
-    + "</button>\r\n  </section>\r\n</div>";
+    + "</button>\n  </section>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -223,25 +223,25 @@ function program3(depth0,data) {
   return "<div class=\"OEPanelBottom\"></div>";
   }
 
-  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\r\n	";
+  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noLeftPane), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n	<aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\r\n\r\n<div class=\"OEMiddleWrap\">\r\n	<nav class=\"OEPanelTop\"></nav>\r\n	";
+  buffer += "\n	<aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\n\n<div class=\"OEMiddleWrap\">\n	<nav class=\"OEPanelTop\"></nav>\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noBottomPane), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n	<section class=\"OEPanelCenter scroll-wrap\">\r\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"scrollbar-horizontal-wrap\"><div class=\"scrollbar-horizontal-thumb\"></div></div>\r\n\r\n		<div id=\"canvas_body\" class=\"canvas-view-normal pos-r scroll-content\">\r\n			<button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
+  buffer += "\n\n	<section class=\"OEPanelCenter scroll-wrap\">\n		<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"scrollbar-horizontal-wrap\"><div class=\"scrollbar-horizontal-thumb\"></div></div>\n\n		<div id=\"canvas_body\" class=\"canvas-view-normal pos-r scroll-content\">\n			<button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('height', 'expand')\"></button>\r\n			<button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('height', 'expand')\"></button>\n			<button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('height', 'shrink')\"></button>\r\n			<button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('height', 'shrink')\"></button>\n			<button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('width', 'expand')\"></button>\r\n			<button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
+  buffer += "' onclick=\"MC.canvas.resize('width', 'expand')\"></button>\n			<button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' onclick=\"MC.canvas.resize('width', 'shrink')\"></button>\r\n\r\n			<svg id=\"svg_canvas\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\">\r\n				<g id=\"group_layer\">\r\n					<g id=\"vpc_layer\"></g>\r\n					<g id=\"az_layer\"></g>\r\n					<g id=\"subnet_layer\"></g>\r\n					<g id=\"asg_layer\"></g>\r\n				</g>\r\n				<g id=\"line_layer\"></g>\r\n				<g id=\"node_layer\"></g>\r\n			</svg>\r\n		</div>\r\n	</section>\r\n</div>\r\n</div>";
+  buffer += "' onclick=\"MC.canvas.resize('width', 'shrink')\"></button>\n\n			<svg id=\"svg_canvas\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\">\n				<g id=\"group_layer\">\n					<g id=\"vpc_layer\"></g>\n					<g id=\"az_layer\"></g>\n					<g id=\"subnet_layer\"></g>\n					<g id=\"asg_layer\"></g>\n				</g>\n				<g id=\"line_layer\"></g>\n				<g id=\"node_layer\"></g>\n			</svg>\n		</div>\n	</section>\n</div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/editor/template/TplOpsEditor',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={"toolbar":{},"confirm":{},"export":{},"modal":{}};
@@ -728,7 +728,7 @@ return TEMPLATE; });
 
     /* env:debug:end */
 
-    /* env:dev                                       env:dev:end */
+    /* env:dev                                     env:dev:end */
     API_URL = "https://" + API_HOST + "/v1/apps/";
     return Backbone.View.extend({
       events: {
@@ -3495,7 +3495,7 @@ return TEMPLATE; });
         self = this;
         region = this.opsModel.get("region");
         stateModule = this.opsModel.getJsonData().agent.module;
-        return Q.all([App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources(constant.RESTYPE.DHCP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), CloudResources("OpsResource", this.opsModel.getVpcId()).init(this.opsModel.get("region")).fetchForce(), this.fetchAmiData()]).then(function() {
+        return Q.all([App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources(constant.RESTYPE.DHCP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.loadVpcResource(), this.fetchAmiData()]).then(function() {
           var newJson, oldJson;
           if (self.isRemoved()) {
             return;
@@ -3595,6 +3595,10 @@ return TEMPLATE; });
         this.design.finishDeserialization();
       };
 
+      AppEditor.prototype.loadVpcResource = function() {
+        return CloudResources("OpsResource", this.opsModel.getVpcId()).init(this.opsModel.get("region")).fetchForce();
+      };
+
       AppEditor.prototype.applyAppEdit = function(modfiedData, force) {
         var fastUpdate, modfied, self;
         modfied = modfiedData || this.design.isModified(void 0, true);
@@ -3615,7 +3619,7 @@ return TEMPLATE; });
             return self.onAppEditDone();
           } else {
             self.view.showUpdateStatus("", true);
-            return CloudResources("OpsResource", self.opsModel.getVpcId()).init(self.opsModel.get("region")).fetchForce().then(function() {
+            return self.loadVpcResource().then(function() {
               return self.onAppEditDone();
             });
           }
@@ -3634,6 +3638,9 @@ return TEMPLATE; });
       };
 
       AppEditor.prototype.onAppEditDone = function() {
+        if (this.isRemoved()) {
+          return;
+        }
         this.__appEdit = this.__applyingUpdate = false;
         this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
         this.recreateDesign();
@@ -3646,6 +3653,7 @@ return TEMPLATE; });
       };
 
       AppEditor.prototype.onOpsModelStateChanged = function() {
+        var self;
         if (!this.isInited()) {
           return;
         }
@@ -3653,7 +3661,19 @@ return TEMPLATE; });
           return;
         }
         this.updateTab();
-        this.view.toggleProcessing();
+        if (this.opsModel.isProcessing()) {
+          this.view.toggleProcessing();
+        } else if (!this.__applyingUpdate && !this.opsModel.testState(OpsModel.State.Destroyed)) {
+          self = this;
+          this.view.showUpdateStatus("", true);
+          this.loadVpcResource().then(function() {
+            if (self.isRemoved()) {
+              return;
+            }
+            self.design.renderNode();
+            return self.view.toggleProcessing();
+          });
+        }
         return StackEditor.prototype.onOpsModelStateChanged.call(this);
       };
 
