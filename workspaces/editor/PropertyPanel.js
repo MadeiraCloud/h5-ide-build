@@ -773,12 +773,14 @@ function program7(depth0,data) {
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-app-resdiff\" type=\"checkbox\" name=\"resdiff\" ";
+  buffer += "\n    <section class=\"property-control-group resdiff-switch\">\n      <div class=\"checkbox\">\n        <input id=\"property-app-resdiff\" type=\"checkbox\" name=\"resdiff\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " >\n        <label for=\"property-app-resdiff\"></label>\n      </div>\n      <label for=\"property-app-resdiff\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_APP_LBL_RESDIFF", {hash:{},data:data}))
-    + "</label>\n    </section>\n    ";
+    + "</label><i class=\"icon-info tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_APP_TIP_RESDIFF", {hash:{},data:data}))
+    + "\"></i>\n    </section>\n    ";
   return buffer;
   }
 function program10(depth0,data) {

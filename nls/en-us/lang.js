@@ -389,6 +389,7 @@ define({
         "PROP_STACK_LBL_ID": "Stack ID",
         "PROP_APP_LBL_ID": "App ID",
         "PROP_APP_LBL_RESDIFF": "Monitor and report external resource change of this app",
+        "PROP_APP_TIP_RESDIFF": "If resource has been changed outside VisualOps, an email notification will be sent to you.",
         "PROP_STACK_LBL_USAGE": "Usage",
         "PROP_STACK_TIT_SG": "Security Groups",
         "PROP_STACK_TIT_ACL": "Network ACL",
