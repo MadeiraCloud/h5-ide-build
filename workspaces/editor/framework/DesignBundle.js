@@ -1148,7 +1148,7 @@
   define('Design',["constant", "OpsModel", "workspaces/editor/framework/canvasview/CanvasAdaptor", 'CloudResources'], function(constant, OpsModel, CanvasAdaptor, CloudResources) {
 
     /* env:prod */
-    var Design, DesignImpl, createRecursiveCheck, diffHelper, noop;
+    var Design, DesignImpl, createRecursiveCheck, noop;
     createRecursiveCheck = function() {
       return createRecursiveCheck.o || (createRecursiveCheck.o = {
         check: function() {}
@@ -1157,7 +1157,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
     noop = function() {};
 
     /*
@@ -1233,11 +1233,10 @@
       this.__shoulddraw = false;
       canvas_data = opsModel.getJsonData();
       this.canvas = new CanvasAdaptor(canvas_data.layout.size);
-      this.__mode = Design.MODE.App;
       if (opsModel.testState(OpsModel.State.UnRun)) {
         this.__mode = Design.MODE.Stack;
-      } else if (opsModel.isImported()) {
-        this.__mode = Design.MODE.AppView;
+      } else {
+        this.__mode = Design.MODE.App;
       }
       component = canvas_data.component;
       layout = canvas_data.layout;
@@ -1257,8 +1256,7 @@
     Design.MODE = {
       Stack: "stack",
       App: "app",
-      AppEdit: "appedit",
-      AppView: "appview"
+      AppEdit: "appedit"
     };
     Design.EVENT = {
       Deserialized: "DESERIALIZED",
@@ -1351,10 +1349,19 @@
       return null;
     };
     DesignImpl.prototype.reload = function(opsModel) {
-      var json;
+      var currentDesignObj, e, json;
       DesignImpl.call(this, opsModel);
       json = opsModel.getJsonData();
-      return this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+      currentDesignObj = Design.instance();
+      this.use();
+      try {
+        this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+      } catch (_error) {
+        e = _error;
+        console.error(e);
+      }
+      currentDesignObj.use();
+      return this;
     };
     DesignImpl.prototype.finishDeserialization = function() {
       var comp, lines, uid, _i, _len, _ref;
@@ -1510,7 +1517,7 @@
       return this.__mode === Design.MODE.App;
     };
     DesignImpl.prototype.modeIsAppView = function() {
-      return this.__mode === Design.MODE.AppView;
+      return false;
     };
     DesignImpl.prototype.modeIsAppEdit = function() {
       return this.__mode === Design.MODE.AppEdit;
@@ -1553,81 +1560,23 @@
       }
       return null;
     };
-    DesignImpl.prototype.isModified = function(newData, showDetail) {
-      var backing, dataToCompare;
-      if (this.modeIsApp() || this.modeIsAppView()) {
+    DesignImpl.prototype.isModified = function() {
+      var backing, newData;
+      if (this.modeIsApp()) {
         console.warn("Testing Design.isModified() in app mode and visualize mode. This should not be happening.");
         return false;
       }
-      dataToCompare = newData || this.attributes;
       backing = this.__opsModel.getJsonData();
-      if (showDetail) {
-        return this.__isModifiedDetail(dataToCompare, backing);
-      }
-      if (dataToCompare.name !== backing.name) {
+      if (this.attributes.name !== backing.name) {
         return true;
       }
-      if (!newData) {
-        newData = this.serialize();
-      }
+      newData = this.serialize();
       if (_.isEqual(backing.component, newData.component)) {
         if (_.isEqual(backing.layout, newData.layout)) {
           return false;
         }
       }
       return true;
-    };
-    DesignImpl.prototype.__isModifiedDetail = function(newData, oldData) {
-      var backingState, comp, dataState, result, state, uid, __bsBackup, __dtBackup, _ref, _ref1;
-      backingState = {};
-      dataState = {};
-      if (!newData.component) {
-        newData = this.serialize();
-      }
-      console.assert(__bsBackup = $.extend(true, {}, oldData));
-      console.assert(__dtBackup = $.extend(true, {}, newData));
-      _ref = oldData.component;
-      for (uid in _ref) {
-        comp = _ref[uid];
-        if (comp.type === constant.RESTYPE.LC || comp.type === constant.RESTYPE.INSTANCE) {
-          backingState[uid] = comp.state;
-          delete comp.state;
-        }
-      }
-      _ref1 = newData.component;
-      for (uid in _ref1) {
-        comp = _ref1[uid];
-        if (comp.type === constant.RESTYPE.LC || comp.type === constant.RESTYPE.INSTANCE) {
-          dataState[uid] = comp.state;
-          delete comp.state;
-        }
-      }
-      result = {
-        attribute: newData.name !== oldData.name || newData.resource_diff !== oldData.resource_diff,
-        component: !_.isEqual(oldData.component, newData.component),
-        layout: !_.isEqual(oldData.layout, newData.layout),
-        instanceState: !_.isEqual(backingState, dataState)
-      };
-      for (uid in backingState) {
-        state = backingState[uid];
-        oldData.component[uid].state = state;
-      }
-      for (uid in dataState) {
-        state = dataState[uid];
-        newData.component[uid].state = state;
-      }
-      console.assert(_.isEqual(oldData, __bsBackup), "BackingStore Modified.");
-      console.assert(_.isEqual(newData, __dtBackup), "Data Modified.");
-      if (result.attribute || result.component || result.layout || result.instanceState) {
-        return $.extend(result, {
-          result: this.diff(newData, oldData),
-          isRunning: this.__opsModel.testState(OpsModel.State.Running),
-          isModified: true,
-          newData: newData
-        });
-      } else {
-        return false;
-      }
     };
     DesignImpl.prototype.serialize = function(options) {
       var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
@@ -1799,97 +1748,6 @@
         totalFee: Math.round(totalFee * 100) / 100
       };
     };
-    diffHelper = function(newComp, oldComp, result, newComponents, oldComponents) {
-      var Model, changeObj, e, r;
-      changeObj = newComp || oldComp;
-      Model = Design.modelClassForType(changeObj.type);
-      if (Model.diffJson) {
-        try {
-          r = Model.diffJson(newComp, oldComp, newComponents, oldComponents);
-        } catch (_error) {
-          e = _error;
-          console.log(e);
-          r = null;
-        }
-        if (r) {
-          if (r.id) {
-            result.push(r);
-          } else {
-            console.error("Invalid return value when diffing json.");
-          }
-        }
-        return;
-      }
-      changeObj = {
-        type: changeObj.type,
-        name: changeObj.name,
-        id: changeObj.uid
-      };
-      if (!newComp) {
-        changeObj.change = "Delete";
-      } else if (!oldComp) {
-        changeObj.change = "Create";
-      } else if (!_.isEqual(newComp.resource, oldComp.resource)) {
-        changeObj.change = "Update";
-      }
-      if (changeObj.change) {
-        result.push(changeObj);
-      }
-      return null;
-    };
-    DesignImpl.prototype.diff = function(newData, oldData) {
-
-      /* Diff the Component first */
-      var c, comp, dedupMap, dedupResult, exist, obj, result, uid, _i, _j, _len, _len1, _ref, _ref1, _ref2;
-      result = [];
-      _ref = newData.component;
-      for (uid in _ref) {
-        comp = _ref[uid];
-        diffHelper(comp, oldData.component[uid], result, newData.component, oldData.component);
-      }
-      _ref1 = oldData.component;
-      for (uid in _ref1) {
-        comp = _ref1[uid];
-        if (newData.component[uid]) {
-          continue;
-        }
-        diffHelper(void 0, comp, result, newData.component, oldData.component);
-      }
-      dedupResult = [];
-      dedupMap = {};
-      for (_i = 0, _len = result.length; _i < _len; _i++) {
-        obj = result[_i];
-        if (constant.RESNAME[obj.type]) {
-          obj.type = constant.RESNAME[obj.type];
-        }
-        exist = dedupMap[obj.id];
-        if (!exist) {
-          exist = dedupMap[obj.id] = obj;
-          dedupResult.push(obj);
-        } else if (obj.change && obj.change !== "Update") {
-          exist.change = obj.change;
-        }
-        if (obj.changes) {
-          exist.changes = obj.changes;
-          _ref2 = obj.changes;
-          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-            c = _ref2[_j];
-            c.info = c.name;
-            if (c.count < 0) {
-              c.info = c.name + " " + c.count;
-            } else if (c.count > 0) {
-              c.info = c.name + " +" + c.count;
-            }
-          }
-        }
-        if (exist.change === "Delete") {
-          exist.info = exist.info || "Deletion cannot be rolled back";
-        } else if (exist.change === "Terminate") {
-          exist.info = exist.info || "Termination cannot be rolled back";
-        }
-      }
-      return dedupResult;
-    };
     DesignImpl.prototype.isStoppable = function() {
       var InstanceModel, LcModel, allObjects, ami, comp, _i, _len;
       InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
@@ -1922,7 +1780,7 @@
     _.extend(DesignImpl.prototype, Backbone.Events);
     CanvasAdaptor.setDesign(Design);
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -1963,7 +1821,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
 
     /*
       -------------------------------
@@ -2084,7 +1942,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                               env:dev:end */
+        /* env:dev                                                                             env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2169,7 +2027,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                          env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2380,7 +2238,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                              env:dev:end */
+        /* env:dev                                                                                           env:dev:end */
 
         /* jshint -W083 */
 
@@ -2469,7 +2327,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                             env:dev:end */
+        /* env:dev                                                                                                                                                                                                           env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -3080,7 +2938,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this, containerId);
 
-          /* env:dev                                                                                                                                                                env:dev:end */
+          /* env:dev                                                                                                                                                             env:dev:end */
         }
         return this.__view;
       },
@@ -4061,49 +3919,6 @@
           mid: null
         };
       },
-      diffJson: function(newData, oldData) {
-        var change, changeData, newCount, oldCount;
-        changeData = newData || oldData;
-        if (changeData.index !== 0) {
-          return;
-        }
-        change = {
-          id: changeData.uid,
-          type: changeData.type,
-          name: changeData.serverGroupName,
-          changes: []
-        };
-        if (newData && oldData && !_.isEqual(newData.resource, oldData.resource)) {
-          change.changes.push({
-            name: "Update"
-          });
-        }
-        newCount = newData ? newData.number : 0;
-        oldCount = oldData ? oldData.number : 0;
-        if (newCount > oldCount) {
-          change.changes.push({
-            name: "Create",
-            count: newCount - oldCount
-          });
-        } else if (newCount < oldCount) {
-          change.change = "Terminate";
-          change.changes.push({
-            name: "Terminate",
-            count: newCount - oldCount
-          });
-        }
-        if (newData && oldData) {
-          if (newData.resource.InstanceType !== oldData.resource.InstanceType || newData.resource.EbsOptimized !== oldData.resource.EbsOptimized || newData.resource.UserData.Data !== oldData.resource.UserData.Data) {
-            change.extra = "Need to restart.";
-            change.info = "If the instance or instance group has been automatically assigned public IP, the IP will change after restart.";
-          }
-        }
-        if (change.changes.length) {
-          return change;
-        } else {
-          return null;
-        }
-      },
       deserialize: function(data, layout_data, resolve) {
         var KP, attr, eipData, m, members, model, rootDevice, _i, _len;
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
@@ -4970,102 +4785,6 @@
         }
         return memberData;
       },
-      diffEipJson: function(newData, oldData, newComponents, oldComponents) {
-        var changeData, eni, instance;
-        if (_.isEqual(newData, oldData)) {
-          return;
-        }
-        changeData = newData || oldData;
-        eni = MC.extractID(changeData.resource.NetworkInterfaceId);
-        eni = newComponents[eni] || oldComponents[eni];
-        if (!eni || eni.index !== 0) {
-          return;
-        }
-        if (MC.extractID(eni.resource.Attachment.DeviceIndex) === "0") {
-          instance = MC.extractID(eni.resource.Attachment.InstanceId);
-          instance = newComponents[instance] || oldComponents[instance];
-          if (instance) {
-            return {
-              name: instance.serverGroupName,
-              id: instance.uid,
-              type: instance.type,
-              change: "Update"
-            };
-          }
-        } else {
-          return {
-            name: eni.serverGroupName,
-            id: eni.uid,
-            type: eni.type,
-            change: "Update"
-          };
-        }
-      },
-      diffJson: function(newData, oldData, newComponents, oldComponents) {
-        var attachment, change, changeData, instance, newCount, oldCount;
-        changeData = newData || oldData;
-        if (changeData.type === constant.RESTYPE.EIP) {
-          return this.diffEipJson(newData, oldData, newComponents, oldComponents);
-        }
-        if (changeData.index !== 0) {
-          return;
-        }
-        if (newData) {
-          attachment = newData.resource.Attachment;
-        }
-        if (!attachment && oldData) {
-          attachment = oldData.resource.Attachment;
-        }
-        if (!attachment) {
-          return;
-        }
-        instance = MC.extractID(attachment.InstanceId);
-        instance = newComponents[instance] || oldComponents[instance];
-        if (!instance) {
-          return;
-        }
-        if (attachment.DeviceIndex === "0") {
-          if (newData && oldData && !_.isEqual(newData, oldData)) {
-            return {
-              name: instance.serverGroupName,
-              type: instance.type,
-              id: instance.uid,
-              change: "Update"
-            };
-          } else {
-            return;
-          }
-        }
-        change = {
-          id: changeData.uid,
-          type: constant.RESTYPE.ENI,
-          name: instance.serverGroupName + "-" + changeData.serverGroupName,
-          changes: []
-        };
-        if (newData && oldData && !_.isEqual(newData.resource, oldData.resource)) {
-          change.changes.push({
-            name: "Update"
-          });
-        }
-        newCount = newData ? newData.number : 0;
-        oldCount = oldData ? oldData.number : 0;
-        if (newCount > oldCount) {
-          change.changes.push({
-            name: "Create",
-            count: newCount - oldCount
-          });
-        } else if (newCount < oldCount) {
-          change.changes.push({
-            name: "Delete",
-            count: newCount - oldCount
-          });
-        }
-        if (change.changes.length) {
-          return change;
-        } else {
-          return null;
-        }
-      },
       deserialize: function(data, layout_data, resolve) {
         var attachment, attr, autoAssign, embed, eni, eniIndex, group, instance, ip, ipObj, m, members, option, sgTarget, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         if (data.type === constant.RESTYPE.EIP) {
@@ -5491,20 +5210,6 @@
       }
     }, {
       handleTypes: constant.RESTYPE.VOL,
-      diffJson: function(newData, oldData, newComponent, oldComponent) {
-        var changeData, instance;
-        if (!(newData && oldData && _.isEqual(newData, oldData))) {
-          changeData = newData || oldData;
-          instance = Design.instance().component(changeData.resource.AttachmentSet.InstanceId);
-          if (instance) {
-            return {
-              id: instance.id,
-              name: instance.get("name"),
-              change: "Update"
-            };
-          }
-        }
-      },
       deserialize: function(data, layout_data, resolve) {
         var attachment, attr, instance, m, members, model, _i, _len;
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
@@ -5926,7 +5631,6 @@
       }
     }, {
       handleTypes: constant.RESTYPE.NC,
-      diffJson: function() {},
       typeMap: {
         "autoscaling:EC2_INSTANCE_LAUNCH": "instanceLaunch",
         "autoscaling:EC2_INSTANCE_LAUNCH_ERROR": "instanceLaunchError",
@@ -6783,7 +6487,6 @@
       }
     }, {
       handleTypes: constant.RESTYPE.AZ,
-      diffJson: function() {},
       deserialize: function(data, layout_data, resolve) {
         new Model({
           id: data.uid,
@@ -8140,7 +7843,6 @@
         return null;
       }
     }, {
-      diffJson: function() {},
       handleTypes: constant.RESTYPE.IAM,
       deserialize: function(data) {
         new SslCertModel({
@@ -9437,7 +9139,6 @@
         defaultKP.set('fingerprint', fingerprint || '');
         return defaultKP.set('isSet', true);
       },
-      diffJson: function() {},
       handleTypes: constant.RESTYPE.KP,
       deserialize: function(data, layout_data, resolve) {
         new KeypairModel({
@@ -10060,7 +9761,6 @@
       }
     }, {
       handleTypes: constant.RESTYPE.SUBNET,
-      diffJson: function() {},
       genCIDRPrefixSuffix: function(subnetCIDR) {
         var cutAry, ipAddr, ipAddrAry, resultPrefix, resultSuffix, suffix;
         cutAry = subnetCIDR.split('/');
@@ -10421,7 +10121,6 @@
     }, {
       handleTypes: constant.RESTYPE.TOPIC,
       resolveFirst: true,
-      diffJson: function() {},
       isTopicNeeded: function() {
         var ScalingPolicyModel, n, sp, useTopic, _i, _j, _len, _len1, _ref, _ref1;
         ScalingPolicyModel = Design.modelClassForType(constant.RESTYPE.SP);
@@ -10528,7 +10227,6 @@
         };
       }
     }, {
-      diffJson: function() {},
       handleTypes: ["AWS.EC2.Tag", "AWS.AutoScaling.Tag"],
       deserialize: function(data) {
         new Model({
@@ -10708,23 +10406,6 @@
       }
     }, {
       handleTypes: [constant.RESTYPE.SP, constant.RESTYPE.CW],
-      diffJson: function(newData, oldData) {
-        var asg, asgId;
-        if (!(newData && oldData && _.isEqual(newData, oldData))) {
-          asgId = (newData || oldData).resource;
-          asgId = asgId.AutoScalingGroupName || asgId.Dimensions[0].value;
-          asg = Design.instance().component(MC.extractID(asgId));
-          if (asg) {
-            return {
-              id: asgId,
-              type: constant.RESTYPE.ASG,
-              name: asg.get("name"),
-              change: "Update"
-            };
-          }
-        }
-        return null;
-      },
       deserialize: function(data, layout_data, resolve) {
         var alarmData, asg, i, policy, refArray, sendNotification, state, topic, _i, _len;
         if (data.type === constant.RESTYPE.CW) {
@@ -12744,7 +12425,7 @@
 (function() {
   define('workspaces/editor/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                                   env:dev:end */
+    /* env:dev                                                                                 env:dev:end */
 
     /* env:debug */
     require(["./workspaces/editor/framework/util/DesignDebugger"], function() {});

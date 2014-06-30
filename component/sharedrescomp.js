@@ -4394,33 +4394,34 @@ return TEMPLATE; });
       if (!option) {
         option = {};
       }
-      option.filterAttrMap = {
-        'type': true,
-        'uid': true,
-        'name': true,
-        'index': true,
-        'number': true,
-        'serverGroupUid': true,
-        'serverGroupName': true,
-        'state': true,
-        'resource.PrivateIpAddressSet.n.AutoAssign': true,
-        'resource.AssociatePublicIpAddress': true,
-        'resource.KeyName': true,
-        'resource.AssociationSet.n.RouteTableAssociationId': true,
-        'resource.AssociationSet.n.NetworkAclAssociationId': true,
-        'resource.BlockDeviceMapping': true,
-        'resource.VolumeSize': true,
-        'resource.GroupDescription': true,
-        'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
-        'resource.Attachment.AttachmentId': true,
-        'resource.Iops': true
-      };
-      option.filterResMap = {};
-      if (option.state === 'stop') {
-        option.filterResMap = {
-          'AWS.AutoScaling.Group': true
+      if (!option.filterAttrMap) {
+        option.filterAttrMap = {
+          'type': true,
+          'uid': true,
+          'name': true,
+          'index': true,
+          'number': true,
+          'serverGroupUid': true,
+          'serverGroupName': true,
+          'resource.PrivateIpAddressSet.n.AutoAssign': true,
+          'resource.AssociatePublicIpAddress': true,
+          'resource.KeyName': true,
+          'resource.AssociationSet.n.RouteTableAssociationId': true,
+          'resource.AssociationSet.n.NetworkAclAssociationId': true,
+          'resource.BlockDeviceMapping': true,
+          'resource.VolumeSize': true,
+          'resource.GroupDescription': true,
+          'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
+          'resource.Attachment.AttachmentId': true,
+          'resource.Iops': true
         };
       }
+      if (!option.noDiffArrayAttrMap) {
+        option.noDiffArrayAttrMap = {
+          'state': true
+        };
+      }
+      option.filterResMap = {};
       isArray = function(value) {
         return value && typeof value === 'object' && value.constructor === Array;
       };
@@ -4489,6 +4490,7 @@ return TEMPLATE; });
           a = aAry;
           b = bAry;
         }
+        attrPath = '';
         if (path) {
           if (key) {
             path = path.concat([key]);
@@ -4502,11 +4504,6 @@ return TEMPLATE; });
               }
             }
           } else if (path.length > 2) {
-
-            /*
-            if _.isArray(a)
-                b = []
-             */
             attrPathAry = path.slice(2);
             attrPathAry = _.map(attrPathAry, function(path) {
               var num;
@@ -4553,11 +4550,13 @@ return TEMPLATE; });
         resultJSON[key] = {};
         if (typeA === 'object' || typeA === 'array' || typeB === 'object' || typeB === 'array') {
           if (typeA === 'array' && typeB === 'array') {
-            diffAryResult = {};
-            if (a.length < b.length) {
-              _diffAry.call(this, a, b);
-            } else {
-              _diffAry.call(this, b, a);
+            if (!attrPath || (attrPath && !option.noDiffArrayAttrMap[attrPath])) {
+              diffAryResult = {};
+              if (a.length < b.length) {
+                _diffAry.call(this, a, b);
+              } else {
+                _diffAry.call(this, b, a);
+              }
             }
           }
           keys = [];
@@ -4926,6 +4925,9 @@ return TEMPLATE; });
         if (path[1] === 'resource') {
           data.skip = true;
         }
+        if (path[1] === 'state') {
+          delete data.key;
+        }
       }
       return data;
     };
@@ -4955,8 +4957,7 @@ return TEMPLATE; });
           oldAppJSON: this.oldAppJSON,
           newAppJSON: this.newAppJSON
         });
-        this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
-        return this.state = option.state;
+        return this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
       },
       events: {
         'click .item .type': '_toggleTab',
@@ -4976,7 +4977,7 @@ return TEMPLATE; });
         return $target.toggleClass('closed');
       },
       render: function() {
-        var okText, options, that;
+        var $containerDom, okText, options, that;
         that = this;
         okText = 'OK, got it';
         options = {
@@ -5017,7 +5018,8 @@ return TEMPLATE; });
           return that.modal.close();
         }, this);
         this.$el.html(template.frame());
-        this._genResGroup(this.oldAppJSON.component, this.newAppJSON.component);
+        $containerDom = this.$('article');
+        this._genResGroup($containerDom);
         return this.modal.resize();
       },
       _genDiffInfo: function(oldComps, newComps) {
@@ -5043,15 +5045,13 @@ return TEMPLATE; });
           }
           return null;
         });
-        diffTree = new DiffTree({
-          state: that.state
-        });
+        diffTree = new DiffTree();
         that.modifiedComps = diffTree.compare(unionOldComps, unionNewComps);
         if (!that.modifiedComps) {
           return that.modifiedComps = {};
         }
       },
-      _genResGroup: function() {
+      _genResGroup: function($containerDom) {
         var $group, compCount, data, groupData, that, _i, _len, _results;
         that = this;
         groupData = [
@@ -5084,7 +5084,7 @@ return TEMPLATE; });
               type: data.type,
               title: data.title,
               count: compCount
-            })).appendTo(this.$('article'));
+            })).appendTo($containerDom);
             _results.push(this._genResTree($group.find('.content'), data.diffComps, data.closed, data.needDiff));
           } else {
             _results.push(void 0);
@@ -5214,6 +5214,58 @@ return TEMPLATE; });
           }
         }
         return '';
+      },
+      renderAppUpdateView: function() {
+        this._genResGroup(this.$el);
+        return this.$el;
+      },
+      getDiffInfo: function() {
+        var appModifiedComps, diffTree, hasCompChange, hasLayoutChange, hasStateChange, layoutModifiedComps, newAppJSON, oldAppJSON, onlyStateChange, that;
+        that = this;
+        oldAppJSON = _.extend({}, that.oldAppJSON);
+        newAppJSON = _.extend({}, that.newAppJSON);
+        hasCompChange = false;
+        if (_.size(that.addedComps) || _.size(that.removedComps) || _.size(that.modifiedComps)) {
+          hasCompChange = true;
+        }
+        diffTree = new DiffTree();
+        layoutModifiedComps = diffTree.compare(oldAppJSON.layout, newAppJSON.layout);
+        hasLayoutChange = false;
+        if (_.size(layoutModifiedComps)) {
+          hasLayoutChange = true;
+        }
+        hasStateChange = false;
+        onlyStateChange = true;
+        _.each(that.modifiedComps, function(comp, uid) {
+          if (comp.state) {
+            hasStateChange = true;
+          }
+          if (_.size(comp) === 1 && comp.state) {
+            delete that.modifiedComps[uid];
+          } else {
+            onlyStateChange = false;
+          }
+          if (comp && comp.state) {
+            delete comp.state;
+          }
+          return null;
+        });
+        if (onlyStateChange && _.size(that.addedComps) === 0 && _.size(that.removedComps) === 0) {
+          hasCompChange = false;
+        }
+        delete oldAppJSON.component;
+        delete oldAppJSON.layout;
+        delete newAppJSON.component;
+        delete newAppJSON.layout;
+        appModifiedComps = diffTree.compare(oldAppJSON, newAppJSON);
+        if (_.size(appModifiedComps) > 0) {
+          hasLayoutChange = true;
+        }
+        return {
+          compChange: hasCompChange,
+          layoutChange: hasLayoutChange,
+          stateChange: hasStateChange
+        };
       },
       getChangeInfo: function() {
         var hasResChange, needUpdateLayout, newComps, oldComps, that;

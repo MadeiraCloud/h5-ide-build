@@ -3687,7 +3687,7 @@ return Markdown;
         $parentEditorModel = $currentElem.parents('#state-editor-model');
         if ($stateEditorModel.length && (!$parentEditorModel.length)) {
           $propertyPanel = $('#OEPanelRight');
-          if ($stateEditorModel.length && !$propertyPanel.hasClass('no-state')) {
+          if ($stateEditorModel.length) {
             return that.onStateSaveClick();
           } else {
             if ($currentElem.parents('#tabbar-wrapper').length) {
