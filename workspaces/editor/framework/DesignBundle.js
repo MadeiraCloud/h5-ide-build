@@ -1349,19 +1349,10 @@
       return null;
     };
     DesignImpl.prototype.reload = function(opsModel) {
-      var currentDesignObj, e, json;
+      var json;
       DesignImpl.call(this, opsModel);
       json = opsModel.getJsonData();
-      currentDesignObj = Design.instance();
-      this.use();
-      try {
-        this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
-      } catch (_error) {
-        e = _error;
-        console.error(e);
-      }
-      currentDesignObj.use();
-      return this;
+      return this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
     };
     DesignImpl.prototype.finishDeserialization = function() {
       var comp, lines, uid, _i, _len, _ref;

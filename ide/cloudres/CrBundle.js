@@ -3624,7 +3624,7 @@
           aclComp = this.add("ACL", aclRes, aclName);
         }
       }, function() {
-        var aws_elb, data, elbComp, elbRes, iamComp, instanceId, listener, me, sgId, sslCertRef, subnetId, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+        var aws_elb, data, elbComp, elbRes, iamComp, instanceId, listener, me, originComp, sgId, sslCertRef, subnetId, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
         me = this;
         _ref = this.getResourceByType("ELB") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3682,9 +3682,14 @@
             }
           };
           elbRes = this._mapProperty(aws_elb, elbRes);
+          originComp = this.getOriginalComp(aws_elb.Name, 'ELB');
           elbRes.ConnectionDraining.Enabled = aws_elb.ConnectionDraining.Enabled;
-          if (aws_elb.ConnectionDraining.Enabled) {
-            elbRes.ConnectionDraining.Timeout = Number(aws_elb.ConnectionDraining.Timeout);
+          if (originComp) {
+            elbRes.ConnectionDraining.Timeout = originComp.resource.ConnectionDraining.Timeout;
+          } else {
+            if (aws_elb.ConnectionDraining.Enabled) {
+              elbRes.ConnectionDraining.Timeout = Number(aws_elb.ConnectionDraining.Timeout);
+            }
           }
           if (elbRes.CanonicalHostedZoneName) {
             delete elbRes.CanonicalHostedZoneName;

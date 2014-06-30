@@ -15665,11 +15665,11 @@ function program49(depth0,data) {
         comp = design.component(uid) || ((_ref = CloudResources(CONST.RESTYPE.INSTANCE, Design.instance().get('region')).findWhere({
           id: uid
         })) != null ? _ref.attributes : void 0);
-        if (!comp.type) {
-          comp.type = CONST.RESTYPE.INSTANCE;
-        }
         if (!comp) {
           return;
+        }
+        if (!comp.type) {
+          comp.type = CONST.RESTYPE.INSTANCE;
         }
         if (!this.updateStateSwitcher(comp.type, uid)) {
           this.openPanel(comp.type, uid);

@@ -3550,6 +3550,23 @@ return TEMPLATE; });
         });
       };
 
+      AppEditor.prototype.delayUntilAwake = function(method) {
+        if (this.isAwake()) {
+          method.call(this);
+        } else {
+          console.info("AppEditor's action is delayed until wake up.");
+          this.__calledUponWakeup = method;
+        }
+      };
+
+      AppEditor.prototype.awake = function() {
+        StackEditor.prototype.awake.call(this);
+        if (this.__calledUponWakeup) {
+          this.__calledUponWakeup.call(this);
+          this.__calledUponWakeup = null;
+        }
+      };
+
       AppEditor.prototype.isModified = function() {
         return this.isAppEditMode() && this.design && this.design.isModified();
       };
@@ -3649,6 +3666,10 @@ return TEMPLATE; });
       };
 
       AppEditor.prototype.onAppEditDone = function() {
+        return this.delayUntilAwake(this.__onAppEditDone);
+      };
+
+      AppEditor.prototype.__onAppEditDone = function() {
         if (this.isRemoved()) {
           return;
         }
@@ -3678,14 +3699,18 @@ return TEMPLATE; });
           self = this;
           this.view.showUpdateStatus("", true);
           this.loadVpcResource().then(function() {
-            if (self.isRemoved()) {
-              return;
-            }
-            self.design.renderNode();
-            return self.view.toggleProcessing();
+            return self.delayUntilAwake(self.onVpcResLoaded);
           });
         }
         return StackEditor.prototype.onOpsModelStateChanged.call(this);
+      };
+
+      AppEditor.prototype.onVpcResLoaded = function() {
+        if (this.isRemoved()) {
+          return;
+        }
+        this.design.renderNode();
+        this.view.toggleProcessing();
       };
 
       return AppEditor;
