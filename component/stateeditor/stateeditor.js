@@ -5323,7 +5323,7 @@ return Markdown;
         }
         if (imageObj) {
           osType = imageObj.get('osType') || layoutOSType;
-          linuxDistroRange = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'sles', 'amazon', 'amaz'];
+          linuxDistroRange = ['centos', 'redhat', 'ubuntu', 'rhel', 'debian', 'amazon', 'amaz'];
           if (osType === 'windows') {
             osPlatform = 'windows';
           } else if (__indexOf.call(linuxDistroRange, osType) >= 0) {

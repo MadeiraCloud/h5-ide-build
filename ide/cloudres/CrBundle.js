@@ -82,7 +82,7 @@
       }
     }, {
 
-      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
     });
   });
 
@@ -309,7 +309,7 @@
         return this.category;
       },
 
-      /* env:dev                                                                                                                                                                                                                                                                                                            env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                                                                                                     env:dev:end */
       where: function(option, first) {
         var hasOtherAttr, key, res;
         if (option.category && option.category === this.category) {
@@ -486,7 +486,7 @@
   define('ide/cloudres/CrModelDhcp',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                           env:dev:end */
+      /* env:dev                                             env:dev:end */
       defaults: function() {
         return {
           "domain-name": [],
@@ -565,7 +565,7 @@
   define('ide/cloudres/CrModelKeypair',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       defaults: {
         keyName: "",
         keyData: "",
@@ -618,7 +618,7 @@
   define('ide/cloudres/CrModelSslcert',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       taggable: false,
       defaults: {
         Path: "",
@@ -687,7 +687,7 @@
   define('ide/cloudres/CrModelTopic',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       taggable: false,
       defaults: {
         Name: "",
@@ -751,7 +751,7 @@
     var CrSubscriptionModel;
     CrSubscriptionModel = CrModel.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       taggable: false,
       defaults: {
         Endpoint: "",
@@ -830,7 +830,7 @@
   define('ide/cloudres/CrModelSnapshot',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       defaults: {
         volumeId: "",
         status: "pending",
@@ -943,7 +943,7 @@
     /* Dhcp */
     CrCollection.extend({
 
-      /* env:dev                                                env:dev:end */
+      /* env:dev                                                  env:dev:end */
       type: constant.RESTYPE.DHCP,
       model: CrDhcpModel,
       doFetch: function() {
@@ -968,7 +968,7 @@
     /* Keypair */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.KP,
       model: CrKeypairModel,
       doFetch: function() {
@@ -993,7 +993,7 @@
     /* Ssl cert */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
@@ -1023,7 +1023,7 @@
     /* Sns Topic */
     CrCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: constant.RESTYPE.TOPIC,
       model: CrTopicModel,
       constructor: function() {
@@ -1082,7 +1082,7 @@
     /* Sns Subscription */
     CrCollection.extend({
 
-      /* env:dev                                                        env:dev:end */
+      /* env:dev                                                          env:dev:end */
       type: constant.RESTYPE.SUBSCRIPTION,
       model: CrSubscriptionModel,
       doFetch: function() {
@@ -1107,7 +1107,7 @@
     /* Snapshot */
     return CrCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       type: constant.RESTYPE.SNAP,
       model: CrSnapshotModel,
       initialize: function() {
@@ -1204,7 +1204,7 @@
     EmptyArr = [];
     CrCommonCollection = CrCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       model: CrModel,
       type: "CrCommonCollection",
       __selfParseData: true,
@@ -1309,7 +1309,7 @@
     /* Elb */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ELB,
       trAwsXml: function(data) {
         var _ref;
@@ -1367,7 +1367,7 @@
     /* VPN */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VPN,
       trAwsXml: function(data) {
         var _ref;
@@ -1398,7 +1398,7 @@
     /* EIP */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.EIP,
       trAwsXml: function(data) {
         var _ref;
@@ -1426,7 +1426,7 @@
     /* VPC */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VPC,
       trAwsXml: function(data) {
         var _ref;
@@ -1454,7 +1454,7 @@
     /* ASG */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ASG,
       modelIdAttribute: "AutoScalingGroupARN",
       trAwsXml: function(data) {
@@ -1497,7 +1497,7 @@
     /* CloudWatch */
     CrCommonCollection.extend({
 
-      /* env:dev                                                      env:dev:end */
+      /* env:dev                                                        env:dev:end */
       type: constant.RESTYPE.CW,
       trAwsXml: function(data) {
         var _ref;
@@ -1530,7 +1530,7 @@
     /* CGW */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.CGW,
       trAwsXml: function(data) {
         var _ref;
@@ -1558,7 +1558,7 @@
     /* VGW */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.VGW,
       trAwsXml: function(data) {
         var _ref;
@@ -1594,7 +1594,7 @@
     /* IGW */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.IGW,
       trAwsXml: function(data) {
         var _ref;
@@ -1631,7 +1631,7 @@
     /* RTB */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.RT,
       trAwsXml: function(data) {
         var _ref;
@@ -1710,7 +1710,7 @@
     /* INSTANCE */
     CrCommonCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       initialize: function() {
         this.listenTo(this, "add", function(m) {
           return CloudResources(constant.RESTYPE.AMI, m.attributes.category).fetchAmi(m.attributes.imageId);
@@ -1785,7 +1785,7 @@
     /* VOLUME */
     CrCommonCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: constant.RESTYPE.VOL,
       trAwsXml: function(data) {
         var _ref;
@@ -1831,7 +1831,7 @@
     /* LC */
     CrCommonCollection.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: constant.RESTYPE.LC,
       AwsResponseType: "DescribeLaunchConfigurationsResponse",
       trAwsXml: function(data) {
@@ -1871,7 +1871,7 @@
     /* ScalingPolicy */
     CrCommonCollection.extend({
 
-      /* env:dev                                                         env:dev:end */
+      /* env:dev                                                           env:dev:end */
       type: constant.RESTYPE.SP,
       AwsResponseType: "DescribePoliciesResponse",
       trAwsXml: function(data) {
@@ -1903,7 +1903,7 @@
     /* AvailabilityZone */
     CrCommonCollection.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: constant.RESTYPE.AZ,
       AwsResponseType: "DescribeAvailabilityZonesResponse",
       trAwsXml: function(data) {
@@ -1932,7 +1932,7 @@
     /* NotificationConfiguartion */
     CrCommonCollection.extend({
 
-      /* env:dev                                                        env:dev:end */
+      /* env:dev                                                          env:dev:end */
       type: constant.RESTYPE.NC,
       AwsResponseType: "DescribeNotificationConfigurationsResponse",
       trAwsXml: function(data) {
@@ -1984,7 +1984,7 @@
     /* ACL */
     CrCommonCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ACL,
       AwsResponseType: "DescribeNetworkAclsResponse",
       trAwsXml: function(data) {
@@ -2021,7 +2021,7 @@
     /* ENI */
     CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.ENI,
       AwsResponseType: "DescribeNetworkInterfacesResponse",
       doFetch: function() {
@@ -2061,7 +2061,7 @@
     /* SUBNET */
     CrCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: constant.RESTYPE.SUBNET,
       doFetch: function() {
         return ApiRequest("subnet_DescribeSubnets", {
@@ -2090,7 +2090,7 @@
     /* SG */
     return CrCollection.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: constant.RESTYPE.SG,
       AwsResponseType: "DescribeSecurityGroupsResponse",
       doFetch: function() {
@@ -2167,7 +2167,7 @@
     /* This Connection is used to fetch all the resource of an vpc */
     return CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: "OpsResource",
       init: function(region) {
         this.__region = region;
@@ -2307,7 +2307,7 @@
     /* This Collection is used to fetch generic ami */
     CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.AMI,
       __selfParseData: true,
       initialize: function() {
@@ -2444,7 +2444,7 @@
     });
     SpecificAmiCollection = CrCollection.extend({
 
-      /* env:dev                                                       env:dev:end */
+      /* env:dev                                                         env:dev:end */
       type: "SpecificAmiCollection",
       initialize: function() {
         this.__models = [];
@@ -2469,7 +2469,7 @@
     /* This Collection is used to fetch quickstart ami */
     SpecificAmiCollection.extend({
 
-      /* env:dev                                                         env:dev:end */
+      /* env:dev                                                           env:dev:end */
       type: "QuickStartAmi",
       doFetch: function() {
         return ApiRequest("aws_quickstart", {
@@ -2494,7 +2494,7 @@
     /* This Collection is used to fetch my ami */
     SpecificAmiCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: "MyAmi",
       doFetch: function() {
         var self, selfParam1, selfParam2;
@@ -2564,7 +2564,7 @@
     /* This Collection is used to fetch favorite ami */
     return SpecificAmiCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: "FavoriteAmi",
       doFetch: function() {
         return ApiRequest("favorite_info", {
@@ -2583,6 +2583,7 @@
           try {
             item = JSON.parse(ami.amiVO);
             item.id = ami.id;
+            item.blockDeviceMapping = $.isEmptyObject(item.blockDeviceMapping) ? null : item.blockDeviceMapping;
             savedAmis.push(item);
             favAmiId.push(ami.id);
           } catch (_error) {
@@ -3262,7 +3263,7 @@
           this.volumes[aws_vol.id] = volComp;
         }
       }, function() {
-        var aws_asg, aws_ins, azComp, insComp, insRes, keyPairComp, me, originComp, subnetComp, vol_in_instance, volumes, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        var aws_asg, aws_ins, azComp, insComp, insRes, keyPairComp, me, originComp, rootDeviceAry, subnetComp, vol_in_instance, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         me = this;
         _ref = this.getResourceByType("ASG");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3339,47 +3340,51 @@
             }
           }
           vol_in_instance = [];
-          if (originComp) {
-            insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
-            insRes.BlockDeviceMapping = _.filter(insRes.BlockDeviceMapping, function(bdm) {
-              if (_.isString(bdm)) {
-                return false;
-              }
-              return true;
-            });
-            _.each(aws_ins.blockDeviceMapping || [], function(e, key) {
-              var volComp;
-              if (aws_ins.rootDeviceName.indexOf(e.deviceName) === -1) {
-                volComp = me.volumes[e.ebs.volumeId];
-                if (volComp) {
-                  insRes.BlockDeviceMapping = _.union(insRes.BlockDeviceMapping, ["#" + volComp.uid]);
-                  me.component[volComp.uid] = volComp;
-                  return vol_in_instance.push(volComp.uid);
+          if (aws_ins.rootDeviceType === 'ebs') {
+            if (!originComp) {
+              insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
+              insRes.BlockDeviceMapping = _.filter(insRes.BlockDeviceMapping, function(bdm) {
+                if (_.isString(bdm)) {
+                  return false;
                 }
-              }
-            });
-          } else {
-            insRes.BlockDeviceMapping = [];
-            volumes = this.volumes;
-            _.each(aws_ins.blockDeviceMapping, function(bdm) {
-              var volume, volumeSize;
-              volume = volumes[bdm.ebs.volumeId];
-              volumeSize = '';
-              if (volume) {
-                volumeSize = volume.resource.Size;
-              }
-              return insRes.BlockDeviceMapping.push({
-                DeviceName: bdm.deviceName,
-                Ebs: {
-                  AttachTime: bdm.ebs.attachTime,
-                  DeleteOnTermination: bdm.ebs.deleteOnTermination,
-                  Status: bdm.ebs.status,
-                  VolumeId: bdm.ebs.volumeId,
-                  VolumeSize: volumeSize
-                }
+                return true;
               });
+            }
+            rootDeviceAry = [];
+            _.each(aws_ins.blockDeviceMapping, function(bdm) {
+              var rootDevice, volume;
+              if (aws_ins.rootDeviceName.indexOf(bdm.deviceName) !== -1) {
+                volume = me.volumes[bdm.ebs.volumeId];
+                if (volume) {
+                  rootDevice = {
+                    DeviceName: bdm.deviceName,
+                    Ebs: {
+                      SnapshotId: volume.resource.SnapshotId,
+                      VolumeSize: volume.resource.Size,
+                      VolumeType: volume.resource.VolumeType
+                    }
+                  };
+                  if (volume.resource.VolumeType === 'io1') {
+                    rootDevice.Ebs.Iops = volume.resource.Iops;
+                  }
+                  return rootDeviceAry.push(rootDevice);
+                }
+              }
             });
+            if (insRes.BlockDeviceMapping.length !== rootDeviceAry.length) {
+              insRes.BlockDeviceMapping = rootDeviceAry;
+            }
           }
+          _.each(aws_ins.blockDeviceMapping || [], function(bdm) {
+            var volComp;
+            if (aws_ins.rootDeviceType === 'instance-store' || aws_ins.rootDeviceName.indexOf(bdm.deviceName) === -1) {
+              volComp = me.volumes[bdm.ebs.volumeId];
+              if (volComp) {
+                me.component[volComp.uid] = volComp;
+                return vol_in_instance.push(volComp.uid);
+              }
+            }
+          });
           insComp = this.add("INSTANCE", insRes, TAG_NAME(aws_ins));
           _.each(vol_in_instance, function(e, key) {
             var volComp;
