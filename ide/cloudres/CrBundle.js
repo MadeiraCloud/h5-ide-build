@@ -3341,7 +3341,7 @@
           }
           vol_in_instance = [];
           if (aws_ins.rootDeviceType === 'ebs') {
-            if (!originComp) {
+            if (originComp) {
               insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
               insRes.BlockDeviceMapping = _.filter(insRes.BlockDeviceMapping, function(bdm) {
                 if (_.isString(bdm)) {
