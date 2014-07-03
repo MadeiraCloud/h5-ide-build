@@ -15400,6 +15400,7 @@ function program49(depth0,data) {
     });
     ide_event.onLongListen(ide_event.FORCE_OPEN_PROPERTY, function() {
       $("#OEPanelRight").trigger("FORCE_SHOW");
+      $("#OEPanelRight").trigger("SHOW_PROPERTY");
     });
     ide_event.onLongListen(ide_event.SHOW_STATE_EDITOR, function(uid) {
       $("#OEPanelRight").trigger("SHOW_STATEEDITOR", [uid]);
@@ -15427,6 +15428,7 @@ function program49(depth0,data) {
         "SHOW_STATEEDITOR": "showStateEditor",
         "FORCE_SHOW": "forceShow",
         "REFRESH": "refresh",
+        "SHOW_PROPERTY": "switchToProperty",
         "click #btn-switch-property": "switchToProperty",
         "click #btn-switch-state": "showStateEditor"
       },
@@ -15658,6 +15660,9 @@ function program49(depth0,data) {
       },
       showStateEditor: function(jqueryEvent, uid) {
         var allCompData, comp, compData, design, _ref;
+        if (this.__showingState) {
+          return false;
+        }
         if (!uid) {
           uid = PropertyBaseModule.activeModule().uid;
         }

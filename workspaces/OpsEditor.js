@@ -2305,12 +2305,15 @@ return TEMPLATE; });
         this.__amiType = "QuickStartAmi";
       },
       render: function() {
+        var that;
+        that = this;
         this.setElement(this.workspace.view.$el.find(".OEPanelLeft").html(LeftPanelTpl.panel({})));
         this.$el.toggleClass("hidden", this.__leftPanelHidden || false);
         this.recalcAccordion();
         this.updateAZ();
         this.updateSnapshot();
         this.updateAmi();
+        $(document).off('keydown', that.bindKey.bind(this)).on('keydown', that.bindKey.bind(this));
         this.updateDisableItems();
         this.renderReuse();
       },
@@ -2371,6 +2374,19 @@ return TEMPLATE; });
           return this;
         }
       }),
+      bindKey: function(event) {
+        var is_input, keyCode, metaKey, shiftKey, tagName, that;
+        that = this;
+        keyCode = event.which;
+        metaKey = event.ctrlKey || event.metaKey;
+        shiftKey = event.shiftKey;
+        tagName = event.target.tagName.toLowerCase();
+        is_input = tagName === 'input' || tagName === 'textarea';
+        if (metaKey === false && shiftKey === false && keyCode === 82 && is_input === false) {
+          that.toggleResourcePanel();
+          return false;
+        }
+      },
       renderReuse: function() {
         var allLc, lc, _i, _len;
         allLc = this.workspace.design.componentsOfType(constant.RESTYPE.LC);
@@ -2516,6 +2532,9 @@ return TEMPLATE; });
       toggleLeftPanel: function() {
         this.__leftPanelHidden = this.$el.toggleClass("hidden").hasClass("hidden");
         return false;
+      },
+      toggleResourcePanel: function() {
+        return this.toggleLeftPanel();
       },
       updateAccordion: function(event, noAnimate) {
         var $accordion, $accordionParent, $accordionWrap, $body, $expanded, $target, $visibleAccordion, height;
