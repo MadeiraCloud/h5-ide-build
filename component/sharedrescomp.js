@@ -2789,7 +2789,7 @@ return TEMPLATE; });
           datas.keys = keys;
           datas.hideDefaultNoKey = true;
         }
-        if (Design.instance().modeIsApp() || Design.instance().modeIsAppEdit()) {
+        if (Design.instance() && (Design.instance().modeIsApp() || Design.instance().modeIsAppEdit())) {
           datas.isRunTime = true;
         }
         content = template.keys(datas);
@@ -2851,7 +2851,7 @@ return TEMPLATE; });
         return this.renderManager();
       },
       renderManager: function() {
-        var currentRegion, initManager, _ref;
+        var currentRegion, initManager, _ref, _ref1;
         if (!App.user.hasCredential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
@@ -2859,8 +2859,8 @@ return TEMPLATE; });
           return false;
         }
         initManager = this.initManager.bind(this);
-        currentRegion = Design.instance().get('region');
-        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
+        currentRegion = (_ref1 = Design.instance()) != null ? _ref1.get('region') : void 0;
+        if (currentRegion && ((!fetched && !fetching) || (!regionsMark[currentRegion]))) {
           fetching = true;
           regionsMark[currentRegion] = true;
           return this.collection.fetchForce().then(initManager, initManager);
@@ -3534,10 +3534,10 @@ return TEMPLATE; });
         return (_ref = this.manager) != null ? _ref.setContent(content) : void 0;
       },
       initManager: function() {
-        var currentRegion, setContent;
+        var currentRegion, setContent, _ref;
         setContent = this.setContent.bind(this);
-        currentRegion = Design.instance().get('region');
-        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
+        currentRegion = (_ref = Design.instance()) != null ? _ref.get('region') : void 0;
+        if (currentRegion && ((!fetched && !fetching) || (!regionsMark[currentRegion]))) {
           fetching = true;
           regionsMark[currentRegion] = true;
           return this.collection.fetchForce().then(setContent, setContent);

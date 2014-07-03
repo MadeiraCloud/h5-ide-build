@@ -1290,7 +1290,7 @@ return TEMPLATE; });
                 confirmModal.close();
                 $switcher.addClass('on');
                 workspace.design.set('agent', agent);
-                return ide_event.trigger(ide_event.REFRESH_PROPERTY);
+                return ide_event.trigger(ide_event.FORCE_OPEN_PROPERTY);
               }
             });
             return null;
@@ -1302,7 +1302,7 @@ return TEMPLATE; });
         } else {
           agent.enabled = false;
           this.workspace.design.set('agent', agent);
-          return ide_event.trigger(ide_event.REFRESH_PROPERTY);
+          return ide_event.trigger(ide_event.FORCE_OPEN_PROPERTY);
         }
       },
       cancelAppEdit: function() {
