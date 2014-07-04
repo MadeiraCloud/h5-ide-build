@@ -852,15 +852,13 @@ return TEMPLATE; });
           return this.collection.create({
             keyName: keyName
           }).save().then(function(res) {
-            console.log(res);
             that.needDownload(true);
             that.genDownload("" + res.attributes.keyName + ".pem", res.attributes.keyMaterial);
             that.switchAction('download');
             that.M$('.before-create').hide();
             return that.M$('.after-create').find('span').text(res.attributes.keyName).end().show();
           }, function(err) {
-            console.log(err);
-            that.modal.error(err.reason || err.msg);
+            that.modal.error(err.awsResult || err.reason || err.msg);
             return that.switchAction();
           });
         }
@@ -900,12 +898,16 @@ return TEMPLATE; });
             keyName: keyName,
             keyData: keyContent
           }).save().then(function(res) {
-            console.log(res);
             notification('info', "" + keyName + " is imported.");
             return that.cancel();
           }, function(err) {
-            console.log(err);
-            that.modal.error(err.error_message || err.reason || err.msg);
+            var msg;
+            if (err.awsResult && err.awsResult.indexOf('Length exceeds maximum of 2048') >= 0) {
+              msg = 'Length exceeds maximum of 2048';
+            } else {
+              msg = err.awsResult || err.error_message || err.reason || err.msg;
+            }
+            that.modal.error(msg);
             return that.switchAction('ready');
           });
         }
