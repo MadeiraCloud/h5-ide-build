@@ -2478,11 +2478,14 @@
         });
       },
       parseFetchData: function(data) {
-        var ami, amiIds, id, savedAmis;
+        var ami, amiIds, id, savedAmis, _ref;
         savedAmis = [];
         amiIds = [];
         for (id in data) {
           ami = data[id];
+          if (ami.architecture === 'i386' || (ami.name.indexOf('by VisualOps') === -1 && ((_ref = ami.osType) !== 'windows' && _ref !== 'suse'))) {
+            continue;
+          }
           ami.id = id;
           savedAmis.push(ami);
           amiIds.push(id);
