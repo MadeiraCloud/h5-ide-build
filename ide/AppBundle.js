@@ -1305,7 +1305,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <div class=\"modal-body\" style=\"color:#676767;width:390px;\">\n    <p><b style=\"color:#ec3c38;\">"
+  buffer += "\n  <div class=\"modal-body\" style=\"width:390px;\">\n    <p><b style=\"color:#ec3c38;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
@@ -1377,7 +1377,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <div class=\"modal-body\" style=\"color:#676767;width:390px;\">\n    <p><b style=\"color:#ec3c38;\">"
+  buffer += "\n  <div class=\"modal-body\" style=\"width:390px;\">\n    <p><b style=\"color:#ec3c38;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))

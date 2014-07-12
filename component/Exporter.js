@@ -913,9 +913,6 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       delete j.signature;
 
       /* env:prod */
-      if (CryptoJS.HmacMD5(JSON.stringify(j), key).toString() !== signature) {
-        return lang.ide.POP_IMPORT_MODIFIED_ERROR;
-      }
 
       /* env:prod:end */
       return j;

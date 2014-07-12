@@ -3570,7 +3570,7 @@
           this.addLayout(rtbComp, true, this.theVpc);
         }
       }, function() {
-        var acl, aclComp, aclName, aclRes, aws_acl, egress, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        var acl, aclComp, aclName, aclRes, aws_acl, egress, originComp, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
         _ref = this.getResourceByType("ACL") || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_acl = _ref[_i];
@@ -3629,6 +3629,10 @@
               "NetworkAclAssociationId": acl.networkAclAssociationId,
               "SubnetId": CREATE_REF(subnetComp, 'resource.SubnetId')
             });
+          }
+          originComp = this.getOriginalComp(aws_acl.id, "ACL");
+          if (originComp && originComp.resource.AssociationSet.sort().toString() === aclRes.AssociationSet.sort().toString()) {
+            aclRes.AssociationSet = jQuery.extend(true, [], originComp.resource.AssociationSet);
           }
           aclComp = this.add("ACL", aclRes, aclName);
         }
@@ -3805,20 +3809,31 @@
           bdm = lcRes.BlockDeviceMapping;
           _.each(aws_lc.BlockDeviceMapping || [], function(e, key) {
             var data;
-            data = {
-              "DeviceName": e.DeviceName,
-              "Ebs": {
-                "VolumeSize": Number(e.Ebs.VolumeSize),
-                "VolumeType": e.Ebs.VolumeType
+            if (e.Ebs === null && e.VirtualName) {
+              return data = {
+                "DeviceName": e.DeviceName,
+                "Ebs": null,
+                "NoDevice": e.NoDevice,
+                "VirtualName": e.VirtualName
+              };
+            } else {
+              data = {
+                "DeviceName": e.DeviceName,
+                "Ebs": {
+                  "VolumeSize": e.Ebs ? Number(e.Ebs.VolumeSize) : 0,
+                  "VolumeType": e.Elb ? e.Ebs.VolumeType : ""
+                }
+              };
+              if (e.Ebs) {
+                if (e.Ebs.SnapshotId) {
+                  data.Ebs.SnapshotId = e.Ebs.SnapshotId;
+                }
+                if (data.Ebs.VolumeType === "io1") {
+                  data.Ebs.Iops = e.Ebs.Iops;
+                }
               }
-            };
-            if (e.Ebs.SnapshotId) {
-              data.Ebs.SnapshotId = e.Ebs.SnapshotId;
+              return bdm.push(data);
             }
-            if (data.Ebs.VolumeType === "io1") {
-              data.Ebs.Iops = e.Ebs.Iops;
-            }
-            return bdm.push(data);
           });
           keyPairComp = this.getOriginalComp(aws_lc.KeyName, 'KP');
           if (!keyPairComp) {
