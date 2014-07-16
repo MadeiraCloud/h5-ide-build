@@ -3475,7 +3475,7 @@
           }
         }
       }, function() {
-        var aws_eip, eipComp, eipRes, eni, _i, _len, _ref;
+        var aws_eip, eipComp, eipRes, eni, idx, ip, _i, _j, _len, _len1, _ref, _ref1;
         _ref = this.getResourceByType("EIP");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           aws_eip = _ref[_i];
@@ -3489,9 +3489,18 @@
             "Domain": aws_eip.domain,
             "InstanceId": "",
             "NetworkInterfaceId": CREATE_REF(eni, "resource.NetworkInterfaceId"),
-            "PrivateIpAddress": CREATE_REF(eni, "resource.PrivateIpAddressSet.0.PrivateIpAddress"),
+            "PrivateIpAddress": "",
             "PublicIp": aws_eip.publicIp
           };
+          idx = 0;
+          _ref1 = eni.resource.PrivateIpAddressSet;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            ip = _ref1[_j];
+            if (ip.PrivateIpAddress === aws_eip.privateIpAddress) {
+              eipRes.PrivateIpAddress = CREATE_REF(eni, "resource.PrivateIpAddressSet." + idx + ".PrivateIpAddress");
+            }
+            idx++;
+          }
           eipComp = this.add("EIP", eipRes);
         }
       }, function() {
