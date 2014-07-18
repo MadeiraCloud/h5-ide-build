@@ -6669,7 +6669,7 @@ define('UI.errortip',["jquery"], function($){
           {
             purge( content.attr('id') );
           }
-        }, 200);
+        }, 1000);
 
     }
   };
