@@ -2532,7 +2532,12 @@ This file use for validate state.
         }
       },
       isRef: function(val) {
-        return constant.REGEXP.stateEditorOriginReference.test(val);
+        if (!_.isArray(val)) {
+          val = [val];
+        }
+        return _.every(val, function(v) {
+          return constant.REGEXP.stateEditorRefOnly.test(v);
+        });
       },
       notnull: function(val) {
         return val.length > 0;
