@@ -4360,12 +4360,16 @@
         return realIp;
       },
       isValidIp: function(ip) {
-        var cidr, eni, ipObj, realIp, realNewIp, _i, _j, _len, _len1, _ref, _ref1;
+        var cidr, eni, ipObj, realIp, realNewIp, validObj, _i, _j, _len, _len1, _ref, _ref1;
         if (ip.indexOf("x") !== -1) {
           return true;
         }
         cidr = this.subnetCidr();
-        if (!Design.modelClassForType(constant.RESTYPE.SUBNET).isIPInSubnet(ip, cidr)) {
+        validObj = Design.modelClassForType(constant.RESTYPE.SUBNET).isIPInSubnet(ip, cidr);
+        if (!validObj.isValid) {
+          if (validObj.isReserved) {
+            return "This IP address is in subnet’s reserved address range";
+          }
           return 'This IP address conflicts with subnet’s IP range';
         }
         realNewIp = this.getRealIp(ip, cidr);
@@ -4382,7 +4386,7 @@
               continue;
             }
             realIp = eni.getRealIp(ipObj.ip);
-            if (realIp === realNewIp) {
+            if (realIp === realNewIp && eni !== this) {
               if (eni === this) {
                 return 'This IP address conflicts with other IP';
               } else {
@@ -9793,7 +9797,8 @@
         return [resultPrefix, resultSuffix];
       },
       isIPInSubnet: function(ipAddr, subnetCIDR) {
-        var filterAry, ipAddrBinStr, ipAddrBinStrDiv, ipAddrBinStrDivAnti, readyAssignAry, readyAssignAryLength, result, subnetAddrAry, subnetIPAry, subnetIPBinStr, subnetIPBinStrDiv, subnetSuffix, suffixLength, suffixOneStr, suffixOneStrNum, suffixZeroAry, suffixZeroStr, suffixZeroStrNum, _i, _j, _ref, _ref1, _results, _results1;
+        var filterAry, ipAddrBinStr, ipAddrBinStrDiv, ipAddrBinStrDivAnti, isValid, readyAssignAry, readyAssignAryLength, result, subnetAddrAry, subnetIPAry, subnetIPBinStr, subnetIPBinStrDiv, subnetSuffix, suffixLength, suffixOneStr, suffixOneStrNum, suffixZeroAry, suffixZeroStr, suffixZeroStrNum, _i, _j, _ref, _ref1, _results, _results1;
+        isValid = true;
         subnetIPAry = subnetCIDR.split('/');
         subnetSuffix = Number(subnetIPAry[1]);
         subnetAddrAry = subnetIPAry[0].split('.');
@@ -9831,9 +9836,16 @@
           return null;
         });
         if (__indexOf.call(filterAry, ipAddrBinStrDivAnti) >= 0) {
-          return false;
+          return {
+            isValid: false,
+            isReserved: true
+          };
         }
-        return subnetIPBinStrDiv === ipAddrBinStrDiv;
+        isValid = subnetIPBinStrDiv === ipAddrBinStrDiv;
+        return {
+          isValid: isValid,
+          isReserved: false
+        };
       },
       isCidrConflict: function(ipCidr1, ipCidr2) {
         var ipCidr1BinStr, ipCidr1Suffix, ipCidr2BinStr, ipCidr2Suffix, minIpCidrSuffix;

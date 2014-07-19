@@ -2203,7 +2203,7 @@ function program57(depth0,data) {
         'click .toggle-eip': 'setEip',
         'click #instance-ip-add': "addIp",
         'click #property-network-list .icon-remove': "removeIp",
-        'change .input-ip': 'syncIPList',
+        'keyup .input-ip': 'syncIPList',
         'click #volume-type-radios input': 'changeVolumeType',
         'keyup #iops-ranged': 'changeIops',
         'keyup #volume-size-ranged': 'sizeChanged'
@@ -2289,6 +2289,7 @@ function program57(depth0,data) {
             return lang.ide.PARSLEY_IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
           }
         });
+        this.bindIpItemValidate();
         return this.model.attributes.name;
       },
       instanceNameChange: function(event) {
@@ -2391,42 +2392,43 @@ function program57(depth0,data) {
         this.trigger("OPEN_AMI", $("#property-ami").attr("data-uid"));
         return null;
       },
-      validateIpItem: function($item) {
-        var result, that;
+      bindIpItemValidate: function() {
+        var that;
         that = this;
-        $item.parsley("custom", function(val) {
-          var currentInputIP, inputValue, inputValuePrefix, ipIPFormatCorrect, prefixAry, result, validDOM;
-          validDOM = $item;
-          inputValue = validDOM.val();
-          inputValuePrefix = validDOM.siblings(".input-ip-prefix").text();
-          currentInputIP = inputValuePrefix + inputValue;
-          prefixAry = inputValuePrefix.split('.');
-          ipIPFormatCorrect = false;
-          if (prefixAry.length === 4) {
-            if (inputValue === 'x') {
-              ipIPFormatCorrect = true;
-            } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
-              ipIPFormatCorrect = true;
+        return $('.input-ip').each(function() {
+          var $item;
+          $item = $(this);
+          return $item.parsley("custom", function(val) {
+            var currentInputIP, inputValue, inputValuePrefix, ipIPFormatCorrect, prefixAry, result, validDOM;
+            validDOM = $item;
+            inputValue = val;
+            inputValuePrefix = validDOM.siblings(".input-ip-prefix").text();
+            currentInputIP = inputValuePrefix + inputValue;
+            prefixAry = inputValuePrefix.split('.');
+            ipIPFormatCorrect = false;
+            if (prefixAry.length === 4) {
+              if (inputValue === 'x') {
+                ipIPFormatCorrect = true;
+              } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
+                ipIPFormatCorrect = true;
+              }
+            } else {
+              if (inputValue === 'x.x') {
+                ipIPFormatCorrect = true;
+              } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
+                ipIPFormatCorrect = true;
+              }
             }
-          } else {
-            if (inputValue === 'x.x') {
-              ipIPFormatCorrect = true;
-            } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
-              ipIPFormatCorrect = true;
+            if (!ipIPFormatCorrect) {
+              return 'Invalid IP address';
+            } else {
+              result = that.model.isValidIp(currentInputIP);
+              if (result !== true) {
+                return result;
+              }
             }
-          }
-          if (!ipIPFormatCorrect) {
-            return 'Invalid IP address';
-          } else {
-            result = that.model.isValidIp(currentInputIP);
-            if (result !== true) {
-              return result;
-            }
-          }
+          });
         });
-        result = $item.parsley("validate");
-        $item.parsley("custom", noop);
-        return result;
       },
       addIp: function() {
         if ($("#instance-ip-add").hasClass("disabled")) {
@@ -2463,7 +2465,7 @@ function program57(depth0,data) {
         var $target, autoAssign, ip, ipItems, ipVal;
         ipItems = $('#property-network-list .input-ip-item');
         $target = $(event.currentTarget);
-        if (!this.validateIpItem($target)) {
+        if (!$target.parsley('validate')) {
           return;
         }
         ipVal = $target.val();
@@ -10798,12 +10800,13 @@ function program14(depth0,data) {
         'click .toggle-eip': 'setEip',
         'click #property-eni-ip-add': "addIp",
         'click #property-eni-list .icon-remove': "removeIp",
-        'blur .input-ip': 'syncIPList'
+        'keyup .input-ip': 'syncIPList'
       },
       render: function() {
         this.$el.html(template(this.model.attributes));
         this.refreshIpList();
         $("#prop-appedit-eni-list").html(list_template(this.model.attributes));
+        this.bindIpItemValidate();
         return this.model.attributes.name;
       },
       setEniDesc: function(event) {
@@ -10849,7 +10852,7 @@ function program14(depth0,data) {
         var $target, autoAssign, ip, ipItems, ipVal;
         ipItems = $('#property-eni-list .input-ip-item');
         $target = $(event.currentTarget);
-        if (!this.validateIpItem($target)) {
+        if (!$target.parsley('validate')) {
           return;
         }
         ipVal = $target.val();
@@ -10863,43 +10866,43 @@ function program14(depth0,data) {
         this.updateIPAddBtnState();
         return null;
       },
-      validateIpItem: function($item) {
-        var result, that;
+      bindIpItemValidate: function() {
+        var that;
         that = this;
-        $item.parsley("custom", function(val) {
-          var currentInputIP, inputValue, inputValuePrefix, ipIPFormatCorrect, prefixAry, result, validDOM;
-          validDOM = $item;
-          inputValue = validDOM.val();
-          inputValuePrefix = validDOM.siblings(".input-ip-prefix").text();
-          currentInputIP = inputValuePrefix + inputValue;
-          prefixAry = inputValuePrefix.split('.');
-          ipIPFormatCorrect = false;
-          if (prefixAry.length === 4) {
-            if (inputValue === 'x') {
-              ipIPFormatCorrect = true;
-            } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
-              ipIPFormatCorrect = true;
+        return $('.input-ip').each(function() {
+          var $item;
+          $item = $(this);
+          return $item.parsley("custom", function(val) {
+            var currentInputIP, inputValue, inputValuePrefix, ipIPFormatCorrect, prefixAry, result, validDOM;
+            validDOM = $item;
+            inputValue = val;
+            inputValuePrefix = validDOM.siblings(".input-ip-prefix").text();
+            currentInputIP = inputValuePrefix + inputValue;
+            prefixAry = inputValuePrefix.split('.');
+            ipIPFormatCorrect = false;
+            if (prefixAry.length === 4) {
+              if (inputValue === 'x') {
+                ipIPFormatCorrect = true;
+              } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
+                ipIPFormatCorrect = true;
+              }
+            } else {
+              if (inputValue === 'x.x') {
+                ipIPFormatCorrect = true;
+              } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
+                ipIPFormatCorrect = true;
+              }
             }
-          } else {
-            if (inputValue === 'x.x') {
-              ipIPFormatCorrect = true;
-            } else if (MC.validate('ipaddress', inputValuePrefix + inputValue)) {
-              ipIPFormatCorrect = true;
+            if (!ipIPFormatCorrect) {
+              return 'Invalid IP address';
+            } else {
+              result = that.model.isValidIp(currentInputIP);
+              if (result !== true) {
+                return result;
+              }
             }
-          }
-          if (!ipIPFormatCorrect) {
-            return lang.ide.PARSLEY_INVALID_IP_ADDRESS;
-          } else {
-            result = that.model.isValidIp(currentInputIP);
-            if (result !== true) {
-              return result;
-            }
-          }
-          return null;
+          });
         });
-        result = $item.parsley("validate");
-        $item.parsley("custom", noop);
-        return result;
       },
       updateIPAddBtnState: function(enabled) {
         var tooltip;
