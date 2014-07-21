@@ -3087,11 +3087,15 @@ return Markdown;
         }
       },
       onBlurInput: function(event) {
-        var $currentInput, editor, that;
+        var $currentInput, content, editor, that;
         that = this;
         $currentInput = $(event.currentTarget);
         editor = $currentInput.data('editor');
         if (editor) {
+          if (!($currentInput.hasClass('key') || $currentInput.hasClass('text'))) {
+            content = $.trim(editor.getValue());
+            editor.setValue(content);
+          }
           return editor.clearSelection();
         }
       },
