@@ -562,6 +562,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 TEMPLATE.upload=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<textarea autofocus spellcheck=\"false\" class=\"safari-download-textarea input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.keypair)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>";
+  return buffer;
+  };
+TEMPLATE.safari_download=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 (function() {
   define('kp_upload',['./component/kp/kpDialogTpl', 'backbone', 'jquery'], function(template_modal, Backbone, $) {
@@ -651,7 +665,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('kp_manage',['toolbar_modal', 'component/kp/kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'JsonExporter', "CloudResources", 'i18n!/nls/lang.js', 'UI.notification'], function(toolbar_modal, template, upload, Backbone, $, constant, JsonExporter, CloudResources, lang) {
+  define('kp_manage',['toolbar_modal', 'UI.modalplus', 'component/kp/kpDialogTpl', 'kp_upload', 'backbone', 'jquery', 'constant', 'JsonExporter', 'CloudResources', 'i18n!/nls/lang.js', 'UI.notification'], function(toolbar_modal, modalplus, template, upload, Backbone, $, constant, JsonExporter, CloudResources, lang) {
     var download;
     download = JsonExporter.download;
     return Backbone.View.extend({
@@ -796,20 +810,29 @@ return TEMPLATE; });
       },
       genDownload: function(name, str) {
         this.__downloadKp = function() {
-          var blob;
+          var blob, options;
           if ($("body").hasClass("safari")) {
             blob = null;
           } else {
             blob = new Blob([str]);
           }
           if (!blob) {
-            return {
-              data: "data://text/plain;," + str,
-              name: name
+            options = {
+              template: template.safari_download({
+                keypair: str
+              }),
+              title: 'Keypair Content',
+              disableFooter: true,
+              disableClose: true,
+              width: '855px',
+              height: '473px',
+              compact: true
             };
+            new modalplus(options);
+            $('.safari-download-textarea').select();
+            return;
           }
-          download(blob, name);
-          return null;
+          return download(blob, name);
         };
         return this.__downloadKp;
       },
@@ -865,7 +888,8 @@ return TEMPLATE; });
       },
       download: function() {
         this.needDownload(false);
-        return this.__downloadKp && this.__downloadKp();
+        this.__downloadKp && this.__downloadKp();
+        return null;
       },
       "delete": function(invalid, checked) {
         var count, onDeleteFinish, that;

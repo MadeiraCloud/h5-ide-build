@@ -930,7 +930,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
         $(aTag).attr({
           href: "data://text/plain;," + j,
-          download: fileName
+          target: "_blank"
         });
       } else {
         $(aTag).off("click.export").on("click.export", function() {

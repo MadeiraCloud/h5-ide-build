@@ -586,11 +586,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"modal-text-wraper\"> <div class=\"modal-center-align-helper\" style=\"padding:40px 20px;\">\n  <div class=\"modal-text-major\"></div>\n  <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_EXPORT_AS_JSON", {hash:{},data:data}))
-    + "</div>\n</div> </div>\n<div class=\"modal-footer\">\n  <a class=\"btn btn-blue modal-close\" href=\""
+    + "</div>\n</div> </div>\n<div class=\"modal-footer\">\n  <a class=\"btn btn-blue\" href=\""
     + escapeExpression(((stack1 = (depth0 && depth0.data)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" target=\"_blank\" download=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
+    + "\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DOWNLOAD", {hash:{},data:data}))
     + "</a>\n  <button id=\"tpl-cancel\" class=\"btn modal-close btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
