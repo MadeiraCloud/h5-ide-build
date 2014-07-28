@@ -23,13 +23,15 @@
  * Date: 2013-04-16
  */
 
+//     Underscore.js 1.5.1
+//     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-
 //     Underscore may be freely distributed under the MIT license.
 
 //     (c) 2010-2013 Jeremy Ashkenas, DocumentCloud Inc.
-
 //     Backbone may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     http://backbonejs.org
 
 /*!
 
@@ -60,9 +62,11 @@ THE SOFTWARE.
 
 /*! sprintf.js | Copyright (c) 2007-2013 Alexandru Marasteanu <hello at alexei dot ro> | 3 clause BSD license */
 
+//
+// Canvon SVG framework
 // Copyright Angel Lai 2013
-
 // MIT license
+//
 
 /*
 CryptoJS v3.1.2

@@ -201,6 +201,8 @@
  *
  */
 
+// jQuery List DragSort v0.5.1
+// Website: http://dragsort.codeplex.com/
 // License: http://dragsort.codeplex.com/license
 
 /*! nanoScrollerJS - v0.8.0 - 2014
