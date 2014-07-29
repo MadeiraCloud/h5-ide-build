@@ -1157,7 +1157,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
     noop = function() {};
 
     /*
@@ -1791,7 +1791,7 @@
     _.extend(DesignImpl.prototype, Backbone.Events);
     CanvasAdaptor.setDesign(Design);
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -1832,7 +1832,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
 
     /*
       -------------------------------
@@ -1953,7 +1953,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                               env:dev:end */
+        /* env:dev                                                                             env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -2038,7 +2038,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                          env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2249,7 +2249,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                              env:dev:end */
+        /* env:dev                                                                                           env:dev:end */
 
         /* jshint -W083 */
 
@@ -2338,7 +2338,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                             env:dev:end */
+        /* env:dev                                                                                                                                                                                                           env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -2949,7 +2949,7 @@
         if (this.__view === void 0 && this.isVisual()) {
           this.__view = CanvasElement.createView(this.type, this, containerId);
 
-          /* env:dev                                                                                                                                                                env:dev:end */
+          /* env:dev                                                                                                                                                             env:dev:end */
         }
         return this.__view;
       },
@@ -8181,6 +8181,7 @@
             Enabled: true,
             Timeout: 300
           },
+          idleTimeout: 60,
           otherPoliciesMap: {}
         };
       },
@@ -8456,7 +8457,10 @@
                 InstantPort: "",
                 PoliciyNames: ""
               }
-            ]
+            ],
+            ConnectionSettings: {
+              IdleTimeout: this.get('idleTimeout') || 60
+            }
           }
         };
         return {
@@ -8467,7 +8471,7 @@
     }, {
       handleTypes: constant.RESTYPE.ELB,
       deserialize: function(data, layout_data, resolve) {
-        var ElbAmiAsso, ElbSubnetAsso, ami, attr, elb, idx, instance, l, sb, sg, sslCert, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        var ElbAmiAsso, ElbSubnetAsso, ami, attr, elb, idx, instance, l, sb, sg, sslCert, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
         attr = {
           id: data.uid,
           name: data.name,
@@ -8489,6 +8493,7 @@
           healthCheckTimeout: String(data.resource.HealthCheck.Timeout),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
+          idleTimeout: ((_ref = data.resource) != null ? (_ref1 = _ref.ConnectionSettings) != null ? _ref1.IdleTimeout : void 0 : void 0) || 60,
           otherPoliciesMap: {}
         };
         if (data.resource.Policies) {
@@ -8506,9 +8511,9 @@
             return azRef;
           }
         });
-        _ref = data.resource.ListenerDescriptions || [];
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          l = _ref[idx];
+        _ref2 = data.resource.ListenerDescriptions || [];
+        for (idx = _i = 0, _len = _ref2.length; _i < _len; idx = ++_i) {
+          l = _ref2[idx];
           l = l.Listener;
           attr.listeners.push({
             port: l.LoadBalancerPort,
@@ -8526,21 +8531,21 @@
         elb = new Model(attr);
         ElbAmiAsso = Design.modelClassForType("ElbAmiAsso");
         ElbSubnetAsso = Design.modelClassForType("ElbSubnetAsso");
-        _ref1 = data.resource.SecurityGroups || [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          sg = _ref1[_j];
+        _ref3 = data.resource.SecurityGroups || [];
+        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+          sg = _ref3[_j];
           new SgAsso(elb, resolve(MC.extractID(sg)));
         }
-        _ref2 = data.resource.Subnets || [];
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          sb = _ref2[_k];
+        _ref4 = data.resource.Subnets || [];
+        for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+          sb = _ref4[_k];
           new ElbSubnetAsso(elb, resolve(MC.extractID(sb)), {
             deserialized: true
           });
         }
-        _ref3 = data.resource.Instances || [];
-        for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-          ami = _ref3[_l];
+        _ref5 = data.resource.Instances || [];
+        for (_l = 0, _len3 = _ref5.length; _l < _len3; _l++) {
+          ami = _ref5[_l];
           instance = resolve(MC.extractID(ami.InstanceId));
           if (instance) {
             new ElbAmiAsso(elb, instance);
@@ -12471,7 +12476,7 @@
 (function() {
   define('workspaces/editor/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
 
-    /* env:dev                                                                                   env:dev:end */
+    /* env:dev                                                                                 env:dev:end */
 
     /* env:debug */
     require(["./workspaces/editor/framework/util/DesignDebugger"], function() {});

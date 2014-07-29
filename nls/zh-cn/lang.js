@@ -670,6 +670,7 @@ define({
         "PROP_ELB_PING_PORT": "Ping端口",
         "PROP_ELB_PING_PATH": "Ping路径",
         "PROP_ELB_HEALTH_CHECK_INTERVAL": "健康度检查间隔",
+        "PROP_ELB_IDLE_TIMEOUT": "",
         "PROP_ELB_HEALTH_CHECK_INTERVAL_SECONDS": "秒",
         "PROP_ELB_HEALTH_CHECK_RESPOND_TIMEOUT": "响应超时",
         "PROP_ELB_HEALTH_THRESHOLD": "健康界限",

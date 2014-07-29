@@ -670,6 +670,7 @@ define({
         "PROP_ELB_PING_PORT": "Ping\tPort",
         "PROP_ELB_PING_PATH": "Ping Path",
         "PROP_ELB_HEALTH_CHECK_INTERVAL": "Health Check Interval",
+        "PROP_ELB_IDLE_TIMEOUT": "Idle Connection Timeout",
         "PROP_ELB_HEALTH_CHECK_INTERVAL_SECONDS": "Seconds",
         "PROP_ELB_HEALTH_CHECK_RESPOND_TIMEOUT": "Response Timeout",
         "PROP_ELB_HEALTH_THRESHOLD": "Healthy Threshold",
