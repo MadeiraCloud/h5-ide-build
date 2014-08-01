@@ -7890,9 +7890,13 @@
         sslCertList = Design.modelClassForType(constant.RESTYPE.IAM).allObjects();
         needCreate = true;
         _.each(sslCertList, function(sslCertModel) {
-          if (sslCertModel.get('arn') === sslCertData.get('Arn')) {
-            needCreate = false;
-            newSslCert = sslCertModel;
+          if (sslCertModel.get('body')) {
+            sslCertModel.remove();
+          } else {
+            if (sslCertModel.get('arn') === sslCertData.get('Arn')) {
+              needCreate = false;
+              newSslCert = sslCertModel;
+            }
           }
           return null;
         });

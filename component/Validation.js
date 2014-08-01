@@ -2256,13 +2256,13 @@
       rtbName = rtb.name;
       routeDesAry = [];
       notices = [];
-      _.each(routeSet, function(route) {
+      _.each(routeSet, function(route, idx) {
         var currentRouteDes;
         currentRouteDes = route.DestinationCidrBlock;
         _.each(routeDesAry, function(routeDes) {
           var SubnetModel, tipInfo;
           SubnetModel = Design.modelClassForType(CONST.RESTYPE.SUBNET);
-          if (SubnetModel.isCidrConflict(currentRouteDes, routeDes)) {
+          if ((currentRouteDes === routeDes) || (idx === 0 && SubnetModel.isCidrConflict(currentRouteDes, routeDes))) {
             tipInfo = sprintf(i18n.TA_MSG_ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
             return notices.push({
               level: CONST.TA.ERROR,

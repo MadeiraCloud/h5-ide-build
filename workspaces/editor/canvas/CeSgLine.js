@@ -1,0 +1,25 @@
+(function() {
+  define(["./CeLine", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CeLine, constant, CanvasManager, lang) {
+    return CeLine.extend({
+
+      /* env:dev                                        env:dev:end */
+      type: "SgRuleLine",
+      createLine: function(pd) {
+        var svg, svgEl;
+        svg = this.canvas.svg;
+        svgEl = svg.group().add([svg.path(pd), svg.path(pd).classes("fill-line")]).attr({
+          "data-id": this.cid
+        }).classes("line " + this.type.replace(/\./g, "-"));
+        this.canvas.appendSgline(svgEl);
+        return svgEl;
+      },
+      renderConnection: function(item_from, item_to, element1, element2) {
+        return CeLine.prototype.renderConnection.call(this, item_from, item_to, element1, element2);
+      },
+      lineStyle: function() {
+        return this.canvas.lineStyle();
+      }
+    });
+  });
+
+}).call(this);

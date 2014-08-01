@@ -9183,7 +9183,7 @@ function program20(depth0,data) {
         return null;
       },
       onBlurCIDR: function(event) {
-        var allCidrAry, cidr, dataRef, descContent, dialog_template, inputElem, inputValue, ips, mainContent, parentElem, that, _i, _len;
+        var allCidrAry, cidr, dataRef, descContent, dialog_template, idx, inputElem, inputValue, ips, mainContent, parentElem, that, _i, _len;
         inputElem = $(event.currentTarget);
         inputValue = inputElem.val();
         parentElem = inputElem.closest(".multi-input");
@@ -9217,11 +9217,16 @@ function program20(depth0,data) {
           mainContent = "" + inputValue + " is not a valid form of CIDR block.";
           descContent = 'Please provide a valid IP range. For example, 10.0.0.1/24.';
         } else {
-          for (_i = 0, _len = allCidrAry.length; _i < _len; _i++) {
-            cidr = allCidrAry[_i];
-            if (inputValue === cidr || (cidr !== "0.0.0.0/0" && this.model.isCidrConflict(inputValue, cidr))) {
+          for (idx = _i = 0, _len = allCidrAry.length; _i < _len; idx = ++_i) {
+            cidr = allCidrAry[idx];
+            if (inputValue === cidr) {
               mainContent = "" + inputValue + " conflicts with other route.";
               descContent = 'Please choose a CIDR block not conflicting with existing route.';
+              break;
+            }
+            if (idx === 0 && cidr !== "0.0.0.0/0" && this.model.isCidrConflict(inputValue, cidr)) {
+              mainContent = "" + inputValue + " conflicts with local route.";
+              descContent = 'Please choose a CIDR block not conflicting with local route.';
               break;
             }
           }
