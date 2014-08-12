@@ -1,7 +1,7 @@
-@import url("./component/toolbar-modal.css?v=4c43cd80");
-@import url("./component/combo-dropdown.css?v=5f7668ee");
-@import url("./component/drop-zone.css?v=f1f65bce");
-@import url("./component/modal.css?v=ffe6c482");
+@import url("./component/toolbar-modal.css");
+@import url("./component/combo-dropdown.css");
+@import url("./component/drop-zone.css");
+@import url("./component/modal.css");
 
 /* Table */
 .table {
@@ -1971,7 +1971,7 @@ input.parsley-error {
   margin   : -40px 0 0 -40px;
 
   opacity : .8;
-  background : url("../images/ide/gearbig.svg?v=3d55f265");
+  background : url("../images/ide/gearbig.svg");
   background-size : 100% 100%;
 
   -webkit-animation : gear 2s linear infinite;
@@ -1986,7 +1986,7 @@ input.parsley-error {
   height    : 30px;
   opacity   : .6;
   margin    : -11px 0 0 -11px;
-  background-image : url("../images/ide/gearsmall.svg?v=d0a553c0");
+  background-image : url("../images/ide/gearsmall.svg");
 
   -webkit-animation : smallgear 1.5s linear infinite;
      -moz-animation : smallgear 1.5s linear infinite;

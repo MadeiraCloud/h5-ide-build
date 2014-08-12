@@ -910,7 +910,7 @@ return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/AppAction/AppAction',["backbone", "component/AppAction/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus) {
+  define('appAction',["backbone", "component/AppAction/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus) {
     var AppAction;
     AppAction = Backbone.View.extend({
       deleteStack: function(id, name) {
@@ -2468,7 +2468,7 @@ return TEMPLATE; });
           $this = $(this);
           start = +$this.data('start');
           end = +$this.data('end');
-          if (start && end) {
+          if (isFinite(start) && isFinite(end)) {
             return $this.parsley('custom', valueInRange(start, end));
           }
         });

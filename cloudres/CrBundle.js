@@ -3345,6 +3345,12 @@
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           aws_ins = _ref1[_j];
           aws_ins = aws_ins.attributes;
+          if (aws_ins.tagSet) {
+            if (aws_ins.tagSet['aws:elasticmapreduce:instance-group-role'] && aws_ins.tagSet['aws:elasticmapreduce:job-flow-id']) {
+              console.warn("ignore EMR instances");
+              continue;
+            }
+          }
           if ((_ref2 = aws_ins.instanceState.name) === "shutting-down" || _ref2 === "terminated") {
             continue;
           }
