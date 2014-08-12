@@ -75,7 +75,7 @@
       return null;
     };
     updateViewDialog = function(canvas_data) {
-      var attributes, comp, component, layout, selectOptions, type, typeArr, typeMap, uid, _i, _len, _ref;
+      var attributes, comp, component, layout, selectOptions, type, typeArr, typeMap, uid, _i, _len, _ref, _ref1;
       component = canvas_data.component;
       layout = canvas_data.layout;
       delete canvas_data.component;
@@ -96,14 +96,10 @@
         }
       }
       selectOptions = "<option value='.'>All</option><option value='selected' selected='selected'>Selected Component</option><option value='.'>----------</option>";
-      if ($canvas.selected_node().length) {
-        selectedComponetUid = $canvas.selected_node()[0];
-      } else {
-        selectedComponetUid = ".";
-      }
-      _ref = typeArr.sort();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
+      selectedComponetUid = ((_ref = App.workspaces.getAwakeSpace().getSelectedComponent()) != null ? _ref.id : void 0) || ".";
+      _ref1 = typeArr.sort();
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        type = _ref1[_i];
         selectOptions += "<option value='" + type + "'>" + type + "</option>";
       }
       $("#diffTypeSelect").html(selectOptions);

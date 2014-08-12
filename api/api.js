@@ -17,7 +17,7 @@
         result: params || void 0,
         reason: errorMsg
 
-        /* env:dev                                                       env:dev:end */
+        /* env:dev                                                     env:dev:end */
       };
     };
 
@@ -190,9 +190,9 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'session_logout'          : { url:'/session/',	method:'logout',	params:['username', 'session_id']   },
 		'session_set_credential'  : { url:'/session/',	method:'set_credential',	params:['username', 'session_id', 'access_key', 'secret_key', 'account_id']   },
 		'app_create'              : { url:'/app/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
-		'app_update'              : { url:'/app/',	method:'update',	params:['username', 'session_id', 'region_name', 'spec', 'app_id', 'fast_update']   },
+		'app_update'              : { url:'/app/',	method:'update',	params:['username', 'session_id', 'region_name', 'spec', 'app_id', 'fast_update', 'create_snapshot']   },
 		'app_rename'              : { url:'/app/',	method:'rename',	params:['username', 'session_id', 'region_name', 'app_id', 'new_name', 'app_name']   },
-		'app_terminate'           : { url:'/app/',	method:'terminate',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name', 'flag']   },
+		'app_terminate'           : { url:'/app/',	method:'terminate',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name', 'flag', 'create_snapshot']   },
 		'app_start'               : { url:'/app/',	method:'start',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name']   },
 		'app_stop'                : { url:'/app/',	method:'stop',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name', 'force']   },
 		'app_reboot'              : { url:'/app/',	method:'reboot',	params:['username', 'session_id', 'region_name', 'app_id', 'app_name']   },
@@ -223,7 +223,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'stack_save'              : { url:'/stack/',	method:'save',	params:['username', 'session_id', 'region_name', 'spec']   },
 		'stack_rename'            : { url:'/stack/',	method:'rename',	params:['username', 'session_id', 'region_name', 'stack_id', 'new_name', 'stack_name']   },
 		'stack_run_v2'            : { url:'/stack/',	method:'run_v2',	params:['username', 'session_id', 'region_name', 'stack', 'app_name']   },
-		'stack_run'               : { url:'/stack/',	method:'run',	params:['username', 'session_id', 'region_name', 'stack']   },
+		'stack_run'               : { url:'/stack/',	method:'run',	params:['username', 'session_id', 'region_name', 'stack_id', 'app_name', 'app_desc', 'app_component', 'app_property', 'app_layout', 'stack_name', 'usage']   },
 		'stack_save_as'           : { url:'/stack/',	method:'save_as',	params:['username', 'session_id', 'region_name', 'stack_id', 'new_name', 'stack_name']   },
 		'stack_info'              : { url:'/stack/',	method:'info',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
 		'stack_list'              : { url:'/stack/',	method:'list',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
@@ -249,6 +249,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'account_apply_trial'     : { url:'/account/',	method:'apply_trial',	params:['username', 'session_id', 'message']   },
 		'account_set_credential'  : { url:'/account/',	method:'set_credential',	params:['username', 'session_id', 'access_key', 'secret_key', 'account_id', 'force_update']   },
 		'account_validate_credential' : { url:'/account/',	method:'validate_credential',	params:['username', 'session_id', 'access_key', 'secret_key']   },
+		'account_get_userinfo'    : { url:'/account/',	method:'get_userinfo',	params:['username']   },
 	}
 
 	for ( var i in Apis ) {
@@ -274,6 +275,7 @@ define('api/define/aws/autoscaling',['ApiRequestDefs'], function( ApiRequestDefs
 		'asl_DescribeTags'                       : { url:'/aws/autoscaling/',	method:'DescribeTags',	params:['username', 'session_id', 'region_name', 'filters', 'max_records', 'next_token']   },
 		'asl_CreateAutoScalingGroup'             : { url:'/aws/autoscaling/',	method:'CreateAutoScalingGroup',	params:['username', 'session_id', 'region_name', 'group_name', 'min_size', 'max_size', 'availability_zones', 'default_cooldown', 'desired_capacity', 'health_check_period', 'health_check_type', 'instance_id', 'launch_config', 'load_balancers', 'placement_group', 'tags', 'termination_policies', 'vpc_zone_identifier']   },
 		'asl_CreateLaunchConfiguration'          : { url:'/aws/autoscaling/',	method:'CreateLaunchConfiguration',	params:['username', 'session_id', 'region_name', 'config_name', 'associate_public_ip', 'block_device_mappings', 'ebs_optimized', 'iam_instance_profile', 'image_id', 'instance_id', 'instance_monitoring', 'instance_type', 'kernel_id', 'key_name', 'placement_tenancy', 'ramdisk_id', 'security_groups', 'spot_price', 'user_data']   },
+		'asl_DescribeAccountLimits'              : { url:'/aws/autoscaling/',	method:'DescribeAccountLimits',	params:['username', 'session_id', 'region_name']   },
 	}
 
 	for ( var i in Apis ) {
@@ -446,20 +448,31 @@ define('api/define/aws/opsworks',['ApiRequestDefs'], function( ApiRequestDefs ){
 
 define('api/define/aws/rds',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
-		'rds_DescribeDBEngineVersions'           : { url:'/aws/rds/',	method:'DescribeDBEngineVersions',	params:['username', 'session_id', 'region_name', 'pg_family', 'default_only', 'engine', 'engine_version', 'list_supported_character_set', 'marker', 'max_records']   },
-		'rds_DescribeOrderableDBInstanceOptions' : { url:'/aws/rds/',	method:'DescribeOrderableDBInstanceOptions',	params:['username', 'session_id', 'region_name', 'engine', 'engine_version', 'instance_class', 'license_model', 'marker', 'max_records']   },
-		'rds_DescribeEngineDefaultParameters'    : { url:'/aws/rds/',	method:'DescribeEngineDefaultParameters',	params:['username', 'session_id', 'region_name', 'pg_family', 'marker', 'max_records']   },
-		'rds_DescribeEvents'                     : { url:'/aws/rds/',	method:'DescribeEvents',	params:['username', 'session_id', 'region_name', 'duration', 'start_time', 'end_time', 'source_id', 'source_type', 'marker', 'max_records']   },
-		'rds_ins_DescribeDBInstances'            : { url:'/aws/rds/instance/',	method:'DescribeDBInstances',	params:['username', 'session_id', 'region_name', 'instance_id', 'marker', 'max_records']   },
-		'rds_og_DescribeOptionGroupOptions'      : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroupOptions',	params:['username', 'session_id', 'region_name', 'engine_name', 'major_engine_version', 'marker', 'max_records']   },
-		'rds_og_DescribeOptionGroups'            : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroups',	params:['username', 'session_id', 'region_name', 'op_name', 'engine_name', 'major_engine_version', 'marker', 'max_records']   },
-		'rds_pg_DescribeDBParameterGroups'       : { url:'/aws/rds/parametergroup/',	method:'DescribeDBParameterGroups',	params:['username', 'session_id', 'region_name', 'pg_name', 'marker', 'max_records']   },
-		'rds_pg_DescribeDBParameters'            : { url:'/aws/rds/parametergroup/',	method:'DescribeDBParameters',	params:['username', 'session_id', 'region_name', 'pg_name', 'source', 'marker', 'max_records']   },
-		'rds_revd_ins_DescribeReservedDBInstances' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstances',	params:['username', 'session_id', 'region_name', 'instance_id', 'instance_class', 'offering_id', 'offering_type', 'duration', 'multi_az', 'description', 'marker', 'max_records']   },
-		'rds_revd_ins_DescribeReservedDBInstancesOfferings' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstancesOfferings',	params:['username', 'session_id', 'region_name', 'offering_id', 'offering_type', 'instance_class', 'duration', 'multi_az', 'description', 'marker', 'max_records']   },
-		'rds_sg_DescribeDBSecurityGroups'        : { url:'/aws/rds/securitygroup/',	method:'DescribeDBSecurityGroups',	params:['username', 'session_id', 'region_name', 'sg_name', 'marker', 'max_records']   },
-		'rds_snap_DescribeDBSnapshots'           : { url:'/aws/rds/snapshot/',	method:'DescribeDBSnapshots',	params:['username', 'session_id', 'region_name', 'instance_id', 'snapshot_id', 'snapshot_type', 'marker', 'max_records']   },
-		'rds_subgrp_DescribeDBSubnetGroups'      : { url:'/aws/rds/subnetgroup/',	method:'DescribeDBSubnetGroups',	params:['username', 'session_id', 'region_name', 'sg_name', 'marker', 'max_records']   },
+		'rds_DescribeDBEngineVersions'           : { url:'/aws/rds/',	method:'DescribeDBEngineVersions',	params:['username', 'session_id', 'region_name', 'engine', 'engine_version', 'param_group_family', 'default_only', 'list_character_sets', 'filters', 'marker', 'max_records']   },
+		'rds_DescribeEngineDefaultParameters'    : { url:'/aws/rds/',	method:'DescribeEngineDefaultParameters',	params:['username', 'session_id', 'region_name', 'param_group_family', 'filters', 'marker', 'max_records']   },
+		'rds_DescribeEventCategories'            : { url:'/aws/rds/',	method:'DescribeEventCategories',	params:['username', 'session_id', 'region_name', 'source_type', 'filters']   },
+		'rds_DescribeEventSubscriptions'         : { url:'/aws/rds/',	method:'DescribeEventSubscriptions',	params:['username', 'session_id', 'region_name', 'sub_scription', 'filters', 'marker', 'max_records']   },
+		'rds_DescribeEvents'                     : { url:'/aws/rds/',	method:'DescribeEvents',	params:['username', 'session_id', 'region_name', 'source_id', 'source_type', 'event_categories', 'duration', 'start_time', 'end_time', 'filters', 'marker', 'max_records']   },
+		'rds_ins_DescribeDBInstances'            : { url:'/aws/rds/instance/',	method:'DescribeDBInstances',	params:['username', 'session_id', 'region_name', 'id', 'filters', 'marker', 'max_records']   },
+		'rds_ins_DescribeDBLogFiles'             : { url:'/aws/rds/instance/',	method:'DescribeDBLogFiles',	params:['username', 'session_id', 'region_name', 'id', 'filename_contains', 'file_size', 'file_last_written', 'filters', 'marker', 'max_records']   },
+		'rds_ins_DescribeOrderableDBInstanceOptions' : { url:'/aws/rds/instance/',	method:'DescribeOrderableDBInstanceOptions',	params:['username', 'session_id', 'region_name', 'engine', 'engine_version', 'instance_class', 'license_model', 'vpc', 'filters', 'marker', 'max_records']   },
+		'rds_og_DescribeOptionGroupOptions'      : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroupOptions',	params:['username', 'session_id', 'region_name', 'engine_name', 'major_engine_version', 'filters', 'marker', 'max_records']   },
+		'rds_og_DescribeOptionGroups'            : { url:'/aws/rds/optiongroup/',	method:'DescribeOptionGroups',	params:['username', 'session_id', 'region_name', 'option_group', 'engine_name', 'major_engine_version', 'filters', 'marker', 'max_records']   },
+		'rds_pg_DescribeDBParameterGroups'       : { url:'/aws/rds/parametergroup/',	method:'DescribeDBParameterGroups',	params:['username', 'session_id', 'region_name', 'param_group', 'filters', 'marker', 'max_records']   },
+		'rds_pg_DescribeDBParameters'            : { url:'/aws/rds/parametergroup/',	method:'DescribeDBParameters',	params:['username', 'session_id', 'region_name', 'param_group', 'source', 'filters', 'marker', 'max_records']   },
+		'rds_pg_CreateDBParameterGroup'          : { url:'/aws/rds/parametergroup/',	method:'CreateDBParameterGroup',	params:['username', 'session_id', 'region_name', 'param_group', 'param_group_family', 'description', 'tags']   },
+		'rds_pg_DeleteDBParameterGroup'          : { url:'/aws/rds/parametergroup/',	method:'DeleteDBParameterGroup',	params:['username', 'session_id', 'region_name', 'param_group']   },
+		'rds_pg_ModifyDBParameterGroup'          : { url:'/aws/rds/parametergroup/',	method:'ModifyDBParameterGroup',	params:['username', 'session_id', 'region_name', 'param_group', 'parameters']   },
+		'rds_pg_ResetDBParameterGroup'           : { url:'/aws/rds/parametergroup/',	method:'ResetDBParameterGroup',	params:['username', 'session_id', 'region_name', 'param_group', 'parameters', 'reset_all']   },
+		'rds_revd_ins_DescribeReservedDBInstances' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstances',	params:['username', 'session_id', 'region_name', 'instance_id', 'instance_class', 'offering_id', 'offering_type', 'duration', 'multi_az', 'description', 'filters', 'marker', 'max_records']   },
+		'rds_revd_ins_DescribeReservedDBInstancesOfferings' : { url:'/aws/rds/reservedinstance/',	method:'DescribeReservedDBInstancesOfferings',	params:['username', 'session_id', 'region_name', 'offering_id', 'offering_type', 'instance_class', 'duration', 'multi_az', 'description', 'filters', 'marker', 'max_records']   },
+		'rds_sg_DescribeDBSecurityGroups'        : { url:'/aws/rds/securitygroup/',	method:'DescribeDBSecurityGroups',	params:['username', 'session_id', 'region_name', 'security_group', 'filters', 'marker', 'max_records']   },
+		'rds_snap_CopyDBSnapshot'                : { url:'/aws/rds/snapshot/',	method:'CopyDBSnapshot',	params:['username', 'session_id', 'region_name', 'source_id', 'target_id', 'tags']   },
+		'rds_snap_CreateDBSnapshot'              : { url:'/aws/rds/snapshot/',	method:'CreateDBSnapshot',	params:['username', 'session_id', 'region_name', 'source_id', 'snapshot_id', 'tags']   },
+		'rds_snap_DeleteDBSnapshot'              : { url:'/aws/rds/snapshot/',	method:'DeleteDBSnapshot',	params:['username', 'session_id', 'region_name', 'snapshot_id']   },
+		'rds_snap_DescribeDBSnapshots'           : { url:'/aws/rds/snapshot/',	method:'DescribeDBSnapshots',	params:['username', 'session_id', 'region_name', 'instance_id', 'snapshot_id', 'snapshot_type', 'filters', 'marker', 'max_records']   },
+		'rds_subgrp_DescribeDBSubnetGroups'      : { url:'/aws/rds/subnetgroup/',	method:'DescribeDBSubnetGroups',	params:['username', 'session_id', 'region_name', 'subnet_group', 'filters', 'marker', 'max_records']   },
+		'rds_ListTagsForResource'                : { url:'/aws/rds/',	method:'ListTagsForResource',	params:['username', 'session_id', 'region_name', 'resource_name', 'filters']   },
 	}
 
 	for ( var i in Apis ) {
@@ -555,7 +568,7 @@ define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define
     };
     logAndThrow = function(obj) {
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                   env:dev:end */
       throw obj;
     };
     tryParseAws = function(xml, findError) {

@@ -1,471 +1,3 @@
-define('component/common/toolbarModalTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"modal-toolbar "
-    + escapeExpression(((stack1 = (depth0 && depth0.classList)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    <div class=\"content-wrap\">\n\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <button class=\"icon-new-stack btn btn-blue t-m-btn\" data-btn=\"create\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.btnValueCreate)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</button>\n    ";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n        <button class=\"icon-"
-    + escapeExpression(((stack1 = (depth0 && depth0.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " t-m-btn\" data-btn=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</button>\n        ";
-  return buffer;
-  }
-function program4(depth0,data) {
-  
-  
-  return "disabled";
-  }
-
-function program6(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                    <th class=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sortable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-row-type=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rowType), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</th>\n                    ";
-  return buffer;
-  }
-function program7(depth0,data) {
-  
-  
-  return "sortable";
-  }
-
-function program9(depth0,data) {
-  
-  var stack1;
-  return escapeExpression(((stack1 = (depth0 && depth0.rowType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  }
-
-function program11(depth0,data) {
-  
-  
-  return "string";
-  }
-
-function program13(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "width:"
-    + escapeExpression(((stack1 = (depth0 && depth0.width)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ";";
-  return buffer;
-  }
-
-function program15(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                            <th style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"><div class=\"th-inner\"></div></th>\n                            ";
-  return buffer;
-  }
-
-  buffer += "<div class=\"toolbar\">\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.btnValueCreate), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"btn-group\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.buttons), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</div>\n<div class=\"list\">\n    <div class=\"slidebox\" style=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.slideStyle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n        <div class=\"content clearfix\">\n        </div>\n        <div class=\"error\">\n            something wrong\n        </div>\n    </div>\n    <div class=\"table-head-fix\">\n        <table class=\"table-head\">\n            <thead>\n                <tr>\n                    <th>\n                        <div class=\"checkbox\">\n                            <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                            <label for=\"t-m-select-all\"></label>\n                        </div>\n                    </th>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </tr>\n            </thead>\n        </table>\n        <div class=\"scroll-wrap\">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.content=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"loading-spinner\"></div>";
-  };
-TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"kp-no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>";
-  };
-TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<tr class=\"table tr-detail\">\n    <td colspan=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.columnCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    </td>\n</tr>";
-  return buffer;
-  };
-TEMPLATE.tr_detail=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>";
-  };
-TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
-
-
-return TEMPLATE; });
-
-/* Example:
-Refer to kpView.coffee
- */
-
-(function() {
-  define('toolbar_modal',['component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', 'UI.notification'], function(template, Backbone, $, modalplus) {
-    return Backbone.View.extend({
-      tagName: 'section',
-      __slide: null,
-      __modalplus: null,
-      events: {
-        'change #t-m-select-all': '__checkAll',
-        'change .one-cb': '__checkOne',
-        'click .t-m-btn': '__handleSlide',
-        'click tr .show-detail': '__handleDetail',
-        'click .cancel': 'cancel',
-        'click .do-action': '__doAction',
-        'click [data-btn=refresh]': '__refresh',
-        'click .table-head .sortable': '__sort',
-        'click .show-credential': '__showCredential'
-      },
-      initialize: function(options) {
-        this.options = options || {};
-        if (!this.options.title) {
-          this.options.title = 'Default Title';
-        }
-        if (options.context) {
-          this.options.context.modal = this;
-          this.options.context.M$ = _.bind(this.$, this);
-        }
-        return null;
-      },
-      __showCredential: function() {
-        return App.showSettings(App.showSettings.TAB.Credential);
-      },
-      __sort: function() {
-        return this.$('.tr-detail').remove();
-      },
-      __doAction: function(event) {
-        var action;
-        this.error();
-        action = $(event.currentTarget).data('action');
-        return this.trigger('action', action, this.getChecked());
-      },
-      getChecked: function() {
-        var allChecked, checkedInfo;
-        allChecked = this.$('.one-cb:checked');
-        checkedInfo = [];
-        allChecked.each(function() {
-          return checkedInfo.push({
-            id: this.id,
-            value: this.value,
-            data: $(this).data()
-          });
-        });
-        return checkedInfo;
-      },
-      __slideRejct: function() {
-        return _.isFunction(this.options.slideable) && !this.options.slideable();
-      },
-      __handleSlide: function(event) {
-        var $activeButton, $button, $slidebox, activeButton, button;
-        $button = $(event.currentTarget);
-        $slidebox = this.$('.slidebox');
-        button = $button.data('btn');
-        if (button === 'refresh') {
-          return this;
-        }
-        if (this.__slideRejct()) {
-          return this;
-        }
-        $activeButton = this.$('.toolbar .active');
-        activeButton = $activeButton && $activeButton.data('btn');
-        if ($activeButton.length) {
-          if ($activeButton.get(0) === $button.get(0)) {
-            this.trigger('slideup', button);
-            $button.removeClass('active');
-            $slidebox.removeClass('show');
-            this.__slide = null;
-          } else {
-            this.trigger('slidedown', button, this.getChecked());
-            $activeButton.removeClass('active');
-            $button.addClass('active');
-            $slidebox.addClass('show');
-            this.__slide = button;
-          }
-        } else {
-          this.trigger('slidedown', button, this.getChecked());
-          $button.addClass('active');
-          $slidebox.addClass('show');
-          this.__slide = button;
-        }
-        return null;
-      },
-      __handleDetail: function(event) {
-        var $target, $tr;
-        $target = $(event.currentTarget);
-        $tr = $target.closest('tr');
-        if ($tr.hasClass('detailed')) {
-          $tr.removeClass('detailed');
-          return $tr.next('.tr-detail').remove();
-        } else {
-          $tr.addClass('detailed').after(template.tr_detail({
-            columnCount: this.options.columns.length + 1
-          }));
-          return this.trigger('detail', event, $tr.data(), $tr);
-        }
-      },
-      __refresh: function() {
-        if (this.__slideRejct()) {
-          return this;
-        }
-        this.__renderLoading();
-        return this.trigger('refresh');
-      },
-      __close: function(event) {
-        this.trigger('close');
-        this.remove();
-        return false;
-      },
-      __checkOne: function(event) {
-        var $target, cbAll, cbAmount, checkedAmount;
-        $target = $(event.currentTarget);
-        this.__processDelBtn();
-        cbAll = this.$('#t-m-select-all');
-        cbAmount = this.$('.one-cb').length;
-        checkedAmount = this.$('.one-cb:checked').length;
-        $target.closest('tr').toggleClass('selected');
-        if (checkedAmount === cbAmount) {
-          cbAll.prop('checked', true);
-        } else if (cbAmount - checkedAmount === 1) {
-          cbAll.prop('checked', false);
-        }
-        return this.__triggerChecked(event);
-      },
-      __checkAll: function(event) {
-        this.__processDelBtn();
-        if (event.currentTarget.checked) {
-          this.$('input[type="checkbox"]').prop('checked', true);
-          this.$('tr.item').addClass('selected');
-        } else {
-          this.$('input[type="checkbox"]').prop('checked', false);
-          this.$('tr.item').removeClass('selected');
-        }
-        return this.__triggerChecked(event);
-      },
-      __triggerChecked: function(param) {
-        return this.trigger('checked', param, this.getChecked());
-      },
-      __processDelBtn: function(enable) {
-        var that;
-        if (arguments.length === 1) {
-          return this.$('[data-btn=delete]').prop('disabled', !enable);
-        } else {
-          that = this;
-          return _.defer(function() {
-            if (that.$('.one-cb:checked').length) {
-              return that.$('[data-btn=delete]').prop('disabled', false);
-            } else {
-              return that.$('[data-btn=delete]').prop('disabled', true);
-            }
-          });
-        }
-      },
-      __stopPropagation: function(event) {
-        var exception;
-        exception = '.sortable, #download-kp, .selection, .item';
-        if (!$(event.target).is(exception)) {
-          return event.stopPropagation();
-        }
-      },
-      __open: function() {
-        var options;
-        options = {
-          template: this.el,
-          title: this.options.title,
-          disableFooter: true,
-          disableClose: true,
-          width: '855px',
-          height: '473px',
-          compact: true
-        };
-        this.__modalplus = new modalplus(options);
-        return this.__modalplus.on('closed', this.__close, this);
-      },
-      __renderLoading: function() {
-        this.$('.content-wrap').html(template.loading);
-        return this;
-      },
-      __renderContent: function() {
-        var $contentWrap, data;
-        $contentWrap = this.$('.content-wrap');
-        if (!$contentWrap.find('.toolbar').size()) {
-          data = this.options;
-          data.buttons = _.reject(data.buttons, function(btn) {
-            if (btn.type === 'create') {
-              data.btnValueCreate = btn.name;
-              return true;
-            }
-          });
-          this.$('.content-wrap').html(template.content(data));
-          return this;
-        }
-      },
-      render: function(refresh) {
-        var tpl;
-        this.$el.html(template.frame(this.options));
-        if (_.isString(refresh)) {
-          tpl = refresh;
-          this.$('.content-wrap').html(template[tpl] && template[tpl]() || tpl);
-        } else {
-          this.__renderLoading();
-        }
-        if (!refresh) {
-          this.__open();
-        }
-        return this;
-      },
-      setContent: function(dom) {
-        this.__renderContent();
-        this.$('.t-m-content').html(dom);
-        this.__triggerChecked(null);
-        return this;
-      },
-      setSlide: function(dom) {
-        this.$('.slidebox .content').html(dom);
-        this.error();
-        return this;
-      },
-      setDetail: function($tr, dom) {
-        var $trDetail;
-        $trDetail = $tr.next('.tr-detail');
-        $trDetail.find('td').html(dom);
-        return $trDetail;
-      },
-      triggerSlide: function(which) {
-        return this.$("[data-btn=" + which + "]").click();
-      },
-      cancel: function() {
-        var $activeButton, $slidebox;
-        if (this.__slideRejct()) {
-          return this;
-        }
-        $slidebox = this.$('.slidebox');
-        $activeButton = this.$('.toolbar .active');
-        this.trigger('slideup', $activeButton.data('btn'));
-        $activeButton.removeClass('active');
-        $slidebox.removeClass('show');
-        return this;
-      },
-      unCheckSelectAll: function() {
-        this.$('#t-m-select-all').get(0).checked = false;
-        return this.__processDelBtn(false);
-      },
-      delegate: function(events, context) {
-        var eventName, key, match, method, selector, _i, _len;
-        if (!events || !_.isObject(events)) {
-          return this;
-        }
-        for (method = _i = 0, _len = events.length; _i < _len; method = ++_i) {
-          key = events[method];
-          if (!method) {
-            continue;
-          }
-          match = key.match(/^(\S+)\s*(.*)$/);
-          eventName = match[1];
-          selector = match[2];
-          method = _.bind(method, context || this);
-          eventName += '.delegateEvents' + this.cid;
-          if (selector === '') {
-            this.$el.on(eventName, method);
-          } else {
-            this.$el.on(eventName, selector, method);
-          }
-        }
-        return this;
-      },
-      error: function(msg) {
-        var $error;
-        $error = this.$('.error');
-        if (msg) {
-          return $error.text(msg).show();
-        } else {
-          return $error.hide();
-        }
-      },
-      getSlide: function() {
-        return this.__slide;
-      }
-    });
-  });
-
-}).call(this);
-
 define('component/kp/kpDialogTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -753,9 +285,9 @@ return TEMPLATE; });
         this.resModel = options.resModel;
         this.collection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
         this.initModal();
+        this.modal.render();
         if (App.user.hasCredential()) {
           that = this;
-          this.modal.render();
           this.collection.fetch().then(function() {
             return that.renderKeys();
           });
@@ -985,182 +517,6 @@ return TEMPLATE; });
       },
       afterImport: function(result) {
         return this.switchAction('ready');
-      }
-    });
-  });
-
-}).call(this);
-
-define('component/common/comboDropdownTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            <input class=\"input combo-dd-filter\" type=\"text\" placeholder=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.filterPlaceHolder)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n        ";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            <div class=\"combo-dd-manage btn btn-primary\" style=\"display:none;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.manageBtnValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        ";
-  return buffer;
-  }
-
-  buffer += "<div class=\"selectbox combo-dd multiopen "
-    + escapeExpression(((stack1 = (depth0 && depth0.classList)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-silent-close=\"#modal-wrap\">\n    <div class=\"selection\"></div>\n\n    <div class=\"dropdown\">\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.noFilter), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"scroll-wrap scrollbar-auto-hide clearfix\">\n            <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content combo-dd-content\">\n            </div>\n        </div>\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.noManage), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<ul class=\"combo-dd-list\"></ul>";
-  };
-TEMPLATE.listframe=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"loading-spinner loading-spinner-small\"></div>";
-  };
-TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"no-credential tac\">\n    <p>You are using a demo AWS account.</p>\n    <a class=\"show-credential\">Provide AWS Credential <br/>to manage key pairs</a>\n</div>";
-  };
-TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
-
-
-return TEMPLATE; });
-
-/* Example:
-Refer to kpView.coffee
- */
-
-(function() {
-  define('combo_dropdown',['component/common/comboDropdownTpl', 'backbone', 'jquery'], function(template, Backbone, $) {
-    return Backbone.View.extend({
-      tagName: 'section',
-      events: {
-        'click .combo-dd-manage': '__manage',
-        'click .show-credential': '__showCredential',
-        'OPTION_SHOW .selectbox': '__optionShow',
-        'OPTION_CHANGE .selectbox': '__optionChange',
-        'keyup .combo-dd-filter': '__filter',
-        'keydown .combo-dd-filter': '__stopPropagation',
-        'click .combo-dd-filter': '__returnFalse',
-        'click .create-one': '__quickCreate'
-      },
-      __quickCreate: function() {
-        return this.trigger('quick_create');
-      },
-      __stopPropagation: function(event) {
-        return event.stopPropagation();
-      },
-      __returnFalse: function() {
-        return false;
-      },
-      __showCredential: function() {
-        return App.showSettings(App.showSettings.TAB.Credential);
-      },
-      __filter: function(event) {
-        return this.trigger('filter', event.currentTarget.value);
-      },
-      __manage: function(event) {
-        this.trigger('manage');
-        return event.stopPropagation();
-      },
-      __optionShow: function() {
-        if (!this.$('.combo-dd-content').html().trim()) {
-          this.render('loading');
-        }
-        return this.trigger('open');
-      },
-      __optionChange: function(event, name, data) {
-        return this.trigger('change', name, data);
-      },
-      initialize: function(options) {
-        this.$el.html(template.frame(options));
-        return this;
-      },
-      render: function(tpl) {
-        this.$('.combo-dd-content').html(template[tpl] && template[tpl]() || tpl);
-        return this;
-      },
-      setSelection: function(dom) {
-        this.$('.selection').html(dom);
-        return this;
-      },
-      getSelection: function(dom) {
-        return $.trim(this.$('.selection').text());
-      },
-      setContent: function(dom) {
-        this.$('.combo-dd-content').html(template.listframe);
-        this.$('.combo-dd-list').html(dom);
-        return this;
-      },
-      toggleControls: function(showOrHide, whichOne) {
-        if (whichOne) {
-          this.$(".combo-dd-" + whichOne).toggle(showOrHide);
-        } else {
-          this.$('.combo-dd-filter, .combo-dd-manage').toggle(showOrHide);
-        }
-        return this;
-      },
-      delegate: function(events, context) {
-        var eventName, key, match, method, selector, _i, _len;
-        if (!events || !_.isObject(events)) {
-          return this;
-        }
-        for (method = _i = 0, _len = events.length; _i < _len; method = ++_i) {
-          key = events[method];
-          if (!method) {
-            continue;
-          }
-          match = key.match(/^(\S+)\s*(.*)$/);
-          eventName = match[1];
-          selector = match[2];
-          method = _.bind(method, context || this);
-          eventName += '.delegateEvents' + this.cid;
-          if (selector === '') {
-            this.$el.on(eventName, method);
-          } else {
-            this.$el.on(eventName, selector, method);
-          }
-        }
-        return this;
       }
     });
   });
@@ -3398,7 +2754,7 @@ return TEMPLATE; });
         return this.trigger('datachange', this);
       },
       remove: function() {
-        this.isRemoved = ture;
+        this.isRemoved = true;
         return Backbone.View.prototype.remove.call(this);
       },
       render: function() {
@@ -3676,7 +3032,7 @@ return TEMPLATE; });
           notification('error', "Create failed because of: " + result.msg);
           return false;
         }
-        return notification('info', "New DHCP Option is created successfully!");
+        return notification('info', "New Snapshot is created successfully!");
       },
       afterDuplicate: function(result) {
         var currentRegion;
@@ -4413,7 +3769,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('DiffTree',[], function() {
+  define('DiffTree',['constant'], function(constant) {
     var DiffTree;
     DiffTree = function(option) {
       var getType, isArray, typeofReal, _compare, _diffAry;
@@ -4422,30 +3778,31 @@ return TEMPLATE; });
       }
       if (!option.filterAttrMap) {
         option.filterAttrMap = {
-          'type': true,
-          'uid': true,
-          'name': true,
-          'index': true,
-          'number': true,
-          'serverGroupUid': true,
-          'serverGroupName': true,
-          'resource.UserData': true,
-          'resource.PrivateIpAddressSet.n.AutoAssign': true,
-          'resource.AssociatePublicIpAddress': true,
-          'resource.KeyName': true,
-          'resource.AssociationSet.n.RouteTableAssociationId': true,
-          'resource.AssociationSet.n.NetworkAclAssociationId': true,
-          'resource.BlockDeviceMapping': true,
-          'resource.VolumeSize': true,
-          'resource.GroupDescription': true,
-          'resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
-          'resource.Attachment.AttachmentId': true,
-          'resource.Iops': true
+          '*.type': true,
+          '*.uid': true,
+          '*.name': true,
+          '*.index': true,
+          '*.number': true,
+          '*.serverGroupUid': true,
+          '*.serverGroupName': true,
+          '*.resource.UserData': true,
+          '*.resource.PrivateIpAddressSet.n.AutoAssign': true,
+          '*.resource.AssociatePublicIpAddress': true,
+          '*.resource.KeyName': true,
+          '*.resource.AssociationSet.n.RouteTableAssociationId': true,
+          '*.resource.AssociationSet.n.NetworkAclAssociationId': true,
+          '*.resource.BlockDeviceMapping': true,
+          '*.resource.VolumeSize': true,
+          '*.resource.GroupDescription': true,
+          '*.resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
+          '*.resource.Attachment.AttachmentId': true,
+          'DBINSTANCE.resource.AvailabilityZone': true,
+          'DBINSTANCE.resource.Endpoint.Address': true
         };
       }
       if (!option.noDiffArrayAttrMap) {
         option.noDiffArrayAttrMap = {
-          'state': true
+          '*.state': true
         };
       }
       option.filterResMap = {};
@@ -4504,7 +3861,7 @@ return TEMPLATE; });
         return _results;
       };
       _compare = function(a, b, key, path, resultJSON) {
-        var aAry, aString, attrPath, attrPathAry, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resType, resUID, typeA, typeB, v, value1, value2, _i, _len;
+        var aAry, aString, attrPath, attrPath1, attrPath2, attrPathAry, attrPathStr, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resShortType, resType, typeA, typeB, v, value1, value2, _i, _len;
         if (key === 'VPCZoneIdentifier') {
           aAry = a.split(',');
           bAry = b.split(',');
@@ -4522,15 +3879,10 @@ return TEMPLATE; });
           if (key) {
             path = path.concat([key]);
           }
-          if (path.length === 2) {
-            resUID = path[1];
-            if (a && a.type) {
-              resType = a.type;
-              if (option.filterResMap[resType]) {
-                return;
-              }
-            }
-          } else if (path.length > 2) {
+          if (path.length === 2 && a && a.type) {
+            path[1] = a.type;
+          }
+          if (path.length > 2) {
             attrPathAry = path.slice(2);
             attrPathAry = _.map(attrPathAry, function(path) {
               var num;
@@ -4540,8 +3892,12 @@ return TEMPLATE; });
               }
               return path;
             });
-            attrPath = attrPathAry.join('.');
-            if (option.filterAttrMap[attrPath]) {
+            resType = path[1];
+            resShortType = this.resTypeShortMap[resType];
+            attrPathStr = attrPathAry.join('.');
+            attrPath1 = resShortType + '.' + attrPathStr;
+            attrPath2 = '*.' + attrPathStr;
+            if (option.filterAttrMap[attrPath1] || option.filterAttrMap[attrPath2]) {
               return;
             }
           }
@@ -4646,6 +4002,7 @@ return TEMPLATE; });
       };
       return null;
     };
+    DiffTree.prototype.resTypeShortMap = _.invert(constant.RESTYPE);
     return DiffTree;
   });
 
@@ -4870,6 +4227,9 @@ return TEMPLATE; });
               break;
             case 'RouteSet':
               data.key = 'Route';
+              break;
+            case 'SubnetIds':
+              data.key = 'Subnet';
           }
           if (__indexOf.call(pluralKeys, parentKey) >= 0) {
             data.key = this.pluralToSingular(parentKey);
@@ -5050,25 +4410,33 @@ return TEMPLATE; });
         return this.modal.resize();
       },
       _genDiffInfo: function(oldComps, newComps) {
-        var diffTree, that, unionNewComps, unionOldComps;
+        var diffTree, ignoreDiffMap, that, unionNewComps, unionOldComps;
         that = this;
         that.addedComps = {};
         that.removedComps = {};
         that.modifiedComps = {};
         unionOldComps = {};
         unionNewComps = {};
+        ignoreDiffMap = {
+          'AWS.EC2.Tag': true,
+          'AWS.AutoScaling.Tag': true
+        };
         _.each(oldComps, function(comp, uid) {
-          if (newComps[uid]) {
-            unionOldComps[uid] = oldComps[uid];
-            unionNewComps[uid] = newComps[uid];
-          } else {
-            that.removedComps[uid] = oldComps[uid];
+          if (comp && !ignoreDiffMap[comp.type]) {
+            if (newComps[uid]) {
+              unionOldComps[uid] = oldComps[uid];
+              unionNewComps[uid] = newComps[uid];
+            } else {
+              that.removedComps[uid] = oldComps[uid];
+            }
+            return null;
           }
-          return null;
         });
         _.each(_.keys(newComps), function(uid) {
           if (!oldComps[uid]) {
-            that.addedComps[uid] = newComps[uid];
+            if (newComps[uid] && !ignoreDiffMap[newComps[uid].type]) {
+              that.addedComps[uid] = newComps[uid];
+            }
           }
           return null;
         });
@@ -5372,6 +4740,1911 @@ return TEMPLATE; });
         };
       }
     });
+  });
+
+}).call(this);
+
+define('component/rds_pg/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li class=\"item";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.DBParameterGroupFamily)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" tabindex=\"-1\">\n            <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.DBParameterGroupFamily)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBEngineVersionDescription)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    </li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return " selected";
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <tr class=\"item\" data-id=\"\">\n        <td>\n            <div class=\"checkbox\">\n                <input id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" value=\"None\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"one-cb\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDefault), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                <label for=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n            </div>\n        </td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBParameterGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBParameterGroupFamily)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    </tr>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "disabled";
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.items), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.content=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.selectedId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " RDS Parameter";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "selected "
+    + escapeExpression(((stack1 = (depth0 && depth0.selectedCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " RDS Parameter Groups";
+  return buffer;
+  }
+
+  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                                        <li class=\"item\" data-id=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\">"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</li>\n                                        ";
+  return buffer;
+  }
+
+  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBPG_SET_FAMILY", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <div id=\"property-family-choose\">\n                        <div class=\"selectbox selectbox-mega\" id=\"property-family\">\n                            <div class=\"selection\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.families)),stack1 == null || stack1 === false ? stack1 : stack1[0])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n                            <div class=\"scroll-wrap\" style=\"height: 160px\">\n                                <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                                <div class=\"scroll-content\">\n                                    <ul class=\"dropdown\" tabindex=\"-1\">\n                                        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.families), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                                    </ul>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n\n\n            <div class=\"control-group clearfix\">\n                <label for=\"property-dbpg-name-create\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBPG_SET_NAME", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id=\"property-dbpg-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-ignore-regexp=\"^[a-zA-Z][a-zA-Z0-9-]*$\" data-required=\"true\" data-type=\"database\" data-ignore=\"true\" placeholder=\"Begin with a letter; must contain only ASCII letters, digits, and hyphens; and must not end with a hyphen or contain two consecutive hyphens\">\n                </div>\n            </div>\n\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-dbpg-desc-create\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBPG_SET_DESC", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id='property-dbpg-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" data-required=\"true\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"slide-reset\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <div class=\"modal-text-major\">Do you confirm to reset all parameters for "
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " to their defaults?</div>\n        <div class=\"init action\">\n            <button class=\"btn btn-red do-action\" data-action=\"reset\">Reset</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Resetting...</button>\n        </div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_reset=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n                <th width=\"40%\">Parameter Name</th>\n                <th width=\"20%\">Origin Value</th>\n                <th width=\"40%\">Edit Value</th>\n            ";
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "\n                <th width=\"50%\">Parameter Name</th>\n                <th width=\"50%\">Edit Value</th>\n            ";
+  }
+
+function program5(depth0,data,depth1) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <tr id=\"pg-"
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n                <td>\n                    <div class=\"prop_main\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                        <div class=\"prop_sub\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.Source)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</div>\n                    </div>\n                    <div class=\"prop_sub\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.Description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n                </td>\n                ";
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.preview), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                <td>\n                    <div class=\"prop_main\">\n                        ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.noop,fn:self.programWithDepth(14, program14, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                        ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                    </div>\n                    <div class=\"prop_main\">\n                        <div class=\"prop_sub\">Changes will apply ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n                    </div>\n                </td>\n            </tr>\n        ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                    <td>\n                        <div class=\"prop_main\" style=\"text-align: center\">\n                            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ParameterValue), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                        </div>\n                    </td>\n                ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                "
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                            ";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            ";
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  return "&lt;engine-default&gt;";
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "&lt;empty&gt;";
+  }
+
+function program14(depth0,data,depth1) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                            <select name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"select\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                                <option value=\"<engine-default>\">&lt;engine-default&gt;</option>\n                                ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(17, program17, data, depth0, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            </select>\n                        ";
+  return buffer;
+  }
+function program15(depth0,data) {
+  
+  
+  return "disabled=\"disabled\"";
+  }
+
+function program17(depth0,data,depth1,depth2) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                    <option value=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(21, program21, data, depth1),fn:self.programWithDepth(18, program18, data, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</option>\n                                ";
+  return buffer;
+  }
+function program18(depth0,data,depth2) {
+  
+  var stack1;
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program19(depth0,data) {
+  
+  
+  return "selected=\"selected\" ";
+  }
+
+function program21(depth0,data,depth2) {
+  
+  var stack1;
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program22(depth0,data) {
+  
+  
+  return "selected=\"selected\"";
+  }
+
+function program24(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                            <input type=\"text\" class=\"input prop-half-width\" name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" value=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.newValue), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n                            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AllowedValues), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                        ";
+  return buffer;
+  }
+function program25(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.newValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program27(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.ParameterValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program29(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<div class=\"prop_sub\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.AllowedValues)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</div>";
+  return buffer;
+  }
+
+function program31(depth0,data) {
+  
+  
+  return "immediately";
+  }
+
+function program33(depth0,data) {
+  
+  
+  return "after rebooting";
+  }
+
+function program35(depth0,data) {
+  
+  
+  return "\n            <button class=\"btn do-action\" id=\"pg-back-to-edit\">Back to Editing</button>\n            <button class=\"btn btn-blue\" id=\"rds-pg-save\">Apply Changes</button>\n        ";
+  }
+
+function program37(depth0,data) {
+  
+  
+  return "\n            <button class=\"btn btn-blue do-action\" data-action=\"preview\" disabled>Review Changes & Save</button>\n        ";
+  }
+
+  buffer += "<div class=\"clearfix\" id=\"pg-sort-filter\">\n    <div class=\"pull-left\">\n        Filter: <input id=\"pg-filter-parameter-name\" class=\"input\" type=\"text\" placeholder=\"Filter by Parameter Name\"/>\n    </div>\n    <div class=\"pull-right\">\n        Sort by:\n        <div class=\"selectbox\" id=\"sort-parameter-name\">\n            <div class=\"selection\">Parameter Name</div>\n            <ul class=\"dropdown\" tabindex=\"-1\">\n                <li class=\"item selected\" data-id=\"ParameterName\">Parameter Name</li>\n                <li class=\"item\" data-id=\"IsModifiable\">Is Modifiable</li>\n                <li class=\"item\" data-id=\"ApplyType\">Apply Method</li>\n                <li class=\"item\" data-id=\"Source\">Source</li>\n            </ul>\n        </div>\n    </div>\n</div>\n<div id=\"parameter-table\" style=\"height: "
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.height), 310, {hash:{},data:data}))
+    + "px\">\n    <table class=\"table\">\n        <thead>\n        <tr>\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        </tr>\n        </thead>\n        <tbody>\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.programWithDepth(5, program5, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        </tbody>\n    </table>\n</div>\n<div class=\"pg-edit-footer clearfix\">\n    <a class=\"blue-link\" target=\"_blank\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ParamValuesRef.html\"> <i class=\"icon-info\"></i> Parameter Value Reference</a>\n    <div class=\"init action\" style=\"padding: 10px 0\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(37, program37, data),fn:self.program(35, program35, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"padding: 10px 0;display: none\">\n        <button class=\"btn btn-blue\" id=\"rds-pg-save\" disabled>Applying</button>\n        <button class=\"btn btn-silver cancel\" disabled>Cancel</button>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_edit=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n            <th width=\"40%\">Parameter Name</th>\n            <th width=\"20%\">Origin Value</th>\n            <th width=\"40%\">Edit Value</th>\n        ";
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "\n            <th width=\"50%\">Parameter Name</th>\n            <th width=\"50%\">Edit Value</th>\n        ";
+  }
+
+function program5(depth0,data,depth1) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <tr id=\"pg-"
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n            <td>\n                <div class=\"prop_main\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                    <div class=\"prop_sub\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.Source)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</div>\n                </div>\n                <div class=\"prop_sub\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.Description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n            </td>\n            ";
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.preview), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            <td>\n                <div class=\"prop_main\">\n                    ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.noop,fn:self.programWithDepth(14, program14, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                    ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                </div>\n                <div class=\"prop_main\">\n                    <div class=\"prop_sub\">Changes will apply ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n                </div>\n            </td>\n        </tr>\n    ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <td>\n                    <div class=\"prop_main\" style=\"text-align: center\">\n                        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ParameterValue), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                    </div>\n                </td>\n            ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                            "
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                        ";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                            ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                        ";
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  return "&lt;engine-default&gt;";
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "&lt;empty&gt;";
+  }
+
+function program14(depth0,data,depth1) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                        <select name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"select\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                            <option value=\"<engine-default>\">&lt;engine-default&gt;</option>\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(17, program17, data, depth0, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                        </select>\n                    ";
+  return buffer;
+  }
+function program15(depth0,data) {
+  
+  
+  return "disabled=\"disabled\"";
+  }
+
+function program17(depth0,data,depth1,depth2) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                <option value=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(21, program21, data, depth1),fn:self.programWithDepth(18, program18, data, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</option>\n                            ";
+  return buffer;
+  }
+function program18(depth0,data,depth2) {
+  
+  var stack1;
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program19(depth0,data) {
+  
+  
+  return "selected=\"selected\" ";
+  }
+
+function program21(depth0,data,depth2) {
+  
+  var stack1;
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program22(depth0,data) {
+  
+  
+  return "selected=\"selected\"";
+  }
+
+function program24(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                        <input type=\"text\" class=\"input prop-half-width\" name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" value=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.newValue), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n                        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AllowedValues), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                    ";
+  return buffer;
+  }
+function program25(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.newValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program27(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.ParameterValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program29(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<div class=\"prop_sub\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.AllowedValues)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</div>";
+  return buffer;
+  }
+
+function program31(depth0,data) {
+  
+  
+  return "immediately";
+  }
+
+function program33(depth0,data) {
+  
+  
+  return "after rebooting";
+  }
+
+  buffer += "<table class=\"table\">\n    <thead>\n    <tr>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    </tr>\n    </thead>\n    <tbody>\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.programWithDepth(5, program5, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </tbody>\n</table>";
+  return buffer;
+  };
+TEMPLATE.filter=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"loading-spinner\"></div>";
+  };
+TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li class=\"item";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" tabindex=\"-1\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return " selected";
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  define('rds_pg',['CloudResources', 'ApiRequest', 'constant', "UI.modalplus", 'combo_dropdown', 'toolbar_modal', "i18n!/nls/lang.js", 'component/rds_pg/template'], function(CloudResources, ApiRequest, constant, modalPlus, combo_dropdown, toolbar_modal, lang, template) {
+    var DbpgRes, deleteCount, deleteErrorCount, fetched, fetching, regionsMark;
+    fetched = false;
+    deleteCount = 0;
+    deleteErrorCount = 0;
+    fetching = false;
+    regionsMark = {};
+    DbpgRes = Backbone.View.extend({
+      constructor: function(model) {
+        if (model) {
+          this.resModel = model;
+        }
+        this.collection = CloudResources(constant.RESTYPE.DBPG, Design.instance().region());
+        this.listenTo(this.collection, 'update', this.onUpdate.bind(this));
+        this.listenTo(this.collection, 'change', this.onUpdate.bind(this));
+        return this;
+      },
+      onUpdate: function() {
+        this.initManager();
+        return this.trigger('datachange', this);
+      },
+      remove: function() {
+        return Backbone.View.prototype.remove.call(this);
+      },
+      render: function() {
+        return this.renderManager();
+      },
+      enableCreate: function() {
+        return this.manager.$el.find('[data-action="create"]').prop('disabled', false);
+      },
+      selectRegion: function() {
+        return this.manager.$el.find('[data-action="reset"]').prop('disabled', false);
+      },
+      renderManager: function() {
+        var _ref;
+        this.manager = new toolbar_modal(this.getModalOptions());
+        this.manager.on('refresh', this.refresh, this);
+        this.manager.on("slidedown", this.renderSlides, this);
+        this.manager.on('action', this.doAction, this);
+        this.manager.on('close', (function(_this) {
+          return function() {
+            _this.manager.remove();
+            return _this.collection.remove();
+          };
+        })(this));
+        this.manager.on('checked', this.processReset, this);
+        this.manager.render();
+        if (!App.user.hasCredential()) {
+          if ((_ref = this.manager) != null) {
+            _ref.render('nocredential');
+          }
+          return false;
+        }
+        return this.initManager();
+      },
+      initManager: function() {
+        var currentRegion, setContent;
+        setContent = this.setContent.bind(this);
+        currentRegion = Design.instance().get('region');
+        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
+          fetching = true;
+          regionsMark[currentRegion] = true;
+          return this.collection.fetchForce().then(setContent, setContent);
+        } else if (!fetching) {
+          return this.setContent();
+        }
+      },
+      processReset: function(event, checked) {
+        var allNotDefault, that;
+        if (checked.length === 1 && !this.collection.findWhere({
+          id: checked[0].data.id
+        }).isDefault()) {
+          this.M$('[data-btn=reset],[data-btn=edit]').prop('disabled', false);
+        } else {
+          this.M$('[data-btn=reset],[data-btn=edit]').prop('disabled', true);
+        }
+        that = this;
+        allNotDefault = _.every(checked, function(e) {
+          var val;
+          val = !that.collection.findWhere({
+            id: e.data.id
+          }).isDefault();
+          return val;
+        });
+        if (checked.length >= 1 && allNotDefault) {
+          return window.setTimeout(function() {
+            return that.M$('[data-btn=delete]').prop('disabled', false);
+          }, 1);
+        } else {
+          return window.setTimeout(function() {
+            return that.M$('[data-btn=delete]').prop('disabled', true);
+          }, 1);
+        }
+      },
+      refresh: function() {
+        fetched = false;
+        return this.initManager();
+      },
+      setContent: function() {
+        var content, data, dataSet, _ref;
+        fetching = false;
+        fetched = true;
+        data = this.collection.toJSON();
+        _.each(data, function(e) {
+          if (e.DBParameterGroupName.indexOf("default.") === 0) {
+            return e.isDefault = true;
+          }
+        });
+        dataSet = {
+          items: data
+        };
+        content = template.content(dataSet);
+        return (_ref = this.manager) != null ? _ref.setContent(content) : void 0;
+      },
+      renderSlides: function(which, checked) {
+        var slides, tpl, _ref;
+        tpl = template['slide_' + which];
+        $(".slidebox .content").removeAttr('style');
+        slides = this.getSlides();
+        return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
+      },
+      getSlides: function() {
+        return {
+          'delete': function(tpl, checked) {
+            var checkedAmount, data;
+            checkedAmount = checked.length;
+            if (!checkedAmount) {
+              return;
+            }
+            data = {};
+            if (checkedAmount === 1) {
+              data.selectedId = checked[0].data.id;
+            } else {
+              data.selectedCount = checkedAmount;
+            }
+            return this.manager.setSlide(tpl(data));
+          },
+          'create': function(tpl) {
+            var that;
+            this.families = CloudResources(constant.RESTYPE.DBENGINE, Design.instance().get("region"));
+            that = this;
+            return this.families.fetch().then(function() {
+              var data, families;
+              families = _.uniq(_.pluck(that.families.toJSON(), "DBParameterGroupFamily"));
+              data = {
+                families: families
+              };
+              that.manager.setSlide(tpl(data));
+              return $("#property-dbpg-name-create").keyup(function() {
+                var disableCreate;
+                disableCreate = !$(this).val();
+                return that.manager.$el.find('[data-action="create"]').prop('disabled', disableCreate);
+              });
+            });
+          },
+          'edit': function(tpl, checked, option) {
+            var parameters, target, that;
+            if (!checked) {
+              return false;
+            }
+            that = this;
+            target = this.collection.findWhere({
+              id: checked[0].data.id
+            });
+            parameters = target.getParameters();
+            if (!option) {
+              that.manager.setSlide(template.loading());
+            }
+            return parameters.fetch().then(function(result) {
+              if (result.error) {
+                that.manager.cancel();
+                notification('error', result.awsResult || result.msg);
+              }
+              that.renderEditTpl(parameters, tpl, option);
+              $(".slidebox .content").css({
+                "width": "100%",
+                "margin-top": "0px"
+              });
+              return that.bindEditEvent(parameters, tpl, option);
+            });
+          },
+          'reset': function(tpl, checked) {
+            var data;
+            data = {
+              name: checked[0].data.id
+            };
+            if (!checked) {
+              return;
+            }
+            return this.manager.setSlide(tpl(data));
+          }
+        };
+      },
+      renderEditTpl: function(parameters, tpl, option) {
+        var data, that;
+        that = this;
+        data = parameters.toJSON ? parameters.toJSON() : parameters;
+        _.each(data, function(e) {
+          var _ref;
+          if (((_ref = e.AllowedValues) != null ? _ref.split(',').length : void 0) > 1) {
+            e.inputType = "select";
+            e.selections = e.AllowedValues.split(",");
+          } else {
+            e.inputType = "input";
+          }
+        });
+        if (option != null ? option.sort : void 0) {
+          data = _.sortBy(data, function(e) {
+            var s;
+            s = e.ParameterName;
+            if (option.sort === "ParameterName") {
+              s = e.ParameterName;
+            }
+            if (option.sort === 'IsModifiable') {
+              s = e.IsModifiable;
+            }
+            if (option.sort === "ApplyType") {
+              s = e.ApplyType;
+            }
+            if (option.sort === "Source") {
+              s = e.Source;
+            }
+            return s;
+          });
+          $("#parameter-table").html(template.filter({
+            data: data
+          }));
+        }
+        if (option != null ? option.filter : void 0) {
+          data = _.filter(data, function(e) {
+            return (e.ParameterName.toLowerCase().indexOf(option.filter.toLowerCase())) > -1;
+          });
+          $("#parameter-table").html(template.filter({
+            data: data
+          }));
+        }
+        if ((option != null ? option.filter : void 0) || (option != null ? option.sort : void 0)) {
+          return false;
+        }
+        console.log("Rendering....");
+        that.manager.setSlide(tpl({
+          data: data,
+          height: $('.table-head-fix.will-be-covered>.scroll-wrap').height() - 53
+        }));
+        $(".slidebox").css('max-height', "none");
+        this.manager.on("slideup", function() {
+          return $('.slidebox').removeAttr("style");
+        });
+        return $(window).on('resize', function() {
+          return $("#parameter-table").height($('.table-head-fix.will-be-covered>.scroll-wrap').height() - 53).find(".scrollbar-veritical-thumb").removeAttr("style");
+        });
+      },
+      bindFilter: function(parameters, tpl) {
+        var filter, sortType, that, _ref, _ref1;
+        that = this;
+        sortType = (_ref = $("#sort-parameter-name").find(".item.selected")) != null ? (_ref1 = _ref.data()) != null ? _ref1.id : void 0 : void 0;
+        filter = $("#pg-filter-parameter-name");
+        filter.off('change').on('change', function() {
+          var checked, val;
+          val = $(this).val();
+          checked = [
+            {
+              data: {
+                id: parameters.groupModel.id
+              }
+            }
+          ];
+          return (that.getSlides().edit.bind(that))(template.slide_edit, checked, {
+            filter: val,
+            sort: sortType
+          });
+        });
+        return $("#sort-parameter-name").on('OPTION_CHANGE', function(event, value, data) {
+          sortType = (data != null ? data.id : void 0) || value;
+          return filter.trigger('change');
+        });
+      },
+      bindEditEvent: function(parameters, tpl, option) {
+        var getChange, that;
+        that = this;
+        getChange = function() {
+          var changeArray;
+          changeArray = [];
+          parameters.filter(function(e) {
+            if (e.has('newValue') && (e.get("newValue") !== e.get("ParameterValue"))) {
+              return changeArray.push(e.toJSON());
+            }
+          });
+          return changeArray;
+        };
+        if (getChange().length) {
+          $("[data-action='preview']").prop('disabled', false);
+        }
+        if (!option) {
+          that.bindFilter(parameters, tpl);
+        }
+        if (!option) {
+          $("#pg-filter-parameter-name").keyup(function() {
+            return $(this).trigger('change');
+          });
+        }
+        _.each(parameters.models, function(e) {
+          var onChange;
+          onChange = function() {
+            $("[data-action='preview']").prop('disabled', false);
+            if (this.value === "<engine-default>" || (this.value === "" && !e.get("ParameterValue"))) {
+              e.unset('newValue');
+            }
+            if (e.isValidValue(this.value) || this.value === "" || e.isFunctionValue(this.value)) {
+              $(this).removeClass("parsley-error");
+              if (this.value !== "") {
+                return e.set('newValue', this.value);
+              }
+            } else {
+              return $(this).addClass("parsley-error");
+            }
+          };
+          if (e.attributes.IsModifiable) {
+            $(".slidebox").on('change', "[name='" + e.attributes.ParameterName + "']", onChange);
+            return $(".slidebox").on('keyup', "[name='" + e.attributes.ParameterName + "']", onChange);
+          }
+        });
+        if (!option) {
+          return $("[data-action='preview']").click(function() {
+            var data;
+            data = getChange();
+            _.each(data, function(e) {
+              var _ref;
+              if (((_ref = e.AllowedValues) != null ? _ref.split(',').length : void 0) > 1) {
+                e.inputType = 'select';
+                e.selections = e.AllowedValues.split(',');
+              } else {
+                e.inputType = 'input';
+              }
+            });
+            that.manager.setSlide(tpl({
+              data: data,
+              preview: true
+            }));
+            $("#rds-pg-save").click(function() {
+              return that.modifyParams(parameters, getChange());
+            });
+            return $("#pg-back-to-edit").click(function() {
+              var checked;
+              checked = [
+                {
+                  data: {
+                    id: parameters.groupModel.id
+                  }
+                }
+              ];
+              return (that.getSlides().edit.bind(that))(tpl, checked);
+            });
+          });
+        }
+      },
+      modifyParams: function(parameters, change) {
+        var afterModify, changeMap;
+        changeMap = {};
+        _.each(change, function(e) {
+          return changeMap[e.ParameterName] = e.newValue;
+        });
+        _.each(parameters.models, function(d) {
+          return d.unset('newValue');
+        });
+        afterModify = this.afterModify.bind(this);
+        this.switchAction('processing');
+        return parameters.groupModel.modifyParams(changeMap).then(afterModify, afterModify);
+      },
+      afterModify: function(result) {
+        if ((result != null ? result.error : void 0)) {
+          notification('error', "Parameter Group updated failed because of " + ((result != null ? result.awsResult : void 0) || (result != null ? result.awsErrorCode : void 0) || (result != null ? result.msg : void 0)));
+          this.switchAction();
+          return false;
+        }
+        notification('info', "Parameter Group is updated.");
+        return this.manager.cancel();
+      },
+      doAction: function(action, checked) {
+        return this["do_" + action] && this["do_" + action]('do_' + action, checked);
+      },
+      do_create: function() {
+        var afterCreated, data;
+        if (!(($('#property-dbpg-name-create').parsley('validate')) && ($('#property-dbpg-desc-create').parsley('validate')))) {
+          return false;
+        }
+        data = {
+          "DBParameterGroupName": $("#property-dbpg-name-create").val(),
+          'DBParameterGroupFamily': $("#property-family .selection").html().trim(),
+          'Description': $('#property-dbpg-desc-create').val()
+        };
+        this.switchAction('processing');
+        afterCreated = this.afterCreated.bind(this);
+        return this.collection.create(data).save().then(afterCreated, afterCreated);
+      },
+      do_delete: function(invalid, checked) {
+        var afterDeleted, that;
+        that = this;
+        deleteCount += checked.length;
+        this.switchAction('processing');
+        afterDeleted = that.afterDeleted.bind(that);
+        return _.each(checked, (function(_this) {
+          return function(data) {
+            return _this.collection.findWhere({
+              id: data.data.id
+            }).destroy().then(afterDeleted, afterDeleted);
+          };
+        })(this));
+      },
+      do_edit: function(invalid, checked) {
+
+        /*
+         */
+      },
+      do_reset: function(invalid, checked) {
+        var afterReset, sourceDbpg;
+        sourceDbpg = checked[0];
+        this.switchAction('processing');
+        afterReset = this.afterReset.bind(this);
+        return this.collection.findWhere({
+          id: sourceDbpg.data.id
+        }).resetParams().then(afterReset, afterReset);
+      },
+      afterCreated: function(result) {
+        this.manager.cancel();
+        if (result.error) {
+          notification('error', "Create failed because of: " + result.msg);
+          return false;
+        }
+        return notification('info', "New RDS Parameter Group is created successfully!");
+      },
+      afterReset: function(result) {
+        var currentRegion;
+        currentRegion = Design.instance().get('region');
+        this.manager.cancel();
+        if (result.error) {
+          notification('error', result.awsResult);
+          return false;
+        }
+        return notification('info', "RDS Parameter Group is reset successfully!");
+      },
+      afterDeleted: function(result) {
+        deleteCount--;
+        if (result.error) {
+          deleteErrorCount++;
+        }
+        if (deleteCount === 0) {
+          if (deleteErrorCount > 0) {
+            notification('error', deleteErrorCount + " RDS Parameter Group failed to delete, Please try again later.");
+          } else {
+            notification('info', "Delete Successfully");
+          }
+          this.manager.unCheckSelectAll();
+          deleteErrorCount = 0;
+          return this.manager.cancel();
+        }
+      },
+      switchAction: function(state) {
+        if (!state) {
+          state = 'init';
+        }
+        return this.M$('.slidebox .action').each(function() {
+          if ($(this).hasClass(state)) {
+            return $(this).show();
+          } else {
+            return $(this).hide();
+          }
+        });
+      },
+      renderDropdown: function() {
+        var option, that;
+        that = this;
+        option = {
+          manageBtnValue: lang.ide.PROP_VPC_MANAGE_RDS_PG,
+          filterPlaceHolder: lang.ide.PROP_VPC_FILTER_RDS_PG
+        };
+        this.dropdown = new combo_dropdown(option);
+        if (this.resModel && !this.resModel.attributes.pgName) {
+          that.dropdown.setSelection("Please Select Parameter Group");
+        } else {
+          this.dropdown.setSelection(this.resModel.attributes.pgName);
+        }
+        this.dropdown.on('open', this.initDropdown.bind(this), this);
+        this.dropdown.on('manage', this.renderManager.bind(this), this);
+        this.dropdown.on('filter', this.filterDropdown.bind(this), this);
+        this.dropdown.on('change', this.setParameterGroup.bind(this), this);
+        return this.dropdown;
+      },
+      initDropdown: function() {
+        if (App.user.hasCredential()) {
+          return this.renderDefault();
+        } else {
+          return this.renderNoCredential();
+        }
+      },
+      renderDefault: function() {
+        if (!fetched) {
+          this.renderLoading();
+          this.collection.fetch().then((function(_this) {
+            return function() {
+              return _this.renderDefault();
+            };
+          })(this));
+          fetched = true;
+          return false;
+        }
+        return this.openDropdown();
+      },
+      renderNoCredential: function() {
+        return this.dropdown.render('nocredential').toggleControls(false);
+      },
+      renderLoading: function() {
+        return this.dropdown.render('loading').toggleControls(false);
+      },
+      openDropdown: function(keys) {
+        var content, data, datas, defaultInfo, engineCol, modelData, regionName, selected, targetFamily;
+        data = this.collection.toJSON();
+        selected = this.resModel.attributes.pgName;
+        _.each(data, function(e) {
+          if (e.DBParameterGroupName === selected) {
+            return e.selected = true;
+          }
+        });
+        datas = {
+          keys: data
+        };
+        if (keys) {
+          datas.keys = keys;
+        }
+        if (Design.instance().modeIsApp() || Design.instance().modeIsAppEdit()) {
+          datas.isRunTime = true;
+        }
+        modelData = this.resModel.attributes;
+        regionName = Design.instance().region();
+        engineCol = CloudResources(constant.RESTYPE.DBENGINE, regionName);
+        if (engineCol) {
+          defaultInfo = engineCol.getDefaultByNameVersion(regionName, modelData.engine, modelData.engineVersion);
+          targetFamily = defaultInfo.family;
+        }
+        if (targetFamily) {
+          datas.keys = _.filter(datas.keys, function(e) {
+            return e.DBParameterGroupFamily === targetFamily;
+          });
+        }
+        content = template.keys(datas);
+        this.dropdown.toggleControls(true);
+        return this.dropdown.setContent(content);
+      },
+      filterDropdown: function(keyword) {
+        var hitKeys;
+        hitKeys = _.filter(this.collection.toJSON(), function(data) {
+          return data.id.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+        });
+        if (keyword) {
+          return this.openDropdown(hitKeys);
+        } else {
+          return this.openDropdown();
+        }
+      },
+      setParameterGroup: function(value, data) {
+        var val;
+        val = value || data.id;
+        return this.resModel.set("pgName", val);
+      },
+      getModalOptions: function() {
+        var region, regionName, that;
+        that = this;
+        region = Design.instance().get('region');
+        regionName = constant.REGION_SHORT_LABEL[region];
+        return {
+          title: "Manage DB Parameter Group in " + regionName,
+          slideable: true,
+          context: that,
+          buttons: [
+            {
+              icon: 'new-stack',
+              type: 'create',
+              name: 'Create Parameter Group'
+            }, {
+              icon: 'edit',
+              type: 'edit',
+              disabled: true,
+              name: ' Edit '
+            }, {
+              icon: 'reset',
+              type: 'reset',
+              disabled: true,
+              name: 'Reset'
+            }, {
+              icon: 'del',
+              type: 'delete',
+              disabled: true,
+              name: 'Delete'
+            }, {
+              icon: 'refresh',
+              type: 'refresh',
+              name: ''
+            }
+          ],
+          columns: [
+            {
+              sortable: true,
+              width: "30%",
+              name: 'Name',
+              rowType: "string"
+            }, {
+              sortable: true,
+              rowType: 'string',
+              width: "30%",
+              name: 'Family'
+            }, {
+              sortable: false,
+              width: "40%",
+              name: 'Description'
+            }
+          ]
+        };
+      }
+    });
+    return DbpgRes;
+  });
+
+}).call(this);
+
+define('component/rds_snapshot/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li class=\"item";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" tabindex=\"-1\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.id), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return " selected";
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    <div class=\"manager-content-sub\">Engine: "
+    + escapeExpression(((stack1 = (depth0 && depth0.Engine)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " &nbsp;&nbsp;Size: "
+    + escapeExpression(((stack1 = (depth0 && depth0.AllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " GiB</div>\n    ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    ";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<tr class=\"item\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n    <td>\n        <div class=\"checkbox\">\n            <input id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" value=\"None\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"one-cb\">\n            <label for=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div></td>\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.AllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " GiB</td>\n    <td>\n        <div class=\"manager-content-main\">";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.Status), "creating", {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n        <span class=\"manager-content-sub\">Started: "
+    + escapeExpression(((stack1 = (depth0 && depth0.started)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n    </td>\n    <td class=\"show-detail icon-toolbar-cloudformation\"></td>\n</tr>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<i class=\"status status-yellow icon-label\"></i>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " - "
+    + escapeExpression(((stack1 = (depth0 && depth0.PercentProgress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "%";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<i class=\"status status-green icon-label\"></i>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.items), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.content=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.selectedId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "selected "
+    + escapeExpression(((stack1 = (depth0 && depth0.selectedCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " Snapshot ";
+  return buffer;
+  }
+
+  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"no-credential tac\">\n    <p>There are no available instance here.</p>\n</div>";
+  };
+TEMPLATE.noinstance=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name-create\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"database\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z][a-zA-Z0-9-]*$\" data-required=\"true\"  placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_INSTANCE", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <div id=\"property-db-instance-choose\"></div>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<div class=\"slide-duplicate\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-source\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SOURCE_SNAPSHOT", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <p id=\"property-snapshot-source\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>\n                </div>\n            </div>\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "-copy\" data-ignore=\"true\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input\" value=\"[Copied "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " from "
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "]\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>Duplicate</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Duplicating...</button>\n        </div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"detail-info horizontal\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>DB Snapshot ID</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Vpc ID</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.VpcId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>DB Engine</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Engine)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>License Model</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.LicenseModel)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Status</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Db Storage</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.AllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Snapshot Creation Time</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.SnapshotCreateTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Source Region</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.AvailabilityZone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>DB Instance Name</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Snapshot Type</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.SnapshotType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>DB Engine Version</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.EngineVersion)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Master Username</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.MasterUsername)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Option Groupname</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.OptionGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Port</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Instance Creation Time</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.InstanceCreateTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.detail=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  define('rds_snapshot',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdown', "UI.modalplus", 'toolbar_modal', "i18n!/nls/lang.js", 'component/rds_snapshot/template'], function(CloudResources, ApiRequest, constant, combo_dropdown, modalPlus, toolbar_modal, lang, template) {
+    var deleteCount, deleteErrorCount, fetched, fetching, regionsMark, snapshotRes;
+    fetched = false;
+    deleteCount = 0;
+    deleteErrorCount = 0;
+    fetching = false;
+    regionsMark = {};
+    snapshotRes = Backbone.View.extend({
+      constructor: function() {
+        this.collection = CloudResources(constant.RESTYPE.DBSNAP, Design.instance().region());
+        this.listenTo(this.collection, 'update', this.onChange.bind(this));
+        this.listenTo(this.collection, 'change', this.onChange.bind(this));
+        return this;
+      },
+      onChange: function() {
+        this.initManager();
+        return this.trigger('datachange', this);
+      },
+      remove: function() {
+        this.isRemoved = true;
+        return Backbone.View.prototype.remove.call(this);
+      },
+      render: function() {
+        return this.renderManager();
+      },
+      renderDropdown: function() {
+        var option, selection;
+        option = {
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_VOLUME
+        };
+        this.dropdown = new combo_dropdown(option);
+        this.instances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region());
+        selection = lang.ide.PROP_INSTANCE_SNAPSHOT_SELECT;
+        this.dropdown.setSelection(selection);
+        this.dropdown.on('open', this.openDropdown, this);
+        this.dropdown.on('filter', this.filterDropdown, this);
+        this.dropdown.on('change', this.selectSnapshot, this);
+        return this.dropdown;
+      },
+      renderRegionDropdown: function() {
+        var option, selection;
+        option = {
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_REGION
+        };
+        this.regionsDropdown = new combo_dropdown(option);
+        this.regions = _.keys(constant.REGION_LABEL);
+        selection = lang.ide.PROP_VOLUME_SNAPSHOT_SELECT_REGION;
+        this.regionsDropdown.setSelection(selection);
+        this.regionsDropdown.on('open', this.openRegionDropdown, this);
+        this.regionsDropdown.on('filter', this.filterRegionDropdown, this);
+        this.regionsDropdown.on('change', this.selectRegion, this);
+        return this.regionsDropdown;
+      },
+      openRegionDropdown: function(keySet) {
+        var content, currentRegion, data, dataSet;
+        currentRegion = Design.instance().get('region');
+        data = _.map(this.regions, function(region) {
+          return {
+            name: constant.REGION_LABEL[region] + " - " + constant.REGION_SHORT_LABEL[region],
+            selected: region === currentRegion,
+            region: region
+          };
+        });
+        dataSet = {
+          isRuntime: false,
+          data: data
+        };
+        if (keySet) {
+          dataSet.data = keySet;
+          dataSet.hideDefaultNoKey = true;
+        }
+        content = template.keys(dataSet);
+        this.regionsDropdown.toggleControls(false, 'manage');
+        this.regionsDropdown.toggleControls(true, 'filter');
+        return this.regionsDropdown.setContent(content);
+      },
+      openDropdown: function(keySet) {
+        return this.instances.fetch().then((function(_this) {
+          return function() {
+            var content, data, dataSet;
+            data = _this.instances.toJSON();
+            if (data.length < 1) {
+              _this.dropdown.setContent(template.noinstance());
+              return false;
+            }
+            dataSet = {
+              isRuntime: false,
+              data: data
+            };
+            if (keySet) {
+              dataSet.data = keySet;
+              dataSet.hideDefaultNoKey = true;
+            }
+            content = template.keys(dataSet);
+            _this.dropdown.toggleControls(false, 'manage');
+            _this.dropdown.toggleControls(true, 'filter');
+            return _this.dropdown.setContent(content);
+          };
+        })(this));
+      },
+      filterDropdown: function(keyword) {
+        var hitKeys;
+        hitKeys = _.filter(this.instances.toJSON(), function(data) {
+          return data.id.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+        });
+        if (keyword) {
+          return this.openDropdown(hitKeys);
+        } else {
+          return this.openDropdown();
+        }
+      },
+      filterRegionDropdown: function(keyword) {
+        var hitKeys;
+        hitKeys = _.filter(this.regions, function(data) {
+          return data.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+        });
+        if (keyword) {
+          return this.openRegionDropdown(hitKeys);
+        } else {
+          return this.openRegionDropdown();
+        }
+      },
+      selectSnapshot: function(e) {
+        $("#property-db-instance-choose .selection .manager-content-sub").remove();
+        return this.manager.$el.find('[data-action="create"]').prop('disabled', false);
+      },
+      selectRegion: function(e) {
+        return this.manager.$el.find('[data-action="duplicate"]').prop('disabled', false);
+      },
+      renderManager: function() {
+        var _ref;
+        this.manager = new toolbar_modal(this.getModalOptions());
+        this.manager.on('refresh', this.refresh, this);
+        this.manager.on("slidedown", this.renderSlides, this);
+        this.manager.on("slideup", this.resetSlide, this);
+        this.manager.on('action', this.doAction, this);
+        this.manager.on('detail', this.detail, this);
+        this.manager.on('close', (function(_this) {
+          return function() {
+            _this.manager.remove();
+            return _this.collection.remove();
+          };
+        })(this));
+        this.manager.on('checked', this.processDuplicate, this);
+        this.manager.render();
+        if (!App.user.hasCredential()) {
+          if ((_ref = this.manager) != null) {
+            _ref.render('nocredential');
+          }
+          return false;
+        }
+        return this.initManager();
+      },
+      resetSlide: function() {
+        return this.manager.$el.find(".slidebox").removeAttr('style');
+      },
+      processDuplicate: function(event, checked) {
+        if (checked.length === 1) {
+          return this.M$('[data-btn=duplicate]').prop('disabled', false);
+        } else {
+          return this.M$('[data-btn=duplicate]').prop('disabled', true);
+        }
+      },
+      refresh: function() {
+        fetched = false;
+        return this.initManager();
+      },
+      setContent: function() {
+        var content, data, dataSet, _ref;
+        fetching = false;
+        fetched = true;
+        data = this.collection.toJSON();
+        _.each(data, function(e, f) {
+          if (e.PercentProgress === 100) {
+            e.completed = true;
+          }
+          if (e.SnapshotCreateTime) {
+            e.started = (new Date(e.SnapshotCreateTime)).toString();
+          }
+          return null;
+        });
+        dataSet = {
+          items: data
+        };
+        content = template.content(dataSet);
+        return (_ref = this.manager) != null ? _ref.setContent(content) : void 0;
+      },
+      initManager: function() {
+        var currentRegion, setContent;
+        setContent = this.setContent.bind(this);
+        currentRegion = Design.instance().get('region');
+        if ((!fetched && !fetching) || (!regionsMark[currentRegion])) {
+          fetching = true;
+          regionsMark[currentRegion] = true;
+          return this.collection.fetchForce().then(setContent, setContent);
+        } else if (!fetching) {
+          return this.setContent();
+        }
+      },
+      renderSlides: function(which, checked) {
+        var slides, tpl, _ref;
+        tpl = template['slide_' + which];
+        slides = this.getSlides();
+        return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
+      },
+      getSlides: function() {
+        return {
+          'delete': function(tpl, checked) {
+            var checkedAmount, data;
+            checkedAmount = checked.length;
+            if (!checkedAmount) {
+              return;
+            }
+            data = {};
+            if (checkedAmount === 1) {
+              data.selectedName = checked[0].data.name;
+            } else {
+              data.selectedCount = checkedAmount;
+            }
+            return this.manager.setSlide(tpl(data));
+          },
+          'create': function(tpl) {
+            var data;
+            data = {
+              volumes: {}
+            };
+            this.manager.setSlide(tpl(data));
+            this.dropdown = this.renderDropdown();
+            this.manager.$el.find('#property-db-instance-choose').html(this.dropdown.$el);
+            return this.manager.$el.find(".slidebox").css('overflow', "visible");
+          },
+          'duplicate': function(tpl, checked) {
+            var data;
+            data = {};
+            data.originSnapshot = checked[0];
+            data.region = Design.instance().get('region');
+            if (!checked) {
+              return;
+            }
+            this.manager.setSlide(tpl(data));
+            this.regionsDropdown = this.renderRegionDropdown();
+            this.regionsDropdown.on('change', (function(_this) {
+              return function() {
+                return _this.manager.$el.find('[data-action="duplicate"]').prop('disabled', false);
+              };
+            })(this));
+            this.manager.$el.find('#property-region-choose').html(this.regionsDropdown.$el);
+            return this.manager.$el.find(".slidebox").css('overflow', "visible");
+          }
+        };
+      },
+      doAction: function(action, checked) {
+        return this["do_" + action] && this["do_" + action]('do_' + action, checked);
+      },
+      do_create: function(validate, checked) {
+        var afterCreated, data, dbInstance;
+        if (!$('#property-snapshot-name-create').parsley('validate')) {
+          return false;
+        }
+        dbInstance = this.instances.findWhere({
+          'id': $('#property-db-instance-choose').find('.selectbox .selection .manager-content-main').data('id')
+        });
+        if (!dbInstance) {
+          return false;
+        }
+        data = {
+          "DBSnapshotIdentifier": $("#property-snapshot-name-create").val(),
+          'DBInstanceIdentifier': dbInstance.id
+        };
+        this.switchAction('processing');
+        afterCreated = this.afterCreated.bind(this);
+        return this.collection.create(data).save().then(afterCreated, afterCreated);
+      },
+      do_delete: function(invalid, checked) {
+        var afterDeleted, that;
+        that = this;
+        deleteCount += checked.length;
+        this.switchAction('processing');
+        afterDeleted = that.afterDeleted.bind(that);
+        return _.each(checked, (function(_this) {
+          return function(data) {
+            return _this.collection.findWhere({
+              id: data.data.id
+            }).destroy().then(afterDeleted, afterDeleted);
+          };
+        })(this));
+      },
+      do_duplicate: function(invalid, checked) {
+        var afterDuplicate, description, newName, sourceSnapshot, targetRegion;
+        sourceSnapshot = checked[0];
+        targetRegion = $('#property-region-choose').find('.selectbox .selection .manager-content-main').data('id');
+        if ((this.regions.indexOf(targetRegion)) < 0) {
+          return false;
+        }
+        this.switchAction('processing');
+        newName = this.manager.$el.find('#property-snapshot-name').val();
+        description = this.manager.$el.find('#property-snapshot-desc').val();
+        afterDuplicate = this.afterDuplicate.bind(this);
+        return this.collection.findWhere({
+          id: sourceSnapshot.data.id
+        }).copyTo(targetRegion, newName, description).then(afterDuplicate, afterDuplicate);
+      },
+      afterCreated: function(result, newSnapshot) {
+        this.manager.cancel();
+        if (result.error) {
+          notification('error', "Create failed because of: " + result.msg);
+          return false;
+        }
+        return notification('info', "New Snapshot is created successfully!");
+      },
+      afterDuplicate: function(result) {
+        var currentRegion;
+        currentRegion = Design.instance().get('region');
+        this.manager.cancel();
+        if (result.error) {
+          notification('error', "Duplicate failed because of: " + result.msg);
+          return false;
+        }
+        if (result.attributes.region === currentRegion) {
+          this.collection.add(result);
+          return notification('info', "New Snapshot is duplicated successfully!");
+        } else {
+          this.initManager();
+          return notification('info', 'New Snapshot is duplicated to another region, you need to switch region to check the snapshot you just created.');
+        }
+      },
+      afterDeleted: function(result) {
+        deleteCount--;
+        if (result.error) {
+          deleteErrorCount++;
+        }
+        if (deleteCount === 0) {
+          if (deleteErrorCount > 0) {
+            notification('error', deleteErrorCount + " Snapshot failed to delete, Please try again later.");
+          } else {
+            notification('info', "Delete Successfully");
+          }
+          this.manager.unCheckSelectAll();
+          deleteErrorCount = 0;
+          return this.manager.cancel();
+        }
+      },
+      switchAction: function(state) {
+        if (!state) {
+          state = 'init';
+        }
+        return this.M$('.slidebox .action').each(function() {
+          if ($(this).hasClass(state)) {
+            return $(this).show();
+          } else {
+            return $(this).hide();
+          }
+        });
+      },
+      detail: function(event, data, $tr) {
+        var detailTpl, snapshotData, snapshotId;
+        snapshotId = data.id;
+        snapshotData = this.collection.get(snapshotId).toJSON();
+        detailTpl = template.detail(snapshotData);
+        return this.manager.setDetail($tr, detailTpl);
+      },
+      getModalOptions: function() {
+        var region, regionName, that;
+        that = this;
+        region = Design.instance().get('region');
+        regionName = constant.REGION_SHORT_LABEL[region];
+        return {
+          title: "Manage RDS Snapshots in " + regionName,
+          slideable: true,
+          context: that,
+          buttons: [
+            {
+              icon: 'new-stack',
+              type: 'create',
+              name: 'Create Snapshot'
+            }, {
+              icon: 'del',
+              type: 'delete',
+              disabled: true,
+              name: 'Delete'
+            }, {
+              icon: 'refresh',
+              type: 'refresh',
+              name: ''
+            }
+          ],
+          columns: [
+            {
+              sortable: true,
+              width: "30%",
+              name: 'Name'
+            }, {
+              sortable: true,
+              rowType: 'number',
+              width: "20%",
+              name: 'Capicity'
+            }, {
+              sortable: true,
+              rowType: 'datetime',
+              width: "40%",
+              name: 'status'
+            }, {
+              sortable: false,
+              width: "10%",
+              name: 'Detail'
+            }
+          ]
+        };
+      }
+    });
+    return snapshotRes;
   });
 
 }).call(this);

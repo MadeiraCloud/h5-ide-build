@@ -1,1151 +1,7 @@
 (function() {
-  define('CanvasManager',['CloudResources'], function(CloudResources) {
-    var CanvasManager;
-    CanvasManager = {
-      removeClass: function(element, theClass) {
-        var klass, newKlass;
-        if (element.length) {
-          element = element[0];
-        }
-        if (!element) {
-          return this;
-        }
-        klass = element.getAttribute("class") || "";
-        newKlass = klass.replace(new RegExp("\\b" + theClass + "\\b", "g"), "");
-        if (klass !== newKlass) {
-          element.setAttribute("class", newKlass);
-        }
-        return this;
-      },
-      addClass: function(element, theClass) {
-        var klass;
-        if (element.length) {
-          element = element[0];
-        }
-        if (!element) {
-          return this;
-        }
-        klass = element.getAttribute("class") || "";
-        if (!klass.match(new RegExp("\\b" + theClass + "\\b"))) {
-          klass = $.trim(klass) + " " + theClass;
-          element.setAttribute("class", klass);
-        }
-        return this;
-      },
-      toggle: function(element, isShow) {
-        if (element.hasOwnProperty("length")) {
-          element = element[0];
-        }
-        if (!element) {
-          return this;
-        }
-        if (isShow === null || isShow === void 0) {
-          isShow = element.getAttribute("display") === "none";
-        }
-        if (isShow) {
-          element.setAttribute("display", "inline");
-          element.setAttribute("style", "");
-          if (element.getAttribute("data-tooltip")) {
-            this.addClass(element, "tooltip");
-          }
-        } else {
-          element.setAttribute("display", "none");
-          element.setAttribute("style", "opacity:0");
-          this.removeClass(element, "tooltip");
-        }
-        return this;
-      },
-      updateEip: function(node, targetModel) {
-        var imgUrl, res, resource_list, toggle, tootipStr;
-        if (node.length) {
-          node = node[0];
-        }
-        toggle = targetModel.hasPrimaryEip();
-        if (toggle) {
-          tootipStr = 'Detach Elastic IP from primary IP';
-          imgUrl = 'ide/icon/eip-on.png';
-        } else {
-          tootipStr = 'Associate Elastic IP to primary IP';
-          imgUrl = 'ide/icon/eip-off.png';
-        }
-        if (targetModel.design().modeIsApp() || targetModel.design().modeIsAppView()) {
-          resource_list = CloudResources(targetModel.type, targetModel.design().region());
-          res = resource_list.get(targetModel.get('appId'));
-          if (toggle && res) {
-            res = res != null ? res.toJSON() : void 0;
-            if (res.privateIpAddressesSet && res.privateIpAddressesSet.item && res.privateIpAddressesSet.item.length) {
-              res = res.privateIpAddressesSet.item[0];
-              if (res.association && res.association) {
-                tootipStr = res.association.publicIp || "";
-              }
-            } else {
-              tootipStr = res.ipAddress || "";
-            }
-          } else {
-            tootipStr = "";
-          }
-        }
-        node.setAttribute("data-tooltip", tootipStr);
-        $(node).data("tooltip", tootipStr);
-        this.update(node, imgUrl, "href");
-        return null;
-      },
-      update: function(element, value, attr) {
-        var href;
-        if (_.isString(element)) {
-          element = document.getElementById(element);
-        }
-        element = $(element);
-        if (!attr) {
-          return element.text(MC.truncate(value, 17));
-        } else if (attr === "href" || attr === "image") {
-          value = MC.IMG_URL + value;
-          href = element[0].getAttributeNS("http://www.w3.org/1999/xlink", "href");
-          if (href !== value) {
-            return element[0].setAttributeNS("http://www.w3.org/1999/xlink", "href", value);
-          }
-        } else if (attr === "tooltip") {
-          element.data("tooltip", value).attr("data-tooltip", value);
-          if (value) {
-            return CanvasManager.addClass(element, "tooltip");
-          } else {
-            return CanvasManager.removeClass(element, "tooltip");
-          }
-        } else if (attr === "color") {
-          return element.attr("style", "fill:" + value);
-        } else {
-          return element.attr(attr, value);
-        }
-      },
-      size: function(node, w, h, oldw, oldh) {
-        var $node, $ports, $wrap, child, childMap, deltaW, newX, newY, pad, transform, transformReg, x, y, _i, _j, _len, _len1;
-        pad = 10;
-        w *= MC.canvas.GRID_WIDTH;
-        h *= MC.canvas.GRID_HEIGHT;
-        oldw *= MC.canvas.GRID_WIDTH;
-        deltaW = w - oldw;
-        $node = $(node);
-        $node.children("group").attr("width", w).attr("height", h);
-        $ports = $node.children("path");
-        transformReg = /translate\(([^)]+)\)/;
-        for (_i = 0, _len = $ports.length; _i < _len; _i++) {
-          child = $ports[_i];
-          transform = transformReg.exec(child.getAttribute("class"));
-          if (transform && transform[1]) {
-            transform = transform[1].split(",");
-            newX = x = parseInt(transform[0], 10);
-            y = parseInt(transform[1], 10);
-            newY = h / 2;
-            if (x >= oldw) {
-              newX += deltaW;
-            }
-            if (x !== newX || y !== newY) {
-              this.position(child, newX, newY);
-            }
-          }
-        }
-        $wrap = $node.children('.resizer-wrap').children();
-        if ($wrap.length) {
-          childMap = {};
-          for (_j = 0, _len1 = $wrap.length; _j < _len1; _j++) {
-            child = $wrap[_j];
-            childMap[child.getAttribute("class")] = child;
-          }
-          child = childMap["resizer-top"];
-          if (child) {
-            child.setAttribute("width", w - 2 * pad);
-          }
-          child = childMap["resizer-bottom"];
-          if (child) {
-            child.setAttribute("width", w - 2 * pad);
-          }
-          child = childMap["resizer-left"];
-          if (child) {
-            child.setAttribute("height", h - 2 * pad);
-          }
-          child = childMap["resizer-right"];
-          if (child) {
-            child.setAttribute("height", h - 2 * pad);
-          }
-          child = childMap["resizer-topright"];
-          if (child) {
-            child.setAttribute("x", w - pad);
-          }
-          child = childMap["resizer-bottomleft"];
-          if (child) {
-            child.setAttribute("y", h - pad);
-          }
-          child = childMap["resizer-bot"];
-          if (child) {
-            child.setAttribute("x", w - pad);
-            return child.setAttribute("y", h - pad);
-          }
-        }
-      },
-      setPoisition: function(node, x, y) {
-        var transformVal, translateVal;
-        transformVal = node.transform.baseVal;
-        if (transformVal.numberOfItems === 1) {
-          transformVal.getItem(0).setTranslate(x * 10, y * 10);
-        } else {
-          translateVal = node.ownerSVGElement.createSVGTransform();
-          translateVal.setTranslate(x * 10, y * 10);
-          transformVal.appendItem(translateVal);
-        }
-        return null;
-      },
-      position: function(node, x, y, updateLine) {
-        if (node.length) {
-          node = node[0];
-        }
-        MC.canvas.position(node, x, y);
-        return null;
-      }
-    };
-    return CanvasManager;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CanvasElement',["CanvasManager", "event", "constant", "i18n!/nls/lang.js", "CloudResources", "MC.canvas.constant"], function(CanvasManager, ide_event, constant, lang, CloudResources) {
-    var CanvasElement, CanvasElementConstructors, Design;
-    Design = null;
-    CanvasElementConstructors = {};
-
-    /*
-     * Canvas interface of CanvasElement
-     */
-    CanvasElement = function(model, containerId) {
-      this.id = model.id;
-      this.model = model;
-      this.type = model.type;
-      this.containerId = containerId;
-      if (model.parent) {
-        this.parentId = model.parent();
-        this.parentId = this.parentId ? this.parentId.id : "";
-      } else {
-        this.parentId = "";
-      }
-      if (model.node_group === true) {
-        this.nodeType = "group";
-      } else if (model.node_line === true) {
-        this.nodeType = "line";
-      } else {
-        this.nodeType = "node";
-      }
-      return this;
-    };
-    CanvasElement.extend = function(Child, ElementType) {
-      var CanvasElementPrototype;
-      CanvasElementPrototype = function() {
-        return null;
-      };
-      CanvasElementPrototype.prototype = this.prototype;
-      Child.prototype = new CanvasElementPrototype();
-      Child.prototype.constructor = Child;
-      Child["super"] = this.prototype;
-      CanvasElementConstructors[ElementType] = Child;
-      return null;
-    };
-    CanvasElement.createView = function(type, model, containerId) {
-      var CEC, m;
-      CEC = CanvasElementConstructors[type];
-      if (!CEC) {
-        CEC = CanvasElement;
-        m = {
-          type: "Unknown",
-          id: model
-        };
-      }
-      return new CEC(m || model, containerId);
-    };
-    CanvasElement.prototype.constant = {
-      PATH_PORT_LEFT: "M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z",
-      PATH_PORT_TOP: "M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z",
-      PATH_PORT_RIGHT: "M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z",
-      PATH_PORT_BOTTOM: "M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z",
-      PATH_PORT_DIAMOND: "M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z"
-    };
-    CanvasElement.constant = {
-      PORT_RIGHT_ANGLE: 0,
-      PORT_UP_ANGLE: 90,
-      PORT_LEFT_ANGLE: 180,
-      PORT_DOWN_ANGLE: 270
-    };
-
-    /*
-     * CanvasElement Interface
-     */
-    CanvasElement.prototype.draw = function() {
-      return null;
-    };
-    CanvasElement.prototype.getModel = function() {
-      return this.model;
-    };
-    CanvasElement.prototype.element = function(id) {
-      if (!id) {
-        id = this.id;
-      }
-      return document.getElementById(id);
-    };
-    CanvasElement.prototype.$element = function(id) {
-      return $(this.element());
-    };
-    CanvasElement.prototype.move = function(x, y) {
-      if (x === this.model.x() && y === this.model.y()) {
-        return;
-      }
-      return MC.canvas.move(this.element(), x, y);
-    };
-    CanvasElement.prototype.position = function(x, y) {
-      var el, oldx, oldy;
-      oldx = this.model.x();
-      oldy = this.model.y();
-      if ((x === void 0 || x === null) && (y === void 0 || y === null)) {
-        return [oldx, oldy];
-      }
-      if (x === null || x === void 0) {
-        x = oldx;
-      }
-      if (y === null || y === void 0) {
-        y = oldy;
-      }
-      if (x === oldx && y === oldy) {
-        return;
-      }
-      this.model.set({
-        x: x,
-        y: y
-      });
-      el = this.element();
-      if (el) {
-        MC.canvas.position(el, x, y);
-      }
-      return null;
-    };
-    CanvasElement.prototype.size = function(w, h) {
-      var el, oldh, oldw;
-      oldw = this.model.width();
-      oldh = this.model.height();
-      if ((w === void 0 || w === null) && (h === void 0 || h === null)) {
-        return [oldw, oldh];
-      }
-      if (!this.model.node_group) {
-        return;
-      }
-      if (w === null || w === void 0) {
-        w = oldw;
-      }
-      if (h === null || h === void 0) {
-        h = oldh;
-      }
-      if (w !== oldw || h !== oldh) {
-        this.model.set({
-          width: w,
-          height: h
-        });
-      }
-      el = this.element();
-      if (el) {
-        MC.canvas.groupSize(el, w, h);
-      }
-      return null;
-    };
-    CanvasElement.prototype.offset = function() {
-      return this.element().getBoundingClientRect();
-    };
-    CanvasElement.prototype.port = function() {
-      if (!this.ports) {
-        this.ports = _.map(this.$element().children(".port"), function(el) {
-          return el.getAttribute("data-name");
-        });
-      }
-      return this.ports;
-    };
-    CanvasElement.prototype.isConnectable = function(fromPort, toId, toPort) {
-      var C, p1Comp, p2Comp, t, _i, _len, _ref;
-      C = Design.modelClassForPorts(fromPort, toPort);
-      if (!C) {
-        return false;
-      }
-      p1Comp = this.model;
-      p2Comp = this.model.design().component(toId);
-      _ref = p1Comp.connectionTargets(C.prototype.type);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        t = _ref[_i];
-        if (t === p2Comp) {
-          return false;
-        }
-      }
-      return C.isConnectable(p1Comp, p2Comp) !== false;
-    };
-    CanvasElement.prototype.isRemovable = function() {
-      var ch, res, _i, _len, _ref;
-      res = this.model.isRemovable();
-      if (res !== true) {
-        return res;
-      }
-      if (this.nodeType === "group") {
-        _ref = this.children();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          ch = _ref[_i];
-          res = ch.isRemovable();
-          if (res !== true) {
-            break;
-          }
-        }
-      }
-      return res;
-    };
-    CanvasElement.prototype.remove = function() {
-      var comp, comp_name, res, template;
-      if (this.model.isRemoved()) {
-        return;
-      }
-      res = this.isRemovable();
-      comp = this.model;
-      comp_name = comp.get("name");
-      if (res === true && comp.children && comp.children().length > 0) {
-        res = sprintf(lang.ide.CVS_CFM_DEL_GROUP, comp_name);
-      }
-      if (_.isString(res)) {
-        template = MC.template.canvasOpConfirm({
-          title: sprintf(lang.ide.CVS_CFM_DEL, comp_name),
-          content: res
-        });
-        modal(template, true);
-        $("#canvas-op-confirm").one("click", function() {
-          if (!comp.isRemoved()) {
-            comp.remove();
-            $canvas.selected_node().length = 0;
-            ide_event.trigger(ide_event.OPEN_PROPERTY);
-          }
-          return null;
-        });
-      } else if (res.error) {
-        notification("error", res.error);
-      } else if (res === true) {
-        comp.remove();
-        $canvas.selected_node().length = 0;
-        ide_event.trigger(ide_event.OPEN_PROPERTY);
-        return true;
-      }
-      return false;
-    };
-    CanvasElement.prototype.reConnect = function() {
-      var cn, v, _i, _len, _ref;
-      _ref = this.model.connections();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cn = _ref[_i];
-        v = cn.getCanvasView();
-        if (v) {
-          v.draw();
-        }
-      }
-      return null;
-    };
-    CanvasElement.prototype.select = function() {
-      if (this.type === "Unknown") {
-        return;
-      }
-      this.doSelect(this.type, this.id, this.id);
-      return true;
-    };
-    CanvasElement.prototype.doSelect = function(type, propertyId, canvasId) {
-      ide_event.trigger(ide_event.OPEN_PROPERTY, type, propertyId);
-      return MC.canvas.select(canvasId);
-    };
-    CanvasElement.prototype.connection = function() {
-      var cn, cns, _i, _len, _ref;
-      cns = [];
-      _ref = this.model.connections();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cn = _ref[_i];
-        if (cn.get("lineType")) {
-          cns.push({
-            line: cn.id,
-            target: this.id,
-            port: cn.port(this.id, "name")
-          });
-        }
-      }
-      return cns;
-    };
-    CanvasElement.prototype.toggleEip = function() {
-      var toggle;
-      console.assert(this.model.setPrimaryEip, "The component doesn't support setting EIP");
-      toggle = !this.model.hasPrimaryEip();
-      this.model.setPrimaryEip(toggle);
-      if (toggle) {
-        Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
-      }
-      ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
-      return null;
-    };
-    CanvasElement.prototype.clone = function(parentId, x, y) {
-      var attributes, createOption, design, name, nameMatch, parent, pos;
-      design = this.model.design();
-      if (!design.modeIsStack() && !design.modeIsAppEdit()) {
-        return;
-      }
-      parent = design.component(parentId);
-      if (!parent) {
-        console.error("No parent is found when cloning object");
-        return;
-      }
-      if (this.model.clone) {
-        name = this.model.get("name");
-        nameMatch = name.match(/(.+-copy)(\d*)$/);
-        if (nameMatch) {
-          name = nameMatch[1] + ((parseInt(nameMatch[2], 10) || 0) + 1);
-        } else {
-          name += "-copy";
-        }
-        attributes = {
-          parent: parent,
-          name: name
-        };
-        pos = {
-          x: x,
-          y: y
-        };
-        createOption = {
-          cloneSource: this.model
-        };
-        return $canvas.add(this.type, attributes, pos, createOption);
-      }
-    };
-    CanvasElement.prototype.parent = function() {
-      var p;
-      p = this.model.parent();
-      if (p) {
-        return p.getCanvasView();
-      } else {
-        return null;
-      }
-    };
-    CanvasElement.prototype.changeParent = function(parentId, execCB) {
-      var oldPid, parent, res;
-      if (parentId === "canvas") {
-        parentId = "";
-      }
-      oldPid = this.model.parent();
-      oldPid = oldPid ? oldPid.id : "";
-      if (oldPid === parentId) {
-        execCB.call(this);
-        return false;
-      }
-      if (this.model.design().modeIsAppEdit() && this.model.get("appId")) {
-        notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
-        return;
-      }
-      parent = this.model.design().component(parentId);
-      if (!parent) {
-        console.warn("Cannot find parent when changing parent");
-        return false;
-      }
-      res = this.model.isReparentable(parent);
-      if (_.isString(res)) {
-        notification("error", res);
-      } else if (res === true) {
-        parent.addChild(this.model);
-        execCB.call(this);
-        return true;
-      }
-      return false;
-    };
-    CanvasElement.prototype.children = function() {
-      if (this.model.children) {
-        return _.map(this.model.children() || [], function(c) {
-          return c.getCanvasView();
-        });
-      } else {
-        return [];
-      }
-    };
-    CanvasElement.prototype.list = function() {
-      var component, id, idx, instance_data, list, member, members, name, resource_list, state, _i, _len, _ref, _ref1, _ref2;
-      component = this.model;
-      members = this.model.members ? this.model.members() : this.model.groupMembers();
-      if (members.length === 0) {
-        return [];
-      }
-      id = this.id;
-      name = this.model.get("name");
-      resource_list = CloudResources(this.model.type, this.model.design().region());
-
-      /*
-       * Quick hack for Lc
-       */
-      if (this.type !== constant.RESTYPE.LC) {
-        if (this.type === constant.RESTYPE.INSTANCE) {
-          instance_data = (_ref = resource_list.get(this.model.get("appId"))) != null ? _ref.toJSON() : void 0;
-          state = instance_data ? instance_data.instanceState.name : "unknown";
-        }
-        list = [
-          {
-            id: id,
-            name: name,
-            appId: this.model.get("appId"),
-            state: state || "",
-            deleted: resource_list.get(this.model.get("appId")) ? "" : " deleted"
-          }
-        ];
-        list.id = id;
-        list.name = name;
-      } else {
-        list = [];
-        list.id = this.model.parent().id;
-        list.name = this.model.parent().get("name");
-      }
-      _ref1 = this.model.groupMembers();
-      for (idx = _i = 0, _len = _ref1.length; _i < _len; idx = ++_i) {
-        member = _ref1[idx];
-        state = "";
-        if (this.type === constant.RESTYPE.INSTANCE || this.type === constant.RESTYPE.LC) {
-          resource_list = CloudResources(constant.RESTYPE.INSTANCE, this.model.design().region());
-          instance_data = (_ref2 = resource_list.get(member.appId)) != null ? _ref2.toJSON() : void 0;
-          state = instance_data ? instance_data.instanceState.name : "unknown";
-        }
-        list.push({
-          id: member.id,
-          name: name,
-          appId: member.appId,
-          state: state,
-          deleted: !this.model.design().modeIsStack() && !resource_list.get(this.model.get("appId")) ? " deleted" : ""
-        });
-      }
-      return list;
-    };
-    CanvasElement.prototype.connectionData = function(portName) {
-      return Design.modelClassForType("Framework_CN").connectionData(this.type, portName);
-    };
-
-    /*
-     * Helper functions for rendering and for model
-     */
-    CanvasElement.prototype.getLayer = function(layerName) {
-      return $("#" + layerName);
-    };
-    CanvasElement.prototype.portDirection = function(portName) {
-      if (this.portDirMap) {
-        return this.portDirMap[portName];
-      } else {
-        return null;
-      }
-    };
-    CanvasElement.prototype.portPosition = function(portName) {
-      if (this.portPosMap) {
-        return this.portPosMap[portName];
-      } else {
-        return null;
-      }
-    };
-    CanvasElement.prototype.initNode = function(node, x, y) {
-      var child, name, pos, _i, _len, _ref;
-      CanvasManager.position(node, x, y);
-      if (node.length) {
-        node = node[0];
-      }
-      _ref = node.children || node.childNodes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        child = _ref[_i];
-        if (child.tagName === "PATH" || child.tagName === "path") {
-          name = child.getAttribute("data-alias") || child.getAttribute("data-name");
-          if (name) {
-            pos = this.portPosition(name);
-            if (pos) {
-              CanvasManager.setPoisition(child, pos[0] / 10, pos[1] / 10);
-            }
-          }
-        }
-      }
-      return null;
-    };
-    CanvasElement.prototype.createNode = function(option) {
-      var height, m, node, width, x, y;
-      m = this.model;
-      x = m.x();
-      y = m.y();
-      width = m.width() * MC.canvas.GRID_WIDTH;
-      height = m.height() * MC.canvas.GRID_HEIGHT;
-      node = Canvon.group().append(Canvon.rectangle(0, 0, width, height).attr({
-        'class': 'node-background',
-        'rx': 5,
-        'ry': 5
-      }), Canvon.image(MC.IMG_URL + option.image, option.imageX, option.imageY, option.imageW, option.imageH)).attr({
-        'id': option.id || this.id,
-        'class': 'dragable node ' + this.type.replace(/\./g, "-"),
-        'data-type': 'node',
-        'data-class': this.type
-      });
-      if (option.labelBg) {
-        node.append(Canvon.rectangle(2, 76, 86, 13).attr({
-          'class': 'node-label-name-bg',
-          'rx': 3,
-          'ry': 3
-        }));
-      }
-      if (option.label) {
-        node.append(Canvon.text(width / 2, height - 4, MC.truncate(option.label, 17)).attr({
-          'class': 'node-label' + (option.labelBg ? ' node-label-name' : '')
-        }));
-      }
-      if (option.sg) {
-        node.append(Canvon.group().append(Canvon.rectangle(10, 6, 7, 5).attr({
-          'class': 'node-sg-color-border tooltip'
-        }), Canvon.rectangle(20, 6, 7, 5).attr({
-          'class': 'node-sg-color-border tooltip'
-        }), Canvon.rectangle(30, 6, 7, 5).attr({
-          'class': 'node-sg-color-border tooltip'
-        }), Canvon.rectangle(40, 6, 7, 5).attr({
-          'class': 'node-sg-color-border tooltip'
-        }), Canvon.rectangle(50, 6, 7, 5).attr({
-          'class': 'node-sg-color-border tooltip'
-        })).attr({
-          'class': 'node-sg-color-group',
-          'transform': 'translate(8, 62)'
-        }));
-      }
-      return node;
-    };
-    CanvasElement.prototype.createGroup = function(name) {
-      var height, m, pad, text_pos, width, x, y;
-      m = this.model;
-      x = m.x();
-      y = m.y();
-      width = m.width() * MC.canvas.GRID_WIDTH;
-      height = m.height() * MC.canvas.GRID_HEIGHT;
-      text_pos = {
-        'AWS.VPC.VPC': [6, 16],
-        'AWS.EC2.AvailabilityZone': [4, 14],
-        'AWS.VPC.Subnet': [4, 14],
-        'AWS.AutoScaling.Group': [4, 14]
-      }[m.type];
-      pad = 10;
-      return Canvon.group().append(Canvon.rectangle(0, 0, width, height).attr({
-        'class': 'group',
-        'rx': 5,
-        'ry': 5
-      }), Canvon.group().append(Canvon.rectangle(pad, 0, width - 2 * pad, pad).attr({
-        'class': 'group-resizer resizer-top',
-        'data-direction': 'top'
-      }), Canvon.rectangle(0, pad, pad, height - 2 * pad).attr({
-        'class': 'group-resizer resizer-left',
-        'data-direction': 'left'
-      }), Canvon.rectangle(width - pad, pad, pad, height - 2 * pad).attr({
-        'class': 'group-resizer resizer-right',
-        "data-direction": "right"
-      }), Canvon.rectangle(pad, height - pad, width - 2 * pad, pad).attr({
-        'class': 'group-resizer resizer-bottom',
-        "data-direction": "bottom"
-      }), Canvon.rectangle(0, 0, pad, pad).attr({
-        'class': 'group-resizer resizer-topleft',
-        "data-direction": "topleft"
-      }), Canvon.rectangle(width - pad, 0, pad, pad).attr({
-        'class': 'group-resizer resizer-topright',
-        "data-direction": "topright"
-      }), Canvon.rectangle(0, height - pad, pad, pad).attr({
-        'class': 'group-resizer resizer-bottomleft',
-        "data-direction": "bottomleft"
-      }), Canvon.rectangle(width - pad, height - pad, pad, pad).attr({
-        'class': 'group-resizer resizer-bottomright',
-        "data-direction": "bottomright"
-      })).attr({
-        'class': 'resizer-wrap'
-      }), Canvon.text(text_pos[0], text_pos[1], name).attr({
-        'class': 'group-label name'
-      })).attr({
-        'id': this.id,
-        'class': 'dragable ' + this.type.replace(/\./g, "-"),
-        'data-type': 'group',
-        'data-class': this.type
-      });
-    };
-    CanvasElement.prototype.updateAppState = function() {
-      var data, design, m, res_list;
-      m = this.model;
-      design = m.design();
-      if (design.modeIsStack() || !m.get("appId")) {
-        return;
-      }
-      CanvasManager.removeClass(this.element(), "deleted");
-      if (m.type && design.region()) {
-        res_list = CloudResources(m.type, design.region());
-        data = res_list.get(m.get('appId'));
-        if (!data) {
-          CanvasManager.addClass(this.element(), "deleted");
-        }
-      }
-      return null;
-    };
-    CanvasElement.prototype.updatexGWAppState = function() {
-      var data, design, el, m, res_list, _ref;
-      m = this.model;
-      design = m.design();
-      if (m.design().modeIsStack() || !m.get("appId")) {
-        return;
-      }
-      el = this.element();
-      CanvasManager.removeClass(el, "deleted");
-      if (m.type && design.region()) {
-        res_list = CloudResources(m.type, design.region());
-        data = res_list.get(m.get('appId'));
-      }
-      if (data) {
-        if (m.get("appId").indexOf("igw-") === 0) {
-          if (!(data.get("state") === "available" && data.get("vpcId") === m.parent().get("appId"))) {
-            CanvasManager.addClass(el, "deleted");
-          }
-        } else if (m.get("appId").indexOf("vgw-") === 0) {
-          if (!(data.get("state") === "available" && ((_ref = data.get("attachmentState")) === "attaching" || _ref === "attached") && data.get("vpcId") === m.parent().get("appId"))) {
-            CanvasManager.addClass(el, "deleted");
-          }
-        } else if (m.get("appId").indexOf("cgw-") === 0) {
-          if (data.get("state") !== "available") {
-            CanvasManager.addClass(el, "deleted");
-          }
-        }
-      } else {
-        CanvasManager.addClass(el, "deleted");
-      }
-      return null;
-    };
-    CanvasElement.prototype.detach = function() {
-      return MC.canvas.remove(this.element());
-    };
-    CanvasElement.setDesign = function(design) {
-      Design = design;
-      return null;
-    };
-    return CanvasElement;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CanvasAdaptor',["./CanvasElement", "event", 'i18n!/nls/lang.js', "constant", "UI.notification"], function(CanvasElement, ide_event, lang, constant) {
-    var $canvas, Canvas, CanvasEvent, Design;
-    Design = null;
-
-    /* $canvas is a adaptor for MC.canvas.js */
-    $canvas = function(id, defaultType) {
-      var component, type, view;
-      component = Design.__instance.component(id);
-      if (component) {
-        view = component.getCanvasView();
-      }
-      if (!view) {
-        console.debug("Creating an view for an unfound component : ", defaultType, id);
-        type = component ? component.type : defaultType;
-        view = CanvasElement.createView(type, component || id);
-      }
-      return view;
-    };
-    $canvas.size = function(w, h) {
-      if (Design.__instance) {
-        return Design.__instance.canvas.size(w, h);
-      } else {
-        return [240, 240];
-      }
-    };
-    $canvas.scale = function(ratio) {
-      return Design.__instance.canvas.scale(ratio);
-    };
-    $canvas.offset = function() {
-      return $(document.getElementById("svg_canvas")).offset();
-    };
-    $canvas.selected_node = function() {
-      if (Design.__instance) {
-        return Design.__instance.canvas.selectedNode;
-      } else {
-        return null;
-      }
-    };
-    $canvas.setLineStyle = function(ls) {
-      if (ls === !4 && Design.instance() && Design.instance().mode() === "appview") {
-        ls = 4;
-      }
-      localStorage.setItem("canvas/lineStyle", ls);
-      return Design.instance().canvas.setLineStyle(ls);
-    };
-    $canvas.lineStyle = function() {
-      var ls, _ref;
-      ls = (_ref = Design.instance()) != null ? _ref.canvas.ls : void 0;
-      if (ls === void 0) {
-        ls = parseInt(localStorage.getItem("canvas/lineStyle"));
-        if (isNaN(ls)) {
-          ls = 2;
-        }
-      }
-      return ls;
-    };
-    $canvas.node = function() {
-      var comp, id, nodes, _ref;
-      nodes = [];
-      _ref = Design.__instance.__canvasNodes;
-      for (id in _ref) {
-        comp = _ref[id];
-        if (!comp.isVisual || comp.isVisual()) {
-          nodes.push(comp.getCanvasView());
-        }
-      }
-      return nodes;
-    };
-    $canvas.group = function() {
-      return _.map(Design.__instance.__canvasGroups, function(comp) {
-        return comp.getCanvasView();
-      });
-    };
-    $canvas.clearSelected = function() {
-      MC.canvas.event.clearSelected();
-      ide_event.trigger(ide_event.OPEN_PROPERTY);
-      return null;
-    };
-    $canvas.trigger = function(event) {
-      console.assert(_.isString(event), "Invalid parameter : event ");
-      if (CanvasEvent[event]) {
-        CanvasEvent[event].apply(this, Array.prototype.slice.call(arguments, 1));
-      }
-      return null;
-    };
-    $canvas.add = function(type, attributes, pos, createOption) {
-      var Model, m, parent;
-      attributes = $.extend({
-        x: Math.round(pos.x),
-        y: Math.round(pos.y)
-      }, attributes);
-      parent = attributes.parent;
-      if (!parent) {
-        parent = Design.__instance.component(attributes.groupUId);
-        attributes.parent = parent;
-        delete attributes.groupUId;
-      }
-      if (parent) {
-        if (parent.type === constant.RESTYPE.ASG) {
-          attributes.x = parent.x() + 2;
-          attributes.y = parent.y() + 3;
-          type = constant.RESTYPE.LC;
-        } else if (parent.type === "ExpandedAsg") {
-          return false;
-        }
-      }
-      Model = Design.modelClassForType(type);
-      createOption = $.extend({
-        createByUser: true
-      }, createOption || {});
-      m = new Model(attributes, createOption);
-      if (createOption.selectId) {
-        $canvas(createOption.selectId, true).select();
-      } else if (m.id) {
-        $canvas(m.id, true).select();
-      }
-      return m.id;
-    };
-    $canvas.connect = function(p1, p1Name, p2, p2Name) {
-      var C, DefaultCreateOption, c, comp1, comp2, res;
-      C = Design.modelClassForPorts(p1Name, p2Name);
-      console.assert(C, "Cannot found Class for type: " + p1Name + ">" + p2Name);
-      comp1 = Design.instance().component(p1);
-      comp2 = Design.instance().component(p2);
-      res = C.isConnectable(comp1, comp2);
-      DefaultCreateOption = {
-        createByUser: true
-      };
-      if (_.isString(res)) {
-        notification("error", res);
-      } else if (res === true) {
-        c = new C(comp1, comp2, void 0, DefaultCreateOption);
-        if (c.id) {
-          $canvas(c.id, true).select();
-        }
-        return true;
-      } else if (res === false) {
-        return false;
-      } else if (res.confirm) {
-        modal(MC.template.modalCanvasConfirm(res), true);
-        $("#canvas-op-confirm").one("click", function() {
-          c = new C(comp1, comp2, void 0, DefaultCreateOption);
-          if (c.id) {
-            $canvas(c.id, true).select();
-          }
-          return null;
-        });
-      }
-      return false;
-    };
-    $canvas.connection = function(line_uid) {
-      var cache, l, line, lineArray, uid;
-      if (line_uid) {
-        cache = {
-          uid: Design.__instance.component(line_uid)
-        };
-      } else {
-        cache = Design.__instance.__canvasLines;
-      }
-      lineArray = {};
-      for (uid in cache) {
-        line = cache[uid];
-        l = {
-          type: line.get("lineType"),
-          target: {}
-        };
-        l.target[line.port1Comp().id] = line.port1("name");
-        l.target[line.port2Comp().id] = line.port2("name");
-        lineArray[uid] = l;
-      }
-      if (line_uid) {
-        return lineArray.uid;
-      } else {
-        return lineArray;
-      }
-    };
-    $canvas.hasVPC = function() {
-      return !!Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-    };
-    CanvasEvent = {
-      CANVAS_NODE_SELECTED: function() {
-        ide_event.trigger(ide_event.OPEN_PROPERTY);
-        return null;
-      },
-      SHOW_STATE_EDITOR: function(uid) {
-        ide_event.trigger(ide_event.SHOW_STATE_EDITOR, uid);
-        return null;
-      },
-      SHOW_PROPERTY_PANEL: function() {
-        ide_event.trigger(ide_event.FORCE_OPEN_PROPERTY, 'property');
-        return null;
-      },
-      CANVAS_PLACE_OVERLAP: function() {
-        notification('warning', lang.ide.CVS_MSG_WARN_COMPONENT_OVERLAP, false);
-        return null;
-      },
-      CANVAS_ZOOMED_DROP_ERROR: function() {
-        notification('warning', lang.ide.CVS_MSG_ERR_ZOOMED_DROP_ERROR);
-        return null;
-      },
-      CANVAS_SAVE: function() {
-        $("#OpsEditor").trigger("SAVE");
-        return false;
-      },
-      CANVAS_PLACE_NOT_MATCH: function(param) {
-        var info, l, res_type;
-        res_type = constant.RESTYPE;
-        l = lang.ide;
-        switch (param.type) {
-          case res_type.VOL:
-            info = l.CVS_MSG_WARN_NOTMATCH_VOLUME;
-            break;
-          case res_type.SUBNET:
-            info = l.CVS_MSG_WARN_NOTMATCH_SUBNET;
-            break;
-          case res_type.INSTANCE:
-            info = l.CVS_MSG_WARN_NOTMATCH_INSTANCE_SUBNET;
-            break;
-          case res_type.ENI:
-            info = l.CVS_MSG_WARN_NOTMATCH_ENI;
-            break;
-          case res_type.RT:
-            info = l.CVS_MSG_WARN_NOTMATCH_RTB;
-            break;
-          case res_type.ELB:
-            info = l.CVS_MSG_WARN_NOTMATCH_ELB;
-            break;
-          case res_type.CGW:
-            info = l.CVS_MSG_WARN_NOTMATCH_CGW;
-            break;
-          case res_type.ASG:
-            info = l.CVS_MSG_WARN_NOTMATCH_ASG;
-        }
-        if (info) {
-          notification('warning', info, false);
-        }
-        return null;
-      },
-      STATE_ICON_CLICKED: function(uid) {
-        return ide_event.trigger(ide_event.OPEN_STATE_EDITOR, uid);
-      }
-    };
-    window.$canvas = $canvas;
-
-    /* Canvas is used by $canvas to store data of svg canvas */
-    Canvas = function(size) {
-      this.sizeAry = size || [240, 240];
-      this.offsetAry = [0, 0];
-      this.scaleAry = 1;
-      this.selectedNode = [];
-      return this;
-    };
-    Canvas.prototype.init = function() {
-      var attr;
-      attr = {
-        'width': this.sizeAry[0] * MC.canvas.GRID_WIDTH,
-        'height': this.sizeAry[1] * MC.canvas.GRID_HEIGHT
-      };
-      $('#svg_canvas').attr(attr);
-      $('#canvas_body').css(attr);
-      this.setLineStyle(localStorage.getItem("canvas/lineStyle"));
-    };
-    Canvas.prototype.scale = function(ratio) {
-      if (ratio === void 0) {
-        return this.scaleAry;
-      }
-      this.scaleAry = ratio;
-      return null;
-    };
-    Canvas.prototype.offset = function(x, y) {
-      if (x === void 0) {
-        return this.offsetAry;
-      }
-      this.offsetAry[0] = x;
-      this.offsetAry[1] = y;
-      return null;
-    };
-    Canvas.prototype.size = function(w, h) {
-      if (w === void 0) {
-        return this.sizeAry;
-      }
-      this.sizeAry[0] = w;
-      this.sizeAry[1] = h;
-      return null;
-    };
-    Canvas.prototype.setLineStyle = function(ls) {
-      this.ls = parseInt(ls) || 0;
-      if (this.ls === 4) {
-        Canvon("#line_layer").addClass("hide-sg");
-      } else {
-        Canvon("#line_layer").removeClass("hide-sg");
-      }
-      if (Design.__instance.shouldDraw() && this.ls !== 4) {
-        _.each(Design.modelClassForType("SgRuleLine").allObjects(), function(cn) {
-          return cn.draw();
-        });
-      }
-      return null;
-    };
-    Canvas.setDesign = function(design) {
-      Design = design;
-      CanvasElement.setDesign(design);
-      Design.on(Design.EVENT.RemoveResource, function(resource) {
-        var selected;
-        selected = $canvas.selected_node()[0];
-        if (selected && selected.id === resource.id) {
-          ide_event.trigger(ide_event.FORCE_OPEN_PROPERTY, 'property');
-          return null;
-        }
-      });
-      return null;
-    };
-    return Canvas;
-  });
-
-}).call(this);
-
-(function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('Design',["constant", "OpsModel", "workspaces/editor/framework/canvasview/CanvasAdaptor", 'CloudResources'], function(constant, OpsModel, CanvasAdaptor, CloudResources) {
+  define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, OpsModel, CloudResources) {
 
     /* env:prod */
     var Design, DesignImpl, createRecursiveCheck, noop;
@@ -1157,7 +13,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
     noop = function() {};
 
     /*
@@ -1224,15 +80,11 @@
     DesignImpl = function(opsModel) {
       var canvas_data, component, layout;
       this.__componentMap = {};
-      this.__canvasNodes = {};
-      this.__canvasLines = {};
-      this.__canvasGroups = {};
       this.__classCache = {};
       this.__usedUidCache = {};
       this.__opsModel = opsModel;
-      this.__shoulddraw = false;
+      this.__initializing = false;
       canvas_data = opsModel.getJsonData();
-      this.canvas = new CanvasAdaptor(canvas_data.layout.size);
       if (opsModel.testState(OpsModel.State.UnRun)) {
         this.__mode = Design.MODE.Stack;
       } else {
@@ -1242,7 +94,9 @@
       layout = canvas_data.layout;
       delete canvas_data.component;
       delete canvas_data.layout;
-      this.attributes = $.extend(true, {}, canvas_data);
+      this.attributes = $.extend(true, {
+        canvasSize: layout.size
+      }, canvas_data);
       canvas_data.component = component;
       canvas_data.layout = layout;
       return null;
@@ -1259,10 +113,10 @@
       AppEdit: "appedit"
     };
     Design.EVENT = {
-      Deserialized: "DESERIALIZED",
       ChangeResource: "CHANGE_RESOURCE",
       AddResource: "ADD_RESOURCE",
-      RemoveResource: "REMOVE_RESOURCE"
+      RemoveResource: "REMOVE_RESOURCE",
+      Deserialized: "DESERIALIZED"
     };
     DesignImpl.prototype.refreshAppUpdate = function() {
       var needRefresh;
@@ -1277,6 +131,7 @@
     };
     DesignImpl.prototype.deserialize = function(json_data, layout_data) {
       var ModelClass, comp, devistor, recursiveCheck, resolveDeserialize, that, uid, version, _i, _len, _old_get_component_, _ref;
+      console.assert(Design.instance() === this);
       console.debug("Deserializing data :", [json_data, layout_data]);
       version = this.get("version");
       _ref = Design.__deserializeVisitors;
@@ -1284,7 +139,8 @@
         devistor = _ref[_i];
         devistor(json_data, layout_data, version);
       }
-      Design.trigger = noop;
+      this.trigger = Design.trigger = noop;
+      this.__initializing = true;
       that = this;
       resolveDeserialize = function(uid) {
         var ModelClass, component_data, obj;
@@ -1346,46 +202,21 @@
           ModelClass.postDeserialize(comp, layout_data[uid]);
         }
       }
-      return null;
-    };
-    DesignImpl.prototype.reload = function(opsModel) {
-      var json;
-      DesignImpl.call(this, opsModel);
-      json = opsModel.getJsonData();
-      return this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
-    };
-    DesignImpl.prototype.finishDeserialization = function() {
-      var comp, lines, uid, _i, _len, _ref;
-      this.__shoulddraw = true;
-      lines = [];
-      _ref = this.__componentMap;
-      for (uid in _ref) {
-        comp = _ref[uid];
-        if (!comp.draw) {
-          continue;
-        }
-        if (comp.node_line) {
-          lines.push(comp);
-        } else {
-          comp.draw(true);
-        }
-      }
-      for (_i = 0, _len = lines.length; _i < _len; _i++) {
-        comp = lines[_i];
-        comp.draw(true);
-      }
-      Design.trigger = Backbone.Events.trigger;
+      this.__initializing = false;
+      this.trigger = Design.trigger = Backbone.Events.trigger;
       Design.trigger(Design.EVENT.Deserialized);
+      this.trigger(Design.EVENT.Deserialized);
       return null;
     };
-    DesignImpl.prototype.renderNode = function() {
-      var comp, uid, _ref;
-      _ref = this.__componentMap;
-      for (uid in _ref) {
-        comp = _ref[uid];
-        if (comp.draw && !comp.node_line) {
-          comp.draw(false);
-        }
+    DesignImpl.prototype.reload = function() {
+      var json, oldDesign;
+      oldDesign = Design.instance();
+      this.use();
+      DesignImpl.call(this, this.__opsModel);
+      json = this.__opsModel.getJsonData();
+      this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+      if (oldDesign) {
+        oldDesign.use();
       }
     };
 
@@ -1409,22 +240,11 @@
       if (!comp) {
         comp = this.__componentMap;
         delete this.__componentMap[id];
-        delete this.__canvasGroups[id];
-        delete this.__canvasNodes[id];
         if (this.modeIsAppEdit()) {
           this.reclaimGuid(id);
         }
       } else {
         this.__componentMap[id] = comp;
-        if (comp.isVisual && comp.isVisual()) {
-          if (comp.node_group) {
-            this.__canvasGroups[id] = comp;
-          } else if (comp.node_line) {
-            this.__canvasLines[id] = comp;
-          } else {
-            this.__canvasNodes[id] = comp;
-          }
-        }
       }
       return null;
     };
@@ -1513,15 +333,19 @@
     DesignImpl.prototype.modeIsAppEdit = function() {
       return this.__mode === Design.MODE.AppEdit;
     };
-    DesignImpl.prototype.setMode = function(m) {
-      this.__mode = m;
-    };
     DesignImpl.prototype.mode = function() {
-      console.warn("Better not to use Design.instance().mode() directly.");
       return this.__mode;
     };
-    DesignImpl.prototype.shouldDraw = function() {
-      return this.__shoulddraw;
+    DesignImpl.prototype.setMode = function(m) {
+      if (this.__mode === m) {
+        return;
+      }
+      this.__mode = m;
+      this.preserveName();
+      this.trigger("change:mode", m);
+    };
+    DesignImpl.prototype.initializing = function() {
+      return this.__initializing;
     };
     DesignImpl.prototype.use = function() {
       Design.__instance = this;
@@ -1590,7 +414,7 @@
           continue;
         }
         try {
-          json = comp.serialize();
+          json = comp.serialize(options);
 
           /* env:prod */
         } catch (_error) {
@@ -1649,13 +473,16 @@
         visitor = _ref1[_k];
         visitor(component_data, layout_data, options);
       }
-      data.layout.size = this.canvas.sizeAry;
+      data.layout.size = data.canvasSize;
+      delete data.canvasSize;
       data.property = this.attributes.property || {};
       data.property.stoppable = this.isStoppable();
       data.version = "2014-02-17";
       data.state = this.__opsModel.getStateDesc() || "Enabled";
       data.id = this.__opsModel.get("id");
-      currentDesignObj.use();
+      if (currentDesignObj) {
+        currentDesignObj.use();
+      }
       return data;
     };
     DesignImpl.prototype.serializeAsStack = function(new_name) {
@@ -1672,38 +499,35 @@
       delete json.stack_id;
       return json;
     };
-    DesignImpl.prototype.getUidByProperty = function(property, value, res_type) {
-      var comp, context, json_data, key, last, namespaces, result, uid, _i, _len, _ref;
-      if (res_type == null) {
-        res_type = null;
-      }
-      if (!property) {
+    DesignImpl.prototype.preserveName = function() {
+      var comp, names, uid, _ref;
+      if (!this.modeIsAppEdit()) {
         return;
       }
-      json_data = this.serialize();
-      result = {};
-      if (json_data && json_data.component) {
-        _ref = json_data.component;
-        for (uid in _ref) {
-          comp = _ref[uid];
-          if (res_type === null || comp.type === res_type) {
-            context = comp;
-            namespaces = property.split('.');
-            last = namespaces.pop();
-            for (_i = 0, _len = namespaces.length; _i < _len; _i++) {
-              key = namespaces[_i];
-              context = context[key];
-            }
-            if (context[last] === value) {
-              if (!result[comp.type]) {
-                result[comp.type] = [];
-              }
-              result[comp.type].push(uid);
-            }
-          }
+      this.__preservedNames = {};
+      _ref = this.__componentMap;
+      for (uid in _ref) {
+        comp = _ref[uid];
+        switch (comp.type) {
+          case constant.RESTYPE.ELB:
+          case constant.RESTYPE.ASG:
+          case constant.RESTYPE.LC:
+          case constant.RESTYPE.DBINSTANCE:
+            names = this.__preservedNames[comp.type] || (this.__preservedNames[comp.type] = {});
+            names[comp.get("name")] = true;
         }
       }
-      return result;
+    };
+    DesignImpl.prototype.isPreservedName = function(type, name) {
+      var names;
+      if (!this.modeIsAppEdit()) {
+        return false;
+      }
+      if (!this.__preservedNames) {
+        return false;
+      }
+      names = this.__preservedNames[type];
+      return names && names[name];
     };
     DesignImpl.prototype.getCost = function() {
       var c, comp, cost, costList, currency, priceMap, totalFee, uid, _i, _len, _ref;
@@ -1754,11 +578,9 @@
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).allObjects(this);
       if (vpc.length > 0) {
         vpcId = vpc[0].get("appId");
-        instanceAry = CloudResources(constant.RESTYPE.INSTANCE, this.region()).filter((function(_this) {
-          return function(model) {
-            return model.RES_TAG === vpcId;
-          };
-        })(this));
+        instanceAry = CloudResources(constant.RESTYPE.INSTANCE, this.region()).filter(function(model) {
+          return model.RES_TAG === vpcId;
+        });
         for (_j = 0, _len1 = instanceAry.length; _j < _len1; _j++) {
           ins = instanceAry[_j];
           ins = ins.attributes;
@@ -1789,9 +611,8 @@
       return result;
     };
     _.extend(DesignImpl.prototype, Backbone.Events);
-    CanvasAdaptor.setDesign(Design);
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -1832,7 +653,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
 
     /*
       -------------------------------
@@ -1921,14 +742,6 @@
     
        * serialize()
           description : Must be implemented by the user, otherwise it logs an error in console.
-    
-       * storage()
-       * getFromStorage( filter )
-       * addToStorage( resouceModel )
-          description : One can store resourceModels into this.storage().
-          According to `Backbone.Collection.model` and `Backbone.Collection.create()`, collection is ususally used to store the same type/kind of objects.
-          Practically speaking, using this.storage() ( especially using it store different kinds of objects ) are unreasonable. It is uncertain if something is inside this.storage(), thus making it hard to manage these things.
-          Better not to use this api.
      */
     ResourceModel = Backbone.Model.extend({
       classId: _.uniqueId("dfc_"),
@@ -1943,8 +756,8 @@
         if (!attributes.id) {
           attributes.id = design.guid();
         }
-        if (!attributes.name) {
-          attributes.name = this.getNewName();
+        if (!attributes.name || !this.isNameAvailable(attributes.name)) {
+          attributes.name = this.getNewName(void 0, attributes.name);
           if (!attributes.name) {
             delete attributes.name;
           }
@@ -1953,7 +766,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                               env:dev:end */
+        /* env:dev                                                                             env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -1971,15 +784,29 @@
       __triggerChangeInDesign: function() {
         this.design().trigger(Design.EVENT.ChangeResource, this);
       },
-      getNewName: function(base) {
-        var myKinds, nameMap, newName;
-        if (!this.newNameTmpl) {
+      isNameAvailable: function(name) {
+        var comp, _i, _len, _ref;
+        if (this.design().isPreservedName(this.type, name)) {
+          return false;
+        }
+        _ref = this.getAllObjects();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          comp = _ref[_i];
+          if (comp.get("name") === name) {
+            return false;
+          }
+        }
+        return true;
+      },
+      getNewName: function(base, tmpl) {
+        var nameMap, newName;
+        tmpl = tmpl || this.newNameTmpl;
+        if (!tmpl) {
           newName = this.defaults ? this.defaults.name : void 0;
           return newName || "";
         }
         if (base === void 0) {
-          myKinds = Design.modelClassForType(this.type).allObjects();
-          base = myKinds.length;
+          base = this.getAllObjects().length;
         }
         nameMap = {};
         this.design().eachComponent(function(comp) {
@@ -1988,15 +815,9 @@
           }
           return null;
         });
-        _.each((this.design().__opsModel.getJsonData() || []).component, function(comp) {
-          var _ref;
-          if ((_ref = comp.type) === constant.RESTYPE.ELB || _ref === constant.RESTYPE.ASG || _ref === constant.RESTYPE.LC || _ref === constant.RESTYPE.SP || _ref === constant.RESTYPE.SA || _ref === constant.RESTYPE.CW) {
-            return nameMap[comp.name] = true;
-          }
-        });
         while (true) {
-          newName = this.newNameTmpl + base;
-          if (nameMap[newName]) {
+          newName = tmpl + base;
+          if (nameMap[newName] || this.design().isPreservedName(this.type, newName)) {
             base += 1;
           } else {
             break;
@@ -2028,6 +849,9 @@
         }
         return null;
       },
+      isVisual: function() {
+        return false;
+      },
       isRemoved: function() {
         return this.__isRemoved === true;
       },
@@ -2038,7 +862,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                          env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -2093,61 +917,6 @@
         }
         return Backbone.Events.listenTo.call(this, other, event, callback);
       },
-      associate: function(resolve, uid) {
-        var arn, arns, attr, k, keys, masterKey, model, _i, _j, _k, _len, _len1, _len2, _ref;
-        if (!this.__asso) {
-          this.__asso = [];
-        }
-        if (resolve instanceof ResourceModel) {
-          model = resolve;
-          this.addToStorage(model);
-          model.addToStorage(this);
-        } else if (_.isFunction(resolve)) {
-          if (uid) {
-            model = resolve(uid);
-            this.associate(model);
-          } else {
-            _ref = this.__asso;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              attr = _ref[_i];
-              keys = attr.key.split('.');
-              masterKey = keys.pop();
-              arns = this.get(keys);
-              for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
-                k = keys[_j];
-                arns = arns[k];
-              }
-              if (_.isString(arns)) {
-                arns = [arns];
-              }
-              if (_.isArray(arns)) {
-                for (_k = 0, _len2 = arns.length; _k < _len2; _k++) {
-                  arn = arns[_k];
-                  uid = MC.extractID(arn);
-                  model = resolve(uid);
-                  if (model) {
-                    this.associate(model);
-                  }
-                }
-                if (!keys.length) {
-                  this.unset(attr.key);
-                }
-              }
-            }
-          }
-        }
-        return null;
-      },
-      disassociate: function(filter) {
-        var model, removed, _i, _len, _results;
-        removed = this.removeFromStorage(filter);
-        _results = [];
-        for (_i = 0, _len = removed.length; _i < _len; _i++) {
-          model = removed[_i];
-          _results.push(model.removeFromStorage(this));
-        }
-        return _results;
-      },
       clone: null,
       cloneAttributes: function(srcTarget, option) {
         var CnClass, attr, cnType, cnsType, extraReserve, reserve, target, value, _i, _j, _len, _len1, _ref, _ref1;
@@ -2180,51 +949,6 @@
       },
       cloneObjectAttributes: function(attributeName, attributeValue) {
         return deepClone(attributeValue);
-      },
-      storage: function() {
-        if (!this.__storage) {
-          this.__storage = new Backbone.Collection();
-        }
-        return this.__storage;
-      },
-      getFromStorage: function(filter) {
-        var models, storage;
-        storage = this.storage();
-        if (_.isString(filter)) {
-          models = _.filter(storage.models, function(res) {
-            return res.type === filter;
-          });
-        } else if (_.isFunction(filter)) {
-          models = _.filter(storage.models, filter);
-        } else {
-          models = storage.models;
-        }
-        return new Backbone.Collection(models);
-      },
-      removeFromStorage: function(filter) {
-        var models, storage;
-        storage = this.storage();
-        if (_.isString(filter)) {
-          models = _.filter(storage.models, function(res) {
-            return res.type === filter;
-          });
-        } else if (_.isFunction(filter)) {
-          models = _.filter(storage.models, filter);
-        } else if (filter instanceof ResourceModel) {
-          models = filter;
-        }
-        if (models) {
-          storage.remove(models);
-        } else {
-          storage.reset();
-        }
-        return models;
-      },
-      addToStorage: function(resource) {
-        var storage;
-        storage = this.storage();
-        storage.add(resource);
-        return null;
       }
     }, {
       allObjects: function(design) {
@@ -2249,7 +973,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                              env:dev:end */
+        /* env:dev                                                                                           env:dev:end */
 
         /* jshint -W083 */
 
@@ -2272,13 +996,40 @@
       }
     });
     Design.registerModelClass(ResourceModel.prototype.type, ResourceModel);
+    _.each(['forEach', 'each', 'map', 'reduce', 'find', 'filter', 'reject', 'every', 'some', 'contains', 'invoke', 'max', 'min', 'size', 'first', 'without', 'isEmpty', 'chain', 'sample'], function(method) {
+      return ResourceModel[method] = function() {
+        var args;
+        args = [].slice.call(arguments);
+        args.unshift(this.allObjects());
+        return _[method].apply(_, args);
+      };
+    });
+    ResourceModel.where = function(attrs, first) {
+      if (_.isEmpty(attrs)) {
+        return first != null ? first : {
+          "null": []
+        };
+      }
+      return this[first && 'find' || 'filter'](function(model) {
+        var key;
+        for (key in attrs) {
+          if (attrs[key] !== model.get(key)) {
+            return false;
+          }
+        }
+        return true;
+      });
+    };
+    ResourceModel.findWhere = function(attrs) {
+      return this.where(attrs, true);
+    };
     return ResourceModel;
   });
 
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/ConnectionModel',["./ResourceModel", "Design", "CanvasManager", "./canvasview/CanvasElement"], function(ResourceModel, Design, CanvasManager, CanvasElement) {
+  define('workspaces/editor/framework/ConnectionModel',["./ResourceModel", "Design"], function(ResourceModel, Design) {
 
     /*
       -------------------------------
@@ -2338,7 +1089,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                             env:dev:end */
+        /* env:dev                                                                                                                                                                                                           env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -2384,9 +1135,6 @@
               cn.remove(this);
             }
           }
-        }
-        if (this.draw) {
-          this.draw();
         }
         return this;
       },
@@ -2479,7 +1227,7 @@
         return null;
       },
       remove: function(option) {
-        var p1Exist, p2Exist, v;
+        var p1Exist, p2Exist;
         console.assert(!(this.__port1Comp.isRemoved() && this.__port2Comp.isRemoved()), "Both ports are already removed when connection is removing", this);
         p1Exist = !this.__port1Comp.isRemoved();
         p2Exist = !this.__port2Comp.isRemoved();
@@ -2495,38 +1243,17 @@
         if (p2Exist) {
           this.__port2Comp.disconnect_base(this, option);
         }
-        v = this.__view;
-        if (v) {
-          v.detach();
-        }
         ResourceModel.prototype.remove.call(this);
         return null;
       },
       serialize: function() {
         return null;
       },
-      getCanvasView: function() {
-        if (!this.isVisual()) {
-          return null;
-        }
-        if (this.__view === void 0) {
-          this.__view = CanvasElement.createView(this.ceType || "Line", this);
-        }
-        return this.__view;
-      },
       isVisual: function() {
         return !!this.portDefs;
       },
-      draw: function(isCreate) {
-        var v;
-        if (!Design.instance().shouldDraw()) {
-          return;
-        }
-        v = this.getCanvasView();
-        if (v) {
-          v.draw(isCreate === true);
-        }
-        return null;
+      draw: function() {
+        return console.warn("ConnectionModel.draw() is deprecated", this);
       }
     }, {
       findExisting: function(p1Comp, p2Comp) {
@@ -2617,7 +1344,6 @@
     C = ConnectionModel.extend({
       type: "EniAttachment",
       defaults: {
-        lineType: "attachment",
         index: 1
       },
       initialize: function(attributes) {
@@ -2699,6 +1425,9 @@
         var eni, instance, maxEniCount, p1p, p2p;
         p1p = p1Comp.parent();
         p2p = p2Comp.parent();
+        if (!p1p || !p2p) {
+          return false;
+        }
         if (p1p.type === constant.RESTYPE.SUBNET) {
           p1p = p1p.parent();
           p2p = p2p.parent();
@@ -2722,11 +1451,13 @@
         }
         if (instance.getEmbedEni().get("assoPublicIp") === true) {
           return {
-            confirm: MC.template.modalAttachingEni({
+            confirm: true,
+            title: "Attach Network Interface to Instance",
+            action: "Attach and Remove Public IP",
+            template: MC.template.modalAttachingEni({
               host: instance.get("name"),
               eni: eni.get("name")
-            }),
-            action: "Attach and Remove Public IP"
+            })
           };
         }
         return true;
@@ -2744,7 +1475,6 @@
       type: constant.RESTYPE.VPN,
       defaults: function() {
         return {
-          lineType: "vpn",
           routes: []
         };
       },
@@ -2812,7 +1542,35 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/ComplexResModel',["Design", "CanvasManager", "./ResourceModel", "constant", "./canvasview/CanvasElement"], function(Design, CanvasManager, ResourceModel, constant, CanvasElement) {
+  define('workspaces/editor/framework/connection/DbReplication',["constant", "../ConnectionModel"], function(constant, ConnectionModel) {
+    return ConnectionModel.extend({
+      type: "DbReplication",
+      portDefs: {
+        port1: {
+          name: "replica",
+          type: constant.RESTYPE.DBINSTANCE
+        },
+        port2: {
+          name: "replica",
+          type: constant.RESTYPE.DBINSTANCE
+        }
+      },
+      master: function() {
+        return this.__port1Comp;
+      },
+      slave: function() {
+        return this.__port2Comp;
+      },
+      isRemovable: function() {
+        return false;
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/editor/framework/ComplexResModel',["Design", "./ResourceModel", "constant"], function(Design, ResourceModel, constant) {
     var ComplexResModel, emptyArr;
     emptyArr = [];
 
@@ -2829,10 +1587,6 @@
       disconnect : ( ConnectionModel, reason )->
           description : disconnect is called when a connection is removed, subclass should override it to do its own logic. `reason` if not null, it will point to an model, which is the cause to remove the connection.
     
-    
-      draw : ( isNewlyCreated : Boolean ) ->
-          description : if the user defines this method, it will be called after object is created. And the framework might call this method at an approprieate time.
-          If the method is defined, it means it's a visual resource
     
       isRemovable   : ()->
           description : When user press delete key in canvas, canvas will ask if the object can be removed. If isRemovable returns a string, it will treat it as a warning, if the string starts with '!', it is a infomation for not allowing the user to delete
@@ -2869,24 +1623,15 @@
         }
         return null;
       },
-      initialize: function() {
-        if (this.draw && Design.instance().shouldDraw()) {
-          this.draw(true);
-        }
-        return null;
-      },
       setName: function(name) {
         if (this.get("name") === name) {
           return;
         }
         this.set("name", name);
-        if (this.draw) {
-          this.draw();
-        }
         return null;
       },
       remove: function() {
-        var cns, l, v;
+        var cns, l;
         this.markAsRemoved();
         cns = this.attributes.__connections;
         if (cns) {
@@ -2895,10 +1640,6 @@
             --l;
             cns[l].remove();
           }
-        }
-        v = this.getCanvasView();
-        if (v) {
-          v.detach();
         }
         this.markAsRemoved(false);
         ResourceModel.prototype.remove.call(this);
@@ -2915,9 +1656,10 @@
         } else {
           if (idx === -1) {
             connections.push(cn);
-            this.set("__connections", connections);
+            this.attributes.__connections = connections;
           }
         }
+        this.trigger("change:connections", cn);
         return null;
       },
       connect_base: function(connection) {
@@ -2945,32 +1687,8 @@
       isVisual: function() {
         return true;
       },
-      getCanvasView: function(containerId) {
-        if (this.__view === void 0 && this.isVisual()) {
-          this.__view = CanvasElement.createView(this.type, this, containerId);
-
-          /* env:dev                                                                                                                                                                env:dev:end */
-        }
-        return this.__view;
-      },
-      draw: function(isCreate) {
-        var args, v;
-        if (!this.isVisual() || !Design.instance().shouldDraw()) {
-          return;
-        }
-        v = this.getCanvasView();
-        if (v) {
-          args = arguments;
-          args[0] = args[0] === true;
-          if (isCreate) {
-            v.nodeCreated = true;
-          }
-          if (!isCreate && !v.nodeCreated) {
-            return;
-          }
-          v.draw.apply(v, args);
-        }
-        return null;
+      draw: function() {
+        return console.warn("ComplexResModel.draw() is deprecated", this);
       },
 
       /*
@@ -3060,21 +1778,6 @@
       height: function() {
         return this.get('height') || 0;
       }
-    }, {
-      extend: function(protoProps, staticProps) {
-        if (protoProps.draw) {
-          protoProps.draw = (function() {
-            var draw;
-            draw = protoProps.draw;
-            return function() {
-              if (Design.instance().shouldDraw()) {
-                return draw.apply(this, arguments);
-              }
-            };
-          })();
-        }
-        return ResourceModel.extend.call(this, protoProps, staticProps);
-      }
     });
     return ComplexResModel;
   });
@@ -3089,10 +1792,6 @@
       type: constant.RESTYPE.INSTANCE,
       newNameTmpl: "host-",
       defaults: {
-        x: 2,
-        y: 2,
-        width: 9,
-        height: 9,
         count: 1,
         imageId: '',
         tenancy: 'default',
@@ -3108,10 +1807,13 @@
       },
       initialize: function(attr, option) {
         var EniModel, KpModel, SgAsso, SgModel, defaultKp, defaultSg, tenancy, volSize, vpc;
-        console.assert(attr.imageId, "Invalid attributes when creating InstanceModel", attr);
         option = option || {};
+        if (option.cloneSource) {
+          attr.imageId = option.cloneSource.get("imageId");
+        }
+        console.assert(attr.imageId, "Invalid attributes when creating InstanceModel", attr);
         this.setAmi(attr.imageId);
-        if (option.createByUser) {
+        if (option.createByUser || option.cloneSource) {
           EniModel = Design.modelClassForType(constant.RESTYPE.ENI);
           this.setEmbedEni(new EniModel({
             name: "eni0",
@@ -3131,7 +1833,6 @@
             this.set("rdSize", volSize);
           }
         }
-        this.draw(true);
         if (option.createByUser && !option.cloneSource) {
           KpModel = Design.modelClassForType(constant.RESTYPE.KP);
           defaultKp = KpModel.getDefaultKP();
@@ -3256,7 +1957,7 @@
       },
       isReparentable: function(newParent) {
         var check;
-        if (newParent.type === constant.RESTYPE.ASG) {
+        if (newParent.type === constant.RESTYPE.ASG || newParent.type === "ExpandedAsg") {
           return false;
         }
         if (newParent.type === constant.RESTYPE.SUBNET) {
@@ -3296,7 +1997,6 @@
             }
           }
         }
-        return this.draw();
       },
       hasPrimaryEip: function() {
         var eni;
@@ -3319,7 +2019,6 @@
             route.remove();
           }
         }
-        this.draw();
         _ref = this.connectionTargets("EniAttachment");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           eni = _ref[_i];
@@ -3330,7 +2029,6 @@
               c.remove();
             }
           }
-          eni.draw();
         }
         return null;
       },
@@ -3371,7 +2069,6 @@
             this.set("rdSize", minRdSize);
           }
         }
-        this.draw();
         return null;
       },
       getAmi: function() {
@@ -3818,9 +2515,6 @@
           ++i;
           instances.push(member);
         }
-        layout.instanceList = _.map(instances, function(ami) {
-          return ami.uid;
-        });
         serverGroupOption = {
           number: instances.length,
           instanceId: ""
@@ -3921,7 +2615,7 @@
             obj = _ref4[_l];
             if (obj === instance_id || obj.InstanceId === instance_id) {
               return {
-                uid: asg.get("lc").id,
+                uid: asg.getLc().id,
                 mid: instance_id
               };
             }
@@ -4023,20 +2717,12 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/connection/SgAsso',["constant", "../ConnectionModel", "CanvasManager", "Design"], function(constant, ConnectionModel, CanvasManager, Design) {
+  define('workspaces/editor/framework/connection/SgAsso',["constant", "../ConnectionModel", "Design"], function(constant, ConnectionModel, Design) {
     var SgAsso;
     SgAsso = ConnectionModel.extend({
       type: "SgAsso",
-      initialize: function() {
-        if (Design.instance().shouldDraw()) {
-          this.draw = this.updateLabel;
-        }
-        this.listenTo(this.getTarget(constant.RESTYPE.SG), "change:name", this.updateLabel);
-        this.on("destroy", this.updateLabel);
-        return null;
-      },
       isVisual: function() {
-        return false;
+        return true;
       },
       assignCompsToPorts: function(p1Comp, p2Comp) {
         if (p1Comp.type === constant.RESTYPE.SG) {
@@ -4093,45 +2779,7 @@
             return 1;
           }
         });
-      },
-      updateLabel: function() {
-        var ch, idx, res_node, resource, sgs, _i, _len, _ref;
-        if (!Design.instance().shouldDraw()) {
-          return;
-        }
-        resource = this.getOtherTarget(constant.RESTYPE.SG);
-        res_node = document.getElementById(resource.id);
-        if (!res_node) {
-          return;
-        }
-        sgs = this.sortedSgList();
-        _ref = $(res_node).children(".node-sg-color-group").children();
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          ch = _ref[idx];
-          if (idx < sgs.length) {
-            CanvasManager.update(ch, sgs[idx].color, "color");
-            CanvasManager.update(ch, sgs[idx].get("name"), "tooltip");
-          } else {
-            CanvasManager.update(ch, "none", "color");
-            CanvasManager.update(ch, "", "tooltip");
-          }
-        }
-        return null;
       }
-    });
-    Design.on(Design.EVENT.Deserialized, function() {
-      var asso, resId, updateMap, _i, _len, _ref;
-      updateMap = {};
-      _ref = SgAsso.allObjects();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        asso = _ref[_i];
-        updateMap[asso.getOtherTarget(constant.RESTYPE.SG).id] = asso;
-      }
-      for (resId in updateMap) {
-        asso = updateMap[resId];
-        asso.updateLabel();
-      }
-      return null;
     });
     return SgAsso;
   });
@@ -4175,11 +2823,7 @@
           description: "",
           ips: [],
           assoPublicIp: false,
-          name: "eni",
-          x: 0,
-          y: 0,
-          width: 9,
-          height: 9
+          name: "eni"
         };
       },
       type: constant.RESTYPE.ENI,
@@ -4198,7 +2842,6 @@
       initialize: function(attributes, option) {
         var defaultSg;
         option = option || {};
-        this.draw(true);
         if (option.createByUser && !option.instance) {
           defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
           SgAsso = Design.modelClassForType("SgAsso");
@@ -4228,22 +2871,19 @@
         return this.__groupMembers;
       },
       updateName: function() {
-        var attachment, instance, oldName;
-        oldName = this.attributes.name;
+        var attachment, instance, name;
         instance = this.__embedInstance;
         if (instance) {
-          this.attributes.name = "eni0";
+          name = "eni0";
         } else {
           attachment = this.connections("EniAttachment")[0];
           if (attachment) {
-            this.attributes.name = "eni" + attachment.get("index");
+            name = "eni" + attachment.get("index");
           } else {
-            this.attributes.name = "eni";
+            name = "eni";
           }
         }
-        if (this.attributes.name !== oldName) {
-          this.draw();
-        }
+        this.set("name", name);
         return null;
       },
       isReparentable: function(newParent) {
@@ -4312,7 +2952,6 @@
           return;
         }
         this.get("ips")[0].hasEip = toggle;
-        this.draw();
         return null;
       },
       hasPrimaryEip: function() {
@@ -4445,11 +3084,7 @@
         if (hasEip !== void 0 && hasEip !== null && hasEip !== ipObj.hasEip) {
           ipObj.hasEip = hasEip;
           if (idx === 0) {
-            if (this.__embedInstance) {
-              this.__embedInstance.draw();
-            } else {
-              this.draw();
-            }
+            (this.__embedInstance || this).trigger("change:primaryEip");
           }
         }
         return null;
@@ -4481,7 +3116,7 @@
         ips.push({
           ip: "fake"
         });
-        if (!subnet.isCidrEnoughForIps()) {
+        if (subnet.getAvailableIPCountInSubnet() <= 0) {
           result = "Ip count limit has reached in " + (subnet.get('name'));
         }
         ips.length = ips.length - 1;
@@ -4494,7 +3129,6 @@
         }
         this.limitIpAddress();
         this.updateName();
-        this.draw();
         SgModel = Design.modelClassForType(constant.RESTYPE.SG);
         SgModel.tryDrawLine(this);
         return null;
@@ -4505,7 +3139,6 @@
           return;
         }
         this.attributes.name = "eni";
-        this.draw();
         reason = {
           reason: connection
         };
@@ -5018,7 +3651,7 @@
         var vl;
         vl = this.attributes.owner.get("volumeList");
         vl.splice(vl.indexOf(this), 1);
-        this.attributes.owner.draw();
+        this.attributes.owner.trigger("change:volumeList");
         ComplexResModel.prototype.remove.call(this);
         return null;
       },
@@ -5088,7 +3721,7 @@
         if (oldOwner) {
           vl = oldOwner.get('volumeList');
           vl.splice(vl.indexOf(this), 1);
-          oldOwner.draw();
+          oldOwner.trigger("change:volumeList");
         }
         this.attributes.owner = owner;
         if (!(options && options.noNeedGenName)) {
@@ -5106,7 +3739,7 @@
         } else {
           owner.set('volumeList', [this]);
         }
-        owner.draw();
+        owner.trigger("change:volumeList");
         return true;
       },
       isSupportEncrypted: function() {
@@ -5510,91 +4143,24 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/GroupModel',["Design", "./ComplexResModel"], function(Design, ComplexResModel) {
-    var GroupModel;
-    GroupModel = ComplexResModel.extend({
-      node_group: true,
-      type: "Framework_G",
+  define('workspaces/editor/framework/connection/LcUsage',["../ConnectionModel", "constant"], function(ConnectionModel, constant) {
+    return ConnectionModel.extend({
+      type: "LcUsage",
       remove: function() {
-        var child, _i, _len, _ref;
-        if (this.attributes.__children) {
-          _ref = this.attributes.__children.splice(0);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            child = _ref[_i];
-            child.off("destroy", this.removeChild, this);
-            child.remove();
-          }
+        var lc;
+        lc = this.getTarget(constant.RESTYPE.LC);
+        ConnectionModel.prototype.remove.apply(this, arguments);
+        if (lc.connections("LcUsage").length === 0) {
+          lc.remove();
         }
-        ComplexResModel.prototype.remove.call(this);
-        return null;
-      },
-      addChild: function(child) {
-
-        /*
-        addChild.call(this) # This is used to suppress the warning in ResourceModel.extend.
-         */
-        var children, oldParent;
-        console.assert(child.remove, "This child is not a ResourceModel object");
-        oldParent = child.parent();
-        if (oldParent === this) {
-          return;
-        }
-        if (oldParent) {
-          oldParent.removeChild(child);
-        }
-        children = this.attributes.__children;
-        if (!children) {
-          children = [];
-        } else if (children.indexOf(child) !== -1) {
-          return;
-        }
-        children.push(child);
-        this.set("__children", children);
-        child.set("__parent", this);
-        child.once("destroy", this.removeChild, this);
-        if (child.onParentChanged) {
-          child.onParentChanged();
-        }
-        return null;
-      },
-      removeChild: function(child) {
-
-        /*
-        removeChild.call(this) # This is used to suppress the warning in ResourceModel.extend.
-         */
-        var children, idx;
-        children = this.get("__children");
-        if (!children || children.length === 0) {
-          console.warn("Child not found when removing.");
-          return;
-        }
-        idx = children.indexOf(child);
-        if (idx === -1) {
-          console.warn("Child not found when removing.");
-          return;
-        }
-        children.splice(idx, 1);
-        this.set("__children", children);
-        child.off("destroy", this.removeChild, this);
-        return null;
-      },
-      children: function() {
-        return this.get("__children") || [];
-      },
-      generateLayout: function() {
-        var layout;
-        layout = ComplexResModel.prototype.generateLayout.call(this);
-        layout.size = [this.width(), this.height()];
-        return layout;
       }
     });
-    return GroupModel;
   });
 
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/AsgModel',["../ResourceModel", "../ComplexResModel", "../GroupModel", "Design", "constant", "i18n!/nls/lang.js"], function(ResourceModel, ComplexResModel, GroupModel, Design, constant, lang) {
+  define('workspaces/editor/framework/resource/AsgModel',["../ResourceModel", "../ComplexResModel", "Design", "constant", "i18n!/nls/lang.js", "../connection/LcUsage"], function(ResourceModel, ComplexResModel, Design, constant, lang, LcUsage) {
     var ExpandedAsgModel, Model, NotificationModel;
     NotificationModel = ComplexResModel.extend({
       type: constant.RESTYPE.NC,
@@ -5689,28 +4255,18 @@
     });
     ExpandedAsgModel = ComplexResModel.extend({
       type: "ExpandedAsg",
-      node_group: true,
       defaults: {
-        x: 0,
-        y: 0,
-        width: 13,
-        height: 13,
         originalAsg: null
       },
       constructor: function(attributes, options) {
-        var expanded, list, _i, _len;
+        var asg, expanded, _i, _len, _ref;
         console.assert(attributes.parent && attributes.originalAsg, "Invalid parameter for expanding asg");
-        list = [attributes.originalAsg].concat(attributes.originalAsg.get("expandedList"));
-        for (_i = 0, _len = list.length; _i < _len; _i++) {
-          expanded = list[_i];
-          if (attributes.parent.type === constant.RESTYPE.SUBNET) {
-            if (attributes.parent.parent() === expanded.parent().parent()) {
-              return;
-            }
-          } else {
-            if (attributes.parent === expanded.parent()) {
-              return;
-            }
+        asg = attributes.originalAsg;
+        _ref = [asg].concat(asg.get("expandedList"));
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          expanded = _ref[_i];
+          if (attributes.parent.parent() === expanded.parent().parent()) {
+            return;
           }
         }
         ComplexResModel.call(this, attributes, options);
@@ -5722,40 +4278,32 @@
         _ref = [asg].concat(asg.get("expandedList"));
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           expanded = _ref[_i];
-          if (expanded === this) {
-            continue;
-          }
-          if (newParent.type === constant.RESTYPE.SUBNET) {
-            if (newParent.parent() === expanded.parent().parent()) {
-              return false;
-            }
-          } else {
-            if (newParent.parent === expanded.parent()) {
-              return false;
-            }
+          if (expanded !== this && newParent.parent() === expanded.parent().parent()) {
+            return false;
           }
         }
         return true;
       },
-      connections: function(type) {
-        var context;
-        context = type === "SgAsso" ? this.getLc() : this;
-        return ComplexResModel.prototype.connections.call(context, type);
-      },
-      connectionTargets: function(type) {
-        var context;
-        context = type === "SgAsso" ? this.getLc() : this;
-        return ComplexResModel.prototype.connectionTargets.call(context, type);
-      },
       initialize: function() {
-        this.draw(true);
-        this.get("originalAsg").__addExpandedAsg(this);
+        var _ref;
+        console.assert(this.get("originalAsg").get("expandedList").indexOf(this) === -1, "The expandedAsg is already in the Asg");
+        this.get("originalAsg").get("expandedList").push(this);
+        if ((_ref = this.getLc()) != null) {
+          _ref.trigger("change:expandedList", this);
+        }
         return null;
       },
-      getLc: function(origin) {
-        var lc;
-        lc = this.attributes.originalAsg.get("lc");
-        return !origin && lc.getBigBrother() || lc;
+      remove: function() {
+        var siblings, _ref;
+        siblings = this.get("originalAsg").get("expandedList");
+        siblings.splice(siblings.indexOf(this), 1);
+        if ((_ref = this.getLc()) != null) {
+          _ref.trigger("change:expandedList", this);
+        }
+        return ComplexResModel.prototype.remove.call(this);
+      },
+      getLc: function() {
+        return this.attributes.originalAsg.getLc();
       },
       serialize: function() {
         var layout;
@@ -5779,13 +4327,9 @@
         return null;
       }
     });
-    Model = GroupModel.extend({
+    Model = ComplexResModel.extend({
       defaults: function() {
         return {
-          x: 0,
-          y: 0,
-          width: 13,
-          height: 13,
           cooldown: "300",
           capacity: "1",
           minSize: "1",
@@ -5799,44 +4343,32 @@
       },
       type: constant.RESTYPE.ASG,
       newNameTmpl: "asg",
-      constructor: function(attributes, options) {
-        var conn, dolly, lc, _i, _len, _ref;
-        GroupModel.prototype.constructor.apply(this, arguments);
-        if (attributes.lcId) {
-          lc = Design.instance().component(attributes.lcId);
-          dolly = lc.clone();
-          this.addChild(dolly);
-          dolly.draw(true);
-          _ref = dolly.connections();
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            conn = _ref[_i];
-            if (conn.isVisual() || conn.type === 'SgAsso') {
-              conn.draw();
-            }
-          }
-        }
-        return this;
-      },
       isReparentable: function(newParent) {
         var expand, _i, _len, _ref;
         _ref = this.get("expandedList");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           expand = _ref[_i];
-          if (newParent.type === constant.RESTYPE.SUBNET) {
-            if (newParent.parent() === expand.parent().parent()) {
-              return sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, this.get("name"), newParent.parent().get("name"));
-            }
-          } else {
-            if (newParent.parent === expand.parent()) {
-              return sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, this.get("name"), newParent.get("name"));
-            }
+          if (newParent.parent() === expand.parent().parent()) {
+            return sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, this.get("name"), newParent.parent().get("name"));
           }
         }
         return true;
       },
+      setLc: function(lc) {
+        if (this.getLc() || !lc) {
+          return;
+        }
+        if (_.isString(lc)) {
+          lc = this.design().component(lc);
+        }
+        return new LcUsage(this, lc);
+      },
+      getLc: function() {
+        return this.connectionTargets("LcUsage")[0];
+      },
       getCost: function(priceMap, currency) {
         var InstanceModel, lc, lcFee, lcPrice, v, volumeList, vp, _i, _len;
-        lc = this.get("lc");
+        lc = this.getLc();
         if (!lc) {
           return null;
         }
@@ -5870,63 +4402,9 @@
         lcPrice.formatedFee = lcPrice.fee + "/mo";
         return lcPrice;
       },
-      addChild: function(lc) {
-        var elb, oldLc, _i, _j, _len, _len1, _ref, _ref1;
-        GroupModel.prototype.addChild.call(this, lc);
-        lc.listenTo(this, 'change:x', function() {
-          return lc.getCanvasView().resetPosition();
-        });
-        lc.listenTo(this, 'change:y', function() {
-          return lc.getCanvasView().resetPosition();
-        });
-        oldLc = this.get("lc");
-        if (oldLc) {
-          this.stopListening(oldLc);
-          _ref = oldLc.connectionTargets("ElbAmiAsso");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            elb = _ref[_i];
-            this.updateExpandedAsgAsso(elb, true);
-          }
-        }
-        this.set("lc", lc);
-        this.listenTo(lc, "change:name change:imageId", this.drawExpanedAsg);
-        this.listenTo(lc, "destroy", this.removeChild);
-        _ref1 = lc.connectionTargets("ElbAmiAsso");
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          elb = _ref1[_j];
-          this.updateExpandedAsgAsso(elb);
-        }
-        this.draw();
-        this.drawExpanedAsg(false);
-        return null;
-      },
-      removeChild: function(lc) {
-        GroupModel.prototype.removeChild.call(this, lc);
-        this.removeExpandedAsso();
-        this.unset("lc");
-        this.draw();
-        return null;
-      },
-      drawExpanedAsg: function(isCreate) {
-        var asg, lc, _i, _len, _ref;
-        lc = this.get('lc');
-        if (lc) {
-          _ref = this.get("expandedList");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            asg = _ref[_i];
-            asg.draw(isCreate);
-          }
-        }
-        return null;
-      },
       getNotification: function() {
-        var n;
-        n = this.get("notification");
-        if (n) {
-          return n.toJSON();
-        } else {
-          return {};
-        }
+        var _ref;
+        return ((_ref = this.get("notification")) != null ? _ref.toJSON() : void 0) || {};
       },
       getNotiObject: function() {
         return this.get("notification");
@@ -5944,73 +4422,12 @@
         return n;
       },
       setNotificationTopic: function(appId, name) {
-        var n;
-        n = this.get("notification");
-        return n != null ? n.setTopic(appId, name) : void 0;
+        var _ref;
+        return (_ref = this.get("notification")) != null ? _ref.setTopic(appId, name) : void 0;
       },
       getNotificationTopicName: function() {
-        var n;
-        n = this.get("notification");
-        if (n) {
-          return n.getTopicName();
-        }
-        return null;
-      },
-      updateExpandedAsgAsso: function(elb, isRemove) {
-        var ElbAsso, asso, i, old_expandedList, _i, _len;
-        if (this.attributes.expandedList.length === 0) {
-          return;
-        }
-        old_expandedList = this.attributes.expandedList;
-        this.attributes.expandedList = [];
-        ElbAsso = Design.modelClassForType("ElbAmiAsso");
-        for (_i = 0, _len = old_expandedList.length; _i < _len; _i++) {
-          i = old_expandedList[_i];
-          asso = new ElbAsso(i, elb);
-          if (isRemove) {
-            asso.remove();
-          }
-        }
-        this.attributes.expandedList = old_expandedList;
-        return null;
-      },
-      updateExpandedAsgSgLine: function(sgTarget, isRemove) {
-        var SgLine, createOption, i, old_expandedList, removeReason, sgline, _i, _len;
-        if (this.attributes.expandedList.length === 0) {
-          return;
-        }
-        old_expandedList = this.attributes.expandedList;
-        this.attributes.expandedList = [];
-        SgLine = Design.modelClassForType("SgRuleLine");
-        createOption = {
-          createByUser: false
-        };
-        removeReason = {
-          reason: sgTarget
-        };
-        for (_i = 0, _len = old_expandedList.length; _i < _len; _i++) {
-          i = old_expandedList[_i];
-          if (i !== sgTarget) {
-            sgline = new SgLine(i, sgTarget, createOption);
-            if (isRemove) {
-              sgline.silentRemove();
-            }
-          }
-        }
-        this.attributes.expandedList = old_expandedList;
-        return null;
-      },
-      removeExpandedAsso: function() {
-        var connections, expandedAsg, _i, _len, _ref;
-        _ref = this.get('expandedList');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          expandedAsg = _ref[_i];
-          connections = expandedAsg.connections();
-          while (connections.length) {
-            _.first(connections).remove();
-          }
-        }
-        return null;
+        var _ref;
+        return (_ref = this.get("notification")) != null ? _ref.getTopicName() : void 0;
       },
       addScalingPolicy: function(policy) {
         policy.__asg = this;
@@ -6025,18 +4442,17 @@
       },
       isEC2HealthCheckType: function() {
         var lc;
-        lc = this.get("lc");
+        lc = this.getLc();
         if (lc && lc.connections("ElbAmiAsso").length && this.get("healthCheckType") === "ELB") {
           return false;
         }
         return true;
       },
       remove: function() {
-        var asg, p, _i, _j, _len, _len1, _ref, _ref1;
+        var asg, p, _i, _j, _len, _len1, _ref, _ref1, _ref2;
         _ref = this.get("expandedList");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           asg = _ref[_i];
-          asg.off();
           asg.remove();
         }
         _ref1 = this.get("policies");
@@ -6045,110 +4461,44 @@
           p.off();
           p.remove();
         }
-        if (this.get("notification")) {
-          this.get("notification").remove();
+        if ((_ref2 = this.get("notification")) != null) {
+          _ref2.remove();
         }
-        GroupModel.prototype.remove.call(this);
-        return null;
-      },
-      __addExpandedAsg: function(expandedAsg) {
-        var ElbAsso, Sgline, elb, lc, sgTarget, _i, _j, _len, _len1, _ref, _ref1;
-        console.assert(this.get("expandedList").indexOf(expandedAsg) === -1 && (!expandedAsg.originalAsg), "The expandedAsg is already in the Asg");
-        this.get("expandedList").push(expandedAsg);
-        expandedAsg.originalAsg = this;
-        this.listenTo(expandedAsg, "destroy", this.__onExpandedAsgRemove);
-        lc = this.get("lc");
-        if (lc) {
-          ElbAsso = Design.modelClassForType("ElbAmiAsso");
-          _ref = lc.connectionTargets("ElbAmiAsso");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            elb = _ref[_i];
-            new ElbAsso(elb, expandedAsg);
-          }
-          Sgline = Design.modelClassForType("SgRuleLine");
-          _ref1 = lc.connectionTargets("SgRuleLine");
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            sgTarget = _ref1[_j];
-            new Sgline(sgTarget, expandedAsg);
-          }
-        }
-        return null;
-      },
-      __onExpandedAsgRemove: function(target) {
-        console.assert(target.type === "ExpandedAsg", "Invalid Parameter");
-        this.get("expandedList").splice(this.get("expandedList").indexOf(target), 1);
+        ComplexResModel.prototype.remove.call(this);
         return null;
       },
       getExpandSubnets: function() {
         var expand, subnets, _i, _len, _ref;
-        if (this.parent().type !== constant.RESTYPE.SUBNET) {
-          return [];
-        }
         subnets = [this.parent()];
         _ref = this.get("expandedList");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           expand = _ref[_i];
           subnets.push(expand.parent());
         }
-        return _.uniq(subnets);
+        return subnets;
       },
       getExpandAzs: function() {
-        var azs, expand, subnets, _i, _len, _ref;
-        subnets = [this.parent()];
-        _ref = this.get("expandedList");
+        var az, sb, _i, _len, _ref;
+        az = [];
+        _ref = this.getExpandSubnets();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          expand = _ref[_i];
-          subnets.push(expand.parent());
+          sb = _ref[_i];
+          az.push(sb.parent());
         }
-        subnets = _.uniq(subnets);
-        if (this.parent().type === constant.RESTYPE.SUBNET) {
-          azs = _.uniq(_.map(subnets, function(sb) {
-            return sb.parent();
-          }));
-        } else {
-          azs = subnets;
-        }
-        return azs;
+        return _.uniq(az);
       },
       serialize: function() {
-        var azs, component, elbArray, elbs, expand, healthCheckType, lc, lcId, newSubnets, sb, sbRef, subnets, _i, _j, _len, _len1, _ref;
-        subnets = [this.parent()];
-        _ref = this.get("expandedList");
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          expand = _ref[_i];
-          subnets.push(expand.parent());
-        }
-        subnets = _.uniq(subnets);
-        if (this.parent().type === constant.RESTYPE.SUBNET) {
-          azs = _.uniq(_.map(subnets, function(sb) {
-            return sb.parent().createRef();
-          }));
-          subnets = _.map(subnets, function(sb) {
-            return sb.createRef("SubnetId");
-          });
-        } else {
-          azs = _.uniq(_.map(subnets, function(az) {
-            return az.createRef();
-          }));
-          newSubnets = [];
-          for (_j = 0, _len1 = subnets.length; _j < _len1; _j++) {
-            sb = subnets[_j];
-            sbRef = sb.getSubnetRef();
-            if (sbRef) {
-              newSubnets.push(sbRef);
-            }
-          }
-          subnets = newSubnets;
-        }
-        lc = this.get("lc");
+        var azs, component, elbArray, elbs, healthCheckType, lc, subnets;
+        subnets = this.getExpandSubnets();
+        azs = _.uniq(_.map(subnets, function(sb) {
+          return sb.parent().createRef();
+        }));
+        subnets = _.map(subnets, function(sb) {
+          return sb.createRef("SubnetId");
+        });
+        lc = this.getLc();
         if (lc) {
-          lcId = (lc.getBigBrother() || lc).createRef("LaunchConfigurationName");
-        } else {
-          lcId = "";
-        }
-        healthCheckType = "EC2";
-        if (this.get("lc")) {
-          elbs = this.get("lc").connectionTargets("ElbAmiAsso");
+          elbs = lc.connectionTargets("ElbAmiAsso");
           if (elbs.length) {
             healthCheckType = this.get("healthCheckType");
             elbArray = _.map(elbs, function(elb) {
@@ -6168,12 +4518,12 @@
             DefaultCooldown: this.get("cooldown"),
             MinSize: this.get("minSize"),
             MaxSize: this.get("maxSize"),
-            HealthCheckType: healthCheckType,
+            HealthCheckType: healthCheckType || "EC2",
             HealthCheckGracePeriod: this.get("healthCheckGracePeriod"),
             TerminationPolicies: this.get("terminationPolicies"),
             AutoScalingGroupName: this.get("groupName") || this.get("name"),
             DesiredCapacity: this.get("capacity"),
-            LaunchConfigurationName: lcId
+            LaunchConfigurationName: (lc != null ? lc.createRef("LaunchConfigurationName") : void 0) || ""
           }
         };
         return {
@@ -6183,17 +4533,6 @@
       }
     }, {
       handleTypes: constant.RESTYPE.ASG,
-      resolveLc: function(uid) {
-        var obj;
-        if (!uid) {
-          return null;
-        }
-        obj = Design.__instance.__componentMap[uid];
-        if (obj && !obj.parent()) {
-          return obj;
-        }
-        return obj.clone();
-      },
       deserialize: function(data, layout_data, resolve) {
         var ElbAsso, asg, elb, elbName, lc, _i, _len, _ref;
         asg = new Model({
@@ -6213,8 +4552,8 @@
           y: layout_data.coordinate[1]
         });
         if (data.resource.LaunchConfigurationName) {
-          lc = this.resolveLc(MC.extractID(data.resource.LaunchConfigurationName));
-          asg.addChild(lc);
+          lc = resolve(MC.extractID(data.resource.LaunchConfigurationName));
+          new LcUsage(asg, lc);
           ElbAsso = Design.modelClassForType("ElbAmiAsso");
           _ref = data.resource.LoadBalancerNames || [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6227,6 +4566,90 @@
       }
     });
     return Model;
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/editor/framework/GroupModel',["Design", "./ComplexResModel"], function(Design, ComplexResModel) {
+    var GroupModel;
+    GroupModel = ComplexResModel.extend({
+      node_group: true,
+      type: "Framework_G",
+      remove: function() {
+        var child, _i, _len, _ref;
+        if (this.attributes.__children) {
+          _ref = this.attributes.__children.splice(0);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            child = _ref[_i];
+            child.off("destroy", this.removeChild, this);
+            child.remove();
+          }
+        }
+        ComplexResModel.prototype.remove.call(this);
+        return null;
+      },
+      addChild: function(child) {
+
+        /*
+        addChild.call(this) # This is used to suppress the warning in ResourceModel.extend.
+         */
+        var children, oldParent;
+        console.assert(child.remove, "This child is not a ResourceModel object");
+        oldParent = child.parent();
+        if (oldParent === this) {
+          return;
+        }
+        if (oldParent) {
+          oldParent.removeChild(child);
+        }
+        children = this.attributes.__children;
+        if (!children) {
+          children = [];
+        } else if (children.indexOf(child) !== -1) {
+          return;
+        }
+        children.push(child);
+        this.set("__children", children);
+        child.set("__parent", this);
+        child.once("destroy", this.removeChild, this);
+        if (child.onParentChanged) {
+          child.onParentChanged();
+        }
+        return null;
+      },
+      removeChild: function(child) {
+
+        /*
+        removeChild.call(this) # This is used to suppress the warning in ResourceModel.extend.
+         */
+        var children, idx;
+        children = this.get("__children");
+        if (!children || children.length === 0) {
+          console.warn("Child not found when removing.");
+          return;
+        }
+        idx = children.indexOf(child);
+        if (idx === -1) {
+          console.warn("Child not found when removing.");
+          return;
+        }
+        children.splice(idx, 1);
+        this.set("__children", children);
+        child.off("destroy", this.removeChild, this);
+        return null;
+      },
+      children: function() {
+        return this.get("__children") || [];
+      },
+      generateLayout: function() {
+        var layout;
+        layout = ComplexResModel.prototype.generateLayout.call(this);
+        layout.size = [this.width(), this.height()];
+        return layout;
+      }
+    });
+    return GroupModel;
   });
 
 }).call(this);
@@ -6290,17 +4713,12 @@
         dnsSupport: true,
         dnsHostnames: false,
         tenancy: "default",
-        cidr: "10.0.0.0/16",
-        x: 5,
-        y: 3,
-        width: 60,
-        height: 60
+        cidr: "10.0.0.0/16"
       },
       initialize: function() {
         if (!this.attributes.dhcp) {
           this.attributes.dhcp = new DhcpModel();
         }
-        this.draw(true);
         return null;
       },
       isRemovable: function() {
@@ -6346,7 +4764,6 @@
         }
         validCIDR = MC.getValidCIDR(cidr);
         this.set("cidr", validCIDR);
-        this.draw();
         return true;
       },
       generateSubnetCidr: function(newCidr, subnetCidrAry) {
@@ -6445,27 +4862,14 @@
     var Model;
     Model = GroupModel.extend({
       type: constant.RESTYPE.AZ,
-      defaults: {
-        x: 2,
-        y: 2,
-        width: 21,
-        height: 21
-      },
-      initialize: function(attribute, option) {
-        var SubnetModel, m;
-        if (option.createByUser) {
-          SubnetModel = Design.modelClassForType(constant.RESTYPE.SUBNET);
-          m = new SubnetModel({
-            x: this.x() + 2,
-            y: this.y() + 2,
-            parent: this
-          });
-          option.selectId = m.id;
-        }
-        this.draw(true);
-        return null;
-      },
       isRemovable: function() {
+        if (_.some(this.children(), function(sb) {
+          return sb.connections("SubnetgAsso").length > 0;
+        })) {
+          return {
+            error: lang.ide.RDS_MSG_ERR_REMOVE_AZ_FAILED_CAUSEDBY_CHILD_USEDBY_SBG
+          };
+        }
         if (this.children().length > 0) {
           return sprintf(lang.ide.CVS_CFM_DEL_GROUP, this.get("name"));
         }
@@ -6474,7 +4878,7 @@
       createRef: function() {
         return Model.__super__.createRef("ZoneName", true, this.id);
       },
-      isCidrEnoughForIps: function(cidr) {
+      getAvailableIPCountInSubnet: function(cidr) {
         var child, eni, ipCount, maxIpCount, _i, _len, _ref;
         if (!cidr) {
           return true;
@@ -6490,10 +4894,10 @@
           } else {
             continue;
           }
-          ipCount += eni.get("ips").length;
+          ipCount += eni.get("ips").length * eni.serverGroupCount();
         }
         maxIpCount = Design.modelClassForType(constant.RESTYPE.ENI).getAvailableIPCountInCIDR(cidr);
-        return maxIpCount >= ipCount;
+        return maxIpCount - ipCount;
       },
       serialize: function() {
         var component, n;
@@ -6515,9 +4919,14 @@
     }, {
       handleTypes: constant.RESTYPE.AZ,
       deserialize: function(data, layout_data, resolve) {
+        var appId;
+        if (!Design.instance().modeIsStack()) {
+          appId = data.name;
+        }
         new Model({
           id: data.uid,
           name: data.name,
+          appId: appId,
           parent: resolve(layout_data.groupUId),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
@@ -6565,10 +4974,6 @@
     var Model;
     Model = ComplexResModel.extend({
       defaults: {
-        x: 0,
-        y: 0,
-        width: 17,
-        height: 10,
         bgpAsn: ""
       },
       newNameTmpl: "customer-gateway-",
@@ -6978,6 +5383,17 @@
           }
         }
         return null;
+      },
+      remove: function() {
+        ConnectionModel.prototype.remove.apply(this, arguments);
+        if (this.getTarget("SgIpTarget")) {
+          return;
+        }
+        if (this.port1Comp().isRemoved()) {
+          this.port2Comp().vlineRemoveBatch(this.port1Comp(), this);
+        } else {
+          this.port1Comp().vlineRemoveBatch(this.port2Comp(), this);
+        }
       }
     }, {
       getResourceSgRuleSets: function(resource) {
@@ -7141,7 +5557,7 @@
         }
         expandAsg = this.getTarget("ExpandedAsg");
         lc = this.getTarget(TYPE.LC);
-        if (expandAsg && lc && expandAsg.get("originalAsg").get("lc") === lc) {
+        if (expandAsg && lc && expandAsg.get("originalAsg").getLc() === lc) {
           return false;
         }
         elb = this.getTarget(TYPE.ELB);
@@ -7227,8 +5643,6 @@
       },
       type: "SgRuleLine",
       defaults: {
-        lineType: "sg",
-        dashLine: true,
         name: "Security Group Rule"
       },
       portDefs: [
@@ -7279,6 +5693,15 @@
           }
         }, {
           port1: {
+            name: "instance-sg",
+            type: constant.RESTYPE.INSTANCE
+          },
+          port2: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          }
+        }, {
+          port1: {
             name: "eni-sg",
             type: constant.RESTYPE.ENI
           },
@@ -7357,6 +5780,51 @@
           port2: {
             name: "elb-sg-in",
             type: constant.RESTYPE.ELB
+          }
+        }, {
+          port1: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          },
+          port2: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          }
+        }, {
+          port1: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          },
+          port2: {
+            name: "eni-sg",
+            type: constant.RESTYPE.ENI
+          }
+        }, {
+          port1: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          },
+          port2: {
+            name: "launchconfig-sg",
+            type: constant.RESTYPE.LC
+          }
+        }, {
+          port1: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          },
+          port2: {
+            name: "launchconfig-sg",
+            type: "ExpandedAsg"
+          }
+        }, {
+          port1: {
+            name: "db-sg",
+            type: constant.RESTYPE.DBINSTANCE
+          },
+          port2: {
+            name: "instance-sg",
+            type: constant.RESTYPE.INSTANCE
           }
         }
       ]
@@ -7485,18 +5953,12 @@
       disconnect: function(cn) {
         if (cn.type === "SgAsso") {
           this.vlineRemove(cn.getOtherTarget(this), void 0, cn);
-        } else if (cn.type === "SgRuleSet") {
-          if (cn.port1Comp() === this) {
-            if (cn.port2Comp().type !== "SgIpTarget") {
-              this.vlineRemoveBatch(cn.port2Comp(), cn);
-            }
-          }
         }
         return null;
       },
       vlineAdd: function(resource) {
         var connectedResMap, res, sg, _i, _j, _len, _len1, _ref, _ref1;
-        if (!Design.instance().shouldDraw()) {
+        if (Design.instance().initializing()) {
           return;
         }
         connectedResMap = {};
@@ -7519,7 +5981,7 @@
       },
       vlineAddBatch: function(otherSg) {
         var groupRes, myRes, otherRes, _i, _j, _len, _len1, _ref;
-        if (!Design.instance().shouldDraw()) {
+        if (Design.instance().initializing()) {
           return;
         }
         if (otherSg === this) {
@@ -7540,7 +6002,7 @@
       },
       vlineRemove: function(resource, possibleAffectedRes, reason) {
         var cn, connectableMap, res, resourceSg, sg, sgTarget, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3;
-        if (!Design.instance().shouldDraw()) {
+        if (Design.instance().initializing()) {
           return;
         }
         if (!possibleAffectedRes) {
@@ -7583,7 +6045,7 @@
       },
       vlineRemoveBatch: function(otherSg, reason) {
         var possibleAffectedRes, resource, _i, _len, _ref;
-        if (!Design.instance().shouldDraw()) {
+        if (Design.instance().initializing()) {
           return;
         }
         possibleAffectedRes = otherSg.connectionTargets("SgAsso");
@@ -7924,7 +6386,6 @@
     ElbSubnetAsso = ConnectionModel.extend({
       type: "ElbSubnetAsso",
       defaults: {
-        lineType: "association",
         deserialized: false
       },
       portDefs: [
@@ -8022,11 +6483,6 @@
     }, {});
     ElbAmiAsso = ConnectionModel.extend({
       type: "ElbAmiAsso",
-      defaults: function() {
-        return {
-          lineType: "elb-sg"
-        };
-      },
       portDefs: [
         {
           port1: {
@@ -8103,7 +6559,7 @@
         return null;
       },
       remove: function(option) {
-        var asg, eAsg, elb, expAsg, lc, reason, _i, _len, _ref;
+        var elb, expAsg, lc, reason;
         if (option && option.reason.type !== constant.RESTYPE.LC) {
           ConnectionModel.prototype.remove.apply(this, arguments);
           return;
@@ -8121,12 +6577,6 @@
           reason = {
             reason: this
           };
-          asg = lc.parent();
-          _ref = asg.get("expandedList");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            eAsg = _ref[_i];
-            (new ElbAmiAsso(elb, eAsg)).remove(reason);
-          }
         }
         ConnectionModel.prototype.remove.apply(this, arguments);
         return null;
@@ -8160,10 +6610,6 @@
     Model = ComplexResModel.extend({
       defaults: function() {
         return {
-          x: 0,
-          y: 0,
-          width: 9,
-          height: 9,
           internal: true,
           crossZone: true,
           healthyThreshold: "9",
@@ -8193,7 +6639,6 @@
       newNameTmpl: "load-balancer-",
       initialize: function(attr, option) {
         var SgAssoModel, sg;
-        this.draw(true);
         if (option.createByUser) {
           sg = new SgModel({
             name: this.getElbSgName(),
@@ -8242,9 +6687,6 @@
         this.set("name", name);
         if (this.getElbSg()) {
           this.getElbSg().set("name", this.getElbSgName());
-        }
-        if (this.draw) {
-          this.draw();
         }
         return null;
       },
@@ -8321,7 +6763,6 @@
       setInternal: function(isInternal) {
         var line, _i, _len, _ref;
         this.set("internal", !!isInternal);
-        this.draw();
         if (isInternal) {
           SgModel = Design.modelClassForType(constant.RESTYPE.SG);
           SgModel.tryDrawLine(this);
@@ -8578,22 +7019,12 @@
 }).call(this);
 
 (function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
   define('workspaces/editor/framework/resource/LcModel',["../ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", 'i18n!/nls/lang.js', 'CloudResources'], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources) {
     var Model, emptyArray;
     emptyArray = [];
     Model = ComplexResModel.extend({
-      offset: {
-        x: 2,
-        y: 3
-      },
       defaults: function() {
         return {
-          x: 0,
-          y: 0,
-          width: 9,
-          height: 9,
           imageId: "",
           ebsOptimized: false,
           instanceType: "m1.small",
@@ -8608,156 +7039,13 @@
       },
       type: constant.RESTYPE.LC,
       newNameTmpl: "launch-config-",
-      __brothers: [],
-      __bigBrother: null,
-      __isClone: false,
-      constructor: function(attr, option) {
-        if (option && option.createByUser && attr.parent.get("lc")) {
-          return;
-        }
-        if (option && option.clone) {
-          this.__isClone = true;
-        }
-        return ComplexResModel.call(this, attr, option);
-      },
-      privacyAttrs: ['__parent', '__connections', 'x', 'y'],
-      clone: function() {
-        var conn, connClass, dolly, isRun, target, _i, _len, _ref;
-        isRun = !!this.get('appId');
-        dolly = new Model(null, {
-          clone: true
-        });
-        this.addBrother(dolly);
-        _ref = this.connections();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          conn = _ref[_i];
-          if (conn.type === 'ElbAmiAsso') {
-            continue;
-          }
-          connClass = Design.modelClassForType(conn.type);
-          target = conn.getOtherTarget(this.type);
-          new connClass(dolly, target);
-        }
-        return dolly;
-      },
-      syncBorthersConn: function(conn, add) {
-        var c, connClass, otherTarget, syncTarget, target, targetConn, _i, _len, _results;
-        if (conn.type === 'ElbAmiAsso') {
-          return;
-        }
-        if (conn.type === 'SgRuleLine') {
-          return;
-        }
-        syncTarget = [];
-        if (this.isClone()) {
-          syncTarget.push(this.getBigBrother());
-          syncTarget = syncTarget.concat(_.without(this.getBigBrother().__brothers, this));
-        } else {
-          syncTarget = syncTarget.concat(this.__brothers);
-        }
-        connClass = Design.modelClassForType(conn.type);
-        otherTarget = conn.getOtherTarget(this.type);
-        _results = [];
-        for (_i = 0, _len = syncTarget.length; _i < _len; _i++) {
-          target = syncTarget[_i];
-          if (add) {
-            _results.push(new connClass(target, otherTarget));
-          } else {
-            targetConn = target.connections(conn.type);
-            _results.push((function() {
-              var _j, _len1, _results1;
-              _results1 = [];
-              for (_j = 0, _len1 = targetConn.length; _j < _len1; _j++) {
-                c = targetConn[_j];
-                if (c.getOtherTarget(this.type === otherTarget)) {
-                  _results1.push(c.remove());
-                } else {
-                  _results1.push(void 0);
-                }
-              }
-              return _results1;
-            }).call(this));
-          }
-        }
-        return _results;
-      },
-      getBigBrother: function() {
-        return this.__bigBrother;
-      },
-      isClone: function() {
-        return this.__isClone;
-      },
-      addBrother: function(brother) {
-        this.__brothers.push(brother);
-        brother.__bigBrother = this;
-        return brother.listenTo(this, 'all', function() {
-          if (/^change/.test(arguments[0])) {
-            return brother.trigger.apply(brother, arguments);
-          }
-        });
-      },
-      removeBrother: function(brother) {
-        var idx;
-        idx = this.__brothers.indexOf(brother);
-        if (idx > -1) {
-          this.__brothers.splice(idx, 1);
-        }
-        return brother.stopListening();
-      },
-      getContext: function(attr) {
-        if (this.__bigBrother && __indexOf.call(this.privacyAttrs, attr) < 0 && !(_.intersection(_.keys(this.privacyAttrs), attr)).length) {
-          return this.__bigBrother;
-        }
-        return this;
-      },
-      set: function(attr) {
-        var context;
-        context = this.getContext(attr);
-        return ComplexResModel.prototype.set.apply(context, arguments);
-      },
-      get: function(attr) {
-        var context, _ref, _ref1;
-        context = this.getContext(attr);
-        if (attr === 'x') {
-          return ((_ref = this.parent()) != null ? _ref.x() : void 0) + this.offset.x;
-        } else if (attr === 'y') {
-          return ((_ref1 = this.parent()) != null ? _ref1.y() : void 0) + this.offset.y;
-        } else {
-          return ComplexResModel.prototype.get.apply(context, arguments);
-        }
-      },
-      toJSON: function() {
-        return ComplexResModel.prototype.toJSON.apply(this.__bigBrother || this);
-      },
-      draw: function(isCreate) {
-        var brother, context, _i, _len, _ref, _results;
-        if (isCreate) {
-          return ComplexResModel.prototype.draw.apply(this, arguments);
-        } else {
-          context = this.getBigBrother() || this;
-          ComplexResModel.prototype.draw.apply(context, arguments);
-          _ref = context.__brothers;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            brother = _ref[_i];
-            _results.push(ComplexResModel.prototype.draw.apply(brother, arguments));
-          }
-          return _results;
-        }
-      },
       initialize: function(attr, option) {
-        var KpModel, SgAsso, defaultSg;
-        this.__brothers = [];
-        if (!option || !option.clone) {
-          this.draw(true);
-        }
+        var SgAsso;
         if (option && option.createByUser) {
           this.initInstanceType();
-          KpModel = Design.modelClassForType(constant.RESTYPE.KP);
-          KpModel.getDefaultKP().assignTo(this);
-          defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
+          Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(this);
           SgAsso = Design.modelClassForType("SgAsso");
-          new SgAsso(defaultSg, this);
+          new SgAsso(Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg(), this);
         }
         if (!this.get("rdSize")) {
           this.set("rdSize", this.getAmiRootDeviceVolumeSize());
@@ -8765,16 +7053,13 @@
         return null;
       },
       getNewName: function(base) {
-        var id, myKinds, nameMap, newName, resource_list, rl;
+        var id, nameMap, newName, resource_list, rl;
         if (!this.newNameTmpl) {
           newName = this.defaults ? this.defaults.name : void 0;
           return newName || "";
         }
         if (base === void 0) {
-          myKinds = _.filter(Design.modelClassForType(this.type).allObjects(), function(m) {
-            return m.getBigBrother() === null;
-          });
-          base = myKinds.length;
+          base = this.getAllObjects().length;
         }
         nameMap = {};
         this.design().eachComponent(function(comp) {
@@ -8810,15 +7095,12 @@
           };
         }
         state = this.get("state");
-        if ((state && _.isArray(state) && state.length > 0) || ($('#state-editor-model').is(':visible') && $('#state-editor-model .state-list .state-item').length >= 1)) {
+        if (state && state.length > 0) {
           return MC.template.NodeStateRemoveConfirmation({
             name: this.get("name")
           });
         }
-        if (this.__brothers.length > 0 || this.isClone()) {
-          return true;
-        }
-        return sprintf(lang.ide.CVS_CFM_DEL_LC, this.get('name'));
+        return true;
       },
       isDefaultTenancy: function() {
         return true;
@@ -8829,7 +7111,7 @@
         if (!resource_list) {
           return [];
         }
-        resource = (_ref = resource_list.get(this.parent().get("appId"))) != null ? _ref.toJSON() : void 0;
+        resource = (_ref = resource_list.get(this.connectionTargets("LcUsage")[0].get("appId"))) != null ? _ref.toJSON() : void 0;
         if (resource && resource.Instances && resource.Instances.length) {
           amis = [];
           _ref1 = resource.Instances;
@@ -8845,54 +7127,13 @@
         return amis || [];
       },
       remove: function() {
-        var brother, i, k, v, _i, _j, _len, _len1, _ref, _ref1, _ref2;
-        if (this.__bigBrother) {
-          this.__bigBrother.removeBrother(this);
-        } else if (this.__brothers.length) {
-          _ref = this.attributes;
-          for (k in _ref) {
-            v = _ref[k];
-            if (k !== '__parent' && k !== '__connections') {
-              this.__brothers[0].attributes[k] = v;
-            }
-          }
-          this.__brothers[0].__bigBrother = null;
-          this.__brothers[0].__brothers = [];
-          this.__brothers[0].__isClone = false;
-          _ref1 = this.__brothers;
-          for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-            brother = _ref1[i];
-            if (i !== 0) {
-              brother.__bigBrother = this.__brothers[0];
-              this.__brothers[0].__brothers.push(brother);
-            }
-          }
-        } else {
-          _ref2 = (this.get("volumeList") || emptyArray).slice(0);
-          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-            v = _ref2[_j];
-            v.remove();
-          }
+        var v, _i, _len, _ref;
+        _ref = (this.get("volumeList") || emptyArray).slice(0);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          v = _ref[_i];
+          v.remove();
         }
         ComplexResModel.prototype.remove.call(this);
-        return null;
-      },
-      connect: function(cn) {
-        if (this.parent() && cn.type === "SgRuleLine") {
-          this.parent().updateExpandedAsgSgLine(cn.getOtherTarget(this));
-        }
-        this.syncBorthersConn(cn, true);
-        return null;
-      },
-      disconnect: function(cn) {
-        if (this.parent()) {
-          if (cn.type === "ElbAmiAsso") {
-
-          } else if (cn.type === "SgRuleLine") {
-            this.parent().updateExpandedAsgSgLine(cn.getOtherTarget(this), true);
-          }
-        }
-        this.syncBorthersConn(cn);
         return null;
       },
       getStateData: InstanceModel.prototype.getStateData,
@@ -8915,10 +7156,7 @@
       getInstanceTypeConfig: InstanceModel.prototype.getInstanceTypeConfig,
       getInstanceTypeList: InstanceModel.prototype.getInstanceTypeList,
       serialize: function() {
-        var ami, blockDevice, component, layout, sgarray, vd, volume, _i, _len, _ref;
-        if (this.isClone()) {
-          return;
-        }
+        var ami, blockDevice, component, layout, vd, volume, _i, _len, _ref;
         ami = this.getAmi() || this.get("cachedAmi");
         layout = this.generateLayout();
         if (ami) {
@@ -8926,9 +7164,6 @@
           layout.architecture = ami.architecture;
           layout.rootDeviceType = ami.rootDeviceType;
         }
-        sgarray = _.map(this.connectionTargets("SgAsso"), function(sg) {
-          return sg.createRef("GroupId");
-        });
         blockDevice = this.getBlockDeviceMapping();
         _ref = this.get("volumeList") || emptyArray;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -8961,7 +7196,9 @@
             KeyName: this.get("keyName"),
             EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
             BlockDeviceMapping: blockDevice,
-            SecurityGroups: sgarray,
+            SecurityGroups: _.map(this.connectionTargets("SgAsso"), function(sg) {
+              return sg.createRef("GroupId");
+            }),
             LaunchConfigurationName: this.get("configName") || this.get("name"),
             InstanceType: this.get("instanceType"),
             AssociatePublicIpAddress: this.get("publicIp")
@@ -8991,9 +7228,7 @@
           monitoring: data.resource.InstanceMonitoring,
           userData: data.resource.UserData,
           publicIp: data.resource.AssociatePublicIpAddress,
-          configName: data.resource.LaunchConfigurationName,
-          x: layout_data.coordinate[0],
-          y: layout_data.coordinate[1]
+          configName: data.resource.LaunchConfigurationName
         };
         if (layout_data.osType && layout_data.architecture && layout_data.rootDeviceType) {
           attr.cachedAmi = {
@@ -9017,28 +7252,17 @@
             model.set("rdIops", volume.Ebs.Iops);
             model.set("rdType", volume.Ebs.VolumeType);
           } else {
-            if (volume.Ebs === null && volume.VirtualName) {
-              _attr = {
-                name: volume.DeviceName,
-                snapshotId: "",
-                volumeSize: "",
-                volumeType: "",
-                iops: "",
-                owner: model
-              };
-            } else {
-              _attr = {
-                name: volume.DeviceName,
-                snapshotId: volume.Ebs.SnapshotId,
-                volumeSize: volume.Ebs.VolumeSize,
-                volumeType: volume.Ebs.VolumeType,
-                iops: volume.Ebs.Iops,
-                owner: model
-              };
-              new VolumeModel(_attr, {
-                noNeedGenName: true
-              });
-            }
+            _attr = {
+              name: volume.DeviceName,
+              snapshotId: volume.Ebs.SnapshotId,
+              volumeSize: volume.Ebs.VolumeSize,
+              volumeType: volume.Ebs.VolumeType,
+              iops: volume.Ebs.Iops,
+              owner: model
+            };
+            new VolumeModel(_attr, {
+              noNeedGenName: true
+            });
           }
         }
         SgAsso = Design.modelClassForType("SgAsso");
@@ -9209,8 +7433,6 @@
       type: "RTB_Route",
       defaults: function() {
         return {
-          lineType: "rtb-target",
-          dashLine: true,
           routes: []
         };
       },
@@ -9325,6 +7547,19 @@
           }
         }
       ]
+    }, {
+      isConnectable: function(p1Comp, p2Comp) {
+        var instance;
+        if (p1Comp.type === constant.RESTYPE.INSTANCE) {
+          instance = p1Comp;
+        } else if (p2Comp.type === constant.RESTYPE.INSTANCE) {
+          instance = p2Comp;
+        }
+        if (instance && instance.get("count") > 1) {
+          return false;
+        }
+        return true;
+      }
     });
     return C;
   });
@@ -9338,7 +7573,6 @@
       type: "RTB_Asso",
       oneToMany: constant.RESTYPE.RT,
       defaults: {
-        lineType: "association",
         implicit: false
       },
       portDefs: {
@@ -9401,18 +7635,10 @@
     Model = ComplexResModel.extend({
       defaults: {
         main: false,
-        x: 50,
-        y: 5,
-        width: 8,
-        height: 8,
         implicit: false
       },
       type: constant.RESTYPE.RT,
       newNameTmpl: "RT-",
-      initialize: function() {
-        this.draw(true);
-        return null;
-      },
       isRemovable: function() {
         if (this.get("main")) {
           return {
@@ -9422,15 +7648,12 @@
         return true;
       },
       setMain: function() {
-        var asso, old_main_rtb, sb, subnets, _i, _len, _results;
+        var asso, sb, subnets, _i, _len, _results;
         if (this.get("main")) {
           return;
         }
-        old_main_rtb = Model.getMainRouteTable();
-        old_main_rtb.set("main", false);
-        old_main_rtb.draw();
+        Model.getMainRouteTable().set("main", false);
         this.set("main", true);
-        this.draw();
         subnets = Design.modelClassForType(constant.RESTYPE.SUBNET).allObjects();
         _results = [];
         for (_i = 0, _len = subnets.length; _i < _len; _i++) {
@@ -9593,10 +7816,6 @@
       type: constant.RESTYPE.SUBNET,
       newNameTmpl: "subnet",
       defaults: {
-        x: 2,
-        y: 2,
-        width: 17,
-        height: 17,
         cidr: ""
       },
       initialize: function(attributes, option) {
@@ -9604,7 +7823,6 @@
         if (!this.attributes.cidr) {
           this.attributes.cidr = this.generateCidr();
         }
-        this.draw(true);
         RtbModel = Design.modelClassForType(constant.RESTYPE.RT);
         new RtbAsso(this, RtbModel.getMainRouteTable(), {
           implicit: true
@@ -9621,7 +7839,6 @@
         var validCIDR;
         validCIDR = MC.getValidCIDR(cidr);
         this.set("cidr", validCIDR);
-        this.draw();
         return null;
       },
       setAcl: function(uid) {
@@ -9656,8 +7873,14 @@
         return true;
       },
       isRemovable: function() {
-        var ami, az, childAZ, cn, _i, _j, _len, _len1, _ref, _ref1;
+        var SBGAsso, ami, az, childAZ, cn, _i, _j, _len, _len1, _ref, _ref1;
         az = this.parent();
+        SBGAsso = this.connectionTargets("SubnetgAsso");
+        if (SBGAsso.length > 0) {
+          return {
+            error: sprintf(lang.ide.RDS_MSG_ERR_REMOVE_SUBNET_FAILED_CAUSEDBY_USEDBY_SBG, this.get("name"), SBGAsso[0].get("name"))
+          };
+        }
         _ref = this.connections("ElbSubnetAsso");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cn = _ref[_i];
@@ -9716,7 +7939,7 @@
             detail: "Please choose a CIDR block not conflicting with existing subnet."
           };
         }
-        if (!this.isCidrEnoughForIps(cidr)) {
+        if (this.getAvailableIPCountInSubnet(cidr) <= 0) {
           return {
             error: "" + cidr + " has not enough IP for the ENIs in this subnet."
           };
@@ -9738,7 +7961,7 @@
         }
         return false;
       },
-      isCidrEnoughForIps: function(cidr) {
+      getAvailableIPCountInSubnet: function(cidr) {
         var child, eni, ipCount, maxIpCount, _i, _len, _ref;
         cidr = cidr || this.get("cidr");
         ipCount = 0;
@@ -9752,10 +7975,10 @@
           } else {
             continue;
           }
-          ipCount += eni.get("ips").length;
+          ipCount += eni.get("ips").length * eni.serverGroupCount();
         }
         maxIpCount = Design.modelClassForType(constant.RESTYPE.ENI).getAvailableIPCountInCIDR(cidr);
-        return maxIpCount >= ipCount;
+        return maxIpCount - ipCount;
       },
       generateCidr: function() {
         var comp, currentSubnetNum, currentVPCCIDR, maxSubnetNum, resultSubnetNum, subnetCIDR, subnetCIDRAry, subnetCIDRIPAry, subnetCIDRIPStr, subnetCIDRSuffix, vpcCIDRAry, vpcCIDRIPStr, vpcCIDRIPStrAry, vpcCIDRSuffix, _i, _len, _ref;
@@ -9989,17 +8212,9 @@
     var Model;
     Model = ComplexResModel.extend({
       defaults: {
-        x: 0,
-        y: 0,
-        width: 8,
-        height: 8,
         name: "Internet-gateway"
       },
       type: constant.RESTYPE.IGW,
-      initialize: function() {
-        this.draw(true);
-        return null;
-      },
       isRemovable: function() {
         var ElbModel, EniModel, LcModel, cannotDel;
         ElbModel = Design.modelClassForType(constant.RESTYPE.ELB);
@@ -10047,20 +8262,15 @@
       }
     }, {
       tryCreateIgw: function() {
-        var igwH, igwW, vpc, vpcH, vpcX, vpcY;
+        var vpc;
         if (Model.allObjects().length > 0) {
           return;
         }
         notification('info', lang.ide.CVS_CFM_ADD_IGW_MSG);
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
-        igwW = Model.prototype.defaults.width;
-        igwH = Model.prototype.defaults.height;
-        vpcX = vpc.x();
-        vpcY = vpc.y();
-        vpcH = vpc.height();
         new Model({
-          x: vpcX - igwW / 2,
-          y: vpcY + (vpcH - igwH) / 2,
+          x: -1,
+          y: -1,
           parent: vpc
         });
         return null;
@@ -10087,17 +8297,9 @@
     var Model;
     Model = ComplexResModel.extend({
       defaults: {
-        x: 0,
-        y: 0,
-        width: 8,
-        height: 8,
         name: "VPN-gateway"
       },
       type: constant.RESTYPE.VGW,
-      initialize: function() {
-        this.draw(true);
-        return null;
-      },
       serialize: function() {
         var component;
         component = {
@@ -10533,6 +8735,1019 @@
           }
         }
         return null;
+      }
+    });
+    return Model;
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/editor/framework/resource/DBSbgModel',["constant", "../GroupModel", "../ConnectionModel"], function(constant, GroupModel, ConnectionModel) {
+    var Model, SbAsso;
+    SbAsso = ConnectionModel.extend({
+      type: "SubnetgAsso"
+    });
+    Model = GroupModel.extend({
+      type: constant.RESTYPE.DBSBG,
+      newNameTmpl: "subnet-group",
+      defaults: {
+        x: 2,
+        y: 2,
+        width: 17,
+        height: 17,
+        createdBy: ""
+      },
+      constructor: function(attr, option) {
+        var az, design, subnet, _i, _len, _ref;
+        if (option && option.createByUser) {
+          design = Design.instance();
+          az = {};
+          _ref = design.componentsOfType(constant.RESTYPE.SUBNET);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            subnet = _ref[_i];
+            az[subnet.parent().get("name")] = true;
+          }
+          if (_.keys(az).length < 2) {
+            return this;
+          }
+        }
+        return GroupModel.apply(this, arguments);
+      },
+      initialize: function(attributes, option) {
+        if (!this.get('description')) {
+          this.set('description', "" + (this.get('name')) + " default description");
+        }
+        return null;
+      },
+      serialize: function() {
+        var component, sbArray;
+        sbArray = _.map(this.connectionTargets("SubnetgAsso"), function(sb) {
+          return sb.createRef("SubnetId");
+        });
+        component = {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            CreatedBy: this.get('createdBy'),
+            DBSubnetGroupName: this.get('appId'),
+            SubnetIds: sbArray,
+            DBSubnetGroupDescription: this.get('description')
+          }
+        };
+        return {
+          component: component,
+          layout: this.generateLayout()
+        };
+      }
+    }, {
+      handleTypes: constant.RESTYPE.DBSBG,
+      deserialize: function(data, layout_data, resolve) {
+        var model, sb, _i, _len, _ref;
+        model = new Model({
+          id: data.uid,
+          name: data.name || data.resource.DBSubnetGroupName,
+          appId: data.resource.DBSubnetGroupName,
+          createdBy: data.resource.CreatedBy,
+          description: data.resource.DBSubnetGroupDescription,
+          x: layout_data.coordinate[0],
+          y: layout_data.coordinate[1],
+          width: layout_data.size[0],
+          height: layout_data.size[1],
+          parent: resolve(layout_data.groupUId)
+        });
+        _ref = data.resource.SubnetIds || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          sb = _ref[_i];
+          new SbAsso(model, resolve(MC.extractID(sb)));
+        }
+        return null;
+      }
+    });
+    return Model;
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/editor/framework/resource/DBOgModel',["../ComplexResModel", "Design", "constant"], function(ComplexResModel, Design, constant) {
+    var Model;
+    Model = ComplexResModel.extend({
+      newNameTmpl: "-og",
+      type: constant.RESTYPE.DBOG,
+      isDefault: function() {
+        return !!this.get('default');
+      },
+      isVisual: function() {
+        return false;
+      },
+      initialize: function(attributes, option) {
+        var mainVersion, typeName;
+        if (this.isDefault()) {
+          return;
+        }
+        if (!this.get('description')) {
+          typeName = this.engineType();
+          mainVersion = this.get('engineVersion').replace(/\./g, '-');
+          this.set('name', typeName + mainVersion + this.get('name'));
+          this.set('description', "custom option group for " + (this.get('engineName')) + " " + (this.get('engineVersion')));
+        }
+        return null;
+      },
+      defaults: function() {
+        return {
+          engineName: '',
+          engineVersion: '',
+          options: [],
+          applyImmediately: true
+        };
+      },
+      engineType: function() {
+        var engine;
+        engine = this.get('engineName');
+        switch (false) {
+          case engine !== 'mysql':
+            return 'mysql';
+          case engine !== 'postgresql':
+            return 'postgresql';
+          case engine !== 'oracle-ee' && engine !== 'oracle-se' && engine !== 'oracle-se1':
+            return 'oracle';
+          case engine !== 'sqlserver-ee' && engine !== 'sqlserver-ex' && engine !== 'sqlserver-se' && engine !== 'sqlserver-web':
+            return 'sqlserver';
+        }
+      },
+      remove: function() {
+        _.invoke(this.connectionTargets('OgUsage'), 'setDefaultOptionGroup');
+        return ComplexResModel.prototype.remove.apply(this, arguments);
+      },
+      createRef: function() {
+        if (this.isDefault()) {
+          return this.get('name');
+        } else {
+          return ComplexResModel.prototype.createRef.apply(this, arguments);
+        }
+      },
+      serialize: function(options) {
+        var component, isRunOrUpdate, vpc;
+        if (this.isDefault()) {
+          return;
+        }
+        isRunOrUpdate = options && options.usage && _.contains(['runStack', 'updateApp'], options.usage);
+        if (isRunOrUpdate && !this.connections().length) {
+          console.debug("Option Group is not serialized, because nothing use it.");
+          return;
+        }
+        if (!this.connections().length) {
+          return;
+        }
+        vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
+        component = {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            CreatedBy: this.get('createdBy') || '',
+            EngineName: this.get('engineName'),
+            MajorEngineVersion: this.get('engineVersion'),
+            OptionGroupDescription: this.get('description'),
+            OptionGroupName: this.get('appId') || '',
+            Options: this.get('options'),
+            ApplyImmediately: this.get('applyImmediately'),
+            VpcId: this.getVpcRef()
+          }
+        };
+        return {
+          component: component
+        };
+      }
+    }, {
+      handleTypes: constant.RESTYPE.DBOG,
+      deserialize: function(data, layout_data, resolve) {
+        return new Model({
+          id: data.uid,
+          name: data.name,
+          appId: data.resource.OptionGroupName,
+          createdBy: data.resource.CreatedBy,
+          engineName: data.resource.EngineName,
+          engineVersion: data.resource.MajorEngineVersion,
+          options: data.resource.Options,
+          description: data.resource.OptionGroupDescription,
+          applyImmediately: data.resource.ApplyImmediately
+        });
+      }
+    });
+    return Model;
+  });
+
+}).call(this);
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('workspaces/editor/framework/resource/DBInstanceModel',['../ComplexResModel', '../ConnectionModel', './DBOgModel', 'Design', 'constant', 'i18n!/nls/lang.js', 'CloudResources'], function(ComplexResModel, ConnectionModel, DBOgModel, Design, constant, lang, CloudResources) {
+    var Model, OgUsage;
+    OgUsage = ConnectionModel.extend({
+      type: "OgUsage",
+      oneToMany: constant.RESTYPE.DBOG
+    });
+    Model = ComplexResModel.extend({
+      defaults: {
+        newInstanceId: '',
+        instanceId: '',
+        snapshotId: '',
+        createdBy: "",
+        accessible: false,
+        username: 'root',
+        password: '12345678',
+        multiAz: true,
+        iops: 0,
+        autoMinorVersionUpgrade: true,
+        allowMajorVersionUpgrade: '',
+        backupRetentionPeriod: 1,
+        allocatedStorage: 10,
+        backupWindow: '',
+        maintenanceWindow: '',
+        characterSetName: '',
+        dbName: '',
+        port: '',
+        pending: '',
+        az: '',
+        ogName: '',
+        pgName: '',
+        applyImmediately: false
+      },
+      type: constant.RESTYPE.DBINSTANCE,
+      newNameTmpl: "db",
+      __cachedSpecifications: null,
+      source: function() {
+        return CloudResources(constant.RESTYPE.DBSNAP, this.design().region()).get(this.get('snapshotId'));
+      },
+      slaveIndependentAttr: "id|appId|x|y|width|height|name|accessible|createdBy|instanceId|instanceClass|autoMinorVersionUpgrade|accessible|backupRetentionPeriod|multiAz|password|__connections|__parent",
+      slaves: function() {
+        if (this.master()) {
+          return [];
+        } else {
+          return this.connectionTargets("DbReplication");
+        }
+      },
+      master: function() {
+        var m;
+        m = this.connections('DbReplication')[0];
+        if (m && m.master() !== this) {
+          return m.master();
+        }
+        return null;
+      },
+      copyMaster: function(master) {
+        this.clone(master);
+        if (!this.get('appId')) {
+          return this.set({
+            backupRetentionPeriod: 0,
+            multiAz: false,
+            createdBy: '',
+            instanceId: '',
+            snapshotId: '',
+            password: '****'
+          });
+        }
+      },
+      setMaster: function(master) {
+        var Replication, _ref;
+        if ((_ref = this.connections("DbReplication")[0]) != null) {
+          _ref.remove();
+        }
+        Replication = Design.modelClassForType("DbReplication");
+        new Replication(master, this);
+        this.listenTo(master, 'change', this.syncMasterAttr);
+        return null;
+      },
+      syncMasterAttr: function(master) {
+        var k, needSync, v, _ref;
+        if (this.get('appId')) {
+          return false;
+        }
+        needSync = {};
+        _ref = master.changedAttributes();
+        for (k in _ref) {
+          v = _ref[k];
+          if (this.slaveIndependentAttr.indexOf(k) < 0) {
+            needSync[k] = v;
+          }
+        }
+        if (needSync['iops']) {
+          delete needSync['iops'];
+        }
+        return this.set(needSync);
+      },
+      needSyncMasterConn: function(cnn) {
+        var connTypesToCopy, _ref;
+        if (this.master()) {
+          return false;
+        }
+        if (this.get('appId')) {
+          connTypesToCopy = ['SgAsso'];
+        } else {
+          connTypesToCopy = ['SgAsso', 'OgUsage'];
+        }
+        if (_ref = cnn.type, __indexOf.call(connTypesToCopy, _ref) < 0) {
+          return false;
+        }
+        return true;
+      },
+      connect: function(cnn) {
+        var connectionModel, otherTarget, slave, _i, _len, _ref;
+        if (!this.needSyncMasterConn(cnn)) {
+          return;
+        }
+        otherTarget = cnn.getOtherTarget(this);
+        connectionModel = Design.modelClassForType(cnn.type);
+        _ref = this.slaves();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          slave = _ref[_i];
+          new connectionModel(slave, otherTarget);
+        }
+      },
+      disconnect: function(cnn) {
+        var connectionModel, otherTarget, slave, _i, _len, _ref;
+        if (!this.needSyncMasterConn(cnn)) {
+          return;
+        }
+        if (cnn.oneToMany) {
+          return;
+        }
+        otherTarget = cnn.getOtherTarget(this);
+        connectionModel = Design.modelClassForType(cnn.type);
+        _ref = this.slaves();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          slave = _ref[_i];
+          new connectionModel(slave, otherTarget).remove();
+        }
+      },
+      constructor: function(attr, option) {
+        var snapshotModel;
+        if (option && !option.master && option.createByUser) {
+          if (attr.snapshotId) {
+            snapshotModel = this.getSnapshotModel(attr.snapshotId);
+            _.extend(attr, {
+              "engine": snapshotModel.get('Engine'),
+              "engineVersion": snapshotModel.get('EngineVersion'),
+              "snapshotId": snapshotModel.get('DBSnapshotIdentifier'),
+              "allocatedStorage": snapshotModel.get('AllocatedStorage'),
+              "port": snapshotModel.get('Port'),
+              "iops": snapshotModel.get('Iops') || '',
+              "multiAz": snapshotModel.get('MultiAZ'),
+              "ogName": snapshotModel.get('OptionGroupName'),
+              "license": snapshotModel.get('LicenseModel'),
+              "az": snapshotModel.get('AvailabilityZone'),
+              "username": snapshotModel.get('MasterUsername')
+            });
+          }
+        }
+        return ComplexResModel.call(this, attr, option);
+      },
+      initialize: function(attr, option) {
+        var SgAsso, defaultSg;
+        option = option || {};
+        if (option.cloneSource) {
+          this.clone(option.cloneSource);
+          return;
+        }
+        if (option.master) {
+          this.copyMaster(option.master);
+          this.setMaster(option.master);
+        } else if (option.createByUser) {
+          SgAsso = Design.modelClassForType("SgAsso");
+          defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
+          new SgAsso(defaultSg, this);
+          this.set(_.defaults(attr, {
+            license: this.getDefaultLicense(),
+            engineVersion: this.getDefaultVersion(),
+            instanceClass: this.getDefaultInstanceClass(),
+            port: this.getDefaultPort(),
+            dbName: this.getDefaultDBName(),
+            characterSetName: this.getDefaultCharSet(),
+            allocatedStorage: this.getDefaultAllocatedStorage(),
+            snapshotId: "",
+            multiAz: !!attr.multiAz
+          }));
+          this.setDefaultOptionGroup();
+          this.setDefaultParameterGroup();
+        }
+      },
+      clone: function(srcTarget) {
+        this.cloneAttributes(srcTarget, {
+          reserve: "newInstanceId|instanceId",
+          copyConnection: ["SgAsso", "OgUsage"]
+        });
+        this.set('snapshotId', '');
+      },
+      setDefaultOptionGroup: function(origEngineVersion) {
+        var defaultInfo, defaultOG, engineCol, origDefaultInfo, regionName;
+        regionName = Design.instance().region();
+        engineCol = CloudResources(constant.RESTYPE.DBENGINE, regionName);
+        defaultInfo = engineCol.getDefaultByNameVersion(regionName, this.get('engine'), this.get('engineVersion'));
+        if (origEngineVersion) {
+          origDefaultInfo = engineCol.getDefaultByNameVersion(regionName, this.get('engine'), origEngineVersion);
+        }
+        if (origDefaultInfo && origDefaultInfo.family && defaultInfo && defaultInfo.family) {
+          if (origDefaultInfo.family === defaultInfo.family) {
+            return null;
+          }
+        }
+        if (defaultInfo && defaultInfo.defaultOGName) {
+          defaultOG = defaultInfo.defaultOGName;
+        } else {
+          defaultOG = "default:" + this.get('engine') + "-" + this.getMajorVersion().replace(".", "-");
+          console.warn("can not get default optiongroup for " + (this.get('engine')) + " " + (this.getMajorVersion()));
+        }
+        new OgUsage(this, this.getDefaultOgInstance(defaultOG));
+        return null;
+      },
+      getDefaultOgInstance: function(name) {
+        return DBOgModel.findWhere({
+          name: name,
+          "default": true
+        }) || new DBOgModel({
+          name: name,
+          "default": true
+        });
+      },
+      setDefaultParameterGroup: function(origEngineVersion) {
+        var defaultInfo, defaultPG, engineCol, origDefaultInfo, regionName;
+        regionName = Design.instance().region();
+        engineCol = CloudResources(constant.RESTYPE.DBENGINE, regionName);
+        defaultInfo = engineCol.getDefaultByNameVersion(regionName, this.get('engine'), this.get('engineVersion'));
+        if (origEngineVersion) {
+          origDefaultInfo = engineCol.getDefaultByNameVersion(regionName, this.get('engine'), origEngineVersion);
+        }
+        if (origDefaultInfo && origDefaultInfo.family && defaultInfo && defaultInfo.family) {
+          if (origDefaultInfo.family === defaultInfo.family) {
+            return null;
+          }
+        }
+        if (defaultInfo && defaultInfo.defaultPGName) {
+          defaultPG = defaultInfo.defaultPGName;
+        } else {
+          defaultPG = "default." + this.get('engine') + this.getMajorVersion();
+          console.warn("can not get default parametergroup for " + (this.get('engine')) + " " + (this.getMajorVersion()));
+        }
+        this.set('pgName', defaultPG || "");
+        return null;
+      },
+      getAllocatedRange: function() {
+        var classInfo, defaultStorage, engine, obj;
+        engine = this.get('engine');
+        if (this.isMysql()) {
+          obj = {
+            min: 5,
+            max: 3072
+          };
+        }
+        if (this.isPostgresql()) {
+          obj = {
+            min: 5,
+            max: 3072
+          };
+        }
+        if (this.isOracle()) {
+          obj = {
+            min: 10,
+            max: 3072
+          };
+        }
+        if (this.isSqlserver()) {
+          engine = this.get('engine');
+          if (engine === 'sqlserver-ee' || engine === 'sqlserver-se') {
+            obj = {
+              min: 200,
+              max: 1024
+            };
+          }
+          if (engine === 'sqlserver-ex' || engine === 'sqlserver-web') {
+            obj = {
+              min: 30,
+              max: 1024
+            };
+          }
+        }
+        classInfo = this.getInstanceClassDict();
+        defaultStorage = constant.DB_DEFAULTSETTING[this.get('engine')].allocatedStorage;
+        if (classInfo && classInfo['ebs']) {
+          if (defaultStorage < 100) {
+            obj.min = 100;
+          }
+        }
+        return obj;
+      },
+      getLicenseObj: function(getDefault) {
+        var currentLicense, obj;
+        currentLicense = this.get('license');
+        if (currentLicense) {
+          obj = _.findWhere(this.getSpecifications(), {
+            license: currentLicense
+          });
+        }
+        if (!obj && getDefault) {
+          obj = this.getSpecifications()[0];
+        }
+        return obj;
+      },
+      getVersionObj: function(getDefault) {
+        var currentVersion, obj, versions;
+        versions = this.getLicenseObj(true).versions;
+        currentVersion = this.get('engineVersion');
+        if (currentVersion) {
+          obj = _.findWhere(versions, {
+            version: currentVersion
+          });
+        }
+        if (!obj && getDefault) {
+          obj = versions[0];
+        }
+        return obj;
+      },
+      getInstanceClassObj: function(getDefault) {
+        var consoleDefault, currentClass, instanceClasses, obj;
+        instanceClasses = this.getVersionObj(true).instanceClasses;
+        currentClass = this.get('instanceClass');
+        if (currentClass) {
+          obj = _.findWhere(instanceClasses, {
+            instanceClass: currentClass
+          });
+        }
+        if (!obj && getDefault) {
+          consoleDefault = 'db.t1.micro';
+          obj = _.find(instanceClasses, function(i) {
+            return i.instanceClass === consoleDefault;
+          });
+          if (!obj) {
+            obj = instanceClasses[0];
+          }
+        }
+        return obj;
+      },
+      setIops: function(iops) {
+        return this.set('iops', iops);
+      },
+      getIops: function() {
+        return this.get('iops');
+      },
+      getDefaultLicense: function() {
+        return this.getLicenseObj(true).license;
+      },
+      getDefaultVersion: function() {
+        return this.getVersionObj(true).version;
+      },
+      getDefaultInstanceClass: function() {
+        return this.getInstanceClassObj(true).instanceClass;
+      },
+      getMajorVersion: function() {
+        var _ref;
+        return (_ref = this.get('engineVersion')) != null ? _ref.split('.').slice(0, 2).join('.') : void 0;
+      },
+      getMinorVersion: function() {
+        var _ref;
+        return (_ref = this.get('engineVersion')) != null ? _ref.split('.').slice(2).join('.') : void 0;
+      },
+      getRdsInstances: function() {
+        var _ref;
+        return (_ref = App.model.getRdsData(this.design().region())) != null ? _ref.instance[this.get('engine')] : void 0;
+      },
+      getDefaultPort: function() {
+        return constant.DB_DEFAULTSETTING[this.get('engine')].port;
+      },
+      getDefaultDBName: function() {
+        return constant.DB_DEFAULTSETTING[this.get('engine')].dbname;
+      },
+      getDefaultCharSet: function() {
+        return constant.DB_DEFAULTSETTING[this.get('engine')].charset;
+      },
+      getInstanceClassDict: function() {
+        return _.find(constant.DB_INSTANCECLASS, (function(_this) {
+          return function(claDict) {
+            return claDict.instanceClass === _this.get('instanceClass');
+          };
+        })(this));
+      },
+      getDefaultAllocatedStorage: function() {
+        var classInfo, defaultStorage;
+        classInfo = this.getInstanceClassDict();
+        defaultStorage = constant.DB_DEFAULTSETTING[this.get('engine')].allocatedStorage;
+        if (classInfo && classInfo['ebs']) {
+          if (defaultStorage < 100) {
+            return 100;
+          }
+        }
+        return defaultStorage;
+      },
+      getOptionGroup: function() {
+        return this.connectionTargets('OgUsage')[0];
+      },
+      getOptionGroupName: function() {
+        var _ref;
+        return (_ref = this.getOptionGroup()) != null ? _ref.get('name') : void 0;
+      },
+      setOptionGroup: function(name) {
+        var ogComp;
+        ogComp = DBOgModel.findWhere({
+          name: name
+        }) || new DBOgModel({
+          name: name,
+          "default": true
+        });
+        return new OgUsage(this, ogComp);
+      },
+      isMysql: function() {
+        return this.engineType() === 'mysql';
+      },
+      isOracle: function() {
+        return this.engineType() === 'oracle';
+      },
+      isSqlserver: function() {
+        return this.engineType() === 'sqlserver';
+      },
+      isPostgresql: function() {
+        return this.engineType() === 'postgresql';
+      },
+      engineType: function() {
+        var engine;
+        engine = this.get('engine');
+        return constant.DB_ENGINTYPE[engine] || engine;
+      },
+      getSpecifications: function() {
+        var az, cla, claDict, classes, i, instanceClassDict, instances, lObj, license, spec, specArr, that, vObj, version, versions, _i, _j, _len, _len1, _ref;
+        if (this.__cachedSpecifications) {
+          return this.__cachedSpecifications;
+        }
+        that = this;
+        instances = this.getRdsInstances();
+        if (!instances) {
+          return null;
+        }
+        spec = {};
+        specArr = [];
+        for (_i = 0, _len = instances.length; _i < _len; _i++) {
+          i = instances[_i];
+          if (!spec[i.LicenseModel]) {
+            spec[i.LicenseModel] = {};
+          }
+          if (!spec[i.LicenseModel][i.EngineVersion]) {
+            spec[i.LicenseModel][i.EngineVersion] = {};
+          }
+          spec[i.LicenseModel][i.EngineVersion][i.DBInstanceClass] = {
+            multiAZCapable: i.MultiAZCapable,
+            availabilityZones: i.AvailabilityZones
+          };
+        }
+        for (license in spec) {
+          versions = spec[license];
+          lObj = {
+            license: license,
+            versions: []
+          };
+          for (version in versions) {
+            classes = versions[version];
+            vObj = {
+              version: version,
+              instanceClasses: []
+            };
+            instanceClassDict = {};
+            for (cla in classes) {
+              az = classes[cla];
+              instanceClassDict[cla] = {
+                multiAZCapable: az.multiAZCapable,
+                availabilityZones: az.availabilityZones
+              };
+            }
+            _ref = constant.DB_INSTANCECLASS;
+            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+              claDict = _ref[_j];
+              if (_.has(instanceClassDict, claDict.instanceClass)) {
+                vObj.instanceClasses.push(_.extend(instanceClassDict[claDict.instanceClass], claDict));
+              }
+            }
+            lObj.versions.push(vObj);
+          }
+          lObj.versions.sort(function(a, b) {
+            return MC.versionCompare(b.version, a.version);
+          });
+          specArr.push(lObj);
+        }
+        this.__cachedSpecifications = specArr;
+        return specArr;
+      },
+      getLVIA: function(spec) {
+        var currentClass, currentLicense, currentVersion, engine, instanceClass, license, multiAZCapable, version, _ref, _ref1;
+        if (!spec) {
+          return [];
+        }
+        currentLicense = this.get('license');
+        currentVersion = this.get('engineVersion');
+        currentClass = this.get('instanceClass');
+        license = _.first(_.filter(spec, function(s) {
+          if (s.license === currentLicense) {
+            s.selected = true;
+            return true;
+          } else {
+            delete s.selected;
+            return false;
+          }
+        }));
+        version = _.first(_.filter(license.versions, function(v) {
+          if (v.version === currentVersion) {
+            v.selected = true;
+            return true;
+          } else {
+            delete v.selected;
+            return false;
+          }
+        }));
+        if (!version) {
+          version = this.getVersionObj(true);
+          this.set('engineVersion', version.version);
+          if ((_ref = _.findWhere(license.versions, {
+            version: version.version
+          })) != null) {
+            _ref.selected = true;
+          }
+        }
+        instanceClass = _.first(_.filter(version.instanceClasses, function(i) {
+          if (i.instanceClass === currentClass) {
+            i.selected = true;
+            return true;
+          } else {
+            delete i.selected;
+            return false;
+          }
+        }));
+        if (!instanceClass) {
+          instanceClass = this.getInstanceClassObj(true);
+          this.set('instanceClass', instanceClass.instanceClass);
+          if ((_ref1 = _.where(version.instanceClasses, {
+            instanceClass: instanceClass.instanceClass
+          })) != null) {
+            _ref1.selected = true;
+          }
+        }
+        multiAZCapable = instanceClass.multiAZCapable;
+        engine = this.get('engine');
+        if ((engine === 'sqlserver-ee' || engine === 'sqlserver-se')) {
+          multiAZCapable = true;
+        }
+        if (!multiAZCapable) {
+          this.set('multiAz', false);
+        }
+        return [spec, license.versions, version.instanceClasses, multiAZCapable, instanceClass.availabilityZones];
+      },
+      getCost: function(priceMap, currency) {
+        var dbInstanceType, deploy, engine, err, fee, formatedFee, license, p, priceObj, sufix, unit, _i, _len;
+        if (!priceMap.database) {
+          return null;
+        }
+        engine = this.engineType();
+        if (engine === 'sqlserver') {
+          sufix = engine.split('-')[1];
+        }
+        dbInstanceType = this.attributes.instanceClass.split('.');
+        deploy = this.attributes.multiAz ? 'multiAZ' : 'standard';
+        if (!engine || !deploy) {
+          return null;
+        }
+        unit = priceMap.database.rds.unit;
+        try {
+          fee = priceMap.database.rds[engine][dbInstanceType[0]][dbInstanceType[1]][dbInstanceType[2]];
+          license = null;
+          if (this.attributes.license === 'license-included') {
+            license = 'li';
+          } else if (this.attributes.license === 'bring-your-own-license') {
+            license = 'byol';
+          }
+          if (license === 'li' && engine === 'sqlserver') {
+            license = license + sufix;
+          }
+          for (_i = 0, _len = fee.length; _i < _len; _i++) {
+            p = fee[_i];
+            if (p.deploy !== deploy) {
+              continue;
+            }
+            if (license && license !== p.license) {
+              continue;
+            }
+            fee = p[currency];
+            break;
+          }
+          if (!fee || typeof fee !== 'number') {
+            return null;
+          }
+          if (unit === "pricePerHour") {
+            formatedFee = fee + "/hr";
+            fee *= 24 * 30;
+          } else {
+            formatedFee = fee + "/mo";
+          }
+          priceObj = {
+            resource: this.attributes.name,
+            type: this.attributes.instanceClass,
+            fee: fee,
+            formatedFee: formatedFee
+          };
+          return priceObj;
+        } catch (_error) {
+          err = _error;
+        } finally {
+
+        }
+      },
+      category: function(type) {
+        switch (type) {
+          case 'instance':
+            return !(this.get('snapshotId') || this.master());
+          case 'replica':
+            return !!this.master();
+          case 'snapshot':
+            return !!this.get('snapshotId');
+        }
+        if (this.get('snapshotId')) {
+          return 'snapshot';
+        }
+        if (this.master()) {
+          return 'replica';
+        } else {
+          return 'instance';
+        }
+      },
+      getSnapshotModel: function(snapshotId) {
+        return CloudResources(constant.RESTYPE.DBSNAP, Design.instance().region()).findWhere({
+          id: snapshotId || this.get('snapshotId')
+        });
+      },
+      autobackup: function(value) {
+        if (value !== void 0) {
+          this.set('backupRetentionPeriod', value);
+          return;
+        }
+        return this.get('backupRetentionPeriod') || 0;
+      },
+      getNewName: function() {
+        var args;
+        args = [].slice.call(arguments, 0);
+        args[0] = Model.getInstances().length;
+        return ComplexResModel.prototype.getNewName.apply(this, args);
+      },
+      isRemovable: function() {
+        var result;
+        if (this.slaves().length > 0) {
+          result = sprintf(lang.ide.CVS_CFM_DEL_DBINSTANCE, this.get("name"));
+          result = "<div class='modal-text-major'>" + result + "</div>";
+          return result;
+        }
+        return true;
+      },
+      remove: function() {
+        var slave, _i, _len, _ref;
+        _ref = this.slaves();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          slave = _ref[_i];
+          slave.remove();
+        }
+        ComplexResModel.prototype.remove.call(this);
+        return null;
+      },
+      serialize: function() {
+        var component, master, _ref;
+        master = this.master();
+        component = {
+          name: this.get("name"),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            CreatedBy: this.get('createdBy'),
+            DBInstanceIdentifier: this.get('instanceId'),
+            NewDBInstanceIdentifier: this.get('newInstanceId'),
+            DBSnapshotIdentifier: this.get('snapshotId'),
+            AllocatedStorage: this.get('allocatedStorage'),
+            AutoMinorVersionUpgrade: this.get('autoMinorVersionUpgrade'),
+            AllowMajorVersionUpgrade: this.get('allowMajorVersionUpgrade'),
+            AvailabilityZone: this.get('az'),
+            MultiAZ: this.get('multiAz'),
+            Iops: this.getIops(),
+            BackupRetentionPeriod: this.get('backupRetentionPeriod'),
+            CharacterSetName: this.get('characterSetName'),
+            DBInstanceClass: this.get('instanceClass'),
+            DBName: this.get('dbName'),
+            Endpoint: {
+              Port: this.get('port')
+            },
+            Engine: this.get('engine'),
+            EngineVersion: this.get('engineVersion'),
+            LicenseModel: this.get('license'),
+            MasterUsername: this.get('username'),
+            MasterUserPassword: this.get('password'),
+            OptionGroupMembership: {
+              OptionGroupName: (_ref = this.connectionTargets('OgUsage')[0]) != null ? _ref.createRef('OptionGroupName' || "") : void 0
+            },
+            DBParameterGroups: {
+              DBParameterGroupName: this.get('pgName')
+            },
+            ApplyImmediately: this.get('applyImmediately'),
+            PendingModifiedValues: this.get('pending'),
+            PreferredBackupWindow: this.get('backupWindow'),
+            PreferredMaintenanceWindow: this.get('maintenanceWindow'),
+            PubliclyAccessible: this.get('accessible'),
+            DBSubnetGroup: {
+              DBSubnetGroupName: this.parent().createRef('DBSubnetGroupName')
+            },
+            VpcSecurityGroupIds: _.map(this.connectionTargets("SgAsso"), function(sg) {
+              return sg.createRef('GroupId');
+            }),
+            ReadReplicaSourceDBInstanceIdentifier: (master != null ? master.createRef('DBInstanceIdentifier') : void 0) || ''
+          }
+        };
+        return {
+          component: component,
+          layout: this.generateLayout()
+        };
+      }
+    }, {
+      handleTypes: constant.RESTYPE.DBINSTANCE,
+      oracleCharset: ["AL32UTF8", "JA16EUC", "JA16EUCTILDE", "JA16SJIS", "JA16SJISTILDE", "KO16MSWIN949", "TH8TISASCII", "VN8MSWIN1258", "ZHS16GBK", "ZHT16HKSCS", "ZHT16MSWIN950", "ZHT32EUC", "BLT8ISO8859P13", "BLT8MSWIN1257", "CL8ISO8859P5", "CL8MSWIN1251", "EE8ISO8859P2", "EL8ISO8859P7", "EL8MSWIN1253", "EE8MSWIN1250", "NE8ISO8859P10", "NEE8ISO8859P4", "WE8ISO8859P15", "WE8MSWIN1252", "AR8ISO8859P6", "AR8MSWIN1256", "IW8ISO8859P8", "IW8MSWIN1255", "TR8MSWIN1254", "WE8ISO8859P9", "US7ASCII", "UTF8", "WE8ISO8859P1"],
+      getInstances: function() {
+        return this.reject(function(obj) {
+          return obj.master() || obj.get('snapshotId');
+        });
+      },
+      getReplicas: function() {
+        return this.filter(function(obj) {
+          return !!obj.master();
+        });
+      },
+      getSnapShots: function() {
+        return this.filter(function(obj) {
+          return !!obj.get('snapshotId');
+        });
+      },
+      getDefaultOgInstance: function(name) {
+        return DBOgModel.findWhere({
+          name: name,
+          "default": true
+        }) || new DBOgModel({
+          name: name,
+          "default": true
+        });
+      },
+      deserialize: function(data, layout_data, resolve) {
+        var SgAsso, model, ogComp, ogName, resource, sg, that, _i, _len, _ref, _ref1, _ref2, _ref3;
+        that = this;
+        resource = data.resource;
+        model = new Model({
+          id: data.uid,
+          name: data.name,
+          createdBy: resource.CreatedBy,
+          appId: resource.DBInstanceIdentifier,
+          instanceId: resource.DBInstanceIdentifier,
+          newInstanceId: resource.NewDBInstanceIdentifier,
+          snapshotId: resource.DBSnapshotIdentifier,
+          allocatedStorage: resource.AllocatedStorage,
+          autoMinorVersionUpgrade: resource.AutoMinorVersionUpgrade,
+          allowMajorVersionUpgrade: resource.AllowMajorVersionUpgrade,
+          az: resource.AvailabilityZone,
+          multiAz: resource.MultiAZ,
+          iops: resource.Iops,
+          backupRetentionPeriod: resource.BackupRetentionPeriod,
+          characterSetName: resource.CharacterSetName,
+          dbName: resource.DBName,
+          port: (_ref = resource.Endpoint) != null ? _ref.Port : void 0,
+          engine: resource.Engine,
+          license: resource.LicenseModel,
+          engineVersion: resource.EngineVersion,
+          instanceClass: resource.DBInstanceClass,
+          username: resource.MasterUsername,
+          password: resource.MasterUserPassword,
+          pending: resource.PendingModifiedValues,
+          backupWindow: resource.PreferredBackupWindow,
+          maintenanceWindow: resource.PreferredMaintenanceWindow,
+          accessible: resource.PubliclyAccessible,
+          pgName: (_ref1 = resource.DBParameterGroups) != null ? _ref1.DBParameterGroupName : void 0,
+          applyImmediately: resource.ApplyImmediately,
+          x: layout_data.coordinate[0],
+          y: layout_data.coordinate[1],
+          parent: resolve(layout_data.groupUId)
+        });
+        if (data.resource.ReadReplicaSourceDBInstanceIdentifier) {
+          model.setMaster(resolve(MC.extractID(data.resource.ReadReplicaSourceDBInstanceIdentifier)));
+        }
+        SgAsso = Design.modelClassForType("SgAsso");
+        _ref2 = data.resource.VpcSecurityGroupIds || [];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          sg = _ref2[_i];
+          new SgAsso(model, resolve(MC.extractID(sg)));
+        }
+        ogName = (_ref3 = data.resource.OptionGroupMembership) != null ? _ref3.OptionGroupName : void 0;
+        if (ogName) {
+          ogComp = resolve(MC.extractID(ogName));
+          return new OgUsage(model, ogComp || model.getDefaultOgInstance(ogName));
+        }
       }
     });
     return Model;
@@ -10987,6 +10202,17 @@
             compo.resource.AlarmArn = "";
             _results.push(compo.resource.AlarmName = compo.name);
             break;
+          case 'AWS.RDS.DBInstance':
+            compo.resource.CreatedBy = "";
+            compo.resource.DBInstanceIdentifier = "";
+            compo.resource.Endpoint.Address = "";
+            compo.resource.PreferredBackupWindow = "";
+            _results.push(compo.resource.PreferredMaintenanceWindow = "");
+            break;
+          case "AWS.RDS.DBSubnetGroup":
+            compo.resource.CreatedBy = '';
+            _results.push(compo.resource.DBSubnetGroupName = "");
+            break;
         }
       }
       return _results;
@@ -10997,1490 +10223,9 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/canvasview/CeLine',["./CanvasElement", "CanvasManager", "constant", "canvon"], function(CanvasElement, CanvasManager, constant) {
+  define('workspaces/editor/framework/DesignBundle',['Design', './connection/EniAttachment', './connection/VPNConnection', './connection/DbReplication', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', './resource/DBSbgModel', './resource/DBInstanceModel', './resource/DBOgModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack"], function(Design) {
 
-    /* LEGACY CODE */
-    var CeLine, ChildElementProto;
-    window.MC.paper = Canvon($('<svg id="SvgLineHolder" xmlns="http://www.w3.org/2000/svg" version="1.2"></div>'));
-    CeLine = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeLine, "Line");
-    ChildElementProto = CeLine.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portName = function(targetId) {
-      return this.model.port(targetId, "name");
-    };
-    ChildElementProto.reConnect = function() {
-      return this.draw();
-    };
-    ChildElementProto.select = function() {
-      if (this.type === "RTB_Route") {
-        this.doSelect(this.type, this.model.getTarget(constant.RESTYPE.RT).id, this.id);
-      } else {
-        this.doSelect(this.type, this.id, this.id);
-      }
-      return true;
-    };
-    ChildElementProto.draw = function() {
-      var connection, controlPoints, dirn_from, dirn_to, end0, from_port, item_from, item_to, ls, path, pos_from, pos_port_from, pos_port_to, pos_to, start0, svg_line, to_port;
-      connection = this.model;
-      item_from = connection.port1Comp().getCanvasView();
-      item_to = connection.port2Comp().getCanvasView();
-      if (!item_from || !item_to) {
-        return;
-      }
-      pos_from = {
-        left: connection.port1Comp().x() * 10,
-        top: connection.port1Comp().y() * 10
-      };
-      pos_to = {
-        left: connection.port2Comp().x() * 10,
-        top: connection.port2Comp().y() * 10
-      };
-      from_port = connection.port1("name");
-      to_port = connection.port2("name");
-      dirn_from = item_from.portDirection(from_port);
-      dirn_to = item_to.portDirection(to_port);
-      if (dirn_from && dirn_to) {
-        if (pos_from.left > pos_to.left) {
-          from_port += "-left";
-          to_port += "-right";
-        } else {
-          from_port += "-right";
-          to_port += "-left";
-        }
-        pos_port_from = item_from.portPosition(from_port);
-        pos_port_to = item_to.portPosition(to_port);
-        pos_from.left += pos_port_from[0];
-        pos_from.top += pos_port_from[1];
-        pos_to.left += pos_port_to[0];
-        pos_to.top += pos_port_to[1];
-      } else if (dirn_from) {
-        pos_port_to = item_to.portPosition(to_port);
-        pos_to.left += pos_port_to[0];
-        pos_to.top += pos_port_to[1];
-        if (dirn_from === "vertical") {
-          from_port += pos_to.top > pos_from.top ? "-bottom" : "-top";
-        } else if (dirn_from === "horizontal") {
-          from_port += pos_to.left > pos_from.left ? "-right" : "-left";
-        }
-        pos_port_from = item_from.portPosition(from_port);
-        pos_from.left += pos_port_from[0];
-        pos_from.top += pos_port_from[1];
-      } else if (dirn_to) {
-        pos_port_from = item_from.portPosition(from_port);
-        pos_from.left += pos_port_from[0];
-        pos_from.top += pos_port_from[1];
-        if (dirn_to === "vertical") {
-          to_port += pos_from.top > pos_to.top ? "-bottom" : "-top";
-        } else if (dirn_to === "horizontal") {
-          to_port += pos_from.left > pos_to.left ? "-right" : "-left";
-        }
-        pos_port_to = item_to.portPosition(to_port);
-        pos_to.left += pos_port_to[0];
-        pos_to.top += pos_port_to[1];
-      } else {
-        pos_port_from = item_from.portPosition(from_port);
-        pos_port_to = item_to.portPosition(to_port);
-        pos_from.left += pos_port_from[0];
-        pos_from.top += pos_port_from[1];
-        pos_to.left += pos_port_to[0];
-        pos_to.top += pos_port_to[1];
-      }
-      start0 = {
-        x: pos_from.left,
-        y: pos_from.top,
-        angle: pos_port_from[2],
-        type: connection.port1Comp().type,
-        name: from_port
-      };
-      end0 = {
-        x: pos_to.left,
-        y: pos_to.top,
-        angle: pos_port_to[2],
-        type: connection.port2Comp().type,
-        name: to_port
-      };
-      if (start0.x === end0.x || start0.y === end0.y) {
-        path = "M" + start0.x + " " + start0.y + " L" + end0.x + " " + end0.y;
-      } else {
-        controlPoints = MC.canvas.route2(start0, end0);
-        if (controlPoints) {
-          ls = connection.get("lineType") === 'sg' ? $canvas.lineStyle() : 777;
-          switch (ls) {
-            case 0:
-              path = "M" + controlPoints[0].x + " " + controlPoints[0].y + " L" + controlPoints[1].x + " " + controlPoints[1].y + " L" + controlPoints[controlPoints.length - 2].x + " " + controlPoints[controlPoints.length - 2].y + " L" + controlPoints[controlPoints.length - 1].x + " " + controlPoints[controlPoints.length - 1].y;
-              break;
-            case 1:
-              path = MC.canvas._round_corner(controlPoints);
-              break;
-            case 2:
-              path = MC.canvas._bezier_q_corner(controlPoints);
-              break;
-            case 3:
-              path = MC.canvas._bezier_qt_corner(controlPoints);
-              break;
-            case 777:
-              path = MC.canvas._round_corner(controlPoints);
-          }
-        }
-      }
-      svg_line = document.getElementById(this.id);
-      if (svg_line) {
-        $(svg_line).children().attr('d', path);
-      } else {
-        MC.paper.start();
-        MC.paper.path(path);
-        MC.paper.path(path).attr('class', 'fill-line');
-        if (connection.get("dashLine")) {
-          MC.paper.path(path).attr('class', 'dash-line');
-        }
-        svg_line = $(MC.paper.save()).attr({
-          'class': 'line line-' + connection.get("lineType"),
-          'data-type': 'line',
-          'id': this.id
-        });
-        this.getLayer("line_layer")[0].appendChild(svg_line[0]);
-      }
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeAz',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
-    var CeAz, ChildElementProto;
-    CeAz = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeAz, constant.RESTYPE.AZ);
-    ChildElementProto = CeAz.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.select = function() {
-      if (!this.model.design().modeIsStack()) {
-        return this.doSelect("", "", this.model.id);
-      } else {
-        return this.doSelect(this.model.type, this.model.id, this.model.id);
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var m, name, node;
-      m = this.model;
-      name = m.get("name");
-      if (isCreate) {
-        node = this.createGroup(name);
-        this.getLayer("az_layer").append(node);
-        CanvasManager.position(node, m.x(), m.y());
-      } else {
-        CanvasManager.update(this.$element().children("text"), name);
-      }
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeSubnet',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
-    var CeSubnet, ChildElementProto;
-    CeSubnet = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeSubnet, constant.RESTYPE.SUBNET);
-    ChildElementProto = CeSubnet.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosition = function(portName) {
-      var m, portY;
-      m = this.model;
-      portY = m.height() * MC.canvas.GRID_HEIGHT / 2 - 5;
-      if (portName === "subnet-assoc-in") {
-        return [-12, portY, CanvasElement.constant.PORT_LEFT_ANGLE];
-      } else {
-        return [m.width() * MC.canvas.GRID_WIDTH + 10, portY, CanvasElement.constant.PORT_RIGHT_ANGLE];
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var label, m, node;
-      m = this.model;
-      label = "" + (m.get('name')) + " (" + (m.get('cidr')) + ")";
-      if (isCreate) {
-        node = this.createGroup(label);
-        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-gray port-subnet-assoc-in tooltip',
-          'data-name': 'subnet-assoc-in',
-          'data-position': 'left',
-          'data-type': 'association',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_L
-        }));
-        node.append(Canvon.path("M2 0.5l-6 -5.5l-2 0 l0 11 l2 0z").attr({
-          'class': 'port port-gray port-subnet-assoc-out tooltip',
-          'data-name': 'subnet-assoc-out',
-          'data-position': 'right',
-          'data-type': 'association',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_M
-        }));
-        this.getLayer("subnet_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        CanvasManager.update(this.$element().children("text"), label);
-      }
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeVpc',["./CanvasElement", "constant", "CanvasManager"], function(CanvasElement, constant, CanvasManager) {
-    var CeVpc, ChildElementProto;
-    CeVpc = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeVpc, constant.RESTYPE.VPC);
-    ChildElementProto = CeVpc.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.draw = function(isCreate) {
-      var label, m, node;
-      m = this.model;
-      label = "" + (m.get('name')) + " (" + (m.get('cidr')) + ")";
-      if (isCreate) {
-        node = this.createGroup(label);
-        this.getLayer("vpc_layer").append(node);
-        CanvasManager.position(node, m.x(), m.y());
-      } else {
-        CanvasManager.update(this.$element().children("text"), label);
-      }
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeCgw',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
-    var CeCgw, ChildElementProto;
-    CeCgw = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeCgw, constant.RESTYPE.CGW);
-    ChildElementProto = CeCgw.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "cgw-vpn": [6, 45, CanvasElement.constant.PORT_LEFT_ANGLE]
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var m, node;
-      m = this.model;
-      if (isCreate) {
-        node = this.createNode({
-          image: "ide/icon/cgw-canvas.png",
-          imageX: 13,
-          imageY: 8,
-          imageW: 151,
-          imageH: 76
-        });
-        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-cgw-vpn tooltip',
-          'data-name': 'cgw-vpn',
-          'data-position': 'left',
-          'data-type': 'vpn',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_I
-        }), Canvon.text(100, 95, MC.truncate(m.get("name"), 17)).attr({
-          'class': 'node-label'
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        CanvasManager.update(this.$element().children(".node-label"), m.get("name"));
-      }
-      this.updatexGWAppState();
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeIgw',["./CanvasElement", "constant", "i18n!/nls/lang.js"], function(CanvasElement, constant, lang) {
-    var CeIgw, ChildElementProto;
-    CeIgw = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeIgw, constant.RESTYPE.IGW);
-    ChildElementProto = CeIgw.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "igw-tgt": [78, 35, CanvasElement.constant.PORT_RIGHT_ANGLE]
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var m, node;
-      m = this.model;
-      if (isCreate) {
-        node = this.createNode({
-          image: "ide/icon/igw-canvas.png",
-          imageX: 10,
-          imageY: 16,
-          imageW: 60,
-          imageH: 46,
-          label: m.get("name")
-        });
-        node.append(Canvon.path(this.constant.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-igw-tgt tooltip',
-          'data-name': 'igw-tgt',
-          'data-position': 'right',
-          'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      }
-      this.updatexGWAppState();
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeVgw',["./CanvasElement", "constant", "i18n!/nls/lang.js"], function(CanvasElement, constant, lang) {
-    var CeVgw, ChildElementProto;
-    CeVgw = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeVgw, constant.RESTYPE.VGW);
-    ChildElementProto = CeVgw.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "vgw-tgt": [3, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "vgw-vpn": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE]
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var m, node;
-      m = this.model;
-      if (isCreate) {
-        node = this.createNode({
-          image: "ide/icon/vgw-canvas.png",
-          imageX: 10,
-          imageY: 16,
-          imageW: 60,
-          imageH: 46,
-          label: m.get("name")
-        });
-        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-vgw-tgt tooltip',
-          'data-name': 'vgw-tgt',
-          'data-position': 'left',
-          'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
-        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-purple port-vgw-vpn tooltip',
-          'data-name': 'vgw-vpn',
-          'data-position': 'right',
-          'data-type': 'vpn',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_H
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      }
-      this.updatexGWAppState();
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeRtb',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
-    var CeRtb, ChildElementProto;
-    CeRtb = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeRtb, constant.RESTYPE.RT);
-    ChildElementProto = CeRtb.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "rtb-tgt-left": [10, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "rtb-tgt-right": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE],
-      "rtb-src-top": [40, 3, CanvasElement.constant.PORT_UP_ANGLE],
-      "rtb-src-bottom": [40, 77, CanvasElement.constant.PORT_DOWN_ANGLE]
-    };
-    ChildElementProto.portDirMap = {
-      "rtb-tgt": "horizontal",
-      "rtb-src": "vertical"
-    };
-    ChildElementProto.iconUrl = function() {
-      if (this.model.get("main")) {
-        return "ide/icon/rt-main-canvas.png";
-      } else {
-        return "ide/icon/rt-canvas.png";
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var m, node;
-      m = this.model;
-      if (isCreate) {
-        node = this.createNode({
-          image: this.iconUrl(),
-          imageX: 10,
-          imageY: 13,
-          imageW: 60,
-          imageH: 57
-        });
-        node.append(Canvon.path(this.constant.PATH_PORT_LEFT).attr({
-          'class': 'port port-blue port-rtb-tgt port-rtb-tgt-left tooltip',
-          'data-name': 'rtb-tgt',
-          'data-alias': 'rtb-tgt-left',
-          'data-position': 'left',
-          'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_B
-        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue  port-rtb-tgt port-rtb-tgt-right tooltip',
-          'data-name': 'rtb-tgt',
-          'data-alias': 'rtb-tgt-right',
-          'data-position': 'right',
-          'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_B
-        }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-top tooltip',
-          'data-name': 'rtb-src',
-          'data-alias': 'rtb-src-top',
-          'data-position': 'top',
-          'data-type': 'association',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_A
-        }), Canvon.path(this.constant.PATH_PORT_TOP).attr({
-          'class': 'port port-gray port-rtb-src port-rtb-src-bottom tooltip',
-          'data-name': 'rtb-src',
-          'data-alias': 'rtb-src-bottom',
-          'data-position': 'bottom',
-          'data-type': 'association',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_A
-        }), Canvon.text(41, 27, m.get("name")).attr({
-          'class': 'node-label node-label-rtb-name'
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        node = this.$element();
-        CanvasManager.update(node.children(".node-label"), m.get("name"));
-        CanvasManager.update(node.children("image"), this.iconUrl(), "href");
-      }
-      this.updateAppState();
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeElb',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
-    var CeElb, ChildElementProto;
-    CeElb = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeElb, constant.RESTYPE.ELB);
-    ChildElementProto = CeElb.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "elb-sg-in": [2, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "elb-assoc": [79, 50, CanvasElement.constant.PORT_RIGHT_ANGLE],
-      "elb-sg-out": [79, 20, CanvasElement.constant.PORT_RIGHT_ANGLE]
-    };
-    ChildElementProto.iconUrl = function() {
-      if (this.model.get("internal")) {
-        return "ide/icon/elb-internal-canvas.png";
-      } else {
-        return "ide/icon/elb-internet-canvas.png";
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var design, m, node;
-      m = this.model;
-      design = m.design();
-      if (isCreate) {
-        node = this.createNode({
-          image: this.iconUrl(),
-          imageX: 9,
-          imageY: 11,
-          imageW: 70,
-          imageH: 53,
-          label: m.get("name"),
-          sg: true
-        });
-        node.append(Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-elb-sg-in tooltip',
-          'data-name': 'elb-sg-in',
-          'data-position': 'left',
-          'data-type': 'sg',
-          'data-direction': "in",
-          'data-tooltip': lang.ide.PORT_TIP_D
-        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-gray port-elb-assoc tooltip',
-          'data-name': 'elb-assoc',
-          'data-position': 'right',
-          'data-type': 'association',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_K
-        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-blue port-elb-sg-out tooltip',
-          'data-name': 'elb-sg-out',
-          'data-position': 'right',
-          'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_J
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        node = this.$element();
-        CanvasManager.update(node.children(".node-label"), m.get("name"));
-        CanvasManager.update(node.children("image"), this.iconUrl(), "href");
-      }
-      CanvasManager.toggle(node.children(".port-elb-sg-in"), m.get("internal"));
-      this.updateAppState();
-      return null;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeAsg',["event", "./CanvasElement", "i18n!/nls/lang.js", "constant", "Design", "CanvasManager"], function(ide_event, CanvasElement, lang, constant, Design, CanvasManager) {
-    var CeAsg, CeAsgProto;
-    CeAsg = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeAsg, constant.RESTYPE.ASG);
-    CeAsgProto = CeAsg.prototype;
-    CeAsgProto.PATH_ASG_TITLE = "M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z";
-    CeAsgProto.isRemovable = function() {
-      var asg, asgName, lc, lcName;
-      asg = this.model;
-      lc = asg.get('lc');
-      if (!lc || lc.__brothers.length > 0 || lc.isClone()) {
-        return true;
-      } else {
-        asgName = asg.get('name');
-        lcName = lc.get('name');
-        return sprintf(lang.ide.CVS_CFM_DEL_ASG, lcName, asgName, asgName, lcName);
-      }
-    };
-    CanvasElement.prototype.remove = function() {
-      var comp, comp_name, res, template;
-      if (this.model.isRemoved()) {
-        return;
-      }
-      res = this.isRemovable();
-      comp = this.model;
-      comp_name = comp.get("name");
-      if (_.isString(res)) {
-        template = MC.template.canvasOpConfirm({
-          title: sprintf(lang.ide.CVS_CFM_DEL, comp_name),
-          content: res
-        });
-        modal(template, true);
-        $("#canvas-op-confirm").one("click", function() {
-          if (!comp.isRemoved()) {
-            comp.remove();
-            $canvas.selected_node().length = 0;
-            ide_event.trigger(ide_event.OPEN_PROPERTY);
-          }
-          return null;
-        });
-      } else if (res.error) {
-        notification("error", res.error);
-      } else if (res === true) {
-        comp.remove();
-        $canvas.selected_node().length = 0;
-        ide_event.trigger(ide_event.OPEN_PROPERTY);
-        return true;
-      }
-      return false;
-    };
-    CeAsgProto.asgExpand = function(parentId, x, y) {
-      var ExpandedAsgModel, comp, design, res, target, targetName;
-      design = this.model.design();
-      comp = this.model;
-      target = design.component(parentId);
-      if (target) {
-        ExpandedAsgModel = Design.modelClassForType("ExpandedAsg");
-        res = new ExpandedAsgModel({
-          x: x,
-          y: y,
-          originalAsg: comp,
-          parent: target
-        });
-      }
-      if (res && res.id) {
-        return true;
-      }
-      targetName = target.type === "AWS.EC2.AvailabilityZone" ? target.get("name") : target.parent().get("name");
-      notification('error', sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, comp.get("name"), targetName));
-      return false;
-    };
-    CeAsgProto.draw = function(isCreate) {
-      var hasLC, height, m, node, width, x, y;
-      m = this.model;
-      if (isCreate) {
-        x = m.x();
-        y = m.y();
-        width = m.width() * MC.canvas.GRID_WIDTH;
-        height = m.height() * MC.canvas.GRID_HEIGHT;
-        node = Canvon.group().append(Canvon.rectangle(1, 1, width - 1, height - 1).attr({
-          'class': 'group group-asg',
-          'rx': 5,
-          'ry': 5
-        }), Canvon.path(this.PATH_ASG_TITLE).attr({
-          'class': 'asg-title'
-        }));
-        node.append(Canvon.image(MC.IMG_URL + 'ide/icon/asg-resource-dragger.png', width - 21, 0, 22, 21).attr({
-          'class': 'asg-resource-dragger tooltip',
-          'data-tooltip': 'Expand the group by drag-and-drop in other availability zone.'
-        }));
-        node.append(Canvon.group().append(Canvon.text(25, 45, 'Drop AMI from'), Canvon.text(20, 65, 'resource panel to'), Canvon.text(30, 85, 'create launch'), Canvon.text(30, 105, 'configuration')).attr({
-          'class': 'prompt_text'
-        }), Canvon.text(4, 14, MC.truncate(m.get("name"), 15)).attr({
-          'class': 'group-label'
-        })).attr({
-          'id': this.id,
-          'class': 'dragable AWS-AutoScaling-Group',
-          'data-type': 'group',
-          'data-class': this.type
-        });
-        this.getLayer("asg_layer").append(node);
-        CanvasManager.position(node, m.x(), m.y());
-      } else {
-        node = this.$element();
-        CanvasManager.update(node.children(".group-label"), MC.truncate(m.get("name"), 15));
-        this.__drawExpandedAsg();
-      }
-      hasLC = !!m.get("lc");
-      CanvasManager.toggle(node.children(".prompt_text"), !hasLC);
-      return null;
-    };
-    CeAsgProto.__drawExpandedAsg = function() {
-      var asg, _i, _len, _ref;
-      _ref = this.model.get("expandedList");
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        asg = _ref[_i];
-        asg.draw();
-      }
-      return null;
-    };
-    return CeAsg;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeExpandedAsg',["./CanvasElement", "constant", "CanvasManager", "./CeAsg", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, CeAsg, lang) {
-    var CeExpandedAsg, ChildElementProto;
-    CeExpandedAsg = function() {
-      CanvasElement.apply(this, arguments);
-      this.type = constant.RESTYPE.ASG;
-      return null;
-    };
-    CanvasElement.extend(CeExpandedAsg, "ExpandedAsg");
-    ChildElementProto = CeExpandedAsg.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "launchconfig-sg-left": [30, 50, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "launchconfig-sg-right": [100, 50, CanvasElement.constant.PORT_RIGHT_ANGLE]
-    };
-    ChildElementProto.portDirMap = {
-      "launchconfig-sg": "horizontal"
-    };
-    ChildElementProto.select = function() {
-      var m;
-      m = this.model.get("originalAsg");
-      this.doSelect(this.type, m.id, this.id);
-      return true;
-    };
-    ChildElementProto.amiIconUrl = function() {
-      var lc;
-      lc = this.model.get("originalAsg").get("lc");
-      if (lc && lc.getCanvasView()) {
-        return lc.getCanvasView().iconUrl();
-      } else {
-        return "ide/ami/ami-not-available.png";
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var height, label, lc, lcLabel, m, members, node, originalAsg, width, x, y;
-      $("#" + this.id).remove();
-      m = this.model;
-      originalAsg = m.get("originalAsg");
-      label = originalAsg.get("name");
-      lc = originalAsg.get("lc");
-      x = m.x();
-      y = m.y();
-      width = m.width() * MC.canvas.GRID_WIDTH;
-      height = m.height() * MC.canvas.GRID_HEIGHT;
-      members = [
-        Canvon.rectangle(1, 1, width - 1, height - 1).attr({
-          'class': 'group group-asg',
-          'rx': 5,
-          'ry': 5
-        }), Canvon.path(CeAsg.prototype.PATH_ASG_TITLE).attr({
-          'class': 'asg-title'
-        }), Canvon.text(4, 14, label).attr({
-          'class': 'group-label'
-        })
-      ];
-      if (lc) {
-        lcLabel = lc.get("name");
-        members = members.concat([
-          Canvon.image(MC.IMG_URL + "ide/icon/instance-canvas.png", 35, 39, 61, 62), Canvon.image(MC.IMG_URL + this.amiIconUrl(), 50, 45, 39, 27).attr({
-            "class": 'ami-icon'
-          }), Canvon.text(65, 116, lcLabel).attr({
-            'class': 'node-label'
-          }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-            'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left tooltip',
-            'data-name': 'launchconfig-sg',
-            'data-alias': 'launchconfig-sg-left',
-            'data-position': 'left',
-            'data-type': 'sg',
-            'data-direction': 'in',
-            'data-tooltip': lang.ide.PORT_TIP_D
-          }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-            'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right tooltip',
-            'data-name': 'launchconfig-sg',
-            'data-alias': 'launchconfig-sg-right',
-            'data-position': 'right',
-            'data-type': 'sg',
-            'data-direction': 'out',
-            'data-tooltip': lang.ide.PORT_TIP_D
-          })
-        ]);
-      }
-      node = Canvon.group().append.apply(Canvon.group(), members).attr({
-        'id': this.id,
-        'class': 'dragable AWS-AutoScaling-Group asg-expand',
-        'data-type': 'group',
-        'data-class': this.type
-      });
-      this.getLayer("asg_layer").append(node);
-      return this.initNode(node, m.x(), m.y());
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeInstance',["i18n!/nls/lang.js", "./CanvasElement", "constant", "CanvasManager", "Design", "CloudResources"], function(lang, CanvasElement, constant, CanvasManager, Design, CloudResources) {
-    var CeInstance, ChildElementProto;
-    CeInstance = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeInstance, constant.RESTYPE.INSTANCE);
-    ChildElementProto = CeInstance.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "instance-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "instance-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE],
-      "instance-attach": [78, 50, CanvasElement.constant.PORT_RIGHT_ANGLE],
-      "instance-rtb": [45, 0, CanvasElement.constant.PORT_UP_ANGLE]
-    };
-    ChildElementProto.portDirMap = {
-      "instance-sg": "horizontal"
-    };
-    ChildElementProto.detach = function() {
-      MC.canvas.nodeAction.remove(this.id);
-      CanvasElement.prototype.detach.call(this);
-      return null;
-    };
-    ChildElementProto.iconUrl = function() {
-      var ami;
-      ami = this.model.getAmi() || this.model.get("cachedAmi");
-      if (!ami) {
-        return "ide/ami/ami-not-available.png";
-      } else {
-        return "ide/ami/" + ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png";
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var m, node, numberGroup, volumeCount, volumeImage;
-      m = this.model;
-      if (isCreate) {
-        node = this.createNode({
-          image: "ide/icon/instance-canvas.png",
-          imageX: 15,
-          imageY: 9,
-          imageW: 61,
-          imageH: 62,
-          label: m.get("name"),
-          labelBg: true,
-          sg: true
-        });
-        node.append(Canvon.image(MC.IMG_URL + this.iconUrl(), 30, 15, 39, 27).attr({
-          'class': "ami-image"
-        }), Canvon.image("", 21, 44, 29, 24).attr({
-          'id': "" + this.id + "_volume_status",
-          'class': 'volume-image'
-        }), Canvon.text(35, 56, "").attr({
-          'class': 'node-label volume-number'
-        }), Canvon.rectangle(21, 44, 29, 24).attr({
-          'data-target-id': this.id,
-          'class': 'instance-volume',
-          'fill': 'none'
-        }), Canvon.image("", 53, 47, 12, 14).attr({
-          'class': 'eip-status tooltip'
-        }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
-          'class': 'server-number-bg',
-          'rx': 4,
-          'ry': 4
-        }), Canvon.text(46, 13, "0").attr({
-          'class': 'node-label server-number'
-        })).attr({
-          'id': "" + this.id + "_instance-number-group",
-          'class': 'instance-number-group',
-          "display": "none"
-        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-left tooltip',
-          'data-name': 'instance-sg',
-          'data-alias': 'instance-sg-left',
-          'data-position': 'left',
-          'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_D
-        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-instance-sg port-instance-sg-right tooltip',
-          'data-name': 'instance-sg',
-          'data-alias': 'instance-sg-right',
-          'data-position': 'right',
-          'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_D
-        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-green port-instance-attach tooltip',
-          'data-name': 'instance-attach',
-          'data-position': 'right',
-          'data-type': 'attachment',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_E
-        }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-blue port-instance-rtb tooltip',
-          'data-name': 'instance-rtb',
-          'data-position': 'top',
-          'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
-        }));
-        if (!this.model.design().modeIsStack() && m.get("appId")) {
-          node.append(Canvon.circle(68, 15, 5, {}).attr({
-            'id': "" + this.id + "_instance-state",
-            'class': 'instance-state instance-state-unknown'
-          }));
-        }
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        node = this.$element();
-        CanvasManager.update(node.children(".node-label-name"), m.get("name"));
-      }
-      if (!this.model.design().modeIsStack() && m.get("appId")) {
-        this.updateAppState();
-      }
-      CanvasManager.update(node.children(".ami-image"), this.iconUrl(), "href");
-      numberGroup = node.children(".instance-number-group");
-      if (m.get("count") > 1) {
-        CanvasManager.toggle(node.children(".instance-state"), false);
-        CanvasManager.toggle(node.children(".port-instance-rtb"), false);
-        CanvasManager.toggle(numberGroup, true);
-        CanvasManager.update(numberGroup.children("text"), m.get("count"));
-      } else {
-        CanvasManager.toggle(node.children(".instance-state"), true);
-        CanvasManager.toggle(node.children(".port-instance-rtb"), true);
-        CanvasManager.toggle(numberGroup, false);
-      }
-      volumeCount = m.get("volumeList") ? m.get("volumeList").length : 0;
-      if (volumeCount > 0) {
-        volumeImage = 'ide/icon/instance-volume-attached-normal.png';
-      } else {
-        volumeImage = 'ide/icon/instance-volume-not-attached.png';
-      }
-      CanvasManager.update(node.children(".volume-image"), volumeImage, "href");
-      CanvasManager.update(node.children(".volume-number"), volumeCount);
-      CanvasManager.updateEip(node.children(".eip-status"), m);
-      return null;
-    };
-    ChildElementProto.select = function(subId) {
-      var design, m, type;
-      m = this.model;
-      type = m.type;
-      design = m.design();
-      if (!subId) {
-        if (design.modeIsApp()) {
-          if (m.get("count") > 1) {
-            type = "component_server_group";
-          }
-        } else if (design.modeIsAppEdit() && m.get("appId")) {
-          type = "component_server_group";
-        }
-      }
-      this.doSelect(type, subId || this.model.id, this.model.id);
-      return true;
-    };
-    ChildElementProto.updateAppState = function() {
-      var el, instanceState, instance_data, m, res_list, stateClass, stateEl;
-      m = this.model;
-      if (m.design().modeIsStack() || !m.get("appId")) {
-        return;
-      }
-      if ($("#" + this.id + "_instance-state").length === 0) {
-        return;
-      }
-      el = this.element();
-      CanvasManager.removeClass(el, "deleted");
-      if (m.type && m.design().region()) {
-        res_list = CloudResources(m.type, m.design().region());
-        instance_data = res_list.get(m.get('appId'));
-      }
-      if (instance_data) {
-        instanceState = instance_data.get("instanceState").name;
-        if (instanceState === "terminated") {
-          CanvasManager.addClass(el, "deleted");
-        }
-      } else {
-        instanceState = "unknown";
-        CanvasManager.addClass(el, "deleted");
-      }
-      stateClass = "instance-state tooltip instance-state-" + instanceState + " instance-state-" + (m.design().mode());
-      stateEl = $("#" + this.id + "_instance-state").attr({
-        "class": stateClass
-      });
-      CanvasManager.update(stateEl, instanceState, "data-tooltip");
-      return null;
-    };
-    ChildElementProto.volume = function(volume_id) {
-      var design, m, v, vl, _i, _len, _ref;
-      m = this.model;
-      design = m.design();
-      if (volume_id) {
-        v = design.component(volume_id);
-        return {
-          deleted: !v.hasAppResource() ? "deleted" : "",
-          name: v.get("name"),
-          snapshotId: v.get("snapshotId"),
-          size: v.get("volumeSize"),
-          id: v.id
-        };
-      }
-      vl = [];
-      _ref = this.model.get("volumeList") || vl;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        v = _ref[_i];
-        vl.push({
-          deleted: !v.hasAppResource() ? "deleted" : "",
-          name: v.get("name"),
-          snapshotId: v.get("snapshotId"),
-          size: v.get("volumeSize"),
-          id: v.id
-        });
-      }
-      return vl;
-    };
-    ChildElementProto.listVolume = function(appId) {
-      var data, design, instanceList, v, vl, volume, volumeList, _i, _len, _ref, _ref1, _ref2;
-      vl = [];
-      design = this.model.design();
-      instanceList = CloudResources(constant.RESTYPE.INSTANCE, design.region());
-      volumeList = CloudResources(constant.RESTYPE.VOL, design.region());
-      if (!instanceList) {
-        return vl;
-      }
-      data = (_ref = instanceList.get(appId)) != null ? _ref.toJSON() : void 0;
-      if (data && data.blockDeviceMapping) {
-        _ref1 = data.blockDeviceMapping;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          v = _ref1[_i];
-          if (data.rootDeviceType === "ebs" && data.rootDeviceName.indexOf(v.deviceName) !== -1) {
-            continue;
-          }
-          volume = (_ref2 = volumeList.get(v.ebs.volumeId)) != null ? _ref2.attributes : void 0;
-          if (!volume) {
-            continue;
-          }
-          if (volume) {
-            vl.push({
-              name: v.deviceName,
-              snapshotId: volume.snapshotId || "",
-              size: volume.size,
-              id: volume.volumeId
-            });
-          } else {
-            if (this.type === constant.RESTYPE.LC) {
-              vl.push({
-                name: v.deviceName,
-                snapshotId: v.ebs.snapshotId || "",
-                size: "",
-                id: v.ebs.volumeId
-              });
-            } else {
-              vl.push({
-                name: v.deviceName,
-                snapshotId: v.ebs.snapshotId || "",
-                size: "",
-                id: v.ebs.volumeId,
-                deleted: "deleted"
-              });
-            }
-          }
-        }
-      }
-      return vl;
-    };
-    ChildElementProto.list = function() {
-      var list;
-      list = CanvasElement.prototype.list.call(this);
-      list.background = this.iconUrl();
-      list.volume = (this.model.get("volumeList") || []).length;
-      return list;
-    };
-    ChildElementProto.addVolume = function(attribute) {
-
-      /*
-         * # # Quick Hack # # #
-        Do not allow adding volume to existing LC in appUpdate
-       */
-      var VolumeModel, v;
-      if (Design.instance().modeIsAppEdit() && this.model.type === constant.RESTYPE.LC && this.model.get("appId")) {
-        notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
-        return false;
-      }
-      if (attribute && _.isString(attribute.encrypted)) {
-        attribute.encrypted = attribute.encrypted === 'true';
-      }
-      attribute = $.extend({}, attribute);
-      attribute.owner = this.model;
-      VolumeModel = Design.modelClassForType(constant.RESTYPE.VOL);
-      v = new VolumeModel(attribute);
-      if (v.id) {
-        return {
-          id: v.id,
-          deleted: !v.hasAppResource(),
-          name: v.get("name"),
-          snapshotId: v.get("snapshotId"),
-          size: v.get("volumeSize")
-        };
-      } else {
-        return false;
-      }
-    };
-    ChildElementProto.removeVolume = function(volumeId) {
-      this.model.design().component(volumeId).remove();
-      return null;
-    };
-    ChildElementProto.moveVolume = function(volumeId) {
-      var design, result, volume;
-      design = this.model.design();
-      volume = design.component(volumeId);
-      result = volume.isReparentable(this.model);
-      if (_.isString(result)) {
-        notification("error", result);
-        return;
-      } else if (result === false) {
-        return false;
-      }
-      result = volume.attachTo(this.model);
-      if (!result) {
-        return false;
-      } else {
-        return this.volume(volumeId);
-      }
-      return null;
-    };
-    return CeInstance;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeVolume',["i18n!/nls/lang.js", "./CanvasElement", "constant", "CanvasManager", "event"], function(lang, CanvasElement, constant, CanvasManager, ide_event) {
-    var CeVolume, ChildElementProto;
-    CeVolume = function(component) {
-      if (_.isString(component)) {
-        this.id = component;
-        this.nodeType = "node";
-        this.type = constant.RESTYPE.VOL;
-      } else {
-        CanvasElement.apply(this, arguments);
-      }
-      return null;
-    };
-    CanvasElement.extend(CeVolume, constant.RESTYPE.VOL);
-    ChildElementProto = CeVolume.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.remove = function() {
-      if (this.model.design().modeIsAppEdit()) {
-        if ((this.model.get("owner") || {}).type === constant.RESTYPE.LC) {
-          notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
-          return false;
-        }
-      }
-      return CeVolume["super"].remove.call(this);
-    };
-    ChildElementProto.select = function(subId) {
-      ide_event.trigger(ide_event.OPEN_PROPERTY, this.type, subId || this.id);
-      MC.canvas.volume.select(this.id);
-      return true;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeEni',["./CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
-    var CeEni, ChildElementProto;
-    CeEni = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend(CeEni, constant.RESTYPE.ENI);
-    ChildElementProto = CeEni.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "eni-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "eni-attach": [8, 50, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "eni-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE],
-      "eni-rtb": [45, 0, CanvasElement.constant.PORT_UP_ANGLE]
-    };
-    ChildElementProto.portDirMap = {
-      "eni-sg": "horizontal"
-    };
-    ChildElementProto.iconUrl = function() {
-      if (this.model.connections("EniAttachment").length) {
-        return "ide/icon/eni-canvas-attached.png";
-      } else {
-        return "ide/icon/eni-canvas-unattached.png";
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var count, m, node, numberGroup;
-      m = this.model;
-      if (m.embedInstance()) {
-        return;
-      }
-      if (isCreate) {
-        node = this.createNode({
-          image: this.iconUrl(),
-          imageX: 16,
-          imageY: 15,
-          imageW: 59,
-          imageH: 49,
-          label: m.get("name"),
-          labelBg: true,
-          sg: true
-        });
-        node.append(Canvon.image("", 44, 37, 12, 14).attr({
-          'id': "" + this.id + "_eip_status",
-          'class': 'eip-status tooltip'
-        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-left tooltip',
-          'data-name': 'eni-sg',
-          'data-alias': 'eni-sg-left',
-          'data-position': 'left',
-          'data-type': 'sg',
-          'data-direction': "in",
-          'data-tooltip': lang.ide.PORT_TIP_D
-        }), Canvon.path(this.constant.PATH_PORT_RIGHT).attr({
-          'class': 'port port-green port-eni-attach tooltip',
-          'data-name': 'eni-attach',
-          'data-position': 'left',
-          'data-type': 'attachment',
-          'data-direction': "in",
-          'data-tooltip': lang.ide.PORT_TIP_G
-        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-eni-sg port-eni-sg-right tooltip',
-          'data-name': 'eni-sg',
-          'data-alias': 'eni-sg-right',
-          'data-position': 'right',
-          'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_F
-        }), Canvon.path(this.constant.PATH_PORT_BOTTOM).attr({
-          'class': 'port port-blue port-eni-rtb tooltip',
-          'data-name': 'eni-rtb',
-          'data-position': 'top',
-          'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_C
-        }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
-          'class': 'server-number-bg',
-          'rx': 4,
-          'ry': 4
-        }), Canvon.text(46, 13, "0").attr({
-          'class': 'node-label server-number'
-        })).attr({
-          'class': 'eni-number-group',
-          'display': "none"
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        node = this.$element();
-        CanvasManager.update(node.children(".node-label"), m.get("name"));
-        CanvasManager.update(node.children("image:not(.eip-status)"), this.iconUrl(), "href");
-      }
-      count = m.serverGroupCount();
-      numberGroup = node.children(".eni-number-group");
-      if (count > 1) {
-        CanvasManager.toggle(node.children(".port-eni-rtb"), false);
-        CanvasManager.toggle(numberGroup, true);
-        CanvasManager.update(numberGroup.children("text"), count);
-      } else {
-        CanvasManager.toggle(node.children(".port-eni-rtb"), true);
-        CanvasManager.toggle(numberGroup, false);
-      }
-      CanvasManager.updateEip(node.children(".eip-status"), m);
-      this.updateAppState();
-      return null;
-    };
-    ChildElementProto.select = function(subId) {
-      var design, m, type;
-      m = this.model;
-      type = m.type;
-      design = m.design();
-      if (!subId) {
-        if (design.modeIsApp()) {
-          if (m.serverGroupCount() > 1) {
-            type = "component_eni_group";
-          }
-        } else if (design.modeIsAppEdit() && m.get("appId")) {
-          type = "component_eni_group";
-        }
-      }
-      this.doSelect(type, subId || this.model.id, this.model.id);
-      return true;
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/canvasview/CeLc',["./CanvasElement", "./CeInstance", "constant", "CanvasManager", 'i18n!/nls/lang.js', "CloudResources"], function(CanvasElement, CeInstance, constant, CanvasManager, lang, CloudResources) {
-    var CeLc, ChildElementProto;
-    CeLc = function() {
-      return CanvasElement.apply(this, arguments);
-    };
-    CanvasElement.extend.call(CeInstance, CeLc, constant.RESTYPE.LC);
-    ChildElementProto = CeLc.prototype;
-
-    /*
-     * Child Element's interface.
-     */
-    ChildElementProto.portPosMap = {
-      "launchconfig-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
-      "launchconfig-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE]
-    };
-    ChildElementProto.portDirMap = {
-      "launchconfig-sg": "horizontal"
-    };
-    ChildElementProto.detach = function() {
-      MC.canvas.nodeAction.remove(this.id);
-      CanvasElement.prototype.detach.call(this);
-      return null;
-    };
-    ChildElementProto.list = function() {
-      var ins, list, _i, _len;
-      list = CanvasElement.prototype.list.call(this);
-      for (_i = 0, _len = list.length; _i < _len; _i++) {
-        ins = list[_i];
-        ins.background = this.iconUrl(ins.appId);
-      }
-      list.volume = (this.model.get("volumeList") || []).length;
-      return list;
-    };
-    ChildElementProto.iconUrl = function(instanceId) {
-      var ami, _ref;
-      if (instanceId) {
-        ami = (_ref = CloudResources(constant.RESTYPE.AMI, Design.instance().region()).get(instanceId)) != null ? _ref.toJSON() : void 0;
-        if (ami) {
-          ami = MC.data.dict_ami[ami.imageId];
-        }
-      }
-      if (!ami) {
-        ami = this.model.getAmi() || this.model.get("cachedAmi");
-      }
-      if (!ami) {
-        return "ide/ami/ami-not-available.png";
-      } else {
-        return "ide/ami/" + ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png";
-      }
-    };
-    ChildElementProto.draw = function(isCreate) {
-      var asg, data, m, node, numberGroup, volumeCount, volumeImage, _ref;
-      m = this.model;
-      if (isCreate) {
-        node = this.createNode({
-          id: m.id,
-          image: "ide/icon/instance-canvas.png",
-          imageX: 15,
-          imageY: 9,
-          imageW: 61,
-          imageH: 62,
-          label: MC.truncate(m.get('name'), 15),
-          labelBg: true,
-          sg: true
-        });
-        node.append(Canvon.image(MC.IMG_URL + this.iconUrl(), 30, 15, 39, 27).attr({
-          'class': "ami-image"
-        }), Canvon.image("", 31, 44, 29, 24).attr({
-          'id': "" + this.id + "_volume_status",
-          'class': 'volume-image'
-        }), Canvon.text(45, 56, "").attr({
-          'class': 'node-label volume-number'
-        }), Canvon.rectangle(31, 44, 29, 24).attr({
-          'data-target-id': this.id,
-          'class': 'instance-volume',
-          'fill': 'none'
-        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-left tooltip',
-          'data-name': 'launchconfig-sg',
-          'data-alias': 'launchconfig-sg-left',
-          'data-position': 'left',
-          'data-type': 'sg',
-          'data-direction': 'in',
-          'data-tooltip': lang.ide.PORT_TIP_D
-        }), Canvon.path(this.constant.PATH_PORT_DIAMOND).attr({
-          'class': 'port port-blue port-launchconfig-sg port-launchconfig-sg-right tooltip',
-          'data-name': 'launchconfig-sg',
-          'data-alias': 'launchconfig-sg-right',
-          'data-position': 'right',
-          'data-type': 'sg',
-          'data-direction': 'out',
-          'data-tooltip': lang.ide.PORT_TIP_D
-        }), Canvon.group().append(Canvon.rectangle(36, 1, 20, 16).attr({
-          'class': 'server-number-bg',
-          'rx': 4,
-          'ry': 4
-        }), Canvon.text(46, 13, "0").attr({
-          'class': 'node-label server-number'
-        })).attr({
-          'id': "" + this.id + "_instance-number-group",
-          'class': 'instance-number-group',
-          "display": "none"
-        }));
-        this.getLayer("node_layer").append(node);
-        this.initNode(node, m.x(), m.y());
-      } else {
-        node = this.$element(m.id);
-        CanvasManager.update(node.children(".node-label-name"), MC.truncate(m.get('name'), 15));
-      }
-      CanvasManager.update(node.children(".ami-image"), this.iconUrl(), "href");
-      volumeCount = (m.get("volumeList") || []).length;
-      CanvasManager.update(node.children(".volume-number"), volumeCount);
-      if (volumeCount > 0) {
-        volumeImage = 'ide/icon/instance-volume-attached-normal.png';
-      } else {
-        volumeImage = 'ide/icon/instance-volume-not-attached.png';
-      }
-      CanvasManager.update(node.children(".volume-image"), volumeImage, "href");
-      asg = m.parent();
-      if (!m.design().modeIsStack() && asg && asg.get('appId')) {
-        data = (_ref = CloudResources(constant.RESTYPE.ASG, m.design().region()).get(asg.get('appId'))) != null ? _ref.toJSON() : void 0;
-        numberGroup = node.children(".instance-number-group");
-        if (data && data.Instances && data.Instances.length) {
-          CanvasManager.toggle(numberGroup, true);
-          CanvasManager.update(numberGroup.children("text"), data.Instances.length);
-        } else {
-          CanvasManager.toggle(numberGroup, false);
-        }
-      }
-      return null;
-    };
-    ChildElementProto.select = function(subId) {
-      var type;
-      if (subId) {
-        type = constant.RESTYPE.INSTANCE;
-      } else {
-        type = this.model.type;
-      }
-      return this.doSelect(type, subId || this.id, this.id);
-    };
-    ChildElementProto.position = function(x, y) {
-      var nowX, nowY;
-      nowX = this.model.x();
-      nowY = this.model.y();
-      return [nowX, nowY];
-    };
-    ChildElementProto.resetPosition = function() {
-      var el;
-      el = this.element();
-      if (el) {
-        return MC.canvas.position(el, this.model.x(), this.model.y());
-      }
-    };
-    return null;
-  });
-
-}).call(this);
-
-(function() {
-  define('workspaces/editor/framework/DesignBundle',['Design', "CanvasManager", './connection/EniAttachment', './connection/VPNConnection', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack", "./canvasview/CeLine", './canvasview/CeAz', './canvasview/CeSubnet', './canvasview/CeVpc', "./canvasview/CeCgw", "./canvasview/CeIgw", "./canvasview/CeVgw", "./canvasview/CeRtb", "./canvasview/CeElb", "./canvasview/CeAsg", "./canvasview/CeExpandedAsg", "./canvasview/CeInstance", "./canvasview/CeVolume", "./canvasview/CeEni", "./canvasview/CeLc"], function(Design) {
-
-    /* env:dev                                                                                   env:dev:end */
+    /* env:dev                                                                                 env:dev:end */
 
     /* env:debug */
     require(["./workspaces/editor/framework/util/DesignDebugger"], function() {});

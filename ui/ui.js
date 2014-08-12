@@ -14,8 +14,8 @@ define('UI.tooltip',["jquery"], function(){
 
 	var tooltip = function (event)
 	{
-		var target = $(this),
-			content = $.trim(target.data('tooltip')),
+		var target = $(event.target),
+			content = $.trim(target.attr('data-tooltip')),
 			tooltip_box = $('#tooltip_box'),
 			docElem = document.documentElement,
 			target_offset,
@@ -1676,7 +1676,7 @@ define('UI.notification',["jquery"], function(){
         "info"    : true
     };
     window.notification = function ( type, template, auto_close ) {
-        if ( !NOTIFICATION_TYPES[ type ] )
+        if ( !NOTIFICATION_TYPES[ type ] || !template )
             return;
 
         var notification_wrap = $('#notification_wrap');
@@ -2717,11 +2717,11 @@ function RGBColor(color_string)
         }
 
         // add id
-        // if (this.attribute('id').hasValue()) {
-        //   if (svg.Definitions[this.attribute('id').value] == null) {
-        //     svg.Definitions[this.attribute('id').value] = this;
-        //   }
-        // }
+        if (this.attribute('id').hasValue()) {
+          if (svg.Definitions[this.attribute('id').value] == null) {
+            svg.Definitions[this.attribute('id').value] = this;
+          }
+        }
       }
     }
 
@@ -4925,6 +4925,7 @@ define('UI.parsley',["jquery"], function(){
           , awsCidr:   "This value should be a valid CIDR and the netmask ('16') must be between 16 and 28."
           , awsName:   "This value should be a valid AWS name."
           , domain:    "This value should be a valid domain."
+          , database:  "This value should be a valid name"
           , ascii:     "This value should be a valid ascii."
 
         }
@@ -5042,8 +5043,12 @@ define('UI.parsley',["jquery"], function(){
             regExp = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([1][6789]|[2]\d|3[0-2]))$/;
             break;
 
-         case 'awsName':
+          case 'awsName':
            regExp = /^[a-zA-Z0-9][a-zA-Z0-9-]*$/;
+           break;
+
+          case 'database':
+           regExp = /(?=[a-zA-Z0-9-]{3,25}$)^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/;
            break;
 
           case 'domain':
@@ -6250,7 +6255,8 @@ define('UI.parsley',["jquery"], function(){
         self.addItem( this );
       });
 
-      this.$element.on( 'submit.' + this.type , false, $.proxy( this.validate, this ) );
+      // Do not support submit event
+      //this.$element.on( 'submit.' + this.type , false, $.proxy( this.validate, this ) );
 
       // hack
       this.$element.addClass( 'parsley-validated' );
@@ -6581,8 +6587,9 @@ var formValidate = function( e ) {
   form.parsley('validate');
 }
 
+// Do not support submit
 // form submit auto bind
-$(document.body).on( 'submit', 'form[data-validate="parsley"]', bindForm);
+//$(document.body).on( 'submit', 'form[data-validate="parsley"]', bindForm);
 
 // element.parsley-submit click auto bind
 $(document.body).on( 'click', '.parsley-submit', bindForm);
@@ -6735,16 +6742,40 @@ define('UI.errortip',["jquery"], function($){
     purge.call( this, event );
   };
 
+  var findScrollableParent = function( target ) {
+    if ( target.parent().prop( 'tagName' ) === 'BODY' ) return null;
+
+    var overflow = target.parent().css( 'overflow' );
+    if ( overflow === 'auto' || overflow === 'scroll' ) return target.parent();
+
+    return findScrollableParent( target.parent() );
+
+  };
+
   // Public Methods
 
   var first = function( target ) {
-    if ( $( target ).is(':hidden') ) return;
 
-    errortip.call( target )
-    id = getEid( target )
-    firstTimer[ id ] = setTimeout(function() {
-      purge({currentTarget: target});
-    }, 2000);
+    setTimeout(function() {
+      if ( $( target ).is(':hidden') ) return;
+      errortip.call( target )
+
+      id = getEid( target )
+      firstTimer[ id ] = setTimeout(function() {
+        purge({currentTarget: target});
+      }, 2000);
+
+      $(window).one('resize', function() {
+        purge({currentTarget: target});
+      });
+
+      scrollableParent = findScrollableParent( $(target) );
+      scrollableParent && scrollableParent.one('scroll', function() {
+        purge({currentTarget: target});
+      });
+
+    }, 1);
+
   };
 
   var purge = function ( event )
@@ -6842,55 +6873,147 @@ define('UI.errortip',["jquery"], function($){
 
 });
 
-/*
-#**********************************************************
-#* Filename: UI.tour
-#* Creator: Song
-#* Description: UI.tour
-#* Date: 20140415
-# **********************************************************
-# (c) Copyright 2014 Madeiracloud  All Rights Reserved
-# **********************************************************
-*/
+(function() {
+  define('UI.dnd',["jquery"], function($) {
+    var cancelDnd, cloneElement, defaultOptions, detectDrag, emptyFunction, onMouseMove, onMouseUp, startDrag;
+    cloneElement = function(data) {
+      if (data.noShadow) {
+        return $();
+      } else {
+        return $("<div id='DndItem'></div>").appendTo(document.body).html(data.source.html()).attr("class", data.source.attr("class").replace("bubble", "").replace("tooltip", ""));
+      }
+    };
+    emptyFunction = function() {};
+    defaultOptions = {
+      clone: cloneElement,
+      eventPrefix: "",
+      minDistance: 4,
+      lockToCenter: true,
+      noShadow: false,
+      onDragStart: emptyFunction,
+      onDrag: emptyFunction,
+      onDragEnd: emptyFunction
+    };
+    $.fn.dnd = function(mouseDownEvent, options) {
+      console.assert(options.dropTargets);
+      console.assert(options.dataTransfer);
+      options = $.extend({
+        source: this,
+        startX: mouseDownEvent.pageX,
+        startY: mouseDownEvent.pageY
+      }, defaultOptions, options);
+      $(document).on({
+        "mousemove.uidnd": detectDrag,
+        "mousedown.uidnd": cancelDnd,
+        "mouseup.uidnd": cancelDnd,
+        "urlroute.uidnd": cancelDnd
+      }, options);
+      return this;
+    };
+    cancelDnd = function(evt) {
+      var data;
+      $(document).off(".uidnd");
+      data = evt.data;
 
-define('UI.tour',['jquery'], function($) {
+      /*
+       * If we need to style the drag shadow, we can temporary comment out this line.
+       */
+      if (data.shadow) {
+        data.shadow.remove();
+      }
+      if (data.hoverZone) {
+        data.hoverZone.removeClass("dragOver").triggerHandler("" + data.eventPrefix + "dragleave", data);
+      }
+    };
+    detectDrag = function(evt) {
+      var data;
+      data = evt.data;
+      if (Math.pow(evt.pageX - data.startX, 2) + Math.pow(evt.pageY - data.startY, 2) >= 4) {
+        $(document).off("mousemove.uidnd").on({
+          "mousemove.uidnd": onMouseMove,
+          "mouseup.uidnd": onMouseUp
+        }, data);
+        startDrag(data, evt);
+      }
+      return false;
+    };
+    startDrag = function(data, evt) {
+      var offset, shadow;
+      data.shadow = shadow = data.clone(data);
+      data.onDragStart(data);
+      if (data.lockToCenter) {
+        data.offsetX = shadow.outerWidth() / 2;
+        data.offsetY = shadow.outerHeight() / 2;
+      } else {
+        offset = data.source.offset();
+        data.offsetX = data.startX - offset.left;
+        data.offsetY = data.startY - offset.top;
+      }
+      shadow.css({
+        left: evt.pageX - data.offsetX,
+        top: evt.pageY - data.offsetY
+      });
+      data.dropZones = _.map(data.dropTargets, function(tgt) {
+        var $tgt;
+        $tgt = $(tgt);
+        offset = $tgt.offset();
+        return {
+          x1: offset.left,
+          y1: offset.top,
+          x2: offset.left + $tgt.outerWidth(),
+          y2: offset.top + $tgt.outerHeight()
+        };
+      });
+    };
+    onMouseMove = function(evt) {
+      var data, dz, hoverZone, idx, newZone, _i, _len, _ref, _ref1, _ref2;
+      data = evt.data;
+      data.pageX = evt.pageX;
+      data.pageY = evt.pageY;
+      _ref = data.dropZones;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        dz = _ref[idx];
+        if ((dz.x1 <= (_ref1 = evt.pageX) && _ref1 <= dz.x2) && (dz.y1 <= (_ref2 = evt.pageY) && _ref2 <= dz.y2)) {
+          newZone = data.dropTargets.eq(idx);
+          data.zoneDimension = dz;
+          break;
+        }
+      }
+      hoverZone = data.hoverZone;
+      if (hoverZone && newZone && newZone[0] === hoverZone[0]) {
+        newZone.triggerHandler("" + data.eventPrefix + "dragover", data);
+      } else {
+        if (hoverZone) {
+          hoverZone.removeClass("dragOver").triggerHandler("" + data.eventPrefix + "dragleave", data);
+        }
+        if (newZone) {
+          newZone.addClass("dragOver").triggerHandler("" + data.eventPrefix + "dragenter", data);
+        }
+        data.shadow.toggleClass("dragOver", !!newZone);
+        data.hoverZone = newZone;
+      }
+      data.shadow.css({
+        left: evt.pageX - data.offsetX,
+        top: evt.pageY - data.offsetY
+      });
+      data.onDrag(evt);
+      return false;
+    };
+    onMouseUp = function(evt) {
+      var data;
+      data = evt.data;
+      cancelDnd(evt);
+      data.pageX = evt.pageX;
+      data.pageY = evt.pageY;
+      data.onDragEnd(evt);
+      if (data.hoverZone) {
+        data.hoverZone.triggerHandler("" + data.eventPrefix + "drop", data);
+      }
+    };
+    return null;
+  });
 
-	$.fn.showTour = function(options) {
-		$target = $(this);
-		$tourBox = $(
-			'<div class="user-tour">\
-				<span class="user-tour-title">This is title</span>\
-				<div class="user-tour-pointer"></div>\
-				<div class="user-tour-pointer animation"></div>\
-			</div>').appendTo('body');
-
-		$tourPointer = $tourBox.children('.user-tour-pointer');
-
-		var tourPos = {};
-		var tourPointerPos = {};
-
-		targetOffset = $target.offset();
-		targetWidth = $target.innerWidth();
-		targetHeight = $target.innerHeight();
-
-		tourWidth = $tourBox.width();
-		tourHeight = $tourBox.height();
-
-		if (targetOffset.left + targetWidth + tourWidth - document.documentElement.scrollLeft > window.innerWidth) {
-			tourPos.left = targetOffset.left - tourWidth - 15;
-			tourPointerPos['margin-left'] = tourWidth + 5;
-		} else {
-			tourPos.left = targetOffset.left + targetWidth + 15;
-			tourPointerPos['margin-left'] = -15;
-		}
-
-		tourPos.top = targetOffset.top - ((tourHeight - targetHeight) / 2);
-		tourPointerPos['margin-top'] = tourHeight / 2 - 5;
-
-		$tourPointer.css(tourPointerPos);
-		$tourBox.css(tourPos).show();
-	};
-});
+}).call(this);
 
 /*!
  * jqPagination, a jQuery pagination plugin (obviously)
@@ -7381,11 +7504,20 @@ define('jquerysort',["jquery"], function($) {
 					//on mousedown wait for movement of mouse before triggering dragsort script (dragStart) to allow clicking of hyperlinks to work
 					var list = lists[$(this).attr("data-listidx")];
 					var item = this;
-					var trigger = function() {
-						list.dragStart.call(item, e);
-						$(list.container).unbind("mousemove", trigger);
+
+					var startX = e.pageX;
+					var startY = e.pageY;
+					var detect = function( e ) {
+						if ( Math.pow( e.pageX - startX, 2 ) + Math.pow( e.pageY - startY, 2 ) >= 4 ) {
+							$(list.container).unbind("mousemove", detect);
+							list.dragStart.call(item, e);
+						}
 					};
-					$(list.container).mousemove(trigger).mouseup(function() { $(list.container).unbind("mousemove", trigger); $(dragHandle).css("cursor", $(dragHandle).attr("data-cursor")); });
+
+					$(list.container).mousemove(detect).mouseup(function() {
+						$(list.container).unbind("mousemove", detect);
+						$(dragHandle).css("cursor", $(dragHandle).attr("data-cursor"));
+					});
 				},
 
 				dragStart: function(e) {
@@ -7678,12 +7810,1132 @@ define('jquerysort',["jquery"], function($) {
 
 });
 
+/************************
+jquery-timepicker v1.4.5
+http://jonthornton.github.com/jquery-timepicker/
+
+requires jQuery 1.7+
+************************/
+
+
+(function (factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define('jqtimepicker',['jquery'], factory);
+	} else {
+		// Browser globals
+		factory(jQuery);
+	}
+}(function ($) {
+	var _baseDate = _generateBaseDate();
+	var _ONE_DAY = 86400;
+	var _defaults =	{
+		className: null,
+		minTime: null,
+		maxTime: null,
+		durationTime: null,
+		step: 30,
+		showDuration: false,
+		showOnFocus: true,
+		timeFormat: 'g:ia',
+		scrollDefault: null,
+		selectOnBlur: false,
+		disableTouchKeyboard: false,
+		forceRoundTime: false,
+		appendTo: 'body',
+		orientation: 'ltr',
+		disableTimeRanges: [],
+		closeOnWindowScroll: false,
+		typeaheadHighlight: true,
+		noneOption: false
+	};
+	var _lang = {
+		am: 'am',
+		pm: 'pm',
+		AM: 'AM',
+		PM: 'PM',
+		decimal: '.',
+		mins: 'mins',
+		hr: 'hr',
+		hrs: 'hrs'
+	};
+
+	var methods =
+	{
+		init: function(options)
+		{
+			return this.each(function()
+			{
+				var self = $(this);
+
+				// pick up settings from data attributes
+				var attributeOptions = [];
+				for (var key in _defaults) {
+					if (self.data(key))  {
+						attributeOptions[key] = self.data(key);
+					}
+				}
+
+				var settings = $.extend({}, _defaults, attributeOptions, options);
+
+				if (settings.lang) {
+					_lang = $.extend(_lang, settings.lang);
+				}
+
+				settings = _parseSettings(settings);
+				self.data('timepicker-settings', settings);
+				self.addClass('ui-timepicker-input');
+
+				if (settings.useSelect) {
+					_render(self);
+				} else {
+					self.prop('autocomplete', 'off');
+					self.on('click.timepicker focus.timepicker', methods.show);
+					self.on('change.timepicker', _formatValue);
+					self.on('keydown.timepicker', _keydownhandler);
+					self.on('keyup.timepicker', _keyuphandler);
+
+					_formatValue.call(self.get(0));
+				}
+			});
+		},
+
+		show: function(e)
+		{
+			var self = $(this);
+			var settings = self.data('timepicker-settings');
+
+			if (e) {
+				if (!settings.showOnFocus) {
+					return true;
+				}
+
+				e.preventDefault();
+			}
+
+			if (settings.useSelect) {
+				self.data('timepicker-list').focus();
+				return;
+			}
+
+			if (_hideKeyboard(self)) {
+				// block the keyboard on mobile devices
+				self.blur();
+			}
+
+			var list = self.data('timepicker-list');
+
+			// check if input is readonly
+			if (self.prop('readonly')) {
+				return;
+			}
+
+			// check if list needs to be rendered
+			if (!list || list.length === 0 || typeof settings.durationTime === 'function') {
+				_render(self);
+				list = self.data('timepicker-list');
+			}
+
+			if (list.is(':visible')) {
+				return;
+			}
+
+			// make sure other pickers are hidden
+			methods.hide();
+
+			// position the dropdown relative to the input
+			list.show();
+			var listOffset = {};
+
+			if (settings.orientation == 'rtl') {
+				// right-align the dropdown
+				listOffset.left = self.offset().left + self.outerWidth() - list.outerWidth() + parseInt(list.css('marginLeft').replace('px', ''), 10);
+			} else {
+				// left-align the dropdown
+				listOffset.left = self.offset().left + parseInt(list.css('marginLeft').replace('px', ''), 10);
+			}
+
+			if ((self.offset().top + self.outerHeight(true) + list.outerHeight()) > $(window).height() + $(window).scrollTop()) {
+				// position the dropdown on top
+				listOffset.top = self.offset().top - list.outerHeight() + parseInt(list.css('marginTop').replace('px', ''), 10);
+			} else {
+				// put it under the input
+				listOffset.top = self.offset().top + self.outerHeight() + parseInt(list.css('marginTop').replace('px', ''), 10);
+			}
+
+			list.offset(listOffset);
+
+			// position scrolling
+			var selected = list.find('.ui-timepicker-selected');
+
+			if (!selected.length) {
+				if (_getTimeValue(self)) {
+					selected = _findRow(self, list, _time2int(_getTimeValue(self)));
+				} else if (settings.scrollDefault) {
+					selected = _findRow(self, list, settings.scrollDefault);
+				}
+			}
+
+			if (selected && selected.length) {
+				var topOffset = list.scrollTop() + selected.position().top - selected.outerHeight();
+				list.scrollTop(topOffset);
+			} else {
+				list.scrollTop(0);
+			}
+
+			// attach close handlers
+			$(document).on('touchstart.ui-timepicker mousedown.ui-timepicker', _closeHandler);
+			if (settings.closeOnWindowScroll) {
+				$(document).on('scroll.ui-timepicker', _closeHandler);
+			}
+
+			self.trigger('showTimepicker');
+
+			return this;
+		},
+
+		hide: function(e)
+		{
+			var self = $(this);
+			var settings = self.data('timepicker-settings');
+
+			if (settings && settings.useSelect) {
+				self.blur();
+			}
+
+			$('.ui-timepicker-wrapper:visible').each(function() {
+				var list = $(this);
+				var self = list.data('timepicker-input');
+				var settings = self.data('timepicker-settings');
+
+				if (settings && settings.selectOnBlur) {
+					_selectValue(self);
+				}
+
+				list.hide();
+				self.trigger('hideTimepicker');
+			});
+
+			return this;
+		},
+
+		option: function(key, value)
+		{
+			return this.each(function(){
+				var self = $(this);
+				var settings = self.data('timepicker-settings');
+				var list = self.data('timepicker-list');
+
+				if (typeof key == 'object') {
+					settings = $.extend(settings, key);
+
+				} else if (typeof key == 'string' && typeof value != 'undefined') {
+					settings[key] = value;
+
+				} else if (typeof key == 'string') {
+					return settings[key];
+				}
+
+				settings = _parseSettings(settings);
+
+				self.data('timepicker-settings', settings);
+
+				if (list) {
+					list.remove();
+					self.data('timepicker-list', false);
+				}
+
+				if (settings.useSelect) {
+					_render(self);
+				}
+			});
+		},
+
+		getSecondsFromMidnight: function()
+		{
+			return _time2int(_getTimeValue(this));
+		},
+
+		getTime: function(relative_date)
+		{
+			var self = this;
+
+			var time_string = _getTimeValue(self);
+			if (!time_string) {
+				return null;
+			}
+
+			if (!relative_date) {
+				relative_date = new Date();
+			}
+			var offset = _time2int(time_string);
+
+			// construct a Date with today's date, and offset's time
+			var time = new Date(relative_date);
+			time.setHours(offset / 3600);
+			time.setMinutes(offset % 3600 / 60);
+			time.setSeconds(offset % 60);
+			time.setMilliseconds(0);
+
+			return time;
+		},
+
+		setTime: function(value)
+		{
+			var self = this;
+			var settings = self.data('timepicker-settings');
+
+			if (settings.forceRoundTime) {
+				var prettyTime = _roundAndFormatTime(value, settings)
+			} else {
+				var prettyTime = _int2time(_time2int(value), settings.timeFormat);
+			}
+
+			_setTimeValue(self, prettyTime);
+			if (self.data('timepicker-list')) {
+				_setSelected(self, self.data('timepicker-list'));
+			}
+
+			return this;
+		},
+
+		remove: function()
+		{
+			var self = this;
+
+			// check if this element is a timepicker
+			if (!self.hasClass('ui-timepicker-input')) {
+				return;
+			}
+
+			var settings = self.data('timepicker-settings');
+			self.removeAttr('autocomplete', 'off');
+			self.removeClass('ui-timepicker-input');
+			self.removeData('timepicker-settings');
+			self.off('.timepicker');
+
+			// timepicker-list won't be present unless the user has interacted with this timepicker
+			if (self.data('timepicker-list')) {
+				self.data('timepicker-list').remove();
+			}
+
+			if (settings.useSelect) {
+				self.show();
+			}
+
+			self.removeData('timepicker-list');
+
+			return this;
+		}
+	};
+
+	// private methods
+
+	function _parseSettings(settings)
+	{
+		if (settings.minTime) {
+			settings.minTime = _time2int(settings.minTime);
+		}
+
+		if (settings.maxTime) {
+			settings.maxTime = _time2int(settings.maxTime);
+		}
+
+		if (settings.durationTime && typeof settings.durationTime !== 'function') {
+			settings.durationTime = _time2int(settings.durationTime);
+		}
+
+		if (settings.scrollDefault == 'now') {
+			settings.scrollDefault = _time2int(new Date());
+		} else if (settings.scrollDefault) {
+			settings.scrollDefault = _time2int(settings.scrollDefault);
+		} else if (settings.minTime) {
+			settings.scrollDefault = settings.minTime;
+		}
+
+		if (settings.scrollDefault) {
+			settings.scrollDefault = _roundTime(settings.scrollDefault, settings);
+		}
+
+		if (settings.timeFormat.match(/[gh]/)) {
+			settings._twelveHourTime = true;
+		}
+
+		if (settings.disableTimeRanges.length > 0) {
+			// convert string times to integers
+			for (var i in settings.disableTimeRanges) {
+				settings.disableTimeRanges[i] = [
+					_time2int(settings.disableTimeRanges[i][0]),
+					_time2int(settings.disableTimeRanges[i][1])
+				];
+			}
+
+			// sort by starting time
+			settings.disableTimeRanges = settings.disableTimeRanges.sort(function(a, b){
+				return a[0] - b[0];
+			});
+
+			// merge any overlapping ranges
+			for (var i = settings.disableTimeRanges.length-1; i > 0; i--) {
+				if (settings.disableTimeRanges[i][0] <= settings.disableTimeRanges[i-1][1]) {
+					settings.disableTimeRanges[i-1] = [
+						Math.min(settings.disableTimeRanges[i][0], settings.disableTimeRanges[i-1][0]),
+						Math.max(settings.disableTimeRanges[i][1], settings.disableTimeRanges[i-1][1])
+					];
+					settings.disableTimeRanges.splice(i, 1);
+				}
+			}
+		}
+
+		return settings;
+	}
+
+	function _render(self)
+	{
+		var settings = self.data('timepicker-settings');
+		var list = self.data('timepicker-list');
+
+		if (list && list.length) {
+			list.remove();
+			self.data('timepicker-list', false);
+		}
+
+		if (settings.useSelect) {
+			list = $('<select />', { 'class': 'ui-timepicker-select' });
+			var wrapped_list = list;
+		} else {
+			list = $('<ul />', { 'class': 'ui-timepicker-list' });
+
+			var wrapped_list = $('<div />', { 'class': 'ui-timepicker-wrapper', 'tabindex': -1 });
+			wrapped_list.css({'display':'none', 'position': 'absolute' }).append(list);
+		}
+
+		if (settings.noneOption) {
+			if (settings.noneOption === true) {
+				settings.noneOption = (settings.useSelect) ? 'Time...' : 'None';
+			}
+
+			if ($.isArray(settings.noneOption)) {
+				for (var i in settings.noneOption) {
+					if (parseInt(i, 10) === i){
+						var noneElement = _generateNoneElement(settings.noneOption[i], settings.useSelect);
+						list.append(noneElement);
+					}
+				}
+			} else {
+				var noneElement = _generateNoneElement(settings.noneOption, settings.useSelect);
+				list.append(noneElement);
+			}
+		}
+
+		if (settings.className) {
+			wrapped_list.addClass(settings.className);
+		}
+
+		if ((settings.minTime !== null || settings.durationTime !== null) && settings.showDuration) {
+			wrapped_list.addClass('ui-timepicker-with-duration');
+			wrapped_list.addClass('ui-timepicker-step-'+settings.step);
+		}
+
+		var durStart = settings.minTime;
+		if (typeof settings.durationTime === 'function') {
+			durStart = _time2int(settings.durationTime());
+		} else if (settings.durationTime !== null) {
+			durStart = settings.durationTime;
+		}
+		var start = (settings.minTime !== null) ? settings.minTime : 0;
+		var end = (settings.maxTime !== null) ? settings.maxTime : (start + _ONE_DAY - 1);
+
+		if (end <= start) {
+			// make sure the end time is greater than start time, otherwise there will be no list to show
+			end += _ONE_DAY;
+		}
+
+		if (end === _ONE_DAY-1 && settings.timeFormat.indexOf('H') !== -1) {
+			// show a 24:00 option when using military time
+			end = _ONE_DAY;
+		}
+
+		var dr = settings.disableTimeRanges;
+		var drCur = 0;
+		var drLen = dr.length;
+
+		for (var i=start; i <= end; i += settings.step*60) {
+			var timeInt = i;
+			var timeString = _int2time(timeInt, settings.timeFormat);
+
+			if (settings.useSelect) {
+				var row = $('<option />', { 'value': timeString });
+				row.text(timeString);
+			} else {
+				var row = $('<li />');
+				row.data('time', (timeInt <= 86400 ? timeInt : timeInt % 86400));
+				row.text(timeString);
+			}
+
+			if ((settings.minTime !== null || settings.durationTime !== null) && settings.showDuration) {
+				var durationString = _int2duration(i - durStart, settings.step);
+				if (settings.useSelect) {
+					row.text(row.text()+' ('+durationString+')');
+				} else {
+					var duration = $('<span />', { 'class': 'ui-timepicker-duration' });
+					duration.text(' ('+durationString+')');
+					row.append(duration);
+				}
+			}
+
+			if (drCur < drLen) {
+				if (timeInt >= dr[drCur][1]) {
+					drCur += 1;
+				}
+
+				if (dr[drCur] && timeInt >= dr[drCur][0] && timeInt < dr[drCur][1]) {
+					if (settings.useSelect) {
+						row.prop('disabled', true);
+					} else {
+						row.addClass('ui-timepicker-disabled');
+					}
+				}
+			}
+
+			list.append(row);
+		}
+
+		wrapped_list.data('timepicker-input', self);
+		self.data('timepicker-list', wrapped_list);
+
+		if (settings.useSelect) {
+			list.val(_roundAndFormatTime(self.val(), settings));
+			list.on('focus', function(){
+				$(this).data('timepicker-input').trigger('showTimepicker');
+			});
+			list.on('blur', function(){
+				$(this).data('timepicker-input').trigger('hideTimepicker');
+			});
+			list.on('change', function(){
+				_setTimeValue(self, $(this).val(), 'select');
+			});
+
+			self.hide().after(list);
+		} else {
+			var appendTo = settings.appendTo;
+			if (typeof appendTo === 'string') {
+				appendTo = $(appendTo);
+			} else if (typeof appendTo === 'function') {
+				appendTo = appendTo(self);
+			}
+			appendTo.append(wrapped_list);
+			_setSelected(self, list);
+
+			list.on('mousedown', 'li', function(e) {
+
+				// hack: temporarily disable the focus handler
+				// to deal with the fact that IE fires 'focus'
+				// events asynchronously
+				self.off('focus.timepicker');
+				self.on('focus.timepicker-ie-hack', function(){
+					self.off('focus.timepicker-ie-hack');
+					self.on('focus.timepicker', methods.show);
+				});
+
+				if (!_hideKeyboard(self)) {
+					self[0].focus();
+				}
+
+				// make sure only the clicked row is selected
+				list.find('li').removeClass('ui-timepicker-selected');
+				$(this).addClass('ui-timepicker-selected');
+
+				if (_selectValue(self)) {
+					self.trigger('hideTimepicker');
+					wrapped_list.hide();
+				}
+			});
+		}
+	}
+
+	function _generateNoneElement(optionValue, useSelect)
+	{
+		var label, className, value;
+
+		if (typeof optionValue == 'object') {
+			label = optionValue.label;
+			className = optionValue.className;
+			value = optionValue.value;
+		} else if (typeof optionValue == 'string') {
+			label = optionValue;
+		} else {
+			$.error('Invalid noneOption value');
+		}
+
+		if (useSelect) {
+			return $('<option />', {
+					'value': value,
+					'class': className,
+					'text': label
+				});
+		} else {
+			return $('<li />', {
+					'class': className,
+					'text': label
+				}).data('time', value);
+		}
+	}
+
+	function _roundTime(seconds, settings)
+	{
+		if (!$.isNumeric(seconds)) {
+			seconds = _time2int(seconds);
+		}
+
+		if (seconds === null) {
+			return null;
+		} else {
+			var offset = seconds % (settings.step*60); // step is in minutes
+
+			if (offset >= settings.step*30) {
+				// if offset is larger than a half step, round up
+				seconds += (settings.step*60) - offset;
+			} else {
+				// round down
+				seconds -= offset;
+			}
+
+			return seconds;
+		}
+	}
+
+	function _roundAndFormatTime(seconds, settings)
+	{
+		seconds = _roundTime(seconds, settings);
+		if (seconds !== null) {
+			return _int2time(seconds, settings.timeFormat);
+		}
+	}
+
+	function _generateBaseDate()
+	{
+		return new Date(1970, 1, 1, 0, 0, 0);
+	}
+
+	// event handler to decide whether to close timepicker
+	function _closeHandler(e)
+	{
+		var target = $(e.target);
+		var input = target.closest('.ui-timepicker-input');
+		if (input.length === 0 && target.closest('.ui-timepicker-wrapper').length === 0) {
+			methods.hide();
+			$(document).unbind('.ui-timepicker');
+		}
+	}
+
+	function _hideKeyboard(self)
+	{
+		var settings = self.data('timepicker-settings');
+		return ((window.navigator.msMaxTouchPoints || 'ontouchstart' in document) && settings.disableTouchKeyboard);
+	}
+
+	function _findRow(self, list, value)
+	{
+		if (!value && value !== 0) {
+			return false;
+		}
+
+		var settings = self.data('timepicker-settings');
+		var out = false;
+		var halfStep = settings.step*30;
+
+		// loop through the menu items
+		list.find('li').each(function(i, obj) {
+			var jObj = $(obj);
+			if (typeof jObj.data('time') != 'number') {
+				return;
+			}
+
+			var offset = jObj.data('time') - value;
+
+			// check if the value is less than half a step from each row
+			if (Math.abs(offset) < halfStep || offset == halfStep) {
+				out = jObj;
+				return false;
+			}
+		});
+
+		return out;
+	}
+
+	function _setSelected(self, list)
+	{
+		list.find('li').removeClass('ui-timepicker-selected');
+
+		var timeValue = _time2int(_getTimeValue(self), self.data('timepicker-settings'));
+		if (timeValue === null) {
+			return;
+		}
+
+		var selected = _findRow(self, list, timeValue);
+		if (selected) {
+
+			var topDelta = selected.offset().top - list.offset().top;
+
+			if (topDelta + selected.outerHeight() > list.outerHeight() || topDelta < 0) {
+				list.scrollTop(list.scrollTop() + selected.position().top - selected.outerHeight());
+			}
+
+			selected.addClass('ui-timepicker-selected');
+		}
+	}
+
+
+	function _formatValue(e)
+	{
+		if (this.value === '') {
+			return;
+		}
+
+		var self = $(this);
+		var list = self.data('timepicker-list');
+
+		if (self.is(':focus') && (!e || e.type != 'change')) {
+			return;
+		}
+
+		var seconds = _time2int(this.value);
+
+		if (seconds === null) {
+			self.trigger('timeFormatError');
+			return;
+		}
+
+		var settings = self.data('timepicker-settings');
+		var rangeError = false;
+		// check that the time in within bounds
+		if (settings.minTime !== null && seconds < settings.minTime) {
+			rangeError = true;
+		} else if (settings.maxTime !== null && seconds > settings.maxTime) {
+			rangeError = true;
+		}
+
+		// check that time isn't within disabled time ranges
+		$.each(settings.disableTimeRanges, function(){
+			if (seconds >= this[0] && seconds < this[1]) {
+				rangeError = true;
+				return false;
+			}
+		});
+
+		if (settings.forceRoundTime) {
+			var offset = seconds % (settings.step*60); // step is in minutes
+
+			if (offset >= settings.step*30) {
+				// if offset is larger than a half step, round up
+				seconds += (settings.step*60) - offset;
+			} else {
+				// round down
+				seconds -= offset;
+			}
+		}
+
+		var prettyTime = _int2time(seconds, settings.timeFormat);
+
+		if (rangeError) {
+			if (_setTimeValue(self, prettyTime, 'error')) {
+				self.trigger('timeRangeError');
+			}
+		} else {
+			_setTimeValue(self, prettyTime);
+		}
+	}
+
+	function _getTimeValue(self)
+	{
+		if (self.is('input')) {
+			return self.val();
+		} else {
+			// use the element's data attributes to store values
+			return self.data('ui-timepicker-value');
+		}
+	}
+
+	function _setTimeValue(self, value, source)
+	{
+		if (self.is('input')) {
+			self.val(value);
+
+			var settings = self.data('timepicker-settings');
+			if (settings.useSelect) {
+				self.data('timepicker-list').val(_roundAndFormatTime(value, settings));
+			}
+		}
+
+		if (self.data('ui-timepicker-value') != value) {
+			self.data('ui-timepicker-value', value);
+			if (source == 'select') {
+				self.trigger('selectTime').trigger('changeTime').trigger('change');
+			} else if (source != 'error') {
+				self.trigger('changeTime');
+			}
+
+			return true;
+		} else {
+			self.trigger('selectTime');
+			return false;
+		}
+	}
+
+	/*
+	*  Keyboard navigation via arrow keys
+	*/
+	function _keydownhandler(e)
+	{
+		var self = $(this);
+		var list = self.data('timepicker-list');
+
+		if (!list || !list.is(':visible')) {
+			if (e.keyCode == 40) {
+				// show the list!
+				methods.show.call(self.get(0));
+				list = self.data('timepicker-list');
+				if (!_hideKeyboard(self)) {
+					self.focus();
+				}
+			} else {
+				return true;
+			}
+		}
+
+		switch (e.keyCode) {
+
+			case 13: // return
+				if (_selectValue(self)) {
+					methods.hide.apply(this);
+				}
+
+				e.preventDefault();
+				return false;
+
+			case 38: // up
+				var selected = list.find('.ui-timepicker-selected');
+
+				if (!selected.length) {
+					list.find('li').each(function(i, obj) {
+						if ($(obj).position().top > 0) {
+							selected = $(obj);
+							return false;
+						}
+					});
+					selected.addClass('ui-timepicker-selected');
+
+				} else if (!selected.is(':first-child')) {
+					selected.removeClass('ui-timepicker-selected');
+					selected.prev().addClass('ui-timepicker-selected');
+
+					if (selected.prev().position().top < selected.outerHeight()) {
+						list.scrollTop(list.scrollTop() - selected.outerHeight());
+					}
+				}
+
+				return false;
+
+			case 40: // down
+				selected = list.find('.ui-timepicker-selected');
+
+				if (selected.length === 0) {
+					list.find('li').each(function(i, obj) {
+						if ($(obj).position().top > 0) {
+							selected = $(obj);
+							return false;
+						}
+					});
+
+					selected.addClass('ui-timepicker-selected');
+				} else if (!selected.is(':last-child')) {
+					selected.removeClass('ui-timepicker-selected');
+					selected.next().addClass('ui-timepicker-selected');
+
+					if (selected.next().position().top + 2*selected.outerHeight() > list.outerHeight()) {
+						list.scrollTop(list.scrollTop() + selected.outerHeight());
+					}
+				}
+
+				return false;
+
+			case 27: // escape
+				list.find('li').removeClass('ui-timepicker-selected');
+				methods.hide();
+				break;
+
+			case 9: //tab
+				methods.hide();
+				break;
+
+			default:
+				return true;
+		}
+	}
+
+	/*
+	*	Time typeahead
+	*/
+	function _keyuphandler(e)
+	{
+		var self = $(this);
+		var list = self.data('timepicker-list');
+
+		if (!list || !list.is(':visible')) {
+			return true;
+		}
+
+		if (!self.data('timepicker-settings').typeaheadHighlight) {
+			list.find('li').removeClass('ui-timepicker-selected');
+			return true;
+		}
+
+		switch (e.keyCode) {
+
+			case 96: // numpad numerals
+			case 97:
+			case 98:
+			case 99:
+			case 100:
+			case 101:
+			case 102:
+			case 103:
+			case 104:
+			case 105:
+			case 48: // numerals
+			case 49:
+			case 50:
+			case 51:
+			case 52:
+			case 53:
+			case 54:
+			case 55:
+			case 56:
+			case 57:
+			case 65: // a
+			case 77: // m
+			case 80: // p
+			case 186: // colon
+			case 8: // backspace
+			case 46: // delete
+				_setSelected(self, list);
+				break;
+
+			default:
+				// list.find('li').removeClass('ui-timepicker-selected');
+				return;
+		}
+	}
+
+	function _selectValue(self)
+	{
+		var settings = self.data('timepicker-settings');
+		var list = self.data('timepicker-list');
+		var timeValue = null;
+
+		var cursor = list.find('.ui-timepicker-selected');
+
+		if (cursor.hasClass('ui-timepicker-disabled')) {
+			return false;
+		}
+
+		if (cursor.length) {
+			// selected value found
+			timeValue = cursor.data('time');
+		}
+
+		if (timeValue !== null) {
+			if (typeof timeValue == 'string') {
+				self.val(timeValue);
+			} else {
+				var timeString = _int2time(timeValue, settings.timeFormat);
+				_setTimeValue(self, timeString, 'select');
+			}
+		}
+
+		//self.trigger('change').trigger('selectTime');
+		return true;
+	}
+
+	function _int2duration(seconds, step)
+	{
+		seconds = Math.abs(seconds);
+		var minutes = Math.round(seconds/60),
+			duration = [],
+			hours, mins;
+
+		if (minutes < 60) {
+			// Only show (x mins) under 1 hour
+			duration = [minutes, _lang.mins];
+		} else {
+			hours = Math.floor(minutes/60);
+			mins = minutes%60;
+
+			// Show decimal notation (eg: 1.5 hrs) for 30 minute steps
+			if (step == 30 && mins == 30) {
+				hours += _lang.decimal + 5;
+			}
+
+			duration.push(hours);
+			duration.push(hours == 1 ? _lang.hr : _lang.hrs);
+
+			// Show remainder minutes notation (eg: 1 hr 15 mins) for non-30 minute steps
+			// and only if there are remainder minutes to show
+			if (step != 30 && mins) {
+				duration.push(mins);
+				duration.push(_lang.mins);
+			}
+		}
+
+		return duration.join(' ');
+	}
+
+	function _int2time(seconds, format)
+	{
+		if (seconds === null) {
+			return;
+		}
+
+		var time = new Date(_baseDate.valueOf() + (seconds*1000));
+
+		if (isNaN(time.getTime())) {
+			return;
+		}
+
+		var output = '';
+		var hour, code;
+
+		for (var i=0; i<format.length; i++) {
+
+			code = format.charAt(i);
+			switch (code) {
+
+				case 'a':
+					output += (time.getHours() > 11) ? _lang.pm : _lang.am;
+					break;
+
+				case 'A':
+					output += (time.getHours() > 11) ? _lang.PM : _lang.AM;
+					break;
+
+				case 'g':
+					hour = time.getHours() % 12;
+					output += (hour === 0) ? '12' : hour;
+					break;
+
+				case 'G':
+					output += time.getHours();
+					break;
+
+				case 'h':
+					hour = time.getHours() % 12;
+
+					if (hour !== 0 && hour < 10) {
+						hour = '0'+hour;
+					}
+
+					output += (hour === 0) ? '12' : hour;
+					break;
+
+				case 'H':
+					hour = time.getHours();
+					if (seconds === _ONE_DAY) hour = 24;
+					output += (hour > 9) ? hour : '0'+hour;
+					break;
+
+				case 'i':
+					var minutes = time.getMinutes();
+					output += (minutes > 9) ? minutes : '0'+minutes;
+					break;
+
+				case 's':
+					seconds = time.getSeconds();
+					output += (seconds > 9) ? seconds : '0'+seconds;
+					break;
+
+				default:
+					output += code;
+			}
+		}
+
+		return output;
+	}
+
+	function _time2int(timeString, settings)
+	{
+		if (timeString === '') return null;
+		if (!timeString || timeString+0 == timeString) return timeString;
+
+		if (typeof(timeString) == 'object') {
+			return timeString.getHours()*3600 + timeString.getMinutes()*60 + timeString.getSeconds();
+		}
+
+		timeString = timeString.toLowerCase();
+
+		var d = new Date(0);
+		var time;
+
+		// try to parse time input
+		time = timeString.match(/^([0-2]?[0-9])\W?([0-5][0-9])?\W?([0-5][0-9])?\s*([pa]?)m?$/);
+
+		if (!time) {
+			return null;
+		}
+
+		var hour = parseInt(time[1]*1, 10);
+		var ampm = time[4];
+		var hours = hour;
+
+		if (ampm) {
+			if (hour == 12) {
+				hours = (time[4] == 'p') ? 12 : 0;
+			} else {
+				hours = (hour + (time[4] == 'p' ? 12 : 0));
+			}
+		}
+
+		var minutes = ( time[2]*1 || 0 );
+		var seconds = ( time[3]*1 || 0 );
+		var timeInt = hours*3600 + minutes*60 + seconds;
+
+		// if no am/pm provided, intelligently guess based on the scrollDefault
+		if (!ampm && settings && settings._twelveHourTime && settings.scrollDefault) {
+			var delta = timeInt - settings.scrollDefault;
+			if (delta < 0 && delta >= _ONE_DAY / -2) {
+				timeInt = (timeInt + (_ONE_DAY / 2)) % _ONE_DAY;
+			}
+		}
+
+		return timeInt
+	}
+
+	function _pad2(n) {
+		return ("0" + n).slice(-2);
+	}
+
+	// Plugin entry
+	$.fn.timepicker = function(method)
+	{
+		if (!this.length) return this;
+		if (methods[method]) {
+			// check if this element is a timepicker
+			if (!this.hasClass('ui-timepicker-input')) {
+				return this;
+			}
+			return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+		}
+		else if(typeof method === "object" || !method) { return methods.init.apply(this, arguments); }
+		else { $.error("Method "+ method + " does not exist on jQuery.timepicker"); }
+	};
+}));
+
 (function() {
   var modalGroup;
 
   modalGroup = [];
 
-  define('UI.modalplus',[], function() {
+  define('UI.modalplus',['backbone'], function(Backbone) {
     var Modal;
     Modal = (function() {
       function Modal(option) {
@@ -7717,8 +8969,9 @@ define('jquerysort',["jquery"], function($) {
             text: "Cancel"
           },
           hasFooter: !this.option.disableFooter,
-          hasScroll: !!this.option.maxHeight,
-          compact: this.option.compact
+          hasScroll: !!this.option.maxHeight || this.option.hasScroll,
+          compact: this.option.compact,
+          mode: this.option.mode || "normal"
         }));
         body = this.tpl.find(".modal-body");
         if (typeof this.option.template === "object") {
@@ -7736,7 +8989,7 @@ define('jquerysort',["jquery"], function($) {
         }
         this.tpl.appendTo(this.wrap);
         modalGroup.push(this);
-        if (modalGroup.length === 1) {
+        if (modalGroup.length === 1 || this.option.mode === "panel") {
           this.tpl.addClass('bounce');
           window.setTimeout((function(_this) {
             return function() {
@@ -7764,15 +9017,15 @@ define('jquerysort',["jquery"], function($) {
         } else if (modalGroup.length <= 1) {
           modalGroup = [];
           this.trigger('close', this);
-          this.trigger('closed', this);
-          this.tpl.addClass('bounce');
           if (typeof (_base = this.option).onClose === "function") {
             _base.onClose(this);
           }
+          this.tpl.addClass('bounce');
           window.setTimeout((function(_this) {
             return function() {
               _this.tpl.remove();
-              return _this.wrap.remove();
+              _this.wrap.remove();
+              return _this.trigger('closed', _this);
             };
           })(this), this.option.delay || 300);
           this.wrap.fadeOut(this.option.delay || 300);
@@ -7848,7 +9101,7 @@ define('jquerysort',["jquery"], function($) {
             }
           };
         })(this));
-        if (!this.option.disableDrag) {
+        if (!(this.option.disableDrag || (this.option.mode === 'panel'))) {
           diffX = 0;
           diffY = 0;
           dragable = false;
@@ -7917,6 +9170,10 @@ define('jquerysort',["jquery"], function($) {
 
       Modal.prototype.resize = function(slideIn) {
         var height, left, top, width, windowHeight, windowWidth, _ref, _ref1;
+        if (this.option.mode === 'panel') {
+          this.trigger('resize', this);
+          return false;
+        }
         windowWidth = $(window).width();
         windowHeight = $(window).height();
         width = ((_ref = this.option.width) != null ? _ref.toLowerCase().replace('px', '') : void 0) || this.tpl.width();
@@ -7926,8 +9183,12 @@ define('jquerysort',["jquery"], function($) {
         if (slideIn) {
           left = windowWidth + left;
         }
-        return this.tpl.css({
+        this.tpl.css({
           top: top > 0 ? top : 10,
+          left: left
+        });
+        return this.trigger('resize', {
+          top: top,
           left: left
         });
       };
@@ -8001,6 +9262,9 @@ define('jquerysort',["jquery"], function($) {
           this.getLastButOne()._fadeIn();
           this.getLast()._slideOut();
           toRemove = modalGroup.pop();
+          if (toRemove.option.mode === 'panel') {
+            toRemove.tpl.addClass('bounce');
+          }
           toRemove.isClosed = true;
           this.getLast().childModal = null;
           if (typeof (_base = toRemove.option).onClose === "function") {
@@ -8021,28 +9285,62 @@ define('jquerysort',["jquery"], function($) {
         return this.tpl.find(".modal-confirm").attr('disabled', !!disabled);
       };
 
+      Modal.prototype.setContent = function(content) {
+        var selector;
+        if (this.option.hasScroll || this.option.maxHeight) {
+          selector = ".scroll-content";
+        } else {
+          selector = ".modal-body";
+        }
+        return this.tpl.find(selector).html(content);
+      };
+
       Modal.prototype._fadeOut = function() {
+        if (this.option.mode === 'panel') {
+          return false;
+        }
         return this.tpl.animate({
           left: "-=" + $(window).width()
         }, this.option.delay || 100);
       };
 
       Modal.prototype._fadeIn = function() {
+        if (this.option.mode === 'panel') {
+          return false;
+        }
         return this.tpl.animate({
           left: "+=" + $(window).width()
         }, this.option.delay || 100);
       };
 
       Modal.prototype._slideIn = function() {
+        if (this.option.mode === 'panel') {
+          return false;
+        }
         return this.tpl.animate({
           left: "-=" + $(window).width()
         }, this.option.delay || 300);
       };
 
       Modal.prototype._slideOut = function() {
+        if (this.option.mode === 'panel') {
+          return false;
+        }
         return this.tpl.animate({
           left: "+=" + $(window).width()
         }, this.option.delay || 300);
+      };
+
+      Modal.prototype.find = function(selector) {
+        return this.tpl.find(selector);
+      };
+
+      Modal.prototype.$ = function(selector) {
+        return this.tpl.find(selector);
+      };
+
+      Modal.prototype.setTitle = function(title) {
+        return this.tpl.find(".modal-header h3").text(title);
       };
 
       return Modal;
@@ -8053,936 +9351,1148 @@ define('jquerysort',["jquery"], function($) {
 
 }).call(this);
 
-/*! nanoScrollerJS - v0.8.0 - 2014
-* http://jamesflorentino.github.com/nanoScrollerJS/
-* Copyright (c) 2014 James Florentino; Licensed MIT */
-define( 'UI.nanoscroller',["jquery"], function() {
-  
-  var BROWSER_IS_IE7, BROWSER_SCROLLBAR_WIDTH, DOMSCROLL, DOWN, DRAG, KEYDOWN, KEYUP, MOUSEDOWN, MOUSEMOVE, MOUSEUP, MOUSEWHEEL, NanoScroll, PANEDOWN, RESIZE, SCROLL, SCROLLBAR, TOUCHMOVE, UP, WHEEL, cAF, defaults, getBrowserScrollbarWidth, hasTransform, isFFWithBuggyScrollbar, rAF, transform, _elementStyle, _prefixStyle, _vendor;
-  defaults = {
+(function() {
+  define('UI.nanoscroller',["jquery"], function($) {
+    
+    var BROWSER_IS_IE7, BROWSER_SCROLLBAR_HEIGHT, BROWSER_SCROLLBAR_WIDTH, DOMSCROLL, DOWN, DRAG, KEYDOWN, KEYUP, LEFT, MOUSEDOWN, MOUSEMOVE, MOUSEUP, MOUSEWHEEL, NanoScroll, PANEDOWN, PANERIGHT, RESIZE, RIGHT, SCROLL, SCROLLBAR, TOUCHMOVE, UP, WHEEL, defaults, getBrowserScrollbarSizes;
+    defaults = {
+
+      /**
+        a classname for the pane element.
+        @property paneClass
+        @type String
+        @default 'pane'
+       */
+      paneClass: 'nano-pane',
+
+      /**
+        a classname for the pane-y element.
+        @property paneClassY
+        @type String
+        @default 'pane-y'
+       */
+      paneClassY: 'pane-y',
+
+      /**
+        a classname for the pane-x element.
+        @property paneClassX
+        @type String
+        @default 'pane-x'
+       */
+      paneClassX: 'pane-x',
+
+      /**
+        a classname for the slider element.
+        @property sliderClass
+        @type String
+        @default 'slider'
+       */
+      sliderClass: 'nano-slider',
+
+      /**
+        a classname for the slider-y element.
+        @property sliderClassY
+        @type String
+        @default 'slider-y'
+       */
+      sliderClassY: 'slider-y',
+
+      /**
+        a classname for the slider-x element.
+        @property sliderClassX
+        @type String
+        @default 'slider-x'
+       */
+      sliderClassX: 'slider-x',
+
+      /**
+        a classname for the content element.
+        @property contentClass
+        @type String
+        @default 'content'
+       */
+      contentClass: 'nano-content',
+
+      /**
+        a setting to enable native scrolling in iOS devices.
+        @property iOSNativeScrolling
+        @type Boolean
+        @default false
+       */
+      iOSNativeScrolling: false,
+
+      /**
+        a setting to prevent the rest of the page being
+        scrolled when user scrolls the `.content` element.
+        @property preventPageScrolling
+        @type Boolean
+        @default false
+       */
+      preventPageScrolling: false,
+
+      /**
+        a setting to disable binding to the resize event.
+        @property disableResize
+        @type Boolean
+        @default false
+       */
+      disableResize: false,
+
+      /**
+        a setting to make the scrollbar always visible.
+        @property alwaysVisible
+        @type Boolean
+        @default false
+       */
+      alwaysVisible: false,
+
+      /**
+        a default timeout for the `flash()` method.
+        @property flashDelay
+        @type Number
+        @default 1500
+       */
+      flashDelay: 1500,
+
+      /**
+        a minimum height for the `.slider` element.
+        @property sliderMinHeight
+        @type Number
+        @default 20
+       */
+      sliderMinHeight: 20,
+
+      /**
+        a maximum height for the `.slider` element.
+        @property sliderMaxHeight
+        @type Number
+        @default null
+       */
+      sliderMaxHeight: null
+    };
 
     /**
-      a classname for the pane element.
-      @property paneClass
+      @property SCROLLBAR
       @type String
-      @default 'nano-pane'
-     */
-    paneClass: 'nano-pane',
-
-    /**
-      a classname for the slider element.
-      @property sliderClass
-      @type String
-      @default 'nano-slider'
-     */
-    sliderClass: 'nano-slider',
-
-    /**
-      a classname for the content element.
-      @property contentClass
-      @type String
-      @default 'nano-content'
-     */
-    contentClass: 'nano-content',
-
-    /**
-      a setting to enable native scrolling in iOS devices.
-      @property iOSNativeScrolling
-      @type Boolean
-      @default false
-     */
-    iOSNativeScrolling: false,
-
-    /**
-      a setting to prevent the rest of the page being
-      scrolled when user scrolls the `.content` element.
-      @property preventPageScrolling
-      @type Boolean
-      @default false
-     */
-    preventPageScrolling: false,
-
-    /**
-      a setting to disable binding to the resize event.
-      @property disableResize
-      @type Boolean
-      @default false
-     */
-    disableResize: false,
-
-    /**
-      a setting to make the scrollbar always visible.
-      @property alwaysVisible
-      @type Boolean
-      @default false
-     */
-    alwaysVisible: false,
-
-    /**
-      a default timeout for the `flash()` method.
-      @property flashDelay
-      @type Number
-      @default 1500
-     */
-    flashDelay: 1500,
-
-    /**
-      a minimum height for the `.slider` element.
-      @property sliderMinHeight
-      @type Number
-      @default 20
-     */
-    sliderMinHeight: 20,
-
-    /**
-      a maximum height for the `.slider` element.
-      @property sliderMaxHeight
-      @type Number
-      @default null
-     */
-    sliderMaxHeight: null,
-
-    /**
-      an alternate document context.
-      @property documentContext
-      @type Document
-      @default null
-     */
-    documentContext: null,
-
-    /**
-      an alternate window context.
-      @property windowContext
-      @type Window
-      @default null
-     */
-    windowContext: null
-  };
-
-  /**
-    @property SCROLLBAR
-    @type String
-    @static
-    @final
-    @private
-   */
-  SCROLLBAR = 'scrollbar';
-
-  /**
-    @property SCROLL
-    @type String
-    @static
-    @final
-    @private
-   */
-  SCROLL = 'scroll';
-
-  /**
-    @property MOUSEDOWN
-    @type String
-    @final
-    @private
-   */
-  MOUSEDOWN = 'mousedown';
-
-  /**
-    @property MOUSEMOVE
-    @type String
-    @static
-    @final
-    @private
-   */
-  MOUSEMOVE = 'mousemove';
-
-  /**
-    @property MOUSEWHEEL
-    @type String
-    @final
-    @private
-   */
-  MOUSEWHEEL = 'mousewheel';
-
-  /**
-    @property MOUSEUP
-    @type String
-    @static
-    @final
-    @private
-   */
-  MOUSEUP = 'mouseup';
-
-  /**
-    @property RESIZE
-    @type String
-    @final
-    @private
-   */
-  RESIZE = 'resize';
-
-  /**
-    @property DRAG
-    @type String
-    @static
-    @final
-    @private
-   */
-  DRAG = 'drag';
-
-  /**
-    @property UP
-    @type String
-    @static
-    @final
-    @private
-   */
-  UP = 'up';
-
-  /**
-    @property PANEDOWN
-    @type String
-    @static
-    @final
-    @private
-   */
-  PANEDOWN = 'panedown';
-
-  /**
-    @property DOMSCROLL
-    @type String
-    @static
-    @final
-    @private
-   */
-  DOMSCROLL = 'DOMMouseScroll';
-
-  /**
-    @property DOWN
-    @type String
-    @static
-    @final
-    @private
-   */
-  DOWN = 'down';
-
-  /**
-    @property WHEEL
-    @type String
-    @static
-    @final
-    @private
-   */
-  WHEEL = 'wheel';
-
-  /**
-    @property KEYDOWN
-    @type String
-    @static
-    @final
-    @private
-   */
-  KEYDOWN = 'keydown';
-
-  /**
-    @property KEYUP
-    @type String
-    @static
-    @final
-    @private
-   */
-  KEYUP = 'keyup';
-
-  /**
-    @property TOUCHMOVE
-    @type String
-    @static
-    @final
-    @private
-   */
-  TOUCHMOVE = 'touchmove';
-
-  /**
-    @property BROWSER_IS_IE7
-    @type Boolean
-    @static
-    @final
-    @private
-   */
-  BROWSER_IS_IE7 = window.navigator.appName === 'Microsoft Internet Explorer' && /msie 7./i.test(window.navigator.appVersion) && window.ActiveXObject;
-
-  /**
-    @property BROWSER_SCROLLBAR_WIDTH
-    @type Number
-    @static
-    @default null
-    @private
-   */
-  BROWSER_SCROLLBAR_WIDTH = null;
-  rAF = window.requestAnimationFrame;
-  cAF = window.cancelAnimationFrame;
-  _elementStyle = document.createElement('div').style;
-  _vendor = (function() {
-    var i, transform, vendor, vendors, _i, _len;
-    vendors = ['t', 'webkitT', 'MozT', 'msT', 'OT'];
-    for (i = _i = 0, _len = vendors.length; _i < _len; i = ++_i) {
-      vendor = vendors[i];
-      transform = vendors[i] + 'ransform';
-      if (transform in _elementStyle) {
-        return vendors[i].substr(0, vendors[i].length - 1);
-      }
-    }
-    return false;
-  })();
-  _prefixStyle = function(style) {
-    if (_vendor === false) {
-      return false;
-    }
-    if (_vendor === '') {
-      return style;
-    }
-    return _vendor + style.charAt(0).toUpperCase() + style.substr(1);
-  };
-  transform = _prefixStyle('transform');
-  hasTransform = transform !== false;
-
-  /**
-    Returns browser's native scrollbar width
-    @method getBrowserScrollbarWidth
-    @return {Number} the scrollbar width in pixels
-    @static
-    @private
-   */
-  getBrowserScrollbarWidth = function() {
-    var outer, outerStyle, scrollbarWidth;
-    outer = document.createElement('div');
-    outerStyle = outer.style;
-    outerStyle.position = 'absolute';
-    outerStyle.width = '100px';
-    outerStyle.height = '100px';
-    outerStyle.overflow = SCROLL;
-    outerStyle.top = '-9999px';
-    document.body.appendChild(outer);
-    scrollbarWidth = outer.offsetWidth - outer.clientWidth;
-    document.body.removeChild(outer);
-    return scrollbarWidth;
-  };
-  isFFWithBuggyScrollbar = function() {
-    var isOSXFF, ua, version;
-    ua = window.navigator.userAgent;
-    isOSXFF = /(?=.+Mac OS X)(?=.+Firefox)/.test(ua);
-    if (!isOSXFF) {
-      return false;
-    }
-    version = /Firefox\/\d{2}\./.exec(ua);
-    if (version) {
-      version = version[0].replace(/\D+/g, '');
-    }
-    return isOSXFF && +version > 23;
-  };
-
-  /**
-    @class NanoScroll
-    @param element {HTMLElement|Node} the main element
-    @param options {Object} nanoScroller's options
-    @constructor
-   */
-  NanoScroll = (function() {
-    function NanoScroll(el, options) {
-      this.el = el;
-      this.options = options;
-      BROWSER_SCROLLBAR_WIDTH || (BROWSER_SCROLLBAR_WIDTH = getBrowserScrollbarWidth());
-      this.$el = $(this.el);
-      this.doc = $(this.options.documentContext || document);
-      this.win = $(this.options.windowContext || window);
-      this.$content = this.$el.children("." + options.contentClass);
-      //this.$content.attr('tabindex', this.options.tabIndex || 0);
-      this.content = this.$content[0];
-      this.previousPosition = 0;
-      if (this.options.iOSNativeScrolling && (this.el.style.WebkitOverflowScrolling != null)) {
-        this.nativeScrolling();
-      } else {
-        this.generate();
-      }
-      this.createEvents();
-      this.addEvents();
-      this.reset();
-    }
-
-
-    /**
-      Prevents the rest of the page being scrolled
-      when user scrolls the `.nano-content` element.
-      @method preventScrolling
-      @param event {Event}
-      @param direction {String} Scroll direction (up or down)
+      @static
+      @final
       @private
      */
+    SCROLLBAR = 'scrollbar';
 
-    NanoScroll.prototype.preventScrolling = function(e, direction) {
-      if (!this.isActive) {
-        return;
-      }
-      if (e.type === DOMSCROLL) {
-        if (direction === DOWN && e.originalEvent.detail > 0 || direction === UP && e.originalEvent.detail < 0) {
-          e.preventDefault();
+    /**
+      @property SCROLL
+      @type String
+      @static
+      @final
+      @private
+     */
+    SCROLL = 'scroll';
+
+    /**
+      @property MOUSEDOWN
+      @type String
+      @final
+      @private
+     */
+    MOUSEDOWN = 'mousedown';
+
+    /**
+      @property MOUSEMOVE
+      @type String
+      @static
+      @final
+      @private
+     */
+    MOUSEMOVE = 'mousemove';
+
+    /**
+      @property MOUSEWHEEL
+      @type String
+      @final
+      @private
+     */
+    MOUSEWHEEL = 'mousewheel';
+
+    /**
+      @property MOUSEUP
+      @type String
+      @static
+      @final
+      @private
+     */
+    MOUSEUP = 'mouseup';
+
+    /**
+      @property RESIZE
+      @type String
+      @final
+      @private
+     */
+    RESIZE = 'resize';
+
+    /**
+      @property DRAG
+      @type String
+      @static
+      @final
+      @private
+     */
+    DRAG = 'drag';
+
+    /**
+      @property UP
+      @type String
+      @static
+      @final
+      @private
+     */
+    UP = 'up';
+
+    /**
+      @property PANEDOWN
+      @type String
+      @static
+      @final
+      @private
+     */
+    PANEDOWN = 'panedown';
+
+    /**
+      @property LEFT
+      @type String
+      @static
+      @final
+      @private
+     */
+    LEFT = 'left';
+
+    /**
+      @property PANERIGHT
+      @type String
+      @static
+      @final
+      @private
+     */
+    PANERIGHT = 'paneright';
+
+    /**
+      @property DOMSCROLL
+      @type String
+      @static
+      @final
+      @private
+     */
+    DOMSCROLL = 'DOMMouseScroll';
+
+    /**
+      @property DOWN
+      @type String
+      @static
+      @final
+      @private
+     */
+    DOWN = 'down';
+
+    /**
+      @property RIGHT
+      @type String
+      @static
+      @final
+      @private
+     */
+    RIGHT = 'right';
+
+    /**
+      @property WHEEL
+      @type String
+      @static
+      @final
+      @private
+     */
+    WHEEL = 'wheel';
+
+    /**
+      @property KEYDOWN
+      @type String
+      @static
+      @final
+      @private
+     */
+    KEYDOWN = 'keydown';
+
+    /**
+      @property KEYUP
+      @type String
+      @static
+      @final
+      @private
+     */
+    KEYUP = 'keyup';
+
+    /**
+      @property TOUCHMOVE
+      @type String
+      @static
+      @final
+      @private
+     */
+    TOUCHMOVE = 'touchmove';
+
+    /**
+      @property BROWSER_IS_IE7
+      @type Boolean
+      @static
+      @final
+      @private
+     */
+    BROWSER_IS_IE7 = window.navigator.appName === 'Microsoft Internet Explorer' && /msie 7./i.test(window.navigator.appVersion) && window.ActiveXObject;
+
+    /**
+      @property BROWSER_SCROLLBAR_WIDTH
+      @type Number
+      @static
+      @default null
+      @private
+     */
+    BROWSER_SCROLLBAR_WIDTH = null;
+
+    /**
+      @property BROWSER_SCROLLBAR_HEIGHT
+      @type Number
+      @static
+      @default null
+      @private
+     */
+    BROWSER_SCROLLBAR_HEIGHT = null;
+
+    /**
+      Returns browser's native scrollbar width
+      @method getBrowserScrollbarSizes
+      @return {Number} the scrollbar width in pixels
+      @static
+      @private
+     */
+    getBrowserScrollbarSizes = function() {
+      var outer, outerStyle, scrollbarHeight, scrollbarWidth;
+      outer = document.createElement('div');
+      outerStyle = outer.style;
+      outerStyle.position = 'absolute';
+      outerStyle.width = '100px';
+      outerStyle.height = '100px';
+      outerStyle.overflow = SCROLL;
+      outerStyle.top = '-9999px';
+      document.body.appendChild(outer);
+      scrollbarWidth = outer.offsetWidth - outer.clientWidth;
+      scrollbarHeight = outer.offsetHeight - outer.clientHeight;
+      document.body.removeChild(outer);
+      return [scrollbarWidth, scrollbarHeight];
+    };
+
+    /**
+      @class NanoScroll
+      @param element {HTMLElement|Node} the main element
+      @param options {Object} nanoScroller's options
+      @constructor
+     */
+    NanoScroll = (function() {
+      function NanoScroll(el, options) {
+        var _ref;
+        this.el = el;
+        this.options = options;
+        if (!BROWSER_SCROLLBAR_WIDTH || !BROWSER_SCROLLBAR_HEIGHT) {
+          _ref = getBrowserScrollbarSizes(), BROWSER_SCROLLBAR_WIDTH = _ref[0], BROWSER_SCROLLBAR_HEIGHT = _ref[1];
         }
-      } else if (e.type === MOUSEWHEEL) {
-        if (!e.originalEvent || !e.originalEvent.wheelDelta) {
+        this.$el = $(this.el);
+        this.doc = $(document);
+        this.win = $(window);
+        this.$content = this.$el.children("." + options.contentClass);
+        this.$content.attr('tabindex', 0);
+        this.content = this.$content[0];
+        if (this.options.iOSNativeScrolling && (this.el.style.WebkitOverflowScrolling != null)) {
+          this.nativeScrolling();
+        } else {
+          this.generate();
+        }
+        this.createEvents();
+        this.addEvents();
+        this.reset();
+      }
+
+
+      /**
+        Prevents the rest of the page being scrolled
+        when user scrolls the `.content` element.
+        @method preventVerticalScrolling
+        @param event {Event}
+        @param direction {String} Scroll direction (up or down)
+        @private
+       */
+
+      NanoScroll.prototype.preventVerticalScrolling = function(e, direction) {
+        if (!this.isActiveY) {
           return;
         }
-        if (direction === DOWN && e.originalEvent.wheelDelta < 0 || direction === UP && e.originalEvent.wheelDelta > 0) {
-          e.preventDefault();
+        if (e.type === DOMSCROLL) {
+          if (direction === DOWN && e.originalEvent.detail > 0 || direction === UP && e.originalEvent.detail < 0) {
+            e.preventDefault();
+          }
+        } else if (e.type === MOUSEWHEEL) {
+          if (!e.originalEvent || !e.originalEvent.wheelDelta) {
+            return;
+          }
+          if (direction === DOWN && e.originalEvent.wheelDelta < 0 || direction === UP && e.originalEvent.wheelDelta > 0) {
+            e.preventDefault();
+          }
         }
-      }
-    };
+      };
 
 
-    /**
-      Enable iOS native scrolling
-      @method nativeScrolling
-      @private
-     */
+      /**
+        Prevents the rest of the page being scrolled
+        when user scrolls the `.content` element.
+        @method preventHorizontalScrolling
+        @param event {Event}
+        @param direction {String} Scroll direction (left or right)
+        @private
+       */
 
-    NanoScroll.prototype.nativeScrolling = function() {
-      this.$content.css({
-        WebkitOverflowScrolling: 'touch'
-      });
-      this.iOSNativeScrolling = true;
-      this.isActive = true;
-    };
+      NanoScroll.prototype.preventHorizontalScrolling = function(e, direction) {
+        if (!this.isActiveX) {
+          return;
+        }
+        if (e.type === DOMSCROLL) {
+          if (direction === RIGHT && e.originalEvent.detail > 0 || direction === LEFT && e.originalEvent.detail < 0) {
+            e.preventDefault();
+          }
+        } else if (e.type === MOUSEWHEEL) {
+          if (!e.originalEvent || !e.originalEvent.wheelDelta) {
+            return;
+          }
+          if (direction === RIGHT && e.originalEvent.wheelDelta < 0 || direction === LEFT && e.originalEvent.wheelDelta > 0) {
+            e.preventDefault();
+          }
+        }
+      };
 
 
-    /**
-      Updates those nanoScroller properties that
-      are related to current scrollbar position.
-      @method updateScrollValues
-      @private
-     */
+      /**
+        Enable iOS native scrolling
+       */
 
-    NanoScroll.prototype.updateScrollValues = function() {
-      var content, direction;
-      content = this.content;
-      this.maxScrollTop = content.scrollHeight - content.clientHeight;
-      this.prevScrollTop = this.contentScrollTop || 0;
-      this.contentScrollTop = content.scrollTop;
-      direction = this.contentScrollTop > this.previousPosition ? "down" : this.contentScrollTop < this.previousPosition ? "up" : "same";
-      this.previousPosition = this.contentScrollTop;
-      if (direction !== "same") {
-        this.$el.trigger('update', {
-          position: this.contentScrollTop,
-          maximum: this.maxScrollTop,
-          direction: direction
+      NanoScroll.prototype.nativeScrolling = function() {
+        this.$content.css({
+          WebkitOverflowScrolling: 'touch'
         });
-      }
-      if (!this.iOSNativeScrolling) {
-        this.maxSliderTop = this.paneHeight - this.sliderHeight;
-        this.sliderTop = this.maxScrollTop === 0 ? 0 : this.contentScrollTop * this.maxSliderTop / this.maxScrollTop;
-      }
-    };
+        this.iOSNativeScrolling = true;
+        this.isActiveX = true;
+        this.isActiveY = true;
+      };
 
 
-    /**
-      Updates CSS styles for current scroll position.
-      Uses CSS 2d transfroms and `window.requestAnimationFrame` if available.
-      @method setOnScrollStyles
-      @private
-     */
+      /**
+        Updates those nanoScroller properties that
+        are related to current scrollbar position.
+        @method updateVerticalScrollValues
+        @private
+       */
 
-    NanoScroll.prototype.setOnScrollStyles = function() {
-      var cssValue;
-      if (hasTransform) {
-        cssValue = {};
-        cssValue[transform] = "translate(0, " + this.sliderTop + "px)";
-      } else {
-        cssValue = {
-          top: this.sliderTop
-        };
-      }
-      if (rAF) {
-        if (!this.scrollRAF) {
-          this.scrollRAF = rAF((function(_this) {
-            return function() {
-              _this.scrollRAF = null;
-              _this.slider.css(cssValue);
-            };
-          })(this));
+      NanoScroll.prototype.updateVerticalScrollValues = function() {
+        var content;
+        content = this.content;
+        if (!content) {
+          return;
         }
-      } else {
-        this.slider.css(cssValue);
-      }
-    };
+        this.maxScrollTop = content.scrollHeight - content.clientHeight;
+        this.contentScrollTop = content.scrollTop;
+        if (!this.iOSNativeScrolling) {
+          this.maxSliderTop = this.yPaneHeight - this.ySliderHeight;
+          this.ySliderTop = this.contentScrollTop * this.maxSliderTop / this.maxScrollTop;
+        }
+      };
 
 
-    /**
-      Creates event related methods
-      @method createEvents
-      @private
-     */
+      /**
+        Updates those nanoScroller properties that
+        are related to current scrollbar position.
+        @method updateVerticalScrollValues
+        @private
+       */
 
-    NanoScroll.prototype.createEvents = function() {
-      this.events = {
-        down: (function(_this) {
-          return function(e) {
-            _this.isBeingDragged = true;
-            _this.offsetY = e.pageY - _this.slider.offset().top;
-            _this.pane.addClass('active');
-            _this.doc.bind(MOUSEMOVE, _this.events[DRAG]).bind(MOUSEUP, _this.events[UP]);
-            return false;
-          };
-        })(this),
-        drag: (function(_this) {
-          return function(e) {
-            _this.sliderY = e.pageY - _this.$el.offset().top - _this.offsetY;
-            _this.scroll();
-            if (_this.contentScrollTop >= _this.maxScrollTop && _this.prevScrollTop !== _this.maxScrollTop) {
-              _this.$el.trigger('scrollend');
-            } else if (_this.contentScrollTop === 0 && _this.prevScrollTop !== 0) {
-              _this.$el.trigger('scrolltop');
-            }
-            return false;
-          };
-        })(this),
-        up: (function(_this) {
-          return function(e) {
-            _this.isBeingDragged = false;
-            _this.pane.removeClass('active');
-            _this.doc.unbind(MOUSEMOVE, _this.events[DRAG]).unbind(MOUSEUP, _this.events[UP]);
-            return false;
-          };
-        })(this),
-        resize: (function(_this) {
-          return function(e) {
-            _this.reset();
-          };
-        })(this),
-        panedown: (function(_this) {
-          return function(e) {
-            _this.sliderY = (e.offsetY || e.originalEvent.layerY) - (_this.sliderHeight * 0.5);
-            _this.scroll();
-            _this.events.down(e);
-            return false;
-          };
-        })(this),
-        scroll: (function(_this) {
-          return function(e) {
-            _this.updateScrollValues();
-            if (_this.isBeingDragged) {
-              return;
-            }
-            if (!_this.iOSNativeScrolling) {
-              _this.sliderY = _this.sliderTop;
-              _this.setOnScrollStyles();
-            }
-            if (e == null) {
-              return;
-            }
-            if (_this.contentScrollTop >= _this.maxScrollTop) {
-              if (_this.options.preventPageScrolling) {
-                _this.preventScrolling(e, DOWN);
-              }
-              if (_this.prevScrollTop !== _this.maxScrollTop) {
+      NanoScroll.prototype.updateHorizontalScrollValues = function() {
+        var content;
+        content = this.content;
+        if (!content) {
+          return;
+        }
+        this.maxScrollLeft = content.scrollWidth - content.clientWidth;
+        this.contentScrollLeft = content.scrollLeft;
+        if (!this.iOSNativeScrolling) {
+          this.maxSliderLeft = this.xPaneWidth - this.xSliderWidth;
+          this.xSliderLeft = this.contentScrollLeft * this.maxSliderLeft / this.maxScrollLeft;
+        }
+      };
+
+
+      /**
+        Creates event related methods
+        @method createEvents
+        @private
+       */
+
+      NanoScroll.prototype.createEvents = function() {
+        this.yEvents = {
+          down: (function(_this) {
+            return function(e) {
+              _this.isYBeingDragged = true;
+              _this.offsetY = e.pageY - _this.ySlider.offset().top;
+              _this.yPane.addClass('active');
+              _this.doc.bind(MOUSEMOVE, _this.yEvents[DRAG]).bind(MOUSEUP, _this.yEvents[UP]);
+              return false;
+            };
+          })(this),
+          drag: (function(_this) {
+            return function(e) {
+              _this.ySliderY = e.pageY - _this.$el.offset().top - _this.offsetY;
+              _this.scrollY();
+              _this.updateVerticalScrollValues();
+              if (_this.contentScrollTop >= _this.maxScrollTop) {
                 _this.$el.trigger('scrollend');
-              }
-            } else if (_this.contentScrollTop === 0) {
-              if (_this.options.preventPageScrolling) {
-                _this.preventScrolling(e, UP);
-              }
-              if (_this.prevScrollTop !== 0) {
+              } else if (_this.contentScrollTop === 0) {
                 _this.$el.trigger('scrolltop');
               }
-            }
-          };
-        })(this),
-        wheel: (function(_this) {
-          return function(e) {
-            var delta;
-            if (e == null) {
-              return;
-            }
-            delta = e.delta || e.wheelDelta || (e.originalEvent && e.originalEvent.wheelDelta) || -e.detail || (e.originalEvent && -e.originalEvent.detail);
-            if (delta) {
-              _this.sliderY += -delta / 3;
-            }
-            _this.scroll();
-            return false;
-          };
-        })(this)
+              return false;
+            };
+          })(this),
+          up: (function(_this) {
+            return function(e) {
+              _this.isYBeingDragged = false;
+              _this.yPane.removeClass('active');
+              _this.doc.unbind(MOUSEMOVE, _this.yEvents[DRAG]).unbind(MOUSEUP, _this.yEvents[UP]);
+              return false;
+            };
+          })(this),
+          resize: (function(_this) {
+            return function(e) {
+              _this.reset();
+            };
+          })(this),
+          panedown: (function(_this) {
+            return function(e) {
+              _this.ySliderY = (e.offsetY || e.originalEvent.layerY) - (_this.ySliderHeight * 0.5);
+              _this.scrollY();
+              _this.yEvents.down(e);
+              return false;
+            };
+          })(this),
+          scroll: (function(_this) {
+            return function(e) {
+              if (_this.isYBeingDragged) {
+                return;
+              }
+              _this.updateVerticalScrollValues();
+              if (!_this.iOSNativeScrolling) {
+                _this.ySliderY = _this.ySliderTop;
+                _this.ySlider.css({
+                  top: _this.ySliderTop
+                });
+              }
+              if (e == null) {
+                return;
+              }
+              if (_this.contentScrollTop >= _this.maxScrollTop) {
+                if (_this.options.preventPageScrolling) {
+                  _this.preventVerticalScrolling(e, DOWN);
+                }
+                _this.$el.trigger('scrollend');
+              } else if (_this.contentScrollTop === 0) {
+                if (_this.options.preventPageScrolling) {
+                  _this.preventVerticalScrolling(e, UP);
+                }
+                _this.$el.trigger('scrolltop');
+              }
+            };
+          })(this),
+          wheel: (function(_this) {
+            return function(e) {
+              if (e == null) {
+                return;
+              }
+              _this.ySliderY += -e.wheelDeltaY || -e.delta;
+              _this.scrollY();
+              return false;
+            };
+          })(this)
+        };
+        this.xEvents = {
+          down: (function(_this) {
+            return function(e) {
+              _this.isXBeingDragged = true;
+              _this.offsetX = e.pageX - _this.xSlider.offset().left;
+              _this.xPane.addClass('active');
+              _this.doc.bind(MOUSEMOVE, _this.xEvents[DRAG]).bind(MOUSEUP, _this.xEvents[UP]);
+              return false;
+            };
+          })(this),
+          drag: (function(_this) {
+            return function(e) {
+              _this.xSliderX = e.pageX - _this.$el.offset().left - _this.offsetX;
+              _this.scrollX();
+              _this.updateHorizontalScrollValues();
+              if (_this.contentScrollLeft >= _this.maxScrollLeft) {
+                _this.$el.trigger('scrollend');
+              } else if (_this.contentScrollLeft === 0) {
+                _this.$el.trigger('scrollleft');
+              }
+              return false;
+            };
+          })(this),
+          up: (function(_this) {
+            return function(e) {
+              _this.isXBeingDragged = false;
+              _this.xPane.removeClass('active');
+              _this.doc.unbind(MOUSEMOVE, _this.xEvents[DRAG]).unbind(MOUSEUP, _this.xEvents[UP]);
+              return false;
+            };
+          })(this),
+          resize: (function(_this) {
+            return function(e) {
+              _this.reset();
+            };
+          })(this),
+          panedown: (function(_this) {
+            return function(e) {
+              _this.xSliderX = (e.offsetX || e.originalEvent.layerX) - (_this.xSliderWidth * 0.5);
+              _this.scrollX();
+              _this.xEvents.down(e);
+              return false;
+            };
+          })(this),
+          scroll: (function(_this) {
+            return function(e) {
+              if (_this.isXBeingDragged) {
+                return;
+              }
+              _this.updateHorizontalScrollValues();
+              if (!_this.iOSNativeScrolling) {
+                _this.xSliderX = _this.xSliderLeft;
+                _this.xSlider.css({
+                  left: _this.xSliderLeft
+                });
+              }
+              if (e == null) {
+                return;
+              }
+              if (_this.contentScrollLeft >= _this.maxScrollLeft) {
+                if (_this.options.preventPageScrolling) {
+                  _this.preventHorizontalScrolling(e, RIGHT);
+                }
+                _this.$el.trigger('scrollend');
+              } else if (_this.contentScrollLeft === 0) {
+                if (_this.options.preventPageScrolling) {
+                  _this.preventHorizontalScrolling(e, LEFT);
+                }
+                _this.$el.trigger('scrollleft');
+              }
+            };
+          })(this),
+          wheel: (function(_this) {
+            return function(e) {
+              if (e == null) {
+                return;
+              }
+              _this.xSliderX += -e.wheelDeltaX || -e.delta;
+              _this.scrollX();
+              return false;
+            };
+          })(this)
+        };
       };
-    };
 
 
-    /**
-      Adds event listeners with jQuery.
-      @method addEvents
-      @private
-     */
+      /**
+        Adds event listeners with jQuery.
+        @method addEvents
+        @private
+       */
 
-    NanoScroll.prototype.addEvents = function() {
-      var events;
-      this.removeEvents();
-      events = this.events;
-      if (!this.options.disableResize) {
-        this.win.bind(RESIZE, events[RESIZE]);
-      }
-      if (!this.iOSNativeScrolling) {
-        this.slider.bind(MOUSEDOWN, events[DOWN]);
-        this.pane.bind(MOUSEDOWN, events[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, events[WHEEL]);
-      }
-      this.$content.bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, events[SCROLL]);
-    };
-
-
-    /**
-      Removes event listeners with jQuery.
-      @method removeEvents
-      @private
-     */
-
-    NanoScroll.prototype.removeEvents = function() {
-      var events;
-      events = this.events;
-      this.win.unbind(RESIZE, events[RESIZE]);
-      if (!this.iOSNativeScrolling) {
-        this.slider.unbind();
-        this.pane.unbind();
-      }
-      this.$content.unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, events[SCROLL]);
-    };
+      NanoScroll.prototype.addEvents = function() {
+        var xEvents, yEvents;
+        this.removeEvents();
+        yEvents = this.yEvents;
+        xEvents = this.xEvents;
+        if (!this.options.disableResize) {
+          this.win.bind(RESIZE, yEvents[RESIZE]).bind(RESIZE, xEvents[RESIZE]);
+        }
+        if (!this.iOSNativeScrolling) {
+          this.ySlider.bind(MOUSEDOWN, yEvents[DOWN]);
+          this.xSlider.bind(MOUSEDOWN, xEvents[DOWN]);
+          this.yPane.bind(MOUSEDOWN, yEvents[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, yEvents[WHEEL]);
+          this.xPane.bind(MOUSEDOWN, xEvents[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, xEvents[WHEEL]);
+        }
+        this.$content.bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, yEvents[SCROLL]).bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, xEvents[SCROLL]);
+      };
 
 
-    /**
-      Generates nanoScroller's scrollbar and elements for it.
-      @method generate
-      @chainable
-      @private
-     */
+      /**
+        Removes event listeners with jQuery.
+        @method removeEvents
+        @private
+       */
 
-    NanoScroll.prototype.generate = function() {
-      var contentClass, cssRule, currentPadding, options, pane, paneClass, sliderClass;
-      options = this.options;
-      paneClass = options.paneClass, sliderClass = options.sliderClass, contentClass = options.contentClass;
-      if (!(pane = this.$el.children("." + paneClass)).length && !pane.children("." + sliderClass).length) {
-        this.$el.append("<div class=\"" + paneClass + "\"><div class=\"" + sliderClass + "\" /></div>");
-      }
-      this.pane = this.$el.children("." + paneClass);
-      this.slider = this.pane.find("." + sliderClass);
-      if (BROWSER_SCROLLBAR_WIDTH === 0 && isFFWithBuggyScrollbar()) {
-        currentPadding = window.getComputedStyle(this.content, null).getPropertyValue('padding-right').replace(/\D+/g, '');
-        cssRule = {
-          right: -14,
-          paddingRight: +currentPadding + 14
-        };
-      } else if (BROWSER_SCROLLBAR_WIDTH) {
-        cssRule = {
-          right: -BROWSER_SCROLLBAR_WIDTH
-        };
-        this.$el.addClass('has-scrollbar');
-      }
-      if (cssRule != null) {
-        this.$content.css(cssRule);
-      }
-      return this;
-    };
+      NanoScroll.prototype.removeEvents = function() {
+        var xEvents, yEvents;
+        yEvents = this.yEvents;
+        xEvents = this.xEvents;
+        this.win.unbind(RESIZE, yEvents[RESIZE]).unbind(RESIZE, xEvents[RESIZE]);
+        if (!this.iOSNativeScrolling) {
+          this.ySlider.unbind();
+          this.xSlider.unbind();
+          this.yPane.unbind();
+          this.xPane.unbind();
+        }
+        this.$content.unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, yEvents[SCROLL]).unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, xEvents[SCROLL]);
+      };
 
 
-    /**
-      @method restore
-      @private
-     */
+      /**
+        Generates nanoScroller's scrollbar and elements for it.
+        @method generate
+        @chainable
+        @private
+       */
 
-    NanoScroll.prototype.restore = function() {
-      this.stopped = false;
-      if (!this.iOSNativeScrolling) {
-        this.pane.show();
-      }
-      this.addEvents();
-    };
+      NanoScroll.prototype.generate = function() {
+        var contentClass, cssRuleX, cssRuleY, options, paneClass, paneClassX, paneClassY, sliderClass, sliderClassX, sliderClassY;
+        options = this.options;
+        paneClass = options.paneClass, paneClassY = options.paneClassY, paneClassX = options.paneClassX, sliderClass = options.sliderClass, sliderClassY = options.sliderClassY, sliderClassX = options.sliderClassX, contentClass = options.contentClass;
+        if (!this.$el.find("" + paneClassY).length && !this.$el.find("" + sliderClassY).length) {
+          this.$el.append("<div class=\"" + paneClass + " " + paneClassY + "\"><div class=\"" + sliderClass + " " + sliderClassY + "\" /></div>");
+        }
+        if (!this.$el.find("" + paneClassX).length && !this.$el.find("" + sliderClassX).length) {
+          this.$el.append("<div class=\"" + paneClass + " " + paneClassX + "\"><div class=\"" + sliderClass + " " + sliderClassX + "\" /></div>");
+        }
+        this.yPane = this.$el.children("." + paneClassY);
+        this.xPane = this.$el.children("." + paneClassX);
+        this.ySlider = this.yPane.find("." + sliderClassY);
+        this.xSlider = this.xPane.find("." + sliderClassX);
+        if (BROWSER_SCROLLBAR_WIDTH) {
+          cssRuleY = this.$el.css('direction') === 'rtl' ? {
+            left: -BROWSER_SCROLLBAR_WIDTH
+          } : {
+            right: -BROWSER_SCROLLBAR_WIDTH
+          };
+          this.$el.addClass('has-scrollbar');
+          this.$content.css(cssRuleY);
+        }
+        if (BROWSER_SCROLLBAR_HEIGHT) {
+          cssRuleX = {
+            bottom: -BROWSER_SCROLLBAR_HEIGHT
+          };
+          this.$el.addClass('has-scrollbar');
+          this.$content.css(cssRuleX);
+        }
+        return this;
+      };
 
 
-    /**
-      Resets nanoScroller's scrollbar.
-      @method reset
-      @chainable
-      @example
-          $(".nano").nanoScroller();
-     */
+      /**
+        @method restore
+        @private
+       */
 
-    NanoScroll.prototype.reset = function() {
-      var content, contentHeight, contentPosition, contentStyle, contentStyleOverflowY, paneBottom, paneHeight, paneOuterHeight, paneTop, parentMaxHeight, right, sliderHeight;
-      if (this.iOSNativeScrolling) {
-        this.contentHeight = this.content.scrollHeight;
-        return;
-      }
-      if (!this.$el.find("." + this.options.paneClass).length) {
-        this.generate().stop();
-      }
-      if (this.stopped) {
-        this.restore();
-      }
-      content = this.content;
-      contentStyle = content.style;
-      contentStyleOverflowY = contentStyle.overflowY;
-      if (BROWSER_IS_IE7) {
-        this.$content.css({
-          height: this.$content.height()
-        });
-      }
-      contentHeight = content.scrollHeight + BROWSER_SCROLLBAR_WIDTH;
-      parentMaxHeight = parseInt(this.$el.css("max-height"), 10);
-      if (parentMaxHeight > 0) {
-        this.$el.height("");
-        this.$el.height(content.scrollHeight > parentMaxHeight ? parentMaxHeight : content.scrollHeight);
-      }
-      paneHeight = this.pane.outerHeight(false);
-      paneTop = parseInt(this.pane.css('top'), 10);
-      paneBottom = parseInt(this.pane.css('bottom'), 10);
-      paneOuterHeight = paneHeight + paneTop + paneBottom;
-      sliderHeight = Math.round(paneOuterHeight / contentHeight * paneOuterHeight);
-      if (sliderHeight < this.options.sliderMinHeight) {
-        sliderHeight = this.options.sliderMinHeight;
-      } else if ((this.options.sliderMaxHeight != null) && sliderHeight > this.options.sliderMaxHeight) {
-        sliderHeight = this.options.sliderMaxHeight;
-      }
-      if (contentStyleOverflowY === SCROLL && contentStyle.overflowX !== SCROLL) {
-        sliderHeight += BROWSER_SCROLLBAR_WIDTH;
-      }
-      this.maxSliderTop = paneOuterHeight - sliderHeight;
-      this.contentHeight = contentHeight;
-      this.paneHeight = paneHeight;
-      this.paneOuterHeight = paneOuterHeight;
-      this.sliderHeight = sliderHeight;
-      this.slider.height(sliderHeight);
-      this.events.scroll();
-      this.pane.show();
-      this.isActive = true;
-      if ((content.scrollHeight === content.clientHeight) || (this.pane.outerHeight(true) >= content.scrollHeight && contentStyleOverflowY !== SCROLL)) {
-        this.pane.hide();
-        this.isActive = false;
-      } else if (this.el.clientHeight === content.scrollHeight && contentStyleOverflowY === SCROLL) {
-        this.slider.hide();
-      } else {
-        this.slider.show();
-      }
-      this.pane.css({
-        opacity: (this.options.alwaysVisible ? 1 : ''),
-        visibility: (this.options.alwaysVisible ? 'visible' : '')
-      });
-      contentPosition = this.$content.css('position');
-      if (contentPosition === 'static' || contentPosition === 'relative') {
-        right = parseInt(this.$content.css('right'), 10);
-        if (right) {
+      NanoScroll.prototype.restore = function() {
+        this.stopped = false;
+        this.yPane.show();
+        this.xPane.show();
+        this.addEvents();
+      };
+
+
+      /**
+        Resets nanoScroller's scrollbar.
+        @method reset
+        @chainable
+        @example
+            $(".nano").nanoScroller();
+       */
+
+      NanoScroll.prototype.reset = function() {
+        var content, contentHeight, contentStyle, contentStyleOverflowX, contentStyleOverflowY, contentWidth, paneBottom, paneHeight, paneLeft, paneOuterHeight, paneOuterWidth, paneRight, paneTop, paneWidth, sliderHeight, sliderWidth;
+        if (!this.content) {
+          return;
+        }
+        if (this.iOSNativeScrolling) {
+          this.contentHeight = this.content.scrollHeight;
+          this.contentWidth = this.content.scrollWidth;
+          return;
+        }
+        this.$el.removeClass('has-scrollbar-x');
+        this.$el.removeClass('has-scrollbar-y');
+        if (!this.$el.find("." + this.options.paneClassY).length && !this.$el.find("." + this.options.paneClassX).length) {
+          this.generate().stop();
+        }
+        if (this.stopped) {
+          this.restore();
+        }
+        content = this.content;
+        contentStyle = content.style;
+        contentStyleOverflowY = contentStyle.overflowY;
+        contentStyleOverflowX = contentStyle.overflowX;
+        if (BROWSER_IS_IE7) {
           this.$content.css({
-            right: '',
-            marginRight: right
+            height: this.$content.height(),
+            width: this.$content.height()
           });
         }
-      }
-      return this;
-    };
-
-
-    /**
-      @method scroll
-      @private
-      @example
-          $(".nano").nanoScroller({ scroll: 'top' });
-     */
-
-    NanoScroll.prototype.scroll = function() {
-      if (!this.isActive) {
-        return;
-      }
-      this.sliderY = Math.max(0, this.sliderY);
-      this.sliderY = Math.min(this.maxSliderTop, this.sliderY);
-      this.$content.scrollTop((this.paneHeight - this.contentHeight + BROWSER_SCROLLBAR_WIDTH) * this.sliderY / this.maxSliderTop * -1);
-      if (!this.iOSNativeScrolling) {
-        this.updateScrollValues();
-        this.setOnScrollStyles();
-      }
-      return this;
-    };
-
-
-    /**
-      Scroll at the bottom with an offset value
-      @method scrollBottom
-      @param offsetY {Number}
-      @chainable
-      @example
-          $(".nano").nanoScroller({ scrollBottom: value });
-     */
-
-    NanoScroll.prototype.scrollBottom = function(offsetY) {
-      if (!this.isActive) {
-        return;
-      }
-      this.$content.scrollTop(this.contentHeight - this.$content.height() - offsetY).trigger(MOUSEWHEEL);
-      this.stop().restore();
-      return this;
-    };
-
-
-    /**
-      Scroll at the top with an offset value
-      @method scrollTop
-      @param offsetY {Number}
-      @chainable
-      @example
-          $(".nano").nanoScroller({ scrollTop: value });
-     */
-
-    NanoScroll.prototype.scrollTop = function(offsetY) {
-      if (!this.isActive) {
-        return;
-      }
-      this.$content.scrollTop(+offsetY).trigger(MOUSEWHEEL);
-      this.stop().restore();
-      return this;
-    };
-
-
-    /**
-      Scroll to an element
-      @method scrollTo
-      @param node {Node} A node to scroll to.
-      @chainable
-      @example
-          $(".nano").nanoScroller({ scrollTo: $('#a_node') });
-     */
-
-    NanoScroll.prototype.scrollTo = function(node) {
-      if (!this.isActive) {
-        return;
-      }
-      this.scrollTop(this.$el.find(node).get(0).offsetTop);
-      return this;
-    };
-
-
-    /**
-      To stop the operation.
-      This option will tell the plugin to disable all event bindings and hide the gadget scrollbar from the UI.
-      @method stop
-      @chainable
-      @example
-          $(".nano").nanoScroller({ stop: true });
-     */
-
-    NanoScroll.prototype.stop = function() {
-      if (cAF && this.scrollRAF) {
-        cAF(this.scrollRAF);
-        this.scrollRAF = null;
-      }
-      this.stopped = true;
-      this.removeEvents();
-      if (!this.iOSNativeScrolling) {
-        this.pane.hide();
-      }
-      return this;
-    };
-
-
-    /**
-      Destroys nanoScroller and restores browser's native scrollbar.
-      @method destroy
-      @chainable
-      @example
-          $(".nano").nanoScroller({ destroy: true });
-     */
-
-    NanoScroll.prototype.destroy = function() {
-      if (!this.stopped) {
-        this.stop();
-      }
-      if (!this.iOSNativeScrolling && this.pane.length) {
-        this.pane.remove();
-      }
-      if (BROWSER_IS_IE7) {
-        this.$content.height('');
-      }
-      this.$content.removeAttr('tabindex');
-      if (this.$el.hasClass('has-scrollbar')) {
-        this.$el.removeClass('has-scrollbar');
-        this.$content.css({
-          right: ''
+        contentHeight = content.scrollHeight + BROWSER_SCROLLBAR_WIDTH;
+        contentWidth = content.scrollWidth + BROWSER_SCROLLBAR_HEIGHT;
+        if (content.scrollWidth > this.xPane.outerWidth(true)) {
+          this.$el.addClass('has-scrollbar-x');
+        }
+        if (content.scrollHeight > this.yPane.outerHeight(true)) {
+          this.$el.addClass('has-scrollbar-y');
+        }
+        paneHeight = this.yPane.outerHeight();
+        paneTop = parseInt(this.yPane.css('top'), 10);
+        paneBottom = parseInt(this.yPane.css('bottom'), 10);
+        paneOuterHeight = paneHeight + paneTop + paneBottom;
+        paneWidth = this.xPane.outerWidth();
+        paneLeft = parseInt(this.xPane.css('left'), 10);
+        paneRight = parseInt(this.xPane.css('right'), 10);
+        paneOuterWidth = paneWidth + paneLeft + paneRight;
+        sliderHeight = Math.round(paneOuterHeight / contentHeight * paneOuterHeight);
+        if (sliderHeight < this.options.sliderMinHeight) {
+          sliderHeight = this.options.sliderMinHeight;
+        } else if ((this.options.sliderMaxHeight != null) && sliderHeight > this.options.sliderMaxHeight) {
+          sliderHeight = this.options.sliderMaxHeight;
+        }
+        if (contentStyleOverflowY === SCROLL && contentStyle.overflowX !== SCROLL) {
+          sliderHeight += BROWSER_SCROLLBAR_WIDTH;
+        }
+        sliderWidth = Math.round(paneOuterWidth / contentWidth * paneOuterWidth);
+        if (sliderWidth < this.options.sliderMinWidth) {
+          sliderWidth = this.options.sliderMinWidth;
+        } else if ((this.options.sliderMaxWidth != null) && sliderWidth > this.options.sliderMaxWidth) {
+          sliderWidth = this.options.sliderMaxWidth;
+        }
+        if (contentStyleOverflowX === SCROLL && contentStyle.overflowY !== SCROLL) {
+          sliderWidth += BROWSER_SCROLLBAR_HEIGHT;
+        }
+        this.maxSliderTop = paneOuterHeight - sliderHeight;
+        this.maxSliderLeft = paneOuterWidth - sliderWidth;
+        this.contentHeight = contentHeight;
+        this.contentWidth = contentWidth;
+        this.yPaneHeight = paneHeight;
+        this.xPaneWidth = paneWidth;
+        this.yPaneOuterHeight = paneOuterHeight;
+        this.xPaneOuterWidth = paneOuterWidth;
+        this.ySliderHeight = sliderHeight;
+        this.xSliderWidth = sliderWidth;
+        this.ySlider.height(sliderHeight);
+        this.xSlider.width(sliderWidth);
+        this.yEvents.scroll();
+        this.xEvents.scroll();
+        this.yPane.show();
+        this.isActiveY = true;
+        if ((content.scrollHeight === content.clientHeight) || (this.yPane.outerHeight(true) >= content.scrollHeight && contentStyleOverflowY !== SCROLL)) {
+          this.yPane.hide();
+          this.$el.removeClass('has-scrollbar-y');
+          this.isActiveY = false;
+        } else if (this.el.clientHeight === content.scrollHeight && contentStyleOverflowY === SCROLL) {
+          this.ySlider.hide();
+        } else {
+          this.ySlider.show();
+        }
+        this.xPane.show();
+        this.isActiveX = true;
+        if ((content.scrollWidth === content.clientWidth) || (this.xPane.outerWidth(true) >= content.scrollWidth && contentStyleOverflowX !== SCROLL)) {
+          this.xPane.hide();
+          this.$el.removeClass('has-scrollbar-x');
+          this.isActiveX = false;
+        } else if (this.el.clientWidth === content.scrollWidth && contentStyleOverflowX === SCROLL) {
+          this.xSlider.hide();
+        } else {
+          this.xSlider.show();
+        }
+        this.yPane.css({
+          opacity: (this.options.alwaysVisible ? 1 : ''),
+          visibility: (this.options.alwaysVisible ? 'visible' : '')
         });
-      }
-      return this;
+        this.xPane.css({
+          opacity: (this.options.alwaysVisible ? 1 : ''),
+          visibility: (this.options.alwaysVisible ? 'visible' : '')
+        });
+        return this;
+      };
+
+
+      /**
+        @method scroll
+        @private
+        @example
+            $(".nano").nanoScroller({ scroll: 'top' });
+       */
+
+      NanoScroll.prototype.scroll = function() {
+        return this.scrollY();
+      };
+
+
+      /**
+        @method scrollY
+        @private
+        @example
+            $(".nano").nanoScroller({ scrollY: 'top' });
+       */
+
+      NanoScroll.prototype.scrollY = function() {
+        if (!this.isActiveY) {
+          return;
+        }
+        this.ySliderY = Math.max(0, this.ySliderY);
+        this.ySliderY = Math.min(this.maxSliderTop, this.ySliderY);
+        this.$content.scrollTop((this.yPaneHeight - this.contentHeight + BROWSER_SCROLLBAR_WIDTH) * this.ySliderY / this.maxSliderTop * -1);
+        if (!this.iOSNativeScrolling) {
+          this.ySlider.css({
+            top: this.ySliderY
+          });
+        }
+        return this;
+      };
+
+
+      /**
+        @method scrollX
+        @private
+        @example
+            $(".nano").nanoScroller({ scrollX: 'top' });
+       */
+
+      NanoScroll.prototype.scrollX = function() {
+        if (!this.isActiveX) {
+          return;
+        }
+        this.xSliderX = Math.max(0, this.xSliderX);
+        this.xSliderX = Math.min(this.maxSliderLeft, this.xSliderX);
+        this.$content.scrollLeft((this.xPaneWidth - this.contentWidth + BROWSER_SCROLLBAR_HEIGHT) * this.xSliderX / this.maxSliderLeft * -1);
+        if (!this.iOSNativeScrolling) {
+          this.xSlider.css({
+            left: this.xSliderX
+          });
+        }
+        return this;
+      };
+
+
+      /**
+        Scroll at the bottom with an offset value
+        @method scrollBottom
+        @param offsetY {Number}
+        @chainable
+        @example
+            $(".nano").nanoScroller({ scrollBottom: value });
+       */
+
+      NanoScroll.prototype.scrollBottom = function(offsetY) {
+        if (!this.isActiveY) {
+          return;
+        }
+        this.reset();
+        this.$content.scrollTop(this.contentHeight - this.$content.height() - offsetY).trigger(MOUSEWHEEL);
+        return this;
+      };
+
+
+      /**
+        Scroll at the right with an offset value
+        @method scrollRight
+        @param offsetX {Number}
+        @chainable
+        @example
+            $(".nano").nanoScroller({ scrollRight: value });
+       */
+
+      NanoScroll.prototype.scrollRight = function(offsetX) {
+        if (!this.isActiveX) {
+          return;
+        }
+        this.reset();
+        this.$content.scrollLeft(this.contentWidth - this.$content.width() - offsetX).trigger(MOUSEWHEEL);
+        return this;
+      };
+
+
+      /**
+        Scroll at the top with an offset value
+        @method scrollTop
+        @param offsetY {Number}
+        @chainable
+        @example
+            $(".nano").nanoScroller({ scrollTop: value });
+       */
+
+      NanoScroll.prototype.scrollTop = function(offsetY) {
+        if (!this.isActiveY) {
+          return;
+        }
+        this.reset();
+        this.$content.scrollTop(+offsetY).trigger(MOUSEWHEEL);
+        return this;
+      };
+
+
+      /**
+        Scroll at the left with an offset value
+        @method scrollLeft
+        @param offsetX {Number}
+        @chainable
+        @example
+            $(".nano").nanoScroller({ scrollLeft: value });
+       */
+
+      NanoScroll.prototype.scrollLeft = function(offsetX) {
+        if (!this.isActiveX) {
+          return;
+        }
+        this.reset();
+        this.$content.scrollLeft(+offsetX).trigger(MOUSEWHEEL);
+        return this;
+      };
+
+
+      /**
+        Scroll to an element
+        @method scrollTo
+        @param node {Node} A node to scroll to.
+        @chainable
+        @example
+            $(".nano").nanoScroller({ scrollTo: $('#a_node') });
+       */
+
+      NanoScroll.prototype.scrollTo = function(node) {
+        var n;
+        if (!(this.isActiveY || this.isActiveX)) {
+          return;
+        }
+        this.reset();
+        n = $(node).get(0);
+        if (this.isActiveY) {
+          this.scrollTop(n.offsetTop);
+        }
+        if (this.isActiveX) {
+          this.scrollLeft(n.offsetLeft);
+        }
+        return this;
+      };
+
+
+      /**
+        To stop the operation.
+        This option will tell the plugin to disable all event bindings and hide the gadget scrollbar from the UI.
+        @method stop
+        @chainable
+        @example
+            $(".nano").nanoScroller({ stop: true });
+       */
+
+      NanoScroll.prototype.stop = function() {
+        this.stopped = true;
+        this.removeEvents();
+        this.yPane.hide();
+        this.xPane.hide();
+        return this;
+      };
+
+
+      /**
+        To flash the scrollbar gadget for an amount of time defined in plugin settings (defaults to 1,5s).
+        Useful if you want to show the user (e.g. on pageload) that there is more content waiting for him.
+        @method flash
+        @chainable
+        @example
+            $(".nano").nanoScroller({ flash: true });
+       */
+
+      NanoScroll.prototype.flash = function() {
+        if (!(this.isActiveY || this.isActiveX)) {
+          return;
+        }
+        this.reset();
+        if (this.isActiveY) {
+          this.yPane.addClass('flashed');
+        }
+        if (this.isActiveX) {
+          this.xPane.addClass('flashed');
+        }
+        setTimeout((function(_this) {
+          return function() {
+            if (_this.isActiveY) {
+              _this.yPane.removeClass('flashed');
+            }
+            if (_this.isActiveX) {
+              _this.xPane.removeClass('flashed');
+            }
+          };
+        })(this), this.options.flashDelay);
+        return this;
+      };
+
+      return NanoScroll;
+
+    })();
+    $.fn.nanoScroller = function(settings) {
+      return this.each(function() {
+        var options, scrollbar;
+        if (!(scrollbar = this.nanoscroller)) {
+          options = $.extend({}, defaults, settings);
+          this.nanoscroller = scrollbar = new NanoScroll(this, options);
+        }
+        if (settings && typeof settings === "object") {
+          $.extend(scrollbar.options, settings);
+          if (settings.scrollBottom) {
+            return scrollbar.scrollBottom(settings.scrollBottom);
+          }
+          if (settings.scrollTop) {
+            return scrollbar.scrollTop(settings.scrollTop);
+          }
+          if (settings.scrollRight) {
+            return scrollbar.scrollRight(settings.scrollRight);
+          }
+          if (settings.scrollLeft) {
+            return scrollbar.scrollLeft(settings.scrollLeft);
+          }
+          if (settings.scrollTo) {
+            return scrollbar.scrollTo(settings.scrollTo);
+          }
+          if (settings.scroll === 'bottom') {
+            return scrollbar.scrollBottom(0);
+          }
+          if (settings.scroll === 'top') {
+            return scrollbar.scrollTop(0);
+          }
+          if (settings.scroll === 'right') {
+            return scrollbar.scrollRight(0);
+          }
+          if (settings.scroll === 'left') {
+            return scrollbar.scrollLeft(0);
+          }
+          if (settings.scroll && settings.scroll instanceof $) {
+            return scrollbar.scrollTo(settings.scroll);
+          }
+          if (settings.stop) {
+            return scrollbar.stop();
+          }
+          if (settings.flash) {
+            return scrollbar.flash();
+          }
+        }
+        return scrollbar.reset();
+      });
     };
+  });
 
+}).call(this);
 
-    /**
-      To flash the scrollbar gadget for an amount of time defined in plugin settings (defaults to 1,5s).
-      Useful if you want to show the user (e.g. on pageload) that there is more content waiting for him.
-      @method flash
-      @chainable
-      @example
-          $(".nano").nanoScroller({ flash: true });
-     */
-
-    NanoScroll.prototype.flash = function() {
-      if (this.iOSNativeScrolling) {
-        return;
-      }
-      if (!this.isActive) {
-        return;
-      }
-      this.reset();
-      this.pane.addClass('flashed');
-      setTimeout((function(_this) {
-        return function() {
-          _this.pane.removeClass('flashed');
-        };
-      })(this), this.options.flashDelay);
-      return this;
-    };
-
-    return NanoScroll;
-
-  })();
-  $.fn.nanoScroller = function(settings) {
-    return this.each(function() {
-      var options, scrollbar;
-      if (!(scrollbar = this.nanoscroller)) {
-        options = $.extend({}, defaults, settings);
-        this.nanoscroller = scrollbar = new NanoScroll(this, options);
-      }
-      if (settings && typeof settings === "object") {
-        $.extend(scrollbar.options, settings);
-        if (settings.scrollBottom != null) {
-          return scrollbar.scrollBottom(settings.scrollBottom);
-        }
-        if (settings.scrollTop != null) {
-          return scrollbar.scrollTop(settings.scrollTop);
-        }
-        if (settings.scrollTo) {
-          return scrollbar.scrollTo(settings.scrollTo);
-        }
-        if (settings.scroll === 'bottom') {
-          return scrollbar.scrollBottom(0);
-        }
-        if (settings.scroll === 'top') {
-          return scrollbar.scrollTop(0);
-        }
-        if (settings.scroll && settings.scroll instanceof $) {
-          return scrollbar.scrollTo(settings.scroll);
-        }
-        if (settings.stop) {
-          return scrollbar.stop();
-        }
-        if (settings.destroy) {
-          return scrollbar.destroy();
-        }
-        if (settings.flash) {
-          return scrollbar.flash();
-        }
-      }
-      return scrollbar.reset();
-    });
-  };
-  $.fn.nanoScroller.Constructor = NanoScroll;
-});
-
-//# sourceMappingURL=jquery.nanoscroller.js.map
-;
 
 define("ui/ui", function(){});

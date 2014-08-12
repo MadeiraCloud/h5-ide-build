@@ -2384,13 +2384,13 @@ return Markdown;
       initState: function() {
         this.initData();
         this.initUndoManager();
-        return $(document).off('keydown', this.keyEvent).on('keydown', {
+        return $(document).off('keydown.stateEditor', this.keyEvent).on('keydown.stateEditor', {
           target: this
         }, this.keyEvent);
       },
       closedPopup: function() {
         this.trigger('CLOSE_POPUP');
-        return $(document).off('keydown', this.keyEvent);
+        return $(document).off('keydown.stateEditor', this.keyEvent);
       },
       render: function() {
         var compData, that, _ref;
@@ -4660,11 +4660,11 @@ return Markdown;
           return false;
         }
         if (metaKey === false && shiftKey === false && keyCode === 80 && is_input === false) {
-          $canvas.trigger('SHOW_PROPERTY_PANEL');
+          ide_event.trigger(ide_event.FORCE_OPEN_PROPERTY, 'property');
           return false;
         }
         if (metaKey === false && shiftKey === false && keyCode === 83 && is_input === false) {
-          $canvas.trigger('SHOW_STATE_EDITOR');
+          ide_event.trigger(ide_event.SHOW_STATE_EDITOR);
           return false;
         }
       },
@@ -5175,7 +5175,7 @@ return Markdown;
         stateLogDataAry: []
       },
       initialize: function() {
-        var allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, comp, currentCompData, currentState, groupResSelectData, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, osType, platformInfo, resAttrDataAry, stateModuel, that;
+        var allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, comp, currentCompData, groupResSelectData, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, osType, platformInfo, resAttrDataAry, stateModuel, that;
         that = this;
         stateModuel = Design.instance().get('agent').module;
         moduleDataObj = App.model.getStateModule(stateModuel.repo, stateModuel.tag);
@@ -5283,14 +5283,7 @@ return Markdown;
         that.genAttrRefRegexList();
         groupResSelectData = that.getGroupResSelectData();
         that.set('groupResSelectData', groupResSelectData);
-        currentState = MC.canvas.getState();
-        if (currentState === 'stack') {
-          return that.set('currentState', 'stack');
-        } else if (currentState === 'app') {
-          return that.set('currentState', 'app');
-        } else if (currentState === 'appedit') {
-          return that.set('currentState', 'appedit');
-        }
+        return that.set('currentState', Design.instance().mode());
       },
       sortParaList: function(cmdAllParaAry, paraName) {
         var newCMDAllParaAry;
@@ -5449,7 +5442,7 @@ return Markdown;
         moduleCMDMap = that.get('moduleCMDMap');
         if (compList && !_.isEmpty(compList) && _.isArray(compList)) {
           _.each(compList, function(compObj) {
-            var compName, compType, compUID, stateAry;
+            var compName, compType, compUID, lcUID, stateAry;
             compUID = compObj.uid;
             compType = compObj.type;
             compName = compObj.name;
@@ -5462,8 +5455,12 @@ return Markdown;
               }
               compName = compObj.serverGroupName;
             }
-            if (compType === constant.RESTYPE.LC) {
-              compName = Design.instance().component(compUID).parent().get('name');
+            if (compType === constant.RESTYPE.ASG) {
+              compName = compObj.name;
+              lcUID = MC.extractID(compObj.resource.LaunchConfigurationName);
+              if (lcUID) {
+                compObj = allCompData[lcUID];
+              }
             }
             stateAry = compObj.state;
             if (stateAry && _.isArray(stateAry)) {

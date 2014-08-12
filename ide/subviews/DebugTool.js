@@ -128,7 +128,7 @@
           }
         }
         $("#ApiDebugSend").attr("disabled", "disabled");
-        $("#ApiResult").text("Loading...");
+        $("#ApiResult").text("Loading...").attr("finish", "false");
         ApiRequest(api, params).then(function(result) {
           if (apiDef.url.indexOf("/aws/") === 0 && apiDef.url.length > 5 && (typeof result[1] === "string")) {
             try {
@@ -138,10 +138,12 @@
             }
           }
           $("#ApiResult").text(JSON.stringify(result, void 0, 4));
-          return $("#ApiDebugSend").removeAttr("disabled");
+          $("#ApiDebugSend").removeAttr("disabled");
+          return $("#ApiResult").attr("finish", "true");
         }, function(error) {
           $("#ApiResult").text(JSON.stringify(error, void 0, 4));
-          return $("#ApiDebugSend").removeAttr("disabled");
+          $("#ApiDebugSend").removeAttr("disabled");
+          return $("#ApiResult").attr("finish", "true");
         });
         return null;
       });

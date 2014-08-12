@@ -510,9 +510,10 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
 
 (function() {
   define('ThumbnailUtil',['UI.canvg', 'component/exporter/Download'], function() {
-    var GridBackground, Href, ThumbGridBackground, cleanupThumbnail, createThumbnail, exportBeforeRender, exportPNG, fixSVG, getThumbnail, removeThumbnail, saveThumbnail, saveThumbnailFinish, thumbBeforeRender;
+    var DefsTpl, GridBackground, Href, ThumbGridBackground, cleanupThumbnail, createThumbnail, exportBeforeRender, exportPNG, fixSVG, getThumbnail, prepareDefTpl, removeThumbnail, saveThumbnail, saveThumbnailFinish, svgHasClass, thumbBeforeRender;
     GridBackground = void 0;
     ThumbGridBackground = void 0;
+    DefsTpl = void 0;
     Href = void 0;
     exportBeforeRender = function(ctx) {
       var cHeight, cWidth, orgFS;
@@ -544,28 +545,41 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       ctx.scale(ratio, ratio);
       return null;
     };
+    prepareDefTpl = function() {
+      var ch, clone, _i, _len, _ref;
+      clone = $("#svgDefs")[0].cloneNode(true);
+      clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+      $("#ExportPngWrap").append(clone);
+      _ref = clone.children || clone.childNodes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        ch = _ref[_i];
+        if (!ch.tagName) {
+          continue;
+        }
+        fixSVG(ch, [], true);
+      }
+      DefsTpl = (new XMLSerializer()).serializeToString(clone).replace(/^<svg[^>]+>/, "").replace(/<\/svg>$/, "").replace(/(fill:rgb\(0, 0, 0\)|stroke:none);?/g, "");
+    };
     exportPNG = function($svg_canvas_element, data) {
-      var $wrap, bbox, beforeRender, canvas, ch, children, clone, firstDom, head, name, origin, removeArray, replaceEl, size, svg, time, _i, _j, _k, _len, _len1, _len2, _ref;
+      var $wrap, bbox, beforeRender, canvas, ch, children, clone, insertTpl, name, origin, removeArray, replaceEl, size, svg, time, _i, _j, _k, _len, _len1, _len2, _ref;
       if (!data.onFinish) {
         return;
+      }
+      $wrap = $("#ExportPngWrap");
+      if (!$wrap.length) {
+        $wrap = $("<div id='ExportPngWrap'></div>").appendTo("body").hide();
       }
       if (!GridBackground) {
         GridBackground = document.createElement("img");
         GridBackground.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHUlEQVQYV2P48ePHf9yAgabSHz9+/I4bENI9gNIA0iYpJd74eOIAAAAASUVORK5CYII=";
         ThumbGridBackground = document.createElement("img");
         ThumbGridBackground.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAMAAABh9kWNAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF9fX1////0eouzwAAABRJREFUeNpiYGBkZGBkYABhgAADAAApAAUR1P0IAAAAAElFTkSuQmCC";
+        prepareDefTpl();
       }
-      $wrap = $("#ExportPngWrap");
-      if (!$wrap.length) {
-        $wrap = $("<div id='ExportPngWrap'></div>").appendTo("body").hide();
-      }
-      $wrap.attr("class", $svg_canvas_element.parents("#canvas_body").attr("class"));
       clone = $svg_canvas_element[0].cloneNode(true);
       size = $svg_canvas_element[0].getBBox();
       clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-      clone.removeAttribute("id");
       $wrap.append(clone);
-      firstDom = clone.getElementById("group_layer");
       removeArray = [clone];
       children = clone.children || clone.childNodes;
       for (_i = 0, _len = children.length; _i < _len; _i++) {
@@ -611,12 +625,12 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         }
         origin.x -= 30;
         origin.y -= 30;
-        replaceEl = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        replaceEl.textContent = "PLACEHOLDER";
-        replaceEl.setAttribute("transform", "translate(" + (-origin.x) + " " + (54 - origin.y) + ")");
-        clone.insertBefore(replaceEl, firstDom);
       }
-      svg = (new XMLSerializer()).serializeToString(clone).replace(/data-[^=<>]+="[^"]*?"/g, "");
+      replaceEl = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      replaceEl.textContent = "PLACEHOLDER";
+      clone.insertBefore(replaceEl, children[0]);
+      svg = (new XMLSerializer()).serializeToString(clone);
+      insertTpl = DefsTpl;
       if (data.isExport) {
         if (Href === void 0) {
           Href = (svg.indexOf("xlink:href") === -1 ? "href" : "xlink:href");
@@ -627,9 +641,10 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
           time = MC.dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss");
           name = data.name;
         }
-        head = "<g transform='translate(" + origin.x + " " + (origin.y - 54) + ")'><rect fill='#3b1252' width='100%' height='4'></rect><rect fill='#723197' width='100%' height='50' y='4'></rect><image " + Href + "='/assets/images/ide/logo-t.png?v=2' x='10' y='11' width='116' height='35'></image><text x='100%' y='40' fill='#fff' text-anchor='end' transform='translate(-10 0)'>" + time + "</text><text fill='#fff' x='100%' y='24' text-anchor='end' transform='translate(-10 0)'>" + name + "</text></g>";
-        svg = svg.replace("PLACEHOLDER</g>", head).replace("</svg>", "</g></svg>");
+        svg = svg.replace("</svg>", "</g></svg>");
+        insertTpl += "<g transform='translate(" + (-origin.x) + " " + (54 - origin.y) + ")'>\n<g transform='translate(" + origin.x + " " + (origin.y - 54) + ")'>\n  <rect fill='#3b1252' width='100%' height='4'></rect>\n  <rect fill='#723197' width='100%' height='50' y='4'></rect>\n  <image " + Href + "='/assets/images/ide/logo-t.png?v=2' x='10' y='11' width='116' height='35'></image>\n  <text x='100%' y='40' fill='#fff' text-anchor='end' transform='translate(-10 0)'>" + time + "</text>\n  <text x='100%' y='24' fill='#fff' text-anchor='end' transform='translate(-10 0)'>" + name + "</text>\n</g>";
       }
+      svg = svg.replace("<g>PLACEHOLDER</g>", insertTpl);
       size = {
         width: size.width + 30 * 2,
         height: size.height + 30 * 2
@@ -672,33 +687,26 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         }
       });
     };
-    fixSVG = function(element, removeArray) {
-      var ch, children, k, remove, s, ss, t1, tagName, _i, _len;
+    svgHasClass = function(svg, test) {
+      if (svg.classList) {
+        return svg.classList.contains(test);
+      } else {
+        return (svg.getAttribute("class") || "").indexOf(test) !== -1;
+      }
+    };
+    fixSVG = function(element, removeArray, keepDefaultStyle) {
+      var ch, children, fo, remove, s, ss, t1, tagName, _i, _len;
       tagName = element.tagName.toLowerCase();
-      if (tagName === "defs") {
-        return removeArray.push(element);
-      }
       children = element.children || element.childNodes;
-      remove = false;
-      if (tagName === "g") {
-        if (children.length === 0) {
-          remove = true;
-        } else {
-          if (element.classList) {
-            remove = element.classList.contains("resizer-wrap");
-          } else {
-            k = element.getAttribute("class");
-            remove = k && k.indexOf("resizer-wrap") !== -1;
-          }
-        }
-      }
-      if (!remove) {
-        if (element.classList) {
-          remove = element.classList.contains("fill-line");
-        } else {
-          k = element.getAttribute("class");
-          remove = k && k.indexOf("fill-line") !== -1;
-        }
+      switch (tagName) {
+        case "g":
+          remove = children.length === 0;
+          break;
+        case "path":
+          remove = svgHasClass(element, "fill-line");
+          break;
+        case "rect":
+          remove = svgHasClass(element, "group-resizer");
       }
       if (remove) {
         return removeArray.push(element);
@@ -708,29 +716,31 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         return removeArray.push(element);
       }
       s = [];
-      if (ss.opacity !== 1) {
+      if ("" + ss.opacity !== "1") {
         s.push("opacity:" + ss.opacity);
       }
-      if (tagName !== "g" && tagName !== "image") {
-        if (ss.fillOpacity === 0) {
+      if (tagName !== "g" && tagName !== "image" && tagName !== "defs") {
+        fo = "" + ss.fillOpacity;
+        if (!keepDefaultStyle && (fo === "0" || ss.fill.match(/rgba\([^)]+0\)/))) {
           s.push("fill:none");
         } else {
           if (ss.fill !== "#000000") {
             s.push("fill:" + ss.fill);
           }
-          if (ss.fillOpacity !== 1) {
+          if (fo !== "1") {
             s.push("fill-opacity:" + ss.fillOpacity);
           }
         }
         t1 = (ss.strokeWidth + "").replace("px", "");
-        if (ss.strokeWidth === 0 || ss.strokeOpacity === 0) {
+        fo = "" + ss.strokeOpacity;
+        if (!keepDefaultStyle && ("" + ss.strokeWidth === "0" || fo === "0")) {
           s.push("stroke:none");
         } else {
           s.push("stroke:" + ss.stroke);
-          if (t1 !== 1) {
+          if (t1 !== "1") {
             s.push("stroke-width:" + ss.strokeWidth);
           }
-          if (ss.strokeOpacity !== 1) {
+          if (fo !== "1") {
             s.push("stroke-opacity:" + ss.strokeOpacity);
           }
         }
@@ -741,7 +751,9 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
           s.push("stroke-dasharray:" + ss.strokeDasharray);
         }
         if (tagName === "text") {
-          s.push("font-size:" + ss.fontSize);
+          if (ss.fontSize !== "14px") {
+            s.push("font-size:" + ss.fontSize);
+          }
           if (ss.textAnchor !== "start") {
             s.push("text-anchor:" + ss.textAnchor);
           }
@@ -755,9 +767,9 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         if (!ch.tagName) {
           continue;
         }
-        fixSVG(ch, removeArray);
-        ch.removeAttribute("id");
-        ch.removeAttribute("class");
+        fixSVG(ch, removeArray, keepDefaultStyle);
+        ch.removeAttribute("data-id");
+        ch.removeAttribute("data-tooltip");
       }
       return null;
     };

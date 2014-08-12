@@ -32,7 +32,8 @@
         stack: new Meteor.Collection("stack", opts),
         app: new Meteor.Collection("app", opts),
         status: new Meteor.Collection("status", opts),
-        imports: new Meteor.Collection("imports", opts)
+        imports: new Meteor.Collection("imports", opts),
+        user_state: new Meteor.Collection("user", opts)
       };
       Deps.autorun((function(_this) {
         return function() {
@@ -83,6 +84,7 @@
       this.connection.subscribe("app", usercode, session);
       this.connection.subscribe("status", usercode, session);
       this.connection.subscribe("imports", usercode, session);
+      this.connection.subscribe("user", usercode, session);
     };
     Websocket.prototype.ready = function() {
       return this.__readyDefer.promise;
@@ -98,6 +100,17 @@
     Websocket.prototype.pipeChanges = function() {
       var self;
       self = this;
+      this.collection.user_state.find().fetch();
+      this.collection.user_state.find().observeChanges({
+        added: function(idx, dag) {
+          console.log("user_state changes", idx, dag);
+          return self.trigger("userStateChange", idx, dag);
+        },
+        changed: function(idx, dag) {
+          console.log("user_state changes", idx, dag);
+          return self.trigger("userStateChange", idx, dag);
+        }
+      });
       this.collection.request.find().fetch();
       this.collection.request.find().observeChanges({
         added: function(idx, dag) {
@@ -140,7 +153,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\r\n  <div class=\"confirmSession\">\r\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\r\n\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\r\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\r\n  </article>\r\n\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\r\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\r\n  </footer>\r\n  </div>\r\n\r\n  <div class=\"reconnectSession\" style=\"display:none;\">\r\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\r\n    <div class=\"modal-input\">\r\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n    </div>\r\n  </article>\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\r\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\r\n  </footer>\r\n  </div>\r\n</section>";
+  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
@@ -212,23 +225,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\r\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\r\n\r\n  <section class=\"dropdown\" >\r\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\r\n      <i class=\"icon-notification\"></i>\r\n      <span id=\"NotificationCounter\"></span>\r\n    </div>\r\n\r\n    <div class=\"dropdown-menu\">\r\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\r\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n        <ul class=\"scroll-content\"></ul>\r\n\r\n        <div class=\"notification-empty\">\r\n          <div class=\"title\">"
+  buffer += "<nav id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\n\n  <section class=\"dropdown\" >\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
-    + "</div>\r\n          <div class=\"description\">"
+    + "</div>\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
-    + "</div>\r\n        </div>\r\n      </div>\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
+    + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown tooltip\" data-tooltip=\""
     + escapeExpression(((stack1 = (depth0 && depth0.user_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
+    + "\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\r\n      <i class=\"icon-caret-down\"></i>\r\n    </div>\r\n\r\n    <ul class=\"dropdown-menu\">\r\n      <li id=\"HeaderShortcuts\">"
+    + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
-    + "</li>\r\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
+    + "</li>\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
-    + "</a></li>\r\n      <li id=\"HeaderSettings\">"
+    + "</a></li>\n      <li id=\"HeaderSettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
-    + "</li>\r\n      <li id=\"HeaderLogout\">"
+    + "</li>\n      <li id=\"HeaderLogout\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
-    + "</li>\r\n    </ul>\r\n  </section>\r\n</nav>";
+    + "</li>\n    </ul>\n  </section>\n</nav>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('ide/subviews/SettingsDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -245,134 +258,132 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
+  buffer += "\n                  <button id=\"CredSetupRemove\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
-    + "</button>\r\n        ";
+    + "</button>\n                  ";
   return buffer;
   }
 
-  buffer += "<div class=\"modal-header\">\r\n  <h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_SETTING", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i>\r\n</div>\r\n\r\n<nav id=\"SettingsNav\">\r\n  <span data-target=\"AccountTab\">"
+  buffer += "<nav id=\"SettingsNav\">\n      <span data-target=\"AccountTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</span>\r\n  <span data-target=\"CredentialTab\">"
+    + "</span>\n      <span data-target=\"CredentialTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CREDENTIAL", {hash:{},data:data}))
-    + "</span>\r\n  <span data-target=\"TokenTab\">"
+    + "</span>\n      <span data-target=\"TokenTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</span>\r\n</nav>\r\n\r\n<div class=\"modal-body\" id=\"SettingsBody\">\r\n  <section id=\"AccountTab\">\r\n    <dl class=\"dl-horizontal\">\r\n      <dt>"
+    + "</span>\n  </nav>\n  <div class=\"tabContent\" id=\"SettingsBody\">\n      <section id=\"AccountTab\">\n          <dl class=\"dl-horizontal\">\n              <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      <dt>"
+    + "</dd>\n              <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n    </dl>\r\n\r\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + "</dd>\n          </dl>\n\n          <button id=\"AccountPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
-    + "</button>\r\n    <div id=\"AccountPwdWrap\">\r\n\r\n      <dl class=\"dl-horizontal\">\r\n        <dt>"
+    + "</button>\n          <div id=\"AccountPwdWrap\">\n\n              <dl class=\"dl-horizontal\">\n                  <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\r\n\r\n        <dt>"
+    + "</dt>\n                  <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n                  <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\r\n      </dl>\r\n\r\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\r\n\r\n      <div id=\"AccountPwdBtns\">\r\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + "</dt>\n                  <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n              </dl>\n\n              <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n              <div id=\"AccountPwdBtns\">\n                  <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
+    + "</button>\n                  <span id=\"AccountCancelPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section id=\"CredentialTab\">\r\n    <div id=\"CredDemoWrap\" ";
+    + "</span>\n              </div>\n          </div>\n      </section>\n\n      <section id=\"CredentialTab\">\n          <div id=\"CredDemoWrap\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\r\n      <h3>"
+  buffer += ">\n          <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <p>"
+    + "</h3>\n          <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TEXT", {hash:{},data:data}))
-    + "</p>\r\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
+    + "</p>\n          <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_SETUP", {hash:{},data:data}))
-    + "</button></p>\r\n    </div>\r\n\r\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
+    + "</button></p>\n          </div>\n\n          <div id=\"CredAwsWrap\" class=\"pos-r\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\r\n      <h3>"
+  buffer += ">\n          <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_CONNECTED_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <button class=\"cred-setup link-style\">"
+    + "</h3>\n          <button class=\"cred-setup link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\r\n        <dt>"
+    + "</button>\n          <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\n              <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>"
+    + "</dd>\n              <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>"
+    + "</dd>\n              <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      </dl>\r\n    </div>\r\n\r\n    <div id=\"CredSetupWrap\">\r\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\r\n      <ul>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</dd>\n          </dl>\n          </div>\n\n          <div id=\"CredSetupWrap\">\n              <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n              <ul>\n                  <li>\n                      <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n                      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
+    + "</label>\n                      <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "\">\n                  </li>\n                  <li>\n                      <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n                      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
+    + "</label>\n                      <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
     + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "\">\n                  </li>\n                  <li>\n                      <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n                      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
+    + "</label>\n                      <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
     + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n      </ul>\r\n\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        ";
+    + "\">\n                  </li>\n              </ul>\n\n              <div class=\"cred-btn-wrap clearfix\">\n                  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.credNeeded), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        <button class=\"right link-style cred-setup-cancel\">"
+  buffer += "\n                  <button class=\"right link-style cred-setup-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
+    + "</button>\n                  <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n\r\n    </div>\r\n\r\n    <div id=\"CredRemoveWrap\">\r\n      <h3>"
+    + "</button>\n              </div>\n\n          </div>\n\n          <div id=\"CredRemoveWrap\">\n              <h3>"
     + escapeExpression(((stack1 = (depth0 && depth0.credRemoveTitle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\r\n      <div>"
+    + "</h3>\n              <div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVE_TEXT", {hash:{},data:data}))
-    + "</div>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style cred-cancel\">"
+    + "</div>\n              <div class=\"cred-btn-wrap clearfix\">\n                  <button class=\"right link-style cred-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
+    + "</button>\n                  <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"CredConfirmWrap\">\r\n      <h3>"
+    + "</button>\n              </div>\n          </div>\n\n          <div id=\"CredConfirmWrap\">\n              <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <div>"
+    + "</h3>\n              <div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TEXT", {hash:{},data:data}))
-    + "</div>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style cred-cancel\">"
+    + "</div>\n              <div class=\"cred-btn-wrap clearfix\">\n                  <button class=\"right link-style cred-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
+    + "</button>\n                  <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_UPDATE_CONFIRM", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"CredRemoving\"><p>"
+    + "</button>\n              </div>\n          </div>\n\n          <div id=\"CredRemoving\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\r\n    <div id=\"CredUpdating\"><p>"
+    + "</p><div class=\"loading-spinner\"></div></div>\n          <div id=\"CredUpdating\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\r\n\r\n  </section>\r\n\r\n  <section id=\"TokenTab\">\r\n    <div id=\"TokenManager\">\r\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n      <div id=\"TokenManager\">\n          <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
     + "</button>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
     + "<a href=\"http://docs.visualops.io/source/reference/ide.html#3-4-5-github-service\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\r\n      <section class=\"token-table\">\r\n        <header class=\"clearfix\">\r\n          <span class=\"tokenName\">"
+    + "</a> </p>\n          <section class=\"token-table\">\n              <header class=\"clearfix\">\n                  <span class=\"tokenName\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\r\n          <span class=\"tokenToken\">"
+    + "</span>\n                  <span class=\"tokenToken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\r\n        </header>\r\n        <div class=\"scroll-wrap\">\r\n          <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n          <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</span>\n              </header>\n              <div class=\"scroll-wrap\">\n                  <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                  <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\r\n        </div>\r\n      </section>\r\n    </div>\r\n    <div id=\"TokenRmConfirm\" class=\"hide\">\r\n      <h3 id=\"TokenRmTit\"></h3>\r\n      <p>"
+    + "\"></ul>\n              </div>\n          </section>\n      </div>\n      <div id=\"TokenRmConfirm\" class=\"hide\">\n          <h3 id=\"TokenRmTit\"></h3>\n          <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
-    + "</p>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
+    + "</p>\n          <div class=\"cred-btn-wrap clearfix\">\n              <button class=\"right link-style\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + "</button>\n              <button id=\"TokenRemove\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>";
+    + "</button>\n          </div>\n      </div>\n  </section>\n\n  </div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('ide/subviews/SettingsDialog',["./SettingsDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "backbone"], function(SettingsTpl, lang, ApiRequest) {
+  define('ide/subviews/SettingsDialog',["./SettingsDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "UI.modalplus", "backbone"], function(SettingsTpl, lang, ApiRequest, Modal) {
     var SettingsDialog;
     SettingsDialog = Backbone.View.extend({
       events: {
@@ -408,21 +419,28 @@ function program3(depth0,data) {
           credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
           credNeeded: !!App.model.appList().length
         };
-        modal(SettingsTpl(attributes));
-        this.setElement($("#modal-box"));
+        this.modal = new Modal({
+          template: SettingsTpl(attributes),
+          title: lang.ide.HEAD_LABEL_SETTING,
+          disableFooter: true,
+          compact: true
+        });
+        this.setElement(this.modal.tpl);
+        this.modal.$("#SettingsNav span[data-target='AccountTab']").click();
+        this.modal.resize();
         tab = 0;
         if (options) {
           tab = options.defaultTab || 0;
           if (tab === SettingsDialog.TAB.CredentialInvalid) {
             this.showCredSetup();
-            $(".modal-close").hide();
-            $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+            this.modal.tpl.find(".modal-close").hide();
+            this.modal.tpl.find("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
           }
           if (tab < 0) {
             tab = Math.abs(tab);
           }
         }
-        $("#SettingsNav").children().eq(tab).click();
+        this.modal.$("#SettingsNav").children().eq(tab).click();
         this.updateTokenTab();
       },
       updateCredSettings: function() {
@@ -435,8 +453,8 @@ function program3(depth0,data) {
           awsSecretKey: App.user.get("awsSecretKey"),
           credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
         };
-        $("#modal-box").html(SettingsTpl(attributes));
-        return $("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
+        this.modal.setContent(SettingsTpl(attributes));
+        return this.modal.$("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
       },
       switchTab: function(evt) {
         var $this;
@@ -444,122 +462,123 @@ function program3(depth0,data) {
         if ($this.hasClass("selected")) {
           return;
         }
-        $("#SettingsBody").children().hide();
-        $("#SettingsNav").children().removeClass("selected");
-        $("#" + $this.addClass("selected").attr("data-target")).show();
+        this.modal.$("#SettingsBody").children().hide();
+        this.modal.$("#SettingsNav").children().removeClass("selected");
+        this.modal.$("#" + $this.addClass("selected").attr("data-target")).show();
       },
       showPwd: function() {
-        $("#AccountPwd").hide();
-        $("#AccountPwdWrap").show();
-        $("#AccountCurrentPwd").focus();
+        this.modal.$("#AccountPwd").hide();
+        this.modal.$("#AccountPwdWrap").show();
+        this.modal.$("#AccountCurrentPwd").focus();
       },
       hidePwd: function() {
-        $("#AccountPwd").show();
-        $("#AccountPwdWrap").hide();
-        $("#AccountCurrentPwd, #AccountNewPwd").val("");
-        $("#AccountInfo").empty();
+        this.modal.$("#AccountPwd").show();
+        this.modal.$("#AccountPwdWrap").hide();
+        this.modal.$("#AccountCurrentPwd, #AccountNewPwd").val("");
+        this.modal.$("#AccountInfo").empty();
       },
       updatePwdBtn: function() {
         var new_pwd, old_pwd;
-        old_pwd = $("#AccountCurrentPwd").val() || "";
-        new_pwd = $("#AccountNewPwd").val() || "";
+        old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
+        new_pwd = this.modal.$("#AccountNewPwd").val() || "";
         if (old_pwd.length && new_pwd.length) {
-          $("#AccountUpdatePwd").removeAttr("disabled");
+          this.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         } else {
-          $("#AccountUpdatePwd").attr("disabled", "disabled");
+          this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
         }
       },
       changePwd: function() {
-        var new_pwd, old_pwd;
-        old_pwd = $("#AccountCurrentPwd").val() || "";
-        new_pwd = $("#AccountNewPwd").val() || "";
+        var new_pwd, old_pwd, that;
+        that = this;
+        old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
+        new_pwd = this.modal.$("#AccountNewPwd").val() || "";
         if (new_pwd.length < 6) {
-          $('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
+          this.modal.$('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
           return;
         }
-        $("#AccountInfo").empty();
-        $("#AccountUpdatePwd").attr("disabled", "disabled");
+        this.modal.$("#AccountInfo").empty();
+        this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
         App.user.changePassword(old_pwd, new_pwd).then(function() {
           notification('info', lang.ide.SETTINGS_UPDATE_PWD_SUCCESS);
-          $("#AccountCancelPwd").click();
-          $("#AccountUpdatePwd").removeAttr("disabled");
+          that.modal.$("#AccountCancelPwd").click();
+          that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         }, function(err) {
           if (err.error === 2) {
-            $('#AccountInfo').html("" + lang.ide.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.ide.SETTINGS_INFO_FORGET_PWD + "</a>");
+            that.modal.$('#AccountInfo').html("" + lang.ide.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.ide.SETTINGS_INFO_FORGET_PWD + "</a>");
           } else {
-            $('#AccountInfo').text(lang.ide.SETTINGS_UPDATE_PWD_FAILURE);
+            that.modal.$('#AccountInfo').text(lang.ide.SETTINGS_UPDATE_PWD_FAILURE);
           }
-          return $("#AccountUpdatePwd").removeAttr("disabled");
+          return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         });
       },
       showCredSetup: function() {
-        $("#CredentialTab").children().hide();
-        $("#CredSetupWrap").show();
-        $("#CredSetupAccount").focus()[0].select();
-        $("#CredSetupRemove").toggle(App.user.hasCredential());
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredSetupWrap").show();
+        this.modal.$("#CredSetupAccount").focus()[0].select();
+        this.modal.$("#CredSetupRemove").toggle(App.user.hasCredential());
         this.updateSubmitBtn();
       },
       cancelCredSetup: function() {
-        $("#CredentialTab").children().hide();
+        this.modal.$("#CredentialTab").children().hide();
         if (App.user.hasCredential()) {
-          $("#CredAwsWrap").show();
+          this.modal.$("#CredAwsWrap").show();
         } else {
-          $("#CredDemoWrap").show();
+          this.modal.$("#CredDemoWrap").show();
         }
       },
       showRemoveCred: function() {
-        $("#CredentialTab").children().hide();
-        $("#CredRemoveWrap").show();
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredRemoveWrap").show();
       },
       removeCred: function() {
         var self;
-        $("#CredentialTab").children().hide();
-        $("#CredRemoving").show();
-        $("#modal-box .modal-close").hide();
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredRemoving").show();
+        this.modal.$("#modal-box .modal-close").hide();
         self = this;
         App.user.changeCredential().then(function() {
           self.updateCredSettings();
         }, function() {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_REMOVE);
-          $("#modal-box .modal-close").show();
+          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_REMOVE);
+          self.modal.$("#modal-box .modal-close").show();
           return self.showCredSetup();
         });
       },
       updateSubmitBtn: function() {
         var accesskey, account, privatekey;
-        account = $("#CredSetupAccount").val();
-        accesskey = $("#CredSetupAccessKey").val();
-        privatekey = $("#CredSetupSecretKey").val();
+        account = this.modal.$("#CredSetupAccount").val();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
         if (account.length && accesskey.length && privatekey.length) {
-          $("#CredSetupSubmit").removeAttr("disabled");
+          this.modal.$("#CredSetupSubmit").removeAttr("disabled");
         } else {
-          $("#CredSetupSubmit").attr("disabled", "disabled");
+          this.modal.$("#CredSetupSubmit").attr("disabled", "disabled");
         }
       },
       submitCred: function() {
         var accesskey, privatekey, self;
-        $("#CredentialTab").children().hide();
-        $("#CredUpdating").show();
-        $("#modal-box .modal-close").hide();
-        accesskey = $("#CredSetupAccessKey").val();
-        privatekey = $("#CredSetupSecretKey").val();
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredUpdating").show();
+        this.modal.$("#modal-box .modal-close").hide();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
         self = this;
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
-          $("#modal-box .modal-close").show();
+          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          self.modal.$("#modal-box .modal-close").show();
           self.showCredSetup();
         });
       },
       setCred: function() {
         var accesskey, account, privatekey, self;
-        account = $("#CredSetupAccount").val();
-        accesskey = $("#CredSetupAccessKey").val();
-        privatekey = $("#CredSetupSecretKey").val();
+        account = this.modal.$("#CredSetupAccount").val();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
         if (account === "demo_account") {
           account = "user_demo_account";
-          $("#CredSetupAccount").val(account);
+          this.modal.$("#CredSetupAccount").val(account);
         }
         self = this;
         return App.user.changeCredential(account, accesskey, privatekey, false).then(function() {
@@ -573,20 +592,20 @@ function program3(depth0,data) {
         });
       },
       showCredUpdateFail: function() {
-        $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
-        $("#modal-box .modal-close").show();
+        this.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+        this.modal.$("#modal-box .modal-close").show();
         return this.showCredSetup();
       },
       showCredConfirm: function() {
-        $("#CredentialTab").children().hide();
-        $("#CredConfirmWrap").show();
-        return $("#modal-box .modal-close").show();
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredConfirmWrap").show();
+        return this.modal.$("#modal-box .modal-close").show();
       },
       confirmCred: function() {
         var accesskey, account, privatekey, self;
-        account = $("#CredSetupAccount").val();
-        accesskey = $("#CredSetupAccessKey").val();
-        privatekey = $("#CredSetupSecretKey").val();
+        account = this.modal.$("#CredSetupAccount").val();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
         self = this;
         App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
           return self.updateCredSettings();
@@ -605,20 +624,20 @@ function program3(depth0,data) {
         $p = $(evt.currentTarget).closest("li");
         name = $p.children(".tokenName").val();
         this.rmToken = $p.children(".tokenToken").text();
-        $("#TokenManager").hide();
-        $("#TokenRmConfirm").show();
-        $("#TokenRmTit").text(sprintf(lang.ide.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+        this.modal.$("#TokenManager").hide();
+        this.modal.$("#TokenRmConfirm").show();
+        this.modal.$("#TokenRmTit").text(sprintf(lang.ide.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
       },
       createToken: function() {
         var self;
-        $("#TokenCreate").attr("disabled", "disabled");
+        this.modal.$("#TokenCreate").attr("disabled", "disabled");
         self = this;
         App.user.createToken().then(function() {
           self.updateTokenTab();
-          return $("#TokenCreate").removeAttr("disabled");
+          return self.modal.$("#TokenCreate").removeAttr("disabled");
         }, function() {
           notification("error", "Fail to create token, please retry.");
-          return $("#TokenCreate").removeAttr("disabled");
+          return self.modal.$("#TokenCreate").removeAttr("disabled");
         });
       },
       doneEditToken: function(evt) {
@@ -648,7 +667,7 @@ function program3(depth0,data) {
       },
       confirmRmToken: function() {
         var self;
-        $("#TokenRemove").attr("disabled", "disabled");
+        this.modal.$("#TokenRemove").attr("disabled", "disabled");
         self = this;
         App.user.removeToken(this.rmToken).then(function() {
           self.updateTokenTab();
@@ -660,18 +679,18 @@ function program3(depth0,data) {
       },
       cancelRmToken: function() {
         this.rmToken = "";
-        $("#TokenRemove").removeAttr("disabled");
-        $("#TokenManager").show();
-        $("#TokenRmConfirm").hide();
+        this.modal.$("#TokenRemove").removeAttr("disabled");
+        this.modal.$("#TokenManager").show();
+        this.modal.$("#TokenRmConfirm").hide();
       },
       updateTokenTab: function() {
         var tokens;
         tokens = App.user.get("tokens");
-        $("#TokenManager").find(".token-table").toggleClass("empty", tokens.length === 0);
+        this.modal.$("#TokenManager").find(".token-table").toggleClass("empty", tokens.length === 0);
         if (tokens.length) {
-          $("#TokenList").html(MC.template.accessTokenTable(tokens));
+          this.modal.$("#TokenList").html(MC.template.accessTokenTable(tokens));
         } else {
-          $("#TokenList").empty();
+          this.modal.$("#TokenList").empty();
         }
       }
     });
@@ -754,69 +773,69 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n    <p>"
+  buffer += "\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_PROVIDE_CRED_DESC", {hash:{},data:data}))
-    + "</p>\r\n  ";
+    + "</p>\n  ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n    <h2>"
+  buffer += "\n    <h2>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_TIT", {hash:{},data:data}))
     + "<span>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></h2>\r\n    <p>"
+    + "</span></h2>\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DESC", {hash:{},data:data}))
-    + "</p>\r\n  ";
+    + "</p>\n  ";
   return buffer;
   }
 
-  buffer += "<section id=\"WelcomeSettings\">\r\n  <header>\r\n  ";
+  buffer += "<section id=\"WelcomeSettings\">\n  <header>\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noWelcome), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n  </header>\r\n  <div id=\"CredSetupWrap\">\r\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\r\n    <ul>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+  buffer += "\n  </header>\n  <div id=\"CredSetupWrap\">\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n    <ul>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\r\n      </li>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\r\n      </li>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\r\n      </li>\r\n    </ul>\r\n\r\n    <footer class=\"cred-btn-wrap clearfix tar\">\r\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\n      </li>\n    </ul>\n\n    <footer class=\"cred-btn-wrap clearfix tar\">\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_SKIP", {hash:{},data:data}))
-    + "</button>\r\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
+    + "</button>\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
-    + "</button>\r\n    </footer>\r\n  </div>\r\n</section>\r\n\r\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\r\n  <p>"
+    + "</button>\n    </footer>\n  </div>\n</section>\n\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p>\r\n  <div class=\"loading-spinner\"></div>\r\n</section>\r\n\r\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\r\n  <h3>"
+    + "</p>\n  <div class=\"loading-spinner\"></div>\n</section>\n\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_TIT", {hash:{},data:data}))
-    + "</h3>\r\n  <h5>"
+    + "</h3>\n  <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_SUBTIT", {hash:{},data:data}))
-    + "</h5>\r\n  <p>"
+    + "</h5>\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG", {hash:{},data:data}))
-    + "</p>\r\n  <p>"
+    + "</p>\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG_EXTRA", {hash:{},data:data}))
-    + "</p>\r\n  <footer class=\"cred-btn-wrap clearfix tar\">\r\n    <button id=\"WelcomeBack\" class=\"link-style\">"
+    + "</p>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeBack\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
-    + "</button>\r\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
+    + "</button>\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n</section>\r\n\r\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\r\n  <p id=\"WelcomeDoneTitDemo\">"
+    + "</button>\n  </footer>\n</section>\n\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\n  <p id=\"WelcomeDoneTitDemo\">"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT_DEMO", {hash:{},data:data}))
-    + "</p>\r\n  <p id=\"WelcomeDoneTit\">"
+    + "</p>\n  <p id=\"WelcomeDoneTit\">"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT", {hash:{},data:data}))
-    + " <span></span></p>\r\n  <h3>"
+    + " <span></span></p>\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_TIT", {hash:{},data:data}))
-    + "</h3>\r\n  <ul>"
+    + "</h3>\n  <ul>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_MSG", {hash:{},data:data}))
-    + "</ul>\r\n  <footer class=\"cred-btn-wrap clearfix tar\">\r\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
+    + "</ul>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n</section>";
+    + "</button>\n  </footer>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -1264,22 +1283,64 @@ TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
+function program1(depth0,data) {
+  
+  
+  return "\n          <li>\n              EC2 instances will be started.\n          </li>\n          ";
+  }
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_START_APP", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_START_APP_LEFT", {hash:{},data:data}))
-    + " "
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_START_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-blue\" id=\"confirmStartApp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_START_APP", {hash:{},data:data}))
-    + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
+function program3(depth0,data) {
+  
+  
+  return "\n          <li>\n              DB instances will be restored from final snapshot.\n          </li>\n          ";
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "\n          <li>\n              Auto Scaling Group will be recreated.\n          </li>\n          ";
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n      <div class=\"modal-shrink\">\n          <div class=\"sub-gray\">Warning</div>\n          <div class=\"error\">\n              DB instance ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.lostDBSnapshot), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "’s final snapshot is missing. This DB instance cannot be restored.\n          </div>\n      </div>\n      ";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  var buffer = "", stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.index), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  return buffer;
+  }
+function program9(depth0,data) {
+  
+  
+  return ", ";
+  }
+
+  buffer += "<div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_START_APP", {hash:{},data:data}))
+    + "</div>\n      <ul class=\"modal-list-items\">\n          ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasASG), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </ul>\n      ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lostDBSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  </div>";
   return buffer;
   };
 TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
@@ -1288,70 +1349,80 @@ TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_TIT_STOP_PRD_APP", {hash:{},data:data}));
+  var buffer = "", stack1;
+  buffer += "\n    <div style=\"padding: 20px\">\n        <p><b style=\"color:#ec3c38;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
+    + "</b>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_ASG", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL", {hash:{},data:data}))
+    + "</p>\n        <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n    </div>\n";
+  return buffer;
   }
 
 function program3(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_TIT_STOP_APP", {hash:{},data:data}));
+  var buffer = "", stack1;
+  buffer += "\n<div class=\"modal-center-align-helper\" style=\"padding: 20px\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_LEFT", {hash:{},data:data}))
+    + " "
+    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
+    + "</div>\n    <ul class=\"modal-list-items\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasAsg), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </ul>\n</div>\n";
+  return buffer;
   }
-
-function program5(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <div class=\"modal-body\" style=\"width:390px;\">\n    <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_MSG", {hash:{},data:data}))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_ASG", {hash:{},data:data}))
-    + "</p>\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n    <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n  </div>\n";
+  buffer += "\n            <li>\n                EC2 instances will be stopped.\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasInstanceStore), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </li>\n        ";
   return buffer;
+  }
+function program5(depth0,data) {
+  
+  
+  return "<span class=\"error\">Instance-stored instances will be deleted.</span>";
   }
 
 function program7(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n  <div class=\"modal-body modal-text-wraper\" style=\"width:390px;\"> <div class=\"modal-center-align-helper\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_LEFT", {hash:{},data:data}))
-    + " "
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n  </div> </div>\n";
-  return buffer;
+  
+  return "\n            <li>\n                DB instances will be deleted final snapshot will be taken.\n                <span>Snapshots will be restored when the app is started.</span>\n            </li>\n        ";
   }
 
 function program9(depth0,data) {
   
   
-  return "disabled";
+  return "\n            <li>\n                Auto Scaling Group will be deleted.\n                <span>Auto Scaling Group will be recreated when the app is started.</span>\n            </li>\n        ";
   }
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</h3><i class=\"modal-close\">&times;</i></header>\n\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"confirmStopApp\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_STOP_APP", {hash:{},data:data}))
-    + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
+  buffer += "\n<div class=\"estimate-stop clearfix\">\n    <div>\n        <span class=\"title\">Estimated Cost When Stopped</span>\n        <span class=\"price\" id=\"label-total-fee\"><b>$"
+    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</b> / month</span>\n    </div>\n    <div class=\"hide\">\n        <span class=\"title\">Saving Compared to Running App</span>\n        <span class=\"price\" id=\"label-total-saving\"><b>$"
+    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</b>/ month</span>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
@@ -1360,24 +1431,54 @@ TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  
+
+
+  return "<div class=\"loading-spinner\"></div>";
+  };
+TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
+  var buffer = "", stack1;
+  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "(<span class=\"db-stop-status\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>)";
+  return buffer;
+  }
+function program2(depth0,data) {
   
-  return escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_TIT_TERMINATE_PRD_APP", {hash:{},data:data}));
+  
+  return ", ";
   }
 
-function program3(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_TIT_TERMINATE_APP", {hash:{},data:data}));
-  }
+  buffer += "<p>DB Instance\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cantStop), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    cannot take final snapshot.</p>\n<p>Wait for the DB instance(s) to be available. Then try to stop the app again.</p>";
+  return buffer;
+  };
+TEMPLATE.cantStop=Handlebars.template(__TEMPLATE__);
 
-function program5(depth0,data) {
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <div class=\"modal-body\" style=\"width:390px;\">\n    <p><b style=\"color:#ec3c38;\">"
+  buffer += "\n    <p><b style=\"color:#ec3c38;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
@@ -1385,43 +1486,62 @@ function program5(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
     + "</p>\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n    <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n  </div>\n";
+    + "</p>\n    <div><input class=\"input\" style=\"width:430px;\" id=\"appNameConfirmIpt\"/></div>\n";
   return buffer;
   }
 
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_LEFT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_RIGHT", {hash:{},data:data}))
+    + "</div></div>\n";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <section class=\"check-final-snapshot checkbox-wrap\">\n        <div class=\"checkbox\">\n            <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n            <label for=\"take-rds-snapshot\"></label>\n        </div>\n        <label for=\"take-rds-snapshot\">Take final snapshot for DB instances.</label>\n    </section>\n    ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <p class=\"cant-snapshot\">DB Instance\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            cannot take final snapshot.</p>\n    ";
+  return buffer;
+  }
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_LEFT", {hash:{},data:data}))
-    + " "
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n  </div> </div>\n";
+  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "(<span class=\"db-stop-status\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>)";
   return buffer;
   }
-
-function program9(depth0,data) {
+function program8(depth0,data) {
   
   
-  return "disabled";
+  return ", ";
   }
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>";
+  buffer += "<div class=\"confirm-padding\">\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</h3><i class=\"modal-close\">&times;</i></header>\n\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  buffer += "\n";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n<div class=\"modal-footer\">\n  <button id=\"appTerminateConfirm\" class=\"btn btn-red modal-close\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_TERMINATE_APP", {hash:{},data:data}))
-    + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
+  buffer += "\n</div>";
   return buffer;
   };
 TEMPLATE.terminateAppConfirm=Handlebars.template(__TEMPLATE__);
@@ -1465,7 +1585,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", 'i18n!/nls/lang.js'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, lang) {
+  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, lang, CloudResources, constant, modalPlus) {
     return Backbone.View.extend({
       el: $("body")[0],
       events: {
@@ -1477,7 +1597,7 @@ return TEMPLATE; });
         this.listenTo(App.user, "change:state", this.toggleWelcome);
         this.listenTo(App.model.appList(), "change:terminateFail", this.askForForceTerminate);
 
-        /* env:dev                                                                             env:dev:end */
+        /* env:dev                                                                           env:dev:end */
 
         /* env:debug */
         require(["./ide/subviews/DebugTool"], function(DT) {
@@ -1486,7 +1606,7 @@ return TEMPLATE; });
 
         /* env:debug:end */
         $(window).on("beforeunload", this.checkUnload);
-        $(document).on('keydown', this.globalKeyEvent);
+        $(window).on('keydown', this.globalKeyEvent);
       },
       checkUnload: function() {
         if (App.canQuit()) {
@@ -1503,7 +1623,8 @@ return TEMPLATE; });
         }
         switch (event.which) {
           case 8:
-            return false;
+            event.preventDefault();
+            return;
           case 191:
             modal(MC.template.shortkey(), true);
             return false;
@@ -1566,96 +1687,6 @@ return TEMPLATE; });
           }
         }
         return false;
-      },
-      deleteStack: function(id, name) {
-        name = name || App.model.stackList().get(id).get("name");
-        modal(AppTpl.removeStackConfirm({
-          msg: sprintf(lang.ide.TOOL_POP_BODY_DELETE_STACK, name)
-        }));
-        $("#confirmRmStack").on("click", function() {
-          var opsModel, p;
-          opsModel = App.model.stackList().get(id);
-          p = opsModel.remove();
-          if (opsModel.isPersisted()) {
-            return p.then(function() {
-              return notification("info", sprintf(lang.ide.TOOL_MSG_ERR_DEL_STACK_SUCCESS, name));
-            }, function() {
-              return notification("error", sprintf(lang.ide.TOOL_MSG_ERR_DEL_STACK_FAILED, name));
-            });
-          }
-        });
-      },
-      duplicateStack: function(id) {
-        var opsModel;
-        opsModel = App.model.stackList().get(id);
-        if (!opsModel) {
-          return;
-        }
-        opsModel.fetchJsonData().then(function() {
-          return App.openOps(App.model.createStackByJson(opsModel.getJsonData()));
-        }, function() {
-          return notification("error", "Cannot duplicate the stack, please retry.");
-        });
-      },
-      startApp: function(id) {
-        var name;
-        name = App.model.appList().get(id).get("name");
-        modal(AppTpl.startAppConfirm({
-          name: name
-        }));
-        $("#confirmStartApp").on("click", function() {
-          App.model.appList().get(id).start().fail(function(err) {
-            var error;
-            error = err.awsError ? err.error + "." + err.awsError : err.error;
-            notification("Fail to start your app \"" + name + "\". (ErrorCode: " + error + ")");
-          });
-        });
-      },
-      stopApp: function(id) {
-        var app, name;
-        app = App.model.appList().get(id);
-        name = app.get("name");
-        modal(AppTpl.stopAppConfirm({
-          name: name,
-          production: app.get("usage") === "production"
-        }));
-        $("#confirmStopApp").on("click", function() {
-          app.stop().fail(function(err) {
-            var error;
-            error = err.awsError ? err.error + "." + err.awsError : err.error;
-            notification("Fail to stop your app \"" + name + "\". (ErrorCode: " + error + ")");
-          });
-        });
-        $("#appNameConfirmIpt").on("keyup change", function() {
-          if ($("#appNameConfirmIpt").val() === name) {
-            $("#confirmStopApp").removeAttr("disabled");
-          } else {
-            $("#confirmStopApp").attr("disabled", "disabled");
-          }
-        });
-      },
-      terminateApp: function(id) {
-        var app, name;
-        app = App.model.appList().get(id);
-        name = app.get("name");
-        modal(AppTpl.terminateAppConfirm({
-          name: name,
-          production: app.get("usage") === "production"
-        }));
-        $("#appNameConfirmIpt").on("keyup change", function() {
-          if ($("#appNameConfirmIpt").val() === name) {
-            $("#appTerminateConfirm").removeAttr("disabled");
-          } else {
-            $("#appTerminateConfirm").attr("disabled", "disabled");
-          }
-        });
-        $("#appTerminateConfirm").on("click", function() {
-          app.terminate().fail(function(err) {
-            var error;
-            error = err.awsError ? err.error + "." + err.awsError : err.error;
-            return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
-          });
-        });
       },
       askForForceTerminate: function(model) {
         if (!model.get("terminateFail")) {
@@ -1722,7 +1753,7 @@ return TEMPLATE; });
           }
         }
 
-        /* env:dev                                                                                                                          env:dev:end */
+        /* env:dev                                                                                                                        env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -1814,66 +1845,78 @@ return TEMPLATE; });
         return this.__jsonData;
       },
       fetchJsonData: function() {
-        var d, sampleId, self;
+        var d;
         if (this.__jsonData) {
           d = Q.defer();
           d.resolve(this);
           return d.promise;
         }
-        self = this;
-        if (this.get("sampleId")) {
-          sampleId = this.get("sampleId");
-          return ApiRequest('stackstore_fetch_stackstore', {
-            sub_path: "master/stack/" + sampleId + "/" + sampleId + ".json"
-          }).then(function(result) {
-            var e, j;
-            try {
-              j = JSON.parse(result);
-              delete j.id;
-              delete j.signature;
-              if (!self.collection.isNameAvailable(j.name)) {
-                j.name = self.collection.getNewName(j.name);
-              }
-              self.attributes.region = j.region;
-              self.__setJsonData(j);
-            } catch (_error) {
-              e = _error;
-              j = null;
-              self.attributes.region = "us-east-1";
-              self.__initJsonData();
-            }
-            if (j) {
-              try {
-                self.set("name", j.name);
-              } catch (_error) {
-                e = _error;
-              }
-            }
-            return self;
-          });
-        } else if (this.isImported()) {
-          return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
-            var json;
-            json = self.generateJsonFromRes();
-            self.__setJsonData(json);
-            self.attributes.name = json.name;
-            return self;
-          });
-        } else if (this.isStack()) {
-          return ApiRequest("stack_info", {
-            region_name: this.get("region"),
-            stack_ids: [this.get("id")]
-          }).then(function(ds) {
-            return self.__setJsonData(ds[0]);
-          });
-        } else {
-          return ApiRequest("app_info", {
-            region_name: this.get("region"),
-            app_ids: [this.get("id")]
-          }).then(function(ds) {
-            return self.__setJsonData(ds[0]);
-          });
+        return this.__fjdTemplate(this) || this.__fjdImport(this) || this.__fjdStack(this) || this.__fjdApp(this);
+      },
+      __fjdTemplate: function(self) {
+        var sampleId;
+        sampleId = this.get("sampleId");
+        if (!sampleId) {
+          return;
         }
+        return ApiRequest('stackstore_fetch_stackstore', {
+          sub_path: "master/stack/" + sampleId + "/" + sampleId + ".json"
+        }).then(function(result) {
+          var e, j;
+          try {
+            j = JSON.parse(result);
+            delete j.id;
+            delete j.signature;
+            if (!self.collection.isNameAvailable(j.name)) {
+              j.name = self.collection.getNewName(j.name);
+            }
+            self.attributes.region = j.region;
+            self.__setJsonData(j);
+          } catch (_error) {
+            e = _error;
+            j = null;
+            self.attributes.region = "us-east-1";
+            self.__initJsonData();
+          }
+          if (j) {
+            self.set("name", j.name);
+          }
+          return self;
+        });
+      },
+      __fjdImport: function(self) {
+        if (!this.isImported()) {
+          return;
+        }
+        return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
+          var json;
+          json = self.generateJsonFromRes();
+          self.__setJsonData(json);
+          self.attributes.name = json.name;
+          return self;
+        });
+      },
+      __fjdStack: function(self) {
+        if (!this.isStack()) {
+          return;
+        }
+        return ApiRequest("stack_info", {
+          region_name: this.get("region"),
+          stack_ids: [this.get("id")]
+        }).then(function(ds) {
+          return self.__setJsonData(ds[0]);
+        });
+      },
+      __fjdApp: function(self) {
+        if (!this.isApp()) {
+          return;
+        }
+        return ApiRequest("app_info", {
+          region_name: this.get("region"),
+          app_ids: [this.get("id")]
+        }).then(function(ds) {
+          return self.__setJsonData(ds[0]);
+        });
       },
       __setJsonData: function(json) {
         var newLayout;
@@ -1926,7 +1969,7 @@ return TEMPLATE; });
         return this;
       },
       generateJsonFromRes: function() {
-        var c, json, l, res;
+        var app_json_xu, c, json, l, res, self;
         res = CloudResources.getAllResourcesForVpc(this.get("region"), this.getVpcId(), this.__jsonData);
         if (this.__jsonData) {
           c = this.__jsonData.component;
@@ -1942,7 +1985,49 @@ return TEMPLATE; });
         json.component = res.component;
         json.layout = res.layout;
         json.name = this.get("name") || res.theVpc.name;
-        return json;
+        app_json_xu = CloudResources('OpsResource', this.getVpcId());
+        if (app_json_xu.models.length > 0) {
+          console.clear();
+          console.info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
+          console.info("app_json_backend");
+          console.debug(JSON.stringify(app_json_xu.models[0].attributes));
+          console.info("\n\n--------------------------------------------------------------------------------------------------------------------------------------\n\n");
+          console.info("app_json_frontend");
+          console.debug(JSON.stringify(json));
+          console.info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
+          console.info("plese use http://tlrobinson.net/projects/javascript-fun/jsondiff/ to diff app_json\n\n");
+        }
+        self = this;
+        _.each(app_json_xu.models[0].attributes.component, function(comp, key) {
+          var acl, sg;
+          if (comp.type === 'AWS.EC2.AvailabilityZone') {
+            comp.name = comp.resource.ZoneName;
+          } else if (comp.type === 'AWS.VPC.NetworkAcl') {
+            acl = CloudResources('AWS.VPC.NetworkAcl', self.get("region")).where({
+              id: comp.resource.NetworkAclId
+            });
+            if (acl.length > 0) {
+              comp.resource.Default = acl[0].attributes["default"];
+            }
+            if (comp.name === "DefaultAcl") {
+              comp.name = 'DefaultACL';
+            }
+          } else if (comp.type === 'AWS.EC2.SecurityGroup') {
+            sg = CloudResources('AWS.EC2.SecurityGroup', self.get("region")).where({
+              id: comp.resource.GroupId
+            });
+            if (sg.length > 0) {
+              comp.resource.GroupName = sg[0].attributes.groupName;
+            }
+          } else if (comp.type === 'AWS.RDS.DBInstance') {
+            comp.resource.MasterUserPassword = "****";
+          }
+          return null;
+        });
+        console.info("app_json_backend(patched)");
+        console.debug(JSON.stringify(app_json_xu.models[0].attributes));
+        console.info("\n\n--------------------------------------------------------------------------------------------------------------------------------------\n\n");
+        return app_json_xu.models[0].attributes;
       },
       save: function(newJson, thumbnail) {
         var api, d, nameClash, self;
@@ -2100,10 +2185,13 @@ return TEMPLATE; });
           throw err;
         });
       },
-      terminate: function(force) {
+      terminate: function(force, create_db_snapshot) {
         var oldState, self;
         if (force == null) {
           force = false;
+        }
+        if (create_db_snapshot == null) {
+          create_db_snapshot = false;
         }
         if (!this.isApp()) {
           return this.__returnErrorPromise();
@@ -2117,7 +2205,8 @@ return TEMPLATE; });
           region_name: this.get("region"),
           app_id: this.get("id"),
           app_name: this.get("name"),
-          flag: force
+          flag: force,
+          create_snapshot: create_db_snapshot
         }).then(function() {
           if (force) {
             self.__destroy();
@@ -2216,12 +2305,12 @@ return TEMPLATE; });
         return this.__saveAppDefer.promise.then(function() {
           self.__jsonData = newJson;
           self.attributes.requestId = void 0;
+          self.__saveAppDefer = null;
           self.set({
             name: newJson.name,
             state: oldState,
             usage: newJson.usage
           });
-          self.__saveAppDefer = null;
         }, function(error) {
           self.__saveAppDefer = null;
           self.attributes.requestId = void 0;
@@ -2779,6 +2868,9 @@ return TEMPLATE; });
       getInstanceTypeConfig: function(awsRegion) {
         return (this.__appdata[awsRegion] || {}).instanceTypeConfig;
       },
+      getRdsData: function(awsRegion) {
+        return (this.__appdata[awsRegion] || {}).rds;
+      },
       getStateModule: function(repo, tag) {
         return this.__stateModuleData[repo + ":" + tag];
       },
@@ -2805,7 +2897,7 @@ return TEMPLATE; });
           return self.get("appList").set(self.__parseListRes(res));
         });
         appdata = ApiRequest("aws_aws", {
-          fields: ["region", "price", "instance_types"]
+          fields: ["region", "price", "instance_types", "rds"]
         }).then(function(res) {
           var cpu, i, instanceTypeConfig, storage, typeInfo, _i, _j, _len, _len1, _ref;
           for (_i = 0, _len = res.length; _i < _len; _i++) {
@@ -2814,7 +2906,8 @@ return TEMPLATE; });
             self.__appdata[i.region] = {
               price: i.price,
               osFamilyConfig: i.instance_types.sort,
-              instanceTypeConfig: instanceTypeConfig
+              instanceTypeConfig: instanceTypeConfig,
+              rds: i.rds
             };
             _ref = i.instance_types.info || [];
             for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
@@ -2834,7 +2927,7 @@ return TEMPLATE; });
             }
           }
         });
-        return Q.all([sp, ap]).then(function() {
+        return Q.all([sp, ap, appdata]).then(function() {
           var e;
           try {
             ThumbUtil.cleanup(self.appList().pluck("id").concat(self.stackList().pluck("id")));
@@ -2922,7 +3015,7 @@ return TEMPLATE; });
           return;
         }
         item.readed = !App.WS.isReady();
-        if (!item.readed && App.workspaces) {
+        if (!item.readed && App.workspaces && !item.state.failed) {
           space = App.workspaces.getAwakeSpace();
           ops = this.appList().get(item.targetId) || this.stackList().get(item.targetId);
           item.readed = space.isWorkingOn(ops);
@@ -3087,7 +3180,8 @@ return TEMPLATE; });
           awsAccessKey: result.access_key,
           awsSecretKey: result.secret_key,
           tokens: result.tokens || [],
-          defaultToken: ""
+          defaultToken: "",
+          paymentState: result.payment_state || "unpay"
         };
         if (result.account_id === "demo_account") {
           res.account = res.awsAccessKey = res.awsSecretKey = "";
@@ -3332,6 +3426,7 @@ return TEMPLATE; });
       initialize: function(options) {
         var self;
         self = this;
+        this.tabsWidth = 0;
         this.$el.find("#ws-tabs").dragsort({
           horizontal: true,
           dragSelectorExclude: ".fixed, .icon-close",
@@ -3376,25 +3471,50 @@ return TEMPLATE; });
           fixed = false;
         }
         $parent = fixed ? $("#ws-fixed-tabs") : $("#ws-tabs");
-        tpl = "<li class='" + data.klass + "' id='" + data.id + "'><span class='truncate'>" + data.title + "</span>";
+        tpl = "<li class='" + data.klass + "' id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
         if (data.closable) {
           tpl += '<i class="icon-close" title="Close Tab"></i>';
         }
         $tgt = $parent.children().eq(index);
         if ($tgt.length) {
-          return $(tpl + "</li>").insertAfter($tgt);
+          $tgt = $(tpl + "</li>").insertAfter($tgt);
         } else {
-          return $(tpl + "</li>").appendTo($parent);
+          $tgt = $(tpl + "</li>").appendTo($parent);
         }
+        this.tabsWidth += $tgt.outerWidth();
+        this.ensureTabSize();
+        return $tgt;
       },
       removeTab: function(id) {
-        return this.$el.find("#" + id).remove();
+        var $tgt;
+        $tgt = this.$el.find("#" + id);
+        this.tabsWidth -= $tgt.outerWidth();
+        $tgt.remove();
+        this.ensureTabSize();
+        return $tgt;
+      },
+      ensureTabSize: function() {
+        var availableSpace, children, windowWidth;
+        windowWidth = $(window).width();
+        availableSpace = windowWidth - $("#header").outerWidth() - $("#ws-tabs").offset().left;
+        children = $("#ws-tabs").children();
+        if (this.tabsWidth < availableSpace) {
+          children.css("max-width", "auto");
+        } else {
+          availableSpace = Math.floor(availableSpace / children.length);
+          children.css("max-width", availableSpace);
+        }
       },
       updateTab: function(id, title, klass) {
         var $tgt;
         $tgt = this.$el.find("#" + id);
         if (title !== void 0 || title !== null) {
+          this.tabsWidth -= $tgt.outerWidth();
+          $tgt.attr("title", title);
           $tgt.children("span").text(title);
+          $tgt.attr("title", title);
+          this.tabsWidth += $tgt.outerWidth();
+          this.ensureTabSize();
         }
         if (klass !== void 0 || klass !== null) {
           if ($tgt.hasClass("active")) {
@@ -3921,6 +4041,7 @@ return TEMPLATE; });
           options = options || {};
           options.replace = true;
         }
+        $(document).trigger("urlroute");
         return Backbone.Router.prototype.navigate.apply(this, arguments);
       }
     });

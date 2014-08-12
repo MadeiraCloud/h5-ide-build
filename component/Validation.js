@@ -1,5 +1,5 @@
 (function() {
-  define('component/trustedadvisor/config',{
+  define('component/trustedadvisor/lib/TA.Config',{
     validDebug: '',
     syncTimeout: 10000,
     componentTypeToFileMap: {
@@ -16,7 +16,8 @@
       'AWS.AutoScaling.LaunchConfiguration': ['state'],
       'AWS.VPC.RouteTable': ['rtb'],
       'AWS.EC2.EBS.Volume': ['ebs'],
-      'AWS.EC2.KeyPair': ['kp']
+      'AWS.EC2.KeyPair': ['kp'],
+      'AWS.RDS.DBInstance': ['dbinstance']
     },
     globalList: {
       eip: ['isHasIGW'],
@@ -24,7 +25,8 @@
       sg: ['isStackUsingOnlyOneSG', 'isAssociatedSGNumExceedLimit'],
       vpc: ['isVPCAbleConnectToOutside'],
       stack: ['~isHaveNotExistAMI'],
-      kp: ['longLiveNotice']
+      kp: ['longLiveNotice'],
+      dbinstance: ['isOgValid', 'isHaveEnoughIPForDB']
     },
     asyncList: {
       cgw: ['isCGWHaveIPConflict'],
@@ -34,107 +36,9 @@
       kp: ['isKeyPairExistInAws'],
       elb: ['isSSLCertExist'],
       asg: ['isTopicNonexist'],
-      vpc: ['isVPCUsingNonexistentDhcp']
+      vpc: ['isVPCUsingNonexistentDhcp'],
+      og: ['unusedOgWontCreate', 'isOGExeedCountLimit']
     }
-  });
-
-}).call(this);
-
-(function() {
-  define('component/trustedadvisor/validation/result_vo',['event', 'MC', 'Design', 'underscore'], function(ide_event, MC, Design) {
-    var reset, result, set, _add, _del, _exist, _genKey, _genRes, _hash, _replace;
-    _hash = function(str) {
-      var hash;
-      hash = 0;
-      if (str.length === 0) {
-        return hash;
-      }
-      _.each(str, function(v, i) {
-        var char;
-        char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-        return null;
-      });
-      return "k" + hash;
-    };
-    _genKey = function(key, uid) {
-      return _hash("" + key + "|" + uid);
-    };
-    _genRes = function(key, result, uid) {
-      uid = uid || result && result.uid || null;
-      return _.extend({}, result, {
-        key: _genKey(key, uid),
-        type: key
-      });
-    };
-    _del = function(key) {
-      var delete_obj;
-      delete_obj = {};
-      _.map(MC.ta.list, function(obj) {
-        if (obj.key === key) {
-          delete_obj = obj;
-        }
-        return null;
-      });
-      if (delete_obj) {
-        MC.ta.list = _.without(MC.ta.list, delete_obj);
-        if (delete_obj.level) {
-          ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'delete', delete_obj.level);
-        }
-      }
-      return null;
-    };
-    _add = function(result) {
-      MC.ta.list.push(result);
-      return ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'add', result.level);
-    };
-    _replace = function(result) {
-      MC.ta.list = _.map(MC.ta.list, function(item) {
-        if (item.key === result.key) {
-          return result;
-        }
-        return item;
-      });
-      return MC.ta.list;
-    };
-    _exist = function(key) {
-      return _.contains(_.pluck(MC.ta.list, 'key'), key);
-    };
-    set = function(key, result, uid) {
-      var k, res;
-      res = _genRes(key, result, uid);
-      k = res.key;
-      if (_.isArray(result)) {
-        _.each(result, function(r) {
-          if (r) {
-            return set(key, r, r.uid);
-          }
-        });
-      } else if (result) {
-        if (!_exist(k)) {
-          _add(res);
-        } else {
-          _replace(res);
-        }
-      } else {
-        _del(k);
-      }
-      return MC.ta.list;
-    };
-    reset = function() {
-      MC.ta.list = [];
-      MC.canvas_data = Design.instance().serialize();
-      return null;
-    };
-    result = function() {
-      return MC.ta.list;
-    };
-    return {
-      set: set,
-      reset: reset,
-      result: result
-    };
   });
 
 }).call(this);
@@ -142,7 +46,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources", '../result_vo'], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
+  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources"], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
     var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
@@ -247,12 +151,11 @@
       }
     };
     isHaveNotExistAMIAsync = function(callback) {
-      var amiAry, currentRegion, currentState, err, instanceAMIMap;
+      var amiAry, currentRegion, err, instanceAMIMap;
       try {
         if (!callback) {
           callback = function() {};
         }
-        currentState = MC.canvas.getState();
         amiAry = [];
         instanceAMIMap = {};
         _.each(MC.canvas_data.component, function(compObj) {
@@ -435,7 +338,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/helper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'], function(CONST, MC, LANG, Design, _) {
+  define('TaHelper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'], function(CONST, MC, LANG, Design, _) {
     var Helper, Inside;
     Inside = {
       taReturn: function(type, tip, uid) {
@@ -611,7 +514,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/instance',['constant', 'MC', 'Design', '../../helper'], function(constant, MC, Design, Helper) {
+  define('component/trustedadvisor/validation/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
     var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isNatCheckedSourceDest, _getSGCompRuleLength;
     i18n = Helper.i18n.short();
     isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
@@ -811,8 +714,8 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'CloudResources', '../../helper', '../result_vo'], function(constant, MC, lang, Design, CloudResources, Helper) {
-    var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, __hasState;
+  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'CloudResources', 'TaHelper'], function(constant, MC, lang, Design, CloudResources, Helper) {
+    var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, isVPCWithRdsAccessibleEnableDNS, isVPCWithRdsAccessibleHasNoIgw, isVPCWithRdsTenancyDefault, __hasState;
     i18n = Helper.i18n.short();
     __hasState = function(uid) {
       var component, had, state;
@@ -905,10 +808,52 @@
       });
       return null;
     };
+    isVPCWithRdsTenancyDefault = function(uid) {
+      var hasRdsInstance, vpc;
+      vpc = Design.instance().component(uid);
+      hasRdsInstance = !!Design.modelClassForType(constant.RESTYPE.DBINSTANCE).size();
+      if (hasRdsInstance && (vpc.get('tenancy') !== 'default')) {
+        return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_TENANCY_MUST_DEFAULT);
+      }
+      return null;
+    };
+    isVPCWithRdsAccessibleHasNoIgw = function(uid) {
+      var hasRdsAccessible, vpc;
+      vpc = Design.instance().component(uid);
+      hasRdsAccessible = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).some(function(db) {
+        return db.get('accessible');
+      });
+      if (!hasRdsAccessible) {
+        return null;
+      }
+      if (_.some(vpc.children(), function(child) {
+        return child.type === constant.RESTYPE.IGW;
+      })) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_ACCESSIBLE_NOT_HAVE_IGW);
+    };
+    isVPCWithRdsAccessibleEnableDNS = function(uid) {
+      var hasRdsAccessible, vpc;
+      vpc = Design.instance().component(uid);
+      hasRdsAccessible = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).some(function(db) {
+        return db.get('accessible');
+      });
+      if (!hasRdsAccessible) {
+        return null;
+      }
+      if (vpc.get('dnsSupport') && vpc.get('dnsHostnames')) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_ACCESSIBLE_NOT_HAVE_DNS);
+    };
     return {
       isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
       isVPCUsingNonexistentDhcp: isVPCUsingNonexistentDhcp,
-      isVPCUsingNoneDHCPAndVisualops: isVPCUsingNoneDHCPAndVisualops
+      isVPCUsingNoneDHCPAndVisualops: isVPCUsingNoneDHCPAndVisualops,
+      isVPCWithRdsTenancyDefault: isVPCWithRdsTenancyDefault,
+      isVPCWithRdsAccessibleHasNoIgw: isVPCWithRdsAccessibleHasNoIgw,
+      isVPCWithRdsAccessibleEnableDNS: isVPCWithRdsAccessibleEnableDNS
     };
   });
 
@@ -917,7 +862,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', '../../helper', 'CloudResources'], function(constant, MC, lang, taHelper, CloudResources) {
+  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, taHelper, CloudResources) {
     var isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
     isHaveIGWForInternetELB = function(elbUID) {
       var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
@@ -1705,7 +1650,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo', '../../helper', 'CloudResources'], function(constant, MC, lang, resultVO, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
     var i18n, isELBHasHealthCheck, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
     i18n = Helper.i18n.short();
     isHasLaunchConfiguration = function(uid) {
@@ -1827,7 +1772,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/eip',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/ec2/eip',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isHasIGW, _hasType;
     isHasIGW = function() {
       var tipInfo;
@@ -1855,7 +1800,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/az',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/ec2/az',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isAZAlone;
     isAZAlone = function() {
       var count, instanceCount, tipInfo;
@@ -1894,7 +1839,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vgw',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/vgw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isConnectToRTB;
     isConnectToRTB = function(uid) {
       var components, isConnectRTB, tipInfo, vpn, vpnId;
@@ -1930,7 +1875,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpn',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/vpn',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isVPNHaveIPForStaticCGW, isVPNPrefixIPNotValid;
     isVPNHaveIPForStaticCGW = function(uid) {
       var bgpAsn, cgwComp, cgwName, cgwRef, cgwUID, isHaveNoEmptyRoute, isStaticCGW, returnObj, routeAry, tipInfo, vgwComp, vgwName, vgwRef, vgwUID, vpnComp;
@@ -2028,7 +1973,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/igw',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/igw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isConnectToRTB;
     isConnectToRTB = function(uid) {
       var components, igw, igwId, isConnectRTB, tipInfo;
@@ -2064,7 +2009,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/networkacl',['constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/vpc/networkacl',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isConnectSubnetButNoAllowRule;
     isConnectSubnetButNoAllowRule = function(uid) {
       var HasAllowACLRule, acl, components, connectSubnet, tipInfo;
@@ -2096,7 +2041,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'customergateway_service', '../../helper', '../result_vo'], function(constant, $, MC, lang, cgwService, Helper) {
+  define('component/trustedadvisor/validation/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'customergateway_service', 'TaHelper'], function(constant, $, MC, lang, cgwService, Helper) {
     var i18n, isAttachVGW, isCGWHaveIPConflict, isValidCGWIP;
     i18n = Helper.i18n.short();
     isCGWHaveIPConflict = function(callback) {
@@ -2225,7 +2170,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/rtb',['constant', 'MC', '../../helper', 'Design'], function(CONST, MC, Helper, Design) {
+  define('component/trustedadvisor/validation/vpc/rtb',['constant', 'MC', 'TaHelper', 'Design'], function(CONST, MC, Helper, Design) {
     var i18n, isRtbConnectedNatAndItConnectedSubnet, isRtbHaveConflictDestination;
     i18n = Helper.i18n.short();
     isRtbConnectedNatAndItConnectedSubnet = function(uid) {
@@ -2296,11 +2241,15 @@ This file use for validate state.
     var Message, checkRefExist, takeplace, __componentTipMap, __findReference, __genError, __getComp, __getCompTip, __getRef, __isUid, __legalExist, __legalState, __refState;
     __componentTipMap = {
       'AWS.EC2.Instance': lang.ide.TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,
-      'AWS.AutoScaling.LaunchConfiguration': lang.ide.TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_ASG
+      'AWS.AutoScaling.Group': lang.ide.TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_ASG
     };
     __getCompTip = function(compType, str1, str2, str100) {
-      var tip;
-      tip = __componentTipMap[arguments[0]];
+      var tip, type;
+      type = arguments[0];
+      if (type === 'AWS.AutoScaling.LaunchConfiguration') {
+        type = 'AWS.AutoScaling.Group';
+      }
+      tip = __componentTipMap[type];
       return sprintf.apply(this, [].concat(tip, Array.prototype.slice.call(arguments, 1)));
     };
     __genError = function(tip, stateId) {
@@ -2651,7 +2600,7 @@ This file use for validate state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/stateeditor/main',['./register', 'constant', 'MC', 'i18n!/nls/lang.js', '../result_vo'], function(validators, constant, MC, lang, resultVO) {
+  define('component/trustedadvisor/validation/stateeditor/main',['./register', 'constant', 'MC', 'i18n!/nls/lang.js'], function(validators, constant, MC, lang) {
     var isStateValid, __checkState, __modifyUid;
     __modifyUid = function(result, uid, index) {
       var r, _i, _len, _ref;
@@ -2715,7 +2664,7 @@ This file use for validate component about state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/state/state',['constant', 'MC', '../result_vo', 'Design', '../../helper'], function(CONST, MC, resultVO, Design, Helper) {
+  define('component/trustedadvisor/validation/state/state',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
     var i18n, isConnectedOut, isHasIgw, isHasOutPort80and443, isHasOutPort80and443Strict, __genConnectedError, __getComp, __getEniByInstance, __getSg, __getSubnetRtb, __hasEipOrPublicIp, __hasState, __hasType, __isEniSourceDestUncheck, __isInstanceConnectedOut, __isInstanceNat, __isLcConnectedOut, __isPortTcpAllowed, __isRouteIgw, __natOut, __selfOut, __sgsHasOutPort80and443, __wrap;
     i18n = Helper.i18n.short();
     __wrap = function(method) {
@@ -2763,7 +2712,7 @@ This file use for validate component about state.
     };
     __getEniByInstance = function(instance) {
       return _.filter(MC.canvas_data.component, function(component) {
-        if (component.type === CONST.RESTYPE.ENI) {
+        if (component.type === constant.RESTYPE.ENI) {
           if (MC.extractID(component.resource.Attachment.InstanceId) === instance.uid) {
             return true;
           }
@@ -2773,13 +2722,13 @@ This file use for validate component about state.
     __getSg = function(component) {
       var eni, enis, sg, sgId, sgs, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       sgs = [];
-      if (component.type === CONST.RESTYPE.LC) {
+      if (component.type === constant.RESTYPE.LC) {
         _ref = component.resource.SecurityGroups;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           sgId = _ref[_i];
           sgs.push(__getComp(MC.extractID(sgId)));
         }
-      } else if (component.type === CONST.RESTYPE.INSTANCE) {
+      } else if (component.type === constant.RESTYPE.INSTANCE) {
         enis = __getEniByInstance(component);
         for (_j = 0, _len1 = enis.length; _j < _len1; _j++) {
           eni = enis[_j];
@@ -2827,13 +2776,10 @@ This file use for validate component about state.
       return __80 > 0 && __443 > 0;
     };
     __hasEipOrPublicIp = function(component) {
-      var enis, hasEip, lc;
-      if (component.type === "ExpandedAsg") {
-        lc = component.get('originalAsg').get('lc');
-        return lc.get('publicIp') === true;
-      } else if (component.type === CONST.RESTYPE.LC) {
+      var enis, hasEip;
+      if (component.type === constant.RESTYPE.LC) {
         return component.get('publicIp') === true;
-      } else if (component.type === CONST.RESTYPE.INSTANCE) {
+      } else if (component.type === constant.RESTYPE.INSTANCE) {
         enis = component.connectionTargets('EniAttachment');
         enis.push(component.getEmbedEni());
         hasEip = _.some(enis, function(eni) {
@@ -2843,12 +2789,7 @@ This file use for validate component about state.
       }
     };
     __getSubnetRtb = function(component) {
-      var subnet;
-      subnet = component.parent();
-      if (subnet.type !== CONST.RESTYPE.SUBNET) {
-        subnet = subnet.parent();
-      }
-      return subnet.connectionTargets('RTB_Asso')[0];
+      return component.parent().connectionTargets('RTB_Asso')[0];
     };
     __isRouteIgw = function(component) {
       var eni, enis, rtbs, uid, _i, _len;
@@ -2865,18 +2806,18 @@ This file use for validate component about state.
         var igw, rtbConn;
         rtbConn = rtb.connectionTargets('RTB_Route');
         igw = _.where(rtbConn, {
-          type: CONST.RESTYPE.IGW
+          type: constant.RESTYPE.IGW
         });
         return igw.length > 0;
       });
     };
     __natOut = function(component) {
       var instances, rtb, _ref;
-      if ((_ref = component.type) === CONST.RESTYPE.INSTANCE || _ref === CONST.RESTYPE.LC) {
+      if ((_ref = component.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.ASG || _ref === 'ExpandedAsg') {
         rtb = __getSubnetRtb(component);
         if (rtb) {
           instances = _.where(rtb.connectionTargets('RTB_Route'), {
-            type: CONST.RESTYPE.INSTANCE
+            type: constant.RESTYPE.INSTANCE
           });
           return _.some(instances, function(instance) {
             return __isInstanceNat(instance);
@@ -2897,15 +2838,15 @@ This file use for validate component about state.
       });
     };
     __selfOut = function(component, result, subnetName) {
-      var lc, name;
-      if (!__hasEipOrPublicIp(component)) {
-        name = component.get('name');
-        if (component.type === 'ExpandedAsg') {
-          lc = component.get('originalAsg').get('lc');
-          subnetName = component.parent().get('name');
-          name = lc && lc.get('name');
-        }
-        result.push(Helper.message.error(component.id, i18n.TA_MSG_ERROR_NO_EIP_OR_PIP, name, name, subnetName));
+      var lcOrInstance, name, _ref;
+      if ((_ref = component.type) === constant.RESTYPE.ASG || _ref === 'ExpandedAsg') {
+        lcOrInstance = component.getLc();
+      } else {
+        lcOrInstance = component;
+      }
+      if (!__hasEipOrPublicIp(lcOrInstance)) {
+        name = lcOrInstance.get('name');
+        result.push(Helper.message.error(lcOrInstance.id, i18n.TA_MSG_ERROR_NO_EIP_OR_PIP, name, name, subnetName));
         return true;
       } else if (__isRouteIgw(component)) {
         return true;
@@ -2917,23 +2858,26 @@ This file use for validate component about state.
       return Helper.message.error(uid, i18n.TA_MSG_ERROR_NOT_CONNECT_OUT, subnetName);
     };
     __isLcConnectedOut = function(uid) {
-      var asg, expandedAsgs, isLcNatOut, lc, lcOld, result, subnet, subnetId, subnetName, _i, _len;
+      var asg, asgs, expandedAsgs, lc, result, subnet, subnetId, subnetName, subnetNameString, subnetNames, _i, _len;
       lc = __getComp(uid, true);
-      lcOld = __getComp(uid);
       result = [];
-      asg = lc.parent();
-      expandedAsgs = asg.get('expandedList');
-      subnet = lc.parent().parent();
-      subnetName = subnet.get('name');
-      subnetId = subnet.id;
-      isLcNatOut = __natOut(lc);
-      if (!(isLcNatOut || __selfOut(lc, result, subnetName))) {
-        result.push(__genConnectedError(subnetName, subnetId));
-      }
-      for (_i = 0, _len = expandedAsgs.length; _i < _len; _i++) {
-        asg = expandedAsgs[_i];
-        if (!(isLcNatOut || __selfOut(asg, result, subnetName))) {
-          subnetName = asg.parent().get('name');
+      expandedAsgs = [];
+      subnetNames = [];
+      asgs = Design.modelClassForType(constant.RESTYPE.ASG).filter(function(asg) {
+        if (asg.getLc() === lc) {
+          expandedAsgs = expandedAsgs.concat(asg.get('expandedList'));
+          subnetNames.push(asg.parent().get('name'));
+          return true;
+        }
+      });
+      asgs = asgs.concat(expandedAsgs);
+      subnetNameString = _.uniq(subnetNames).join(',');
+      for (_i = 0, _len = asgs.length; _i < _len; _i++) {
+        asg = asgs[_i];
+        if (!(__natOut(asg) || __selfOut(asg, result, subnetNameString))) {
+          subnet = asg.parent();
+          subnetName = subnet.get('name');
+          subnetId = subnet.id;
           result.push(__genConnectedError(subnetName, subnetId));
         }
       }
@@ -2955,7 +2899,7 @@ This file use for validate component about state.
 
     /* Public */
     isHasIgw = function(uid) {
-      if (__hasType(CONST.RESTYPE.IGW)) {
+      if (__hasType(constant.RESTYPE.IGW)) {
         return null;
       }
       return Helper.message.error(uid, i18n.TA_MSG_ERROR_NO_CGW);
@@ -2982,7 +2926,7 @@ This file use for validate component about state.
       var component, result;
       result = [];
       component = __getComp(uid);
-      if (component.type === CONST.RESTYPE.LC) {
+      if (component.type === constant.RESTYPE.LC) {
         return __isLcConnectedOut(uid);
       } else {
         return __isInstanceConnectedOut(uid);
@@ -3001,7 +2945,7 @@ This file use for validate component about state.
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ebs_service', '../result_vo'], function(constant, $, MC, lang, ebsService) {
+  define('component/trustedadvisor/validation/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ebs_service'], function(constant, $, MC, lang, ebsService) {
     var isSnapshotExist;
     isSnapshotExist = function(callback) {
       var currentRegion, err, snaphostAry, snaphostMap;
@@ -3020,6 +2964,8 @@ This file use for validate component about state.
               if (!snaphostMap[snaphostId]) {
                 snaphostMap[snaphostId] = [];
               }
+              instanceUID = MC.extractID(instanceUID);
+              snaphostMap[snaphostId] = _.union(snaphostMap[snaphostId], [instanceUID]);
             }
           }
           if (compObj.type === constant.RESTYPE.LC) {
@@ -3029,8 +2975,9 @@ This file use for validate component about state.
                 instanceUID = compObj.uid;
                 if (snaphostId && instanceUID) {
                   if (!snaphostMap[snaphostId]) {
-                    return snaphostMap[snaphostId] = [];
+                    snaphostMap[snaphostId] = [];
                   }
+                  return snaphostMap[snaphostId] = _.union(snaphostMap[snaphostId], [instanceUID]);
                 }
               }
             });
@@ -3113,7 +3060,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', '../../helper', 'keypair_service', 'underscore'], function(constant, MC, Design, Helper, keypair_service, _) {
+  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore'], function(constant, MC, Design, Helper, keypair_service, _) {
     var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
     i18n = Helper.i18n.short();
     isNotDefaultAndRefInstance = function(uid) {
@@ -3232,7 +3179,238 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/main',['MC', './stack/stack', './ec2/instance', './vpc/subnet', './vpc/vpc', './elb/elb', './ec2/securitygroup', './asg/asg', './ec2/eip', './ec2/az', './vpc/vgw', './vpc/vpn', './vpc/igw', './vpc/networkacl', './vpc/cgw', './vpc/eni', './vpc/rtb', './stateeditor/main', './state/state', './ec2/ebs', './ec2/kp'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp) {
+  define('component/trustedadvisor/validation/rds/dbinstance',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+    var i18n, isAzConsistent, isBackupMaintenanceOverlap, isHaveEnoughIPForDB, isHaveReplicaStorageSmallThanOrigin, isMasterPasswordValid, isOgValid, isSqlServerCross3Subnet;
+    i18n = Helper.i18n.short();
+    isOgValid = function() {
+      var db, dbs, nameStr, taId, _i, _len;
+      dbs = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).filter(function(db) {
+        return (db.get('instanceClass') === 'db.t1.micro') && !db.getOptionGroup().isDefault();
+      });
+      if (!dbs.length) {
+        return null;
+      }
+      taId = '';
+      nameStr = '';
+      for (_i = 0, _len = dbs.length; _i < _len; _i++) {
+        db = dbs[_i];
+        nameStr += "<span class='validation-tag'>" + (db.get('name')) + "</span>, ";
+        taId += db.id;
+      }
+      nameStr = nameStr.slice(0, -2);
+      return Helper.message.error(taId, i18n.TA_MSG_ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION, nameStr);
+    };
+    isAzConsistent = function(uid) {
+      var azName, db, sbg;
+      db = Design.instance().component(uid);
+      azName = db.get('az');
+      if (!azName) {
+        return null;
+      }
+      sbg = db.parent();
+      if (_.some(sbg.connectionTargets("SubnetgAsso"), function(sb) {
+        return sb.parent().get('name') === azName;
+      })) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_AZ_NOT_CONSISTENT, db.get('name'), azName);
+    };
+    isHaveEnoughIPForDB = function(uid) {
+      var dbModels, resultSubnetAry, subnetDBMap, _getSubnetRemainIPCount;
+      _getSubnetRemainIPCount = function(subnetModel) {
+        var availableIPCount, cidr;
+        cidr = subnetModel.get('cidr');
+        availableIPCount = subnetModel.getAvailableIPCountInSubnet();
+        return availableIPCount;
+      };
+      subnetDBMap = {};
+      resultSubnetAry = [];
+      dbModels = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).allObjects();
+      _.each(dbModels, function(dbModel) {
+        var connAry, subnetGroupModel;
+        subnetGroupModel = dbModel.get('__parent');
+        connAry = subnetGroupModel.get('__connections');
+        _.each(connAry, function(conModel) {
+          var subnetModel;
+          subnetModel = conModel.getTarget(constant.RESTYPE.SUBNET);
+          if (!subnetDBMap[subnetModel.id]) {
+            subnetDBMap[subnetModel.id] = [];
+          }
+          subnetDBMap[subnetModel.id] = _.union(subnetDBMap[subnetModel.id], [dbModel.get('id')]);
+          return null;
+        });
+        return null;
+      });
+      _.each(subnetDBMap, function(dbAry, subnetUID) {
+        var availableIPCount, subnetModel;
+        subnetModel = Design.instance().component(subnetUID);
+        availableIPCount = _getSubnetRemainIPCount(subnetModel);
+        if (availableIPCount < dbAry.length) {
+          resultSubnetAry.push(subnetModel.get('name'));
+        }
+        return null;
+      });
+      resultSubnetAry = _.map(resultSubnetAry, function(name) {
+        return "<span class='validation-tag tag-vpn'>" + name + "</span>";
+      });
+      if (resultSubnetAry.length) {
+        return {
+          level: constant.TA.ERROR,
+          info: sprintf(i18n.TA_MSG_ERROR_HAVE_NOT_ENOUGH_IP_FOR_DB, resultSubnetAry.join(', '))
+        };
+      }
+      return null;
+    };
+    isHaveReplicaStorageSmallThanOrigin = function(uid) {
+      var dbModel, srcStorge, storge;
+      dbModel = Design.instance().component(uid);
+      if (!dbModel.master()) {
+        return null;
+      }
+      storge = dbModel.get('allocatedStorage');
+      srcStorge = dbModel.master().get('allocatedStorage');
+      if (storge < srcStorge) {
+        return {
+          uid: uid,
+          level: constant.TA.ERROR,
+          info: sprintf(i18n.TA_MSG_ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN, dbModel.get('name'), dbModel.master().get('name'))
+        };
+      }
+      return null;
+    };
+    isSqlServerCross3Subnet = function(uid) {
+      var azs, db, sbg;
+      db = Design.instance().component(uid);
+      if (!(db.isSqlserver() && db.get('multiAz'))) {
+        return null;
+      }
+      sbg = db.parent();
+      azs = _.map(sbg.connectionTargets('SubnetgAsso'), function(sb) {
+        return sb.parent();
+      });
+      if (_.uniq(azs).length > 2) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_SQL_SERVER_MIRROR_MUST_HAVE3SUBNET, db.get('name'));
+    };
+    isBackupMaintenanceOverlap = function(uid) {
+      var appData, appId, backupEnd, backupStart, backupTimeArray, backupWindow, db, maintenanceEnd, maintenanceStart, maintenanceTimeArray, maintenanceWindow;
+      db = Design.instance().component(uid);
+      appId = db.get('appId');
+      backupWindow = db.get('backupWindow');
+      maintenanceWindow = db.get('maintenanceWindow');
+      if (appId) {
+        appData = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(appId);
+        backupWindow = backupWindow || appData.get('PreferredBackupWindow');
+        maintenanceWindow = maintenanceWindow || appData.get('PreferredMaintenanceWindow');
+      }
+      if (!(backupWindow && maintenanceWindow)) {
+        return null;
+      }
+      backupTimeArray = backupWindow.replace(/:/g, '').split('-');
+      maintenanceTimeArray = maintenanceWindow.replace(/:/g, '').split('-');
+      backupStart = +backupTimeArray[0];
+      backupEnd = +backupTimeArray[1];
+      maintenanceStart = +maintenanceTimeArray[0].slice(3);
+      maintenanceEnd = +maintenanceTimeArray[1].slice(3);
+      if (backupStart > maintenanceEnd || backupEnd < maintenanceStart) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_BACKUP_MAINTENANCE_OVERLAP, db.get('name'));
+    };
+    isMasterPasswordValid = function(uid) {
+      var db, password, _ref;
+      db = Design.instance().component(uid);
+      password = db.get('password');
+      if (password && (password === '****' || (8 <= (_ref = password.length) && _ref <= 41))) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_MASTER_PASSWORD_INVALID, db.get('name'));
+    };
+    return {
+      isOgValid: isOgValid,
+      isAzConsistent: isAzConsistent,
+      isHaveEnoughIPForDB: isHaveEnoughIPForDB,
+      isSqlServerCross3Subnet: isSqlServerCross3Subnet,
+      isBackupMaintenanceOverlap: isBackupMaintenanceOverlap,
+      isMasterPasswordValid: isMasterPasswordValid,
+      isHaveReplicaStorageSmallThanOrigin: isHaveReplicaStorageSmallThanOrigin
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/rds/og',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+    var i18n, isOGExeedCountLimit, unusedOgWontCreate;
+    i18n = Helper.i18n.short();
+    unusedOgWontCreate = function(callback) {
+      var nameStr, og, ogUnused, taId, _i, _len;
+      ogUnused = Design.modelClassForType(constant.RESTYPE.DBOG).filter(function(og) {
+        return !(og.isDefault() || og.connections().length);
+      });
+      if (!ogUnused.length) {
+        callback(null);
+        return null;
+      }
+      taId = '';
+      nameStr = '';
+      for (_i = 0, _len = ogUnused.length; _i < _len; _i++) {
+        og = ogUnused[_i];
+        nameStr += "<span class='validation-tag'>" + (og.get('name')) + "</span>, ";
+        taId += og.id;
+      }
+      nameStr = nameStr.slice(0, -2);
+      callback(Helper.message.warning(taId, i18n.TA_MSG_WARNING_RDS_UNUSED_OG_NOT_CREATE, nameStr));
+      return null;
+    };
+    isOGExeedCountLimit = function(callback) {
+      var customOGModels, err, existOGModels, ogModels, region, regionName;
+      try {
+        if (!callback) {
+          callback = function() {};
+        }
+        existOGModels = Design.modelClassForType(constant.RESTYPE.DBOG).allObjects();
+        customOGModels = _.filter(existOGModels, function(model) {
+          if (!model.get('default') && !model.get('createdBy')) {
+            return true;
+          }
+        });
+        if (customOGModels.length) {
+          region = Design.instance().get('region');
+          regionName = constant.REGION_SHORT_LABEL[region];
+          ogModels = CloudResources(constant.RESTYPE.DBOG, region);
+          return ogModels.fetchForce().then(function(ogCol) {
+            var customOgAry;
+            customOgAry = ogCol.filter(function(model) {
+              return model.get('id').indexOf('default:') !== 0;
+            });
+            if (customOgAry.length >= 20) {
+              return callback(Helper.message.error('', i18n.TA_MSG_ERROR_RDS_OG_EXCEED_20_LIMIT, regionName));
+            } else {
+              return callback(null);
+            }
+          }, function(err) {
+            return callback(null);
+          });
+        } else {
+          return callback(null);
+        }
+      } catch (_error) {
+        err = _error;
+        return callback(null);
+      }
+    };
+    return {
+      unusedOgWontCreate: unusedOgWontCreate,
+      isOGExeedCountLimit: isOGExeedCountLimit
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/stack/stack', '../validation/ec2/instance', '../validation/vpc/subnet', '../validation/vpc/vpc', '../validation/elb/elb', '../validation/ec2/securitygroup', '../validation/asg/asg', '../validation/ec2/eip', '../validation/ec2/az', '../validation/vpc/vgw', '../validation/vpc/vpn', '../validation/vpc/igw', '../validation/vpc/networkacl', '../validation/vpc/cgw', '../validation/vpc/eni', '../validation/vpc/rtb', '../validation/stateeditor/main', '../validation/state/state', '../validation/ec2/ebs', '../validation/ec2/kp', '../validation/rds/dbinstance', '../validation/rds/og'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og) {
     return {
       stack: stack,
       instance: instance,
@@ -3253,17 +3431,118 @@ This file use for validate component about state.
       stateEditor: stateEditor,
       state: state,
       ebs: ebs,
-      kp: kp
+      kp: kp,
+      dbinstance: dbinstance,
+      og: og
     };
   });
 
 }).call(this);
 
 (function() {
-  define('validation',['constant', 'event', 'component/trustedadvisor/config', 'component/trustedadvisor/validation/main', 'component/trustedadvisor/validation/result_vo', 'jquery', 'underscore', "MC"], function(constant, ide_event, config, validation_main, resultVO) {
-    var V, validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
+  define('component/trustedadvisor/lib/TA.Core',['event', 'MC', 'Design', 'underscore'], function(ide_event, MC, Design) {
+    var reset, result, set, _add, _del, _exist, _genKey, _genRes, _hash, _replace;
+    _hash = function(str) {
+      var hash;
+      hash = 0;
+      if (str.length === 0) {
+        return hash;
+      }
+      _.each(str, function(v, i) {
+        var char;
+        char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+        return null;
+      });
+      return "k" + hash;
+    };
+    _genKey = function(key, uid) {
+      return _hash("" + key + "|" + uid);
+    };
+    _genRes = function(key, result, uid) {
+      uid = uid || result && result.uid || null;
+      return _.extend({}, result, {
+        key: _genKey(key, uid),
+        type: key
+      });
+    };
+    _del = function(key) {
+      var delete_obj;
+      delete_obj = {};
+      _.map(MC.ta.list, function(obj) {
+        if (obj.key === key) {
+          delete_obj = obj;
+        }
+        return null;
+      });
+      if (delete_obj) {
+        MC.ta.list = _.without(MC.ta.list, delete_obj);
+        if (delete_obj.level) {
+          ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'delete', delete_obj.level);
+        }
+      }
+      return null;
+    };
+    _add = function(result) {
+      MC.ta.list.push(result);
+      return ide_event.trigger(ide_event.UPDATE_TA_MODAL, 'add', result.level);
+    };
+    _replace = function(result) {
+      MC.ta.list = _.map(MC.ta.list, function(item) {
+        if (item.key === result.key) {
+          return result;
+        }
+        return item;
+      });
+      return MC.ta.list;
+    };
+    _exist = function(key) {
+      return _.contains(_.pluck(MC.ta.list, 'key'), key);
+    };
+    set = function(key, result, uid) {
+      var k, res;
+      res = _genRes(key, result, uid);
+      k = res.key;
+      if (_.isArray(result)) {
+        _.each(result, function(r) {
+          if (r) {
+            return set(key, r, r.uid);
+          }
+        });
+      } else if (result) {
+        if (!_exist(k)) {
+          _add(res);
+        } else {
+          _replace(res);
+        }
+      } else {
+        _del(k);
+      }
+      return MC.ta.list;
+    };
+    reset = function() {
+      MC.ta.list = [];
+      MC.canvas_data = Design.instance().serialize();
+      return null;
+    };
+    result = function() {
+      return MC.ta.list;
+    };
+    return {
+      set: set,
+      reset: reset,
+      result: result
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('validation',['constant', 'event', 'component/trustedadvisor/lib/TA.Config', 'component/trustedadvisor/lib/TA.Bundle', 'component/trustedadvisor/lib/TA.Core', 'jquery', 'underscore', "MC"], function(constant, ide_event, config, TaBundle, TaCore) {
+    var validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
     _init = function() {
-      return resultVO.reset();
+      return TaCore.reset();
     };
     _isGlobal = function(filename, method) {
       return config.globalList[filename] && _.contains(config.globalList[filename], method);
@@ -3281,7 +3560,7 @@ This file use for validate component about state.
       return [filename];
     };
     _pushResult = function(result, method, filename, uid) {
-      return resultVO.set("" + filename + "." + method, result, uid);
+      return TaCore.set("" + filename + "." + method, result, uid);
     };
     _syncStart = function() {
       return ide_event.trigger(ide_event.TA_SYNC_START);
@@ -3325,7 +3604,7 @@ This file use for validate component about state.
                 return;
               }
             }
-            result = validation_main[filename][method]();
+            result = TaBundle[filename][method]();
             return _pushResult(result, method, filename);
           } catch (_error) {
             err = _error;
@@ -3342,11 +3621,11 @@ This file use for validate component about state.
         var err, filenames;
         filenames = _getFilename(component.type);
         _.each(filenames, function(filename) {
-          return _.each(validation_main[filename], function(func, method) {
+          return _.each(TaBundle[filename], function(func, method) {
             var err, result;
             if (!_isGlobal(filename, method) && !_isAsync(filename, method)) {
               try {
-                result = validation_main[filename][method](uid);
+                result = TaBundle[filename][method](uid);
                 return _pushResult(result, method, filename, uid);
               } catch (_error) {
                 err = _error;
@@ -3356,7 +3635,7 @@ This file use for validate component about state.
           });
         });
         try {
-          return _validState(validation_main, uid);
+          return _validState(TaBundle, uid);
         } catch (_error) {
           err = _error;
           return _handleException(err);
@@ -3364,10 +3643,10 @@ This file use for validate component about state.
       });
       return null;
     };
-    _validState = function(validation_main, uid) {
+    _validState = function(TaBundle, uid) {
       var result;
       if (Design.instance().get('agent').enabled === true) {
-        result = validation_main.stateEditor(uid);
+        result = TaBundle.stateEditor(uid);
         _pushResult(result, 'stateEditor', 'stateEditor', uid);
       }
       return null;
@@ -3383,7 +3662,7 @@ This file use for validate component about state.
         return _.each(methods, function(method) {
           var err, result;
           try {
-            result = validation_main[filename][method](_asyncCallback(method, filename, syncFinish));
+            result = TaBundle[filename][method](_asyncCallback(method, filename, syncFinish));
             return _pushResult(result, method, filename);
           } catch (_error) {
             err = _error;
@@ -3396,15 +3675,15 @@ This file use for validate component about state.
     validComp = function(type) {
       var args, err, filename, func, method, result, temp;
       try {
-        MC.ta.resultVO = resultVO;
+        MC.ta.resultVO = TaCore;
         temp = type.split('.');
         filename = temp[0];
         method = temp[1];
-        func = validation_main[filename][method];
+        func = TaBundle[filename][method];
         if (_.isFunction(func)) {
           args = Array.prototype.slice.call(arguments, 1);
-          result = func.apply(validation_main[filename], args);
-          resultVO.set(type, result);
+          result = func.apply(TaBundle[filename], args);
+          TaCore.set(type, result);
           return result;
         } else {
           console.log('func not found');
@@ -3420,29 +3699,28 @@ This file use for validate component about state.
       _validComponents();
       _validGlobal('run');
       _validAsync();
-      return resultVO.result();
+      return TaCore.result();
     };
     validAll = function() {
       _init();
       _validComponents();
       _validGlobal('all');
-      return resultVO.result();
+      return TaCore.result();
     };
-    V = {
+    MC.ta = {
       validComp: validComp,
       validAll: validAll,
       validRun: validRun,
-      stateEditor: validation_main.stateEditor,
+      stateEditor: TaBundle.stateEditor,
       list: [],
       state_list: {}
     };
-    MC.ta = V;
-    return V;
+    return MC.ta;
   });
 
 }).call(this);
 
-define('component/trustedadvisor/template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+define('component/trustedadvisor/gui/tpl/template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
@@ -3456,101 +3734,101 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title\" data-key=\""
+  buffer += "\n					<div class=\"title\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						";
+    + "\">\n						";
   stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n					</div>\r\n\r\n				";
+  buffer += "\n					</div>\n\n				";
   return buffer;
   }
 
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title empty\" data-key=\""
+  buffer += "\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No error here.\r\n					</div>\r\n				";
+    + "\">\n						Good job! No error here.\n					</div>\n				";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title\" data-key=\""
+  buffer += "\n					<div class=\"title\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						";
+    + "\">\n						";
   stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n					</div>\r\n				";
+  buffer += "\n					</div>\n				";
   return buffer;
   }
 
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title empty\" data-key=\""
+  buffer += "\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No warning here.\r\n					</div>\r\n				";
+    + "\">\n						Good job! No warning here.\n					</div>\n				";
   return buffer;
   }
 
 function program11(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title empty\" data-key=\""
+  buffer += "\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No notice here.\r\n					</div>\r\n				";
+    + "\">\n						Good job! No notice here.\n					</div>\n				";
   return buffer;
   }
 
-  buffer += "<div class=\"validation-content\">\r\n	<ul class=\"tab\">\r\n		<li class=\"active ";
+  buffer += "<div class=\"validation-content\">\n	<ul class=\"tab\">\n		<li class=\"active ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tab-target=\"#item-error\">Error<span class=\"validation-counter validation-counter-error\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\r\n		<li data-tab-target=\"#item-warning\" class=\"";
+    + "</span></li>\n		<li data-tab-target=\"#item-warning\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">Warning<span class=\"validation-counter validation-counter-warning\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\r\n		<li data-tab-target=\"#item-notice\" class=\"";
+    + "</span></li>\n		<li data-tab-target=\"#item-notice\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">Notice<span class=\"validation-counter validation-counter-notice\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\r\n	</ul>\r\n	<div class=\"scroll-wrap scroll-wrap-validation\">\r\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"content_wrap scroll-content\">\r\n\r\n			<div id=\"item-error\" class=\"content active\">\r\n\r\n				";
+    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\r\n\r\n			</div>\r\n			<div id=\"item-warning\" class=\"content\">\r\n				";
+  buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\n\n			</div>\n			<div id=\"item-warning\" class=\"content\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n			</div>\r\n			<div id=\"item-notice\" class=\"content\">\r\n				";
+  buffer += "\n			</div>\n			<div id=\"item-notice\" class=\"content\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.notice_list), {hash:{},inverse:self.program(11, program11, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>";
+  buffer += "\n			</div>\n		</div>\n	</div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
-define('component/trustedadvisor/modal_template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+define('component/trustedadvisor/gui/tpl/modal_template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"modal-header\">\r\n	<h3>Validation</h3>\r\n	<i class=\"modal-close\">×</i>\r\n</div>\r\n<div class=\"modal-body\">\r\n	<div id=\"modal-validation-statusbar\">\r\n	</div>\r\n</div>";
+  return "<div class=\"modal-header\">\n	<h3>Validation</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div id=\"modal-validation-statusbar\">\n	</div>\n</div>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('component/trustedadvisor/view',['event', './template', './modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template, modal_template) {
+  define('component/trustedadvisor/gui/view',['event', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template, modal_template) {
     var TrustedAdvisorView;
     TrustedAdvisorView = Backbone.View.extend({
       el: '.status-bar-modal',
@@ -3684,7 +3962,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/model',['backbone', 'jquery', 'underscore', 'MC'], function() {
+  define('component/trustedadvisor/gui/model',['backbone', 'jquery', 'underscore', 'MC'], function() {
     var TrustedAdvisorModel;
     TrustedAdvisorModel = Backbone.Model.extend({
       defaults: {
@@ -3730,7 +4008,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/main',['jquery', 'event', './view', './model'], function($, ide_event, View, Model) {
+  define('component/trustedadvisor/gui/main',['jquery', 'event', './view', './model'], function($, ide_event, View, Model) {
     var loadModule, unLoadModule;
     loadModule = function(type, status) {
       var model, processBar, processRun, view;
@@ -3755,9 +4033,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           model.createList();
           view.render(type, status);
           if (model.get('error_list').length === 0) {
-            return deferred.resolve();
+            return deferred.resolve(model);
           } else {
-            return deferred.reject();
+            return deferred.reject(model);
           }
         });
         MC.ta.validRun();

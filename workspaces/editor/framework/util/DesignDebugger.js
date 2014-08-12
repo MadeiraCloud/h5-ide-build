@@ -1,5 +1,5 @@
 (function() {
-  define(["Design"], function(Design) {
+  define(["Design", "event"], function(Design, ide_event) {
     var DESIGN_PROTOTYPE, NEW_DESIGN_PROTOTYPE, func, funcName;
     Design.debug = function() {
       var a, canvasGroups, canvasNodes, checked, checkedMap, componentMap, id;
@@ -42,11 +42,11 @@
       return checkedMap;
     };
     Design.debug.selectedComp = function() {
-      return Design.instance().component($("#svg_canvas").find(".selected").attr("id"));
+      return App.workspaces.getAwakeSpace().getSelectedComponent();
     };
     Design.debug.selectedCompState = function() {
-      var comp;
-      comp = Design.instance().component($("#svg_canvas").find(".selected").attr("id")).serialize()[1];
+      var comp, _ref;
+      comp = (_ref = Design.debug.selectedComp()) != null ? _ref.serialize()[1] : void 0;
       if (comp && comp.component && comp.component.state) {
         return '{\n\t"component": {\n\t\t"init" : {\n\t\t\t"state": ' + JSON.stringify(comp.component.state) + '\n\t\t}\n\t}\n}\n';
       } else {
@@ -104,6 +104,9 @@
         return null;
       });
       return null;
+    };
+    Design.debug.autoLayout = function() {
+      return App.workspaces.getAwakeSpace().view.canvas.autoLayout();
     };
     window.d = function() {
       return Design.instance();
