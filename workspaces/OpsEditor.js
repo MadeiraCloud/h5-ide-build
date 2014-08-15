@@ -714,16 +714,19 @@ return TEMPLATE; });
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   define('workspaces/editor/subviews/Toolbar',["OpsModel", "../template/TplOpsEditor", "ThumbnailUtil", "JsonExporter", "ApiRequest", "i18n!/nls/lang.js", "UI.modalplus", 'kp_dropdown', "ResDiff", 'constant', 'event', 'component/trustedadvisor/gui/main', "CloudResources", "appAction", "UI.notification", "backbone"], function(OpsModel, OpsEditorTpl, Thumbnail, JsonExporter, ApiRequest, lang, Modal, kpDropdown, ResDiff, constant, ide_event, TA, CloudResources, appAction) {
-    var API_HOST, API_URL;
-    API_HOST = "api.visualops.io";
-
-    /* env:debug */
-    API_HOST = "api.mc3.io";
-
-    /* env:debug:end */
-
-    /* env:dev                                     env:dev:end */
-    API_URL = "https://" + API_HOST + "/v1/apps/";
+    var API_HOST, API_URL, hosts, location;
+    location = window.location;
+    if (/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/.exec(location.hostname)) {
+      console.error("VisualOps IDE can not be browsed with IP address.");
+      return;
+    }
+    hosts = location.hostname.split(".");
+    if (hosts.length >= 3) {
+      API_HOST = hosts[hosts.length - 2] + "." + hosts[hosts.length - 1];
+    } else {
+      API_HOST = location.hostname;
+      API_URL = "https://api." + API_HOST + "/v1/apps/";
+    }
     return Backbone.View.extend({
       events: {
         "click .icon-save": "saveStack",

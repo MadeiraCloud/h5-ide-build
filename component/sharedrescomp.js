@@ -5113,7 +5113,7 @@ function program37(depth0,data) {
   buffer += "\n\n        </tr>\n        </thead>\n        <tbody>\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.programWithDepth(5, program5, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </tbody>\n    </table>\n</div>\n<div class=\"pg-edit-footer clearfix\">\n    <a class=\"blue-link\" target=\"_blank\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ParamValuesRef.html\"> <i class=\"icon-info\"></i> Parameter Value Reference</a>\n    <div class=\"init action\" style=\"padding: 10px 0\">\n        ";
+  buffer += "\n        </tbody>\n    </table>\n</div>\n<div class=\"pg-edit-footer clearfix\">\n    <a target=\"_blank\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ParamValuesRef.html\"> Parameter Value Reference</a>\n    <div class=\"init action\" style=\"padding: 10px 0\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(37, program37, data),fn:self.program(35, program35, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"padding: 10px 0;display: none\">\n        <button class=\"btn btn-blue\" id=\"rds-pg-save\" disabled>Applying</button>\n        <button class=\"btn btn-silver cancel\" disabled>Cancel</button>\n    </div>\n</div>";
@@ -5894,6 +5894,9 @@ return TEMPLATE; });
         }
       },
       renderDefault: function() {
+        if (!this.dropdown) {
+          return false;
+        }
         if (!fetched) {
           this.renderLoading();
           this.collection.fetch().then((function(_this) {
