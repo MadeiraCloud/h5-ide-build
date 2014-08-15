@@ -1370,7 +1370,7 @@ define({
         "TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTENT": "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span>'s Scaling Policy %s is using a nonexistent SNS Topic <span class='validation-tag'>%s</span>. Please change to an existing SNS Topic to make notification work.",
         "TA_MSG_ERROR_VPC_DHCP_NONEXISTENT": "VPC is using a nonexistent DHCP option set. Please specify default, auto-assigned or an existing DHCP option set.",
         "TA_MSG_WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS": "vpc can not use default(none) dhcpoptions when use visualops",
-        "TA_MSG_ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION": " DB Instance <span class='validation-tag tag-rds'>%s</span> has db.t1.micro instance class, which can only be members of the default option group.",
+        "TA_MSG_ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION": " DB Instance %s has db.t1.micro instance class, which can only be members of the default option group.",
         "TA_MSG_ERROR_RDS_CIDR_NOT_LARGE_ENOUGH": "The CIDR blocks in each of your subnets must be large enough to accommodate spare IP addresses for Amazon RDS to use during maintenance activities, including failover and compute scaling. (For each DB instance that you run in a VPC, you should reserve at least one address in each subnet in the DB subnet group for use by Amazon RDS for recovery actions.)",
         "TA_MSG_ERROR_RDS_TENANCY_MUST_DEFAULT": "To launch DB instance, instance tenancy attribute of the VPC must be set to default. ",
         "TA_MSG_ERROR_RDS_SNAPSHOT_NOT_LARGE_ENOUGH": "Snapshot storage need large than original value.",

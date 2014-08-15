@@ -2501,7 +2501,7 @@
         return d.promise;
       },
       markId: function(amiId, invalid) {
-        return this.__markedIds[amiId] = invalid;
+        this.__markedIds[amiId] = invalid;
       },
       isIdMarked: function(amiId) {
         return this.__markedIds.hasOwnProperty(amiId);

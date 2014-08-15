@@ -1028,7 +1028,8 @@ return TEMPLATE; });
         });
       },
       runStack: function(event) {
-        var appNameDom, checkAppNameRepeat, cost, self;
+        var appNameDom, checkAppNameRepeat, cost, self, that;
+        that = this;
         if ($(event.currentTarget).attr('disabled')) {
           return false;
         }
@@ -1059,7 +1060,7 @@ return TEMPLATE; });
           return checkAppNameRepeat(appNameDom.val());
         });
         self = this;
-        return this.modal.on('confirm', (function(_this) {
+        this.modal.on('confirm', (function(_this) {
           return function() {
             var appNameRepeated;
             _this.hideError();
@@ -1088,6 +1089,16 @@ return TEMPLATE; });
             });
           };
         })(this));
+        App.user.on('change:credential', function() {
+          console.log('We got it.');
+          if (App.user.hasCredential() && that.modal.isOpen()) {
+            return that.modal.find(".modal-confirm").text(lang.ide.RUN_STACK_MODAL_CONFIRM_BTN);
+          }
+        });
+        return this.modal.on('close', function() {
+          console.log('We gave up.');
+          return App.user.off('change:credential');
+        });
       },
       appToStack: function() {
         var appToStackModal, name, newName, onConfirm, originStackExist, stack;
@@ -7433,6 +7444,14 @@ return TEMPLATE; });
         ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
         return false;
       },
+      select: function(selectedDomElement) {
+        var type;
+        type = this.type;
+        if (this.model.get("appId") && this.canvas.design.modeIsAppEdit()) {
+          type = "component_server_group";
+        }
+        ide_event.trigger(ide_event.OPEN_PROPERTY, type, this.model.id);
+      },
       create: function() {
         var m, svg, svgEl;
         m = this.model;
@@ -7749,6 +7768,7 @@ return TEMPLATE; });
         this.listenTo(this.model, "change:connections", this.render);
         this.listenTo(this.model, "change:volumeList", this.render);
         this.listenTo(this.model, "change:imageId", this.render);
+        this.listenTo(this.canvas, "switchMode", this.render);
         this.listenTo(this.model, "change:expandedList", function() {
           var self;
           self = this;
@@ -8296,7 +8316,7 @@ return TEMPLATE; });
         return this.canvas.lineStyle();
       },
       generateCurvePath: function(start, end) {
-        var endX, endY, fliped, offset, origin, originalEndAngle, point, result, _i, _j, _len, _len1;
+        var fliped, origin, originalEndAngle, point, result, _i, _j, _len, _len1;
         origin = {
           x: start.x,
           y: start.y
@@ -8335,29 +8355,6 @@ return TEMPLATE; });
           rotate(point, start.angle);
           point.x += origin.x;
           point.y += origin.y;
-        }
-        offset = function(dir, match) {
-          var _k, _len2;
-          for (_k = 0, _len2 = result.length; _k < _len2; _k++) {
-            point = result[_k];
-            if (point[dir] === match) {
-              point[dir] += 0.5;
-            }
-          }
-        };
-        endX = result[result.length - 1].x;
-        endY = result[result.length - 1].y;
-        if (start.angle % 180 === 0) {
-          offset("y", origin.y);
-          origin.y += 0.5;
-        } else {
-          offset("x", origin.x);
-          origin.x += 0.5;
-        }
-        if (originalEndAngle % 180 === 0) {
-          offset("y", endY);
-        } else {
-          offset("x", endX);
         }
         if (result.length === 3) {
           return "M" + origin.x + " " + origin.y + "C" + result[0].x + " " + result[0].y + " " + result[1].x + " " + result[1].y + " " + result[2].x + " " + result[2].y;
