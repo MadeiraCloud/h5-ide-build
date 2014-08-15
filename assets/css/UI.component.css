@@ -2292,7 +2292,7 @@ input.parsley-error {
   left: 50%;
   margin: -40px 0 0 -40px;
   opacity: .8;
-  background: url("../images/ide/gearbig.svg");
+  background: url("../images/ide/gearbig.svg?v=3d55f265");
   background-size: 100% 100%;
   -webkit-animation: gear 2s linear infinite;
   -moz-animation: gear 2s linear infinite;
@@ -2304,7 +2304,7 @@ input.parsley-error {
   height: 30px;
   opacity: .6;
   margin: -11px 0 0 -11px;
-  background-image: url("../images/ide/gearsmall.svg");
+  background-image: url("../images/ide/gearsmall.svg?v=d0a553c0");
   -webkit-animation: smallgear 1.5s linear infinite;
   -moz-animation: smallgear 1.5s linear infinite;
   -o-animation: smallgear 1.5s linear infinite;
