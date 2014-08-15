@@ -1385,6 +1385,7 @@ define({
         "TA_MSG_ERROR_HAVE_NOT_ENOUGH_IP_FOR_DB": "To accommodate spare IP address for Amazon RDS to use during maintenance activities, subnet <span class='validation-tag tag-subnet'>%s</span> should use a larger CIDR block.",
         "TA_MSG_ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN": "Read Replica <span class='validation-tag tag-rds'>%s</span> should have same or larger storage than its source <span class='validation-tag tag-rds'>%s</span>.",
         "TA_MSG_ERROR_MASTER_PASSWORD_INVALID": "DB instance <span class='validation-tag tag-rds'>%s</span>'s Master Password must contain 8 to 41 characters.",
+        "TA_MSG_ERROR_OG_DB_BOTH_MODIFIED": "DB Instance %s cannot be modified in the same update with the Option Group %s it is using.",
         "RELOAD_STATE_INVALID_REQUEST": "Sorry, but the request is not valid.",
         "RELOAD_STATE_NETWORKERROR": "Network error, please try again later.",
         "RELOAD_STATE_INTERNAL_SERVER_ERROR": "Sorry, Internal server error, please try again later.",
