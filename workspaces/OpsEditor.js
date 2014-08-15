@@ -2243,22 +2243,22 @@ return TEMPLATE; });
         }
         $sortedList = [];
         if (selectedId === 'date') {
-          $sortedList = $('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
             return (new Date($(b).data('date'))) - (new Date($(a).data('date')));
           });
         }
         if (selectedId === 'engine') {
-          $sortedList = $('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
             return $(a).data('engine') - $(b).data('engine');
           });
         }
         if (selectedId === 'storge') {
-          $sortedList = $('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
             return Number($(b).data('storge')) - Number($(a).data('storge'));
           });
         }
         if ($sortedList.length) {
-          return $('.resource-list-rds-snapshot-exist').html($sortedList);
+          return this.$el.find('.resource-list-rds-snapshot-exist').html($sortedList);
         }
       },
       resourceListSortSelectSnapshotEvent: function(event) {
