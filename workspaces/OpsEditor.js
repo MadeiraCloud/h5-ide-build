@@ -6806,7 +6806,7 @@ return TEMPLATE; });
         } else {
           x = m.width() * CanvasView.GRID_WIDTH + 4;
           if (isAtomic) {
-            x += 6;
+            x += 8;
           }
           return [x, portY, CanvasElement.constant.PORT_RIGHT_ANGLE];
         }
@@ -8276,16 +8276,17 @@ return TEMPLATE; });
         ports = this.getConnectPorts(item_from, item_to, element1, element2);
         start = ports.start;
         end = ports.end;
-        this.__lastDir = start.y >= end.y ? 1 : -1;
+        this.__lastDir = 1;
         if (this.lineStyle() === 0) {
           return "M" + start.x + " " + start.y + " L" + end.x + " " + end.y;
         }
-        if (this.lineStyle() === 2) {
+        if (this.lineStyle() === 2 || this.lineStyle() === 3) {
           return this.generateCurvePath(ports.start, ports.end);
         }
         if (start.x === end.x || start.y === end.y) {
           return "M" + start.x + " " + start.y + " L" + end.x + " " + end.y;
         }
+        this.__lastDir = start.y >= end.y ? 1 : -1;
         return MC.canvas._round_corner(MC.canvas.route2(start, end, this.lineStyle()));
       },
       lineStyle: function() {
@@ -8351,9 +8352,9 @@ return TEMPLATE; });
           origin.x += 0.5;
         }
         if (originalEndAngle % 180 === 0) {
-          offset("y", endX);
+          offset("y", endY);
         } else {
-          offset("x", endY);
+          offset("x", endX);
         }
         if (result.length === 3) {
           return "M" + origin.x + " " + origin.y + "C" + result[0].x + " " + result[0].y + " " + result[1].x + " " + result[1].y + " " + result[2].x + " " + result[2].y;

@@ -3416,7 +3416,7 @@ This file use for validate component about state.
             customOgAry = ogCol.filter(function(model) {
               return model.get('id').indexOf('default:') !== 0;
             });
-            if (customOgAry.length >= 20) {
+            if (customOgAry.length + customOGModels.length > 20) {
               return callback(Helper.message.error('', i18n.TA_MSG_ERROR_RDS_OG_EXCEED_20_LIMIT, regionName));
             } else {
               return callback(null);

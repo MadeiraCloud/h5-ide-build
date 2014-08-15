@@ -1364,11 +1364,11 @@
     return CrModel.extend({
 
       /* env:dev                                          env:dev:end */
-      initailize: function() {
+      initialize: function() {
         var self;
         self = this;
         ApiRequest("elb_DescribeInstanceHealth", {
-          region_name: this.getCollection().region(),
+          region_name: this.get("category"),
           elb_name: this.get("Name")
         }).then(function(data) {
           return self.onInsHealthData(data);
