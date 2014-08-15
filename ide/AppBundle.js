@@ -1948,12 +1948,18 @@ return TEMPLATE; });
           return;
         }
         return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
-          var json;
-          json = self.generateJsonFromRes();
-          self.__setJsonData(json);
-          self.attributes.name = json.name;
-          return self;
+          return self.__onFjdImported();
         });
+      },
+      generateJsonFromRes: function() {
+        return CloudResources('OpsResource', this.getVpcId()).generatedJson;
+      },
+      __onFjdImported: function() {
+        var json;
+        json = this.generateJsonFromRes();
+        this.__setJsonData(json);
+        this.attributes.name = json.name;
+        return this;
       },
       __fjdStack: function(self) {
         if (!this.isStack()) {
@@ -2026,67 +2032,6 @@ return TEMPLATE; });
           this.set("name", json.name);
         }
         return this;
-      },
-      generateJsonFromRes: function() {
-        var app_json_xu, c, json, l, res, self;
-        res = CloudResources.getAllResourcesForVpc(this.get("region"), this.getVpcId(), this.__jsonData);
-        if (this.__jsonData) {
-          c = this.__jsonData.component;
-          l = this.__jsonData.layout;
-          delete this.__jsonData.component;
-          delete this.__jsonData.layout;
-          json = $.extend(true, {}, this.__jsonData);
-          this.__jsonData.component = c;
-          this.__jsonData.layout = l;
-        } else {
-          json = this.__createRawJson();
-        }
-        json.component = res.component;
-        json.layout = res.layout;
-        json.name = this.get("name") || res.theVpc.name;
-        app_json_xu = CloudResources('OpsResource', this.getVpcId());
-        if (app_json_xu.models.length > 0) {
-          console.clear();
-          console.info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
-          console.info("app_json_backend");
-          console.debug(JSON.stringify(app_json_xu.models[0].attributes));
-          console.info("\n\n--------------------------------------------------------------------------------------------------------------------------------------\n\n");
-          console.info("app_json_frontend");
-          console.debug(JSON.stringify(json));
-          console.info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
-          console.info("plese use http://tlrobinson.net/projects/javascript-fun/jsondiff/ to diff app_json\n\n");
-        }
-        self = this;
-        _.each(app_json_xu.models[0].attributes.component, function(comp, key) {
-          var acl, sg;
-          if (comp.type === 'AWS.EC2.AvailabilityZone') {
-            comp.name = comp.resource.ZoneName;
-          } else if (comp.type === 'AWS.VPC.NetworkAcl') {
-            acl = CloudResources('AWS.VPC.NetworkAcl', self.get("region")).where({
-              id: comp.resource.NetworkAclId
-            });
-            if (acl.length > 0) {
-              comp.resource.Default = acl[0].attributes["default"];
-            }
-            if (comp.name === "DefaultAcl") {
-              comp.name = 'DefaultACL';
-            }
-          } else if (comp.type === 'AWS.EC2.SecurityGroup') {
-            sg = CloudResources('AWS.EC2.SecurityGroup', self.get("region")).where({
-              id: comp.resource.GroupId
-            });
-            if (sg.length > 0) {
-              comp.resource.GroupName = sg[0].attributes.groupName;
-            }
-          } else if (comp.type === 'AWS.RDS.DBInstance') {
-            comp.resource.MasterUserPassword = "****";
-          }
-          return null;
-        });
-        console.info("app_json_backend(patched)");
-        console.debug(JSON.stringify(app_json_xu.models[0].attributes));
-        console.info("\n\n--------------------------------------------------------------------------------------------------------------------------------------\n\n");
-        return app_json_xu.models[0].attributes;
       },
       save: function(newJson, thumbnail) {
         var api, d, nameClash, self;

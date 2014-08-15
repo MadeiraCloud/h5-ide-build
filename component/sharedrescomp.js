@@ -3797,7 +3797,8 @@ return TEMPLATE; });
           '*.resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
           '*.resource.Attachment.AttachmentId': true,
           'DBINSTANCE.resource.AvailabilityZone': true,
-          'DBINSTANCE.resource.Endpoint.Address': true
+          'DBINSTANCE.resource.Endpoint.Address': true,
+          'DBINSTANCE.resource.ApplyImmediately': true
         };
       }
       if (!option.noDiffArrayAttrMap) {
@@ -4230,6 +4231,9 @@ return TEMPLATE; });
               break;
             case 'SubnetIds':
               data.key = 'Subnet';
+              break;
+            case 'Options':
+              data.key = 'Option';
           }
           if (__indexOf.call(pluralKeys, parentKey) >= 0) {
             data.key = this.pluralToSingular(parentKey);
@@ -4985,7 +4989,7 @@ function program14(depth0,data,depth1) {
   var buffer = "", stack1;
   buffer += "\n                            <select name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"select\" ";
+    + "\" class=\"select3\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                                <option value=\"<engine-default>\">&lt;engine-default&gt;</option>\n                                ";
@@ -5205,7 +5209,7 @@ function program14(depth0,data,depth1) {
   var buffer = "", stack1;
   buffer += "\n                        <select name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"select\" ";
+    + "\" class=\"select3\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                            <option value=\"<engine-default>\">&lt;engine-default&gt;</option>\n                            ";
@@ -5380,11 +5384,24 @@ return TEMPLATE; });
         this.collection = CloudResources(constant.RESTYPE.DBPG, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onUpdate.bind(this));
         this.listenTo(this.collection, 'change', this.onUpdate.bind(this));
+        this.listenTo(this.collection, 'remove', this.onRemove.bind(this));
+        this.listenTo(this.collection, 'add', this.onAdd.bind(this));
         return this;
       },
       onUpdate: function() {
         this.initManager();
         return this.trigger('datachange', this);
+      },
+      onAdd: function() {
+        return this.initDropdown();
+      },
+      onRemove: function() {
+        var _ref;
+        this.initDropdown();
+        if (this.resModel && !(this.collection.get(this.resModel.get('pgName')))) {
+          this.resModel.setDefaultParameterGroup(this.resModel.get('engineVersion'));
+        }
+        return (_ref = this.dropdown) != null ? _ref.setSelection(this.resModel.get('pgName')) : void 0;
       },
       remove: function() {
         return Backbone.View.prototype.remove.call(this);
@@ -5559,12 +5576,28 @@ return TEMPLATE; });
         };
       },
       renderEditTpl: function(parameters, tpl, option) {
-        var data, that;
+        var data, isMixedValue, isNumberString, that;
         that = this;
         data = parameters.toJSON ? parameters.toJSON() : parameters;
+        isNumberString = function(e) {
+          return !isNaN(parseFloat(e)) && isFinite(e);
+        };
+        isMixedValue = function(e) {
+          var isMixed, tempArray;
+          isMixed = false;
+          tempArray = e.split(",");
+          _.each(tempArray, function(value) {
+            var range;
+            range = value.split('-');
+            if (range.length = 2 && isNumberString(range[0]) && isNumberString(range[1])) {
+              return isMixed = true;
+            }
+          });
+          return isMixed;
+        };
         _.each(data, function(e) {
           var _ref;
-          if (((_ref = e.AllowedValues) != null ? _ref.split(',').length : void 0) > 1) {
+          if (((_ref = e.AllowedValues) != null ? _ref.split(',').length : void 0) > 1 && !isMixedValue(e.AllowedValues)) {
             e.inputType = "select";
             e.selections = e.AllowedValues.split(",");
           } else {
@@ -5607,14 +5640,14 @@ return TEMPLATE; });
         console.log("Rendering....");
         that.manager.setSlide(tpl({
           data: data,
-          height: $('.table-head-fix.will-be-covered>.scroll-wrap').height() - 53
+          height: $('.table-head-fix.will-be-covered>div').height() - 76
         }));
         $(".slidebox").css('max-height', "none");
         this.manager.on("slideup", function() {
           return $('.slidebox').removeAttr("style");
         });
         return $(window).on('resize', function() {
-          return $("#parameter-table").height($('.table-head-fix.will-be-covered>.scroll-wrap').height() - 53).find(".scrollbar-veritical-thumb").removeAttr("style");
+          return $("#parameter-table").height($('.table-head-fix.will-be-covered>div').height() - 67).find(".scrollbar-veritical-thumb").removeAttr("style");
         });
       },
       bindFilter: function(parameters, tpl) {
@@ -5673,7 +5706,7 @@ return TEMPLATE; });
             if (this.value === "<engine-default>" || (this.value === "" && !e.get("ParameterValue"))) {
               e.unset('newValue');
             }
-            if (e.isValidValue(this.value) || this.value === "" || e.isFunctionValue(this.value)) {
+            if (e.isValidValue(this.value) || this.value === "" || (e.isFunctionValue(this.value) && !e.isNumber(this.value))) {
               $(this).removeClass("parsley-error");
               if (this.value !== "") {
                 return e.set('newValue', this.value);
@@ -5937,6 +5970,7 @@ return TEMPLATE; });
         return {
           title: "Manage DB Parameter Group in " + regionName,
           slideable: true,
+          disableScroll: true,
           context: that,
           buttons: [
             {

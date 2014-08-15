@@ -730,22 +730,13 @@ function program9(depth0,data) {
   return "\n                <li>\n                    Auto Scaling Group will be deleted.\n                    <span>Auto Scaling Group will be recreated when the app is started.</span>\n                </li>\n            ";
   }
 
-function program11(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <div class=\"estimate-stop clearfix\">\n        <div>\n            <span class=\"title\">Estimated Cost When Stopped</span>\n            <span class=\"price\" id=\"label-total-fee\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b> / month</span>\n        </div>\n        <div class=\"hide\">\n            <span class=\"title\">Saving Compared to Running App</span>\n            <span class=\"price\" id=\"label-total-saving\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b>/ month</span>\n        </div>\n    </div>\n";
-  return buffer;
-  }
-
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n<div class=\"estimate-stop clearfix\">\n    <div>\n        <span class=\"title\">Estimated Cost When Stopped</span>\n        <span class=\"price\" id=\"label-total-fee\"><b>$"
+    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</b> / month</span>\n    </div>\n    <div class=\"hide\">\n        <span class=\"title\">Saving Compared to Running App</span>\n        <span class=\"price\" id=\"label-total-saving\"><b>$"
+    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</b>/ month</span>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
@@ -846,8 +837,9 @@ function program7(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
+  buffer += "<span class=\"resource-tag\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>(<span class=\"db-stop-status\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>)";
   return buffer;
@@ -1055,7 +1047,8 @@ return TEMPLATE; });
             hasAsg = (_ref1 = _.filter(comp, function(e) {
               return e.type === constant.RESTYPE.ASG;
             })) != null ? _ref1.length : void 0;
-            fee = ((_ref2 = Design.instance()) != null ? _ref2.getCost() : void 0) || {};
+            fee = ((_ref2 = Design.instance()) != null ? _ref2.getCost(true) : void 0) || {};
+            console.log(fee);
             totalFee = fee.totalFee;
             savingFee = fee.totalFee;
             canStop.tpl.find(".modal-footer").show();
@@ -1264,13 +1257,31 @@ function program13(depth0,data) {
 function program15(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n            <div style=\"overflow-y:auto;overflow-x:hidden;height: "
+    + escapeExpression(((stack1 = (depth0 && depth0.height)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "px;\">\n        ";
+  return buffer;
+  }
+
+function program17(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <div class=\"scroll-wrap\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.height), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n        ";
+  return buffer;
+  }
+function program18(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "style=\"height: "
     + escapeExpression(((stack1 = (depth0 && depth0.height)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "px\" ";
   return buffer;
   }
 
-function program17(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <th style=\"";
@@ -1278,6 +1289,18 @@ function program17(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"><div class=\"th-inner\"></div></th>\n                            ";
   return buffer;
+  }
+
+function program22(depth0,data) {
+  
+  
+  return "\n            </div>\n        ";
+  }
+
+function program24(depth0,data) {
+  
+  
+  return "\n            </div>\n        </div>\n        ";
   }
 
   buffer += "<div class=\"toolbar\">\n    ";
@@ -1291,13 +1314,16 @@ function program17(depth0,data) {
     + "\">\n        <div class=\"content clearfix\">\n        </div>\n        <div class=\"error\">\n            something wrong\n        </div>\n    </div>\n    <div class=\"table-head-fix will-be-covered\">\n        <table class=\"table-head\">\n            <thead>\n                <tr>\n                    <th>\n                        <div class=\"checkbox\">\n                            <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                            <label for=\"t-m-select-all\"></label>\n                        </div>\n                    </th>\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </tr>\n            </thead>\n        </table>\n        <div class=\"scroll-wrap\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.height), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  buffer += "\n                </tr>\n            </thead>\n        </table>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  buffer += "\n\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    </div>\n</div>";
+  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(24, program24, data),fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.content=Handlebars.template(__TEMPLATE__);
@@ -1553,6 +1579,7 @@ Refer to kpView.coffee
         that = this;
         this.__modalplus.tpl.find(".scrollbar-veritical-thumb").removeAttr("style");
         scroll = this.__modalplus.tpl.find(".table-head-fix.will-be-covered .scroll-wrap");
+        scroll = scroll.size() > 0 ? scroll : this.__modalplus.find('.will-be-covered>div');
         if (scroll.size()) {
           return scroll.height(that.__getHeightOfContent());
         }
@@ -1825,7 +1852,7 @@ function program9(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n                <select name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.SettingName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"option-setting\">\n                    ";
+    + "\" class=\"option-setting select3\">\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.items), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </select>\n                ";
@@ -1855,7 +1882,7 @@ function program13(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n                <input name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.SettingName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-required=\"true\" data-type=\"number\" class=\"option-setting\" type=\"text\" class=\"input\" value=\""
+    + "\" data-required=\"true\" data-type=\"number\" class=\"input option-setting\" type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-start=\""
     + escapeExpression(((stack1 = (depth0 && depth0.start)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -2020,10 +2047,18 @@ function program1(depth0,data) {
   buffer += "\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.Permenant), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.unmodify), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  buffer += "\n    \n    <div class=\"option-edit-btn ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.unmodify), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</li>\n";
+  buffer += " icon-btn-details\"></div>\n    <label class=\"switcher";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.checked), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.unmodify), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n        <span class=\"switch-label\" data-on=\"ON\" data-off=\"OFF\"></span>\n        <span class=\"switch-handle\"></span>\n    </label>\n\n</li>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -2040,31 +2075,32 @@ function program4(depth0,data) {
 
 function program6(depth0,data) {
   
+  
+  return "invisible";
+  }
+
+function program8(depth0,data) {
+  
   var buffer = "", stack1;
-  buffer += "\n    <div class=\"option-edit-btn icon-btn-details";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.checked), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.visible), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"></div>\n    <label class=\"switcher";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.checked), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.checked), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n        <span class=\"switch-label\" data-on=\"ON\" data-off=\"OFF\"></span>\n        <span class=\"switch-handle\"></span>\n    </label>\n    ";
   return buffer;
   }
-function program7(depth0,data) {
+function program9(depth0,data) {
   
   
   return " invisible";
   }
 
-function program9(depth0,data) {
+function program11(depth0,data) {
   
   
   return " on";
   }
 
-function program11(depth0,data) {
+function program13(depth0,data) {
   
   
   return " disabled";
@@ -2255,7 +2291,7 @@ return TEMPLATE; });
           return appOptions[option.OptionName] = option;
         });
         return _.some(appOptions, function(option, name) {
-          return +that.ogDataStore[name].Port !== +option.Port;
+          return that.ogDataStore[name] && +that.ogDataStore[name].Port !== +option.Port;
         });
       },
       initModal: function(tpl) {
@@ -2307,6 +2343,9 @@ return TEMPLATE; });
             option.unmodify = true;
           } else {
             option.unmodify = false;
+          }
+          if (!(!option.DefaultPort && !option.OptionGroupOptionSettings)) {
+            option.visible = true;
           }
           return null;
         });
@@ -2512,7 +2551,7 @@ return TEMPLATE; });
         }
       },
       optionChanged: function(event) {
-        var $optionEdit, $optionItem, $switcher, optionIdx, optionName, that;
+        var $optionEdit, $optionItem, $switcher, option, optionIdx, optionName, that;
         that = this;
         $switcher = $(event.currentTarget);
         $optionEdit = $switcher.siblings('.option-edit-btn');
@@ -2521,8 +2560,11 @@ return TEMPLATE; });
         optionIdx = Number($optionItem.data('idx'));
         optionName = $optionItem.data('name');
         if ($switcher.hasClass('on')) {
-          $optionEdit.removeClass('invisible');
-          this.slide(this.ogOptions[optionIdx], function(optionData) {
+          option = this.ogOptions[optionIdx];
+          if (!(!option.DefaultPort && !option.OptionGroupOptionSettings)) {
+            $optionEdit.removeClass('invisible');
+          }
+          this.slide(option, function(optionData) {
             if (optionData) {
               return that.ogDataStore[optionName] = optionData;
             } else {
@@ -2619,7 +2661,7 @@ return TEMPLATE; });
               });
               if (needAry.length) {
                 isRightDepend = false;
-                errTip = "" + ogName + " depend on " + (needAry.join(',')) + " option.";
+                errTip = "" + ogName + " has a dependency on " + (needAry.join(',')) + " option.";
                 that.$('.err-tip').text(errTip);
               }
             }

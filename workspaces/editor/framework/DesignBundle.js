@@ -130,7 +130,7 @@
       return null;
     };
     DesignImpl.prototype.deserialize = function(json_data, layout_data) {
-      var ModelClass, comp, devistor, recursiveCheck, resolveDeserialize, that, uid, version, _i, _len, _old_get_component_, _ref;
+      var ModelClass, comp, defaultLayout, devistor, recursiveCheck, resolveDeserialize, that, uid, version, _i, _len, _old_get_component_, _ref;
       console.assert(Design.instance() === this);
       console.debug("Deserializing data :", [json_data, layout_data]);
       version = this.get("version");
@@ -141,6 +141,10 @@
       }
       this.trigger = Design.trigger = noop;
       this.__initializing = true;
+      defaultLayout = {
+        coordinate: [0, 0],
+        size: [0, 0]
+      };
       that = this;
       resolveDeserialize = function(uid) {
         var ModelClass, component_data, obj;
@@ -162,7 +166,7 @@
           console.warn("We do not support deserializing resource of type : " + component_data.type);
           return;
         }
-        ModelClass.deserialize(component_data, layout_data[uid], resolveDeserialize);
+        ModelClass.deserialize(component_data, layout_data[uid] || defaultLayout, resolveDeserialize);
         return Design.__instance.__componentMap[uid];
       };
       _old_get_component_ = this.component;
@@ -180,7 +184,7 @@
             console.error("The class is marked as resolveFirst, yet it doesn't implement preDeserialize()");
             continue;
           }
-          ModelClass.preDeserialize(comp, layout_data[uid]);
+          ModelClass.preDeserialize(comp, layout_data[uid] || defaultLayout);
         }
       }
       this.component = resolveDeserialize;
@@ -188,7 +192,7 @@
         comp = json_data[uid];
         if (Design.__resolveFirstMap[comp.type] === true) {
           recursiveCheck = createRecursiveCheck(uid);
-          Design.modelClassForType(comp.type).deserialize(comp, layout_data[uid], resolveDeserialize);
+          Design.modelClassForType(comp.type).deserialize(comp, layout_data[uid] || defaultLayout, resolveDeserialize);
         } else {
           recursiveCheck = createRecursiveCheck();
           resolveDeserialize(uid);
@@ -199,7 +203,7 @@
         comp = json_data[uid];
         ModelClass = Design.modelClassForType(comp.type);
         if (ModelClass && ModelClass.postDeserialize) {
-          ModelClass.postDeserialize(comp, layout_data[uid]);
+          ModelClass.postDeserialize(comp, layout_data[uid] || defaultLayout);
         }
       }
       this.__initializing = false;
@@ -529,8 +533,8 @@
       names = this.__preservedNames[type];
       return names && names[name];
     };
-    DesignImpl.prototype.getCost = function() {
-      var c, comp, cost, costList, currency, priceMap, totalFee, uid, _i, _len, _ref;
+    DesignImpl.prototype.getCost = function(stopped) {
+      var c, comp, cost, costList, currency, priceMap, totalFee, uid, _i, _len, _ref, _ref1;
       costList = [];
       totalFee = 0;
       priceMap = App.model.getPriceData(this.region());
@@ -539,6 +543,9 @@
         _ref = this.__componentMap;
         for (uid in _ref) {
           comp = _ref[uid];
+          if (stopped && !((_ref1 = comp.type) === constant.RESTYPE.EIP || _ref1 === constant.RESTYPE.VOL || _ref1 === constant.RESTYPE.ELB || _ref1 === constant.RESTYPE.CW)) {
+            continue;
+          }
           if (comp.getCost) {
             cost = comp.getCost(priceMap, currency);
             if (!cost) {
@@ -4119,7 +4126,7 @@
       preDeserialize: function(data, layout_data) {
         new Model({
           id: data.uid,
-          name: data.name,
+          name: data.resource.Default ? "DefaultACL" : data.name,
           appId: data.resource.NetworkAclId,
           rules: formatRules(data.resource.EntrySet)
         });
@@ -6209,7 +6216,7 @@
       deserialize: function(data, layout_data, resolve) {
         var attr, dir, group, rule, ruleObj, ruleTarget, rules, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         group = new Model({
-          name: data.name,
+          name: data.resource.Default ? "DefaultSG" : data.name,
           id: data.uid,
           appId: data.resource.GroupId,
           groupName: data.resource.GroupName,
@@ -6420,7 +6427,7 @@
       hasAppUpdateRestriction: function() {
         var asso, elb, _i, _len, _ref;
         elb = this.getTarget(constant.RESTYPE.ELB);
-        if (this.design().modeIsAppEdit()) {
+        if (this.design().modeIsAppEdit() && this.get("deserialized")) {
           _ref = elb.connections("ElbSubnetAsso");
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             asso = _ref[_i];
@@ -9046,7 +9053,7 @@
           return false;
         }
         if (this.get('appId')) {
-          connTypesToCopy = ['SgAsso'];
+          connTypesToCopy = [];
         } else {
           connTypesToCopy = ['SgAsso', 'OgUsage'];
         }
@@ -9174,18 +9181,10 @@
         });
       },
       setDefaultParameterGroup: function(origEngineVersion) {
-        var defaultInfo, defaultPG, engineCol, origDefaultInfo, regionName;
+        var defaultInfo, defaultPG, engineCol, regionName;
         regionName = Design.instance().region();
         engineCol = CloudResources(constant.RESTYPE.DBENGINE, regionName);
         defaultInfo = engineCol.getDefaultByNameVersion(regionName, this.get('engine'), this.get('engineVersion'));
-        if (origEngineVersion) {
-          origDefaultInfo = engineCol.getDefaultByNameVersion(regionName, this.get('engine'), origEngineVersion);
-        }
-        if (origDefaultInfo && origDefaultInfo.family && defaultInfo && defaultInfo.family) {
-          if (origDefaultInfo.family === defaultInfo.family) {
-            return null;
-          }
-        }
         if (defaultInfo && defaultInfo.defaultPGName) {
           defaultPG = defaultInfo.defaultPGName;
         } else {
@@ -9193,7 +9192,7 @@
           console.warn("can not get default parametergroup for " + (this.get('engine')) + " " + (this.getMajorVersion()));
         }
         this.set('pgName', defaultPG || "");
-        return null;
+        return defaultPG;
       },
       getAllocatedRange: function() {
         var classInfo, defaultStorage, engine, obj;

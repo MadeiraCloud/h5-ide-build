@@ -2245,6 +2245,7 @@
           d.resolve();
           d.promise;
         }
+        this.generatedJson = null;
         return CrCollection.prototype.fetchForce.call(this);
       },
       doFetch: function() {
@@ -2260,9 +2261,9 @@
         });
       },
       parseFetchData: function(data) {
-        var app_json, cln, d, extraAttr, type;
+        var acl, cln, comp, d, dbins, extraAttr, pending, region, sg, type, uid, _ref;
         delete data.vpc;
-        app_json = data.app_json;
+        this.generatedJson = data.app_json;
         delete data.app_json;
         extraAttr = {
           RES_TAG: this.category
@@ -2276,7 +2277,62 @@
           }
           cln.__parseExternalData(d, extraAttr, this.__region);
         }
-        return [app_json];
+        region = this.__region;
+        _ref = this.generatedJson.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          switch (comp.type) {
+            case constant.RESTYPE.AZ:
+              comp.name = comp.resource.ZoneName;
+              break;
+            case constant.RESTYPE.ACL:
+              acl = CloudResources(comp.type, region).get(comp.resource.NetworkAclId);
+              if (acl) {
+                comp.resource.Default = acl.get("default");
+              }
+              break;
+            case constant.RESTYPE.SG:
+              sg = CloudResources(comp.type, region).get(comp.resource.GroupId);
+              if (sg) {
+                comp.resource.GroupName = sg.get("groupName");
+              }
+              break;
+            case constant.RESTYPE.DBOG:
+              comp.name = comp.resource.OptionGroupName;
+              break;
+            case constant.RESTYPE.DBINSTANCE:
+              comp.resource.MasterUserPassword = "****";
+              dbins = CloudResources(comp.type, region).get(comp.resource.DBInstanceIdentifier);
+              if (dbins) {
+                dbins = dbins.attributes;
+                if (!dbins.ReadReplicaSourceDBInstanceIdentifier) {
+                  comp.resource.ReadReplicaSourceDBInstanceIdentifier = "";
+                }
+                pending = dbins.PendingModifiedValues;
+                if (pending) {
+                  if (pending.AllocatedStorage) {
+                    comp.resource.AllocatedStorage = Number(pending.AllocatedStorage);
+                  }
+                  if (pending.BackupRetentionPeriod) {
+                    comp.resource.BackupRetentionPeriod = Number(pending.BackupRetentionPeriod);
+                  }
+                  if (pending.DBInstanceClass) {
+                    comp.resource.DBInstanceClass = pending.DBInstanceClass;
+                  }
+                  if (pending.Iops) {
+                    comp.resource.Iops = Number(pending.Iops);
+                  }
+                  if (pending.MultiAZ) {
+                    comp.resource.MultiAZ = pending.MultiAZ;
+                  }
+                  if (pending.MasterUserPassword) {
+                    comp.resource.MasterUserPassword = pending.MasterUserPassword;
+                  }
+                }
+              }
+          }
+        }
+        console.log("Generated Json from backend:", this.generatedJson);
       }
     });
   });
@@ -5191,7 +5247,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           allowed = _ref[_i];
           if (allowed.indexOf("-") >= 0) {
-            if (!/^[0-9]*$/.test(value) && !/^-[0-9]*$/.test(value)) {
+            if (!(!isNaN(parseFloat(value)) && isFinite(value))) {
               return false;
             }
             if (allowed.split("-").length >= 2) {
@@ -5213,6 +5269,11 @@
       isFunctionValue: function(value) {
         var reg;
         reg = /^((GREATEST|LEAST|SUM)\s*\(\s*)*((({(DBInstanceClassMemory|AllocatedStorage|EndPointPort))+((\/|\*|\+|\-)*(\d+|(DBInstanceClassMemory|AllocatedStorage|EndPointPort)))*}|\d+)\s*,?\s*\)*)*$/;
+        return reg.test(value);
+      },
+      isNumber: function(value) {
+        var reg;
+        reg = /^\d+$/;
         return reg.test(value);
       },
       applyMethod: function() {

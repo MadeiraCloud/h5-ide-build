@@ -1252,8 +1252,21 @@ return TEMPLATE; });
         this.workspace.switchToEditMode();
         return false;
       },
+      checkDBinstance: function(oldDBInstanceList) {
+        var DBInstances, checkDB;
+        checkDB = new Q.defer();
+        if (oldDBInstanceList.length) {
+          DBInstances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().get("region"));
+          DBInstances.fetchForce().then(function() {
+            return checkDB.resolve(DBInstances);
+          });
+        } else {
+          checkDB.resolve([]);
+        }
+        return checkDB.promise;
+      },
       applyAppEdit: function() {
-        var DBInstances, changeList, components, differ, newJson, oldJson, removes, result, that;
+        var components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
         that = this;
         oldJson = this.workspace.opsModel.getJsonData();
         newJson = this.workspace.design.serialize({
@@ -1268,15 +1281,15 @@ return TEMPLATE; });
           return this.workspace.applyAppEdit();
         }
         removes = differ.removedComps;
-        changeList = [];
+        console.log(differ);
+        dbInstanceList = [];
         console.log(newJson);
         components = newJson.component;
-        _.each(components, function(e, key) {
+        _.each(components, function(e) {
           if (e.type === constant.RESTYPE.DBINSTANCE) {
-            return changeList.push(e.resource.DBInstanceIdentifier);
+            return dbInstanceList.push(e.resource.DBInstanceIdentifier);
           }
         });
-        DBInstances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().get("region"));
         this.updateModal = new Modal({
           title: lang.ide.HEAD_INFO_LOADING,
           template: MC.template.loadingSpiner,
@@ -1285,13 +1298,20 @@ return TEMPLATE; });
           maxHeight: "450px"
         });
         this.updateModal.tpl.find(".modal-footer").hide();
-        return DBInstances.fetchForce().then(function() {
+        oldDBInstanceList = [];
+        _.each(oldJson.component, function(e) {
+          if (e.type === constant.RESTYPE.DBINSTANCE) {
+            return oldDBInstanceList.push(e.resource.DBInstanceIdentifier);
+          }
+        });
+        return this.checkDBinstance(oldDBInstanceList).then(function(DBInstances) {
           var $diffTree, notAvailableDB, removeList, removeListNotReady;
           notAvailableDB = DBInstances.filter(function(e) {
             var _ref;
-            return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(changeList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
+            return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(dbInstanceList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
           });
           if (notAvailableDB.length) {
+            that.updateModal.find(".modal-footer").show().find(".modal-confirm").hide();
             that.updateModal.setContent(MC.template.cantUpdateApp({
               data: notAvailableDB
             }));
@@ -1434,7 +1454,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
     + "\n  <i class=\"icon-resources js-toggle-dropdown menu-manage-shard-res tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_SHARED_RESOURCES", {hash:{},data:data}))
-    + "\"></i>\n  <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n    <li data-action=\"keypair\" class=\"icon-kp\"><span>Key Pair</span></li>\n    <li data-action=\"snapshot\"><span>EBS Snapshot</span></li>\n    <li data-action=\"sns\"><span>SNS Topic & Subscription</span></li>\n    <li data-action=\"sslcert\"><span>Server Certificate</span></li>\n    <li data-action=\"dhcp\"><span>DHCP Option Sets</span></li>\n    <li data-action=\"rdspg\"><span>DB Parameter Groups</span></li>\n    <li data-action=\"rdssnapshot\"><span>DB Snapshot</span></li>\n  </ul>\n  <i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</header>\n\n<div class=\"fixedaccordion accordion-default\">\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\"></i>\n  <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n    <li data-action=\"keypair\" class=\"icon-kp\"><span>Key Pair</span></li>\n    <li data-action=\"snapshot\" class=\"icon-ebs-snap\"><span>EBS Snapshot</span></li>\n    <li data-action=\"sns\" class=\"icon-sns\"><span>SNS Topic & Subscription</span></li>\n    <li data-action=\"sslcert\" class=\"icon-cert\"><span>Server Certificate</span></li>\n    <li data-action=\"dhcp\" class=\"icon-dhcp\"><span>DHCP Option Sets</span></li>\n    <li data-action=\"rdspg\" class=\"icon-pg\"><span>DB Parameter Groups</span></li>\n    <li data-action=\"rdssnapshot\" class=\"icon-rds-snap\"><span>DB Snapshot</span></li>\n  </ul>\n  <i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</header>\n\n<div class=\"fixedaccordion accordion-default\">\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AZ", {hash:{},data:data}))
     + "</header>\n    <ul class=\"resource-list-az clearfix accordion-body\">\n      <li class=\"tooltip resource-item az\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_AZ", {hash:{},data:data}))
@@ -1470,7 +1490,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL", {hash:{},data:data}))
     + "</li>\n        </ul>\n        <div class=\"resource-list-head\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL_FROM_SNAPSHOT", {hash:{},data:data}))
-    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-snapshot resource-list-snapshot-exist\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-snapshot resource-list-snapshot-exist\"></ul>\n        <div class=\"resource-list-empty resource-list-snapshot-empty\"></div>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RDS", {hash:{},data:data}))
     + "</header>\n    <div class=\"accordion-body scroll-wrap scrollbar-auto-hide\">\n      <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n      <button class=\"btn btn-primary ManageSnapshot ManageRdsSnapshot\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RDS_SNAPSHOT_MANAGE", {hash:{},data:data}))
@@ -1478,7 +1498,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RDS_INSTANCE", {hash:{},data:data}))
     + "</div>\n        <ul class=\"resource-list-rds\"></ul>\n        <div class=\"resource-list-head\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RDS_INSTANCE_FROM_SNAPSHOT", {hash:{},data:data}))
-    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-rds-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"engine\">By Engine</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-rds-snapshot resource-list-rds-snapshot-exist\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-rds-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"engine\">By Engine</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-rds-snapshot resource-list-rds-snapshot-exist\"></ul>\n        <div class=\"resource-list-empty resource-list-rds-snapshot-empty\"></div>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_ELB_ASG", {hash:{},data:data}))
     + "</header>\n    <ul class=\"resource-list-asg clearfix accordion-body\">\n      <li class=\"tooltip resource-item elb\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ELB", {hash:{},data:data}))
@@ -1575,6 +1595,20 @@ TEMPLATE.snapshot=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<span>No EBS Snapshot in "
+    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</span>";
+  return buffer;
+  };
+TEMPLATE.snapshot_empty=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
@@ -1633,9 +1667,9 @@ function program1(depth0,data,depth1) {
     + escapeExpression(((stack1 = (depth1 && depth1.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"}'>\n  <div class=\"resource-icon-dbsnapshot\"><img src=\"/assets/images/ide/icon/rds-"
     + escapeExpression(helpers.firstOfSplit.call(depth0, (depth0 && depth0.Engine), "-", {hash:{},data:data}))
-    + ".png\" width=\"32\" height=\"23\"></div>\n  <div class=\"rds-snapshot-size\">"
+    + ".png\" width=\"32\" height=\"23\">\n  <div class=\"rds-snapshot-size\">"
     + escapeExpression(((stack1 = (depth0 && depth0.AllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " GB</div>"
+    + " GB</div></div>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n</li>\n";
   return buffer;
@@ -1646,6 +1680,20 @@ function program1(depth0,data,depth1) {
   else { return ''; }
   };
 TEMPLATE.rds_snapshot=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<span>No DB Snapshot in "
+    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</span>";
+  return buffer;
+  };
+TEMPLATE.rds_snapshot_empty=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -2319,7 +2367,13 @@ return TEMPLATE; });
           category: region
         }) || [];
         cln.region = region;
-        return this.$el.find(".resource-list-snapshot-exist").html(LeftPanelTpl.snapshot(cln));
+        if (cln && cln.length) {
+          return this.$el.find(".resource-list-snapshot-exist").html(LeftPanelTpl.snapshot(cln));
+        } else {
+          return this.$el.find(".resource-list-snapshot-empty").html(LeftPanelTpl.snapshot_empty({
+            regionName: constant.REGION_SHORT_LABEL[region]
+          }));
+        }
       },
       updateRDSList: function() {
         var cln;
@@ -2331,7 +2385,13 @@ return TEMPLATE; });
         region = this.workspace.opsModel.get("region");
         cln = CloudResources(constant.RESTYPE.DBSNAP, region).toJSON();
         cln.region = region;
-        return this.$el.find(".resource-list-rds-snapshot-exist").html(LeftPanelTpl.rds_snapshot(cln));
+        if (cln && cln.length) {
+          return this.$el.find(".resource-list-rds-snapshot-exist").html(LeftPanelTpl.rds_snapshot(cln));
+        } else {
+          return this.$el.find(".resource-list-rds-snapshot-empty").html(LeftPanelTpl.rds_snapshot_empty({
+            regionName: constant.REGION_SHORT_LABEL[region]
+          }));
+        }
       },
       changeAmiType: function(evt, attr) {
         this.__amiType = attr || "QuickStartAmi";
@@ -3928,8 +3988,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.__linestyle;
       },
       updateLineStyle: function() {
-        var cn, uid, _ref;
-        this.__linestyle = parseInt(localStorage.getItem("canvas/lineStyle")) || 0;
+        var cn, ls, uid, _ref;
+        ls = parseInt(localStorage.getItem("canvas/lineStyle")) || 0;
+        if (this.__linestyle === ls) {
+          return;
+        }
+        this.__linestyle = ls;
         _ref = this.__itemLineMap;
         for (uid in _ref) {
           cn = _ref[uid];
@@ -4644,7 +4708,7 @@ return TEMPLATE; });
         }, CanvasView.prototype.events);
       },
       recreateStructure: function() {
-        this.svg.clear().add([this.svg.group().classes("layer_vpc"), this.svg.group().classes("layer_az"), this.svg.group().classes("layer_subnet"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_asg"), this.svg.group().classes("layer_sgline"), this.svg.group().classes("layer_node")]);
+        this.svg.clear().add([this.svg.group().classes("layer_vpc"), this.svg.group().classes("layer_az"), this.svg.group().classes("layer_subnet"), this.svg.group().classes("layer_asg"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_sgline"), this.svg.group().classes("layer_node")]);
       },
       appendVpc: function(svgEl) {
         return this.__appendSvg(svgEl, ".layer_vpc");
@@ -8088,84 +8152,85 @@ return TEMPLATE; });
           CeLine.cleanLineMask(svgEl.maskWith(maskPath));
         }
       },
-      generatePath: function(item_from, item_to, element1, element2) {
-        var connection, controlPoints, dirn_from, dirn_to, end0, from_port, path, pos_from, pos_port_from, pos_port_to, pos_to, start0, to_port;
+      getConnectPorts: function(item_from, item_to, element1, element2) {
+        var connection, d, dirn_from, dirn_to, distance, from_port, i, idx, j, pos_from, pos_to, possiblePortFrom, possiblePortTo, to_port, _i, _j, _k, _l, _len, _len1, _len2, _len3;
         connection = this.model;
-        pos_from = item_from.pos(element1);
         pos_to = item_to.pos(element2);
+        pos_from = item_from.pos(element1);
         pos_to.x *= 10;
-        pos_to.y *= 10;
         pos_from.x *= 10;
+        pos_to.y *= 10;
         pos_from.y *= 10;
         from_port = connection.port1("name");
         to_port = connection.port2("name");
         dirn_from = item_from.portDirection(from_port);
         dirn_to = item_to.portDirection(to_port);
-        if (dirn_from && dirn_to) {
-          if (pos_from.x > pos_to.x) {
-            from_port += "-left";
-            to_port += "-right";
-          } else {
-            from_port += "-right";
-            to_port += "-left";
-          }
-          pos_port_from = item_from.portPosition(from_port, true);
-          pos_port_to = item_to.portPosition(to_port, true);
-          pos_from.x += pos_port_from[0];
-          pos_from.y += pos_port_from[1];
-          pos_to.x += pos_port_to[0];
-          pos_to.y += pos_port_to[1];
-        } else if (dirn_from) {
-          pos_port_to = item_to.portPosition(to_port, true);
-          pos_to.x += pos_port_to[0];
-          pos_to.y += pos_port_to[1];
-          if (dirn_from === "vertical") {
-            from_port += pos_to.y > pos_from.y ? "-bottom" : "-top";
-          } else if (dirn_from === "horizontal") {
-            from_port += pos_to.x > pos_from.x ? "-right" : "-left";
-          }
-          pos_port_from = item_from.portPosition(from_port, true);
-          pos_from.x += pos_port_from[0];
-          pos_from.y += pos_port_from[1];
-        } else if (dirn_to) {
-          pos_port_from = item_from.portPosition(from_port, true);
-          pos_from.x += pos_port_from[0];
-          pos_from.y += pos_port_from[1];
-          if (dirn_to === "vertical") {
-            to_port += pos_from.y > pos_to.y ? "-bottom" : "-top";
-          } else if (dirn_to === "horizontal") {
-            to_port += pos_from.x > pos_to.x ? "-right" : "-left";
-          }
-          pos_port_to = item_to.portPosition(to_port, true);
-          pos_to.x += pos_port_to[0];
-          pos_to.y += pos_port_to[1];
-        } else {
-          pos_port_from = item_from.portPosition(from_port, true);
-          pos_port_to = item_to.portPosition(to_port, true);
-          pos_from.x += pos_port_from[0];
-          pos_from.y += pos_port_from[1];
-          pos_to.x += pos_port_to[0];
-          pos_to.y += pos_port_to[1];
+        possiblePortFrom = [from_port];
+        possiblePortTo = [to_port];
+        if (dirn_from) {
+          possiblePortFrom = dirn_from === "horizontal" ? [from_port + "-left", from_port + "-right"] : [from_port + "-top", from_port + "-bottom"];
         }
-        start0 = {
-          x: pos_from.x,
-          y: pos_from.y,
-          angle: pos_port_from[2],
-          type: connection.port1Comp().type,
-          name: from_port
+        if (dirn_to) {
+          possiblePortTo = dirn_to === "horizontal" ? [to_port + "-left", to_port + "-right"] : [to_port + "-top", to_port + "-bottom"];
+        }
+        for (idx = _i = 0, _len = possiblePortFrom.length; _i < _len; idx = ++_i) {
+          i = possiblePortFrom[idx];
+          possiblePortFrom[idx] = {
+            name: i,
+            pos: item_from.portPosition(i, true).slice(0)
+          };
+          possiblePortFrom[idx].pos[0] += pos_from.x;
+          possiblePortFrom[idx].pos[1] += pos_from.y;
+        }
+        for (idx = _j = 0, _len1 = possiblePortTo.length; _j < _len1; idx = ++_j) {
+          i = possiblePortTo[idx];
+          possiblePortTo[idx] = {
+            name: i,
+            pos: item_to.portPosition(i, true).slice(0)
+          };
+          possiblePortTo[idx].pos[0] += pos_to.x;
+          possiblePortTo[idx].pos[1] += pos_to.y;
+        }
+        distance = -1;
+        for (_k = 0, _len2 = possiblePortFrom.length; _k < _len2; _k++) {
+          i = possiblePortFrom[_k];
+          for (_l = 0, _len3 = possiblePortTo.length; _l < _len3; _l++) {
+            j = possiblePortTo[_l];
+            d = Math.pow(i.pos[0] - j.pos[0], 2) + Math.pow(i.pos[1] - j.pos[1], 2);
+            if (distance === -1 || distance > d) {
+              distance = d;
+              pos_from = i;
+              pos_to = j;
+            }
+          }
+        }
+        return {
+          start: {
+            x: pos_from.pos[0],
+            y: pos_from.pos[1],
+            angle: pos_from.pos[2],
+            type: connection.port1Comp().type,
+            name: pos_from.name
+          },
+          end: {
+            x: pos_to.pos[0],
+            y: pos_to.pos[1],
+            angle: pos_to.pos[2],
+            type: connection.port2Comp().type,
+            name: pos_to.name
+          }
         };
-        end0 = {
-          x: pos_to.x,
-          y: pos_to.y,
-          angle: pos_port_to[2],
-          type: connection.port2Comp().type,
-          name: to_port
-        };
-        this.__lastDir = start0.y >= end0.y ? 1 : -1;
-        if (start0.x === end0.x || start0.y === end0.y) {
-          path = "M" + start0.x + " " + start0.y + " L" + end0.x + " " + end0.y;
+      },
+      generatePath: function(item_from, item_to, element1, element2) {
+        var controlPoints, end, path, ports, start;
+        ports = this.getConnectPorts(item_from, item_to, element1, element2);
+        start = ports.start;
+        end = ports.end;
+        this.__lastDir = start.y >= end.y ? 1 : -1;
+        if (start.x === end.x || start.y === end.y) {
+          path = "M" + start.x + " " + start.y + " L" + end.x + " " + end.y;
         } else {
-          controlPoints = MC.canvas.route2(start0, end0);
+          controlPoints = MC.canvas.route2(start, end, this.lineStyle());
           if (controlPoints) {
             switch (this.lineStyle()) {
               case 0:
@@ -8231,6 +8296,9 @@ return TEMPLATE; });
 
       /* env:dev                                          env:dev:end */
       type: "RTB_Route",
+      lineStyle: function() {
+        return 1;
+      },
       createLine: function(pd) {
         var svg, svgEl;
         svg = this.canvas.svg;

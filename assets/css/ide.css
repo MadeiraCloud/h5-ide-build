@@ -1,15 +1,18 @@
 @charset "UTF-8";
+/* Rectangle 5: */
+/* Rectangle 6: */
+/* Rectangle 9: */
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/Lato-regular.woff?v=c62bcc99") format("woff"); }
+  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/Lato-regular.woff") format("woff"); }
 
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 700;
-  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/Lato-Bold.woff?v=eba02393") format("woff"); }
+  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/Lato-Bold.woff") format("woff"); }
 
 .font-mono {
   font-family: "Monaco","Consolas", monospace;
@@ -664,7 +667,6 @@ td.table-action a.btn {
 
 .property-content {
   height: 100%;
-  background-color: #383838;
   color: #ccc;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -934,32 +936,6 @@ td.table-action a.btn {
 .sg-info-list-tab li:hover {
   color: #eee;
   background: rgba(0, 0, 0, 0.4); }
-
-/* General Style for Property Panel List */
-.property-list {
-  /*border-top : 1px solid #252525;*/ }
-
-.property-list li {
-  width: 260px;
-  padding: 10px;
-  border-bottom: 1px solid #393939;
-  background: #3f3f3f;
-  -webkit-transition: background .2s;
-  -moz-transition: background .2s;
-  -ms-transition: background .2s;
-  -o-transition: background .2s;
-  transition: background .2s; }
-
-.property-list li:hover {
-  background: #494949; }
-
-.property-list-no-padding {
-  border: none; }
-
-.property-list.property-list-no-padding li {
-  width: 280px;
-  padding: 0;
-  /*border  : none;*/ }
 
 /* End of General Style for Property Panel List */
 .acl-sg-info-list > li {
@@ -2135,26 +2111,26 @@ a.action-link:hover {
 /* Icons Placeholder */
 /* Tabbar Icon */
 .icon-dashboard {
-  background: url("../images/ide/icon-dashboard.png?v=2164b17b") center center no-repeat; }
+  background: url("../images/ide/icon-dashboard.png") center center no-repeat; }
 
 .icon-stack {
-  background: url("../images/ide/icon-stack.png?v=910f026c") center center no-repeat; }
+  background: url("../images/ide/icon-stack.png") center center no-repeat; }
 
 .icon-app-running,
 .icon-app-Running {
-  background: url("../images/ide/icon-app-running.png?v=62eb7120") center center no-repeat; }
+  background: url("../images/ide/icon-app-running.png") center center no-repeat; }
 
 .icon-app-stopped,
 .icon-app-Stopped {
-  background: url("../images/ide/icon-app-stopped.png?v=8c2fe0f1") center center no-repeat; }
+  background: url("../images/ide/icon-app-stopped.png") center center no-repeat; }
 
 .icon-app-pending {
-  background: url("../images/ide/icon-app-pending.png?v=913b368e") center center no-repeat; }
+  background: url("../images/ide/icon-app-pending.png") center center no-repeat; }
 
 /* Nav Icon */
 .icon-stack-nav,
 .icon-stack-tabbar {
-  background: url("../images/ide/icon-stack.png?v=910f026c") center center no-repeat; }
+  background: url("../images/ide/icon-stack.png") center center no-repeat; }
 
 .icon-visualization-tabbar {
   background: url("../images/ide/icon-app-visualization.png") center center no-repeat; }
@@ -2467,13 +2443,14 @@ summary:focus {
   border-bottom: none; }
 
 .validation-content .tab li {
+  background: #1b1b21;
   color: #999;
   width: 119px;
   line-height: 30px;
   display: block;
   float: left;
   padding: 0 10px;
-  border-right: 1px solid #131313;
+  border-right: 1px solid #000;
   box-shadow: inset 0 -1px 0 #000;
   text-align: left;
   -webkit-transition: background .2s;
@@ -2491,7 +2468,7 @@ summary:focus {
 
 .validation-content .tab li.active,
 .validation-content .tab li.active:hover {
-  background: #36373A;
+  background: #303041;
   color: #eee;
   box-shadow: inset 0 1px 0 #36373A; }
 
@@ -2501,14 +2478,14 @@ summary:focus {
 .validation-content .scroll-wrap-validation {
   width: 420px;
   height: 250px;
-  border: 1px solid #131313;
+  border: 1px solid #151519;
   border-top: none;
   border-radius: 0 0 2px 2px;
   overflow: hidden;
-  background: #36373A; }
+  background: #303041; }
 
 #modal-validation-statusbar .validation-content .scroll-wrap-validation {
-  border: 1px solid #222;
+  border: 1px solid #151519;
   border-top: none; }
 
 #modal-run-stack .validation-content .scroll-wrap-validation,
@@ -2590,7 +2567,8 @@ summary:focus {
   color: #ffa740;
   font-size: 28px; }
 
-.validation-tag {
+.validation-tag,
+.resource-tag {
   font-size: 12px;
   padding: 1px 3px;
   margin: 0 3px;
@@ -3036,9 +3014,9 @@ div.modal-text-highlight {
   bottom: 23px;
   right: 0;
   z-index: 4;
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 -2px 5px rgba(0, 0, 0, 0.2);
-  border: solid 1px #242424;
-  background-color: #464646;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  border: solid 1px #151519;
+  background-color: #25252d;
   border-radius: 4px 4px 0 0; }
 
 .status-bar-modal .modal-header {
@@ -3498,7 +3476,7 @@ div.modal-text-highlight {
 
 #experimental-modal .modal-body-content {
   padding-left: 160px;
-  background-image: url("../images/ide/request_invite_image.png?v=8dea4a87");
+  background-image: url("../images/ide/request_invite_image.png");
   background-repeat: no-repeat;
   background-size: 91px 98px;
   background-position-x: 10px; }
@@ -3631,7 +3609,8 @@ div.modal-text-highlight {
 
 .check-final-snapshot {
   padding: 10px 0;
-  font-size: 16px; }
+  font-size: 16px;
+  color: #ddd; }
 
 .cant-snapshot {
   display: block;
@@ -3934,8 +3913,8 @@ div.modal-text-highlight {
     background: rgba(255, 255, 255, 0.02);
     color: #fff; }
   .off-canvas-tab.selected {
-    border-bottom: 3px solid #66398b;
-    color: #9F62D1; }
+    border-bottom: 3px solid #727ad3;
+    color: #727ad3; }
 
 .nav-empty {
   margin: 5px 15px 15px;
@@ -3999,19 +3978,23 @@ div.modal-text-highlight {
     float: left;
     min-width: 100px;
     text-align: center;
-    color: #148BE6;
+    color: #4d4e8c;
     height: 38px;
     line-height: 38px;
     cursor: pointer;
     position: relative;
     padding: 0 10px;
     font-size: 12px; }
+    #SettingsNav > span.selected {
+      color: #727ad3; }
+    #SettingsNav > span:hover, #SettingsNav > span.selected:hover {
+      color: #868cd9; }
     #SettingsNav > span.selected:before {
       position: absolute;
       left: 0;
       bottom: 0px;
       content: '';
-      border-bottom: 2px solid #148BE6;
+      border-bottom: 2px solid #727ad3;
       width: 100%; }
 
 #SettingsBody {
@@ -4470,7 +4453,7 @@ div.modal-text-highlight {
     padding: 0 0 0 30px;
     height: 26px;
     line-height: 26px;
-    background: url('/assets/images/ide/global-region-app-stack-s.png?v=143e19e4') 6px -3px no-repeat;
+    background: url('/assets/images/ide/global-region-app-stack-s.png') 6px -3px no-repeat;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
@@ -4552,7 +4535,7 @@ div.modal-text-highlight {
 #global-region-spot {
   width: 787px;
   height: 423px;
-  background: url('/assets/images/ide/global-dotted-map.png?v=f86b17bb') no-repeat;
+  background: url('/assets/images/ide/global-dotted-map.png') no-repeat;
   margin: 24px 0 10px 48px; }
 
 #global-region-status-widget {
@@ -4593,7 +4576,7 @@ div.modal-text-highlight {
     font-size: 36px;
     color: #e6e6e6;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
-    background: url('/assets/images/ide/global-region-app-stack.png?v=8ae5df14') no-repeat; }
+    background: url('/assets/images/ide/global-region-app-stack.png') no-repeat; }
   .global-region-status-tab > h5 {
     color: #ccc;
     font-size: 14px;
@@ -4657,10 +4640,10 @@ div.modal-text-highlight {
   #dashboard-data-wrap .resource-count {
     padding-left: 60px;
     font-size: 40px;
-    background: url('/assets/images/ide/global-region-icon2.png?v=e9644f0b') left top no-repeat; }
+    background: url('/assets/images/ide/global-region-icon2.png') left top no-repeat; }
     @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
       #dashboard-data-wrap .resource-count {
-        background: url('/assets/images/ide/global-region-icon2@2x.png?v=571b731a') left top no-repeat;
+        background: url('/assets/images/ide/global-region-icon2@2x.png') left top no-repeat;
         background-size: 55px; } }
   #dashboard-data-wrap .instances .resource-count {
     background-position: left -2px; }
@@ -4851,13 +4834,13 @@ div.modal-text-highlight {
     background: #55626e; }
   #RegionResourceData td {
     padding: 15px;
-    background: #edf1f3;
+    background-color: #edf1f3 !important;
     border: none;
     color: #666; }
   #RegionResourceData tr:nth-child(odd) > td {
     background-color: #e8ebed; }
   #RegionResourceData .dashboard-eip {
-    background: url('/assets/images/ide/icon/icn-eipon.png?v=f52b7ea4') left center no-repeat;
+    background: url('/assets/images/ide/icon/icn-eipon.png') left center no-repeat;
     padding-left: 16px;
     color: #148BE6; }
 
@@ -4889,12 +4872,12 @@ div.modal-text-highlight {
 .region-resource-list .thumbnail {
   height: 0;
   padding-bottom: 65%;
-  background: #55626f url('/assets/images/ide/thumbnail-stack-placehoder@2x.png?v=6c4f5cbe') center center no-repeat;
+  background: #55626f url('/assets/images/ide/thumbnail-stack-placehoder@2x.png') center center no-repeat;
   background-size: 100% auto;
   overflow: hidden;
   border-radius: 5px 5px 0 0; }
   .region-resource-list .thumbnail.app-thumbnail {
-    background-image: url('/assets/images/ide/thumbnail-app-placehoder@2x.png?v=d64d139f');
+    background-image: url('/assets/images/ide/thumbnail-app-placehoder@2x.png');
     background-size: 100% auto; }
   .region-resource-list .thumbnail img {
     width: 100%;
@@ -4990,9 +4973,9 @@ div.modal-text-highlight {
     margin-right: 4px; }
   .region-resource-list .region-resource-info > .running, .region-resource-list .region-resource-info > .stopped {
     padding-left: 14px;
-    background: url('/assets/images/ide/icon-app-running-16x16.png?v=f66ce91d') left center no-repeat; }
+    background: url('/assets/images/ide/icon-app-running-16x16.png') left center no-repeat; }
   .region-resource-list .region-resource-info > .stopped {
-    background-image: url('/assets/images/ide/icon-app-stopped-16x16.png?v=30c7df20'); }
+    background-image: url('/assets/images/ide/icon-app-stopped-16x16.png'); }
 
 #region-app-stack-wrap {
   position: relative; }
@@ -5021,7 +5004,7 @@ div.modal-text-highlight {
     cursor: pointer;
     font-size: 21px;
     color: #666;
-    background: #f3f3f3 url('/assets/images/ide/global-region-app-stack-m.png?v=359e6f6c') 20px top no-repeat; }
+    background: #f3f3f3 url('/assets/images/ide/global-region-app-stack-m.png') 20px top no-repeat; }
     #region-resource-tab > li > small {
       font-size: 12px;
       color: #ccc; }
@@ -5057,7 +5040,7 @@ div.modal-text-highlight {
   right: 8px;
   width: 114px;
   height: 119px;
-  background: url('/assets/images/ide/action-guide.png?v=4a5f19fd') top right no-repeat; }
+  background: url('/assets/images/ide/action-guide.png') top right no-repeat; }
 
 #region-switch-list {
   position: absolute;
@@ -5390,6 +5373,8 @@ button#property-app-keypair {
       color: #aaa; }
       #modal-option-group .option-list .option-item .option-edit-btn:hover {
         color: #bbb; }
+    #modal-option-group .option-list .option-item .option-edit-btn.invisible {
+      visibility: hidden; }
   #modal-option-group .option-list .option-item:nth-child(odd) {
     background-color: #333; }
   #modal-option-group .option-list .option-item:nth-child(even) {
@@ -5426,6 +5411,9 @@ button#property-app-keypair {
 #modal-option-group .slidebox table input {
   padding: 1px 6px;
   max-width: 140px; }
+#modal-option-group .slidebox table select {
+  height: auto;
+  width: 154px; }
 #modal-option-group .slidebox .error {
   position: relative;
   display: block; }
@@ -5463,7 +5451,8 @@ button#property-app-keypair {
 .prop_main {
   display: block;
   color: #fff;
-  font-size: 15px; }
+  font-size: 15px;
+  margin-bottom: 4px; }
 
 .prop_main .prop_sub {
   margin-left: 5px; }
@@ -5471,32 +5460,15 @@ button#property-app-keypair {
 .prop_sub {
   display: inline-block;
   color: #999;
-  font-size: 13px; }
+  font-size: 12px;
+  line-height: 14px; }
 
 .modal-toolbar .slidebox .content input.input.prop-half-width {
   width: 45%; }
 
-.modal-toolbar .slidebox .content .select {
-  background-image: none;
-  width: 205px;
-  background-color: #1c1c1c;
-  color: #d0d0d0;
-  border: 1px solid #000;
-  display: inline-block;
-  border-radius: 0;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none; }
-
-.modal-toolbar .slidebox .content select.select:active,
-.modal-toolbar .slidebox .content select.select:focus {
-  outline: none; }
-
-.modal-toolbar .slidebox .content select.select:disabled,
-.modal-toolbar .slidebox .content select.select.disabled {
-  background: #3f3f3f;
-  color: #666;
-  border-color: #3f3f3f; }
+.modal-toolbar .slidebox .content .select3 {
+  height: 30px;
+  width: 205px; }
 
 .pg-edit-footer .blue-link {
   color: #175d99;
@@ -5638,15 +5610,17 @@ button#property-app-keypair {
 .sslcert-placeholder section.empty .selection {
   color: #f00; }
 
+/* Rectangle 5: */
+/* Rectangle 6: */
+/* Rectangle 9: */
 .OEPanelLeft, .OEPanelRight {
   position: absolute;
   height: 100%;
   z-index: 3;
-  background: #313131; }
+  background: #202027; }
 
 .OEPanelLeft {
   width: 246px;
-  background: #242424;
   left: 0;
   -webkit-transition: left 0.1s ease-out;
   -moz-transition: left 0.1s ease-out;
@@ -5659,6 +5633,8 @@ button#property-app-keypair {
     left: -246px; }
     .OEPanelLeft.hidden > .HideOEPanelLeft:before {
       content: "\F124"; }
+  .OEPanelLeft ::selection {
+    background: transparent; }
 
 .OEPanelRight {
   right: 0;
@@ -5704,14 +5680,14 @@ button#property-app-keypair {
   position: absolute;
   bottom: 0;
   width: 100%;
-  background: #505050;
+  background: #2b2b35;
   height: 24px;
   line-height: 24px;
   color: #999;
   font-size: 12px;
   z-index: 3;
   box-sizing: border-box;
-  border-top: 1px solid #212121; }
+  border-top: 1px solid #151519; }
   .OEPanelBottom ~ .OEPanelCenter {
     bottom: 24px; }
 
@@ -5749,11 +5725,11 @@ button#property-app-keypair {
   line-height: 39px;
   color: #b0b0b0;
   text-shadow: 0 1px #333;
-  background-color: #313131;
-  border-bottom: 1px solid #202020;
+  background-color: #2b2b35;
+  border-bottom: 1px solid #151519;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
   .sidebar-title.open .menu-manage-shard-res {
-    color: #9F62D1;
+    color: #5d64b5;
     background-color: rgba(0, 0, 0, 0.3); }
   .sidebar-title i {
     width: 40px;
@@ -5762,7 +5738,7 @@ button#property-app-keypair {
     cursor: pointer;
     text-align: center; }
     .sidebar-title i:hover {
-      color: #9F62D1;
+      color: #5d64b5;
       background-color: rgba(0, 0, 0, 0.3); }
     .sidebar-title i.disabled {
       color: #666;
@@ -5811,25 +5787,25 @@ button#property-app-keypair {
   position: relative;
   font-size: 0;
   /* A hack to make sure #canvas_body.scrollHeight is correct. */
-  background: white url('/assets/images/ide/grid_x1.png?v=32f8a83f'); }
+  background: white url('/assets/images/ide/grid_x1.png'); }
   .canvas-view[data-scale="1.2"] {
-    background-image: url('/assets/images/ide/grid_x1.2.png?v=03400c63'); }
+    background-image: url('/assets/images/ide/grid_x1.2.png'); }
   .canvas-view[data-scale="1.4"] {
-    background-image: url('/assets/images/ide/grid_x1.4.png?v=3a4d0f90'); }
+    background-image: url('/assets/images/ide/grid_x1.4.png'); }
   .canvas-view[data-scale="1.6"] {
-    background-image: url('/assets/images/ide/grid_x1.6.png?v=029457a3'); }
+    background-image: url('/assets/images/ide/grid_x1.6.png'); }
   @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
     .canvas-view {
-      background-image: url('/assets/images/ide/grid_x1@2x.png?v=61c73fc7');
+      background-image: url('/assets/images/ide/grid_x1@2x.png');
       background-size: 80px 80px; }
     .canvas-view[data-scale="1.2"] {
-      background-image: url('/assets/images/ide/grid_x1.2@2x.png?v=19ccb8aa');
+      background-image: url('/assets/images/ide/grid_x1.2@2x.png');
       background-size: 64px 64px; }
     .canvas-view[data-scale="1.4"] {
-      background-image: url('/assets/images/ide/grid_x1.4@2x.png?v=e570e3c9');
+      background-image: url('/assets/images/ide/grid_x1.4@2x.png');
       background-size: 48px 48px; }
     .canvas-view[data-scale="1.6"] {
-      background-image: url('/assets/images/ide/grid_x1.6@2x.png?v=b8fd2e16');
+      background-image: url('/assets/images/ide/grid_x1.6@2x.png');
       background-size: 32px 32px; } }
   .canvas-view[data-mode="app"] .group-resizer {
     display: none; }
@@ -6245,7 +6221,7 @@ g.shadow {
   font-size: 9px;
   color: #333;
   text-align: center;
-  background: url('/assets/images/ide/icon/cvs-vol.png?v=80f313dc') center no-repeat; }
+  background: url('/assets/images/ide/icon/cvs-vol.png') center no-repeat; }
   .vpp-volume:nth-child(4n+1), .vpp-snapshot:nth-child(4n+1) {
     clear: left;
     margin-left: 10px; }
@@ -6261,7 +6237,7 @@ g.shadow {
     margin-top: 10px; }
 
 .vpp-snapshot {
-  background-image: url('/assets/images/ide/icon/cvs-snapshot.png?v=6d74e1d2'); }
+  background-image: url('/assets/images/ide/icon/cvs-snapshot.png'); }
 
 #DndItem.vpp-volume, #DndItem.vpp-snapshot {
   color: #333;
@@ -6298,7 +6274,7 @@ g.shadow {
   border: #fff 2px solid;
   border-radius: 4px;
   position: relative;
-  background: url('/assets/images/ide/icon/cvs-instance.png?v=88cd6271') 14px 10px no-repeat;
+  background: url('/assets/images/ide/icon/cvs-instance.png') 14px 10px no-repeat;
   color: #333;
   text-align: center; }
   .vpp-instance:nth-child(4n+1) {
@@ -6325,7 +6301,7 @@ g.shadow {
     width: 26px;
     color: #74B1FD;
     height: 24px;
-    background: url('/assets/images/ide/icon/icn-vol.png?v=32cc445f') center no-repeat; }
+    background: url('/assets/images/ide/icon/icn-vol.png') center no-repeat; }
 
 .instance-pp-empty {
   text-align: center;
@@ -6340,13 +6316,13 @@ g.shadow {
 .vpp-eni {
   position: relative;
   line-height: 148px;
-  background: url('/assets/images/ide/icon/cvs-eni-att.png?v=250cf163') 15px 14px no-repeat; }
+  background: url('/assets/images/ide/icon/cvs-eni-att.png') 15px 14px no-repeat; }
 
 .vpp-eip {
   position: absolute;
   width: 12px;
   height: 14px;
-  background: url('/assets/images/ide/icon/icn-eipon.png?v=f52b7ea4');
+  background: url('/assets/images/ide/icon/icn-eipon.png');
   left: 43px;
   top: 36px; }
 
@@ -6389,7 +6365,8 @@ g.shadow {
     background-color: #333;
     float: left;
     border-right: 1px solid #000;
-    border-bottom: 1px solid #000; }
+    border-bottom: 1px solid #000;
+    color: #5d64b5; }
     .resources-dropdown-wrapper li:before {
       font-size: 32px;
       text-align: center;
@@ -6399,7 +6376,7 @@ g.shadow {
       background-color: #222;
       color: #fff; }
       .resources-dropdown-wrapper li:hover span {
-        color: #148BE6; }
+        color: #ccc; }
     .resources-dropdown-wrapper li:last-child {
       border-right: none; }
     .resources-dropdown-wrapper li span {
@@ -6407,7 +6384,8 @@ g.shadow {
       position: absolute;
       top: 53px;
       text-align: center;
-      width: 80px; }
+      width: 80px;
+      color: #999; }
 
 .AmiTypeSelect {
   position: absolute;
@@ -6426,12 +6404,6 @@ g.shadow {
   background-repeat: no-repeat;
   background-color: transparent; }
 
-.elb-asg .resource-item {
-  height: 5em; }
-
-.resource-list-asg .resource-item {
-  height: 3em; }
-
 .resource-list-sort-select {
   margin-top: -21px;
   float: right;
@@ -6443,7 +6415,7 @@ g.shadow {
     box-shadow: none;
     border: none;
     background: transparent;
-    color: #ccc; }
+    color: #ddd; }
     .resource-list-sort-select .selection:hover {
       background: transparent;
       color: #eee; }
@@ -6484,35 +6456,34 @@ g.shadow {
   .resource-item.instance, .resource-item.dbinstance {
     padding-top: 5px;
     height: 132px; }
+  .resource-item.dbsnapshot {
+    padding-top: 5px; }
   .resource-item.az {
-    background-image: url('/assets/images/ide/icon/res-az.png?v=857ce644');
+    background-image: url('/assets/images/ide/icon/res-az.png');
     position: relative; }
   .resource-item.volume {
-    background-image: url('/assets/images/ide/icon/res-vol.png?v=6b8f6e5c'); }
+    background-image: url('/assets/images/ide/icon/res-vol.png'); }
   .resource-item.eni {
-    background-image: url('/assets/images/ide/icon/res-eni.png?v=3403afa2'); }
+    background-image: url('/assets/images/ide/icon/res-eni.png'); }
   .resource-item.subnet {
-    background-image: url('/assets/images/ide/icon/res-subnet.png?v=6d0a6b76'); }
+    background-image: url('/assets/images/ide/icon/res-subnet.png'); }
   .resource-item.rtb {
-    background-image: url('/assets/images/ide/icon/res-rtb.png?v=e0734b28'); }
+    background-image: url('/assets/images/ide/icon/res-rtb.png'); }
   .resource-item.igw {
-    background-image: url('/assets/images/ide/icon/res-igw.png?v=e0f040a3'); }
+    background-image: url('/assets/images/ide/icon/res-igw.png'); }
   .resource-item.vgw {
-    background-image: url('/assets/images/ide/icon/res-vgw.png?v=76049d65'); }
+    background-image: url('/assets/images/ide/icon/res-vgw.png'); }
   .resource-item.cgw {
-    background-image: url('/assets/images/ide/icon/res-cgw.png?v=cef8582f'); }
+    background-image: url('/assets/images/ide/icon/res-cgw.png'); }
   .resource-item.asg {
-    background-image: url('/assets/images/ide/icon/res-asg.png?v=8e5321bb');
+    background-image: url('/assets/images/ide/icon/res-asg.png');
     position: relative; }
   .resource-item.elb {
-    background-image: url('/assets/images/ide/icon/res-elb.png?v=dab655be'); }
+    background-image: url('/assets/images/ide/icon/res-elb.png'); }
   .resource-item.snapshot {
-    background-image: url('/assets/images/ide/icon/res-snapshot.png?v=bb1a3be5'); }
+    background-image: url('/assets/images/ide/icon/res-snapshot.png'); }
   .resource-item.subnetgroup {
-    background-image: url('/assets/images/ide/icon/res-subnetg.png?v=4416cc04'); }
-  .resource-item.dbsnapshot {
-    height: 30px;
-    background-image: url('/assets/images/ide/icon/res-rdssnap.png?v=ddfe55d2'); }
+    background-image: url('/assets/images/ide/icon/res-subnetg.png'); }
   .resource-item .resource-count {
     position: absolute;
     top: 7px;
@@ -6528,27 +6499,16 @@ g.shadow {
     padding: 2px; }
   .resource-item.disabled .resource-count {
     background: #999; }
-  .resource-item .resource-icon-dbsnapshot {
-    margin-top: -50px; }
 
-.resource-icon-instance, .resource-icon-dbinstance {
+.resource-icon-instance, .resource-icon-dbinstance, .resource-icon-dbsnapshot {
   padding-top: 12px;
   height: 48px;
-  background: url('/assets/images/ide/icon/res-instance.png?v=e7572ea2') center no-repeat; }
-  #DndItem .resource-icon-instance, #DndItem .resource-icon-dbinstance {
+  background: url('/assets/images/ide/icon/res-instance.png') center no-repeat; }
+  #DndItem .resource-icon-instance, #DndItem .resource-icon-dbinstance, #DndItem .resource-icon-dbsnapshot {
     padding-top: 28px;
     height: 62px;
     position: relative; }
-  .resource-item.asg > .resource-icon-instance, .resource-item.asg > .resource-icon-dbinstance {
-    background: #fff;
-    border-radius: 4px;
-    position: absolute;
-    left: 17px;
-    top: 17px;
-    width: 36px;
-    height: 30px;
-    padding-top: 6px; }
-  #DndItem.asg .resource-icon-instance, #DndItem.asg .resource-icon-dbinstance {
+  #DndItem.asg .resource-icon-instance, #DndItem.asg .resource-icon-dbinstance, #DndItem.asg .resource-icon-dbsnapshot {
     left: 16px;
     top: 16px;
     height: 31px;
@@ -6558,14 +6518,27 @@ g.shadow {
     -webkit-transition: all ease-in 0.2s;
     -moz-transition: all ease-in 0.2s;
     transition: all ease-in 0.2s; }
-  #DndItem.asg.dragOver .resource-icon-instance, #DndItem.asg.dragOver .resource-icon-dbinstance {
+  #DndItem.asg.dragOver .resource-icon-instance, #DndItem.asg.dragOver .resource-icon-dbinstance, #DndItem.asg.dragOver .resource-icon-dbsnapshot {
     left: 47px;
     top: 51px;
     width: 53px;
     height: 46px; }
 
+.resource-item.asg > .resource-icon-instance {
+  background: #fff;
+  border-radius: 4px;
+  position: absolute;
+  left: 17px;
+  top: 17px;
+  width: 36px;
+  height: 30px;
+  padding-top: 6px; }
+
 .resource-icon-dbinstance {
-  background-image: url('/assets/images/ide/icon/res-rds.png?v=ba0c685d'); }
+  background-image: url('/assets/images/ide/icon/res-rds.png'); }
+
+.resource-icon-dbsnapshot {
+  background-image: url('/assets/images/ide/icon/res-rdssnap.png'); }
 
 .ebs-size {
   margin-top: -1.5em;
@@ -6574,7 +6547,15 @@ g.shadow {
 
 .rds-snapshot-size {
   color: #676767;
-  line-height: 2em; }
+  line-height: 2em;
+  margin-top: 2px; }
+
+.resource-list-empty {
+  float: left;
+  text-align: center;
+  width: 100%;
+  margin-top: 25px;
+  font-size: 12px; }
 
 .az-name {
   font-size: 16px;
@@ -6606,7 +6587,7 @@ g.shadow {
   #DndItem.rtb, #DndItem.igw, #DndItem.vgw {
     width: 80px;
     height: 80px; }
-  #DndItem.elb, #DndItem.instance, #DndItem.eni, #DndItem.dbinstance {
+  #DndItem.elb, #DndItem.instance, #DndItem.eni, #DndItem.dbinstance, #DndItem.dbsnapshot {
     width: 90px;
     height: 90px; }
   #DndItem.cgw {
@@ -6735,7 +6716,7 @@ g.shadow {
     color: #aaa; }
 
 .resource-select.selectbox .selection {
-  background: #143553;
+  background: #25254c;
   color: #F3F3F3;
   height: 17px;
   border: none;
@@ -6762,17 +6743,17 @@ g.shadow {
 .btn-fav-ami, .toggle-fav {
   width: 20px;
   height: 20px;
-  background: url('/assets/images/ide/fav-btn-off.png?v=22d97db7') center no-repeat; }
+  background: url('/assets/images/ide/fav-btn-off.png') center no-repeat; }
   .btn-fav-ami:hover, .toggle-fav:hover {
     top: 0;
     right: 0;
     width: 20px;
     height: 20px;
-    background-image: url('/assets/images/ide/fav-btn-off-hover.png?v=e03404e8'); }
+    background-image: url('/assets/images/ide/fav-btn-off-hover.png'); }
   .btn-fav-ami.fav, .toggle-fav.fav {
-    background-image: url('/assets/images/ide/fav-btn.png?v=9deef1d1'); }
+    background-image: url('/assets/images/ide/fav-btn.png'); }
   .btn-fav-ami.fav:hover, .toggle-fav.fav:hover {
-    background-image: url('/assets/images/ide/fav-btn-hover.png?v=d1776393'); }
+    background-image: url('/assets/images/ide/fav-btn-hover.png'); }
 
 .btn-fav-ami {
   position: absolute;
@@ -6845,7 +6826,7 @@ g.shadow {
   left: 0;
   bottom: 0;
   position: absolute;
-  background: #313131;
+  background: #26262b;
   /* for zoomed out */ }
   .property-panel-wrapper .scroll-wrap {
     position: absolute;
@@ -6859,7 +6840,7 @@ g.shadow {
   width: 24px;
   height: 24px;
   margin-right: 5px;
-  background: url('/assets/images/ide/icon/icn-amios.png?v=2e5a83e0') left top no-repeat; }
+  background: url('/assets/images/ide/icon/icn-amios.png') left top no-repeat; }
 .icon-ami-os.centos:before {
   background-position: -24px 0; }
 .icon-ami-os.debian:before {
@@ -6925,6 +6906,28 @@ g.shadow {
   border-radius: 4px;
   border: 1px solid #9e2622; }
 
+/* General Style for Property Panel List */
+.property-list li {
+  width: 260px;
+  padding: 10px;
+  border-bottom: 1px solid #202027;
+  background: #2b2b35;
+  -webkit-transition: background .2s;
+  -moz-transition: background .2s;
+  -ms-transition: background .2s;
+  -o-transition: background .2s;
+  transition: background .2s; }
+
+.property-list li:hover {
+  background: #373743; }
+
+.property-list-no-padding {
+  border: none; }
+
+.property-list.property-list-no-padding li {
+  width: 280px;
+  padding: 0; }
+
 .property-panel-wrapper .property-dbinstance-status-icon-warning {
   color: #f00; }
   .property-panel-wrapper .property-dbinstance-status-icon-warning:hover {
@@ -6940,6 +6943,8 @@ g.shadow {
 
 .property-dbinstance #property-dbinstance-class-select .dropdown {
   top: 49px; }
+.property-dbinstance #property-dbinstance-engine-version-select.combo-dd.selectbox .scroll-wrap {
+  width: 178px; }
 .property-dbinstance input.shorter-input {
   width: 37px;
   padding-right: 7px; }
@@ -6988,8 +6993,7 @@ g.shadow {
   overflow: hidden;
   text-overflow: ellipsis;
   color: #aaa; }
-.property-dbinstance #property-dbinstance-maintenance-window-group
-label, .property-dbinstance #property-dbinstance-backup-window-group label {
+.property-dbinstance #property-dbinstance-maintenance-window-group label, .property-dbinstance #property-dbinstance-backup-window-group label {
   width: 73px; }
 
 .property-subnet-group .property-az-name {
