@@ -1775,7 +1775,7 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n    <div class=\"port-sg\">\n        <div>\n            <label for=\"og-port\">Port</label>\n            <input type=\"text\" id=\"og-port\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-required=\"true\" data-type=\"number\" autocomplete=\"off\"/>\n        </div>\n        <ul class=\"acl-sg-info-list property-list\" id=\"og-sg\">\n            ";
+    + "\" data-required=\"true\" data-type=\"number\" autocomplete=\"off\"/>\n        </div>\n        <label>Security Group</label>\n        <ul class=\"acl-sg-info-list property-list\" id=\"og-sg\">\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.sgs), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </ul>\n\n    </div>\n    ";

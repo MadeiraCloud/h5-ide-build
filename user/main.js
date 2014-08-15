@@ -1,45 +1,26 @@
 (function() {
-  var API_HOST, API_PROTO, ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, ideHttps, init, l, langType, loadLang, loadPageVar, render, sendEmail, setCredit, shouldIdeHttps, showErrorMessage, userRoute, validPassword, xhr;
+  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, userRoute, validPassword, xhr;
 
-  API_HOST = "api.visualops.io";
-
-  API_PROTO = "http://";
-
-  shouldIdeHttps = false;
-
-  ideHttps = true;
-
-
-  /* env:debug */
-
-  API_HOST = "api.mc3.io";
-
-  ideHttps = false;
-
-
-  /* env:debug:end */
-
-
-  /* env:dev                                                  env:dev:end */
-
-
-  /* AHACKFORRELEASINGPUBLICVERSION */
-
-  shouldIdeHttps = ideHttps;
-
-  API_PROTO = "https://";
-
-
-  /* AHACKFORRELEASINGPUBLICVERSION */
-
-  l = window.location;
-
-  window.language = window.version = "";
-
-  if (shouldIdeHttps && l.protocol === "http:") {
-    window.location = l.href.replace("http:", "https:");
+  (function() {
+    var MC_DOMAIN, hosts, location;
+    location = window.location;
+    if (/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/.exec(location.hostname)) {
+      console.error("VisualOps IDE can not be browsed with IP address.");
+    }
     return;
-  }
+    hosts = location.hostname.split(".");
+    if (hosts.length >= 3) {
+      MC_DOMAIN = hosts[hosts.length - 2] + "." + hosts[hosts.length - 1];
+    } else {
+      MC_DOMAIN = location.hostname;
+    }
+    window.API_HOST = "api." + MC_DOMAIN;
+    window.API_PROTO = location.protocol + "//";
+    window.language = window.version = "";
+    if (location.hostname.toLowerCase().indexOf("visualops.io") >= 0 && location.protocol === "http:") {
+      window.location = location.href.replace("http:", "https:");
+    }
+  })();
 
   goto500 = function() {
     var hash;

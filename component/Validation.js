@@ -4163,16 +4163,7 @@ return TEMPLATE; });
     var diff, i18n, isAzConsistent, isBackupMaintenanceOverlap, isDBandOgBothModified, isHaveEnoughIPForDB, isHaveReplicaStorageSmallThanOrigin, isMasterPasswordValid, isOgValid, isSqlServerCross3Subnet;
     i18n = Helper.i18n.short();
     diff = function(oldcomp, newcomp) {
-      var differ;
-      differ = new ResDiff({
-        old: {
-          component: oldcomp
-        },
-        "new": {
-          component: newcomp
-        }
-      });
-      return differ.getChangeInfo().hasResChange;
+      return !_.isEqual(oldcomp, newcomp);
     };
     isOgValid = function() {
       var db, dbs, nameStr, taId, _i, _len;

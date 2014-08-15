@@ -360,9 +360,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "</span></li>\n    <li class='item' data-id=\"1\"><span class=\"icon-elbow\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_ELBOW", {hash:{},data:data}))
     + "</span></li>\n    <li class='item' data-id=\"2\"><span class=\"icon-bezier-q\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_QUADRATIC_BELZIER", {hash:{},data:data}))
-    + "</span></li>\n    <li class='item' data-id=\"3\"><span class=\"icon-bezier-qt\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_SMOOTH_QUADRATIC_BELZIER", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_CURVE", {hash:{},data:data}))
     + "</span></li>\n  </ul>\n</div>\n<button class=\"btn-toolbar icon-hide-sg tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_HIDE_SG", {hash:{},data:data}))
     + "'></button>";
@@ -3185,12 +3183,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return null;
         }
       },
-      portPosition: function(portName) {
-        if (this.portPosMap) {
-          return this.portPosMap[portName];
-        } else {
+      portPosition: function(portName, isAtomic) {
+        var p;
+        if (!this.portPosMap) {
           return null;
         }
+        p = this.portPosMap[portName];
+        if (isAtomic && p.length >= 5) {
+          return [p[3], p[4], p[2]];
+        }
+        return p;
       },
       hover: function(evt) {
         var cn, _i, _len, _ref;
@@ -3713,6 +3715,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
     });
     CanvasElement.constant = {
+      PORT_4D_ANGLE: -1,
+      PORT_2D_H_ANGLE: -2,
+      PORT_2D_V_ANGLE: -3,
       PORT_RIGHT_ANGLE: 0,
       PORT_UP_ANGLE: 90,
       PORT_LEFT_ANGLE: 180,
@@ -6855,8 +6860,8 @@ return TEMPLATE; });
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [8, 8],
       portPosMap: {
-        "rtb-tgt-left": [10, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
-        "rtb-tgt-right": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE],
+        "rtb-tgt-left": [10, 35, CanvasElement.constant.PORT_LEFT_ANGLE, 8, 35],
+        "rtb-tgt-right": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE, 72, 35],
         "rtb-src-top": [40, 3, CanvasElement.constant.PORT_UP_ANGLE],
         "rtb-src-bottom": [40, 77, CanvasElement.constant.PORT_DOWN_ANGLE]
       },
@@ -6967,7 +6972,7 @@ return TEMPLATE; });
       defaultSize: [8, 8],
       portPosMap: {
         "vgw-tgt": [3, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
-        "vgw-vpn": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE]
+        "vgw-vpn": [70, 35, CanvasElement.constant.PORT_RIGHT_ANGLE, 72, 35]
       },
       sticky: "right",
       create: function() {
@@ -7062,8 +7067,8 @@ return TEMPLATE; });
       defaultSize: [9, 9],
       portPosMap: {
         "elb-sg-in": [2, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
-        "elb-assoc": [79, 50, CanvasElement.constant.PORT_RIGHT_ANGLE],
-        "elb-sg-out": [79, 20, CanvasElement.constant.PORT_RIGHT_ANGLE]
+        "elb-assoc": [79, 50, CanvasElement.constant.PORT_RIGHT_ANGLE, 81, 50],
+        "elb-sg-out": [79, 20, CanvasElement.constant.PORT_RIGHT_ANGLE, 81, 20]
       },
       iconUrl: function() {
         if (this.model.get("internal")) {
@@ -7366,7 +7371,7 @@ return TEMPLATE; });
       portPosMap: {
         "instance-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
         "instance-sg-right": [80, 20, CanvasElement.constant.PORT_RIGHT_ANGLE],
-        "instance-attach": [78, 50, CanvasElement.constant.PORT_RIGHT_ANGLE],
+        "instance-attach": [78, 50, CanvasElement.constant.PORT_RIGHT_ANGLE, 80, 50],
         "instance-rtb": [45, 2, CanvasElement.constant.PORT_UP_ANGLE]
       },
       portDirMap: {
@@ -8065,8 +8070,43 @@ return TEMPLATE; });
 
 (function() {
   define('workspaces/editor/canvas/CeLine',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
-    var CeLine, LineMaskToClear;
+    var CeLine, LineMaskToClear, determineAngle, rotate, __determineAngle;
     LineMaskToClear = null;
+    rotate = function(point, angle) {
+      var a, c, s, x, y;
+      a = Math.PI / 180 * angle;
+      c = Math.cos(a);
+      s = Math.sin(a);
+      point.y = -point.y;
+      x = Math.round(point.x * c - point.y * s);
+      y = Math.round(point.x * s + point.y * c);
+      point.x = x;
+      point.y = -y;
+    };
+    __determineAngle = function(target, endpoint) {
+      var a;
+      a = target[2];
+      if (a === CanvasElement.constant.PORT_4D_ANGLE) {
+        if (Math.abs(endpoint[0] - target[0]) - Math.abs(endpoint[1] - target[1]) > 0) {
+          a = CanvasElement.constant.PORT_2D_H_ANGLE;
+        } else {
+          a = CanvasElement.constant.PORT_2D_V_ANGLE;
+        }
+      }
+      if (a === CanvasElement.constant.PORT_2D_H_ANGLE) {
+        target[2] = endpoint[0] >= target[0] ? CanvasElement.constant.PORT_RIGHT_ANGLE : CanvasElement.constant.PORT_LEFT_ANGLE;
+      } else if (a === CanvasElement.constant.PORT_2D_V_ANGLE) {
+        target[2] = endpoint[1] >= target[1] ? CanvasElement.constant.PORT_DOWN_ANGLE : CanvasElement.constant.PORT_UP_ANGLE;
+      }
+    };
+    determineAngle = function(p1, p2) {
+      if (p1[2] < 0) {
+        __determineAngle(p1, p2);
+      }
+      if (p2[2] < 0) {
+        __determineAngle(p2, p1);
+      }
+    };
     CeLine = CanvasElement.extend({
 
       /* env:dev                                      env:dev:end */
@@ -8156,7 +8196,7 @@ return TEMPLATE; });
         }
       },
       getConnectPorts: function(item_from, item_to, element1, element2) {
-        var connection, d, dirn_from, dirn_to, distance, from_port, i, idx, j, pos_from, pos_to, possiblePortFrom, possiblePortTo, to_port, _i, _j, _k, _l, _len, _len1, _len2, _len3;
+        var connection, d, dirn_from, dirn_to, distance, from_port, i, idx, j, port_from, port_to, pos_from, pos_to, possiblePortFrom, possiblePortTo, size_from, size_to, to_port, _i, _j, _k, _l, _len, _len1, _len2, _len3;
         connection = this.model;
         pos_to = item_to.pos(element2);
         pos_from = item_from.pos(element1);
@@ -8171,10 +8211,10 @@ return TEMPLATE; });
         possiblePortFrom = [from_port];
         possiblePortTo = [to_port];
         if (dirn_from) {
-          possiblePortFrom = dirn_from === "horizontal" ? [from_port + "-left", from_port + "-right"] : [from_port + "-top", from_port + "-bottom"];
+          possiblePortFrom = dirn_from === "horizontal" ? [from_port + "-right", from_port + "-left"] : [from_port + "-top", from_port + "-bottom"];
         }
         if (dirn_to) {
-          possiblePortTo = dirn_to === "horizontal" ? [to_port + "-left", to_port + "-right"] : [to_port + "-top", to_port + "-bottom"];
+          possiblePortTo = dirn_to === "horizontal" ? [to_port + "-right", to_port + "-left"] : [to_port + "-top", to_port + "-bottom"];
         }
         for (idx = _i = 0, _len = possiblePortFrom.length; _i < _len; idx = ++_i) {
           i = possiblePortFrom[idx];
@@ -8202,61 +8242,309 @@ return TEMPLATE; });
             d = Math.pow(i.pos[0] - j.pos[0], 2) + Math.pow(i.pos[1] - j.pos[1], 2);
             if (distance === -1 || distance > d) {
               distance = d;
-              pos_from = i;
-              pos_to = j;
+              port_from = i;
+              port_to = j;
             }
           }
         }
+        size_to = item_to.size();
+        size_from = item_from.size();
+        determineAngle(port_from.pos, port_to.pos);
         return {
           start: {
-            x: pos_from.pos[0],
-            y: pos_from.pos[1],
-            angle: pos_from.pos[2],
+            x: port_from.pos[0],
+            y: port_from.pos[1],
+            angle: port_from.pos[2],
             type: connection.port1Comp().type,
-            name: pos_from.name
+            name: port_from.name,
+            itemCX: pos_from.x + size_from.width / 2 * 10,
+            itemCY: pos_from.y + size_from.height / 2 * 10
           },
           end: {
-            x: pos_to.pos[0],
-            y: pos_to.pos[1],
-            angle: pos_to.pos[2],
+            x: port_to.pos[0],
+            y: port_to.pos[1],
+            angle: port_to.pos[2],
             type: connection.port2Comp().type,
-            name: pos_to.name
+            name: port_to.name,
+            itemCX: pos_to.x + size_to.width / 2 * 10,
+            itemCY: pos_to.y + size_to.height / 2 * 10
           }
         };
       },
       generatePath: function(item_from, item_to, element1, element2) {
-        var controlPoints, end, path, ports, start;
+        var end, ports, start;
         ports = this.getConnectPorts(item_from, item_to, element1, element2);
         start = ports.start;
         end = ports.end;
         this.__lastDir = start.y >= end.y ? 1 : -1;
-        if (start.x === end.x || start.y === end.y) {
-          path = "M" + start.x + " " + start.y + " L" + end.x + " " + end.y;
-        } else {
-          controlPoints = MC.canvas.route2(start, end, this.lineStyle());
-          if (controlPoints) {
-            switch (this.lineStyle()) {
-              case 0:
-                path = "M" + controlPoints[0].x + " " + controlPoints[0].y + " L" + controlPoints[1].x + " " + controlPoints[1].y + " L" + controlPoints[controlPoints.length - 2].x + " " + controlPoints[controlPoints.length - 2].y + " L" + controlPoints[controlPoints.length - 1].x + " " + controlPoints[controlPoints.length - 1].y;
-                break;
-              case 1:
-                path = MC.canvas._round_corner(controlPoints);
-                break;
-              case 2:
-                path = MC.canvas._bezier_q_corner(controlPoints);
-                break;
-              case 3:
-                path = MC.canvas._bezier_qt_corner(controlPoints);
-                break;
-              case 777:
-                path = MC.canvas._round_corner(controlPoints);
-            }
-          }
+        if (this.lineStyle() === 0) {
+          return "M" + start.x + " " + start.y + " L" + end.x + " " + end.y;
         }
-        return path;
+        if (this.lineStyle() === 2) {
+          return this.generateCurvePath(ports.start, ports.end);
+        }
+        if (start.x === end.x || start.y === end.y) {
+          return "M" + start.x + " " + start.y + " L" + end.x + " " + end.y;
+        }
+        return MC.canvas._round_corner(MC.canvas.route2(start, end, this.lineStyle()));
       },
       lineStyle: function() {
         return this.canvas.lineStyle();
+      },
+      generateCurvePath: function(start, end) {
+        var endX, endY, fliped, offset, origin, originalEndAngle, point, result, _i, _j, _len, _len1;
+        origin = {
+          x: start.x,
+          y: start.y
+        };
+        originalEndAngle = end.angle;
+        start.x = start.y = 0;
+        end.x -= origin.x;
+        end.y -= origin.y;
+        if (start.angle !== 0) {
+          rotate(end, -start.angle);
+          end.angle -= start.angle;
+          if (end.angle < 0) {
+            end.angle += 360;
+          }
+        }
+        fliped = false;
+        if (end.y > 0) {
+          fliped = true;
+          end.y = -end.y;
+          if (end.angle === 90) {
+            end.angle = 270;
+          } else if (end.angle === 270) {
+            end.angle = 90;
+          }
+        }
+        result = this["generateCurvePath" + end.angle](start, end);
+        result.push(end);
+        if (fliped) {
+          for (_i = 0, _len = result.length; _i < _len; _i++) {
+            point = result[_i];
+            point.y = -point.y;
+          }
+        }
+        for (_j = 0, _len1 = result.length; _j < _len1; _j++) {
+          point = result[_j];
+          rotate(point, start.angle);
+          point.x += origin.x;
+          point.y += origin.y;
+        }
+        offset = function(dir, match) {
+          var _k, _len2;
+          for (_k = 0, _len2 = result.length; _k < _len2; _k++) {
+            point = result[_k];
+            if (point[dir] === match) {
+              point[dir] += 0.5;
+            }
+          }
+        };
+        endX = result[result.length - 1].x;
+        endY = result[result.length - 1].y;
+        if (start.angle % 180 === 0) {
+          offset("y", origin.y);
+          origin.y += 0.5;
+        } else {
+          offset("x", origin.x);
+          origin.x += 0.5;
+        }
+        if (originalEndAngle % 180 === 0) {
+          offset("y", endX);
+        } else {
+          offset("x", endY);
+        }
+        if (result.length === 3) {
+          return "M" + origin.x + " " + origin.y + "C" + result[0].x + " " + result[0].y + " " + result[1].x + " " + result[1].y + " " + result[2].x + " " + result[2].y;
+        } else {
+          return "M" + origin.x + " " + origin.y + "L" + result[0].x + " " + result[0].y + "C" + result[1].x + " " + result[1].y + " " + result[2].x + " " + result[2].y + " " + result[3].x + " " + result[3].y + "L" + result[4].x + " " + result[4].y;
+        }
+      },
+      generateCurvePath0: function(start, end) {
+        var cos, dis, rad, sin, x, y;
+        x = end.x;
+        y = Math.abs(end.y);
+        dis = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / 4;
+        rad = Math.PI / 180 * 30;
+        cos = dis * Math.cos(rad);
+        sin = dis * Math.sin(rad);
+        if (x > 0) {
+          return [
+            {
+              x: cos,
+              y: -sin
+            }, {
+              x: end.x + sin,
+              y: end.y + cos
+            }
+          ];
+        } else if (x === 0) {
+          return [
+            {
+              x: cos,
+              y: -sin
+            }, {
+              x: end.x + cos,
+              y: end.y + sin
+            }
+          ];
+        } else {
+          return [
+            {
+              x: sin,
+              y: -cos
+            }, {
+              x: end.x + cos,
+              y: end.y + sin
+            }
+          ];
+        }
+      },
+      generateCurvePath90: function(start, end) {
+        var c2x, c2y, dis, rad, x, y;
+        x = end.x;
+        y = Math.abs(end.y);
+        dis = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        rad = Math.PI / 180 * 30;
+        dis /= x > 0 ? 4 : 2;
+        c2x = dis * Math.cos(rad);
+        c2y = dis * Math.sin(rad);
+        if (x > 0) {
+          return [
+            {
+              x: end.x / 2,
+              y: 0
+            }, {
+              x: end.x - c2x,
+              y: end.y - c2y
+            }
+          ];
+        } else {
+          return [
+            {
+              x: sin,
+              y: -cos
+            }, {
+              x: end.x + cos,
+              y: end.y - sin
+            }
+          ];
+        }
+      },
+      generateCurvePath180: function(start, end) {
+        var cos, dis, rad, sin, x, y;
+        if (end.x > 0) {
+          return [
+            {
+              x: end.x / 2,
+              y: 0
+            }, {
+              x: end.x / 2,
+              y: end.y
+            }
+          ];
+        }
+        x = end.x;
+        y = Math.abs(end.y);
+        dis = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / 3;
+        rad = Math.PI / 180 * 40;
+        sin = dis * Math.sin(rad);
+        cos = dis * Math.cos(rad);
+        return [
+          {
+            x: sin,
+            y: -cos
+          }, {
+            x: end.x - sin,
+            y: end.y + cos
+          }
+        ];
+      },
+      generateCurvePath270: function(start, end) {
+        var c1x, c1y, dis, rad, x, y;
+        x = end.x;
+        y = Math.abs(end.y);
+        if (x > 0) {
+          if (Math.abs(x - y) < 10) {
+            return [
+              {
+                x: x,
+                y: 0
+              }, {
+                x: x,
+                y: end.y
+              }
+            ];
+          }
+          if (x < 20) {
+            return [
+              {
+                x: 0,
+                y: 0
+              }, {
+                x: 0,
+                y: 0
+              }, {
+                x: x,
+                y: 0
+              }, {
+                x: x,
+                y: -x
+              }
+            ];
+          } else if (y < 20) {
+            return [
+              {
+                x: x - y,
+                y: 0
+              }, {
+                x: x - y,
+                y: 0
+              }, {
+                x: x,
+                y: 0
+              }, {
+                x: x,
+                y: end.y
+              }
+            ];
+          }
+          if (x < y) {
+            return [
+              {
+                x: x,
+                y: 0
+              }, {
+                x: x,
+                y: end.y / 2
+              }
+            ];
+          } else {
+            return [
+              {
+                x: x / 2,
+                y: 0
+              }, {
+                x: x,
+                y: 0
+              }
+            ];
+          }
+        }
+        dis = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / 4;
+        rad = Math.PI / 180 * 30;
+        c1x = dis * Math.cos(rad);
+        c1y = dis * Math.sin(rad);
+        return [
+          {
+            x: c1x,
+            y: -c1y
+          }, {
+            x: end.x,
+            y: end.y / 2
+          }
+        ];
       }
     }, {
       cleanLineMask: function(line) {
@@ -8376,10 +8664,25 @@ return TEMPLATE; });
       portPosMap: {
         "db-sg-left": [10, 35, CanvasElement.constant.PORT_LEFT_ANGLE],
         "db-sg-right": [79, 35, CanvasElement.constant.PORT_RIGHT_ANGLE],
-        "replica": [45, 45, CanvasElement.constant.PORT_RIGHT_ANGLE]
+        "replica": [45, 45, CanvasElement.constant.PORT_DOWN_ANGLE]
       },
       portDirMap: {
         "db-sg": "horizontal"
+      },
+      portPosition: function(portName, isAtomic) {
+        var p;
+        p = this.portPosMap[portName];
+        if (portName === "replica") {
+          p = p.slice(0);
+          if (this.model.master()) {
+            p[1] = 45;
+            p[2] = CanvasElement.constant.PORT_2D_V_ANGLE;
+          } else {
+            p[1] = 65;
+            p[2] = CanvasElement.constant.PORT_DOWN_ANGLE;
+          }
+        }
+        return p;
       },
       typeIcon: function() {
         return "ide/icon/icn-" + (this.model.category()) + ".png";

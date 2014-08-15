@@ -5381,6 +5381,11 @@
           _ref = portion.ary;
           for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
             rule = _ref[_j];
+            if (rule.protocol === '1') {
+              rule.protocol = 'icmp';
+              rule.fromPort = '0';
+              rule.toPort = '0';
+            }
             portion.owner.push({
               FromPort: rule.fromPort,
               ToPort: rule.toPort ? rule.toPort : rule.fromPort,
@@ -6113,7 +6118,7 @@
           resource: {
             Default: this.isDefault(),
             GroupId: this.get("appId"),
-            GroupName: this.get("groupName") || this.get("name"),
+            GroupName: this.isDefault() ? "default" : this.get("groupName") || this.get("name"),
             GroupDescription: this.get("description"),
             VpcId: this.getVpcRef(),
             IpPermissions: [],
@@ -6219,7 +6224,7 @@
           name: data.resource.Default ? "DefaultSG" : data.name,
           id: data.uid,
           appId: data.resource.GroupId,
-          groupName: data.resource.GroupName,
+          groupName: data.resource.Default ? "default" : data.resource.GroupName,
           description: data.resource.GroupDescription
         }, {
           isDeserialize: true
