@@ -6,8 +6,8 @@
     location = window.location;
     if (/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/.exec(location.hostname)) {
       console.error("VisualOps IDE can not be browsed with IP address.");
+      return;
     }
-    return;
     hosts = location.hostname.split(".");
     if (hosts.length >= 3) {
       MC_DOMAIN = hosts[hosts.length - 2] + "." + hosts[hosts.length - 1];

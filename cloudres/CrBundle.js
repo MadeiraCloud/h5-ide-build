@@ -1360,13 +1360,50 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnCommonRes',["./CrCommonCollection", "./CrCollection", "./CrModel", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, ApiRequest, constant, CloudResources) {
+  define('cloudres/CrModelElb',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                          env:dev:end */
+      initailize: function() {
+        var self;
+        self = this;
+        ApiRequest("elb_DescribeInstanceHealth", {
+          region_name: this.getCollection().region(),
+          elb_name: this.get("Name")
+        }).then(function(data) {
+          return self.onInsHealthData(data);
+        });
+      },
+      onInsHealthData: function(data) {
+        var _ref;
+        data = data.DescribeInstanceHealthResponse;
+        if (!data) {
+          return;
+        }
+        data = data.DescribeInstanceHealthResult;
+        if (!data) {
+          return;
+        }
+        data = (_ref = data.InstanceStates) != null ? _ref.member : void 0;
+        if (!data) {
+          return;
+        }
+        this.set("InstanceStates", data);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/CrClnCommonRes',["./CrCommonCollection", "./CrCollection", "./CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
 
     /* Elb */
     CrCommonCollection.extend({
 
       /* env:dev                                               env:dev:end */
       type: constant.RESTYPE.ELB,
+      model: CrElbModel,
       trAwsXml: function(data) {
         var _ref;
         return (_ref = data.DescribeLoadBalancersResponse.DescribeLoadBalancersResult.LoadBalancerDescriptions) != null ? _ref.member : void 0;
