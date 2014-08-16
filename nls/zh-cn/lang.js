@@ -972,7 +972,7 @@ define({
         "WELCOME_DONE_TIT": "Get started with VisualOps",
         "WELCOME_DONE_HINT": "You have connected to AWS account: ",
         "WELCOME_DONE_HINT_DEMO": "You are using a demo AWS account.",
-        "WELCOME_DONE_MSG": "<li>Play with the 5 sample stacks prebuilt in Virginia region.</li> <li>Read <a href='http://docs.visualops.io/' target='_blank'>Documentation</a>.</li> <li>Watch short <a href='http://docs.visualops.io/source/tutorial/video.html' target='_blank'>Tutorial Videos</a>. </li>",
+        "WELCOME_DONE_MSG": "<li>Play with the 5 sample stacks prebuilt in Virginia region.</li> <li>Read <a href='http://docs.visualops.io/' target='_blank'>Documentation</a>.</li> <li>Watch short <a href='http://docs.visualops.io/example/video.html' target='_blank'>Tutorial Videos</a>. </li>",
         "HEAD_MSG_ERR_UPDATE_EMAIL3": "请提供有效邮箱地址",
         "HEAD_LABEL_TOUR_DESIGN_DIAGRAM": "拖放到设计图",
         "HEAD_LABEL_TOUR_CONNECT_PORT": "连接端口",

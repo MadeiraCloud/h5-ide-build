@@ -785,7 +785,7 @@ td.table-action a.btn {
 
 .property-instance-name-wrap {
   height: 31px;
-  margin-top: 25px;
+  margin-top: 20px;
   -webkit-box-shadow: 0 1px 0 0 #5d5c5d;
   -moz-box-shadow: 0 1px 0 0 #5d5c5d;
   box-shadow: 0 1px 0 0 #5d5c5d; }
@@ -1785,7 +1785,7 @@ a.action-link:hover {
   padding: 2px 10px; }
 
 .delete-sgrule-dialog .sg-color {
-  margin-top: 7px;
+  margin-top: 5px;
   width: 10px;
   height: 10px;
   float: left;
@@ -3418,6 +3418,8 @@ div.modal-text-highlight {
 
 .highlight-status {
   color: #f8b42d; }
+  .highlight-status.in-sync {
+    color: #00d38f; }
 
 #tabbar-wrapper {
   padding: 10px 0 0 45px;
@@ -5035,6 +5037,8 @@ button#property-app-keypair {
   height: 468px;
   font-size: 12px; }
 
+#modal-option-group .og-name {
+  text-transform: lowercase; }
 #modal-option-group .header .icon-info {
   float: right;
   margin-top: 4px;
@@ -5187,6 +5191,8 @@ button#property-app-keypair {
   margin-bottom: 20px; }
   #modal-option-group .slidebox .port-sg input {
     width: 177px; }
+  #modal-option-group .slidebox .port-sg label {
+    margin-bottom: 20px; }
   #modal-option-group .slidebox .port-sg > div {
     padding-bottom: 8px; }
   #modal-option-group .slidebox .port-sg #error-sg-required {
@@ -5387,8 +5393,14 @@ button#property-app-keypair {
 .sslcert-placeholder section.empty .selection {
   color: #f00; }
 
-#property-db-instance-choose .selectbox {
+#property-db-instance-choose .selectbox.combo-dd {
   width: 320px; }
+#property-db-instance-choose .dropdown {
+  width: 320px; }
+  #property-db-instance-choose .dropdown .input {
+    width: 292px; }
+  #property-db-instance-choose .dropdown .scroll-wrap {
+    width: 318px; }
 
 /* Rectangle 5: */
 /* Rectangle 6: */
@@ -5436,7 +5448,7 @@ button#property-app-keypair {
     -moz-transition: none;
     -o-transition: none;
     transition: none; }
-  .OEPanelRight ::selection {
+  .OEPanelRight::selection {
     background: transparent; }
 
 .OEMiddleWrap {
@@ -5839,7 +5851,7 @@ button#property-app-keypair {
 .AWS-RDS-DBSubnetGroup .group-label {
   fill: #498fe1;
   white-space: pre; }
-.AWS-RDS-DBSubnetGroup:hover .group {
+.AWS-RDS-DBSubnetGroup:hover .group, .droppable.AWS-RDS-DBSubnetGroup .group {
   stroke: #498fe1; }
 .canvas-view .AWS-RDS-DBSubnetGroup.selected .group {
   stroke: #498fe1;
@@ -5903,6 +5915,8 @@ button#property-app-keypair {
 .droppable.AWS-EC2-AvailabilityZone > .group {
   stroke-width: 4px; }
 .droppable.AWS-VPC-Subnet > .group {
+  stroke-width: 4px; }
+.droppable.AWS-RDS-DBSubnetGroup > .group {
   stroke-width: 4px; }
 .droppable.AWS-AutoScaling-Group > .asg-frame {
   stroke-width: 4;
@@ -6219,6 +6233,15 @@ g.shadow {
   height: 18px;
   float: left; }
 
+.resource-list-ami {
+  position: relative; }
+  .resource-list-ami .blank-slate {
+    position: absolute;
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    top: 40%; }
+
 .resource-item {
   width: 70px;
   padding-top: 65px;
@@ -6251,7 +6274,8 @@ g.shadow {
     padding-top: 5px;
     height: 132px; }
   .resource-item.dbsnapshot {
-    padding-top: 5px; }
+    padding-top: 5px;
+    height: 90px; }
   .resource-item.az {
     background-image: url('/assets/images/ide/icon/res-az.png');
     position: relative; }
@@ -6343,13 +6367,6 @@ g.shadow {
   color: #676767;
   line-height: 2em;
   margin-top: 2px; }
-
-.resource-list-empty {
-  float: left;
-  text-align: center;
-  width: 100%;
-  margin-top: 25px;
-  font-size: 12px; }
 
 .az-name {
   font-size: 16px;
@@ -6561,9 +6578,9 @@ g.shadow {
   border: none;
   border-radius: 0;
   z-index: 3; }
-  .BrowseCommunityAmi + .scroll-content, .ManageSnapshot + .scroll-content {
+  .BrowseCommunityAmi + .nano-content, .ManageSnapshot + .nano-content {
     padding-bottom: 30px; }
-    .BrowseCommunityAmi + .scroll-content:after, .ManageSnapshot + .scroll-content:after {
+    .BrowseCommunityAmi + .nano-content:after, .ManageSnapshot + .nano-content:after {
       display: block;
       content: " ";
       clear: both; }
@@ -6628,6 +6645,14 @@ g.shadow {
     top: 33px;
     bottom: 0;
     width: 100%; }
+
+.accordion-body.nano {
+  padding: 0; }
+  .accordion-body.nano .nano-content {
+    overflow-x: hidden;
+    top: 10px;
+    left: 10px;
+    right: 10px; }
 
 .icon-ami-os:before {
   content: " ";
@@ -6961,7 +6986,14 @@ g.shadow {
   cursor: pointer; }
 
 .apply-immediately-section {
-  line-height: 18px; }
+  line-height: 18px;
+  background: #363b76;
+  position: relative; }
+  .apply-immediately-section i {
+    display: inline-block;
+    position: absolute; }
+  .apply-immediately-section label {
+    color: #fff; }
 
 .option-group-category {
   display: block;
@@ -8821,9 +8853,15 @@ g.shadow {
 /* Rectangle 9: */
 /* Edit Subnet Group Modal */
 .dbsgppp-subnet-list {
-  cursor: pointer; }
+  cursor: pointer;
+  position: relative;
+  padding-left: 32px; }
+  .dbsgppp-subnet-list .checkbox {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    margin-top: -8px; }
 
 .dbsgppp-cidr {
   font-size: 12px;
-  color: #666;
-  margin-left: 24px; }
+  color: #666; }

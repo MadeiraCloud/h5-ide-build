@@ -3806,7 +3806,10 @@ return TEMPLATE; });
           '*.resource.Attachment.AttachmentId': true,
           'DBINSTANCE.resource.AvailabilityZone': true,
           'DBINSTANCE.resource.Endpoint.Address': true,
-          'DBINSTANCE.resource.ApplyImmediately': true
+          'DBINSTANCE.resource.ApplyImmediately': true,
+          'ASG.resource.AutoScalingGroupARN': true,
+          'ASG.resource.PolicyARN': true,
+          'DBINSTANCE.resource.Endpoint': true
         };
       }
       if (!option.noDiffArrayAttrMap) {
@@ -4196,7 +4199,7 @@ return TEMPLATE; });
           return str.slice(0, -3);
         },
         replaceArrayIndex: function(path, data) {
-          var childNode, component, componentMap, deviceObj, parentKey, pluralKeys, type;
+          var childNode, component, componentMap, deviceObj, err, parentKey, pluralKeys, type;
           componentMap = this.getNodeMap(path[0]);
           component = this.getNewest(componentMap);
           type = component.type;
@@ -4240,6 +4243,9 @@ return TEMPLATE; });
             case 'SubnetIds':
               data.key = 'Subnet';
               break;
+            case 'OptionSettings':
+              data.key = 'Option';
+              break;
             case 'Options':
               data.key = 'Option';
           }
@@ -4248,6 +4254,16 @@ return TEMPLATE; });
           }
           if (path.length === 1) {
             data.key = constant.RESNAME[data.key] || data.key;
+          }
+          try {
+            if (data.key === 'MasterUserPassword' && data.value) {
+              if (data.value.type === 'changed') {
+                data.value.__new__ = data.value.__new__.replace(/./g, '*');
+              }
+            }
+          } catch (_error) {
+            err = _error;
+            null;
           }
           return data;
         }
