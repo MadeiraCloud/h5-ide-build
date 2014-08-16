@@ -3412,7 +3412,7 @@ This file use for validate component about state.
         }
         existOGModels = Design.modelClassForType(constant.RESTYPE.DBOG).allObjects();
         customOGModels = _.filter(existOGModels, function(model) {
-          if ((!model.get('default') && !model.get('createdBy')) && model.get('__connections') && model.get('__connections').length) {
+          if (!model.get('default') && !model.get('createdBy')) {
             return true;
           }
         });
