@@ -2377,7 +2377,8 @@ return Markdown;
         'COLLAPSE_STATE': 'onCollapseState',
         'REMOVE_STATE': 'onRemoveState',
         'ACE_TAB_SWITCH': 'aceTabSwitch',
-        'ACE_UTAB_SWITCH': 'aceUTabSwitch'
+        'ACE_UTAB_SWITCH': 'aceUTabSwitch',
+        'SAVE_STATE': 'onStateSaveClick'
       },
       editorShow: false,
       initialize: function() {},

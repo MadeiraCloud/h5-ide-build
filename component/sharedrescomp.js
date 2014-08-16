@@ -1127,9 +1127,17 @@ return TEMPLATE; });
         return this.processDetail($trDetail, $tr);
       },
       processDetail: function($trDetail, $tr) {
-        var that;
+        var that, updateCount;
         that = this;
-        return $trDetail.on('click', '.remove', function() {
+        updateCount = function() {
+          var subCount;
+          subCount = $trDetail.find('.sns-detail tbody tr').length;
+          $tr.find('.show-detail b').text(subCount);
+          if (subCount === 0) {
+            return $tr.find('.show-detail').click();
+          }
+        };
+        $trDetail.on('click', '.remove', function() {
           $(this).hide();
           return $trDetail.find('.do-remove-panel').show();
         }).on('click', '.cancel', function() {
@@ -1139,15 +1147,11 @@ return TEMPLATE; });
           var $removeBtn;
           $removeBtn = $(this);
           return that.removeSub($removeBtn.data('id')).then(function() {
-            var subCount;
             $removeBtn.closest('tr').remove();
-            subCount = $trDetail.find('.sns-detail tbody tr').length;
-            $tr.find('.show-detail b').text(subCount);
-            if (subCount === 0) {
-              return $tr.find('.show-detail').click();
-            }
+            return updateCount();
           });
         });
+        return updateCount();
       },
       removeSub: function(subId) {
         var m;
@@ -1171,7 +1175,8 @@ return TEMPLATE; });
       initialize: function() {
         this.initCol();
         this.initModal();
-        return this.fetch();
+        this.fetch();
+        return window.M$ = this.M$;
       },
       doAction: function(action, checked) {
         return this[action] && this[action](this.validate(action), checked);
@@ -1409,6 +1414,9 @@ return TEMPLATE; });
               pass = true;
               $allTextBox.each(function() {
                 var selectedProto;
+                if ($(this).is(':hidden')) {
+                  return;
+                }
                 if (this.id === 'create-display-name') {
                   selectedProto = that.M$('.dd-protocol .selected').data('id');
                   if (selectedProto === 'sms') {
@@ -1567,7 +1575,7 @@ return TEMPLATE; });
             tData.subCount = tData.sub.length;
             return tData;
           });
-          if (filter) {
+          if (filter === true) {
             len = keyword.length;
             data = _.filter(data, function(d) {
               return d.Name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
@@ -1580,13 +1588,13 @@ return TEMPLATE; });
               return null;
             }
           });
-          this.renderDropdownList(data);
+          this.renderDropdownList(data, filter);
         }
         return false;
       },
-      renderDropdownList: function(data) {
+      renderDropdownList: function(data, filter) {
         var region, regionName;
-        if (_.isEmpty(data)) {
+        if (_.isEmpty(data) && !filter) {
           region = Design.instance().region();
           regionName = constant.REGION_SHORT_LABEL[region];
           return this.dropdown.setContent(template.nosns({
