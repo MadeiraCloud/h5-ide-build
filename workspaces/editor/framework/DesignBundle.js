@@ -8922,9 +8922,6 @@
         if (this.isDefault()) {
           return;
         }
-        if (!this.connections().length) {
-          return;
-        }
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         component = {
           name: this.get("name"),
