@@ -10836,6 +10836,7 @@ function program14(depth0,data) {
       refreshIpList: function(event) {
         $('#property-eni-list').html(MC.template.propertyIpList(this.model.attributes.ips));
         this.updateIPAddBtnState();
+        this.bindIpItemValidate();
         return null;
       },
       bindIpItemValidate: function() {

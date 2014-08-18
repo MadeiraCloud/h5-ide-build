@@ -9162,6 +9162,9 @@
           copyConnection: ["SgAsso", "OgUsage"]
         });
         this.set('snapshotId', '');
+        if (this.get('password') === '****') {
+          this.set('password', '12345678');
+        }
       },
       setDefaultOptionGroup: function(origEngineVersion) {
         var defaultInfo, defaultOG, engineCol, origDefaultInfo, regionName;
