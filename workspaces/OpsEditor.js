@@ -24,26 +24,26 @@ function program5(depth0,data) {
   buffer += "<div class='ops-process ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'>\n  <section class=\"processing-wrap\">\n    <header class=\"processing\">";
+  buffer += "'>\r\n  <section class=\"processing-wrap\">\r\n    <header class=\"processing\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.title), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
+    + "%</span></header>\r\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\r\n    <section class=\"loading-spinner\"></section>\r\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div> </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
+    + "%;\"></div> </section>\r\n  </section>\r\n\r\n  <section class=\"success hide\">\r\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
-    + "</p>\n    <p class=\"sub-title\">"
+    + "</p>\r\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
+    + "</p>\r\n  </section>\r\n\r\n  <section class=\"fail hide error-info-block\">\r\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
-    + "</header>\n    <p class=\"sub-title\">"
+    + "</header>\r\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
+    + "</p>\r\n    <div class=\"result-error-info\">\r\n      <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_ERR_INFO", {hash:{},data:data}))
-    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n    <button class=\"btn btn-silver btn-close-process right\">"
+    + "</p>\r\n      <p class=\"detail\"></p>\r\n    </div>\r\n    <button class=\"btn btn-silver btn-close-process right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
-    + "</button>\n  </section>\n</div>";
+    + "</button>\r\n  </section>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3015,7 +3015,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<svg style=\"display:none;\" id=\"svgDefs\"><defs>\n  <path d=\"M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z\" id=\"port_diamond\"></path>\n  <path d=\"M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z\" id=\"port_right\"></path>\n  <path d=\"M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z\" id=\"port_left\"></path>\n  <path d=\"M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z\" id=\"port_top\"></path>\n  <path d=\"M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z\" id=\"port_bottom\"></path>\n  <path d=\"M0 74h90v11a5 5 0 0 1 -5 5h-80a5 5 0 0 1 -5 -5z\" id=\"label_path\" data-readonly=\"true\"></path>\n\n  <g id=\"asg_frame\">\n    <rect class=\"group-asg\" rx=\"5\" ry=\"5\" height=\"129\" x=\"1\" y=\"1\" width=\"129\"></rect>\n    <path d=\"M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z\" class=\"asg-title\"></path>\n  </g>\n  <text id=\"asg_prompt\">\n    <tspan x=\"25\" y=\"47\">Drop AMI from</tspan>\n    <tspan x=\"20\" y=\"67\">resource panel to</tspan>\n    <tspan x=\"30\" y=\"87\">create launch</tspan>\n    <tspan x=\"30\" y=\"107\">configuration</tspan>\n  </text>\n\n  <g id=\"asg_dragger\">\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\n  </g>\n\n  <g id=\"clone_indicator\" data-readonly=\"true\">\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\n  </g>\n\n  <g id=\"replica_dragger\">\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\n  </g>\n\n  <g id=\"sbg_info\" data-readonly=\"true\">\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\n  </g>\n\n</defs></svg>";
+  return "<svg style=\"display:none;\" id=\"svgDefs\"><defs>\r\n  <path d=\"M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z\" id=\"port_diamond\"></path>\r\n  <path d=\"M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z\" id=\"port_right\"></path>\r\n  <path d=\"M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z\" id=\"port_left\"></path>\r\n  <path d=\"M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z\" id=\"port_top\"></path>\r\n  <path d=\"M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z\" id=\"port_bottom\"></path>\r\n  <path d=\"M0 74h90v11a5 5 0 0 1 -5 5h-80a5 5 0 0 1 -5 -5z\" id=\"label_path\" data-readonly=\"true\"></path>\r\n\r\n  <g id=\"asg_frame\">\r\n    <rect class=\"group-asg\" rx=\"5\" ry=\"5\" height=\"129\" x=\"1\" y=\"1\" width=\"129\"></rect>\r\n    <path d=\"M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z\" class=\"asg-title\"></path>\r\n  </g>\r\n  <text id=\"asg_prompt\">\r\n    <tspan x=\"25\" y=\"47\">Drop AMI from</tspan>\r\n    <tspan x=\"20\" y=\"67\">resource panel to</tspan>\r\n    <tspan x=\"30\" y=\"87\">create launch</tspan>\r\n    <tspan x=\"30\" y=\"107\">configuration</tspan>\r\n  </text>\r\n\r\n  <g id=\"asg_dragger\">\r\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\r\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\r\n  </g>\r\n\r\n  <g id=\"clone_indicator\" data-readonly=\"true\">\r\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\r\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\r\n  </g>\r\n\r\n  <g id=\"replica_dragger\">\r\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\r\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\r\n  </g>\r\n\r\n  <g id=\"sbg_info\" data-readonly=\"true\">\r\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\r\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\r\n  </g>\r\n\r\n</defs></svg>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('workspaces/editor/canvas/CanvasManager',['CloudResources'], function(CloudResources) {
@@ -3171,7 +3171,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     CanvasView = null;
     __detailExtend = Backbone.Model.extend;
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 env:dev:end */
     SubElements = {};
     CanvasElement = Backbone.View.extend({
       _ensureElement: function() {
@@ -3658,8 +3658,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           cn.update();
         }
       },
-      applyGeometry: function(x, y, width, height) {
+      applyGeometry: function(x, y, width, height, updateConnections) {
         var ch, classes, cn, name, p, pad, pad2, ports, pos, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+        if (updateConnections == null) {
+          updateConnections = true;
+        }
         if (x !== void 0 || y !== void 0) {
           this.model.set({
             x: x,
@@ -3719,10 +3722,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
           }
         }
-        _ref2 = this.connections();
-        for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-          cn = _ref2[_l];
-          cn.update();
+        if (updateConnections) {
+          _ref2 = this.connections();
+          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+            cn = _ref2[_l];
+            cn.update();
+          }
         }
       }
     }, {
@@ -4769,7 +4774,7 @@ return TEMPLATE; });
       fixConnection: function(coord, initiator, target) {
         var toPort;
         if (target.type === constant.RESTYPE.ELB && (initiator.type === constant.RESTYPE.INSTANCE || initiator.type === constant.RESTYPE.LC)) {
-          if (coord.x < target.pos().x + target.size().width / 2) {
+          if (coord.x > target.pos().x + target.size().width / 2) {
             toPort = "elb-sg-out";
           } else {
             toPort = "elb-sg-in";
@@ -4962,7 +4967,7 @@ return TEMPLATE; });
     ________visualizeOnMove = function() {};
     ________visualizeBestfit = function() {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
     CanvasViewProto = CanvasView.prototype;
     CanvasViewProto.__addItemDragOver = function(evt, data) {
       var ItemClass, group, parentType;
@@ -5677,7 +5682,7 @@ return TEMPLATE; });
     var CanvasViewProto, ________visualizeResize, __childrenBound, __max, __min, __resizeMove, __resizeUp, __updateGroupEl, __updateRange;
     ________visualizeResize = function() {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                env:dev:end */
     CanvasViewProto = CanvasView.prototype;
     CanvasViewProto.__resizeGroupDown = function(evt) {
       var $group, $resizer, data, direction, dirt, item, left, parent, size, target, top, _i, _len;
@@ -6256,12 +6261,12 @@ return TEMPLATE; });
             x = -1;
             y = -1;
           }
-          view.applyGeometry(x, y, item.width, item.height);
+          view.applyGeometry(x, y, item.width, item.height, false);
         }
       }
     };
     CanvasView.prototype.autoLayoutFully = function() {
-      var hierachy, svgChildren;
+      var hierachy, line, svgChildren, uid, _ref;
       Defination = this.autoLayoutConfig;
 
       /*
@@ -6292,7 +6297,15 @@ return TEMPLATE; });
        * 4. Merge Position Info
        */
       this.applyGeometry(hierachy, 5, 3);
-      console.log(hierachy);
+
+      /*
+       * 5. Update Line
+       */
+      _ref = this.__itemLineMap;
+      for (uid in _ref) {
+        line = _ref[uid];
+        line.update();
+      }
     };
     return {
       DefaultGroupMethod: DefaultGroupMethod,
@@ -6765,7 +6778,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeVpc',["./CanvasElement", "constant", "./CanvasManager", "./CanvasView"], function(CanvasElement, constant, CanvasManager, CanvasView) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.VPC,
       parentType: ["SVG"],
       listenModelEvents: function() {
@@ -6796,7 +6809,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeAz',["./CanvasElement", "constant", "./CanvasManager", "./CanvasView"], function(CanvasElement, constant, CanvasManager, CanvasView) {
     return CanvasElement.extend({
 
-      /* env:dev                                    env:dev:end */
+      /* env:dev                                      env:dev:end */
       type: constant.RESTYPE.AZ,
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [23, 23],
@@ -6832,7 +6845,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeSubnet',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js", "./CanvasView"], function(CanvasElement, constant, CanvasManager, lang, CanvasView) {
     return CanvasElement.extend({
 
-      /* env:dev                                        env:dev:end */
+      /* env:dev                                          env:dev:end */
       type: constant.RESTYPE.SUBNET,
       parentType: [constant.RESTYPE.AZ],
       defaultSize: [19, 19],
@@ -6894,7 +6907,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeRtb',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.RT,
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [8, 8],
@@ -6968,7 +6981,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeIgw',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js", "Design"], function(CanvasElement, constant, CanvasManager, lang, Design) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.IGW,
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [8, 8],
@@ -7005,7 +7018,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeVgw',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.VGW,
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [8, 8],
@@ -7060,7 +7073,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeCgw',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.CGW,
       parentType: ["SVG"],
       defaultSize: [17, 10],
@@ -7100,7 +7113,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeElb',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.ELB,
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [9, 9],
@@ -7258,7 +7271,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeEni',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js", "CloudResources", "./CpEni", "event"], function(CanvasElement, constant, CanvasManager, lang, CloudResources, EniPopup, ide_event) {
     return CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.ENI,
       parentType: [constant.RESTYPE.SUBNET],
       defaultSize: [9, 9],
@@ -7403,7 +7416,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeInstance',["./CanvasElement", "constant", "./CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "event"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, ide_event) {
     return CanvasElement.extend({
 
-      /* env:dev                                          env:dev:end */
+      /* env:dev                                            env:dev:end */
       type: constant.RESTYPE.INSTANCE,
       parentType: [constant.RESTYPE.AZ, constant.RESTYPE.SUBNET, constant.RESTYPE.ASG, "ExpandedAsg"],
       defaultSize: [9, 9],
@@ -7648,7 +7661,7 @@ return TEMPLATE; });
     var CeAsg;
     CeAsg = CanvasElement.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.ASG,
       parentType: [constant.RESTYPE.SUBNET],
       defaultSize: [15, 15],
@@ -7755,7 +7768,7 @@ return TEMPLATE; });
     });
     CeAsg.extend({
 
-      /* env:dev                                             env:dev:end */
+      /* env:dev                                               env:dev:end */
       type: "ExpandedAsg",
       render: function() {
         return CanvasManager.update(this.$el.children("text"), this.model.get("originalAsg").get("name"));
@@ -7770,7 +7783,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeLc',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js", "./CpVolume", "./CpInstance", "CloudResources"], function(CanvasElement, constant, CanvasManager, lang, VolumePopup, InstancePopup, CloudResources) {
     return CanvasElement.extend({
 
-      /* env:dev                                    env:dev:end */
+      /* env:dev                                      env:dev:end */
       type: constant.RESTYPE.LC,
       portPosMap: {
         "launchconfig-sg-left": [10, 20, CanvasElement.constant.PORT_LEFT_ANGLE],
@@ -8052,7 +8065,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeSgAsso',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                        env:dev:end */
+      /* env:dev                                          env:dev:end */
       type: "SgAsso",
       initialize: function(options) {
         var canvas, self, toRenderTargetId;
@@ -8157,7 +8170,7 @@ return TEMPLATE; });
     };
     CeLine = CanvasElement.extend({
 
-      /* env:dev                                      env:dev:end */
+      /* env:dev                                        env:dev:end */
       type: "CeLine",
       node_line: true,
       portName: function(targetId) {
@@ -8596,22 +8609,22 @@ return TEMPLATE; });
     });
     CeLine.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: "EniAttachment"
     });
     CeLine.extend({
 
-      /* env:dev                                         env:dev:end */
+      /* env:dev                                           env:dev:end */
       type: "ElbAsso"
     });
     CeLine.extend({
 
-      /* env:dev                                         env:dev:end */
+      /* env:dev                                           env:dev:end */
       type: "RTB_Asso"
     });
     CeLine.extend({
 
-      /* env:dev                                          env:dev:end */
+      /* env:dev                                            env:dev:end */
       type: "RTB_Route",
       lineStyle: function() {
         return 1;
@@ -8626,22 +8639,22 @@ return TEMPLATE; });
     });
     CeLine.extend({
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                       env:dev:end */
       type: constant.RESTYPE.VPN
     });
     CeLine.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: "ElbSubnetAsso"
     });
     CeLine.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       type: "ElbAmiAsso"
     });
     CeLine.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: "DbReplication",
       select: function() {},
       createLine: function(pd) {
@@ -8661,7 +8674,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeSgLine',["./CeLine", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CeLine, constant, CanvasManager, lang) {
     return CeLine.extend({
 
-      /* env:dev                                        env:dev:end */
+      /* env:dev                                          env:dev:end */
       type: "SgRuleLine",
       createLine: function(pd) {
         var svg, svgEl;
@@ -8684,7 +8697,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeDbInstance',["./CanvasElement", "constant", "./CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "component/dbsbgroup/DbSubnetGPopup"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, DbSubnetGPopup) {
     return CanvasElement.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       type: constant.RESTYPE.DBINSTANCE,
       parentType: [constant.RESTYPE.DBSBG, constant.RESTYPE.VPC],
       defaultSize: [9, 9],
@@ -8820,8 +8833,10 @@ return TEMPLATE; });
           CanvasManager.toggle($r, m.autobackup() !== 0);
           if (this.model.slaves().length < 5) {
             tip = "Drag to create a read replica.";
+            CanvasManager.removeClass($r, "disabled");
           } else {
             tip = "Cannot create more read replica.";
+            CanvasManager.addClass($r, "disabled");
           }
           CanvasManager.update($r, tip, "tooltip");
         }
@@ -8876,7 +8891,7 @@ return TEMPLATE; });
   define('workspaces/editor/canvas/CeDbSubnetGroup',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js", "./CanvasView", "component/dbsbgroup/DbSubnetGPopup"], function(CanvasElement, constant, CanvasManager, lang, CanvasView, DbSubnetGPopup) {
     return CanvasElement.extend({
 
-      /* env:dev                                             env:dev:end */
+      /* env:dev                                               env:dev:end */
       type: constant.RESTYPE.DBSBG,
       parentType: [constant.RESTYPE.VPC],
       defaultSize: [19, 19],

@@ -27,47 +27,47 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div>\n\n<header id=\"global-region-header\">\n	<button id=\"RefreshResource\" class=\"icon-refresh\">just now</button>\n\n	<button class=\"btn btn-primary icon-new-stack js-toggle-dropdown\">"
+  buffer += "<div>\r\n\r\n<header id=\"global-region-header\">\r\n	<button id=\"RefreshResource\" class=\"icon-refresh\">just now</button>\r\n\r\n	<button class=\"btn btn-primary icon-new-stack js-toggle-dropdown\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n\n	<ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">\n	";
+    + "<i class=\"icon-caret-down\"></i></button>\r\n\r\n	<ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">\r\n	";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n\n	<button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
+  buffer += "</ul>\r\n\r\n	<button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
-    + "</button>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + "</button>\r\n\r\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
-    + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n	<div id=\"global-region-map-wrap\"> <div id=\"global-region-map-content\" class=\"clearfix\">\n		<ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n		<div id=\"global-region-status-widget\">\n			<header class=\"clearfix\">\n			  <div class=\"global-region-status-tab\">\n			    <span>0</span><h5>"
+    + "\r\n	</button>\r\n</header>\r\n\r\n\r\n<div id=\"global-region-wrap\" class=\"nano\">\r\n<div class=\"nano-content\">\r\n	<!-- Global Map -->\r\n	<div id=\"global-region-map-wrap\"> <div id=\"global-region-map-content\" class=\"clearfix\">\r\n		<ul id=\"global-region-spot\" class=\"pos-r\"></ul>\r\n		<div id=\"global-region-status-widget\">\r\n			<header class=\"clearfix\">\r\n			  <div class=\"global-region-status-tab\">\r\n			    <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
-    + "</h5>\n			  </div>\n			  <div class=\"global-region-status-tab on stack\">\n		      <span>0</span><h5>"
+    + "</h5>\r\n			  </div>\r\n			  <div class=\"global-region-status-tab on stack\">\r\n		      <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}))
-    + "</h5>\n			  </div>\n			</header>\n			<section id=\"global-region-recent-list\"></section>\n		</div>\n	</div> </div>\n	<!-- Global Map -->\n\n<section id=\"dashboard-data-wrap\">\n\n	<nav class=\"pos-r\">\n		<button id=\"region-switch\" class=\"btn-blue btn js-toggle-dropdown\">\n			<i class=\"icon-caret-down right\"></i><span>"
+    + "</h5>\r\n			  </div>\r\n			</header>\r\n			<section id=\"global-region-recent-list\"></section>\r\n		</div>\r\n	</div> </div>\r\n	<!-- Global Map -->\r\n\r\n<section id=\"dashboard-data-wrap\">\r\n\r\n	<nav class=\"pos-r\">\r\n		<button id=\"region-switch\" class=\"btn-blue btn js-toggle-dropdown\">\r\n			<i class=\"icon-caret-down right\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
-    + "</span>\n		</button>\n\n		<ul id=\"region-switch-list\" class=\"dropdown-menu\">\n			<li data-region=\"global\">"
+    + "</span>\r\n		</button>\r\n\r\n		<ul id=\"region-switch-list\" class=\"dropdown-menu\">\r\n			<li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
-    + "</li>\n			";
+    + "</li>\r\n			";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</ul>\n	</nav>\n\n	<!-- Global view --><ul id=\"GlobalView\" class=\"clearfix\" style=\"display:none;\"></ul><!-- Global view -->\n\n	<!-- Region view --><section id=\"RegionView\" style=\"display:none;\">\n		<div id=\"region-app-stack-wrap\">\n			<div class=\"dashboard-loading\"><div class=\"loading-spinner\"></div></div>\n		</div>\n		<div id=\"RegionViewWrap\">\n		<nav class=\"clearfix\" id=\"RegionResourceNav\">\n		  <div class=\"resource-tab instances on\" data-type=\"INSTANCE\">\n		    <span class=\"resource-count\">"
+  buffer += "\r\n		</ul>\r\n	</nav>\r\n\r\n	<!-- Global view --><ul id=\"GlobalView\" class=\"clearfix\" style=\"display:none;\"></ul><!-- Global view -->\r\n\r\n	<!-- Region view --><section id=\"RegionView\" style=\"display:none;\">\r\n		<div id=\"region-app-stack-wrap\">\r\n			<div class=\"dashboard-loading\"><div class=\"loading-spinner\"></div></div>\r\n		</div>\r\n		<div id=\"RegionViewWrap\">\r\n		<nav class=\"clearfix\" id=\"RegionResourceNav\">\r\n		  <div class=\"resource-tab instances on\" data-type=\"INSTANCE\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_INSTANCE", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		    <div class=\"resource-tab rds\" data-type=\"DBINSTANCE\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		    <div class=\"resource-tab rds\" data-type=\"DBINSTANCE\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RDS", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab eips\" data-type=\"EIP\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab eips\" data-type=\"EIP\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ELASTIC_IP", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab volumes\" data-type=\"VOL\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab volumes\" data-type=\"VOL\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VOLUME", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab vpcs\" data-type=\"VPC\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab vpcs\" data-type=\"VPC\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VPC", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab vpns\" data-type=\"VPN\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab vpns\" data-type=\"VPN\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VPN", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab elbs\" data-type=\"ELB\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab elbs\" data-type=\"ELB\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LOAD_BALANCER", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab asgs\" data-type=\"ASG\">\n		   <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab asgs\" data-type=\"ASG\">\r\n		   <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_AUTO_SCALING_GROUP", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab cloudwatches\" data-type=\"CW\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab cloudwatches\" data-type=\"CW\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CLOUDWATCH_ALARM", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab snss\" data-type=\"SUBSCRIPTION\">\n		    <span class=\"resource-count\">"
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		  <div class=\"resource-tab snss\" data-type=\"SUBSCRIPTION\">\r\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SNS_SUBSCRIPTION", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		</nav>\n		<div id=\"RegionResourceData\" class=\"table-head-fix\"></div>\n		</div>\n	</section><!-- Region view -->\n\n	<div id=\"DashboardDemo\">\n	  <div class=\"enter-credential\">\n	    This is only sample data of global resource sumary.</br>\n	    <a class=\"show-credential\">Provide your AWS Credential</a> to see real data\n	  </div>\n	  <img src=\"/assets/images/ide/global-demo.png\"/>\n	</div>\n</section>\n\n</div></div></div>\n\n</div>";
+    + "</span><span class=\"count-bubble\"></span></div>\r\n		</nav>\r\n		<div id=\"RegionResourceData\" class=\"table-head-fix\"></div>\r\n		</div>\r\n	</section><!-- Region view -->\r\n\r\n	<div id=\"DashboardDemo\">\r\n	  <div class=\"enter-credential\">\r\n	    This is only sample data of global resource sumary.</br>\r\n	    <a class=\"show-credential\">Provide your AWS Credential</a> to see real data\r\n	  </div>\r\n	  <img src=\"/assets/images/ide/global-demo.png\"/>\r\n	</div>\r\n</section>\r\n\r\n</div></div></div>\r\n\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/dashboard/DashboardTplData',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -1594,16 +1594,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "\n<div class=\"unmanaged-vpc-empty\">Oops, loading VPC failed.\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">Retry</button>\n</div>\n<div class=\"loading-spinner hide\"></div>\n";
+  return "\r\n<div class=\"unmanaged-vpc-empty\">Oops, loading VPC failed.\r\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">Retry</button>\r\n</div>\r\n<div class=\"loading-spinner hide\"></div>\r\n";
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	";
+  buffer += "\r\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.ready), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
+  buffer += "\r\n\r\n";
   return buffer;
   }
 function program4(depth0,data) {
@@ -1615,10 +1615,10 @@ function program4(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		";
+  buffer += "\r\n		";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(18, program18, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
+  buffer += "\r\n	";
   return buffer;
   }
 function program7(depth0,data) {
@@ -1626,53 +1626,53 @@ function program7(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.vpcs)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\r\n		";
   return buffer;
   }
 function program8(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<section>\n			<header class=\"region-header\"><span class=\"region-name\">"
+  buffer += "<section>\r\n			<header class=\"region-header\"><span class=\"region-name\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>"
     + escapeExpression(((stack1 = (depth0 && depth0.subname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<span class=\"vpc-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.vpcs)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></header>\n\n			<ul class=\"region-group clearfix\" data-region=\""
+    + "</span></header>\r\n\r\n			<ul class=\"region-group clearfix\" data-region=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n				";
+    + "\">\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.vpcs), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</ul>\n		</section>";
+  buffer += "\r\n			</ul>\r\n		</section>";
   return buffer;
   }
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<li class=\"visualize-vpc ";
+  buffer += "\r\n				<li class=\"visualize-vpc ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"\n					";
+  buffer += "\"\r\n					";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n					<h5>";
+  buffer += ">\r\n					<h5>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</h5>\n					<ol class=\"tac\">\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+  buffer += "</h5>\r\n					<ol class=\"tac\">\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subnet)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">subnet</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">subnet</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">running instance</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">running instance</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.stopped)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">stopped instance</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">stopped instance</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">network interface</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">network interface</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eip)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">elastic ip</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">elastic ip</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.elb)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">load balancer</span></li>\n					</ol>\n					<button class=\"btn btn-blue visualize-vpc-btn\" data-vpcid=\""
+    + "</div><span class=\"vis-res-name\">load balancer</span></li>\r\n					</ol>\r\n					<button class=\"btn btn-blue visualize-vpc-btn\" data-vpcid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">Import</button>\n				</li>\n				";
+    + "\">Import</button>\r\n				</li>\r\n				";
   return buffer;
   }
 function program10(depth0,data) {
@@ -1712,10 +1712,10 @@ function program18(depth0,data) {
   return "<div class=\"unmanaged-vpc-empty\">There is no VPC to import.</div>";
   }
 
-  buffer += "<div class=\"scroll-wrap scrollbar-auto-hide\" style=\"height:500px;\">\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div id=\"VisualizeVpcDialog\" class=\"scroll-content\">\n";
+  buffer += "<div class=\"scroll-wrap scrollbar-auto-hide\" style=\"height:500px;\">\r\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n	<div id=\"VisualizeVpcDialog\" class=\"scroll-content\">\r\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.fail), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n	</div>\n</div>";
+  buffer += "\r\n\r\n	</div>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
