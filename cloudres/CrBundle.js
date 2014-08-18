@@ -2317,9 +2317,8 @@
         });
       },
       parseFetchData: function(data) {
-        var RESTYPE, acl, app_json, cln, comp, d, dbins, extraAttr, pending, region, sg, topic, topicComp, topicCompAry, topicMap, type, uid, _i, _j, _len, _len1, _ref, _ref1;
+        var RESTYPE, acl, cln, comp, d, dbins, extraAttr, pending, region, sg, topic, topicComp, topicCompAry, topicMap, type, uid, _i, _j, _len, _len1, _ref, _ref1;
         delete data.vpc;
-        app_json = data.app_json;
         extraAttr = {
           RES_TAG: this.category
         };
@@ -2428,44 +2427,14 @@
             this.generatedJson.component[topic.uid] = topic;
           }
         } else {
-          this.generatedJson = this.__generateJsonFromRes();
+
+          /* env:dev                                                                     env:dev:end */
+          console.log("Generated Json from frontend:", $.extend(true, {}, this.generatedJson));
         }
         console.log("Patched Generated Json:", this.generatedJson);
-      },
-      __generateJsonFromRes: function() {
-        var json, res;
-        res = CloudResources.getAllResourcesForVpc(this.__region, this.category);
-        json = this.__createRawJson();
-        json.component = res.component;
-        json.layout = res.layout;
-        json.name = "imported-" + this.category;
-        return json;
-      },
-      __createRawJson: function(region) {
-        return {
-          id: "",
-          name: this.category,
-          description: "",
-          region: this.__region,
-          platform: "ec2-vpc",
-          state: "Enabled",
-          version: "2014-02-17",
-          component: {},
-          layout: {
-            size: [240, 240]
-          },
-          agent: {
-            enabled: true,
-            module: {
-              repo: App.user.get("repo"),
-              tag: App.user.get("tag")
-            }
-          },
-          property: {
-            stoppable: true
-          }
-        };
       }
+
+      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
     });
   });
 
