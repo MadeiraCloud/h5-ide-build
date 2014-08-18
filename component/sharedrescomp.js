@@ -3873,7 +3873,7 @@ return TEMPLATE; });
         return _results;
       };
       _compare = function(a, b, key, path, resultJSON) {
-        var aAry, aString, attrPath, attrPath1, attrPath2, attrPathAry, attrPathStr, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resShortType, resType, typeA, typeB, v, value1, value2, _i, _len;
+        var aAry, aString, attrPath1, attrPath2, attrPathAry, attrPathStr, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resShortType, resType, typeA, typeB, v, value1, value2, _i, _len;
         if (key === 'VPCZoneIdentifier') {
           aAry = a.split(',');
           bAry = b.split(',');
@@ -3886,7 +3886,7 @@ return TEMPLATE; });
           a = aAry;
           b = bAry;
         }
-        attrPath = '';
+        attrPathStr = '';
         if (path) {
           if (key) {
             path = path.concat([key]);
@@ -3945,7 +3945,7 @@ return TEMPLATE; });
         resultJSON[key] = {};
         if (typeA === 'object' || typeA === 'array' || typeB === 'object' || typeB === 'array') {
           if (typeA === 'array' && typeB === 'array') {
-            if (!attrPath || (attrPath && !option.noDiffArrayAttrMap[attrPath])) {
+            if (!attrPath2 || (attrPath2 && !option.noDiffArrayAttrMap[attrPath2])) {
               diffAryResult = {};
               if (a.length < b.length) {
                 _diffAry.call(this, a, b);

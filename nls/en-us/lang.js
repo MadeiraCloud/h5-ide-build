@@ -708,7 +708,7 @@ define({
         "PROP_ELB_PORT": "Port",
         "PROP_ELB_INSTANCE_PROTOCOL": "Instance Protocol",
         "PROP_ELB_INSTANCES": "Instances",
-        "PROP_ELB_HEALTH_INTERVAL_VALID": "Response timeout must be less than or equal to the health check interval value",
+        "PROP_ELB_HEALTH_INTERVAL_VALID": "Response timeout must be less than the health check interval value",
         "PROP_ELB_CONNECTION_DRAIN_TIMEOUT_INVALID": "Timeout must be an integer between 1 and 3600",
         "PROP_ELB_TIP_CLICK_TO_SELECT_ALL": "Click to select all",
         "PROP_ELB_TIP_REMOVE_LISTENER": "Remove listener",
