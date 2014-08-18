@@ -753,7 +753,7 @@ return TEMPLATE; });
         'click .icon-save-app': 'appToStack'
       },
       initialize: function(options) {
-        var ami, attr, btn, btns, opsModel, that, tpl, _i, _len;
+        var attr, btn, btns, opsModel, that, tpl, _i, _len;
         _.extend(this, options);
         opsModel = this.workspace.opsModel;
         if (opsModel.isStack()) {
@@ -769,14 +769,8 @@ return TEMPLATE; });
           };
           tpl += OpsEditorTpl.toolbar[btn](attr);
         }
-        if (this.workspace.opsModel.isApp()) {
-          ami = [].concat(this.workspace.design.componentsOfType(constant.RESTYPE.INSTANCE), this.workspace.design.componentsOfType(constant.RESTYPE.LC));
-          if (_.find(ami, function(comp) {
-            var _ref;
-            return comp && (((_ref = comp.attributes.state) != null ? _ref.length : void 0) > 0);
-          })) {
-            tpl += OpsEditorTpl.toolbar.BtnReloadStates();
-          }
+        if (this.workspace.opsModel.isApp() && this.workspace.design.attributes.agent.enabled) {
+          tpl += OpsEditorTpl.toolbar.BtnReloadStates();
         }
         this.setElement(this.parent.$el.find(".OEPanelTop").html(tpl));
         that = this;
@@ -786,7 +780,7 @@ return TEMPLATE; });
         this.updateZoomButtons();
       },
       updateTbBtns: function() {
-        var isAppEdit, opsModel, running, stopped;
+        var ami, hasState, isAppEdit, opsModel, running, stopped;
         opsModel = this.workspace.opsModel;
         this.$el.children(".toolbar-line-style").children(".dropdown").children().eq(parseInt(localStorage.getItem("canvas/lineStyle"), 10) || 2).click();
         if (opsModel.isApp()) {
@@ -804,6 +798,12 @@ return TEMPLATE; });
             this.$el.children(".icon-play").toggle(stopped).toggleClass("toolbar-btn-primary seperator", opsModel.testState(OpsModel.State.Stopped)).find("span").toggle(stopped);
             this.$el.children('.icon-update-app').toggle(!stopped);
             this.$el.find(".icon-refresh").toggle(running);
+            ami = [].concat(this.workspace.design.componentsOfType(constant.RESTYPE.INSTANCE), this.workspace.design.componentsOfType(constant.RESTYPE.LC));
+            hasState = _.find(ami, function(comp) {
+              var _ref;
+              return comp && (((_ref = comp.attributes.state) != null ? _ref.length : void 0) > 0);
+            });
+            this.$el.find('.reload-states').toggle(!!hasState);
           }
         }
         if (this.__saving) {
@@ -5463,7 +5463,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/canvas/CanvasViewConnect',["./CanvasView", "Design", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasView, Design, CanvasManager, lang) {
+  define('workspaces/editor/canvas/CanvasViewConnect',["./CanvasView", "Design", "./CanvasManager", "./CanvasElement", "i18n!/nls/lang.js"], function(CanvasView, Design, CanvasManager, CanvasElement, lang) {
     var CanvasViewProto, cancelConnect, detectDrag, startDrag, __drawLineMove, __drawLineUp;
     CanvasViewProto = CanvasView.prototype;
     cancelConnect = function(evt) {
@@ -5559,12 +5559,11 @@ return TEMPLATE; });
       return false;
     };
     CanvasViewProto.__connect = function(LineClass, comp1, comp2, startItem) {
-      var c, self;
+      var LineItemClass, c, self;
       self = this;
-      c = new LineClass(comp1, comp2, void 0, {
-        createByUser: true
-      });
-      if (c.id) {
+      LineItemClass = CanvasElement.getClassByType(LineClass.prototype.type);
+      c = LineItemClass.connect(LineClass, comp1, comp2);
+      if (c && c.id) {
         _.defer(function() {
           return self.selectItem(c.id);
         });
@@ -8130,7 +8129,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/canvas/CeLine',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+  define('workspaces/editor/canvas/CeLine',["./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js", "component/sgrule/SGRulePopup"], function(CanvasElement, constant, CanvasManager, lang, SGRulePopup) {
     var CeLine, LineMaskToClear, determineAngle, rotate, __determineAngle;
     LineMaskToClear = null;
     rotate = function(point, angle) {
@@ -8605,17 +8604,17 @@ return TEMPLATE; });
           }
         }
         LineMaskToClear = null;
+      },
+      connect: function(LineClass, comp1, comp2) {
+        return new LineClass(comp1, comp2, void 0, {
+          createByUser: true
+        });
       }
     });
     CeLine.extend({
 
       /* env:dev                                                 env:dev:end */
       type: "EniAttachment"
-    });
-    CeLine.extend({
-
-      /* env:dev                                           env:dev:end */
-      type: "ElbAsso"
     });
     CeLine.extend({
 
@@ -8651,6 +8650,13 @@ return TEMPLATE; });
 
       /* env:dev                                              env:dev:end */
       type: "ElbAmiAsso"
+    }, {
+      connect: function(LineClass, p1Comp, p2Comp) {
+        new SGRulePopup(p1Comp, p2Comp);
+        return new LineClass(p1Comp, p2Comp, void 0, {
+          createByUser: true
+        });
+      }
     });
     CeLine.extend({
 
@@ -8671,7 +8677,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/canvas/CeSgLine',["./CeLine", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CeLine, constant, CanvasManager, lang) {
+  define('workspaces/editor/canvas/CeSgLine',["./CeLine", "constant", "./CanvasManager", "i18n!/nls/lang.js", "component/sgrule/SGRulePopup"], function(CeLine, constant, CanvasManager, lang, SGRulePopup) {
     return CeLine.extend({
 
       /* env:dev                                          env:dev:end */
@@ -8687,6 +8693,10 @@ return TEMPLATE; });
       },
       renderConnection: function(item_from, item_to, element1, element2) {
         return CeLine.prototype.renderConnection.call(this, item_from, item_to, element1, element2);
+      }
+    }, {
+      connect: function(LineClass, p1Comp, p2Comp) {
+        new SGRulePopup(p1Comp, p2Comp);
       }
     });
   });
@@ -8718,7 +8728,7 @@ return TEMPLATE; });
             p[1] = 45;
             p[2] = CanvasElement.constant.PORT_2D_V_ANGLE;
           } else {
-            p[1] = 65;
+            p[1] = 61;
             p[2] = CanvasElement.constant.PORT_DOWN_ANGLE;
           }
         }

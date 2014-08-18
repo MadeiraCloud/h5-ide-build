@@ -4961,10 +4961,10 @@ function program5(depth0,data,depth1) {
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.noop,fn:self.programWithDepth(14, program14, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    </div>\n                    <div class=\"prop_main\">\n                        <div class=\"prop_sub\">Changes will apply ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n                    </div>\n                </td>\n            </tr>\n        ";
   return buffer;
@@ -5016,8 +5016,11 @@ function program14(depth0,data,depth1) {
     + "\" class=\"select3\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                                <option value=\"<engine-default>\">&lt;engine-default&gt;</option>\n                                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(17, program17, data, depth0, depth1),data:data});
+  buffer += ">\n                            ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.ParameterValue), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(19, program19, data, depth0, depth1),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </select>\n                        ";
   return buffer;
@@ -5028,75 +5031,81 @@ function program15(depth0,data) {
   return "disabled=\"disabled\"";
   }
 
-function program17(depth0,data,depth1,depth2) {
+function program17(depth0,data) {
+  
+  
+  return "<option value=\"<engine-default>\">&lt;engine-default&gt;</option>";
+  }
+
+function program19(depth0,data,depth1,depth2) {
   
   var buffer = "", stack1;
-  buffer += "\n                                    <option value=\""
+  buffer += "\n                                <option value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
-  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(21, program21, data, depth1),fn:self.programWithDepth(18, program18, data, depth1),data:data});
+  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(23, program23, data, depth1),fn:self.programWithDepth(20, program20, data, depth1),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "</option>\n                                ";
+    + "</option>\n                            ";
   return buffer;
   }
-function program18(depth0,data,depth2) {
+function program20(depth0,data,depth2) {
   
   var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   
   return "selected=\"selected\" ";
   }
 
-function program21(depth0,data,depth2) {
+function program23(depth0,data,depth2) {
   
   var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program22(depth0,data) {
+function program24(depth0,data) {
   
   
   return "selected=\"selected\"";
   }
 
-function program24(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <input type=\"text\" class=\"input prop-half-width\" name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" value=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.newValue), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.newValue), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n                            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AllowedValues), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AllowedValues), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        ";
   return buffer;
   }
-function program25(depth0,data) {
+function program27(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.newValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program27(depth0,data) {
+function program29(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.ParameterValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program29(depth0,data) {
+function program31(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<div class=\"prop_sub\">("
@@ -5105,25 +5114,25 @@ function program29(depth0,data) {
   return buffer;
   }
 
-function program31(depth0,data) {
+function program33(depth0,data) {
   
   
   return "immediately";
   }
 
-function program33(depth0,data) {
+function program35(depth0,data) {
   
   
   return "after rebooting";
   }
 
-function program35(depth0,data) {
+function program37(depth0,data) {
   
   
   return "\n            <button class=\"btn do-action\" id=\"pg-back-to-edit\">Back to Editing</button>\n            <button class=\"btn btn-blue\" id=\"rds-pg-save\">Apply Changes</button>\n        ";
   }
 
-function program37(depth0,data) {
+function program39(depth0,data) {
   
   
   return "\n            <button class=\"btn btn-blue do-action\" data-action=\"preview\" disabled>Review Changes & Save</button>\n        ";
@@ -5138,7 +5147,7 @@ function program37(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.programWithDepth(5, program5, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </tbody>\n    </table>\n</div>\n<div class=\"pg-edit-footer clearfix\">\n    <a target=\"_blank\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ParamValuesRef.html\"> Parameter Value Reference</a>\n    <div class=\"init action\" style=\"padding: 10px 0\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(37, program37, data),fn:self.program(35, program35, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(39, program39, data),fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"padding: 10px 0;display: none\">\n        <button class=\"btn btn-blue\" id=\"rds-pg-save\" disabled>Applying</button>\n        <button class=\"btn btn-silver cancel\" disabled>Cancel</button>\n    </div>\n</div>";
   return buffer;
@@ -5181,10 +5190,10 @@ function program5(depth0,data,depth1) {
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.noop,fn:self.programWithDepth(14, program14, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </div>\n                <div class=\"prop_main\">\n                    <div class=\"prop_sub\">Changes will apply ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n                </div>\n            </td>\n        </tr>\n    ";
   return buffer;
@@ -5236,8 +5245,11 @@ function program14(depth0,data,depth1) {
     + "\" class=\"select3\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                            <option value=\"<engine-default>\">&lt;engine-default&gt;</option>\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(17, program17, data, depth0, depth1),data:data});
+  buffer += ">\n                            ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.ParameterValue), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(19, program19, data, depth0, depth1),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </select>\n                    ";
   return buffer;
@@ -5248,75 +5260,81 @@ function program15(depth0,data) {
   return "disabled=\"disabled\"";
   }
 
-function program17(depth0,data,depth1,depth2) {
+function program17(depth0,data) {
+  
+  
+  return "<option value=\"<engine-default>\">&lt;engine-default&gt;</option>";
+  }
+
+function program19(depth0,data,depth1,depth2) {
   
   var buffer = "", stack1;
   buffer += "\n                                <option value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
-  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(21, program21, data, depth1),fn:self.programWithDepth(18, program18, data, depth1),data:data});
+  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(23, program23, data, depth1),fn:self.programWithDepth(20, program20, data, depth1),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "</option>\n                            ";
   return buffer;
   }
-function program18(depth0,data,depth2) {
+function program20(depth0,data,depth2) {
   
   var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   
   return "selected=\"selected\" ";
   }
 
-function program21(depth0,data,depth2) {
+function program23(depth0,data,depth2) {
   
   var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program22(depth0,data) {
+function program24(depth0,data) {
   
   
   return "selected=\"selected\"";
   }
 
-function program24(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <input type=\"text\" class=\"input prop-half-width\" name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.ParameterName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" value=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.newValue), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.newValue), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.IsModifiable), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n                        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AllowedValues), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AllowedValues), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    ";
   return buffer;
   }
-function program25(depth0,data) {
+function program27(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.newValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program27(depth0,data) {
+function program29(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.ParameterValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program29(depth0,data) {
+function program31(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<div class=\"prop_sub\">("
@@ -5325,13 +5343,13 @@ function program29(depth0,data) {
   return buffer;
   }
 
-function program31(depth0,data) {
+function program33(depth0,data) {
   
   
   return "immediately";
   }
 
-function program33(depth0,data) {
+function program35(depth0,data) {
   
   
   return "after rebooting";
@@ -5689,10 +5707,15 @@ return TEMPLATE; });
               }
             }
           ];
-          return (that.getSlides().edit.bind(that))(template.slide_edit, checked, {
-            filter: val,
-            sort: sortType
-          });
+          if (that.filterDelay) {
+            window.clearTimeout(that.filterDelay);
+          }
+          return that.filterDelay = window.setTimeout(function() {
+            return (that.getSlides().edit.bind(that))(template.slide_edit, checked, {
+              filter: val,
+              sort: sortType
+            });
+          }, 200);
         });
         return $("#sort-parameter-name").on('OPTION_CHANGE', function(event, value, data) {
           sortType = (data != null ? data.id : void 0) || value;
@@ -5761,6 +5784,7 @@ return TEMPLATE; });
               data: data,
               preview: true
             }));
+            $("#parameter-table").height($('.table-head-fix.will-be-covered>div').height() - 67).find(".scrollbar-veritical-thumb").removeAttr("style");
             $("#rds-pg-save").click(function() {
               return that.modifyParams(parameters, getChange());
             });

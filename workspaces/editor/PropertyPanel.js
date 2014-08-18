@@ -2211,7 +2211,6 @@ function program57(depth0,data) {
             return lang.ide.PARSLEY_IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
           }
         });
-        this.bindIpItemValidate();
         return this.model.attributes.name;
       },
       instanceNameChange: function(event) {
@@ -2402,6 +2401,7 @@ function program57(depth0,data) {
         }
         $('#property-network-list').html(MC.template.propertyIpList(this.model.attributes.eni.ips));
         this.updateIPAddBtnState();
+        this.bindIpItemValidate();
         return null;
       },
       updateIPAddBtnState: function(enabled) {
@@ -16823,8 +16823,8 @@ return TEMPLATE; });
             }
             increaseSize = storage - originValue.originAllocatedStorage;
             if (increaseSize > 0) {
-              minIncreaseSize = Math.ceil(originValue.originAllocatedStorage * 0.1 + 1);
-              if (increaseSize <= minIncreaseSize) {
+              minIncreaseSize = Math.ceil(originValue.originAllocatedStorage * 0.1);
+              if (increaseSize < minIncreaseSize) {
                 return "Allocated storage must increase by at least 10%, for a new storage size of at least " + (originValue.originAllocatedStorage + minIncreaseSize) + ".";
               }
             }

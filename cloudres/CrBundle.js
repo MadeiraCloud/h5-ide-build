@@ -2317,7 +2317,7 @@
         });
       },
       parseFetchData: function(data) {
-        var RESTYPE, acl, cln, comp, d, dbins, extraAttr, pending, region, sg, topic, topicComp, topicCompAry, topicMap, type, uid, _i, _j, _len, _len1, _ref, _ref1;
+        var cln, d, extraAttr, type;
         delete data.vpc;
         extraAttr = {
           RES_TAG: this.category
@@ -2335,103 +2335,10 @@
           this.generatedJson = data.app_json;
           delete data.app_json;
           console.log("Generated Json from backend:", $.extend(true, {}, this.generatedJson));
-          topicMap = {};
-          topicCompAry = [];
-          RESTYPE = constant.RESTYPE;
-          region = this.__region;
-          _ref = this.generatedJson.component;
-          for (uid in _ref) {
-            comp = _ref[uid];
-            switch (comp.type) {
-              case RESTYPE.ENI:
-                _ref1 = comp.resource.GroupSet;
-                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                  sg = _ref1[_i];
-                  if (sg.GroupName.indexOf("@{") !== 0) {
-                    sg.GroupName = "@{" + (MC.extractID(sg.GroupId)) + ".resource.GroupName}";
-                  }
-                }
-                break;
-              case RESTYPE.AZ:
-                comp.name = comp.resource.ZoneName;
-                break;
-              case RESTYPE.ACL:
-                acl = CloudResources(comp.type, region).get(comp.resource.NetworkAclId);
-                if (acl) {
-                  comp.resource.Default = acl.get("default");
-                }
-                break;
-              case RESTYPE.SG:
-                sg = CloudResources(comp.type, region).get(comp.resource.GroupId);
-                if (sg) {
-                  comp.resource.GroupName = sg.get("groupName");
-                }
-                break;
-              case RESTYPE.DBOG:
-                comp.name = comp.resource.OptionGroupName;
-                break;
-              case RESTYPE.NC:
-                if (comp.resource.TopicARN.indexOf("arn:aws:sns:") === 0) {
-                  if (!topicMap[comp.resource.TopicARN]) {
-                    topicComp = {
-                      name: comp.resource.TopicARN.split(":").pop(),
-                      type: "AWS.SNS.Topic",
-                      uid: MC.guid(),
-                      resource: {
-                        TopicArn: comp.resource.TopicARN
-                      }
-                    };
-                    topicMap[comp.resource.TopicARN] = topicComp;
-                    topicCompAry.push(topicComp);
-                    console.log("create component for Topic");
-                  }
-                  uid = topicMap[comp.resource.TopicARN].uid;
-                  comp.resource.TopicARN = "@{" + uid + ".resource.TopicArn}";
-                  console.log("convert TopicARN of NC");
-                }
-                break;
-              case RESTYPE.DBINSTANCE:
-                comp.resource.MasterUserPassword = "****";
-                dbins = CloudResources(comp.type, region).get(comp.resource.DBInstanceIdentifier);
-                if (dbins) {
-                  dbins = dbins.attributes;
-                  if (!dbins.ReadReplicaSourceDBInstanceIdentifier) {
-                    comp.resource.ReadReplicaSourceDBInstanceIdentifier = "";
-                  }
-                  pending = dbins.PendingModifiedValues;
-                  if (pending) {
-                    if (pending.AllocatedStorage) {
-                      comp.resource.AllocatedStorage = Number(pending.AllocatedStorage);
-                    }
-                    if (pending.BackupRetentionPeriod) {
-                      comp.resource.BackupRetentionPeriod = Number(pending.BackupRetentionPeriod);
-                    }
-                    if (pending.DBInstanceClass) {
-                      comp.resource.DBInstanceClass = pending.DBInstanceClass;
-                    }
-                    if (pending.Iops) {
-                      comp.resource.Iops = Number(pending.Iops);
-                    }
-                    if (pending.MultiAZ) {
-                      comp.resource.MultiAZ = pending.MultiAZ;
-                    }
-                    if (pending.MasterUserPassword) {
-                      comp.resource.MasterUserPassword = pending.MasterUserPassword;
-                    }
-                  }
-                }
-            }
-          }
-          for (_j = 0, _len1 = topicCompAry.length; _j < _len1; _j++) {
-            topic = topicCompAry[_j];
-            this.generatedJson.component[topic.uid] = topic;
-          }
         } else {
 
-          /* env:dev                                                                     env:dev:end */
-          console.log("Generated Json from frontend:", $.extend(true, {}, this.generatedJson));
+          /* env:dev                                                                                                                                                             env:dev:end */
         }
-        console.log("Patched Generated Json:", this.generatedJson);
       }
 
       /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */

@@ -3052,7 +3052,7 @@
               continue;
             }
             realIp = eni.getRealIp(ipObj.ip);
-            if (realIp === realNewIp && eni !== this) {
+            if (realIp === realNewIp) {
               if (eni === this) {
                 return 'This IP address conflicts with other IP';
               } else {
@@ -5551,14 +5551,10 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/connection/SgLine',["constant", "../ConnectionModel", "../ResourceModel", "component/sgrule/SGRulePopup"], function(constant, ConnectionModel, ResourceModel, SGRulePopup) {
+  define('workspaces/editor/framework/connection/SgLine',["constant", "../ConnectionModel", "../ResourceModel"], function(constant, ConnectionModel, ResourceModel) {
     var SgRuleLine;
     SgRuleLine = ConnectionModel.extend({
       constructor: function(p1Comp, p2Comp, attr, option) {
-        if (option && option.createByUser) {
-          new SGRulePopup(p1Comp, p2Comp);
-          return;
-        }
         console.assert(p1Comp !== p2Comp, "Sgline should connect to different resources.");
         if (!this.assignCompsToPorts(p1Comp, p2Comp) || !this.isValid()) {
           return;
@@ -6542,18 +6538,8 @@
           }
         }
       ],
-      constructor: function(p1Comp, p2Comp, attr, option) {
-        if (p1Comp.design().modeIsAppEdit() && ((p1Comp.type === constant.RESTYPE.LC && p1Comp.get('appId')) || (p2Comp.type === constant.RESTYPE.LC && p2Comp.get('appId')))) {
-          notification("error", lang.ide.NOTIFY_MSG_WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH);
-          return;
-        }
-        return ConnectionModel.prototype.constructor.apply(this, arguments);
-      },
       initialize: function(attibutes, option) {
         var ami, asg, connectedSbs, elb, foundSubnet, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
-        if (option && option.createByUser) {
-          new SGRulePopup(this.id);
-        }
         ami = this.getOtherTarget(constant.RESTYPE.ELB);
         elb = this.getTarget(constant.RESTYPE.ELB);
         subnet = ami;
@@ -6626,6 +6612,21 @@
           });
         }
         return null;
+      }
+    }, {
+      isConnectable: function(comp1, comp2) {
+        var lc;
+        if (comp1.design().modeIsAppEdit()) {
+          if (comp1.type === constant.RESTYPE.LC) {
+            lc = comp1;
+          } else if (comp2.type === constant.RESTYPE.LC) {
+            lc = comp2;
+          }
+          if (lc && lc.get("appId")) {
+            return lang.ide.NOTIFY_MSG_WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH;
+          }
+        }
+        return true;
       }
     });
     return null;
@@ -9026,7 +9027,6 @@
           return this.set({
             backupRetentionPeriod: 0,
             multiAz: false,
-            createdBy: '',
             instanceId: '',
             snapshotId: '',
             password: '****'
@@ -9158,7 +9158,7 @@
       },
       clone: function(srcTarget) {
         this.cloneAttributes(srcTarget, {
-          reserve: "newInstanceId|instanceId",
+          reserve: "newInstanceId|instanceId|createdBy",
           copyConnection: ["SgAsso", "OgUsage"]
         });
         this.set('snapshotId', '');
@@ -9209,7 +9209,7 @@
         return defaultPG;
       },
       getAllocatedRange: function() {
-        var classInfo, defaultStorage, engine, obj;
+        var engine, obj;
         engine = this.get('engine');
         if (this.isMysql()) {
           obj = {
@@ -9242,13 +9242,6 @@
               min: 30,
               max: 1024
             };
-          }
-        }
-        classInfo = this.getInstanceClassDict();
-        defaultStorage = constant.DB_DEFAULTSETTING[this.get('engine')].allocatedStorage;
-        if (classInfo && classInfo['ebs']) {
-          if (defaultStorage < 100) {
-            obj.min = 100;
           }
         }
         return obj;
@@ -9344,14 +9337,8 @@
         })(this));
       },
       getDefaultAllocatedStorage: function() {
-        var classInfo, defaultStorage;
-        classInfo = this.getInstanceClassDict();
+        var defaultStorage;
         defaultStorage = constant.DB_DEFAULTSETTING[this.get('engine')].allocatedStorage;
-        if (classInfo && classInfo['ebs']) {
-          if (defaultStorage < 100) {
-            return 100;
-          }
-        }
         return defaultStorage;
       },
       getOptionGroup: function() {
