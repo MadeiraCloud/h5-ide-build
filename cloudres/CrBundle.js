@@ -4804,6 +4804,32 @@
           Status: res.Status
         });
       },
+      copyTo: function(destRegion, newName, description) {
+        var self, source_id;
+        self = this;
+        source_id = "arn:aws:rds:" + (this.collection.region()) + ":" + (App.user.attributes.account.split('-').join("")) + ":snapshot:" + (this.get('id'));
+        return ApiRequest("rds_snap_CopyDBSnapshot", {
+          region_name: destRegion,
+          source_id: source_id,
+          target_id: newName
+        }).then(function(data) {
+          var clones, model, newSnapshot, thatCln, _ref, _ref1;
+          console.log(data);
+          newSnapshot = (_ref = data.CopyDBSnapshotResponse) != null ? (_ref1 = _ref.CopyDBSnapshotResult) != null ? _ref1.DBSnapshot : void 0 : void 0;
+          if (!newSnapshot.DBSnapshotIdentifier) {
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot copied but aws returns invalid data.");
+          }
+          thatCln = CloudResources(self.collection.type, destRegion);
+          clones = newSnapshot;
+          clones.id = newSnapshot.DBSnapshotIdentifier;
+          clones.name = newName;
+          clones.region = destRegion;
+          model = thatCln.create(clones);
+          thatCln.add(model);
+          model.tagResource();
+          return model;
+        });
+      },
       doDestroy: function() {
         return ApiRequest("rds_snap_DeleteDBSnapshot", {
           region_name: this.getCollection().region(),

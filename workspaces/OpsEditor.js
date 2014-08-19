@@ -9368,7 +9368,7 @@ return TEMPLATE; });
         this.opsModel.fetchJsonData().then((function() {
           return s.jsonLoaded();
         }), (function(err) {
-          return s.jsonLoadFailed();
+          return s.jsonLoadFailed(err);
         }));
         Workspace.apply(this, arguments);
       }
@@ -9819,15 +9819,9 @@ return TEMPLATE; });
           "new": newJson,
           callback: function(confirm) {
             if (confirm) {
-              self.opsModel.__setJsonData(newJson);
-              self.design.reload();
-              if (differ.getChangeInfo().needUpdateLayout) {
-                self.view.canvas.autoLayout();
-              }
-              return self.opsModel.saveApp(self.design.serialize());
-            } else {
-              return self.remove();
+              return self.applyDiff(newJson, differ.getChangeInfo().needUpdateLayout);
             }
+            self.remove();
           }
         });
         if (differ.getChangeInfo().hasResChange) {
@@ -9835,6 +9829,21 @@ return TEMPLATE; });
           return true;
         }
         return false;
+      };
+
+      AppEditor.prototype.applyDiff = function(newJson, autoLayout) {
+        var e;
+        try {
+          this.opsModel.__setJsonData(newJson);
+          this.design.reload();
+          if (autoLayout) {
+            this.view.canvas.autoLayout();
+          }
+        } catch (_error) {
+          e = _error;
+          console.error(e);
+        }
+        return this.opsModel.saveApp(this.design.serialize());
       };
 
       AppEditor.prototype.reloadAppData = function() {

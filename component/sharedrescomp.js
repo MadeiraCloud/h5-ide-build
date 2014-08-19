@@ -6257,19 +6257,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SOURCE_SNAPSHOT", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <p id=\"property-snapshot-source\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</p>\n                </div>\n            </div>\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
+    + "</p>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "-copy\" data-ignore=\"true\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input\" value=\"[Copied "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " from "
-    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>Duplicate</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Duplicating...</button>\n        </div>\n    </div>\n</div>";
+    + escapeExpression(((stack1 = (depth0 && depth0.newCopyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-ignore=\"true\">\n                </div>\n            </div>\n\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>Duplicate</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Duplicating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
@@ -6358,13 +6352,16 @@ return TEMPLATE; });
         this.dropdown.on('change', this.selectSnapshot, this);
         return this.dropdown;
       },
-      renderRegionDropdown: function() {
+      renderRegionDropdown: function(exceptRegion) {
         var option, selection;
         option = {
           filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_REGION
         };
         this.regionsDropdown = new combo_dropdown(option);
         this.regions = _.keys(constant.REGION_LABEL);
+        if (exceptRegion) {
+          this.regions = _.without(this.regions, exceptRegion);
+        }
         selection = lang.ide.PROP_VOLUME_SNAPSHOT_SELECT_REGION;
         this.regionsDropdown.setSelection(selection);
         this.regionsDropdown.on('open', this.openRegionDropdown, this);
@@ -6551,15 +6548,22 @@ return TEMPLATE; });
             return this.manager.$el.find(".slidebox").css('overflow', "visible");
           },
           'duplicate': function(tpl, checked) {
-            var data;
+            var data, snapshot;
             data = {};
             data.originSnapshot = checked[0];
             data.region = Design.instance().get('region');
             if (!checked) {
               return;
             }
+            data.newCopyName = checked[0].id.split(':').pop() + "-copy";
+            snapshot = this.collection.get(checked[0].id);
+            console.log(snapshot);
             this.manager.setSlide(tpl(data));
-            this.regionsDropdown = this.renderRegionDropdown();
+            if (snapshot.isAutomated()) {
+              this.regionsDropdown = this.renderRegionDropdown();
+            } else {
+              this.regionsDropdown = this.renderRegionDropdown(snapshot.collection.region());
+            }
             this.regionsDropdown.on('change', (function(_this) {
               return function() {
                 return _this.manager.$el.find('[data-action="duplicate"]').prop('disabled', false);
@@ -6607,7 +6611,7 @@ return TEMPLATE; });
         })(this));
       },
       do_duplicate: function(invalid, checked) {
-        var afterDuplicate, description, newName, sourceSnapshot, targetRegion;
+        var accountNumber, afterDuplicate, newName, sourceSnapshot, targetRegion;
         sourceSnapshot = checked[0];
         targetRegion = $('#property-region-choose').find('.selectbox .selection .manager-content-main').data('id');
         if ((this.regions.indexOf(targetRegion)) < 0) {
@@ -6615,11 +6619,15 @@ return TEMPLATE; });
         }
         this.switchAction('processing');
         newName = this.manager.$el.find('#property-snapshot-name').val();
-        description = this.manager.$el.find('#property-snapshot-desc').val();
         afterDuplicate = this.afterDuplicate.bind(this);
+        accountNumber = App.user.attributes.account;
+        if (!/^\d+$/.test(accountNumber.split('-').join(''))) {
+          notification('error', 'Please fill update your accountNumber to Numbered');
+          return false;
+        }
         return this.collection.findWhere({
           id: sourceSnapshot.data.id
-        }).copyTo(targetRegion, newName, description).then(afterDuplicate, afterDuplicate);
+        }).copyTo(targetRegion, newName).then(afterDuplicate, afterDuplicate);
       },
       afterCreated: function(result, newSnapshot) {
         this.manager.cancel();
@@ -6634,15 +6642,15 @@ return TEMPLATE; });
         currentRegion = Design.instance().get('region');
         this.manager.cancel();
         if (result.error) {
-          notification('error', "Duplicate failed because of: " + result.msg);
+          notification('error', "Duplicate failed because of: " + (result.awsResult || result.msg));
           return false;
         }
         if (result.attributes.region === currentRegion) {
           this.collection.add(result);
-          return notification('info', "New Snapshot is duplicated successfully!");
+          return notification('info', "New RDS Snapshot is duplicated successfully!");
         } else {
           this.initManager();
-          return notification('info', 'New Snapshot is duplicated to another region, you need to switch region to check the snapshot you just created.');
+          return notification('info', 'New RDS Snapshot is duplicated to another region, you need to switch region to check the snapshot you just created.');
         }
       },
       afterDeleted: function(result) {
@@ -6694,6 +6702,11 @@ return TEMPLATE; });
               icon: 'new-stack',
               type: 'create',
               name: 'Create Snapshot'
+            }, {
+              icon: 'duplicate',
+              type: 'duplicate',
+              disabled: true,
+              name: 'Duplicate'
             }, {
               icon: 'del',
               type: 'delete',
