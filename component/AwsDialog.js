@@ -6,29 +6,29 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n\n      <div class=\"selectbox\" id=\"sg-create-sg-out\">\n        <div class=\"selection\"><span class=\"sg-create-sg-color\" style=\"background:"
+  buffer += "\r\n\r\n      <div class=\"selectbox\" id=\"sg-create-sg-out\">\r\n        <div class=\"selection\"><span class=\"sg-create-sg-color\" style=\"background:"
     + escapeExpression(((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.owner)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.color)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></span>"
     + escapeExpression(((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.owner)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        <ul class=\"dropdown\">\n          ";
+    + "</div>\r\n        <ul class=\"dropdown\">\r\n          ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.owner), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </ul>\n      </div>\n\n      <div class=\"selectbox\" id=\"sg-create-direction\">\n        <div class=\"selection\">initiate traffic to</div>\n        <ul class=\"dropdown\">\n          <li class=\"item selected\" data-id=\"outbound\">initiate traffic to</li>\n          <li class=\"item\" data-id=\"inbound\">accept traffic from</li>\n          <li class=\"item\" data-id=\"biway\">have 2-way traffic with</li>\n        </ul>\n      </div>\n\n      ";
+  buffer += "\r\n        </ul>\r\n      </div>\r\n\r\n      <div class=\"selectbox\" id=\"sg-create-direction\">\r\n        <div class=\"selection\">initiate traffic to</div>\r\n        <ul class=\"dropdown\">\r\n          <li class=\"item selected\" data-id=\"outbound\">initiate traffic to</li>\r\n          <li class=\"item\" data-id=\"inbound\">accept traffic from</li>\r\n          <li class=\"item\" data-id=\"biway\">have 2-way traffic with</li>\r\n        </ul>\r\n      </div>\r\n\r\n      ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            <li class=\"item ";
+  buffer += "\r\n            <li class=\"item ";
   stack1 = helpers.unless.call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.uid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n              <span class=\"sg-create-sg-color\" style=\"background:"
+    + "\">\r\n              <span class=\"sg-create-sg-color\" style=\"background:"
     + escapeExpression(((stack1 = (depth0 && depth0.color)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></span>\n              "
+    + "\"></span>\r\n              "
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n            </li>\n          ";
+    + "\r\n            </li>\r\n          ";
   return buffer;
   }
 function program3(depth0,data) {
@@ -40,61 +40,61 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n\n      <div id=\"sg-create-sg-out\">\n        <div class=\"sg-create-selection selected\" data-id=\""
+  buffer += "\r\n\r\n      <div id=\"sg-create-sg-out\">\r\n        <div class=\"sg-create-selection selected\" data-id=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.owner)),stack1 == null || stack1 === false ? stack1 : stack1.uid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.owner)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n      </div>\n\n      <div id=\"sg-create-direction\">\n        <div class=\"sg-create-selection selected\" data-id=\"outbound\">initiate traffic to</div>\n      </div>\n\n      ";
+    + "</div>\r\n      </div>\r\n\r\n      <div id=\"sg-create-direction\">\r\n        <div class=\"sg-create-selection selected\" data-id=\"outbound\">initiate traffic to</div>\r\n      </div>\r\n\r\n      ";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            <li class=\"item truncate ";
+  buffer += "\r\n            <li class=\"item truncate ";
   stack1 = helpers.unless.call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.uid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n              <span class=\"sg-create-sg-color\" style=\"background:"
+    + "\">\r\n              <span class=\"sg-create-sg-color\" style=\"background:"
     + escapeExpression(((stack1 = (depth0 && depth0.color)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></span>\n              "
+    + "\"></span>\r\n              "
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n            </li>\n          ";
+    + "\r\n            </li>\r\n          ";
   return buffer;
   }
 
 function program9(depth0,data) {
   
   
-  return "\n          <li class=\"item\" data-id=\"custom\">Custom</li>\n          <li class=\"item\" data-id=\"all\">All</li>\n          ";
+  return "\r\n          <li class=\"item\" data-id=\"custom\">Custom</li>\r\n          <li class=\"item\" data-id=\"all\">All</li>\r\n          ";
   }
 
 function program11(depth0,data) {
   
   
-  return "\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-custom\">\n            <input class=\"input\" type=\"text\" name=\"protocol-custom-ranged\" value=\"1\" min=\"1\" max=\"255\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9]*$\" data-required=\"true\">\n          </section>\n\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-all\">Port Range: 0-65535</section>\n    ";
+  return "\r\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-custom\">\r\n            <input class=\"input\" type=\"text\" name=\"protocol-custom-ranged\" value=\"1\" min=\"1\" max=\"255\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9]*$\" data-required=\"true\">\r\n          </section>\r\n\r\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-all\">Port Range: 0-65535</section>\r\n    ";
   }
 
-  buffer += "<header class=\"modal-header sg-rule-create-h\"><h3>Create Security Group Rule</h3><i class=\"btn-modal-close\">&times;</i></header>\n\n\n<article class=\"modal-body\" id=\"sg-rule-create-modal\" data-bind=\"true\">\n  <section class=\"sg-rule-create-add-wrap\">\n\n    <section class=\"sg-node-wrap clearfix\">\n      <label>Allow</label>\n\n      ";
+  buffer += "<header class=\"modal-header sg-rule-create-h\"><h3>Create Security Group Rule</h3><i class=\"btn-modal-close\">&times;</i></header>\r\n\r\n\r\n<article class=\"modal-body\" id=\"sg-rule-create-modal\" data-bind=\"true\">\r\n  <section class=\"sg-rule-create-add-wrap\">\r\n\r\n    <section class=\"sg-node-wrap clearfix\">\r\n      <label>Allow</label>\r\n\r\n      ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.owner)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(5, program5, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n      <div class=\"selectbox\" id=\"sg-create-sg-in\">\n        <div class=\"selection truncate\"><span class=\"sg-create-sg-color\" style=\"background:"
+  buffer += "\r\n\r\n      <div class=\"selectbox\" id=\"sg-create-sg-in\">\r\n        <div class=\"selection truncate\"><span class=\"sg-create-sg-color\" style=\"background:"
     + escapeExpression(((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.relation)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.color)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></span>"
     + escapeExpression(((stack1 = ((stack1 = ((stack1 = (depth0 && depth0.relation)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        <ul class=\"dropdown\">\n          ";
+    + "</div>\r\n        <ul class=\"dropdown\">\r\n          ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.relation), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </ul>\n      </div>\n    </section>\n\n    <p class=\"clearfix mgt10\">\n      <label class=\"sg-create-proto-label\">Destination Protocol</label>\n      <label class=\"sg-create-proto-label-port\">Port</label>\n    </p>\n\n    <section class=\"clearfix sg-proto-option-wrap\">\n      <div class=\"selectbox sg-proto-option\" id=\"sg-create-proto\" data-protocal-type=\"tcp\">\n        <div class=\"selection\">TCP</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n          <li class=\"selected item\" data-id=\"tcp\">TCP</li>\n          <li class=\"item\" data-id=\"udp\">UDP</li>\n          <li class=\"item\" data-id=\"icmp\">ICMP</li>\n          ";
+  buffer += "\r\n        </ul>\r\n      </div>\r\n    </section>\r\n\r\n    <p class=\"clearfix mgt10\">\r\n      <label class=\"sg-create-proto-label\">Destination Protocol</label>\r\n      <label class=\"sg-create-proto-label-port\">Port</label>\r\n    </p>\r\n\r\n    <section class=\"clearfix sg-proto-option-wrap\">\r\n      <div class=\"selectbox sg-proto-option\" id=\"sg-create-proto\" data-protocal-type=\"tcp\">\r\n        <div class=\"selection\">TCP</div>\r\n        <ul class=\"dropdown\" tabindex=\"-1\">\r\n          <li class=\"selected item\" data-id=\"tcp\">TCP</li>\r\n          <li class=\"item\" data-id=\"udp\">UDP</li>\r\n          <li class=\"item\" data-id=\"icmp\">ICMP</li>\r\n          ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isClassic), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </ul>\n      </div>\n\n      <div class=\"sg-create-proto-inputs\">\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-tcp\" style=\"display:block;\">\n            <input class=\"input\" type=\"text\" placeholder=\"Port Range.eg.80 or 49152-65535\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9-]*$\" data-required=\"true\"/>\n          </section>\n\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-udp\">\n            <input class=\"input\" type=\"text\" placeholder=\"Port Range.eg.80 or 49152-65535\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9-]*$\" data-required=\"true\"/>\n          </section>\n\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-icmp\">\n            <div class=\"selectbox\" id=\"sg-proto-icmp-sel\">\n              <div class=\"selection\">Echo Reply(0)</div>\n              <div class=\"dropdown scroll-wrap scrollbar-auto-hide context-wrap\" style=\"height:300px;\">\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                <ul tabindex=\"-1\" class=\"scroll-content\">\n                  <li class=\"item selected\" data-id=\"0\">Echo Reply(0)</li>\n                  <li class=\"item\" data-id=\"3\">Destination Unreachable(3) ...</li>\n                  <li class=\"item\" data-id=\"4\">Source Quench(4)</li>\n                  <li class=\"item\" data-id=\"5\">Redirect Message(5) ...</li>\n                  <li class=\"item\" data-id=\"6\">Alternate Host Address(6)</li>\n                  <li class=\"item\" data-id=\"8\">Echo Request(8)</li>\n                  <li class=\"item\" data-id=\"9\">Router Advertisement(9)</li>\n                  <li class=\"item\" data-id=\"10\">Router Solicitation(10)</li>\n                  <li class=\"item\" data-id=\"11\">Time Exceeded(11) ...</li>\n                  <li class=\"item\" data-id=\"12\">Parameter Problem: Bad IP header(12) ...</li>\n                  <li class=\"item\" data-id=\"13\">Timestamp(13)</li>\n                  <li class=\"item\" data-id=\"14\">Timestamp Reply(14)</li>\n                  <li class=\"item\" data-id=\"15\">Information Request(15)</li>\n                  <li class=\"item\" data-id=\"16\">Information Reply(16)</li>\n                  <li class=\"item\" data-id=\"17\">Address Mask Request(17)</li>\n                  <li class=\"item\" data-id=\"18\">Address Mask Reply(18)</li>\n                  <li class=\"item\" data-id=\"30\">Traceroute(30)</li>\n                  <li class=\"item\" data-id=\"31\">Datagram Conversion Error(31)</li>\n                  <li class=\"item\" data-id=\"32\">Mobile Host Redirect(32)</li>\n                  <li class=\"item\" data-id=\"33\">Where Are You(33)</li>\n                  <li class=\"item\" data-id=\"34\">Here I Am(34)</li>\n                  <li class=\"item\" data-id=\"35\">Mobile Registration Request(35)</li>\n                  <li class=\"item\" data-id=\"36\">Mobile Registration Reply(36)</li>\n                  <li class=\"item\" data-id=\"37\">Domain Name Request(37)</li>\n                  <li class=\"item\" data-id=\"38\">Domain Name Reply(38)</li>\n                  <li class=\"item\" data-id=\"39\">SKIP Algorithm Discovery Protocol(39)</li>\n                  <li class=\"item\" data-id=\"40\">Photuris Security Failures(40)</li>\n                  <li class=\"item\" data-id=\"-1\">All(-1)</li>\n                </ul>\n              </div>\n            </div>\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-3\">\n              <div class=\"selection\">All(-1)</div>\n              <div class=\"dropdown scroll-wrap scrollbar-auto-hide context-wrap\" style=\"height:300px;\">\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                <ul class=\"scroll-content\" tabindex=\"-1\">\n                  <li class=\"item selected\" data-id=\"-1\">All(-1)</li>\n                  <li class=\"item\" data-id=\"0\">destination network unreachable(0)</li>\n                  <li class=\"item\" data-id=\"1\">destination host unreachable(1)</li>\n                  <li class=\"item\" data-id=\"2\">destination protocol unreachable(2)</li>\n                  <li class=\"item\" data-id=\"3\">destination port unreachable(3)</li>\n                  <li class=\"item\" data-id=\"4\">fragmentation required and DF flag set(4)</li>\n                  <li class=\"item\" data-id=\"5\">source route failed(5)</li>\n                  <li class=\"item\" data-id=\"6\">destination network unknown(6)</li>\n                  <li class=\"item\" data-id=\"7\">destination host unknown(7)</li>\n                  <li class=\"item\" data-id=\"8\">source host isolated(8)</li>\n                  <li class=\"item\" data-id=\"9\">network administratively prohibited(9)</li>\n                  <li class=\"item\" data-id=\"10\">host administratively prohibited(10)</li>\n                  <li class=\"item\" data-id=\"11\">network unreachable for TOS(11)</li>\n                  <li class=\"item\" data-id=\"12\">host unreachable for TOS(12)</li>\n                  <li class=\"item\" data-id=\"13\">communication administratively prohibited(13)</li>\n                </ul>\n              </div>\n            </div>\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-5\">\n              <div class=\"selection\">All(-1)</div>\n              <ul class=\"dropdown\" tabindex=\"-1\">\n                <li class=\"selected item\" data-id=\"-1\">All(-1)</li>\n                <li class=\"item\" data-id=\"0\">redirect datagram for the network(0)</li>\n                <li class=\"item\" data-id=\"1\">redirect datagram for the host(1)</li>\n                <li class=\"item\" data-id=\"2\">redirect datagram for the TOS & network(2)</li>\n                <li class=\"item\" data-id=\"3\">redirect datagram for the TOS & host(3)</li>\n              </ul>\n            </div>\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-11\">\n              <div class=\"selection\">All(-1)</div>\n              <ul class=\"dropdown\" tabindex=\"-1\">\n                <li class=\"item selected\" data-id=\"-1\">All(-1)</li>\n                <li class=\"item\" data-id=\"0\">TTL expired transit(0)</li>\n                <li class=\"item\" data-id=\"1\">fragmentation reasembly time exceeded(1)</li>\n              </ul>\n            </div>\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-12\">\n              <div class=\"selection\">All(-1)</div>\n              <ul class=\"dropdown\" role=\"menu\">\n                <li class=\"item selected\" data-id=\"-1\">All(-1)</li>\n                <li class=\"item\" data-id=\"0\">pointer indicates the error(0)</li>\n                <li class=\"item\" data-id=\"1\">missing a required option(1)</li>\n                <li class=\"item\" data-id=\"2\">bad length(2)</li>\n              </ul>\n            </div>\n          </section>\n\n\n    ";
+  buffer += "\r\n        </ul>\r\n      </div>\r\n\r\n      <div class=\"sg-create-proto-inputs\">\r\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-tcp\" style=\"display:block;\">\r\n            <input class=\"input\" type=\"text\" placeholder=\"Port Range.eg.80 or 49152-65535\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9-]*$\" data-required=\"true\"/>\r\n          </section>\r\n\r\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-udp\">\r\n            <input class=\"input\" type=\"text\" placeholder=\"Port Range.eg.80 or 49152-65535\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9-]*$\" data-required=\"true\"/>\r\n          </section>\r\n\r\n          <section class=\"sg-proto-input\" id=\"sg-proto-ipt-icmp\">\r\n            <div class=\"selectbox\" id=\"sg-proto-icmp-sel\">\r\n              <div class=\"selection\">Echo Reply(0)</div>\r\n              <div class=\"dropdown scroll-wrap scrollbar-auto-hide context-wrap\" style=\"height:300px;\">\r\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n                <ul tabindex=\"-1\" class=\"scroll-content\">\r\n                  <li class=\"item selected\" data-id=\"0\">Echo Reply(0)</li>\r\n                  <li class=\"item\" data-id=\"3\">Destination Unreachable(3) ...</li>\r\n                  <li class=\"item\" data-id=\"4\">Source Quench(4)</li>\r\n                  <li class=\"item\" data-id=\"5\">Redirect Message(5) ...</li>\r\n                  <li class=\"item\" data-id=\"6\">Alternate Host Address(6)</li>\r\n                  <li class=\"item\" data-id=\"8\">Echo Request(8)</li>\r\n                  <li class=\"item\" data-id=\"9\">Router Advertisement(9)</li>\r\n                  <li class=\"item\" data-id=\"10\">Router Solicitation(10)</li>\r\n                  <li class=\"item\" data-id=\"11\">Time Exceeded(11) ...</li>\r\n                  <li class=\"item\" data-id=\"12\">Parameter Problem: Bad IP header(12) ...</li>\r\n                  <li class=\"item\" data-id=\"13\">Timestamp(13)</li>\r\n                  <li class=\"item\" data-id=\"14\">Timestamp Reply(14)</li>\r\n                  <li class=\"item\" data-id=\"15\">Information Request(15)</li>\r\n                  <li class=\"item\" data-id=\"16\">Information Reply(16)</li>\r\n                  <li class=\"item\" data-id=\"17\">Address Mask Request(17)</li>\r\n                  <li class=\"item\" data-id=\"18\">Address Mask Reply(18)</li>\r\n                  <li class=\"item\" data-id=\"30\">Traceroute(30)</li>\r\n                  <li class=\"item\" data-id=\"31\">Datagram Conversion Error(31)</li>\r\n                  <li class=\"item\" data-id=\"32\">Mobile Host Redirect(32)</li>\r\n                  <li class=\"item\" data-id=\"33\">Where Are You(33)</li>\r\n                  <li class=\"item\" data-id=\"34\">Here I Am(34)</li>\r\n                  <li class=\"item\" data-id=\"35\">Mobile Registration Request(35)</li>\r\n                  <li class=\"item\" data-id=\"36\">Mobile Registration Reply(36)</li>\r\n                  <li class=\"item\" data-id=\"37\">Domain Name Request(37)</li>\r\n                  <li class=\"item\" data-id=\"38\">Domain Name Reply(38)</li>\r\n                  <li class=\"item\" data-id=\"39\">SKIP Algorithm Discovery Protocol(39)</li>\r\n                  <li class=\"item\" data-id=\"40\">Photuris Security Failures(40)</li>\r\n                  <li class=\"item\" data-id=\"-1\">All(-1)</li>\r\n                </ul>\r\n              </div>\r\n            </div>\r\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-3\">\r\n              <div class=\"selection\">All(-1)</div>\r\n              <div class=\"dropdown scroll-wrap scrollbar-auto-hide context-wrap\" style=\"height:300px;\">\r\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n                <ul class=\"scroll-content\" tabindex=\"-1\">\r\n                  <li class=\"item selected\" data-id=\"-1\">All(-1)</li>\r\n                  <li class=\"item\" data-id=\"0\">destination network unreachable(0)</li>\r\n                  <li class=\"item\" data-id=\"1\">destination host unreachable(1)</li>\r\n                  <li class=\"item\" data-id=\"2\">destination protocol unreachable(2)</li>\r\n                  <li class=\"item\" data-id=\"3\">destination port unreachable(3)</li>\r\n                  <li class=\"item\" data-id=\"4\">fragmentation required and DF flag set(4)</li>\r\n                  <li class=\"item\" data-id=\"5\">source route failed(5)</li>\r\n                  <li class=\"item\" data-id=\"6\">destination network unknown(6)</li>\r\n                  <li class=\"item\" data-id=\"7\">destination host unknown(7)</li>\r\n                  <li class=\"item\" data-id=\"8\">source host isolated(8)</li>\r\n                  <li class=\"item\" data-id=\"9\">network administratively prohibited(9)</li>\r\n                  <li class=\"item\" data-id=\"10\">host administratively prohibited(10)</li>\r\n                  <li class=\"item\" data-id=\"11\">network unreachable for TOS(11)</li>\r\n                  <li class=\"item\" data-id=\"12\">host unreachable for TOS(12)</li>\r\n                  <li class=\"item\" data-id=\"13\">communication administratively prohibited(13)</li>\r\n                </ul>\r\n              </div>\r\n            </div>\r\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-5\">\r\n              <div class=\"selection\">All(-1)</div>\r\n              <ul class=\"dropdown\" tabindex=\"-1\">\r\n                <li class=\"selected item\" data-id=\"-1\">All(-1)</li>\r\n                <li class=\"item\" data-id=\"0\">redirect datagram for the network(0)</li>\r\n                <li class=\"item\" data-id=\"1\">redirect datagram for the host(1)</li>\r\n                <li class=\"item\" data-id=\"2\">redirect datagram for the TOS & network(2)</li>\r\n                <li class=\"item\" data-id=\"3\">redirect datagram for the TOS & host(3)</li>\r\n              </ul>\r\n            </div>\r\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-11\">\r\n              <div class=\"selection\">All(-1)</div>\r\n              <ul class=\"dropdown\" tabindex=\"-1\">\r\n                <li class=\"item selected\" data-id=\"-1\">All(-1)</li>\r\n                <li class=\"item\" data-id=\"0\">TTL expired transit(0)</li>\r\n                <li class=\"item\" data-id=\"1\">fragmentation reasembly time exceeded(1)</li>\r\n              </ul>\r\n            </div>\r\n            <div class=\"selectbox sg-proto-input-sub\" id=\"sg-proto-input-sub-12\">\r\n              <div class=\"selection\">All(-1)</div>\r\n              <ul class=\"dropdown\" role=\"menu\">\r\n                <li class=\"item selected\" data-id=\"-1\">All(-1)</li>\r\n                <li class=\"item\" data-id=\"0\">pointer indicates the error(0)</li>\r\n                <li class=\"item\" data-id=\"1\">missing a required option(1)</li>\r\n                <li class=\"item\" data-id=\"2\">bad length(2)</li>\r\n              </ul>\r\n            </div>\r\n          </section>\r\n\r\n\r\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isClassic), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      </div>\n    </section>\n    <button class=\"btn btn-blue sg-rule-create-add\">Add Rule</button>\n  </section>\n\n  <section class=\"sg-rule-create-done-wrap\">\n    <div>\n      <p id=\"sg-rule-create-msg\" class=\"modal-text-major\"></p>\n      <p id=\"sg-rule-self-ref\" class=\"hide\"><i class=\"icon-info icon-label\"></i>You have created a rule referencing its own security group. This rule will not be visualized as the blue connection lines.</p>\n    </div>\n    <button class=\"btn sg-rule-create-readd\">Create another rule</button>\n    <button class=\"btn btn-silver btn-modal-close\">Close</button>\n  </section>\n</article>\n\n\n<aside class=\"sg-rule-create-sidebar\">\n  <div class=\"sidebar-wrap\">\n  <header class=\"sg-create-sb-h\">Related Rule<span class=\"num-wrap\" id=\"sgRuleCreateCount\">("
+  buffer += "\r\n      </div>\r\n    </section>\r\n    <button class=\"btn btn-blue sg-rule-create-add\">Add Rule</button>\r\n  </section>\r\n\r\n  <section class=\"sg-rule-create-done-wrap\">\r\n    <div>\r\n      <p id=\"sg-rule-create-msg\" class=\"modal-text-major\"></p>\r\n      <p id=\"sg-rule-self-ref\" class=\"hide\"><i class=\"icon-info icon-label\"></i>You have created a rule referencing its own security group. This rule will not be visualized as the blue connection lines.</p>\r\n    </div>\r\n    <button class=\"btn sg-rule-create-readd\">Create another rule</button>\r\n    <button class=\"btn btn-silver btn-modal-close\">Close</button>\r\n  </section>\r\n</article>\r\n\r\n\r\n<aside class=\"sg-rule-create-sidebar\">\r\n  <div class=\"sidebar-wrap\">\r\n  <header class=\"sg-create-sb-h\">Related Rule<span class=\"num-wrap\" id=\"sgRuleCreateCount\">("
     + escapeExpression(((stack1 = (depth0 && depth0.ruleCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</span></header>\n  <section class=\"scroll-wrap scrollbar-auto-hide\" style=\"max-height:358px\">\n      <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n      <div class=\"scroll-content sg-create-rule-list\" id=\"sgRuleCreateSidebar\"></div>\n  </section>\n</div>\n</aside>";
+    + ")</span></header>\r\n  <section class=\"scroll-wrap scrollbar-auto-hide\" style=\"max-height:358px\">\r\n      <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n      <div class=\"scroll-content sg-create-rule-list\" id=\"sgRuleCreateSidebar\"></div>\r\n  </section>\r\n</div>\r\n</aside>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -415,33 +415,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<header class=\"modal-list-header dbsgppp-az\">"
+  buffer += "\r\n<header class=\"modal-list-header dbsgppp-az\">"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</header>\n";
+    + "</header>\r\n";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<section class=\"modal-list-body dbsgppp-subnet-list\">\n  <div class=\"checkbox\">\n   <input id=\"dbsgppp-"
+  buffer += "\r\n<section class=\"modal-list-body dbsgppp-subnet-list\">\r\n  <div class=\"checkbox\">\r\n   <input id=\"dbsgppp-"
     + escapeExpression(((stack1 = (depth0 && depth0.idx)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"dbsgppp-subnet\" type=\"checkbox\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.checked), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n   <label for=\"dbsgppp-"
+  buffer += ">\r\n   <label for=\"dbsgppp-"
     + escapeExpression(((stack1 = (depth0 && depth0.idx)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n  </div>\n  <label class=\"dbsgppp-sbname\" for=\"dbsgppp-"
+    + "\"></label>\r\n  </div>\r\n  <label class=\"dbsgppp-sbname\" for=\"dbsgppp-"
     + escapeExpression(((stack1 = (depth0 && depth0.idx)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " \n  	<div class=\"dbsgppp-cidr\">("
+    + " \r\n  	<div class=\"dbsgppp-cidr\">("
     + escapeExpression(((stack1 = (depth0 && depth0.cidr)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</div>\n  </label>\n  \n</section>\n";
+    + ")</div>\r\n  </label>\r\n  \r\n</section>\r\n";
   return buffer;
   }
 function program3(depth0,data) {
@@ -450,7 +450,7 @@ function program3(depth0,data) {
   return "checked=\"checked\"";
   }
 
-  buffer += "<p class=\"modal-text-major\">Add subnets from at least 2 different availability zones to this subnet group. </p>\n\n";
+  buffer += "<p class=\"modal-text-major\">Add subnets from at least 2 different availability zones to this subnet group. </p>\r\n\r\n";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;
