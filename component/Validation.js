@@ -3349,17 +3349,17 @@ This file use for validate component about state.
       backupEnd = +backupTimeArray[1];
       maintenanceStart = +maintenanceTimeArray[0].slice(3);
       maintenanceEnd = +maintenanceTimeArray[1].slice(3);
-      if (maintenanceEnd < maintenanceStart && backupStart < backupEnd) {
-        if (maintenanceEnd < backupStart && backupStart < maintenanceStart && backupEnd < maintenanceStart) {
+      if (maintenanceEnd <= maintenanceStart && backupStart <= backupEnd) {
+        if (maintenanceEnd <= backupStart && backupStart <= maintenanceStart && backupEnd <= maintenanceStart) {
           return null;
         }
-      } else if (backupEnd < backupStart && maintenanceStart < maintenanceEnd) {
-        if (backupEnd < maintenanceStart && maintenanceStart < backupStart && maintenanceEnd < backupStart) {
+      } else if (backupEnd <= backupStart && maintenanceStart <= maintenanceEnd) {
+        if (backupEnd <= maintenanceStart && maintenanceStart <= backupStart && maintenanceEnd < backupStart) {
           return null;
         }
-      } else if (backupEnd < backupStart && maintenanceEnd < maintenanceStart) {
+      } else if (backupEnd <= backupStart && maintenanceEnd <= maintenanceStart) {
 
-      } else if (backupStart > maintenanceEnd || backupEnd < maintenanceStart) {
+      } else if (backupStart >= maintenanceEnd || backupEnd <= maintenanceStart) {
         return null;
       }
       return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_BACKUP_MAINTENANCE_OVERLAP, db.get('name'));

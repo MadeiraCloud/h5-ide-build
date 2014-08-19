@@ -6662,7 +6662,7 @@ return TEMPLATE; });
           if (deleteErrorCount > 0) {
             notification('error', deleteErrorCount + " Snapshot failed to delete, Please try again later.");
           } else {
-            notification('info', "Delete Successfully");
+            notification('info', "RDS Snapshot(s) Delete Successfully");
           }
           this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
