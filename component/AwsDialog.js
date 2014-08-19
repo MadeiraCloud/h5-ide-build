@@ -800,7 +800,7 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
     + "</p>\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n        <div><input class=\"input\" style=\"width:430px;\" id=\"appNameConfirmIpt\"/></div>\n    ";
+    + "</p>\n        <div><input class=\"input\" style=\"width:390px;\" id=\"appNameConfirmIpt\"/></div>\n    ";
   return buffer;
   }
 
