@@ -7009,7 +7009,7 @@ return TEMPLATE; });
       },
       sticky: "left",
       create: function() {
-        var appData, m, state, svg, svgEl;
+        var m, svg, svgEl;
         m = this.model;
         svg = this.canvas.svg;
         svgEl = this.createNode({
@@ -7024,14 +7024,6 @@ return TEMPLATE; });
           'data-name': 'igw-tgt',
           'data-tooltip': lang.ide.PORT_TIP_C
         }));
-        if (!m.design().modeIsStack() && m.get("appId")) {
-          appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
-          state = (appData != null ? appData.get('state') : void 0) || 'unknown';
-          svgEl.add(svg.circle(8).move(63, 15).attr({
-            'class': "res-state tooltip " + state,
-            'data-tooltip': state
-          }));
-        }
         this.canvas.appendNode(svgEl);
         this.initNode(svgEl, m.x(), m.y());
         return svgEl;
@@ -7055,7 +7047,7 @@ return TEMPLATE; });
       },
       sticky: "right",
       create: function() {
-        var appData, m, state, svg, svgEl;
+        var m, svg, svgEl;
         m = this.model;
         svg = this.canvas.svg;
         svgEl = this.createNode({
@@ -7076,14 +7068,6 @@ return TEMPLATE; });
             'data-tooltip': lang.ide.PORT_TIP_H
           })
         ]);
-        if (!m.design().modeIsStack() && m.get("appId")) {
-          appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
-          state = (appData != null ? appData.get('state') : void 0) || 'unknown';
-          svgEl.add(svg.circle(8).move(63, 15).attr({
-            'class': "res-state tooltip " + state,
-            'data-tooltip': state
-          }));
-        }
         this.canvas.appendNode(svgEl);
         this.initNode(svgEl, m.x(), m.y());
         return svgEl;
@@ -7116,7 +7100,7 @@ return TEMPLATE; });
         "cgw-vpn": [6, 45, CanvasElement.constant.PORT_LEFT_ANGLE]
       },
       create: function() {
-        var appData, m, state, svg, svgEl;
+        var m, svg, svgEl;
         m = this.model;
         svg = this.canvas.svg;
         svgEl = this.createNode({
@@ -7132,14 +7116,6 @@ return TEMPLATE; });
             'data-tooltip': lang.ide.PORT_TIP_I
           })
         ]);
-        if (!m.design().modeIsStack() && m.get("appId")) {
-          appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
-          state = (appData != null ? appData.get('state') : void 0) || 'unknown';
-          svgEl.add(svg.circle(8).move(159, 7).attr({
-            'class': "res-state tooltip " + state,
-            'data-tooltip': state
-          }));
-        }
         this.canvas.appendNode(svgEl);
         this.initNode(svgEl, m.x(), m.y());
         return svgEl;
@@ -7278,9 +7254,11 @@ return TEMPLATE; });
             }
             vols.push({
               id: vol.id,
+              appId: vol.id,
               name: bdm.deviceName,
               snapshot: vol.get("snapshotId"),
-              size: vol.get("size")
+              size: vol.get("size"),
+              state: vol.get('state') || 'unknown'
             });
           }
         }
@@ -8790,6 +8768,17 @@ return TEMPLATE; });
       listenModelEvents: function() {
         this.listenTo(this.model, "change:backupRetentionPeriod", this.render);
         this.listenTo(this.model, "change:connections", this.updateReplicaTip);
+        this.listenTo(this.canvas, "change:externalData", this.updateState);
+      },
+      updateState: function() {
+        var appData, m, state, stateIcon;
+        m = this.model;
+        stateIcon = this.$el.children(".res-state");
+        if (stateIcon) {
+          appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
+          state = (appData != null ? appData.get("DBInstanceStatus") : void 0) || "unknown";
+          return stateIcon.data("tooltip", state).attr("data-tooltip", state).attr("class", "res-state tooltip " + state);
+        }
       },
       updateReplicaTip: function(cnn) {
         if (cnn.type === "DbReplication") {
@@ -8879,7 +8868,7 @@ return TEMPLATE; });
         return svgEl;
       },
       render: function() {
-        var $r, appData, m, state, statusIcon, tip;
+        var $r, m, tip;
         m = this.model;
         CanvasManager.update(this.$el.children(".node-label"), m.get("name"));
         CanvasManager.update(this.$el.children(".type-image"), this.typeIcon(), "href");
@@ -8897,12 +8886,7 @@ return TEMPLATE; });
           }
           CanvasManager.update($r, tip, "tooltip");
         }
-        statusIcon = this.$el.children(".res-state");
-        if (statusIcon) {
-          appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
-          state = (appData != null ? appData.get("DBInstanceStatus") : void 0) || "unknown";
-          statusIcon.data("tooltip", state).attr("data-tooltip", state).attr("class", "res-state tooltip " + state);
-        }
+        this.updateState();
       }
     }, {
       isDirectParentType: function(t) {

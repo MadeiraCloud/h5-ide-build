@@ -7026,7 +7026,7 @@ function program30(depth0,data) {
         elbDistrMap = {};
         instanceStateObj = elb.InstanceStates;
         _.each(instanceStateObj, function(stateObj) {
-          var err, instanceComp, instanceCompObj, instanceId, instanceName, instanceState, instanceStateCode, instanceStateDescription, instanceUID, regionComp, regionName, showStateObj;
+          var err, instanceComp, instanceCompObj, instanceId, instanceModel, instanceName, instanceState, instanceStateCode, instanceStateDescription, instanceUID, regionComp, regionName, showStateObj;
           try {
             instanceId = stateObj.InstanceId;
             instanceStateCode = stateObj.ReasonCode;
@@ -7056,6 +7056,14 @@ function program30(depth0,data) {
               }
               if (regionComp) {
                 regionName = regionComp.get('name');
+              }
+            }
+            if (!regionName) {
+              instanceModel = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region()).get(instanceId);
+              if (instanceModel) {
+                if (instanceModel.get('placement')) {
+                  regionName = instanceModel.get('placement').availabilityZone;
+                }
               }
             }
             elbDistrMap[regionName] = elbDistrMap[regionName] || [];
@@ -16728,7 +16736,7 @@ return TEMPLATE; });
         } else if (attr.snapshotId) {
           template = template_instance;
           snapshotModel = this.resModel.getSnapshotModel();
-          attr.snapshotSize = Number(snapshotModel.get('AllocatedStorage'));
+          attr.snapshotSize = Number((snapshotModel != null ? snapshotModel.get('AllocatedStorage') : void 0) || this.resModel.get("allocatedStorage"));
         }
         if (this.resModel.isOracle()) {
           attr.isOracle = true;

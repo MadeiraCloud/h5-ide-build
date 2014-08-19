@@ -3311,13 +3311,13 @@ This file use for validate component about state.
       appId = db.get('appId');
       backupWindow = db.get('backupWindow');
       maintenanceWindow = db.get('maintenanceWindow');
+      if (!(backupWindow && maintenanceWindow)) {
+        return null;
+      }
       if (appId) {
         appData = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(appId);
         backupWindow = backupWindow || appData.get('PreferredBackupWindow');
         maintenanceWindow = maintenanceWindow || appData.get('PreferredMaintenanceWindow');
-      }
-      if (!(backupWindow && maintenanceWindow)) {
-        return null;
       }
       backupTimeArray = backupWindow.replace(/:/g, '').split('-');
       maintenanceTimeArray = maintenanceWindow.replace(/:/g, '').split('-');
