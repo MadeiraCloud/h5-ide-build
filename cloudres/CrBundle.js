@@ -2317,7 +2317,7 @@
         });
       },
       parseFetchData: function(data) {
-        var app_id, cln, d, extraAttr, originalJson, type;
+        var cln, d, extraAttr, type;
         delete data.vpc;
         extraAttr = {
           RES_TAG: this.category
@@ -2331,23 +2331,13 @@
           }
           cln.__parseExternalData(d, extraAttr, this.__region);
         }
-        data.app_json = null;
         if (data.app_json) {
           this.generatedJson = data.app_json;
           delete data.app_json;
           console.log("Generated Json from backend:", $.extend(true, {}, this.generatedJson));
         } else {
-          app_id = App.workspaces.getAwakeSpace().opsModel.get("id");
-          if (app_id && app_id.substr(0, 4) === 'app-') {
-            originalJson = App.model.attributes.appList.where({
-              id: app_id
-            });
-            if (originalJson && originalJson.length > 0) {
-              originalJson = originalJson[0].__jsonData;
-            }
-          }
-          this.generatedJson = this.__generateJsonFromRes(originalJson);
-          console.log("Generated Json from frontend:", $.extend(true, {}, this.generatedJson));
+
+          /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
         }
       },
       __generateJsonFromRes: function(originalJson) {
@@ -2378,7 +2368,7 @@
         };
         json.component = res.component;
         json.layout = res.layout;
-        json.name = "imported-" + this.category;
+        json.name = originalJson ? originalJson.name : "imported-" + this.category;
         return json;
       }
     });
