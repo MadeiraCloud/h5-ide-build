@@ -196,13 +196,20 @@
       isReady: function() {
         return this.__fetchPromise && this.__ready;
       },
+      isLastFetchFailed: function() {
+        return !!this.lastFetchError();
+      },
+      lastFetchError: function() {
+        return this.__lastFetchError;
+      },
       fetch: function() {
         var self;
-        if (this.__fetchPromise) {
+        if (!this.isLastFetchFailed() && this.__fetchPromise) {
           return this.__fetchPromise;
         }
         this.lastFetch = +new Date();
         this.__ready = false;
+        this.__lastFetchError = null;
         self = this;
         this.__fetchPromise = this.doFetch().then(function(data) {
           var d, e, _i, _len;
@@ -238,7 +245,9 @@
           return self;
         }, function(error) {
           self.lastFetch = 0;
-          self.__fetchPromise = null;
+          self.__lastFetchError = error;
+          self.__ready = true;
+          self.trigger("update");
           throw error;
         });
         return this.__fetchPromise;
@@ -2317,8 +2326,10 @@
         });
       },
       parseFetchData: function(data) {
-        var cln, d, extraAttr, type;
+        var app_json, cln, d, extraAttr, type;
         delete data.vpc;
+        app_json = data.app_json;
+        delete data.app_json;
         extraAttr = {
           RES_TAG: this.category
         };
@@ -2331,9 +2342,8 @@
           }
           cln.__parseExternalData(d, extraAttr, this.__region);
         }
-        if (data.app_json) {
-          this.generatedJson = data.app_json;
-          delete data.app_json;
+        if (app_json) {
+          this.generatedJson = app_json;
           console.log("Generated Json from backend:", $.extend(true, {}, this.generatedJson));
         } else {
 

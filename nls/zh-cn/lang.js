@@ -122,6 +122,7 @@ define({
         "RES_TIT_AMI": "虚拟机映像",
         "RES_TIT_VOL": "虚拟磁盘和快照",
         "RES_TIT_SNAPSHOT_MANAGE": "管理 EBS 快照",
+        "RES_MSG_RDS_DISABLED": "Your AWS account does not have access to this resource. Please make sure you can access to all RDS-related resources. ",
         "RES_TIT_RDS": "",
         "RES_TIT_RDS_EMPTY": "",
         "RES_LBL_NEW_RDS_INSTANCE": "",

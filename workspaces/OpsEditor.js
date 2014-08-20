@@ -1461,8 +1461,19 @@ define('workspaces/editor/template/TplLeftPanel',['handlebars'], function(Handle
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
+function program1(depth0,data) {
+  
+  
+  return "disabled";
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "disableRds";
+  }
 
   buffer += "<button class=\"tooltip sidebar-hider icon-caret-left HideOEPanelLeft\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_TOGGLE_RESOURCE_PANEL", {hash:{},data:data}))
@@ -1470,7 +1481,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
     + "\n  <i class=\"icon-resources js-toggle-dropdown menu-manage-shard-res tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_SHARED_RESOURCES", {hash:{},data:data}))
-    + "\"></i>\n  <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n    <li data-action=\"keypair\" class=\"icon-kp\"><span>Key Pair</span></li>\n    <li data-action=\"snapshot\" class=\"icon-ebs-snap\"><span>EBS Snapshot</span></li>\n    <li data-action=\"sns\" class=\"icon-sns\"><span>SNS Topic & Subscription</span></li>\n    <li data-action=\"sslcert\" class=\"icon-cert\"><span>Server Certificate</span></li>\n    <li data-action=\"dhcp\" class=\"icon-dhcp\"><span>DHCP Option Sets</span></li>\n    <li data-action=\"rdspg\" class=\"icon-pg\"><span>DB Parameter Groups</span></li>\n    <li data-action=\"rdssnapshot\" class=\"icon-rds-snap\"><span>DB Snapshot</span></li>\n  </ul>\n  <i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</header>\n\n<div class=\"fixedaccordion accordion-default\">\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\"></i>\n  <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n    <li data-action=\"keypair\" class=\"icon-kp\"><span>Key Pair</span></li>\n    <li data-action=\"snapshot\" class=\"icon-ebs-snap\"><span>EBS Snapshot</span></li>\n    <li data-action=\"sns\" class=\"icon-sns\"><span>SNS Topic & Subscription</span></li>\n    <li data-action=\"sslcert\" class=\"icon-cert\"><span>Server Certificate</span></li>\n    <li data-action=\"dhcp\" class=\"icon-dhcp\"><span>DHCP Option Sets</span></li>\n    <li data-action=\"rdspg\" class=\"icon-pg ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rdsDisabled), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"><span>DB Parameter Groups</span></li>\n    <li data-action=\"rdssnapshot\" class=\"icon-rds-snap ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rdsDisabled), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"><span>DB Snapshot</span></li>\n  </ul>\n  <i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</header>\n\n<div class=\"fixedaccordion accordion-default\">\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AZ", {hash:{},data:data}))
     + "</header>\n    <ul class=\"resource-list-az clearfix accordion-body\">\n      <li class=\"tooltip resource-item az\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_AZ", {hash:{},data:data}))
@@ -1500,21 +1517,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_SNAPSHOT_MANAGE", {hash:{},data:data}))
     + "</button>\n      <div class=\"nano-content\">\n        <div class=\"resource-list-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_BLANK_VOL", {hash:{},data:data}))
-    + "</div>\n        <ul class=\"resource-list-snapshot\">\n          <li class=\"tooltip resource-item volume\" data-tooltip='"
+    + "</div>\n        <ul class=\"clearfix\"><li class=\"tooltip resource-item volume\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VOLUME", {hash:{},data:data}))
     + "' data-type=\"VOL\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL", {hash:{},data:data}))
-    + "</li>\n        </ul>\n        <div class=\"resource-list-head\">\n          "
+    + "</li></ul>\n        <div class=\"resource-list-head\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL_FROM_SNAPSHOT", {hash:{},data:data}))
-    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-snapshot resource-list-snapshot-exist\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-snapshot\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RDS", {hash:{},data:data}))
-    + "</header>\n    <div class=\"accordion-body nano\">\n      <button class=\"btn btn-primary ManageSnapshot ManageRdsSnapshot\">"
+    + "</header>\n    <div class=\"accordion-body nano ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rdsDisabled), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n      <div class=\"disableRds-content\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_MSG_RDS_DISABLED", {hash:{},data:data}))
+    + "</div>\n      <button class=\"btn btn-primary ManageSnapshot ManageRdsSnapshot\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RDS_SNAPSHOT_MANAGE", {hash:{},data:data}))
     + "</button>\n      <div class=\"nano-content\">\n        <div class=\"resource-list-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RDS_INSTANCE", {hash:{},data:data}))
     + "</div>\n        <ul class=\"resource-list-rds\"></ul>\n        <div class=\"resource-list-head\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RDS_INSTANCE_FROM_SNAPSHOT", {hash:{},data:data}))
-    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-rds-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"engine\">By Engine</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-rds-snapshot resource-list-rds-snapshot-exist\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-rds-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"engine\">By Engine</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-rds-snapshot\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_ELB_ASG", {hash:{},data:data}))
     + "</header>\n    <ul class=\"resource-list-asg clearfix accordion-body\">\n      <li class=\"tooltip resource-item elb\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ELB", {hash:{},data:data}))
@@ -1601,25 +1623,20 @@ function program5(depth0,data) {
   return "false";
   }
 
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.programWithDepth(1, program1, data, depth0),data:data});
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<div style=\"padding-bottom:15px;\">No EBS Snapshot in "
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(7, program7, data),fn:self.programWithDepth(1, program1, data, depth0),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
 TEMPLATE.snapshot=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<span>No EBS Snapshot in "
-    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".</span>";
-  return buffer;
-  };
-TEMPLATE.snapshot_empty=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -1691,25 +1708,20 @@ function program1(depth0,data,depth1) {
   return buffer;
   }
 
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.programWithDepth(1, program1, data, depth0),data:data});
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<div style=\"padding-bottom:15px;\">No DB Snapshot in "
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(3, program3, data),fn:self.programWithDepth(1, program1, data, depth0),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
 TEMPLATE.rds_snapshot=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<span>No DB Snapshot in "
-    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".</span>";
-  return buffer;
-  };
-TEMPLATE.rds_snapshot_empty=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -2241,19 +2253,22 @@ return TEMPLATE; });
         this.listenTo(CloudResources("MyAmi", region), "update", this.updateMyAmiList);
         this.listenTo(CloudResources(constant.RESTYPE.AZ, region), "update", this.updateAZ);
         this.listenTo(CloudResources(constant.RESTYPE.SNAP, region), "update", this.updateSnapshot);
-        this.listenTo(CloudResources(constant.RESTYPE.DBENGINE, region), "update", this.updateRDSList);
+        this.listenTo(CloudResources(constant.RESTYPE.DBSNAP, region), "update", this.updateRDSSnapshotList);
         design = this.workspace.design;
         this.listenTo(design, Design.EVENT.ChangeResource, this.onResChanged);
         this.listenTo(design, Design.EVENT.AddResource, this.updateDisableItems);
         this.listenTo(design, Design.EVENT.RemoveResource, this.updateDisableItems);
         this.listenTo(design, Design.EVENT.AddResource, this.updateLc);
+        this.listenTo(this.workspace, "toggleRdsFeature", this.toggleRdsFeature);
         this.__amiType = "QuickStartAmi";
         this.setElement(this.parent.$el.find(".OEPanelLeft"));
         $(document).off('keydown', this.bindKey.bind(this)).on('keydown', this.bindKey.bind(this));
         return this.render();
       },
       render: function() {
-        this.$el.html(LeftPanelTpl.panel({}));
+        this.$el.html(LeftPanelTpl.panel({
+          rdsDisabled: this.workspace.isRdsDisabled()
+        }));
         this.$el.toggleClass("hidden", this.__leftPanelHidden || false);
         this.recalcAccordion();
         this.updateAZ();
@@ -2274,22 +2289,22 @@ return TEMPLATE; });
         }
         $sortedList = [];
         if (selectedId === 'date') {
-          $sortedList = this.$el.find('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-rds-snapshot li').sort(function(a, b) {
             return (new Date($(b).data('date'))) - (new Date($(a).data('date')));
           });
         }
         if (selectedId === 'engine') {
-          $sortedList = this.$el.find('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-rds-snapshot li').sort(function(a, b) {
             return $(a).data('engine') - $(b).data('engine');
           });
         }
         if (selectedId === 'storge') {
-          $sortedList = this.$el.find('.resource-list-rds-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-rds-snapshot li').sort(function(a, b) {
             return Number($(b).data('storge')) - Number($(a).data('storge'));
           });
         }
         if ($sortedList.length) {
-          return this.$el.find('.resource-list-rds-snapshot-exist').html($sortedList);
+          return this.$el.find('.resource-list-rds-snapshot').html($sortedList);
         }
       },
       resourceListSortSelectSnapshotEvent: function(event) {
@@ -2301,17 +2316,17 @@ return TEMPLATE; });
         }
         $sortedList = [];
         if (selectedId === 'date') {
-          $sortedList = this.$el.find('.resource-list-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-snapshot li').sort(function(a, b) {
             return (new Date($(b).data('date'))) - (new Date($(a).data('date')));
           });
         }
         if (selectedId === 'storge') {
-          $sortedList = this.$el.find('.resource-list-snapshot-exist li').sort(function(a, b) {
+          $sortedList = this.$el.find('.resource-list-snapshot li').sort(function(a, b) {
             return Number($(a).data('storge')) - Number($(b).data('storge'));
           });
         }
         if ($sortedList.length) {
-          return this.$el.find('.resource-list-snapshot-exist').html($sortedList);
+          return this.$el.find('.resource-list-snapshot').html($sortedList);
         }
       },
       bindKey: function(event) {
@@ -2397,14 +2412,17 @@ return TEMPLATE; });
         cln = CloudResources(constant.RESTYPE.SNAP, region).where({
           category: region
         }) || [];
-        cln.region = region;
-        if (cln && cln.length) {
-          return this.$el.find(".resource-list-snapshot-exist").html(LeftPanelTpl.snapshot(cln));
-        } else {
-          return this.$el.find(".resource-list-snapshot-empty").html(LeftPanelTpl.snapshot_empty({
-            regionName: constant.REGION_SHORT_LABEL[region]
-          }));
+        cln.region = cln.length ? region : constant.REGION_SHORT_LABEL[region];
+        return this.$el.find(".resource-list-snapshot").html(LeftPanelTpl.snapshot(cln));
+      },
+      toggleRdsFeature: function() {
+        this.$el.find(".ManageRdsSnapshot").parent().toggleClass("disableRds", this.workspace.isRdsDisabled());
+        if (!this.workspace.isRdsDisabled()) {
+          this.updateRDSList();
+          this.updateRDSSnapshotList();
         }
+        this.updateDisableItems();
+        this.$el.children(".sidebar-title").find(".icon-rds-snap,.icon-pg").toggleClass("disabled", this.workspace.isRdsDisabled());
       },
       updateRDSList: function() {
         var cln;
@@ -2415,14 +2433,8 @@ return TEMPLATE; });
         var cln, region;
         region = this.workspace.opsModel.get("region");
         cln = CloudResources(constant.RESTYPE.DBSNAP, region).toJSON();
-        cln.region = region;
-        if (cln && cln.length) {
-          return this.$el.find(".resource-list-rds-snapshot-exist").html(LeftPanelTpl.rds_snapshot(cln));
-        } else {
-          return this.$el.find(".resource-list-rds-snapshot-empty").html(LeftPanelTpl.rds_snapshot_empty({
-            regionName: constant.REGION_SHORT_LABEL[region]
-          }));
-        }
+        cln.region = cln.length ? region : constant.REGION_SHORT_LABEL[region];
+        return this.$el.find(".resource-list-rds-snapshot").html(LeftPanelTpl.rds_snapshot(cln));
       },
       changeAmiType: function(evt, attr) {
         this.__amiType = attr || "QuickStartAmi";
@@ -2465,7 +2477,7 @@ return TEMPLATE; });
         return this.$el.find(".resource-list-ami").html(html).parent().nanoScroller("reset");
       },
       updateDisableItems: function(resModel) {
-        var $ul, RESTYPE, az, design, subnet, _i, _len, _ref;
+        var $ul, RESTYPE, az, design, disabled, subnet, tooltip, _i, _len, _ref;
         if (!this.workspace.isAwake()) {
           return;
         }
@@ -2483,10 +2495,18 @@ return TEMPLATE; });
         }
         this.sbg = this.$el.find(".resource-item.subnetgroup");
         if (_.keys(az).length < 2) {
-          this.sbg.toggleClass("disabled", true).attr("data-tooltip", "To create subnet group, there must to be subnets from at least 2 different availability zones on canvas.");
+          disabled = true;
+          tooltip = "To create subnet group, there must to be subnets from at least 2 different availability zones on canvas.";
+          this.sbg.toggleClass("disabled", true).attr("data-tooltip");
         } else {
-          this.sbg.toggleClass("disabled", false).attr("data-tooltip", lang.ide.RES_TIP_DRAG_NEW_SUBNET_GROUP);
+          disabled = false;
+          tooltip = lang.ide.RES_TIP_DRAG_NEW_SUBNET_GROUP;
         }
+        if (this.workspace.isRdsDisabled()) {
+          disabled = true;
+          tooltip = lang.ide.RES_MSG_RDS_DISABLED;
+        }
+        this.sbg.toggleClass("disabled", disabled).attr("data-tooltip", tooltip);
       },
       updateFavList: function() {
         if (this.__amiType === "FavoriteAmi") {
@@ -2586,14 +2606,20 @@ return TEMPLATE; });
         return new RdsSnapshotManager().render();
       },
       refreshPanelData: function(evt) {
-        var $tgt, region;
+        var $tgt, jobs, region;
         $tgt = $(evt.currentTarget);
         if ($tgt.hasClass("reloading")) {
           return;
         }
         $tgt.addClass("reloading");
         region = this.workspace.opsModel.get("region");
-        Q.all([CloudResources("MyAmi", region).fetchForce(), CloudResources(constant.RESTYPE.SNAP, region).fetchForce()]).done(function() {
+        jobs = [CloudResources("MyAmi", region).fetchForce(), CloudResources(constant.RESTYPE.SNAP, region).fetchForce()];
+        if (this.workspace.isRdsDisabled()) {
+          jobs.push(this.workspace.fetchRdsData());
+        } else {
+          jobs.push(CloudResources(constant.RESTYPE.DBSNAP, region).fetchForce());
+        }
+        Q.all(jobs).done(function() {
           return $tgt.removeClass("reloading");
         });
       },
@@ -4983,7 +5009,7 @@ return TEMPLATE; });
 
 (function() {
   define('workspaces/editor/canvas/CanvasViewDnd',["./CanvasView", "./CanvasElement", "constant", "./CanvasManager", "i18n!/nls/lang.js"], function(CanvasView, CanvasElement, constant, CanvasManager, lang) {
-    var CanvasViewProto, ________visualizeBestfit, ________visualizeOnMove, __cancelCanvasDrag, __canvasDrag, __expandRect, __findFits, __isContain, __isOverlap, __isRectEmpty, __moveItemDidDrop, __moveItemDrag, __moveItemDrop, __moveItemStart, __moveStickyItemDrag, __moveStickyItemDrop, __moveStickyItemStart, __parentBorderLimit, __rectHeight, __rectWidth;
+    var CanvasViewProto, ________visualizeBestfit, ________visualizeOnMove, __cancelCanvasDrag, __canvasDrag, __expandRect, __findFits, __isContain, __isOverlap, __isRectEmpty, __moveItemCancel, __moveItemDidDrop, __moveItemDrag, __moveItemDrop, __moveItemStart, __moveStickyItemDrag, __moveStickyItemDrop, __moveStickyItemStart, __parentBorderLimit, __rectHeight, __rectWidth;
     ________visualizeOnMove = function() {};
     ________visualizeBestfit = function() {};
 
@@ -5319,6 +5345,7 @@ return TEMPLATE; });
         onDragStart: __moveItemStart,
         onDrag: __moveItemDrag,
         onDragEnd: __moveItemDrop,
+        onDragCancel: __moveItemCancel,
         includeSource: function(evt) {
           return evt.data.altState && !!evt.altKey;
         }
@@ -5386,11 +5413,7 @@ return TEMPLATE; });
     __moveItemDrop = function(evt) {
       var data, ignore, result, size;
       data = evt.data;
-      data.context.__addItemDragLeave();
-      data.targetSvg.attr("id", "");
-      if (data.cloneSvg) {
-        data.cloneSvg.remove();
-      }
+      __moveItemCancel(evt);
       size = data.item.size();
       data.itemWidth = size.width;
       data.itemHeight = size.height;
@@ -5424,6 +5447,15 @@ return TEMPLATE; });
         m = "changeParent";
       }
       dataTransfer.item[m](dataTransfer.parent, dataTransfer.x, dataTransfer.y);
+    };
+    __moveItemCancel = function(evt) {
+      var data;
+      data = evt.data;
+      data.context.__addItemDragLeave();
+      data.targetSvg.attr("id", "");
+      if (data.cloneSvg) {
+        data.cloneSvg.remove();
+      }
     };
     __moveStickyItemStart = function(evt) {};
     __moveStickyItemDrag = function(evt) {
@@ -9547,7 +9579,7 @@ return TEMPLATE; });
         var jobs, region, stateModule;
         region = this.opsModel.get("region");
         stateModule = this.opsModel.getJsonData().agent.module;
-        jobs = [App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources(constant.RESTYPE.DBENGINE, region).fetch(), CloudResources(constant.RESTYPE.DBOG, region).fetch(), CloudResources(constant.RESTYPE.DBSNAP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.fetchAmiData()];
+        jobs = [App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.fetchAmiData(), this.fetchRdsData()];
         if (!this.opsModel.isPersisted()) {
           jobs.unshift(this.opsModel.save());
         }
@@ -9586,6 +9618,30 @@ return TEMPLATE; });
           }
         }
         return CloudResources(constant.RESTYPE.AMI, this.opsModel.get("region")).fetchAmis(_.keys(toFetch));
+      };
+
+      StackEditor.prototype.isRdsDisabled = function() {
+        return !!this.__disableRds;
+      };
+
+      StackEditor.prototype.fetchRdsData = function() {
+        var region, self;
+        self = this;
+        region = this.opsModel.get("region");
+        return Q.all([CloudResources(constant.RESTYPE.DBENGINE, region).fetchForce(), CloudResources(constant.RESTYPE.DBOG, region).fetchForce(), CloudResources(constant.RESTYPE.DBSNAP, region).fetchForce()]).then(function() {
+          if (self.__disableRds !== false) {
+            self.__disableRds = false;
+            return self.trigger("toggleRdsFeature", true);
+          }
+        }, function(error) {
+          if (error.awsErrorCode) {
+            console.error("No authority to load rds data. Rds feature will be disabled.", error);
+            self.__disableRds = true;
+            self.trigger("toggleRdsFeature", false);
+            return;
+          }
+          throw error;
+        });
       };
 
       StackEditor.prototype.cleanup = function() {
@@ -9791,7 +9847,7 @@ return TEMPLATE; });
         self = this;
         region = this.opsModel.get("region");
         stateModule = this.opsModel.getJsonData().agent.module;
-        return Q.all([App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources(constant.RESTYPE.DHCP, region).fetch(), CloudResources(constant.RESTYPE.DBENGINE, region).fetch(), CloudResources(constant.RESTYPE.DBOG, region).fetch(), CloudResources(constant.RESTYPE.DBSNAP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.loadVpcResource(), this.fetchAmiData()]).fail(function(err) {
+        return Q.all([App.model.fetchStateModule(stateModule.repo, stateModule.tag), CloudResources(constant.RESTYPE.AZ, region).fetch(), CloudResources(constant.RESTYPE.SNAP, region).fetch(), CloudResources(constant.RESTYPE.DHCP, region).fetch(), CloudResources("QuickStartAmi", region).fetch(), CloudResources("MyAmi", region).fetch(), CloudResources("FavoriteAmi", region).fetch(), this.loadVpcResource(), this.fetchAmiData(), this.fetchRdsData()]).fail(function(err) {
           return self.__handleDataError(err);
         });
       };

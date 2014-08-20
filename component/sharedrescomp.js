@@ -4028,7 +4028,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"scroll-wrap scroll-wrap-res-diff\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"content_wrap scroll-content\">\n		<p>Resources of this App have been changed externally. This has been synced to your App. The diagram may be re-generated to reflect the change(s).</p>\n		<h5>What have been changed:</h5>\n		<article></article>\n	</div>\n</div>";
+  return "<p>Resources of this App have been changed externally. This has been synced to your App. The diagram may be re-generated to reflect the change(s).</p>\n<h5>What have been changed:</h5>\n<div class=\"scroll-wrap scroll-wrap-res-diff\" style=\"max-height: 350px;\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<article class=\"content_wrap scroll-content\"></article>\n</div>";
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 

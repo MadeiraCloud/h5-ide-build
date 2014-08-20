@@ -2634,7 +2634,7 @@
         };
       },
       deserialize: function(data, layout_data, resolve) {
-        var KP, attr, eipData, m, members, model, rootDevice, _i, _len;
+        var KP, attr, eipData, kpUid, m, members, model, rootDevice, _i, _len;
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
           members = resolve(data.serverGroupUid).groupMembers();
           for (_i = 0, _len = members.length; _i < _len; _i++) {
@@ -2709,7 +2709,10 @@
           };
         }
         model = new Model(attr);
-        KP = resolve(MC.extractID(data.resource.KeyName));
+        kpUid = MC.extractID(data.resource.KeyName);
+        if (kpUid && kpUid !== data.resource.KeyName) {
+          KP = resolve(kpUid);
+        }
         if (KP) {
           KP.assignTo(model);
         } else {
@@ -9707,7 +9710,7 @@
         });
       },
       deserialize: function(data, layout_data, resolve) {
-        var SgAsso, model, ogComp, ogName, resource, sg, that, _i, _len, _ref, _ref1, _ref2, _ref3;
+        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, that, _i, _len, _ref, _ref1, _ref2, _ref3;
         that = this;
         resource = data.resource;
         model = new Model({
@@ -9755,7 +9758,10 @@
         }
         ogName = (_ref3 = data.resource.OptionGroupMembership) != null ? _ref3.OptionGroupName : void 0;
         if (ogName) {
-          ogComp = resolve(MC.extractID(ogName));
+          ogUid = MC.extractID(ogName);
+          if (ogUid && ogUid !== ogName) {
+            ogComp = resolve(ogUid);
+          }
           return new OgUsage(model, ogComp || model.getDefaultOgInstance(ogName));
         }
       }

@@ -122,6 +122,7 @@ define({
         "RES_TIT_AMI": "Images",
         "RES_TIT_VOL": "Volume & Snapshot",
         "RES_TIT_SNAPSHOT_MANAGE": "Manage EBS Snapshot",
+        "RES_MSG_RDS_DISABLED": "Your AWS account does not have access to this resource. Please make sure you can access to all RDS-related resources. ",
         "RES_TIT_RDS": "RDS & Snapshot",
         "RES_TIT_RDS_EMPTY": "No RDS Snapshot in",
         "RES_LBL_NEW_RDS_INSTANCE": "New DB Instance",
