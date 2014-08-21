@@ -4404,7 +4404,7 @@ return TEMPLATE; });
             text: okText
           },
           width: '608px',
-          compact: true,
+          compact: false,
           preventClose: true
         };
         this.modal = new modalplus(options);
