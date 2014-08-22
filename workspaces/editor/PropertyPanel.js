@@ -18353,6 +18353,7 @@ return TEMPLATE; });
           context: that,
           noCheckbox: true,
           longtermActive: true,
+          disableScroll: true,
           buttons: [
             {
               icon: 'unknown',
