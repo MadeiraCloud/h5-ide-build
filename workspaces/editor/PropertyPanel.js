@@ -15420,13 +15420,13 @@ function program6(depth0,data) {
 function program8(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <div class=\"property-control-group clearfix\">\n            <label>"
+  buffer += "\n        <dl class=\"dl-vertical\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </div>\n        ";
+  buffer += "</dd>\n        </dl>\n        ";
   return buffer;
   }
 function program9(depth0,data) {
@@ -15756,6 +15756,30 @@ function program72(depth0,data) {
   return buffer;
   }
 
+function program74(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(77, program77, data),fn:self.program(75, program75, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    \n    ";
+  return buffer;
+  }
+function program75(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <div class=\"option-group-head\" id=\"sg-head\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
+    + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n    <div class=\"option-group sg-group\"></div>\n    ";
+  return buffer;
+  }
+
+function program77(depth0,data) {
+  
+  
+  return "\n    ";
+  }
+
   buffer += "<article class=\"property-dbinstance\" data-bind=\"true\">\n\n    <div class=\"property-dbinstance-not-available-info hide\">\n        This DB instance is not in availabe status. To apply modification made for this instance, wait for its status to be available.\n    </div>\n\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -15871,9 +15895,10 @@ function program72(depth0,data) {
   buffer += "\n                    </ul>\n                </div>\n                <label for=\"property-dbinstance-maintenance-window-duration\">hour(s)</label>\n            </section>\n\n        </section>\n\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </div>\n\n    <div class=\"option-group-head\" id=\"sg-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_SG_DETAIL", {hash:{},data:data}))
-    + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n    <div class=\"option-group sg-group\"></div>\n\n</article>";
+  buffer += "\n\n    </div>\n\n    \n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(75, program75, data),fn:self.program(74, program74, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    \n\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/editor/property/dbinstance/template/stack_replica',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -16708,6 +16733,7 @@ return TEMPLATE; });
           _.extend(attr, this.appModel.toJSON());
           _.extend(attr, this.getOriginAttr());
         }
+        attr.snapshotId = attr.instanceId ? '' : attr.snapshotId;
         return attr;
       },
       getOriginAttr: function() {
