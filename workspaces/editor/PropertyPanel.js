@@ -18154,9 +18154,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<section class=\"db-sys-log-content font-mono\">\n    "
     + escapeExpression(helpers.breaklines.call(depth0, (depth0 && depth0.LogFileData), {hash:{},data:data}))
-    + "\n    <br/>\n    ----------------------- END OF LOG ----------------------\n</section>\n<footer>\n    <div class=\"action\">\n        <button class=\"btn btn-blue refresh-log\" data-file-name=\""
+    + "\n    <br/>\n    ----------------------- END OF LOG ----------------------\n</section>\n<div class=\"action\">\n    <button class=\"btn btn-blue refresh-log\" data-file-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.filename)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">Refresh</button>\n        <button class=\"btn btn-silver close cancel\">Close</button>\n    </div>\n</footer>";
+    + "\">Refresh</button>\n    <button class=\"btn btn-silver close cancel\">Close</button>\n</div>";
   return buffer;
   };
 TEMPLATE.log_content=Handlebars.template(__TEMPLATE__);
@@ -18385,7 +18385,7 @@ return TEMPLATE; });
           }, {
             sortable: true,
             rowType: 'number',
-            width: "20%",
+            width: "10%",
             name: 'Size(B)'
           }, {
             sortable: false,
