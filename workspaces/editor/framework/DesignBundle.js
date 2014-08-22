@@ -9046,6 +9046,10 @@
         this.listenTo(master, 'change', this.syncMasterAttr);
         return null;
       },
+      unsetMaster: function() {
+        var _ref;
+        return (_ref = this.connections("DbReplication")[0]) != null ? _ref.remove() : void 0;
+      },
       syncMasterAttr: function(master) {
         var k, needSync, v, _ref;
         if (this.get('appId')) {
@@ -9119,7 +9123,7 @@
               "snapshotId": snapshotModel.get('DBSnapshotIdentifier'),
               "allocatedStorage": snapshotModel.get('AllocatedStorage'),
               "port": snapshotModel.get('Port'),
-              "iops": snapshotModel.get('Iops') || '',
+              "iops": snapshotModel.get('Iops') || 0,
               "multiAz": snapshotModel.get('MultiAZ'),
               "ogName": snapshotModel.get('OptionGroupName'),
               "license": snapshotModel.get('LicenseModel'),
@@ -9644,7 +9648,7 @@
             AllowMajorVersionUpgrade: this.get('allowMajorVersionUpgrade'),
             AvailabilityZone: this.get('az'),
             MultiAZ: this.get('multiAz'),
-            Iops: this.getIops(),
+            Iops: this.getIops() || 0,
             BackupRetentionPeriod: this.get('backupRetentionPeriod'),
             CharacterSetName: this.get('characterSetName'),
             DBInstanceClass: this.get('instanceClass'),

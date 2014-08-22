@@ -15385,28 +15385,119 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <section class=\"property-control-group apply-immediately-section ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isChanged), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  buffer += "\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isCanPromote), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n        <div class=\"checkbox\">\n            <input id=\"property-dbinstance-apply-immediately\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.applyImmediately), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  buffer += "\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-apply-immediately\">\n            <label for=\"property-dbinstance-apply-immediately\"></label>\n        </div>\n        <label for=\"property-dbinstance-apply-immediately\">Apply Immediately</label>\n        <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.html#Overview.DBInstance.Modifying\" data-tooltip=\"Click to read AWS documentation on modifying DB instance using Apply Immediately.\" target=\"_blank\"></a>\n    </section>\n    ";
+  buffer += "\n    ";
   return buffer;
   }
 function program2(depth0,data) {
   
   
-  return "hide";
+  return "\n    <section class=\"property-control-group property-dbinstance-promote-replica hide\">\n        <button class=\"btn btn-primary\" id=\"property-dbinstance-promote-replica\" style=\"width: 200px;\">Promote Read Replica</button>\n    </section>\n    ";
   }
 
 function program4(depth0,data) {
   
   
-  return "checked=\"true\"";
+  return "\n    <section class=\"property-control-group property-dbinstance-promote-replica hide\">\n        <button class=\"btn\" id=\"property-dbinstance-promote-replica\" style=\"width: 200px;\">Cancel Promote</button>\n    </section>\n    ";
   }
 
 function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <section class=\"property-control-group apply-immediately-section ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isChanged), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n        <div class=\"checkbox\">\n            <input id=\"property-dbinstance-apply-immediately\" type=\"checkbox\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.applyImmediately), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\"None\" name=\"property-dbinstance-apply-immediately\">\n            <label for=\"property-dbinstance-apply-immediately\"></label>\n        </div>\n        <label for=\"property-dbinstance-apply-immediately\">Apply Immediately</label>\n        <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.html#Overview.DBInstance.Modifying\" data-tooltip=\"Click to read AWS documentation on modifying DB instance using Apply Immediately.\" target=\"_blank\"></a>\n    </section>\n    ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  
+  return "hide";
+  }
+
+function program9(depth0,data) {
+  
+  
+  return "checked=\"true\"";
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head expand\">DB Instance Details</div>\n    <div class=\"option-group\">\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(17, program17, data),fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        <div id =\"lvia-container\"></div>\n\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-version-update\" type=\"checkbox\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.autoMinorVersionUpgrade), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\"None\" name=\"property-dbinstance-version-update\">\n                <label for=\"property-dbinstance-version-update\"></label>\n            </div>\n            <label for=\"property-dbinstance-version-update\">Auto Minor Version Update</label>\n        </section>\n\n        <section class=\"property-control-group\">\n            <label>Allocated Storage</label>\n            <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_REQUIRE", {hash:{},data:data}))
+    + "</span>\n            <div class=\"ranged-number-input\">\n                <label for=\"property-dbinstance-storage\"></label>\n                <input id=\"property-dbinstance-storage\" type=\"text\" class=\"input parsley-validated property-input-left tooltip\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.allocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" name=\"property-dbinstance-storage\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-type=\"number\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                <label for=\"property-dbinstance-storage\" class=\"property-label-right\">GB</label>\n            </div>\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        </section>\n\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-iops-check\" class=\"tooltip\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " type=\"checkbox\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\"None\" name=\"property-dbinstance-iops-check\">\n                <label for=\"property-dbinstance-iops-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-iops-check\" class=\"property-dbinstance-iops-check-tooltip tooltip\" data-tooltip=\"dsaasd\">Use Provisioned IOPS</label>\n        </section>\n\n        <section class=\"property-control-group property-dbinstance-iops-value-section ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n            <label class=\"left\">Provisioned IOPS</label>\n            <div class=\"ranged-number-input\">\n                <input class=\"input\" id=\"property-dbinstance-iops-value\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" name=\"iops-ranged\" data-ignore=\"true\" data-required=\"true\" data-type=\"number\">\n                <label for=\"property-dbinstance-iops-value\"></label>\n            </div>\n            <label class=\"property-dbinstance-iops-info\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.iopsInfo)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</label>\n        </section>\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-master-password\" >Master Password</label>\n            <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_REQUIRE", {hash:{},data:data}))
+    + "</span>\n            <input class=\"input tooltip\" data-tooltip=\"";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(39, program39, data),fn:self.program(37, program37, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" type=\"password\" placeholder=\"****\" id=\"property-dbinstance-master-password\" value=\"";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(42, program42, data),fn:self.program(37, program37, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-type=\"ascii\" data-ignore=\"true\" data-required=\"true\"/>\n        </section>\n\n    </div>\n\n    <div class=\"option-group-head expand\">Database Config</div>\n    <div class=\"option-group\">\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(51, program51, data),fn:self.program(44, program44, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        <div class=\"property-control-group clearfix property-dbinstance-optiongroup\"></div>\n\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(57, program57, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOracle), {hash:{},inverse:self.noop,fn:self.program(59, program59, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    </div>\n\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideAZConfig), {hash:{},inverse:self.noop,fn:self.program(63, program63, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    ";
+  return buffer;
+  }
+function program12(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dl class=\"dl-vertical\">\n            <dt>DB Snapshot ID</dt>\n            <dd>"
@@ -15417,25 +15508,25 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dl class=\"dl-vertical\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n        </dl>\n        ";
   return buffer;
   }
-function program9(depth0,data) {
+function program15(depth0,data) {
   
   
   return "(Pending Apply)";
   }
 
-function program11(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-name\" >DB Instance Name</label>\n            <span class=\"required-input right\">"
@@ -15443,37 +15534,6 @@ function program11(depth0,data) {
     + "</span>\n            <input class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n        </section>\n        ";
-  return buffer;
-  }
-
-function program13(depth0,data) {
-  
-  var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
-  }
-function program14(depth0,data) {
-  
-  
-  return "disabled data-tooltip=\"Scalling storage after launch a DB Instance is currently not supported for SQL Server.\"";
-  }
-
-function program16(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originAllocatedStorage), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            ";
-  return buffer;
-  }
-function program17(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                <label>Current Allocated Storage: "
-    + escapeExpression(((stack1 = (depth0 && depth0.originAllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " GB</label>\n                ";
   return buffer;
   }
 
@@ -15487,36 +15547,67 @@ function program19(depth0,data) {
 function program20(depth0,data) {
   
   
-  return "disabled=\"disabled\"";
+  return "disabled data-tooltip=\"Scalling storage after launch a DB Instance is currently not supported for SQL Server.\"";
   }
 
 function program22(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originAllocatedStorage), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            ";
+  return buffer;
+  }
+function program23(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <label>Current Allocated Storage: "
+    + escapeExpression(((stack1 = (depth0 && depth0.originAllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " GB</label>\n                ";
+  return buffer;
+  }
+
+function program25(depth0,data) {
+  
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program23(depth0,data) {
+function program26(depth0,data) {
+  
+  
+  return "disabled=\"disabled\"";
+  }
+
+function program28(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program29(depth0,data) {
   
   
   return "disabled";
   }
 
-function program25(depth0,data) {
+function program31(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div class=\"property-info property-info-iops-adjust-tip ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.originIOPS), (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.originIOPS), (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.originIOPS), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.originIOPS), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">When you initiate a storage type conversion between IOPS and standard storage, your DB Instance will have an availability impact for a few minutes.</div>\n        ";
   return buffer;
   }
 
-function program27(depth0,data) {
+function program33(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div class=\"property-control-group clearfix\">\n            <label>"
@@ -15527,7 +15618,7 @@ function program27(depth0,data) {
   return buffer;
   }
 
-function program29(depth0,data) {
+function program35(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-master-username\" >Master Username</label>\n            <span class=\"required-input right\">"
@@ -15538,46 +15629,46 @@ function program29(depth0,data) {
   return buffer;
   }
 
-function program31(depth0,data) {
+function program37(depth0,data) {
   
   var buffer = "";
   return buffer;
   }
 
-function program33(depth0,data) {
+function program39(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.password), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.password), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program34(depth0,data) {
+function program40(depth0,data) {
   
   
   return "Default Password: 12345678";
   }
 
-function program36(depth0,data) {
+function program42(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.password)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program38(depth0,data) {
+function program44(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div class=\"property-control-group clearfix\">\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_PORT", {hash:{},data:data}))
     + "</label>\n            <div>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(43, program43, data),fn:self.program(41, program41, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n        </div>\n        ";
   return buffer;
   }
-function program39(depth0,data) {
+function program45(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<label>"
@@ -15588,39 +15679,39 @@ function program39(depth0,data) {
   return buffer;
   }
 
-function program41(depth0,data) {
+function program47(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.Endpoint)),stack1 == null || stack1 === false ? stack1 : stack1.Port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program43(depth0,data) {
+function program49(depth0,data) {
   
   
   return "Not Ready";
   }
 
-function program45(depth0,data) {
+function program51(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(52, program52, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-database-port\" >Database Port</label>\n            <input class=\"input\"  type=\"text\" id=\"property-dbinstance-database-port\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-ignore=\"true\" data-type=\"number\" data-required=\"true\" data-min=\"1150\" data-max=\"65535\"/>\n        </section>\n        ";
   return buffer;
   }
-function program46(depth0,data) {
+function program52(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(55, program55, data),fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
   return buffer;
   }
-function program47(depth0,data) {
+function program53(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-database-name\" >Database Name</label>\n            <input class=\"input\"  type=\"text\" id=\"property-dbinstance-database-name\" value=\""
@@ -15629,36 +15720,36 @@ function program47(depth0,data) {
   return buffer;
   }
 
-function program49(depth0,data) {
+function program55(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMysql), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMysql), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
   return buffer;
   }
 
-function program51(depth0,data) {
+function program57(depth0,data) {
   
   
   return "\n        <section class=\"property-control-group\">\n            <label class=\"left\">Parameter Group</label>\n            <div id=\"property-dbinstance-parameter-group-select\">\n            </div>\n        </section>\n        ";
   }
 
-function program53(depth0,data) {
+function program59(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\">\n            <label class=\"left\">Character Set Name</label>\n            <div class=\"selectbox combo-dd\" id=\"property-dbinstance-charset-select\">\n                <div class=\"selection\"></div>\n                <div class=\"dropdown\">\n                    <div class=\"scroll-wrap scrollbar-auto-hide clearfix\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <ul>\n                                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.oracleCharset), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.oracleCharset), {hash:{},inverse:self.noop,fn:self.program(60, program60, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </ul>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </section>\n        ";
   return buffer;
   }
-function program54(depth0,data) {
+function program60(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.charset)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15667,54 +15758,60 @@ function program54(depth0,data) {
     + "</li>\n                                ";
   return buffer;
   }
-function program55(depth0,data) {
+function program61(depth0,data) {
   
   
   return "selected";
   }
 
-function program57(depth0,data) {
+function program63(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n\n    <div class=\"option-group-head expand\">Network & AZ Deployment</div>\n    <div class=\"option-group\">\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(58, program58, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(64, program64, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        <div id=\"property-dbinstance-mutil-az\"></div>\n\n    </div>\n\n    ";
   return buffer;
   }
-function program58(depth0,data) {
+function program64(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-public-access-check\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.accessible), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.accessible), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-dbinstance-public-access-check\">\n                <label for=\"property-dbinstance-public-access-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-public-access-check\">Publicly Accessible</label>\n        </section>\n        ";
   return buffer;
   }
 
-function program60(depth0,data) {
+function program66(depth0,data) {
+  
+  
+  return "expand";
+  }
+
+function program68(depth0,data) {
   
   
   return "data-tooltip=\"DB instance serving as replication source must enable automatic backups\"";
   }
 
-function program62(depth0,data) {
+function program70(depth0,data) {
   
   
   return "disabled checked";
   }
 
-function program64(depth0,data) {
+function program72(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program66(depth0,data) {
+function program74(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15724,7 +15821,7 @@ function program66(depth0,data) {
   return buffer;
   }
 
-function program68(depth0,data) {
+function program76(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <section class=\"property-control-group\">\n                <label>Current Backup Window: "
@@ -15733,11 +15830,37 @@ function program68(depth0,data) {
   return buffer;
   }
 
-function program70(depth0,data) {
+function program78(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head\">Maintenance Options</div>\n    <div class=\"option-group\">\n\n        <section id=\"property-dbinstance-maintenance-window-select\" class=\"property-control-group\">\n            <label>Maintenance Window</label>\n            <div>\n                <div class=\"radio\">\n                    <input id=\"property-dbinstance-maintenance-radio-no\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\"no\">\n                    <label for=\"property-dbinstance-maintenance-radio-no\"></label>\n                </div>\n                <label for=\"property-dbinstance-maintenance-radio-no\">No Preference</label>\n            </div>\n            <div>\n                <div class=\"radio\">\n                    <input id=\"property-dbinstance-maintenance-radio-window\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\"window\">\n                    <label for=\"property-dbinstance-maintenance-radio-window\"></label>\n                </div>\n                <label for=\"property-dbinstance-maintenance-radio-window\">Select Window</label>\n            </div>\n        </section>\n\n        <section id=\"property-dbinstance-maintenance-window-group\" class=\"property-control-group ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n            <section class=\"property-control-group\" >\n                <label class=\"left\">Start Day</label>\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-start-day-select\">\n                    <div class=\"selection\">Monday</div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        <li class=\"item\" data-id=\"mon\">Monday</li>\n                        <li class=\"item\" data-id=\"tue\">Tuesday</li>\n                        <li class=\"item\" data-id=\"wed\">Wednesday</li>\n                        <li class=\"item\" data-id=\"thu\">Thursday</li>\n                        <li class=\"item\" data-id=\"fri\">Friday</li>\n                        <li class=\"item\" data-id=\"sat\">Saturday</li>\n                        <li class=\"item\" data-id=\"sun\">Sunday</li>\n                    </ul>\n                </div>\n            </section>\n            <section class=\"property-control-group\" >\n                <label>Start Time:</label>\n                <input class=\"input shorter-input\" type=\"text\" id=\"property-dbinstance-maintenance-window-start-time\" value=\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.maintenance)),stack1 == null || stack1 === false ? stack1 : stack1.startTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-required-rollback=\"true\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\n                <label>UTC</label>\n            </section>\n            <section class=\"property-control-group\" >\n                <label>Duration:</label>\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-duration\">\n                    <div class=\"selection\"></div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.maintenanceDurations), {hash:{},inverse:self.noop,fn:self.program(79, program79, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                    </ul>\n                </div>\n                <label for=\"property-dbinstance-maintenance-window-duration\">hour(s)</label>\n            </section>\n\n        </section>\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(81, program81, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    </div>\n\n    \n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(84, program84, data),fn:self.program(83, program83, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    \n\n    ";
+  return buffer;
+  }
+function program79(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15747,7 +15870,7 @@ function program70(depth0,data) {
   return buffer;
   }
 
-function program72(depth0,data) {
+function program81(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\">\n            <label>Current Maintenance Window: <br/>"
@@ -15756,16 +15879,16 @@ function program72(depth0,data) {
   return buffer;
   }
 
-function program74(depth0,data) {
+function program83(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(77, program77, data),fn:self.program(75, program75, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(86, program86, data),fn:self.program(84, program84, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    \n    ";
   return buffer;
   }
-function program75(depth0,data) {
+function program84(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <div class=\"option-group-head\" id=\"sg-head\">"
@@ -15774,7 +15897,7 @@ function program75(depth0,data) {
   return buffer;
   }
 
-function program77(depth0,data) {
+function program86(depth0,data) {
   
   
   return "\n    ";
@@ -15783,122 +15906,50 @@ function program77(depth0,data) {
   buffer += "<article class=\"property-dbinstance\" data-bind=\"true\">\n\n    <div class=\"property-dbinstance-not-available-info hide\">\n        This DB instance is not in availabe status. To apply modification made for this instance, wait for its status to be available.\n    </div>\n\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    <div class=\"option-group-head expand\">DB Instance Details</div>\n    <div class=\"option-group\">\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  buffer += "\n\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(11, program11, data),fn:self.program(8, program8, data),data:data});
+  buffer += "\n\n    <div class=\"option-group-head ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(66, program66, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        <div id =\"lvia-container\"></div>\n\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-version-update\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.autoMinorVersionUpgrade), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-version-update\">\n                <label for=\"property-dbinstance-version-update\"></label>\n            </div>\n            <label for=\"property-dbinstance-version-update\">Auto Minor Version Update</label>\n        </section>\n\n        <section class=\"property-control-group\">\n            <label>Allocated Storage</label>\n            <span class=\"required-input right\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_REQUIRE", {hash:{},data:data}))
-    + "</span>\n            <div class=\"ranged-number-input\">\n                <label for=\"property-dbinstance-storage\"></label>\n                <input id=\"property-dbinstance-storage\" type=\"text\" class=\"input parsley-validated property-input-left tooltip\" value=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.allocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"property-dbinstance-storage\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-type=\"number\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                <label for=\"property-dbinstance-storage\" class=\"property-label-right\">GB</label>\n            </div>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </section>\n\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-iops-check\" class=\"tooltip\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-iops-check\">\n                <label for=\"property-dbinstance-iops-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-iops-check\" class=\"property-dbinstance-iops-check-tooltip tooltip\" data-tooltip=\"dsaasd\">Use Provisioned IOPS</label>\n        </section>\n\n        <section class=\"property-control-group property-dbinstance-iops-value-section ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n            <label class=\"left\">Provisioned IOPS</label>\n            <div class=\"ranged-number-input\">\n                <input class=\"input\" id=\"property-dbinstance-iops-value\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " type=\"text\" value=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"iops-ranged\" data-ignore=\"true\" data-required=\"true\" data-type=\"number\">\n                <label for=\"property-dbinstance-iops-value\"></label>\n            </div>\n            <label class=\"property-dbinstance-iops-info\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.iopsInfo)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</label>\n        </section>\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-master-password\" >Master Password</label>\n            <span class=\"required-input right\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_REQUIRE", {hash:{},data:data}))
-    + "</span>\n            <input class=\"input tooltip\" data-tooltip=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(33, program33, data),fn:self.program(31, program31, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" type=\"password\" placeholder=\"****\" id=\"property-dbinstance-master-password\" value=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(36, program36, data),fn:self.program(31, program31, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-type=\"ascii\" data-ignore=\"true\" data-required=\"true\"/>\n        </section>\n\n    </div>\n\n    <div class=\"option-group-head expand\">Database Config</div>\n    <div class=\"option-group\">\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(45, program45, data),fn:self.program(38, program38, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        <div class=\"property-control-group clearfix property-dbinstance-optiongroup\"></div>\n\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(51, program51, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOracle), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </div>\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideAZConfig), {hash:{},inverse:self.noop,fn:self.program(57, program57, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n    <div class=\"option-group-head\">Backup Options</div>\n    <div class=\"option-group\">\n\n        <section class=\"property-control-group tooltip\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(60, program60, data),data:data});
+  buffer += "\">Backup Options</div>\n    <div class=\"option-group\">\n\n        <section class=\"property-control-group tooltip\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(68, program68, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-auto-backup-check\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-dbinstance-auto-backup-check\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(62, program62, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(70, program70, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                <label for=\"property-dbinstance-auto-backup-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-auto-backup-check\">Enable Automatic Backups</label>\n        </section>\n\n        <div id=\"property-dbinstance-auto-backup-group\" class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n\n            <section id=\"group-dbinstance-backup-period\" class=\"property-control-group ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" >\n                <label>Backup Retention Period</label>\n                <input class=\"input shorter-input\" title=\"hours\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.backupRetentionPeriod)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"property-dbinstance-backup-period\" type=\"text\" data-type=\"digits\" data-min=\"1\" data-max=\"35\" data-ignore=\"true\">\n                <label class=\"property-label-right\" for=\"property-dbinstance-backup-period\">day(s)</label>\n            </section>\n\n            <section id=\"property-dbinstance-backup-window-select\" class=\"property-control-group\">\n                <label>Backup Window</label>\n                <div>\n                    <div class=\"radio\">\n                        <input id=\"property-dbinstance-backup-radio-no\" name=\"property-dbinstance-backup-radio\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(64, program64, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"no\">\n                        <label for=\"property-dbinstance-backup-radio-no\"></label>\n                    </div>\n                    <label for=\"property-dbinstance-backup-radio-no\">No Preference</label>\n                </div>\n                <div>\n                    <div class=\"radio\">\n                        <input id=\"property-dbinstance-backup-radio-window\" name=\"property-dbinstance-backup-radio\" type=\"radio\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(64, program64, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"window\">\n                        <label for=\"property-dbinstance-backup-radio-window\"></label>\n                    </div>\n                    <label for=\"property-dbinstance-backup-radio-window\">Select Window</label>\n                </div>\n            </section>\n\n            <section id=\"property-dbinstance-backup-window-group\" class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " property-control-group\">\n                <section class=\"property-control-group\">\n                    <label>Start Time:</label>\n                    <input class=\"input shorter-input\" type=\"text\" id=\"property-dbinstance-backup-window-start-time\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.backup)),stack1 == null || stack1 === false ? stack1 : stack1.startTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\n                    <label>UTC</label>\n                </section>\n                <section class=\"property-control-group\">\n                    <label>Duration:</label>\n                    <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-backup-window-duration\">\n                        <div class=\"selection\"></div>\n                        <ul class=\"dropdown\">\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.backupDurations), {hash:{},inverse:self.noop,fn:self.program(66, program66, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.backupDurations), {hash:{},inverse:self.noop,fn:self.program(74, program74, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </ul>\n                    </div>\n                    <label for=\"property-dbinstance-maintenance-window-duration\">hour(s)</label>\n                </section>\n            </section>\n\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originBackupWindow), {hash:{},inverse:self.noop,fn:self.program(68, program68, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originBackupWindow), {hash:{},inverse:self.noop,fn:self.program(76, program76, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n\n        </div>\n\n    </div>\n\n    <div class=\"option-group-head\">Maintenance Options</div>\n    <div class=\"option-group\">\n\n        <section id=\"property-dbinstance-maintenance-window-select\" class=\"property-control-group\">\n            <label>Maintenance Window</label>\n            <div>\n                <div class=\"radio\">\n                    <input id=\"property-dbinstance-maintenance-radio-no\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(64, program64, data),data:data});
+  buffer += "\n\n\n\n        </div>\n    </div>\n\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(78, program78, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"no\">\n                    <label for=\"property-dbinstance-maintenance-radio-no\"></label>\n                </div>\n                <label for=\"property-dbinstance-maintenance-radio-no\">No Preference</label>\n            </div>\n            <div>\n                <div class=\"radio\">\n                    <input id=\"property-dbinstance-maintenance-radio-window\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(64, program64, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"window\">\n                    <label for=\"property-dbinstance-maintenance-radio-window\"></label>\n                </div>\n                <label for=\"property-dbinstance-maintenance-radio-window\">Select Window</label>\n            </div>\n        </section>\n\n        <section id=\"property-dbinstance-maintenance-window-group\" class=\"property-control-group ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n            <section class=\"property-control-group\" >\n                <label class=\"left\">Start Day</label>\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-start-day-select\">\n                    <div class=\"selection\">Monday</div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        <li class=\"item\" data-id=\"mon\">Monday</li>\n                        <li class=\"item\" data-id=\"tue\">Tuesday</li>\n                        <li class=\"item\" data-id=\"wed\">Wednesday</li>\n                        <li class=\"item\" data-id=\"thu\">Thursday</li>\n                        <li class=\"item\" data-id=\"fri\">Friday</li>\n                        <li class=\"item\" data-id=\"sat\">Saturday</li>\n                        <li class=\"item\" data-id=\"sun\">Sunday</li>\n                    </ul>\n                </div>\n            </section>\n            <section class=\"property-control-group\" >\n                <label>Start Time:</label>\n                <input class=\"input shorter-input\" type=\"text\" id=\"property-dbinstance-maintenance-window-start-time\" value=\""
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.maintenance)),stack1 == null || stack1 === false ? stack1 : stack1.startTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-required-rollback=\"true\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\n                <label>UTC</label>\n            </section>\n            <section class=\"property-control-group\" >\n                <label>Duration:</label>\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-duration\">\n                    <div class=\"selection\"></div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.maintenanceDurations), {hash:{},inverse:self.noop,fn:self.program(70, program70, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                    </ul>\n                </div>\n                <label for=\"property-dbinstance-maintenance-window-duration\">hour(s)</label>\n            </section>\n\n        </section>\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </div>\n\n    \n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(75, program75, data),fn:self.program(74, program74, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    \n\n</article>";
+  buffer += "\n\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/editor/property/dbinstance/template/stack_replica',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -16491,11 +16542,22 @@ function program18(depth0,data) {
 TEMPLATE.propertyDbinstanceMutilAZ=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<section class=\"modal-db-replica-promote-confirm\">\n    <h5 class=\"modal-text-major\">The following steps show the general process for promoting a read replica to a Single-AZ DB instance.</h5>\n    <ul>\n        <li>Stop any transactions from being written to the read replica source DB instance, and then wait for all updates to be made to the read replica.</p>\n        <li>To be able to make changes to the read replica, you must the set the read_only parameter to 0 in the DB parameter group for the read replica.</p>\n        <li>Perform all needed DDL operations, such as creating indexes, on the read replica.</p>\n        <li>Promote the read replica.</p>\n    </ul>\n    <h5 class=\"modal-text-major\">Note</h5>\n    <p>The promotion process takes a few minutes to complete. When you promote a read replica, replication is stopped and the read replica is rebooted. When the reboot is complete, the read replica is available as a Single-AZ DB instance.</p>\n    <a href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\" target=\"_blank\">Read AWS Document</a>\n</section>";
+  };
+TEMPLATE.modalPromoteConfirm=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/editor/property/dbinstance/view',['ApiRequest', 'ResDiff', '../base/view', 'og_dropdown', './template/stack_instance', './template/stack_replica', './template/stack_component', 'i18n!/nls/lang.js', 'constant', 'CloudResources', 'rds_pg', 'jqtimepicker'], function(ApiRequest, ResDiff, PropertyView, OgDropdown, template_instance, template_replica, template_component, lang, constant, CloudResources, parameterGroup) {
+  define('workspaces/editor/property/dbinstance/view',['ApiRequest', 'ResDiff', '../base/view', 'og_dropdown', './template/stack_instance', './template/stack_replica', './template/stack_component', 'i18n!/nls/lang.js', 'constant', 'CloudResources', 'rds_pg', 'UI.modalplus', 'jqtimepicker'], function(ApiRequest, ResDiff, PropertyView, OgDropdown, template_instance, template_replica, template_component, lang, constant, CloudResources, parameterGroup, Modal) {
     var DBInstanceView, noop;
     noop = function() {
       return null;
@@ -16530,7 +16592,30 @@ return TEMPLATE; });
         'OPTION_CHANGE #property-dbinstance-charset-select': 'changeCharset',
         'change #property-dbinstance-apply-immediately': 'changeApplyImmediately',
         'OPTION_CHANGE': 'checkChange',
-        'change *': 'checkChange'
+        'change *': 'checkChange',
+        'click #property-dbinstance-promote-replica': 'promoteReplica'
+      },
+      promoteReplica: function() {
+        var modal, that;
+        that = this;
+        if (this.isPromoted()) {
+          this.unsetPromote();
+          return App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+        } else {
+          return modal = new Modal({
+            title: "Confirm to promote Read Replica",
+            template: template_component.modalPromoteConfirm({}),
+            confirm: {
+              text: "Confirm"
+            },
+            disableClose: true,
+            onConfirm: function() {
+              that.setPromote();
+              App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+              return modal.close();
+            }
+          });
+        }
       },
       checkChange: function(e) {
         var diff, that;
@@ -16730,11 +16815,50 @@ return TEMPLATE; });
         attr = this.resModel.toJSON();
         if (this.isAppEdit) {
           attr.isAppEdit = this.isAppEdit;
-          _.extend(attr, this.appModel.toJSON());
+          if (this.appModel) {
+            _.extend(attr, this.appModel.toJSON());
+          }
           _.extend(attr, this.getOriginAttr());
         }
         attr.snapshotId = attr.instanceId ? '' : attr.snapshotId;
+        attr.isCanPromote = this.isCanPromote();
+        attr.isPromoted = this.isPromoted();
+        attr.isPromote = this.isCanPromote() || this.isPromoted();
         return attr;
+      },
+      isPromoted: function() {
+        var dbModel, originReplicaId;
+        dbModel = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(this.resModel.get('appId'));
+        if (dbModel) {
+          originReplicaId = dbModel.get('ReadReplicaSourceDBInstanceIdentifier');
+          return this.isAppEdit && originReplicaId && !this.resModel.master();
+        }
+        return false;
+      },
+      isCanPromote: function() {
+        var dbModel, originReplicaId;
+        dbModel = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(this.resModel.get('appId'));
+        if (dbModel) {
+          originReplicaId = dbModel.get('ReadReplicaSourceDBInstanceIdentifier');
+          return this.isAppEdit && originReplicaId && this.resModel.master();
+        }
+        return false;
+      },
+      setPromote: function() {
+        this.resModel.unsetMaster();
+        return this.resModel.autobackup(1);
+      },
+      unsetPromote: function() {
+        var srcDBId, srcDBModel, _ref;
+        srcDBId = (_ref = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(this.resModel.get('appId'))) != null ? _ref.get('ReadReplicaSourceDBInstanceIdentifier') : void 0;
+        if (srcDBId) {
+          srcDBModel = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).findWhere({
+            appId: srcDBId
+          });
+          if (srcDBModel) {
+            return this.resModel.setMaster(srcDBModel);
+          }
+        }
       },
       getOriginAttr: function() {
         var allocatedStorage, iops;
@@ -17156,21 +17280,23 @@ return TEMPLATE; });
       _disableIOPSCheck: function(isDisable) {
         var checked, checkedDom;
         checkedDom = $('#property-dbinstance-iops-check')[0];
-        if (isDisable) {
-          $('#property-dbinstance-iops-check').attr('disabled', 'disabled');
-          $('.property-dbinstance-iops-value-section').hide();
-          $('#property-dbinstance-iops-value').val('');
-          this.resModel.setIops(0);
-          return checkedDom.checked = false;
-        } else {
-          $('#property-dbinstance-iops-check').removeAttr('disabled');
-          checked = checkedDom.checked;
-          if (checked) {
-            $('.property-dbinstance-iops-value-section').show();
-            return checkedDom.checked = true;
-          } else {
+        if (checkedDom) {
+          if (isDisable) {
+            $('#property-dbinstance-iops-check').attr('disabled', 'disabled');
             $('.property-dbinstance-iops-value-section').hide();
+            $('#property-dbinstance-iops-value').val('');
+            this.resModel.setIops(0);
             return checkedDom.checked = false;
+          } else {
+            $('#property-dbinstance-iops-check').removeAttr('disabled');
+            checked = checkedDom.checked;
+            if (checked) {
+              $('.property-dbinstance-iops-value-section').show();
+              return checkedDom.checked = true;
+            } else {
+              $('.property-dbinstance-iops-value-section').hide();
+              return checkedDom.checked = false;
+            }
           }
         }
       },
@@ -17405,11 +17531,14 @@ return TEMPLATE; });
         }
       },
       getInstanceStatus: function() {
-        var dbId, region, that, _setStatus;
+        var currentResModel, dbId, region, that, _setStatus;
+        that = this;
         _setStatus = function(showError) {
           var tip;
           $('.property-dbinstance-status-icon-warning').remove();
-          that.setTitle(that.appModel.get('name'));
+          if (that.appModel) {
+            that.setTitle(that.appModel.get('name'));
+          }
           if (showError === true) {
             $('.db-status-loading').remove();
             $('.property-dbinstance-not-available-info').show();
@@ -17422,28 +17551,39 @@ return TEMPLATE; });
           }
           return that.prependTitle(tip);
         };
-        that = this;
-        dbId = this.appModel.get('DBInstanceIdentifier');
         _setStatus();
         region = Design.instance().region();
-        return ApiRequest('rds_ins_DescribeDBInstances', {
-          id: dbId,
-          region_name: region
-        }).then(function(data) {
-          var dbData, dbStatus, _ref;
-          data = ((_ref = data.DescribeDBInstancesResponse.DescribeDBInstancesResult.DBInstances) != null ? _ref.DBInstance : void 0) || [];
-          dbData = !_.isArray(data) ? data : data[0];
-          if (dbData) {
-            dbStatus = dbData.DBInstanceStatus;
-            if (dbStatus !== 'available') {
-              _setStatus(true);
-              return;
+        dbId = that.resModel.get('appId');
+        currentResModel = CloudResources(constant.RESTYPE.DBINSTANCE, region).get(dbId);
+        if (currentResModel) {
+          return ApiRequest("rds_ins_DescribeDBInstances", {
+            region_name: region,
+            id: dbId
+          }).then(function(data) {
+            var dbData, dbStatus, newSrcId, oldSrcId, _ref;
+            data = ((_ref = data.DescribeDBInstancesResponse.DescribeDBInstancesResult.DBInstances) != null ? _ref.DBInstance : void 0) || [];
+            dbData = !_.isArray(data) ? data : data[0];
+            if (dbData) {
+              oldSrcId = currentResModel.get('ReadReplicaSourceDBInstanceIdentifier');
+              newSrcId = dbData.ReadReplicaSourceDBInstanceIdentifier;
+              if (oldSrcId !== newSrcId) {
+                currentResModel.set('ReadReplicaSourceDBInstanceIdentifier', newSrcId);
+                App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+              } else {
+                dbStatus = dbData.DBInstanceStatus;
+                if (dbStatus !== 'available') {
+                  _setStatus(true);
+                  return;
+                } else {
+                  that.$el.find('.property-dbinstance-promote-replica').show();
+                }
+              }
             }
-          }
-          return _setStatus(false);
-        }, function() {
-          return _setStatus(false);
-        });
+            return _setStatus(false);
+          }, function() {
+            return _setStatus(false);
+          });
+        }
       }
     });
     return new DBInstanceView();
@@ -17790,9 +17930,11 @@ function program69(depth0,data) {
   return buffer;
   }
 
-  buffer += "<article class=\"property-app app-dbinstance\">\n    <div class=\"option-group-head expand\">"
+  buffer += "<article class=\"property-app app-dbinstance\">\n    <div class=\"option-group-head expand\">\n        "
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_TIT_DETAIL", {hash:{},data:data}))
-    + "</div>\n    <div class=\"option-group\" style=\"display: block\">\n        <dl class=\"dl-vertical\">\n            <dt>"
+    + "\n        <a href=\"#\" class=\"icon-syslog tooltip property-btn-get-system-log action-link\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_GET_SYSTEM_LOG", {hash:{},data:data}))
+    + "\" ></a>\n    </div>\n\n    <div class=\"option-group\" style=\"display: block\">\n        <dl class=\"dl-vertical\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
@@ -17916,26 +18058,132 @@ function program69(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </dl>\n    </div>\n\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_STACK_TIT_SG", {hash:{},data:data}))
-    + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n    <div class=\"option-group sg-group\"></div>\n\n\n</article>";
+    + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n    <div class=\"option-group sg-group\"></div>\n</article>";
   return buffer;
   };
 TEMPLATE.appView=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<tr class=\"item\">\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.LogFileName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    <td>"
+    + escapeExpression(helpers.timeStr.call(depth0, (depth0 && depth0.LastWritten), {hash:{},data:data}))
+    + "</td>\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    <td>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.LogFileName), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSafari), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</tr>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<a class=\"view\" data-file-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.LogFileName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">View</a>";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <td>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.LogFileName), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </td>\n    ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<a class=\"download\" data-file-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.LogFileName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">Download</a>";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.log_list=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<tr class=\"item\">\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Date)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.SourceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Message)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n</tr>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.event_list=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<section class=\"db-sys-log-content font-mono\">\n    "
+    + escapeExpression(helpers.breaklines.call(depth0, (depth0 && depth0.LogFileData), {hash:{},data:data}))
+    + "\n    <br/>\n    ----------------------- END OF LOG ----------------------\n</section>\n<footer>\n    <div class=\"action\">\n        <button class=\"btn btn-blue refresh-log\" data-file-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.filename)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">Refresh</button>\n        <button class=\"btn btn-silver close cancel\">Close</button>\n    </div>\n</footer>";
+  return buffer;
+  };
+TEMPLATE.log_content=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"text-center no-data\">No records found.</div>";
+  };
+TEMPLATE.list_empty=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 (function() {
-  define('workspaces/editor/property/dbinstance/app_view',['../base/view', './template/app', 'og_manage_app', 'constant'], function(PropertyView, template, ogManageApp, constant) {
+  define('workspaces/editor/property/dbinstance/app_view',['../base/view', './template/app', 'og_manage_app', 'constant', 'toolbar_modal', 'ApiRequest', 'JsonExporter'], function(PropertyView, template, ogManageApp, constant, toolbar_modal, ApiRequest, JsonExporter) {
     var CGWAppView;
     CGWAppView = PropertyView.extend({
       events: {
-        'click .db-og-in-app': 'openOgModal'
+        'click .db-og-in-app': 'openOgModal',
+        'click .property-btn-get-system-log': 'openModal'
       },
-      openOgModal: function() {
-        var ogModel;
-        ogModel = this.resModel.connectionTargets('OgUsage')[0];
-        return new ogManageApp({
-          model: ogModel
-        });
+      initialize: function() {
+        return this.isSafari = $("body").hasClass("safari");
       },
       render: function() {
         var data;
@@ -17956,6 +18204,220 @@ return TEMPLATE; });
         });
         this.$el.html(template.appView(data));
         return this.resModel.get('name');
+      },
+      renderLogList: function(logList) {
+        var that;
+        that = this;
+        if (logList) {
+          logList = _.map(logList, function(log) {
+            log.isSafari = that.isSafari;
+            return log;
+          });
+          this.modal.options.columns = this.getLogColumns();
+          this.modal.setContent(template.log_list(logList));
+        } else {
+          this.modal.setContent(template.list_empty({}), true);
+        }
+        return null;
+      },
+      renderEventList: function(eventList) {
+        var that;
+        that = this;
+        if (eventList) {
+          this.modal.options.columns = this.getEventColumns();
+          this.modal.setContent(template.event_list(eventList));
+        } else {
+          this.modal.setContent(template.list_empty({}), true);
+        }
+        return null;
+      },
+      openOgModal: function() {
+        var ogModel;
+        ogModel = this.resModel.connectionTargets('OgUsage')[0];
+        return new ogManageApp({
+          model: ogModel
+        });
+      },
+      openModal: function() {
+        new toolbar_modal(this.getModalOptions());
+        this.modal.on('slidedown', this.switchLogEvent, this);
+        this.modal.delegate({
+          'click a.view': 'viewLog',
+          'click a.download': 'downloadLog',
+          'click .refresh-log': 'viewLog'
+        }, this);
+        this.modal.render();
+        this.switchLog();
+        return false;
+      },
+      switchLog: function() {
+        return this.getLogList();
+      },
+      switchEvent: function() {
+        return this.getEventList();
+      },
+      switchLogEvent: function(button) {
+        this.modal.toggleSlide(false).renderListLoading();
+        if (button === 'event') {
+          return this.switchEvent();
+        } else {
+          return this.switchLog();
+        }
+      },
+      getEventList: function() {
+        var that;
+        that = this;
+        ApiRequest('rds_DescribeEvents', {
+          region_name: this.resModel.design().region(),
+          source_id: this.resModel.get('appId'),
+          source_type: 'db-instance',
+          event_categories: null,
+          duration: 20160
+        }).then((function(result) {
+          var eventList, _ref, _ref1, _ref2;
+          console.log(result);
+          eventList = (result != null ? (_ref = result.DescribeEventsResponse) != null ? (_ref1 = _ref.DescribeEventsResult) != null ? (_ref2 = _ref1.Events) != null ? _ref2.Event : void 0 : void 0 : void 0 : void 0) || null;
+          if (eventList && !_.isArray(eventList)) {
+            eventList = [eventList];
+          }
+          return that.renderEventList(eventList);
+        }), (function() {}));
+        return null;
+      },
+      getLogList: function() {
+        var that;
+        that = this;
+        ApiRequest('rds_DescribeDBLogFiles', {
+          db_identifier: this.resModel.get('appId'),
+          region_name: this.resModel.design().region()
+        }).then((function(result) {
+          var logList, _ref, _ref1, _ref2;
+          logList = (result != null ? (_ref = result.DescribeDBLogFilesResponse) != null ? (_ref1 = _ref.DescribeDBLogFilesResult) != null ? (_ref2 = _ref1.DescribeDBLogFiles) != null ? _ref2.DescribeDBLogFilesDetails : void 0 : void 0 : void 0 : void 0) || null;
+          if (logList && !_.isArray(logList)) {
+            logList = [logList];
+          }
+          return that.renderLogList(logList);
+        }), (function() {
+          that.renderLogList(null);
+          return null;
+        }));
+        return null;
+      },
+      viewLog: function(e) {
+        var filename, modal;
+        modal = this.modal;
+        filename = $(e.currentTarget).data('fileName');
+        modal.toggleSlide(true);
+        return this.getLogContent(filename).then((function(log) {
+          console.log(log);
+          log.filename = filename;
+          return modal.setSlide(template.log_content(log));
+        }), (function() {
+          var log;
+          log = {
+            LogFileData: '',
+            filename: filename
+          };
+          return modal.setSlide(template.log_content(log));
+        }));
+      },
+      downloadLog: function(e) {
+        var filename, modal;
+        modal = this.modal;
+        filename = $(e.currentTarget).data('fileName');
+        modal.toggleSlide(true);
+        return this.getLogContent(filename).then(function(log) {
+          var blob, download;
+          console.log(log);
+          download = JsonExporter.download;
+          blob = new Blob([log.LogFileData || '']);
+          download(blob, filename);
+          return modal.toggleSlide(false);
+        });
+      },
+      getLogContent: function(filename) {
+        return ApiRequest('rds_DownloadDBLogFilePortion', {
+          db_identifier: this.resModel.get('appId'),
+          log_filename: filename
+        }).then((function(result) {
+          var _ref;
+          console.log(result);
+          return (result != null ? (_ref = result.DownloadDBLogFilePortionResponse) != null ? _ref.DownloadDBLogFilePortionResult : void 0 : void 0) || {};
+        }), (function() {
+          return {};
+        }));
+      },
+      getModalOptions: function() {
+        var appId, options, that;
+        that = this;
+        appId = this.resModel.get('appId');
+        options = {
+          title: "Log & Event: " + appId,
+          classList: 'syslog-dbinstance',
+          context: that,
+          noCheckbox: true,
+          disableClickSlideup: true,
+          buttons: [
+            {
+              icon: 'unknown',
+              type: 'log',
+              name: 'Log',
+              active: true
+            }, {
+              icon: 'unknown',
+              type: 'event',
+              name: 'Event'
+            }
+          ]
+        };
+        options.columns = this.getLogColumns();
+        if (this.isSafari) {
+          options.columns.pop();
+        }
+        return options;
+      },
+      getLogColumns: function() {
+        return [
+          {
+            sortable: true,
+            name: 'Name'
+          }, {
+            sortable: true,
+            rowType: 'datetime',
+            name: 'Last Written',
+            width: "28%"
+          }, {
+            sortable: true,
+            rowType: 'number',
+            width: "20%",
+            name: 'Size'
+          }, {
+            sortable: false,
+            width: "10%",
+            name: 'View'
+          }, {
+            sortable: false,
+            width: "10%",
+            name: 'Download'
+          }
+        ];
+      },
+      getEventColumns: function() {
+        return [
+          {
+            sortable: true,
+            rowType: 'datetime',
+            name: 'Time',
+            width: "28%"
+          }, {
+            sortable: true,
+            width: "20%",
+            name: 'Source'
+          }, {
+            sortable: false,
+            name: 'System Notes'
+          }
+        ];
       }
     });
     return new CGWAppView();

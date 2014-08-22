@@ -1616,7 +1616,7 @@ function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n		";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(18, program18, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(26, program26, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	";
   return buffer;
@@ -1670,9 +1670,18 @@ function program9(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eip)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">elastic ip</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.elb)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">load balancer</span></li>\n					</ol>\n					<button class=\"btn btn-blue visualize-vpc-btn\" data-vpcid=\""
+    + "</div><span class=\"vis-res-name\">load balancer</span></li>\n					</ol>\n					<button class=\"btn btn-blue visualize-vpc-btn";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.username), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.username), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " data-vpcid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">Import</button>\n				</li>\n				";
+    + "\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.username), {hash:{},inverse:self.program(24, program24, data),fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</button>\n				</li>\n				";
   return buffer;
   }
 function program10(depth0,data) {
@@ -1707,6 +1716,33 @@ function program16(depth0,data) {
   }
 
 function program18(depth0,data) {
+  
+  
+  return " tooltip disabled";
+  }
+
+function program20(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "data-tooltip=\"This VPC was imported by "
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"";
+  return buffer;
+  }
+
+function program22(depth0,data) {
+  
+  
+  return "Already Imported";
+  }
+
+function program24(depth0,data) {
+  
+  
+  return "Import";
+  }
+
+function program26(depth0,data) {
   
   
   return "<div class=\"unmanaged-vpc-empty\">There is no VPC to import.</div>";
@@ -2125,8 +2161,11 @@ function program18(depth0,data) {
           self.visModal.tpl.find(".loading-spinner").show();
           return false;
         });
-        this.visModal.tpl.on("click", ".visualize-vpc-btn", function() {
+        this.visModal.tpl.on("click", ".visualize-vpc-btn", function(event) {
           var $tgt, id, region;
+          if ($(event.currentTarget).hasClass('disabled')) {
+            return false;
+          }
           $tgt = $(this);
           if ($tgt.hasClass(".disabled")) {
             return false;
@@ -2484,13 +2523,38 @@ function program18(depth0,data) {
         });
       },
       onVisualizeUpdated: function(result) {
+        var data, self, vpcsDefer;
         if (!this.__visRequest) {
           return;
         }
         this.__isVisReady = true;
         this.__isVisFail = false;
         this.attributes.visualizeData = null;
-        this.set("visualizeData", this.parseVisData(result));
+        self = this;
+        data = self.parseVisData(result);
+        vpcsDefer = [];
+        _.each(data, function(e) {
+          return vpcsDefer.push(ApiRequest("vpc_DescribeVpcs", {
+            region_name: e.id
+          }));
+        });
+        Q.all(vpcsDefer).spread(function(result) {
+          var vpcs;
+          console.log(arguments);
+          vpcs = _.flatten(_.map(_.toArray(arguments), function(e) {
+            return e.DescribeVpcsResponse.vpcSet.item;
+          }));
+          _.map(data, function(e) {
+            return _.map(e.vpcs, function(f) {
+              var _ref;
+              f.tagSet = (_ref = _.findWhere(vpcs, {
+                vpcId: f.id
+              })) != null ? _ref.tagSet : void 0;
+              return f.username = f.tagSet ? (f.tagSet.visualops ? f.tagSet.visualops.match(/^.*created-by=(\w+)\s*/)[1] : f.tagSet['Created by']) : void 0;
+            });
+          });
+          return self.set("visualizeData", data);
+        });
       },
       isVisualizeReady: function() {
         return !!this.__isVisReady;

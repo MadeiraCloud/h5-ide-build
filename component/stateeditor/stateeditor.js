@@ -3769,7 +3769,9 @@ return Markdown;
             highlightSelectedWord: false,
             enableSnippets: false,
             singleLine: editorSingleLine,
-            enableTab: enableTab
+            enableTab: enableTab,
+            useSoftTabs: false,
+            tabSize: 4
           });
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;

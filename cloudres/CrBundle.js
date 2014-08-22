@@ -4966,9 +4966,10 @@
         self = this;
         parameters = self.getParameters();
         return Q.all(requests).then(function() {
-          for (name in paramNewValueMap) {
-            value = paramNewValueMap[name];
-            parameters.get(name).set("ParameterValue", value);
+          var n, v;
+          for (n in paramNewValueMap) {
+            v = paramNewValueMap[n];
+            parameters.get(n).set("ParameterValue", v);
           }
         });
       }

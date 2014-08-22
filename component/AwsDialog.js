@@ -957,7 +957,7 @@ return TEMPLATE; });
         }).then(function(ds) {
           return comp = ds[0].component;
         }).then(function() {
-          var dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
+          var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
           name = App.model.appList().get(id).get("name");
           hasEC2Instance = (_.filter(comp, function(e) {
             return e.type === constant.RESTYPE.INSTANCE;
@@ -972,8 +972,16 @@ return TEMPLATE; });
             return e.type === constant.RESTYPE.DBINSTANCE;
           });
           snapshots = CloudResources(constant.RESTYPE.DBSNAP, Design.instance().region());
-          return snapshots.fetchForce().then(function() {
+          awsError = null;
+          return snapshots.fetchForce().fail(function(error) {
+            return awsError = error.awsError;
+          })["finally"](function() {
             var lostDBSnapshot;
+            if (awsError && awsError !== 403) {
+              startAppModal.close();
+              notification('error', "Error while loading AWS data, please try again later.");
+              return false;
+            }
             lostDBSnapshot = _.filter(dbInstance, function(e) {
               return e.resource.DBSnapshotIdentifier && !snapshots.findWhere({
                 id: e.resource.DBSnapshotIdentifier
@@ -998,7 +1006,7 @@ return TEMPLATE; });
         });
       },
       stopApp: function(id) {
-        var app, appName, canStop, isProduction, name, resourceList, that;
+        var app, appName, awsError, canStop, isProduction, name, resourceList, that;
         app = App.model.appList().get(id);
         name = app.get("name");
         that = this;
@@ -1017,90 +1025,104 @@ return TEMPLATE; });
         });
         canStop.tpl.find(".modal-footer").hide();
         resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
-        return Q.all(resourceList.fetchForce(), app.fetchJsonData()).then(function() {
-          var amiRes, com, comp, imageId, toFetch, toFetchArray, uid;
-          comp = app.getJsonData().component;
-          toFetch = {};
-          for (uid in comp) {
-            com = comp[uid];
-            if (com.type === constant.RESTYPE.INSTANCE || com.type === constant.RESTYPE.LC) {
-              imageId = com.resource.ImageId;
-              if (imageId) {
-                toFetch[imageId] = true;
-              }
-            }
+        awsError = null;
+        return resourceList.fetchForce().fail(function(error) {
+          console.log(error);
+          if (error.awsError) {
+            return awsError = error.awsError;
           }
-          toFetchArray = _.keys(toFetch);
-          amiRes = CloudResources(constant.RESTYPE.AMI, app.get("region"));
-          return amiRes.fetchAmis(_.keys(toFetch)).then(function() {
-            var dbInstanceName, fee, hasAsg, hasDBInstance, hasEC2Instance, hasInstanceStore, hasNotReadyDB, savingFee, totalFee, _ref, _ref1, _ref2;
-            hasInstanceStore = false;
-            amiRes.each(function(e) {
-              var _ref;
-              if ((_ref = e.id, __indexOf.call(toFetchArray, _ref) >= 0) && e.get("rootDeviceType") === 'instance-store') {
-                return hasInstanceStore = true;
+        })["finally"](function() {
+          if (awsError && awsError !== 403) {
+            canStop.close();
+            notification('error', "Error when loading AWS data, please try again later.");
+            return false;
+          }
+          return app.fetchJsonData().then(function() {
+            var amiRes, com, comp, imageId, toFetch, toFetchArray, uid;
+            comp = app.getJsonData().component;
+            toFetch = {};
+            for (uid in comp) {
+              com = comp[uid];
+              if (com.type === constant.RESTYPE.INSTANCE || com.type === constant.RESTYPE.LC) {
+                imageId = com.resource.ImageId;
+                if (imageId) {
+                  toFetch[imageId] = true;
+                }
               }
-            });
-            hasEC2Instance = (_ref = _.filter(comp, function(e) {
-              return e.type === constant.RESTYPE.INSTANCE;
-            })) != null ? _ref.length : void 0;
-            hasDBInstance = _.filter(comp, function(e) {
-              return e.type === constant.RESTYPE.DBINSTANCE;
-            });
-            dbInstanceName = _.map(hasDBInstance, function(e) {
-              return e.resource.DBInstanceIdentifier;
-            });
-            hasNotReadyDB = resourceList.filter(function(e) {
-              var _ref1;
-              return (_ref1 = e.get('DBInstanceIdentifier'), __indexOf.call(dbInstanceName, _ref1) >= 0) && e.get('DBInstanceStatus') !== 'available';
-            });
-            hasAsg = (_ref1 = _.filter(comp, function(e) {
-              return e.type === constant.RESTYPE.ASG;
-            })) != null ? _ref1.length : void 0;
-            fee = ((_ref2 = Design.instance()) != null ? _ref2.getCost(true) : void 0) || {};
-            console.log(fee);
-            totalFee = fee.totalFee;
-            savingFee = fee.totalFee;
-            canStop.tpl.find(".modal-footer").show();
-            if (hasNotReadyDB && hasNotReadyDB.length) {
-              canStop.tpl.find('.modal-body').html(AppTpl.cantStop({
-                cantStop: hasNotReadyDB
-              }));
-              canStop.tpl.find('.modal-confirm').remove();
-            } else {
-              hasDBInstance = hasDBInstance != null ? hasDBInstance.length : void 0;
-              canStop.tpl.find('.modal-body').css('padding', "0").html(AppTpl.stopAppConfirm({
-                isProduction: isProduction,
-                appName: appName,
-                hasEC2Instance: hasEC2Instance,
-                hasDBInstance: hasDBInstance,
-                hasAsg: hasAsg,
-                totalFee: totalFee,
-                savingFee: savingFee,
-                hasInstanceStore: hasInstanceStore
-              }));
             }
-            canStop.resize();
-            canStop.on("confirm", function() {
-              canStop.close();
-              app.stop().fail(function(err) {
-                var error;
-                error = err.awsError ? err.error + "." + err.awsError : err.error;
-                notification("Fail to stop your app \"" + name + "\". (ErrorCode: " + error + ")");
+            toFetchArray = _.keys(toFetch);
+            amiRes = CloudResources(constant.RESTYPE.AMI, app.get("region"));
+            return amiRes.fetchAmis(_.keys(toFetch)).then(function() {
+              var dbInstanceName, fee, hasAsg, hasDBInstance, hasEC2Instance, hasInstanceStore, hasNotReadyDB, savingFee, totalFee, _ref, _ref1, _ref2;
+              hasInstanceStore = false;
+              amiRes.each(function(e) {
+                var _ref;
+                if ((_ref = e.id, __indexOf.call(toFetchArray, _ref) >= 0) && e.get("rootDeviceType") === 'instance-store') {
+                  return hasInstanceStore = true;
+                }
               });
-            });
-            $("#appNameConfirmIpt").on("keyup change", function() {
-              if ($("#appNameConfirmIpt").val() === name) {
-                canStop.tpl.find('.modal-confirm').removeAttr("disabled");
+              hasEC2Instance = (_ref = _.filter(comp, function(e) {
+                return e.type === constant.RESTYPE.INSTANCE;
+              })) != null ? _ref.length : void 0;
+              hasDBInstance = _.filter(comp, function(e) {
+                return e.type === constant.RESTYPE.DBINSTANCE;
+              });
+              dbInstanceName = _.map(hasDBInstance, function(e) {
+                return e.resource.DBInstanceIdentifier;
+              });
+              hasNotReadyDB = resourceList.filter(function(e) {
+                var _ref1;
+                return (_ref1 = e.get('DBInstanceIdentifier'), __indexOf.call(dbInstanceName, _ref1) >= 0) && e.get('DBInstanceStatus') !== 'available';
+              });
+              hasAsg = (_ref1 = _.filter(comp, function(e) {
+                return e.type === constant.RESTYPE.ASG;
+              })) != null ? _ref1.length : void 0;
+              fee = ((_ref2 = Design.instance()) != null ? _ref2.getCost(true) : void 0) || {};
+              totalFee = fee.totalFee || 0;
+              savingFee = fee.totalFee || 0;
+              canStop.tpl.find(".modal-footer").show();
+              if (hasNotReadyDB && hasNotReadyDB.length) {
+                canStop.tpl.find('.modal-body').html(AppTpl.cantStop({
+                  cantStop: hasNotReadyDB
+                }));
+                canStop.tpl.find('.modal-confirm').remove();
               } else {
-                canStop.tpl.find('.modal-confirm').attr("disabled", "disabled");
+                hasDBInstance = hasDBInstance != null ? hasDBInstance.length : void 0;
+                canStop.tpl.find('.modal-body').css('padding', "0").html(AppTpl.stopAppConfirm({
+                  isProduction: isProduction,
+                  appName: appName,
+                  hasEC2Instance: hasEC2Instance,
+                  hasDBInstance: hasDBInstance,
+                  hasAsg: hasAsg,
+                  totalFee: totalFee,
+                  savingFee: savingFee,
+                  hasInstanceStore: hasInstanceStore
+                }));
               }
+              canStop.resize();
+              canStop.on("confirm", function() {
+                canStop.close();
+                app.stop().fail(function(err) {
+                  var error;
+                  console.log(err);
+                  error = err.awsError ? err.error + "." + err.awsError : err.error;
+                  notification("Fail to stop your app \"" + name + "\". (ErrorCode: " + error + ")");
+                });
+              });
+              $("#appNameConfirmIpt").on("keyup change", function() {
+                if ($("#appNameConfirmIpt").val() === name) {
+                  canStop.tpl.find('.modal-confirm').removeAttr("disabled");
+                } else {
+                  canStop.tpl.find('.modal-confirm').attr("disabled", "disabled");
+                }
+              });
             });
           });
         });
       },
       terminateApp: function(id) {
-        var app, name, production, resourceList, terminateConfirm;
+        var app, name, production, resourceList, self, terminateConfirm;
+        self = this;
         app = App.model.appList().get(id);
         name = app.get("name");
         production = app.get("usage") === 'production';
@@ -1116,49 +1138,64 @@ return TEMPLATE; });
         });
         terminateConfirm.tpl.find('.modal-footer').hide();
         resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
-        return resourceList.fetchForce().then(function() {
-          return app.fetchJsonData().then(function() {
-            var comp, dbInstanceName, hasDBInstance, notReadyDB;
-            comp = app.getJsonData().component;
-            hasDBInstance = _.filter(comp, function(e) {
-              return e.type === constant.RESTYPE.DBINSTANCE;
+        return resourceList.fetchForce().then(function(result) {
+          return self.__terminateApp(id, resourceList, terminateConfirm);
+        }).fail(function(error) {
+          if (error.awsError === 403) {
+            return self.__terminateApp(id, resourceList, terminateConfirm);
+          } else {
+            terminateConfirm.close();
+            notification('error', "Error while loading AWS data, please try again later.");
+            return false;
+          }
+        });
+      },
+      __terminateApp: function(id, resourceList, terminateConfirm) {
+        var app, name, production;
+        app = App.model.appList().get(id);
+        name = app.get("name");
+        production = app.get("usage") === 'production';
+        return app.fetchJsonData().then(function() {
+          var comp, dbInstanceName, hasDBInstance, notReadyDB;
+          comp = app.getJsonData().component;
+          hasDBInstance = _.filter(comp, function(e) {
+            return e.type === constant.RESTYPE.DBINSTANCE;
+          });
+          dbInstanceName = _.map(hasDBInstance, function(e) {
+            return e.resource.DBInstanceIdentifier;
+          });
+          notReadyDB = resourceList.filter(function(e) {
+            var _ref;
+            return (_ref = e.get('DBInstanceIdentifier'), __indexOf.call(dbInstanceName, _ref) >= 0) && e.get('DBInstanceStatus') !== 'available';
+          });
+          terminateConfirm.tpl.find('.modal-body').html(AppTpl.terminateAppConfirm({
+            production: production,
+            name: name,
+            hasDBInstance: hasDBInstance,
+            notReadyDB: notReadyDB
+          }));
+          terminateConfirm.tpl.find('.modal-footer').show();
+          terminateConfirm.resize();
+          if (notReadyDB != null ? notReadyDB.length : void 0) {
+            terminateConfirm.tpl.find("#take-rds-snapshot").attr("checked", false).change(function() {
+              return terminateConfirm.tpl.find(".modal-confirm").attr('disabled', $(this).is(":checked"));
             });
-            dbInstanceName = _.map(hasDBInstance, function(e) {
-              return e.resource.DBInstanceIdentifier;
-            });
-            notReadyDB = resourceList.filter(function(e) {
-              var _ref;
-              return (_ref = e.get('DBInstanceIdentifier'), __indexOf.call(dbInstanceName, _ref) >= 0) && e.get('DBInstanceStatus') !== 'available';
-            });
-            terminateConfirm.tpl.find('.modal-body').html(AppTpl.terminateAppConfirm({
-              production: production,
-              name: name,
-              hasDBInstance: hasDBInstance,
-              notReadyDB: notReadyDB
-            }));
-            terminateConfirm.tpl.find('.modal-footer').show();
-            terminateConfirm.resize();
-            if (notReadyDB != null ? notReadyDB.length : void 0) {
-              terminateConfirm.tpl.find("#take-rds-snapshot").attr("checked", false).change(function() {
-                return terminateConfirm.tpl.find(".modal-confirm").attr('disabled', $(this).is(":checked"));
-              });
+          }
+          $("#appNameConfirmIpt").on("keyup change", function() {
+            if ($("#appNameConfirmIpt").val() === name) {
+              terminateConfirm.tpl.find('.modal-confirm').removeAttr("disabled");
+            } else {
+              terminateConfirm.tpl.find('.modal-confirm').attr("disabled", "disabled");
             }
-            $("#appNameConfirmIpt").on("keyup change", function() {
-              if ($("#appNameConfirmIpt").val() === name) {
-                terminateConfirm.tpl.find('.modal-confirm').removeAttr("disabled");
-              } else {
-                terminateConfirm.tpl.find('.modal-confirm').attr("disabled", "disabled");
-              }
-            });
-            terminateConfirm.on("confirm", function() {
-              var takeSnapshot;
-              terminateConfirm.close();
-              takeSnapshot = terminateConfirm.tpl.find("#take-rds-snapshot").is(':checked');
-              app.terminate(null, takeSnapshot).fail(function(err) {
-                var error;
-                error = err.awsError ? err.error + "." + err.awsError : err.error;
-                return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
-              });
+          });
+          terminateConfirm.on("confirm", function() {
+            var takeSnapshot;
+            terminateConfirm.close();
+            takeSnapshot = terminateConfirm.tpl.find("#take-rds-snapshot").is(':checked');
+            app.terminate(null, takeSnapshot).fail(function(err) {
+              var error;
+              error = err.awsError ? err.error + "." + err.awsError : err.error;
+              return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
             });
           });
         });
@@ -1188,74 +1225,120 @@ TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <button class=\"icon-new-stack btn btn-blue t-m-btn\" data-btn=\"create\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.btnValueCreate)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</button>\n    ";
+  buffer += "\n<div class=\"toolbar\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.btnValueCreate), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <div class=\"btn-group\">\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.buttons), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        </div>\n</div>\n";
   return buffer;
   }
-
-function program3(depth0,data) {
+function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <button class=\"icon-"
-    + escapeExpression(((stack1 = (depth0 && depth0.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " t-m-btn\" data-btn=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  buffer += "\n        <button class=\"icon-new-stack btn btn-blue t-m-btn ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.active), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+  buffer += "\" data-btn=\"create\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.btnValueCreate)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</button>\n        ";
   return buffer;
   }
-function program4(depth0,data) {
+function program3(depth0,data) {
+  
+  
+  return "active";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <button class=\"icon-"
+    + escapeExpression(((stack1 = (depth0 && depth0.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " t-m-btn ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.active), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-btn=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</button>\n            ";
+  return buffer;
+  }
+function program6(depth0,data) {
   
   
   return "disabled";
   }
 
-function program6(depth0,data) {
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasButton), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n<div class=\"list\">\n    <div class=\"slidebox\" style=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.slideStyle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        <div class=\"content clearfix\">\n            <div class=\"loading-spinner\"></div>\n        </div>\n        <div class=\"error\">\n            something wrong\n        </div>\n    </div>\n    "
+    + escapeExpression(((stack1 = (depth0 && depth0.beforeTable)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n    <div class=\"list-content\">\n    </div>\n\n\n</div>";
+  return buffer;
+  };
+TEMPLATE.toolbar_slide=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n                <th>\n                    <div class=\"checkbox\">\n                        <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                        <label for=\"t-m-select-all\"></label>\n                    </div>\n                </th>\n                ";
+  }
+
+function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                    <th class=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sortable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  buffer += "\n                <th class=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sortable), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-row-type=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rowType), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rowType), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</th>\n                    ";
+    + "</th>\n                ";
   return buffer;
   }
-function program7(depth0,data) {
+function program4(depth0,data) {
   
   
   return "sortable";
   }
 
-function program9(depth0,data) {
+function program6(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.rowType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program11(depth0,data) {
+function program8(depth0,data) {
   
   
   return "string";
   }
 
-function program13(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "width:"
@@ -1264,25 +1347,25 @@ function program13(depth0,data) {
   return buffer;
   }
 
-function program15(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            <div style=\"overflow-y:auto;overflow-x:hidden;height: "
+  buffer += "\n    <div style=\"overflow-y:auto;overflow-x:hidden;height: "
     + escapeExpression(((stack1 = (depth0 && depth0.height)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "px;\">\n        ";
   return buffer;
   }
 
-function program17(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div class=\"scroll-wrap\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.height), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.height), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n        ";
+  buffer += ">\n            <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n            <div class=\"scroll-content\" style=\"display:block;\">\n                ";
   return buffer;
   }
-function program18(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "style=\"height: "
@@ -1291,52 +1374,56 @@ function program18(depth0,data) {
   return buffer;
   }
 
-function program20(depth0,data) {
+function program17(depth0,data) {
+  
+  
+  return "<th><div class=\"th-inner\"></div></th>";
+  }
+
+function program19(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <th style=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.width), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"><div class=\"th-inner\"></div></th>\n                            ";
   return buffer;
   }
 
-function program22(depth0,data) {
+function program21(depth0,data) {
   
   
-  return "\n            </div>\n        ";
+  return "\n            </div>\n            ";
   }
 
-function program24(depth0,data) {
+function program23(depth0,data) {
   
   
-  return "\n            </div>\n        </div>\n        ";
+  return "\n        </div>\n    </div>\n    ";
   }
 
-  buffer += "<div class=\"toolbar\">\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.btnValueCreate), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  buffer += "<div class=\"table-head-fix will-be-covered\">\n    <table class=\"table-head\">\n        <thead>\n            <tr>\n                ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.noCheckbox), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"btn-group\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.buttons), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  buffer += "\n                ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</div>\n<div class=\"list\">\n    <div class=\"slidebox\" style=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.slideStyle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n        <div class=\"content clearfix\">\n        </div>\n        <div class=\"error\">\n            something wrong\n        </div>\n    </div>\n    <div class=\"table-head-fix will-be-covered\">\n        <table class=\"table-head\">\n            <thead>\n                <tr>\n                    <th>\n                        <div class=\"checkbox\">\n                            <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                            <label for=\"t-m-select-all\"></label>\n                        </div>\n                    </th>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  buffer += "\n            </tr>\n        </thead>\n    </table>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </tr>\n            </thead>\n        </table>\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
+  buffer += "\n\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.noCheckbox), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  buffer += "\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n\n                    </tbody>\n                </table>\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(24, program24, data),fn:self.program(22, program22, data),data:data});
+  buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n                    </tbody>\n                </table>\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</div>";
+  buffer += "\n</div>";
   return buffer;
   };
-TEMPLATE.content=Handlebars.template(__TEMPLATE__);
+TEMPLATE.table=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -1445,40 +1532,42 @@ Refer to kpView.coffee
         });
         return checkedInfo;
       },
-      __slideRejct: function() {
+      __slideReject: function() {
         return _.isFunction(this.options.slideable) && !this.options.slideable();
       },
       __handleSlide: function(event) {
-        var $activeButton, $button, $slidebox, activeButton, button;
+        var $activeButton, $button, activeButton, button;
         $button = $(event.currentTarget);
-        $slidebox = this.$('.slidebox');
         button = $button.data('btn');
         if (button === 'refresh') {
           return this;
         }
-        if (this.__slideRejct()) {
+        if (this.__slideReject()) {
           return this;
         }
         $activeButton = this.$('.toolbar .active');
         activeButton = $activeButton && $activeButton.data('btn');
         if ($activeButton.length) {
           if ($activeButton.get(0) === $button.get(0)) {
-            this.trigger('slideup', button);
+            if (this.options.disableClickSlideup) {
+              return;
+            }
             $button.removeClass('active');
-            $slidebox.removeClass('show');
+            this.toggleSlide(false);
             this.__slide = null;
+            this.trigger('slideup', button);
           } else {
-            this.trigger('slidedown', button, this.getChecked());
             $activeButton.removeClass('active');
             $button.addClass('active');
-            $slidebox.addClass('show');
+            this.toggleSlide(true);
             this.__slide = button;
+            this.trigger('slidedown', button, this.getChecked());
           }
         } else {
-          this.trigger('slidedown', button, this.getChecked());
           $button.addClass('active');
-          $slidebox.addClass('show');
+          this.toggleSlide(true);
           this.__slide = button;
+          this.trigger('slidedown', button, this.getChecked());
         }
         return null;
       },
@@ -1497,10 +1586,10 @@ Refer to kpView.coffee
         }
       },
       __refresh: function() {
-        if (this.__slideRejct()) {
+        if (this.__slideReject()) {
           return this;
         }
-        this.__renderLoading();
+        this.renderLoading();
         return this.trigger('refresh');
       },
       __close: function(event) {
@@ -1594,16 +1683,13 @@ Refer to kpView.coffee
           return scroll.height(that.__getHeightOfContent());
         }
       },
-      __renderLoading: function() {
-        this.$('.content-wrap').html(template.loading);
-        return this;
-      },
-      __renderContent: function() {
-        var $contentWrap, data, that;
+      __renderToolbarSlide: function() {
+        var $contentWrap, data, that, _ref;
         that = this;
         $contentWrap = this.$('.content-wrap');
         if (!$contentWrap.find('.toolbar').size()) {
           data = this.options;
+          data.hasButton = !!((_ref = data.buttons) != null ? _ref.length : void 0);
           data.buttons = _.reject(data.buttons, function(btn) {
             if (btn.type === 'create') {
               data.btnValueCreate = btn.name;
@@ -1611,7 +1697,7 @@ Refer to kpView.coffee
             }
           });
           data.height = that.__getHeightOfContent();
-          this.$('.content-wrap').html(template.content(data));
+          this.$('.content-wrap').html(template.toolbar_slide(data));
           return this;
         }
       },
@@ -1622,17 +1708,30 @@ Refer to kpView.coffee
           tpl = refresh;
           this.$('.content-wrap').html(template[tpl] && template[tpl]() || tpl);
         } else {
-          this.__renderLoading();
+          this.renderLoading();
         }
         if (!refresh) {
           this.__open();
         }
         return this;
       },
-      setContent: function(dom) {
+      renderLoading: function() {
+        this.$('.content-wrap').html(template.loading);
+        return this;
+      },
+      renderListLoading: function() {
+        this.$('.list-content').html(template.loading);
+        return this;
+      },
+      setContent: function(dom, noTable) {
         this.tempDom = dom;
-        this.__renderContent();
-        this.$('.t-m-content').html(dom);
+        this.__renderToolbarSlide();
+        if (noTable) {
+          this.$('.list-content').html(dom);
+        } else {
+          this.$('.list-content').html(template.table(this.options));
+          this.$('.t-m-content').html(dom);
+        }
         this.__triggerChecked(null);
         this.trigger("rendered", this);
         return this;
@@ -1652,15 +1751,14 @@ Refer to kpView.coffee
         return this.$("[data-btn=" + which + "]").click();
       },
       cancel: function() {
-        var $activeButton, $slidebox;
-        if (this.__slideRejct()) {
+        var $activeButton;
+        if (this.__slideReject()) {
           return this;
         }
-        $slidebox = this.$('.slidebox');
         $activeButton = this.$('.toolbar .active');
         this.trigger('slideup', $activeButton.data('btn'));
         $activeButton.removeClass('active');
-        $slidebox.removeClass('show');
+        this.toggleSlide(false);
         return this;
       },
       unCheckSelectAll: function() {
@@ -1668,19 +1766,23 @@ Refer to kpView.coffee
         return this.__processDelBtn(false);
       },
       delegate: function(events, context) {
-        var eventName, key, match, method, selector, _i, _len;
+        var eventName, key, match, method, selector;
         if (!events || !_.isObject(events)) {
           return this;
         }
-        for (method = _i = 0, _len = events.length; _i < _len; method = ++_i) {
-          key = events[method];
+        context = context || this;
+        for (key in events) {
+          method = events[key];
+          if (!_.isFunction(method)) {
+            method = context[events[key]];
+          }
           if (!method) {
             continue;
           }
           match = key.match(/^(\S+)\s*(.*)$/);
           eventName = match[1];
           selector = match[2];
-          method = _.bind(method, context || this);
+          method = _.bind(method, context);
           eventName += '.delegateEvents' + this.cid;
           if (selector === '') {
             this.$el.on(eventName, method);
@@ -1701,6 +1803,15 @@ Refer to kpView.coffee
       },
       getSlide: function() {
         return this.__slide;
+      },
+      toggleSlide: function(display) {
+        var $slidebox;
+        $slidebox = this.$('.slidebox');
+        if (display) {
+          this.setSlide(template.loading);
+        }
+        $slidebox.toggleClass('show', display || false);
+        return this;
       }
     });
   });

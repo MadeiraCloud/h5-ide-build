@@ -218,6 +218,7 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'resource_change_detail'  : { url:'/resource/',	method:'change_detail',	params:['username', 'session_id', 'region_name', 'app_id']   },
 		'resource_vpc_resource'   : { url:'/resource/',	method:'vpc_resource',	params:['username', 'session_id', 'region_name', 'vpc_id']   },
 		'resource_check_change'   : { url:'/resource/',	method:'check_change',	params:['username', 'session_id', 'region_name', 'app_id']   },
+		'resource_generate_json'  : { url:'/resource/',	method:'generate_json',	params:['username', 'session_id', 'app_id']   },
 		'stack_create'            : { url:'/stack/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
 		'stack_remove'            : { url:'/stack/',	method:'remove',	params:['username', 'session_id', 'region_name', 'stack_id', 'stack_name']   },
 		'stack_save'              : { url:'/stack/',	method:'save',	params:['username', 'session_id', 'region_name', 'spec']   },
@@ -473,6 +474,8 @@ define('api/define/aws/rds',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'rds_snap_DescribeDBSnapshots'           : { url:'/aws/rds/snapshot/',	method:'DescribeDBSnapshots',	params:['username', 'session_id', 'region_name', 'instance_id', 'snapshot_id', 'snapshot_type', 'filters', 'marker', 'max_records']   },
 		'rds_subgrp_DescribeDBSubnetGroups'      : { url:'/aws/rds/subnetgroup/',	method:'DescribeDBSubnetGroups',	params:['username', 'session_id', 'region_name', 'subnet_group', 'filters', 'marker', 'max_records']   },
 		'rds_ListTagsForResource'                : { url:'/aws/rds/',	method:'ListTagsForResource',	params:['username', 'session_id', 'region_name', 'resource_name', 'filters']   },
+		'rds_DescribeDBLogFiles'                 : { url:'/aws/rds/',	method:'DescribeDBLogFiles',	params:['username', 'session_id', 'region_name', 'db_identifier', 'file_last_written', 'file_size', 'filename_contains', 'filters', 'marker', 'max_records']   },
+		'rds_DownloadDBLogFilePortion'           : { url:'/aws/rds/',	method:'DownloadDBLogFilePortion',	params:['username', 'session_id', 'region_name', 'db_identifier', 'log_filename', 'num_of_lines', 'marker']   },
 	}
 
 	for ( var i in Apis ) {

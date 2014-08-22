@@ -3184,6 +3184,32 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         } else {
           return element.attr(attr, value);
         }
+      },
+      setLabel: function(canvasItem, labelElement) {
+        var el, length, maxWidth, text, _i, _len;
+        text = canvasItem.label();
+        maxWidth = canvasItem.labelWidth();
+        if (_.isString(labelElement)) {
+          labelElement = document.getElementById(labelElement);
+        }
+        if (!labelElement.length && labelElement.length !== 0) {
+          labelElement = [labelElement];
+        }
+        $(labelElement[0]).text(text);
+        if (labelElement[0].getSubStringLength(0, text.length) > maxWidth) {
+          length = text.length - 1;
+          while (true && length > 0) {
+            if (labelElement[0].getSubStringLength(0, length) + 8 <= maxWidth) {
+              text = text.substr(0, length) + "...";
+              break;
+            }
+            --length;
+          }
+        }
+        for (_i = 0, _len = labelElement.length; _i < _len; _i++) {
+          el = labelElement[_i];
+          $(el).text(text);
+        }
       }
     };
     return CanvasManager;
@@ -3462,6 +3488,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           "data-id": this.cid
         }).classes("canvasel group " + this.type.replace(/\./g, "-"));
       },
+      label: function() {
+        return this.model.get("name");
+      },
+      labelWidth: function(width) {
+        return (width || this.size().width * CanvasView.GRID_WIDTH) - 8;
+      },
       isGroup: function() {
         return !!this.model.node_group;
       },
@@ -3736,6 +3768,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             ch.move(width - pad, height - pad);
           } else if (classes.indexOf("port") >= 0) {
             ports.push(ch);
+          } else if (classes.indexOf("group-label") >= 0) {
+            CanvasManager.setLabel(this, ch.node);
           }
         }
         for (_k = 0, _len2 = ports.length; _k < _len2; _k++) {
@@ -6845,10 +6879,13 @@ return TEMPLATE; });
           return canvas.getItem(m.id);
         });
       },
+      label: function() {
+        return "" + (this.model.get('name')) + " (" + (this.model.get('cidr')) + ")";
+      },
       render: function() {
         var m;
         m = this.model;
-        this.$el.children("text").text("" + (m.get('name')) + " (" + (m.get('cidr')) + ")");
+        CanvasManager.setLabel(this, this.$el.children("text"));
         return this.$el[0].instance.move(m.x() * CanvasView.GRID_WIDTH, m.y() * CanvasView.GRID_WIDTH);
       }
     });
@@ -6936,10 +6973,13 @@ return TEMPLATE; });
         this.initNode(svgEl, m.x(), m.y());
         return svgEl;
       },
+      label: function() {
+        return "" + (this.model.get('name')) + " (" + (this.model.get('cidr')) + ")";
+      },
       render: function() {
         var m;
         m = this.model;
-        this.$el.children("text").text("" + (m.get('name')) + " (" + (m.get('cidr')) + ")");
+        CanvasManager.setLabel(this, this.$el.children("text"));
         return this.$el[0].instance.move(m.x() * CanvasView.GRID_WIDTH, m.y() * CanvasView.GRID_WIDTH);
       },
       containPoint: function(px, py) {
@@ -7019,8 +7059,11 @@ return TEMPLATE; });
         this.initNode(node, m.x(), m.y());
         return node;
       },
+      labelWidth: function(width) {
+        return CanvasElement.prototype.labelWidth.call(this, width) - 20;
+      },
       render: function() {
-        CanvasManager.update(this.$el.children(".node-label"), this.model.get("name"));
+        CanvasManager.setLabel(this, this.$el.children(".node-label"));
         return CanvasManager.update(this.$el.children("image"), this.iconUrl(), "href");
       }
     });
@@ -7142,7 +7185,7 @@ return TEMPLATE; });
           imageW: 151,
           imageH: 76
         }).add([
-          svg.text("").move(100, 95).classes('node-label'), svg.use("port_right").attr({
+          svg.text("").move(90, 95).classes('node-label'), svg.use("port_right").attr({
             'class': 'port port-purple tooltip',
             'data-name': 'cgw-vpn',
             'data-tooltip': lang.ide.PORT_TIP_I
@@ -7152,8 +7195,11 @@ return TEMPLATE; });
         this.initNode(svgEl, m.x(), m.y());
         return svgEl;
       },
+      labelWidth: function(width) {
+        return CanvasElement.prototype.labelWidth.call(this, width) - 4;
+      },
       render: function() {
-        return CanvasManager.update(this.$el.children(".node-label"), this.model.get("name"));
+        return CanvasManager.setLabel(this, this.$el.children(".node-label"));
       }
     });
   });
@@ -7217,7 +7263,7 @@ return TEMPLATE; });
       render: function() {
         var m;
         m = this.model;
-        CanvasManager.update(this.$el.children(".node-label"), m.get("name"));
+        CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children("image"), this.iconUrl(), "href");
         return CanvasManager.toggle(this.$el.children('[data-name="elb-sg-in"]'), m.get("internal"));
       }
@@ -7416,7 +7462,7 @@ return TEMPLATE; });
       render: function() {
         var count, m, numberGroup;
         m = this.model;
-        CanvasManager.update(this.$el.children(".node-label"), m.get("name"));
+        CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children("image:not(.eip-status)"), this.iconUrl(), "href");
         count = m.serverGroupCount();
         numberGroup = this.$el.children(".server-number-group");
@@ -7599,7 +7645,7 @@ return TEMPLATE; });
       render: function() {
         var instance, m, numberGroup, state, statusIcon, volumeCount;
         m = this.model;
-        CanvasManager.update(this.$el.children(".node-label"), m.get("name"));
+        CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children(".ami-image"), this.iconUrl(), "href");
         numberGroup = this.$el.children(".server-number-group");
         statusIcon = this.$el.children(".res-state");
@@ -7784,8 +7830,11 @@ return TEMPLATE; });
       getLc: function() {
         return this.model.getLc();
       },
+      labelWidth: function(width) {
+        return (width || this.size().width * CanvasView.GRID_WIDTH) - 22;
+      },
       render: function() {
-        return CanvasManager.update(this.$el.children("text"), this.model.get("name"));
+        return CanvasManager.setLabel(this, this.$el.children("text"));
       },
       updateConnections: function() {
         var cn, lc, _i, _len, _ref;
@@ -8914,7 +8963,7 @@ return TEMPLATE; });
       render: function() {
         var $r, m, tip;
         m = this.model;
-        CanvasManager.update(this.$el.children(".node-label"), m.get("name"));
+        CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children(".type-image"), this.typeIcon(), "href");
         CanvasManager.update(this.$el.children(".engine-image"), this.engineIcon(), "href");
         CanvasManager.toggle(this.$el.children(".master-text"), m.design().modeIsApp() && m.slaves().length);
@@ -9015,6 +9064,9 @@ return TEMPLATE; });
       listenModelEvents: function() {
         this.listenTo(this.model, "change:connections", this.render);
       },
+      labelWidth: function(width) {
+        return (width || this.model.width() * CanvasView.GRID_WIDTH) - 20;
+      },
       create: function() {
         var m, svg, svgEl;
         svg = this.canvas.svg;
@@ -9032,7 +9084,7 @@ return TEMPLATE; });
       render: function() {
         var m, sb, tt, _i, _len, _ref;
         m = this.model;
-        this.$el.children("text").text(m.get('name'));
+        CanvasManager.setLabel(this, this.$el.children("text"));
         this.$el[0].instance.move(m.x() * CanvasView.GRID_WIDTH, m.y() * CanvasView.GRID_WIDTH);
         tt = [];
         _ref = m.connectionTargets("SubnetgAsso");
