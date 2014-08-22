@@ -1549,7 +1549,7 @@ Refer to kpView.coffee
         activeButton = $activeButton && $activeButton.data('btn');
         if ($activeButton.length) {
           if ($activeButton.get(0) === $button.get(0)) {
-            if (this.options.disableClickSlideup) {
+            if (this.options.longtermActive) {
               return;
             }
             $button.removeClass('active');
@@ -1757,7 +1757,9 @@ Refer to kpView.coffee
         }
         $activeButton = this.$('.toolbar .active');
         this.trigger('slideup', $activeButton.data('btn'));
-        $activeButton.removeClass('active');
+        if (!this.options.longtermActive) {
+          $activeButton.removeClass('active');
+        }
         this.toggleSlide(false);
         return this;
       },

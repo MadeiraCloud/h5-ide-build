@@ -15500,24 +15500,24 @@ function program11(depth0,data) {
 function program12(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <dl class=\"dl-vertical\">\n            <dt>DB Snapshot ID</dt>\n            <dd>"
+  buffer += "\n        <section class=\"property-control-group clearfix\">\n            <label>DB Snapshot ID</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.snapshotId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n            <dt>DB Snapshot Size</dt>\n            <dd>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group clearfix\">\n            <label>DB Snapshot Size</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.snapshotSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "GiB</dd>\n        </dl>\n        ";
+    + "GiB</div>\n        </section>\n        ";
   return buffer;
   }
 
 function program14(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <dl class=\"dl-vertical\">\n            <dt>"
+  buffer += "\n        <section class=\"property-control-group clearfix\">\n            <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
-    + "</dt>\n            <dd>"
+    + "</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</dd>\n        </dl>\n        ";
+  buffer += "</div>\n        </section>\n        ";
   return buffer;
   }
 function program15(depth0,data) {
@@ -15610,11 +15610,11 @@ function program31(depth0,data) {
 function program33(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <div class=\"property-control-group clearfix\">\n            <label>"
+  buffer += "\n        <section class=\"property-control-group clearfix\">\n            <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_USERNAME", {hash:{},data:data}))
     + "</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.MasterUsername)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </div>\n        ";
+    + "</div>\n        </section>\n        ";
   return buffer;
   }
 
@@ -15657,7 +15657,7 @@ function program42(depth0,data) {
 function program44(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <div class=\"property-control-group clearfix\">\n            ";
+  buffer += "\n        <section class=\"property-control-group clearfix\">\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <label>"
@@ -15665,7 +15665,7 @@ function program44(depth0,data) {
     + "</label>\n            <div>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </div>\n        ";
+  buffer += "</div>\n        </section>\n        ";
   return buffer;
   }
 function program45(depth0,data) {
@@ -16200,11 +16200,11 @@ function program9(depth0,data) {
 function program11(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <dl class=\"dl-vertical\">\n        <dt>DB Engine Version</dt>\n        <dd>"
+  buffer += "\n    <section class=\"property-control-group clearfix\">\n        <label>DB Engine Version</label>\n        <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.engine)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "("
     + escapeExpression(((stack1 = (depth0 && depth0.engineVersion)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</dd>\n    </dl>\n";
+    + ")</div>\n    </section>\n";
   return buffer;
   }
 
@@ -18292,6 +18292,7 @@ return TEMPLATE; });
           region_name: this.resModel.design().region()
         }).then((function(result) {
           var logList, _ref, _ref1, _ref2;
+          console.log(result);
           logList = (result != null ? (_ref = result.DescribeDBLogFilesResponse) != null ? (_ref1 = _ref.DescribeDBLogFilesResult) != null ? (_ref2 = _ref1.DescribeDBLogFiles) != null ? _ref2.DescribeDBLogFilesDetails : void 0 : void 0 : void 0 : void 0) || null;
           if (logList && !_.isArray(logList)) {
             logList = [logList];
@@ -18356,7 +18357,7 @@ return TEMPLATE; });
           classList: 'syslog-dbinstance',
           context: that,
           noCheckbox: true,
-          disableClickSlideup: true,
+          longtermActive: true,
           buttons: [
             {
               icon: 'unknown',
@@ -18390,7 +18391,7 @@ return TEMPLATE; });
             sortable: true,
             rowType: 'number',
             width: "20%",
-            name: 'Size'
+            name: 'Size(B)'
           }, {
             sortable: false,
             width: "10%",

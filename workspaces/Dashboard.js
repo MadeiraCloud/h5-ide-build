@@ -2523,7 +2523,7 @@ function program26(depth0,data) {
         });
       },
       onVisualizeUpdated: function(result) {
-        var data, self, vpcsDefer;
+        var data, self;
         if (!this.__visRequest) {
           return;
         }
@@ -2531,30 +2531,10 @@ function program26(depth0,data) {
         this.__isVisFail = false;
         this.attributes.visualizeData = null;
         self = this;
+        console.log(result);
         data = self.parseVisData(result);
-        vpcsDefer = [];
-        _.each(data, function(e) {
-          return vpcsDefer.push(ApiRequest("vpc_DescribeVpcs", {
-            region_name: e.id
-          }));
-        });
-        Q.all(vpcsDefer).spread(function(result) {
-          var vpcs;
-          console.log(arguments);
-          vpcs = _.flatten(_.map(_.toArray(arguments), function(e) {
-            return e.DescribeVpcsResponse.vpcSet.item;
-          }));
-          _.map(data, function(e) {
-            return _.map(e.vpcs, function(f) {
-              var _ref;
-              f.tagSet = (_ref = _.findWhere(vpcs, {
-                vpcId: f.id
-              })) != null ? _ref.tagSet : void 0;
-              return f.username = f.tagSet ? (f.tagSet.visualops ? f.tagSet.visualops.match(/^.*created-by=(\w+)\s*/)[1] : f.tagSet['Created by']) : void 0;
-            });
-          });
-          return self.set("visualizeData", data);
-        });
+        console.log(data);
+        self.set("visualizeData", data);
       },
       isVisualizeReady: function() {
         return !!this.__isVisReady;
@@ -2610,6 +2590,7 @@ function program26(depth0,data) {
             resources = vpcMap[vpc];
             try {
               tags = {};
+              console.log(resources.Tag);
               if (resources.Tag && resources.Tag.item) {
                 if (resources.Tag.item.length) {
                   _ref = resources.Tag.item;
@@ -2629,7 +2610,8 @@ function program26(depth0,data) {
                 stopped: instanceMap(resources["AWS|EC2|Instance"], true),
                 eni: resourceMap(resources["AWS|VPC|NetworkInterface"]),
                 eip: resourceMap(resources["AWS|EC2|EIP"]),
-                elb: resourceMap(resources["AWS|ELB"])
+                elb: resourceMap(resources["AWS|ELB"]),
+                username: resources['username'] ? MC.base64Decode(resources['username']) : void 0
               };
               obj.disabled = obj.eni.length > 300;
               vpcs.push(obj);
