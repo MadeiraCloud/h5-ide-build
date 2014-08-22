@@ -2531,9 +2531,7 @@ function program26(depth0,data) {
         this.__isVisFail = false;
         this.attributes.visualizeData = null;
         self = this;
-        console.log(result);
         data = self.parseVisData(result);
-        console.log(data);
         self.set("visualizeData", data);
       },
       isVisualizeReady: function() {
@@ -2590,7 +2588,6 @@ function program26(depth0,data) {
             resources = vpcMap[vpc];
             try {
               tags = {};
-              console.log(resources.Tag);
               if (resources.Tag && resources.Tag.item) {
                 if (resources.Tag.item.length) {
                   _ref = resources.Tag.item;

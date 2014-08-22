@@ -18275,7 +18275,6 @@ return TEMPLATE; });
           duration: 20160
         }).then((function(result) {
           var eventList, _ref, _ref1, _ref2;
-          console.log(result);
           eventList = (result != null ? (_ref = result.DescribeEventsResponse) != null ? (_ref1 = _ref.DescribeEventsResult) != null ? (_ref2 = _ref1.Events) != null ? _ref2.Event : void 0 : void 0 : void 0 : void 0) || null;
           if (eventList && !_.isArray(eventList)) {
             eventList = [eventList];
@@ -18292,7 +18291,6 @@ return TEMPLATE; });
           region_name: this.resModel.design().region()
         }).then((function(result) {
           var logList, _ref, _ref1, _ref2;
-          console.log(result);
           logList = (result != null ? (_ref = result.DescribeDBLogFilesResponse) != null ? (_ref1 = _ref.DescribeDBLogFilesResult) != null ? (_ref2 = _ref1.DescribeDBLogFiles) != null ? _ref2.DescribeDBLogFilesDetails : void 0 : void 0 : void 0 : void 0) || null;
           if (logList && !_.isArray(logList)) {
             logList = [logList];
@@ -18310,7 +18308,6 @@ return TEMPLATE; });
         filename = $(e.currentTarget).data('fileName');
         modal.toggleSlide(true);
         return this.getLogContent(filename).then((function(log) {
-          console.log(log);
           log.filename = filename;
           return modal.setSlide(template.log_content(log));
         }), (function() {
@@ -18329,11 +18326,10 @@ return TEMPLATE; });
         modal.toggleSlide(true);
         return this.getLogContent(filename).then(function(log) {
           var blob, download;
-          console.log(log);
+          modal.toggleSlide(false);
           download = JsonExporter.download;
           blob = new Blob([log.LogFileData || '']);
-          download(blob, filename);
-          return modal.toggleSlide(false);
+          return download(blob, filename);
         });
       },
       getLogContent: function(filename) {
@@ -18342,7 +18338,6 @@ return TEMPLATE; });
           log_filename: filename
         }).then((function(result) {
           var _ref;
-          console.log(result);
           return (result != null ? (_ref = result.DownloadDBLogFilePortionResponse) != null ? _ref.DownloadDBLogFilePortionResult : void 0 : void 0) || {};
         }), (function() {
           return {};

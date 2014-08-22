@@ -6,13 +6,13 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/Lato-regular.woff?v=c62bcc99") format("woff"); }
+  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/Lato-regular.woff") format("woff"); }
 
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 700;
-  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/Lato-Bold.woff?v=eba02393") format("woff"); }
+  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/Lato-Bold.woff") format("woff"); }
 
 .font-mono {
   font-family: "Monaco","Consolas", monospace;
@@ -1060,10 +1060,10 @@ li:hover > .rule-remove-icon,
   cursor: pointer;
   width: 14px;
   height: 17px;
-  background: url("../images/ide/icon/icn-eipoff.png?v=859550ab") no-repeat; }
+  background: url("../images/ide/icon/icn-eipoff.png") no-repeat; }
 
 .toggle-eip.associated {
-  background: url("../images/ide/icon/icn-eipon.png?v=f52b7ea4") no-repeat; }
+  background: url("../images/ide/icon/icn-eipon.png") no-repeat; }
 
 .network-list > .input-ip-item .toggle-eip {
   position: absolute;
@@ -1908,26 +1908,26 @@ a.action-link:hover {
 /* Icons Placeholder */
 /* Tabbar Icon */
 .icon-dashboard {
-  background: url("../images/ide/icon-dashboard.png?v=2164b17b") center center no-repeat; }
+  background: url("../images/ide/icon-dashboard.png") center center no-repeat; }
 
 .icon-stack {
-  background: url("../images/ide/icon-stack.png?v=910f026c") center center no-repeat; }
+  background: url("../images/ide/icon-stack.png") center center no-repeat; }
 
 .icon-app-running,
 .icon-app-Running {
-  background: url("../images/ide/icon-app-running.png?v=62eb7120") center center no-repeat; }
+  background: url("../images/ide/icon-app-running.png") center center no-repeat; }
 
 .icon-app-stopped,
 .icon-app-Stopped {
-  background: url("../images/ide/icon-app-stopped.png?v=8c2fe0f1") center center no-repeat; }
+  background: url("../images/ide/icon-app-stopped.png") center center no-repeat; }
 
 .icon-app-pending {
-  background: url("../images/ide/icon-app-pending.png?v=913b368e") center center no-repeat; }
+  background: url("../images/ide/icon-app-pending.png") center center no-repeat; }
 
 /* Nav Icon */
 .icon-stack-nav,
 .icon-stack-tabbar {
-  background: url("../images/ide/icon-stack.png?v=910f026c") center center no-repeat; }
+  background: url("../images/ide/icon-stack.png") center center no-repeat; }
 
 .icon-visualization-tabbar {
   background: url("../images/ide/icon-app-visualization.png") center center no-repeat; }
@@ -3273,7 +3273,7 @@ div.modal-text-highlight {
 
 #experimental-modal .modal-body-content {
   padding-left: 160px;
-  background-image: url("../images/ide/request_invite_image.png?v=8dea4a87");
+  background-image: url("../images/ide/request_invite_image.png");
   background-repeat: no-repeat;
   background-size: 91px 98px;
   background-position-x: 10px; }
@@ -4238,7 +4238,7 @@ div.modal-text-highlight {
     padding: 0 0 0 30px;
     height: 26px;
     line-height: 26px;
-    background: url('/assets/images/ide/global-region-app-stack-s.png?v=143e19e4') 6px -3px no-repeat;
+    background: url('/assets/images/ide/global-region-app-stack-s.png') 6px -3px no-repeat;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
@@ -4320,7 +4320,7 @@ div.modal-text-highlight {
 #global-region-spot {
   width: 787px;
   height: 423px;
-  background: url('/assets/images/ide/global-dotted-map.png?v=f86b17bb') no-repeat;
+  background: url('/assets/images/ide/global-dotted-map.png') no-repeat;
   margin: 24px 0 10px 48px; }
 
 #global-region-status-widget {
@@ -4361,7 +4361,7 @@ div.modal-text-highlight {
     font-size: 36px;
     color: #e6e6e6;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
-    background: url('/assets/images/ide/global-region-app-stack.png?v=8ae5df14') no-repeat; }
+    background: url('/assets/images/ide/global-region-app-stack.png') no-repeat; }
   .global-region-status-tab > h5 {
     color: #ccc;
     font-size: 14px;
@@ -4425,10 +4425,10 @@ div.modal-text-highlight {
   #dashboard-data-wrap .resource-count {
     padding-left: 60px;
     font-size: 40px;
-    background: url('/assets/images/ide/global-region-icon2.png?v=e9644f0b') left top no-repeat; }
+    background: url('/assets/images/ide/global-region-icon2.png') left top no-repeat; }
     @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
       #dashboard-data-wrap .resource-count {
-        background: url('/assets/images/ide/global-region-icon2@2x.png?v=571b731a') left top no-repeat;
+        background: url('/assets/images/ide/global-region-icon2@2x.png') left top no-repeat;
         background-size: 55px; } }
   #dashboard-data-wrap .instances .resource-count {
     background-position: left -2px; }
@@ -4627,7 +4627,7 @@ div.modal-text-highlight {
   #RegionResourceData tr:nth-child(odd) > td {
     background-color: #e8ebed !important; }
   #RegionResourceData .dashboard-eip {
-    background: url('/assets/images/ide/icon/icn-eipon.png?v=f52b7ea4') left center no-repeat;
+    background: url('/assets/images/ide/icon/icn-eipon.png') left center no-repeat;
     padding-left: 16px;
     color: #148BE6; }
 
@@ -4659,12 +4659,12 @@ div.modal-text-highlight {
 .region-resource-list .thumbnail {
   height: 0;
   padding-bottom: 65%;
-  background: #55626f url('/assets/images/ide/thumbnail-stack-placehoder@2x.png?v=6c4f5cbe') center center no-repeat;
+  background: #55626f url('/assets/images/ide/thumbnail-stack-placehoder@2x.png') center center no-repeat;
   background-size: 100% auto;
   overflow: hidden;
   border-radius: 5px 5px 0 0; }
   .region-resource-list .thumbnail.app-thumbnail {
-    background-image: url('/assets/images/ide/thumbnail-app-placehoder@2x.png?v=d64d139f');
+    background-image: url('/assets/images/ide/thumbnail-app-placehoder@2x.png');
     background-size: 100% auto; }
   .region-resource-list .thumbnail img {
     width: 100%;
@@ -4760,9 +4760,9 @@ div.modal-text-highlight {
     margin-right: 4px; }
   .region-resource-list .region-resource-info > .running, .region-resource-list .region-resource-info > .stopped {
     padding-left: 14px;
-    background: url('/assets/images/ide/icon-app-running-16x16.png?v=f66ce91d') left center no-repeat; }
+    background: url('/assets/images/ide/icon-app-running-16x16.png') left center no-repeat; }
   .region-resource-list .region-resource-info > .stopped {
-    background-image: url('/assets/images/ide/icon-app-stopped-16x16.png?v=30c7df20'); }
+    background-image: url('/assets/images/ide/icon-app-stopped-16x16.png'); }
 
 #region-app-stack-wrap {
   position: relative; }
@@ -4791,7 +4791,7 @@ div.modal-text-highlight {
     cursor: pointer;
     font-size: 21px;
     color: #666;
-    background: #f3f3f3 url('/assets/images/ide/global-region-app-stack-m.png?v=359e6f6c') 20px top no-repeat; }
+    background: #f3f3f3 url('/assets/images/ide/global-region-app-stack-m.png') 20px top no-repeat; }
     #region-resource-tab > li > small {
       font-size: 12px;
       color: #ccc; }
@@ -4827,7 +4827,7 @@ div.modal-text-highlight {
   right: 8px;
   width: 114px;
   height: 119px;
-  background: url('/assets/images/ide/action-guide.png?v=4a5f19fd') top right no-repeat; }
+  background: url('/assets/images/ide/action-guide.png') top right no-repeat; }
 
 #region-switch-list {
   position: absolute;
@@ -5584,25 +5584,25 @@ button#property-app-keypair {
   position: relative;
   font-size: 0;
   /* A hack to make sure #canvas_body.scrollHeight is correct. */
-  background: white url('/assets/images/ide/grid_x1.png?v=32f8a83f'); }
+  background: white url('/assets/images/ide/grid_x1.png'); }
   .canvas-view[data-scale="1.2"] {
-    background-image: url('/assets/images/ide/grid_x1.2.png?v=03400c63'); }
+    background-image: url('/assets/images/ide/grid_x1.2.png'); }
   .canvas-view[data-scale="1.4"] {
-    background-image: url('/assets/images/ide/grid_x1.4.png?v=3a4d0f90'); }
+    background-image: url('/assets/images/ide/grid_x1.4.png'); }
   .canvas-view[data-scale="1.6"] {
-    background-image: url('/assets/images/ide/grid_x1.6.png?v=029457a3'); }
+    background-image: url('/assets/images/ide/grid_x1.6.png'); }
   @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
     .canvas-view {
-      background-image: url('/assets/images/ide/grid_x1@2x.png?v=61c73fc7');
+      background-image: url('/assets/images/ide/grid_x1@2x.png');
       background-size: 80px 80px; }
     .canvas-view[data-scale="1.2"] {
-      background-image: url('/assets/images/ide/grid_x1.2@2x.png?v=19ccb8aa');
+      background-image: url('/assets/images/ide/grid_x1.2@2x.png');
       background-size: 64px 64px; }
     .canvas-view[data-scale="1.4"] {
-      background-image: url('/assets/images/ide/grid_x1.4@2x.png?v=e570e3c9');
+      background-image: url('/assets/images/ide/grid_x1.4@2x.png');
       background-size: 48px 48px; }
     .canvas-view[data-scale="1.6"] {
-      background-image: url('/assets/images/ide/grid_x1.6@2x.png?v=b8fd2e16');
+      background-image: url('/assets/images/ide/grid_x1.6@2x.png');
       background-size: 32px 32px; } }
   .canvas-view[data-mode="app"] .group-resizer {
     display: none; }
@@ -6039,7 +6039,7 @@ g.shadow {
   color: #333;
   text-align: center;
   position: relative;
-  background: url('/assets/images/ide/icon/cvs-vol.png?v=80f313dc') center no-repeat; }
+  background: url('/assets/images/ide/icon/cvs-vol.png') center no-repeat; }
   .vpp-volume .res-state, .vpp-snapshot .res-state {
     position: absolute;
     top: 3px;
@@ -6059,7 +6059,7 @@ g.shadow {
     margin-top: 10px; }
 
 .vpp-snapshot {
-  background-image: url('/assets/images/ide/icon/cvs-snapshot.png?v=6d74e1d2'); }
+  background-image: url('/assets/images/ide/icon/cvs-snapshot.png'); }
 
 #DndItem.vpp-volume, #DndItem.vpp-snapshot {
   color: #333;
@@ -6096,7 +6096,7 @@ g.shadow {
   border: #fff 2px solid;
   border-radius: 4px;
   position: relative;
-  background: url('/assets/images/ide/icon/cvs-instance.png?v=88cd6271') 14px 10px no-repeat;
+  background: url('/assets/images/ide/icon/cvs-instance.png') 14px 10px no-repeat;
   color: #333;
   text-align: center; }
   .vpp-instance:nth-child(4n+1) {
@@ -6123,7 +6123,7 @@ g.shadow {
     width: 26px;
     color: #74B1FD;
     height: 24px;
-    background: url('/assets/images/ide/icon/icn-vol.png?v=32cc445f') center no-repeat; }
+    background: url('/assets/images/ide/icon/icn-vol.png') center no-repeat; }
 
 .instance-pp-empty {
   text-align: center;
@@ -6138,13 +6138,13 @@ g.shadow {
 .vpp-eni {
   position: relative;
   line-height: 148px;
-  background: url('/assets/images/ide/icon/cvs-eni-att.png?v=250cf163') 15px 14px no-repeat; }
+  background: url('/assets/images/ide/icon/cvs-eni-att.png') 15px 14px no-repeat; }
 
 .vpp-eip {
   position: absolute;
   width: 12px;
   height: 14px;
-  background: url('/assets/images/ide/icon/icn-eipon.png?v=f52b7ea4');
+  background: url('/assets/images/ide/icon/icn-eipon.png');
   left: 43px;
   top: 36px; }
 
@@ -6294,31 +6294,31 @@ g.shadow {
     padding-top: 5px;
     height: 90px; }
   .resource-item.az {
-    background-image: url('/assets/images/ide/icon/res-az.png?v=857ce644');
+    background-image: url('/assets/images/ide/icon/res-az.png');
     position: relative; }
   .resource-item.volume {
-    background-image: url('/assets/images/ide/icon/res-vol.png?v=6b8f6e5c'); }
+    background-image: url('/assets/images/ide/icon/res-vol.png'); }
   .resource-item.eni {
-    background-image: url('/assets/images/ide/icon/res-eni.png?v=3403afa2'); }
+    background-image: url('/assets/images/ide/icon/res-eni.png'); }
   .resource-item.subnet {
-    background-image: url('/assets/images/ide/icon/res-subnet.png?v=6d0a6b76'); }
+    background-image: url('/assets/images/ide/icon/res-subnet.png'); }
   .resource-item.rtb {
-    background-image: url('/assets/images/ide/icon/res-rtb.png?v=e0734b28'); }
+    background-image: url('/assets/images/ide/icon/res-rtb.png'); }
   .resource-item.igw {
-    background-image: url('/assets/images/ide/icon/res-igw.png?v=e0f040a3'); }
+    background-image: url('/assets/images/ide/icon/res-igw.png'); }
   .resource-item.vgw {
-    background-image: url('/assets/images/ide/icon/res-vgw.png?v=76049d65'); }
+    background-image: url('/assets/images/ide/icon/res-vgw.png'); }
   .resource-item.cgw {
-    background-image: url('/assets/images/ide/icon/res-cgw.png?v=cef8582f'); }
+    background-image: url('/assets/images/ide/icon/res-cgw.png'); }
   .resource-item.asg {
-    background-image: url('/assets/images/ide/icon/res-asg.png?v=8e5321bb');
+    background-image: url('/assets/images/ide/icon/res-asg.png');
     position: relative; }
   .resource-item.elb {
-    background-image: url('/assets/images/ide/icon/res-elb.png?v=dab655be'); }
+    background-image: url('/assets/images/ide/icon/res-elb.png'); }
   .resource-item.snapshot {
-    background-image: url('/assets/images/ide/icon/res-snapshot.png?v=bb1a3be5'); }
+    background-image: url('/assets/images/ide/icon/res-snapshot.png'); }
   .resource-item.subnetgroup {
-    background-image: url('/assets/images/ide/icon/res-subnetg.png?v=4416cc04'); }
+    background-image: url('/assets/images/ide/icon/res-subnetg.png'); }
   .resource-item .resource-count {
     position: absolute;
     top: 7px;
@@ -6338,7 +6338,7 @@ g.shadow {
 .resource-icon-instance, .resource-icon-dbinstance, .resource-icon-dbsnapshot {
   padding-top: 12px;
   height: 48px;
-  background: url('/assets/images/ide/icon/res-instance.png?v=e7572ea2') center no-repeat; }
+  background: url('/assets/images/ide/icon/res-instance.png') center no-repeat; }
   #DndItem .resource-icon-instance, #DndItem .resource-icon-dbinstance, #DndItem .resource-icon-dbsnapshot {
     padding-top: 28px;
     height: 62px;
@@ -6370,10 +6370,10 @@ g.shadow {
   padding-top: 6px; }
 
 .resource-icon-dbinstance {
-  background-image: url('/assets/images/ide/icon/res-rds.png?v=ba0c685d'); }
+  background-image: url('/assets/images/ide/icon/res-rds.png'); }
 
 .resource-icon-dbsnapshot {
-  background-image: url('/assets/images/ide/icon/res-rdssnap.png?v=ddfe55d2'); }
+  background-image: url('/assets/images/ide/icon/res-rdssnap.png'); }
 
 .ebs-size {
   margin-top: -1.5em;
@@ -6570,17 +6570,17 @@ g.shadow {
 .btn-fav-ami, .toggle-fav {
   width: 20px;
   height: 20px;
-  background: url('/assets/images/ide/fav-btn-off.png?v=22d97db7') center no-repeat; }
+  background: url('/assets/images/ide/fav-btn-off.png') center no-repeat; }
   .btn-fav-ami:hover, .toggle-fav:hover {
     top: 0;
     right: 0;
     width: 20px;
     height: 20px;
-    background-image: url('/assets/images/ide/fav-btn-off-hover.png?v=e03404e8'); }
+    background-image: url('/assets/images/ide/fav-btn-off-hover.png'); }
   .btn-fav-ami.fav, .toggle-fav.fav {
-    background-image: url('/assets/images/ide/fav-btn.png?v=9deef1d1'); }
+    background-image: url('/assets/images/ide/fav-btn.png'); }
   .btn-fav-ami.fav:hover, .toggle-fav.fav:hover {
-    background-image: url('/assets/images/ide/fav-btn-hover.png?v=d1776393'); }
+    background-image: url('/assets/images/ide/fav-btn-hover.png'); }
 
 .btn-fav-ami {
   position: absolute;
@@ -6689,7 +6689,7 @@ g.shadow {
   width: 24px;
   height: 24px;
   margin-right: 5px;
-  background: url('/assets/images/ide/icon/icn-amios.png?v=2e5a83e0') left top no-repeat; }
+  background: url('/assets/images/ide/icon/icn-amios.png') left top no-repeat; }
 .icon-ami-os.centos:before {
   background-position: -24px 0; }
 .icon-ami-os.debian:before {
@@ -7076,6 +7076,9 @@ g.shadow {
   font-size: 12px;
   overflow: auto;
   margin: 0 -83px; }
+.syslog-dbinstance button[data-btn=event],
+.syslog-dbinstance button[data-btn=log] {
+  width: 100px; }
 .syslog-dbinstance .no-data {
   margin-top: 40px; }
 
