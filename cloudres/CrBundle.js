@@ -2344,6 +2344,10 @@
         }
         if (app_json) {
           this.generatedJson = app_json;
+          if (!(app_json.agent.module.repo && app_json.agent.module.tag)) {
+            this.generatedJson.agent.module.repo = App.user.get("repo");
+            this.generatedJson.agent.module.tag = App.user.get("tag");
+          }
           console.log("Generated Json from backend:", $.extend(true, {}, this.generatedJson));
         } else {
 
