@@ -547,10 +547,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         $panel = $("#OEPanelRight").find(".property-first-panel").find(".property-details");
         $new_panel = $("<div class='scroll-content property-content property-details'></div>").insertAfter($panel);
         $panel.empty().remove();
+        this._resetImmediatelySection();
         this.setElement($new_panel);
         this.render();
         this.focusImportantInput();
         return null;
+      },
+      _resetImmediatelySection: function() {
+        $('.apply-immediately-section').remove();
+        return $('.property-panel-wrapper').removeClass('immediately');
       },
       _loadAsSub: function(subPanelID) {
         var that;
@@ -16590,7 +16595,6 @@ return TEMPLATE; });
         'OPTION_CHANGE #property-dbinstance-class-select': 'changeClass',
         'OPTION_CHANGE #property-dbinstance-preferred-az': 'changeAZ',
         'OPTION_CHANGE #property-dbinstance-charset-select': 'changeCharset',
-        'change #property-dbinstance-apply-immediately': 'changeApplyImmediately',
         'OPTION_CHANGE': 'checkChange',
         'change *': 'checkChange',
         'click #property-dbinstance-promote-replica': 'promoteReplica'
@@ -16637,9 +16641,11 @@ return TEMPLATE; });
         if (e) {
           return _.defer(function() {
             if (diff()) {
-              return that.$('.apply-immediately-section').show();
+              $('.apply-immediately-section').show();
+              return $('.property-panel-wrapper').addClass('immediately');
             } else {
-              return that.$('.apply-immediately-section').hide();
+              $('.apply-immediately-section').hide();
+              return $('.property-panel-wrapper').removeClass('immediately');
             }
           });
         } else {
@@ -16876,7 +16882,7 @@ return TEMPLATE; });
         }
       },
       render: function() {
-        var $item, $select, attr, backupTime, lvi, maintenanceTime, snapshotModel, spec, template, weekStr, _ref;
+        var $item, $select, attr, backupTime, changeApplyImmediately, checkChange, lvi, maintenanceTime, snapshotModel, spec, template, weekStr, _ref;
         attr = this.getModelJSON();
         backupTime = this._getTimeData(attr.backupWindow);
         maintenanceTime = this._getTimeData(attr.maintenanceWindow);
@@ -16932,6 +16938,10 @@ return TEMPLATE; });
           attr.iopsInfo = 'Supports IOPS / GB ratios between 3 and 10';
         }
         this.$el.html(template(attr));
+        checkChange = this.checkChange.bind(this);
+        changeApplyImmediately = this.changeApplyImmediately.bind(this);
+        this.$el.find(".apply-immediately-section").insertAfter('header.property-sidebar-title').click(changeApplyImmediately);
+        $('.property-panel-wrapper').toggleClass('immediately', checkChange());
         this.setTitle(attr.name);
         this.renderLVIA();
         this.renderOptionGroup();
