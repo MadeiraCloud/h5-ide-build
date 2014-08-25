@@ -16941,7 +16941,9 @@ return TEMPLATE; });
         checkChange = this.checkChange.bind(this);
         changeApplyImmediately = this.changeApplyImmediately.bind(this);
         this.$el.find(".apply-immediately-section").insertAfter('header.property-sidebar-title').click(changeApplyImmediately);
-        $('.property-panel-wrapper').toggleClass('immediately', checkChange());
+        if (this.isAppEdit) {
+          $('.property-panel-wrapper').toggleClass('immediately', checkChange());
+        }
         this.setTitle(attr.name);
         this.renderLVIA();
         this.renderOptionGroup();
