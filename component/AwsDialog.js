@@ -1409,7 +1409,7 @@ function program23(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </tr>\n        </thead>\n    </table>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.useCustomScroll), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n                <table class=\"table\">\n                    <thead>\n                        <tr>\n                            ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.noCheckbox), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
@@ -1418,7 +1418,7 @@ function program23(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </tr>\n                    </thead>\n                    <tbody class='t-m-content'>\n                    </tbody>\n                </table>\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableScroll), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.useCustomScroll), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
   return buffer;

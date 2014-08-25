@@ -3932,7 +3932,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
       },
       processDetails: function() {
-        var $details, $nutshell, $summary, $tabs, bindSummary, error, notice, processNutshell, warning;
+        var $details, $nutshell, $summary, $tabs, error, notice, processNutshell, warning;
         error = this.model.get('error_list');
         warning = this.model.get('warning_list');
         notice = this.model.get('notice_list');
@@ -3940,15 +3940,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         $nutshell = $('.modal-box .nutshell');
         $details = $nutshell.prev('details');
         $summary = $details.find('summary');
-        bindSummary = function() {
-          return $summary.click(function() {
-            if ($details.attr('open') === 'open') {
-              return $nutshell.show();
-            } else {
-              return $nutshell.hide();
-            }
-          });
-        };
         processNutshell = function(notShow) {
           var content;
           content = '';
@@ -3970,30 +3961,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             content = content.slice(0, -2);
           }
           $nutshell.find('label').text(content);
-          $nutshell.click(function() {
+          return $nutshell.click(function() {
             return $summary.click();
           });
-          if (!notShow) {
-            return $nutshell.show();
-          }
         };
         if (error.length) {
-          bindSummary();
           return processNutshell(true);
         } else if (warning.length) {
           $tabs.eq(1).click();
           $details.removeAttr('open');
-          processNutshell();
-          return bindSummary();
+          return processNutshell();
         } else if (notice.length) {
           $tabs.eq(2).click();
           $details.removeAttr('open');
-          processNutshell();
-          return bindSummary();
+          return processNutshell();
         } else {
           $details.removeAttr('open');
           processNutshell();
-          bindSummary();
           return $('.validation-content').text('Great job! No error, warning or notice here.');
         }
       },

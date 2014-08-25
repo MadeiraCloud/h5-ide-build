@@ -562,7 +562,7 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_EXPORT_CF_INFO", {hash:{},data:data}))
-    + "</div>\n</div> </div>\n<div style=\"padding-top:20px;text-align:right;\">\n  <a class=\"btn btn-blue disabled\">"
+    + "</div>\n</div> </div>\n<div class=\"stack-validation\">\n  <details open style=\"display:none;\">\n    <summary>Stack Validation</summary>\n    <div id=\"stack-run-validation-container\"></div>\n  </details>\n  <div class=\"nutshell\">:<label></label></div>\n  <div class=\"validating\">\n    <div class=\"loading-spinner loading-spinner-small\"></div>\n    <p>Validating your stack...</p>\n  </div>\n</div>\n<div style=\"padding-top:20px;text-align:right;\">\n  <a class=\"btn btn-blue disabled\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_INFO_LOADING", {hash:{},data:data}))
     + "</a>\n  <button class=\"btn modal-close btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
@@ -945,7 +945,7 @@ return TEMPLATE; });
         }
       },
       exportCF: function() {
-        var components, design, hasCustomOG, modal, name;
+        var ApiPromise, TAPromise, components, design, hasCustomOG, modal, name;
         design = this.workspace.design;
         hasCustomOG = false;
         components = design.serialize({
@@ -965,20 +965,49 @@ return TEMPLATE; });
           disableFooter: true
         });
         name = design.get("name");
-        return ApiRequest("stack_export_cloudformation", {
+        TAPromise = TA.loadModule('stack');
+        ApiPromise = ApiRequest("stack_export_cloudformation", {
           region: design.get("region"),
           stack: design.serialize()
-        }).then(function(data) {
+        });
+        return Q.spread([TAPromise, ApiPromise], function(taError, apiReturn) {
           var btn;
+          if (modal != null) {
+            modal.resize();
+          }
           btn = modal.tpl.find("a.btn-blue").text(lang.ide.TOOL_POP_BTN_EXPORT_CF).removeClass("disabled");
-          JsonExporter.genericExport(btn, data, "" + name + ".json");
+          JsonExporter.genericExport(btn, apiReturn, "" + name + ".json");
           btn.click(function() {
             return modal.close();
           });
-        }, function(err) {
+        }, function(taError, apiReturn) {
+          if (modal != null) {
+            modal.resize();
+          }
           modal.tpl.find("a.btn-blue").text("Fail to export...");
-          notification("error", "Fail to export to AWS CloudFormation Template, Error code:" + err.error);
+          if (apiReturn) {
+            notification("error", "Fail to export to AWS CloudFormation Template, Error code:" + err.error);
+          }
         });
+
+        /*
+        .then () ->
+            modal?.resize()
+            modal.tpl.find("a.btn-blue").text(lang.ide.TOOL_POP_BTN_EXPORT_CF).removeClass("disabled")
+        
+        ApiRequest("stack_export_cloudformation", {
+          region : design.get("region")
+          stack  : design.serialize()
+        }).then ( data )->
+          btn = modal.tpl.find("a.btn-blue").text(lang.ide.TOOL_POP_BTN_EXPORT_CF).removeClass("disabled")
+          JsonExporter.genericExport btn, data, "#{name}.json"
+          btn.click ()-> modal.close()
+          return
+        , ( err )->
+          modal.tpl.find("a.btn-blue").text("Fail to export...")
+          notification "error", "Fail to export to AWS CloudFormation Template, Error code:#{err.error}"
+          return
+         */
       },
       reloadState: function(event) {
         var $target, app_id, data;
