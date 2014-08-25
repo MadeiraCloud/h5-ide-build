@@ -385,6 +385,7 @@ define({
         "PROP_INSTANCE_AMI_LAUNCH_INDEX": "AMI Launch Index",
         "PROP_INSTANCE_AMI_NETWORK_INTERFACE": "Network Interface",
         "PROP_INSTANCE_TIP_GET_SYSTEM_LOG": "Get System Log",
+        "PROP_DB_INSTANCE_TIP_GET_LOG": "Get Logs & Events",
         "PROP_INSTANCE_TIP_IF_THE_QUANTITY_IS_MORE_THAN_1": "If the quantity is more than 1, host name will be the string you provide plus number index.",
         "PROP_INSTANCE_TIP_YOU_CANNOT_SPECIFY_INSTANCE_NUMBER": "You cannot specify instance number, since the instance is connected to a route table.",
         "PROP_INSTANCE_TIP_PUBLIC_IP_CANNOT_BE_ASSOCIATED": "Public IP cannot be associated if instance is launching with more than one network interface.",

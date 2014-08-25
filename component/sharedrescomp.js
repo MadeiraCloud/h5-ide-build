@@ -5894,13 +5894,15 @@ return TEMPLATE; });
         }
         if (deleteCount === 0) {
           if (deleteErrorCount > 0) {
-            notification('error', deleteErrorCount + " RDS Parameter Group failed to delete, Please try again later.");
+            this.manager.error(result.awsResult || deleteErrorCount + " DB Parameter Group(s) failed to delete, please try again later.");
+            this.switchAction();
+            return deleteErrorCount = 0;
           } else {
             notification('info', "Delete Successfully");
+            this.manager.unCheckSelectAll();
+            deleteErrorCount = 0;
+            return this.manager.cancel();
           }
-          this.manager.unCheckSelectAll();
-          deleteErrorCount = 0;
-          return this.manager.cancel();
         }
       },
       switchAction: function(state) {
