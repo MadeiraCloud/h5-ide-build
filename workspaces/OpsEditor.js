@@ -3148,8 +3148,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (targetModel.getEmbedEni) {
             targetModel = targetModel.getEmbedEni();
           }
-          ip = (targetModel.get("ips") || [])[0];
-          tootipStr = (ip != null ? (_ref = ip.eipData) != null ? _ref.publicIp : void 0 : void 0) || "";
+          if (targetModel) {
+            ip = (targetModel.get("ips") || [])[0];
+            tootipStr = (ip != null ? (_ref = ip.eipData) != null ? _ref.publicIp : void 0 : void 0) || "";
+          } else {
+            console.warn("updateEip(): can not found EmbedEni");
+          }
         }
         node.setAttribute("data-tooltip", tootipStr);
         $(node).data("tooltip", tootipStr);

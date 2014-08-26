@@ -2326,7 +2326,7 @@
         });
       },
       parseFetchData: function(data) {
-        var app_json, cln, d, extraAttr, type;
+        var app_json, cln, comp, d, eni, extraAttr, id, type, _ref;
         delete data.vpc;
         app_json = data.app_json;
         delete data.app_json;
@@ -2349,6 +2349,21 @@
             this.generatedJson.agent.module.tag = App.user.get("tag");
           }
           console.log("Generated Json from backend:", $.extend(true, {}, this.generatedJson));
+          _ref = this.generatedJson.component;
+          for (id in _ref) {
+            comp = _ref[id];
+            if (comp.type === constant.RESTYPE.ENI) {
+              eni = CloudResources(constant.RESTYPE.ENI, this.__region).where({
+                id: comp.resource.NetworkInterfaceId
+              });
+              if (eni && eni.length > 0 && !comp.resource.Attachment.AttachmentId) {
+                eni = eni[0].attributes;
+                comp.resource.Attachment.AttachmentId = eni.attachment.attachmentId;
+                console.warn("[patch app_json] fill AttachmentId of eni");
+              }
+            }
+            null;
+          }
         } else {
 
           /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
