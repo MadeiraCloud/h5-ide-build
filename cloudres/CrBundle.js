@@ -2519,6 +2519,9 @@
       isIdMarked: function(amiId) {
         return this.__markedIds.hasOwnProperty(amiId);
       },
+      isInvalidAmiId: function(amiId) {
+        return this.__markedIds[amiId];
+      },
       getOSFamily: function(amiId) {
         return getOSFamily(this.get(amiId));
       },

@@ -6542,71 +6542,77 @@
         }
       ],
       initialize: function(attibutes, option) {
-        var ami, asg, connectedSbs, elb, foundSubnet, lcUsage, sb, subnet, _i, _j, _len, _len1, _ref, _ref1;
+        var ami, connectedSbs, elb, foundSubnet, sb, _i, _len, _ref;
         ami = this.getOtherTarget(constant.RESTYPE.ELB);
         elb = this.getTarget(constant.RESTYPE.ELB);
         if (ami.type === constant.RESTYPE.LC) {
-          lcUsage = ami.connectionTargets("LcUsage");
-          if (lcUsage.length > 0) {
-            asg = lcUsage[0];
-            subnet = asg.parent();
+          this.listenTo(ami, "change:expandedList", this.updateLcSubnetAsso);
+          this.listenTo(ami, "change:connections", this.updateLcSubnetAssoIfNeeded);
+          if (option.createByUser) {
+            this.updateLcSubnetAsso();
           }
         } else {
-          subnet = ami.parent();
-        }
-        connectedSbs = elb.connectionTargets("ElbSubnetAsso");
-        _ref = subnet.parent().children();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          sb = _ref[_i];
-          if (connectedSbs.indexOf(sb) !== -1) {
-            foundSubnet = true;
-            break;
-          }
-        }
-        if (!foundSubnet) {
-          new ElbSubnetAsso(subnet, elb);
-        }
-        if (ami.type === constant.RESTYPE.LC && asg) {
-          _ref1 = asg.get("expandedList");
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            asg = _ref1[_j];
-            new ElbAmiAsso(asg, elb);
-          }
-        }
-        return null;
-      },
-      remove: function(option) {
-        var elb, expAsg, lc, lcUsage, reason;
-        if (option && option.reason.type !== constant.RESTYPE.LC) {
-          ConnectionModel.prototype.remove.apply(this, arguments);
-          return;
-        }
-        if (this.getOtherTarget(constant.RESTYPE.ELB).type === constant.RESTYPE.LC) {
-          lcUsage = this.getTarget(constant.RESTYPE.LC).connectionTargets("LcUsage");
-          if (lcUsage) {
-            expAsg = lcUsage[0].get("expandedList");
-            if (expAsg && expAsg.length > 0) {
-              expAsg = expAsg[0];
-              if (expAsg && !expAsg.isRemoved()) {
-                elb = this.getTarget(constant.RESTYPE.ELB);
-                lc = expAsg.getLc();
-                (new ElbAmiAsso(elb, lc)).remove(reason = {
-                  reason: this
-                });
-                return;
-              }
+          connectedSbs = elb.connectionTargets("ElbSubnetAsso");
+          _ref = ami.parent().parent().children();
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            sb = _ref[_i];
+            if (connectedSbs.indexOf(sb) !== -1) {
+              foundSubnet = true;
+              break;
             }
           }
-          lc = this.getTarget(constant.RESTYPE.LC);
-          if (lc) {
-            elb = this.getTarget(constant.RESTYPE.ELB);
-            reason = {
-              reason: this
-            };
+          if (!foundSubnet) {
+            new ElbSubnetAsso(ami.parent(), elb);
           }
         }
-        ConnectionModel.prototype.remove.apply(this, arguments);
-        return null;
+      },
+      updateLcSubnetAssoIfNeeded: function(cn) {
+        if (cn.type === "LcUsage") {
+          return this.updateLcSubnetAsso();
+        }
+      },
+      updateLcSubnetAsso: function() {
+        var asg, asgs, az, azMap, azName, azs, e, elb, lc, subnet, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
+        if (this.design().initializing()) {
+          return;
+        }
+        elb = this.getTarget(constant.RESTYPE.ELB);
+        lc = this.getTarget(constant.RESTYPE.LC);
+        azs = lc.design().componentsOfType(constant.RESTYPE.AZ);
+        azMap = {};
+        for (_i = 0, _len = azs.length; _i < _len; _i++) {
+          az = azs[_i];
+          azName = az.get("name");
+          _ref = az.children();
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            subnet = _ref[_j];
+            _ref1 = subnet.connectionTargets("ElbSubnetAsso");
+            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              e = _ref1[_k];
+              if (e === elb) {
+                azMap[azName] = true;
+                break;
+              }
+            }
+            if (azMap[azName]) {
+              break;
+            }
+          }
+        }
+        _ref2 = lc.connectionTargets("LcUsage");
+        for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+          asg = _ref2[_l];
+          asgs = asg.get("expandedList").slice(0);
+          asgs.push(asg);
+          for (_m = 0, _len4 = asgs.length; _m < _len4; _m++) {
+            asg = asgs[_m];
+            azName = asg.parent().parent().get("name");
+            if (!azMap[azName]) {
+              new ElbSubnetAsso(asg.parent(), elb);
+              azMap[azName] = true;
+            }
+          }
+        }
       },
       serialize: function(components) {
         var elb, i, instance, instanceArray, _i, _len, _ref;

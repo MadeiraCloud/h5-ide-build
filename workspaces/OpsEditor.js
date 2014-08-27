@@ -9641,6 +9641,9 @@ return TEMPLATE; });
 
       StackEditor.prototype.isReady = function() {
         var region, stateModule;
+        if (this.__hasAdditionalData) {
+          return true;
+        }
         if (!this.opsModel.hasJsonData() || !this.opsModel.isPersisted()) {
           return false;
         }
@@ -9669,7 +9672,7 @@ return TEMPLATE; });
           comp = _ref[uid];
           if (comp.type === constant.RESTYPE.INSTANCE || comp.type === constant.RESTYPE.LC) {
             imageId = comp.resource.ImageId;
-            if (imageId && !cln.get(imageId)) {
+            if (imageId && !cln.get(imageId) && !cln.isInvalidAmiId(imageId)) {
               return false;
             }
           }
