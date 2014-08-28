@@ -5421,7 +5421,6 @@ return TEMPLATE; });
         $dom = $tgt;
       }
       $dom.dnd(evt, options);
-      this.selectItem($tgt[0]);
       return false;
     };
     __moveItemStart = function(data) {
