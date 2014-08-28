@@ -664,7 +664,7 @@ TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -732,13 +732,8 @@ function program9(depth0,data) {
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n<div class=\"estimate-stop clearfix\">\n    <div>\n        <span class=\"title\">Estimated Cost When Stopped</span>\n        <span class=\"price\" id=\"label-total-fee\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b> / month</span>\n    </div>\n    <div class=\"hide\">\n        <span class=\"title\">Saving Compared to Running App</span>\n        <span class=\"price\" id=\"label-total-saving\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b>/ month</span>\n    </div>\n</div>";
-  return buffer;
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
 
@@ -1053,7 +1048,7 @@ return TEMPLATE; });
             toFetchArray = _.keys(toFetch);
             amiRes = CloudResources(constant.RESTYPE.AMI, app.get("region"));
             return amiRes.fetchAmis(_.keys(toFetch)).then(function() {
-              var dbInstanceName, fee, hasAsg, hasDBInstance, hasEC2Instance, hasInstanceStore, hasNotReadyDB, savingFee, totalFee, _ref, _ref1, _ref2;
+              var dbInstanceName, hasAsg, hasDBInstance, hasEC2Instance, hasInstanceStore, hasNotReadyDB, _ref, _ref1;
               hasInstanceStore = false;
               amiRes.each(function(e) {
                 var _ref;
@@ -1077,9 +1072,6 @@ return TEMPLATE; });
               hasAsg = (_ref1 = _.filter(comp, function(e) {
                 return e.type === constant.RESTYPE.ASG;
               })) != null ? _ref1.length : void 0;
-              fee = ((_ref2 = Design.instance()) != null ? _ref2.getCost(true) : void 0) || {};
-              totalFee = fee.totalFee || 0;
-              savingFee = fee.totalFee || 0;
               canStop.tpl.find(".modal-footer").show();
               if (hasNotReadyDB && hasNotReadyDB.length) {
                 canStop.tpl.find('.modal-body').html(AppTpl.cantStop({
@@ -1094,8 +1086,6 @@ return TEMPLATE; });
                   hasEC2Instance: hasEC2Instance,
                   hasDBInstance: hasDBInstance,
                   hasAsg: hasAsg,
-                  totalFee: totalFee,
-                  savingFee: savingFee,
                   hasInstanceStore: hasInstanceStore
                 }));
               }

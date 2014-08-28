@@ -6134,7 +6134,7 @@
           resource: {
             Default: this.isDefault(),
             GroupId: this.get("appId"),
-            GroupName: this.isDefault() ? "default" : this.get("groupName") || this.get("name"),
+            GroupName: this.get("groupName") || this.get("name"),
             GroupDescription: this.get("description"),
             VpcId: this.getVpcRef(),
             IpPermissions: [],
@@ -6240,7 +6240,7 @@
           name: data.resource.Default ? "DefaultSG" : data.name,
           id: data.uid,
           appId: data.resource.GroupId,
-          groupName: data.resource.Default ? "default" : data.resource.GroupName,
+          groupName: data.resource.GroupName,
           description: data.resource.GroupDescription
         }, {
           isDeserialize: true

@@ -638,7 +638,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " has been successfully imported as VisualOps app.</p>\n<p class=\"modal-text-major\">Give this app an appropriate name.</p>\n<div class=\"modal-control-group\">\n<label for=\"ImportSaveAppName\">App Name</label> <input id=\"ImportSaveAppName\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"string\" autofocus> </div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n  <label for=\"\">App Usage</label>\n  <div id=\"app-usage-selectbox\" class=\"selectbox\">\n    <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n    <ul class=\"dropdown\" tabindex=\"-1\">\n      <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n      <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n      <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n      <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n    </ul>\n  </div>\n</div>\n<p>Now you can easily manage the resources and lifecycle of the app within VisualOps.</p>";
+    + "\" type=\"string\" autofocus> </div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n  <label for=\"\">App Usage</label>\n  <div id=\"app-usage-selectbox\" class=\"selectbox\">\n    <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n    <ul class=\"dropdown\" tabindex=\"-1\">\n      <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n      <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n      <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n      <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n    </ul>\n  </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">Monitor and report external resource change of this app</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\"If resource has been changed outside VisualOps, an email notification will be sent to you.\" style=\"color:#148BE6;vertical-align:-3px;\"></i>\n</section>\n\n<p>Now you can easily manage the resources and lifecycle of the app within VisualOps.</p>";
   return buffer;
   };
 TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
@@ -9803,8 +9803,14 @@ return TEMPLATE; });
             json = self.workspace.design.serialize();
             json.name = $ipt.val();
             json.usage = $("#app-usage-selectbox").find(".item.selected").attr('data-value') || "testing";
+            json.resource_diff = $("#MonitorImportApp").is(":checked");
             return self.workspace.opsModel.saveApp(json).then(function() {
-              self.workspace.design.set("name", json.name);
+              var design;
+              design = self.workspace.design;
+              design.set("name", json.name);
+              design.set("resource_diff", json.resource_diff);
+              design.set("usage", json.usage);
+              $("#OEPanelRight").trigger("REFRESH");
               return modal.close();
             }, function(err) {
               notification("error", err.msg);

@@ -2134,7 +2134,7 @@ function program26(depth0,data) {
       },
       visualizeVPC: function() {
         var TO, attributes, self;
-        this.model.visualizeVpc();
+        this.model.visualizeVpc(true);
         attributes = {
           ready: this.model.isVisualizeReady(),
           fail: this.model.isVisualizeTimeout() || this.model.isVisualizeFailed(),

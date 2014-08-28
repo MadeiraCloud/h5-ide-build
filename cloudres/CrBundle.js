@@ -2326,7 +2326,7 @@
         });
       },
       parseFetchData: function(data) {
-        var app_json, cln, comp, d, eni, extraAttr, id, type, _ref;
+        var app_id, app_json, cln, comp, d, eni, extraAttr, id, kpComp, originalJson, originalKpComp, type, _ref, _ref1;
         delete data.vpc;
         app_json = data.app_json;
         delete data.app_json;
@@ -2341,6 +2341,15 @@
             continue;
           }
           cln.__parseExternalData(d, extraAttr, this.__region);
+        }
+        app_id = App.workspaces.getAwakeSpace().opsModel.get("id");
+        if (app_id && app_id.substr(0, 4) === 'app-') {
+          originalJson = App.model.attributes.appList.where({
+            id: app_id
+          });
+          if (originalJson && originalJson.length > 0) {
+            originalJson = originalJson[0].__jsonData;
+          }
         }
         if (app_json) {
           this.generatedJson = app_json;
@@ -2361,12 +2370,33 @@
                 comp.resource.Attachment.AttachmentId = eni.attachment.attachmentId;
                 console.warn("[patch app_json] fill AttachmentId of eni");
               }
+            } else if (comp.type === constant.RESTYPE.KP) {
+              kpComp = $.extend(true, {}, comp);
             }
             null;
           }
+          if (originalJson) {
+            _ref1 = originalJson.component;
+            for (id in _ref1) {
+              comp = _ref1[id];
+              if (comp.type === constant.RESTYPE.KP) {
+                originalKpComp = $.extend(true, {}, comp);
+                break;
+              }
+              null;
+            }
+            if (originalKpComp) {
+              if (kpComp) {
+                delete this.generatedJson.component[kpComp.uid];
+                this.generatedJson.component[originalKpComp.uid] = originalKpComp;
+              }
+            } else {
+              originalJson.component[kpComp.uid] = kpComp;
+            }
+          }
         } else {
 
-          /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+          /* env:dev                                                                                                                                                                         env:dev:end */
         }
       },
       __generateJsonFromRes: function(originalJson) {
