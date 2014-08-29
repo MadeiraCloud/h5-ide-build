@@ -9026,6 +9026,7 @@
         return CloudResources(constant.RESTYPE.DBSNAP, this.design().region()).get(this.get('snapshotId'));
       },
       slaveIndependentAttr: "id|appId|x|y|width|height|name|accessible|createdBy|instanceId|instanceClass|autoMinorVersionUpgrade|accessible|backupRetentionPeriod|multiAz|password|__connections|__parent",
+      sourceDbIndependentAttrForRestore: "id|appId|x|y|width|height|name|accessible|createdBy|instanceId|instanceClass|autoMinorVersionUpgrade|multiAz|__connections|__parent|license|iops|port|ogName|pgName|az",
       slaves: function() {
         if (this.master()) {
           return [];
@@ -9088,7 +9089,8 @@
         this.setDefaultParameterGroup();
         defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
         SgAsso = Design.modelClassForType("SgAsso");
-        return new SgAsso(defaultSg, this);
+        new SgAsso(defaultSg, this);
+        return this.listenTo(sourceDb, 'change', this.syncAttrSourceDBForRestore);
       },
       getSourceDBForRestore: function() {
         return this.sourceDBForRestore;
@@ -9108,6 +9110,18 @@
         }
         if (needSync['iops']) {
           delete needSync['iops'];
+        }
+        return this.set(needSync);
+      },
+      syncAttrSourceDBForRestore: function(sourceDb) {
+        var k, needSync, v, _ref;
+        needSync = {};
+        _ref = sourceDb.changedAttributes();
+        for (k in _ref) {
+          v = _ref[k];
+          if (this.sourceDbIndependentAttrForRestore.indexOf(k) < 0) {
+            needSync[k] = v;
+          }
         }
         return this.set(needSync);
       },

@@ -1230,7 +1230,7 @@
       return resultAry;
     };
     isSSLCertExist = function(callback) {
-      var allExistCertAry, eachListener, elbNameUIDMap, elbNotExistCertMap, err, haveCert, validResultAry;
+      var allExistCertAry, eachListener, elbNameUIDMap, elbNotExistCertMap, err, haveCert, sslCertCol, validResultAry;
       try {
         if (!callback) {
           callback = function() {};
@@ -1269,12 +1269,10 @@
           return haveCert = true;
         });
         if (haveCert) {
-          if (!window.sslCertCol) {
-            window.sslCertCol = CloudResources(constant.RESTYPE.IAM);
-          }
-          return window.sslCertCol.fetchForce().then(function(result) {
+          sslCertCol = CloudResources(constant.RESTYPE.IAM);
+          return sslCertCol.fetchForce().then(function(result) {
             var sslCertAry;
-            sslCertAry = window.sslCertCol.toJSON();
+            sslCertAry = sslCertCol.toJSON();
             _.each(sslCertAry, function(sslCertData) {
               return allExistCertAry.push(sslCertData.Name);
             });
@@ -3084,7 +3082,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore'], function(constant, MC, Design, Helper, keypair_service, _) {
+  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, keypair_service, _, CloudResources) {
     var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
     i18n = Helper.i18n.short();
     isNotDefaultAndRefInstance = function(uid) {
@@ -3121,7 +3119,7 @@ This file use for validate component about state.
       return Helper.message.notice(null, i18n.TA_MSG_NOTICE_KEYPAIR_LONE_LIVE);
     };
     isKeyPairExistInAws = function(callback) {
-      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, needValidate, region, results, session, username, _i, _len;
+      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, kpCollection, needValidate, region, results, session, username, _i, _len;
       allInstances = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
       allLcs = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
       instanceLike = allInstances.concat(allLcs);
@@ -3145,12 +3143,10 @@ This file use for validate component about state.
         username = $.cookie("usercode");
         session = $.cookie("session_id");
         region = Design.instance().region();
-        return keypair_service.DescribeKeyPairs(null, username, session, region).then(function(res) {
+        kpCollection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
+        return kpCollection.fetchForce().then(function(col) {
           var kpList;
-          if (res.is_error) {
-            throw res;
-          }
-          kpList = res.resolved_data || [];
+          kpList = col.toJSON();
           _.each(needValidate, function(i) {
             var inexist, tag;
             inexist = _.every(kpList, function(kp) {
@@ -3188,7 +3184,7 @@ This file use for validate component about state.
             return results.push(Helper.message.error(keyName, i18n.TA_MSG_ERROR_INSTANCE_REF_OLD_KEYPAIR, message, keyName));
           });
           return callback(results);
-        }).fail(function(error) {
+        }, function() {
           return callback(null);
         });
       }

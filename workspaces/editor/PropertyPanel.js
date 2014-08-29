@@ -17407,8 +17407,10 @@ return TEMPLATE; });
           }
         });
         this.$('#property-dbinstance-iops-value').parsley('custom', function(val) {
-          var defaultIOPS, iops, iopsRange, storage;
-          storage = $('#property-dbinstance-storage').val();
+          var defaultIOPS, fillValue, iops, iopsRange, originValue, storage;
+          fillValue = $('#property-dbinstance-storage').val();
+          originValue = that.resModel.get('allocatedStorage');
+          storage = Number(fillValue || originValue);
           iopsRange = that._getIOPSRange(storage);
           defaultIOPS = that._getDefaultIOPS(storage);
           iops = Number(val);
@@ -17728,10 +17730,12 @@ return TEMPLATE; });
         return that.updateIOPSCheckStatus(value);
       },
       changeProvisionedIOPSCheck: function(event) {
-        var defaultIOPS, iopsRange, storage, that, value;
+        var defaultIOPS, fillValue, iopsRange, originValue, storage, that, value;
         that = this;
         value = event.target.checked;
-        storage = Number($('#property-dbinstance-storage').val());
+        fillValue = $('#property-dbinstance-storage').val();
+        originValue = this.resModel.get('allocatedStorage');
+        storage = Number(fillValue || originValue);
         iopsRange = this._getIOPSRange(storage);
         if (this.resModel.master() && !this.isAppEdit) {
           if (value) {
@@ -17757,13 +17761,15 @@ return TEMPLATE; });
         }
       },
       changeProvisionedIOPS: function(event) {
-        var iops, originValue, storage, target, that, value;
+        var fillValue, iops, originValue, storage, target, that, value;
         that = this;
         if ($('#property-dbinstance-iops-check')[0].checked) {
           target = $('#property-dbinstance-iops-value');
           value = target.val();
           iops = Number(value);
-          storage = Number($('#property-dbinstance-storage').val());
+          fillValue = $('#property-dbinstance-storage').val();
+          originValue = this.resModel.get('allocatedStorage');
+          storage = Number(fillValue || originValue);
           if (target.parsley('validate')) {
             originValue = that.getOriginAttr();
             if (originValue && originValue.originIOPS && (iops !== originValue.originIOPS)) {
@@ -18715,6 +18721,7 @@ return TEMPLATE; });
       },
       getLogContent: function(filename) {
         return ApiRequest('rds_DownloadDBLogFilePortion', {
+          region_name: this.resModel.design().region(),
           db_identifier: this.resModel.get('appId'),
           log_filename: filename
         }).then((function(result) {
