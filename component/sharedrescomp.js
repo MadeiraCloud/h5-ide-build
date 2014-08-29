@@ -3807,9 +3807,11 @@ return TEMPLATE; });
           'DBINSTANCE.resource.AvailabilityZone': true,
           'DBINSTANCE.resource.Endpoint.Address': true,
           'DBINSTANCE.resource.ApplyImmediately': true,
+          'DBINSTANCE.resource.Endpoint': true,
+          'DBINSTANCE.resource.SourceDBInstanceIdentifierForPoint': true,
+          'DBINSTANCE.resource.UseLatestRestorableTime': true,
           'ASG.resource.AutoScalingGroupARN': true,
-          'ASG.resource.PolicyARN': true,
-          'DBINSTANCE.resource.Endpoint': true
+          'ASG.resource.PolicyARN': true
         };
       }
       if (!option.noDiffArrayAttrMap) {

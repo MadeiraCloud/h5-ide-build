@@ -209,6 +209,7 @@ define({
         "CVS_CFM_ADD_IGW_MSG": "为设置EIP，自动添加了一个互联网网关",
         "CVS_CFM_DEL_NONEXISTENT_DBINSTANCE": "%s 未创建,删除它会同时删除与之相关的所有只读副本，确定要删除它吗？",
         "CVS_CFM_DEL_EXISTENT_DBINSTANCE": "%s已存在，删除它会同时删除与之相关的只读副本，但会保留，确定要删除它吗？",
+        "CVS_CFM_DEL_RELATED_RESTORE_DBINSTANCE": "",
         "CVS_MSG_ERR_ZOOMED_DROP_ERROR": "在添加新资源前，请重设缩放至100%。",
         "CVS_TIP_EXPAND_W": "增加画板宽度",
         "CVS_TIP_SHRINK_W": "减少画板宽度",

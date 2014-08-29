@@ -13,7 +13,7 @@
 
     /* env:prod:end */
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                       env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
     noop = function() {};
 
     /*
@@ -619,7 +619,7 @@
     };
     _.extend(DesignImpl.prototype, Backbone.Events);
 
-    /* env:dev                                              env:dev:end */
+    /* env:dev                                            env:dev:end */
 
     /* env:debug */
     Design.DesignImpl = DesignImpl;
@@ -660,7 +660,7 @@
     __detailExtend = Backbone.Model.extend;
     __emptyObj = {};
 
-    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            env:dev:end */
 
     /*
       -------------------------------
@@ -773,7 +773,7 @@
         design.cacheComponent(attributes.id, this);
         Backbone.Model.call(this, attributes, options || __emptyObj);
 
-        /* env:dev                                                                               env:dev:end */
+        /* env:dev                                                                             env:dev:end */
         if (!this.attributes.name) {
           this.attributes.name = "";
         }
@@ -869,7 +869,7 @@
         return true;
       },
 
-      /* env:dev                                                                                                                                                                                                                                     env:dev:end */
+      /* env:dev                                                                                                                                                                                                                          env:dev:end */
       serialize: function() {
         console.warn("Class '" + this.type + "' doesn't implement serialize");
         return null;
@@ -980,7 +980,7 @@
           delete staticProps.resolveFirst;
         }
 
-        /* env:dev                                                                                              env:dev:end */
+        /* env:dev                                                                                           env:dev:end */
 
         /* jshint -W083 */
 
@@ -1096,7 +1096,7 @@
       type: "Framework_CN",
       constructor: function(p1Comp, p2Comp, attr, option) {
 
-        /* env:dev                                                                                                                                                                                                             env:dev:end */
+        /* env:dev                                                                                                                                                                                                           env:dev:end */
         var cn, cns, comp, _i, _len, _ref;
         if (!p1Comp || !p2Comp) {
           console.warn("Connection of " + this.type + " is not created, because invalid targets :", [p1Comp, p2Comp]);
@@ -9015,7 +9015,9 @@
         az: '',
         ogName: '',
         pgName: '',
-        applyImmediately: false
+        applyImmediately: false,
+        dbRestoreTime: '',
+        isRestored: false
       },
       type: constant.RESTYPE.DBINSTANCE,
       newNameTmpl: "db",
@@ -9030,6 +9032,21 @@
         } else {
           return this.connectionTargets("DbReplication");
         }
+      },
+      getAllRestoreDB: function() {
+        var dbModels, srcDb, that;
+        srcDb = this.getSourceDBForRestore();
+        if (srcDb) {
+          return [];
+        }
+        that = this;
+        dbModels = Design.modelClassForType(constant.RESTYPE.DBINSTANCE).allObjects();
+        return _.filter(dbModels, function(dbModel) {
+          if (dbModel.getSourceDBForRestore() === that) {
+            return true;
+          }
+          return false;
+        });
       },
       master: function() {
         var m;
@@ -9064,6 +9081,17 @@
       unsetMaster: function() {
         var _ref;
         return (_ref = this.connections("DbReplication")[0]) != null ? _ref.remove() : void 0;
+      },
+      setSourceDBForRestore: function(sourceDb) {
+        var SgAsso, defaultSg;
+        this.sourceDBForRestore = sourceDb;
+        this.setDefaultParameterGroup();
+        defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
+        SgAsso = Design.modelClassForType("SgAsso");
+        return new SgAsso(defaultSg, this);
+      },
+      getSourceDBForRestore: function() {
+        return this.sourceDBForRestore;
       },
       syncMasterAttr: function(master) {
         var k, needSync, v, _ref;
@@ -9127,6 +9155,11 @@
           new connectionModel(slave, otherTarget).remove();
         }
       },
+      restoreMaster: function(master) {
+        this.clone(master);
+        this.set("snapshotId", master.get("snapshotId"));
+        return null;
+      },
       constructor: function(attr, option) {
         var snapshotModel;
         if (option && !option.master && option.createByUser) {
@@ -9157,8 +9190,13 @@
           return;
         }
         if (option.master) {
-          this.copyMaster(option.master);
-          this.setMaster(option.master);
+          if (!option.isRestore) {
+            this.copyMaster(option.master);
+            this.setMaster(option.master);
+          } else {
+            this.cloneForRestore(option.master);
+            this.setSourceDBForRestore(option.master);
+          }
         } else if (option.createByUser) {
           SgAsso = Design.modelClassForType("SgAsso");
           defaultSg = Design.modelClassForType(constant.RESTYPE.SG).getDefaultSg();
@@ -9182,6 +9220,16 @@
         this.cloneAttributes(srcTarget, {
           reserve: "newInstanceId|instanceId|createdBy",
           copyConnection: ["SgAsso", "OgUsage"]
+        });
+        this.set('snapshotId', '');
+        if (this.get('password') === '****') {
+          this.set('password', '12345678');
+        }
+      },
+      cloneForRestore: function(srcTarget) {
+        this.cloneAttributes(srcTarget, {
+          reserve: "newInstanceId|instanceId|createdBy|pgName",
+          copyConnection: ["OgUsage"]
         });
         this.set('snapshotId', '');
         if (this.get('password') === '****') {
@@ -9621,7 +9669,7 @@
         return ComplexResModel.prototype.getNewName.apply(this, args);
       },
       isRemovable: function() {
-        var result;
+        var allRestoreDB, dbNameAry, result;
         if (this.slaves().length > 0) {
           if (!this.get("appId")) {
             result = sprintf(lang.ide.CVS_CFM_DEL_NONEXISTENT_DBINSTANCE, this.get("name"));
@@ -9632,10 +9680,20 @@
           }
           return result;
         }
+        allRestoreDB = this.getAllRestoreDB();
+        if (allRestoreDB.length > 0) {
+          dbNameAry = [];
+          _.each(allRestoreDB, function(dbModel) {
+            return dbNameAry.push("<span class='resource-tag'>" + (dbModel.get('name')) + "</span>");
+          });
+          result = sprintf(lang.ide.CVS_CFM_DEL_RELATED_RESTORE_DBINSTANCE, this.get("name"), dbNameAry.join(', '));
+          result = "<div class='modal-text-major'>" + result + "</div>";
+          return result;
+        }
         return true;
       },
       remove: function() {
-        var slave, _i, _len, _ref;
+        var restore, slave, _i, _j, _len, _len1, _ref, _ref1;
         _ref = this.slaves();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           slave = _ref[_i];
@@ -9643,12 +9701,25 @@
             slave.remove();
           }
         }
+        _ref1 = this.getAllRestoreDB();
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          restore = _ref1[_j];
+          restore.remove();
+        }
         ComplexResModel.prototype.remove.call(this);
         return null;
       },
       serialize: function() {
-        var component, master, _ref;
+        var component, master, restoreTime, useLatestRestorableTime, _ref, _ref1;
         master = this.master();
+        useLatestRestorableTime = '';
+        if (this.getSourceDBForRestore()) {
+          useLatestRestorableTime = this.get('dbRestoreTime') ? false : true;
+        }
+        restoreTime = '';
+        if (this.get('dbRestoreTime')) {
+          restoreTime = this.get('dbRestoreTime');
+        }
         component = {
           name: this.get("name"),
           type: this.type,
@@ -9693,7 +9764,10 @@
             VpcSecurityGroupIds: _.map(this.connectionTargets("SgAsso"), function(sg) {
               return sg.createRef('GroupId');
             }),
-            ReadReplicaSourceDBInstanceIdentifier: (master != null ? master.createRef('DBInstanceIdentifier') : void 0) || ''
+            ReadReplicaSourceDBInstanceIdentifier: (master != null ? master.createRef('DBInstanceIdentifier') : void 0) || '',
+            SourceDBInstanceIdentifierForPoint: ((_ref1 = this.getSourceDBForRestore()) != null ? _ref1.createRef('DBInstanceIdentifier') : void 0) || '',
+            UseLatestRestorableTime: useLatestRestorableTime,
+            RestoreTime: restoreTime
           }
         };
         return {
@@ -10264,7 +10338,7 @@
 (function() {
   define('workspaces/editor/framework/DesignBundle',['Design', './connection/EniAttachment', './connection/VPNConnection', './connection/DbReplication', './resource/InstanceModel', './resource/EniModel', './resource/VolumeModel', './resource/AclModel', './resource/AsgModel', './resource/AzModel', './resource/AzModel', './resource/CgwModel', './resource/ElbModel', './resource/LcModel', './resource/KeypairModel', './resource/SslCertModel', './resource/RtbModel', './resource/SgModel', './resource/SubnetModel', './resource/VpcModel', './resource/IgwModel', './resource/VgwModel', './resource/SnsModel', './resource/StorageModel', './resource/ScalingPolicyModel', './resource/DBSbgModel', './resource/DBInstanceModel', './resource/DBOgModel', "./util/deserializeVisitor/JsonFixer", "./util/deserializeVisitor/EipMerge", "./util/deserializeVisitor/FixOldStack", "./util/deserializeVisitor/AsgExpandor", "./util/deserializeVisitor/ElbSgNamePatch", "./util/serializeVisitor/EniIpAssigner", "./util/serializeVisitor/AppToStack"], function(Design) {
 
-    /* env:dev                                                                                   env:dev:end */
+    /* env:dev                                                                                 env:dev:end */
 
     /* env:debug */
     require(["./workspaces/editor/framework/util/DesignDebugger"], function() {});
