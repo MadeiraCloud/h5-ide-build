@@ -17,7 +17,9 @@
       'AWS.VPC.RouteTable': ['rtb'],
       'AWS.EC2.EBS.Volume': ['ebs'],
       'AWS.EC2.KeyPair': ['kp'],
-      'AWS.RDS.DBInstance': ['dbinstance']
+      'AWS.RDS.DBInstance': ['dbinstance'],
+      'AWS.RDS.OptionGroup': ['og'],
+      'AWS.RDS.DBSubnetGroup': ['sbg']
     },
     globalList: {
       eip: ['isHasIGW'],
@@ -3470,7 +3472,33 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/stack/stack', '../validation/ec2/instance', '../validation/vpc/subnet', '../validation/vpc/vpc', '../validation/elb/elb', '../validation/ec2/securitygroup', '../validation/asg/asg', '../validation/ec2/eip', '../validation/ec2/az', '../validation/vpc/vgw', '../validation/vpc/vpn', '../validation/vpc/igw', '../validation/vpc/networkacl', '../validation/vpc/cgw', '../validation/vpc/eni', '../validation/vpc/rtb', '../validation/stateeditor/main', '../validation/state/state', '../validation/ec2/ebs', '../validation/ec2/kp', '../validation/rds/dbinstance', '../validation/rds/og'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og) {
+  define('component/trustedadvisor/validation/rds/sbg',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+    var i18n, isSbgHasSbin2Az;
+    i18n = Helper.i18n.short();
+    isSbgHasSbin2Az = function(uid) {
+      var azs, sbg, sbs, tmpTip, uniqAzCount;
+      tmpTip = "Subnet Group %s must have subnets in at least 2 Availability Zones.";
+      sbg = Design.instance().component(uid);
+      sbs = sbg.connectionTargets("SubnetgAsso");
+      azs = [];
+      azs = _.map(sbs, function(sb) {
+        return sb.parent();
+      });
+      uniqAzCount = _.uniq(azs).length;
+      if (uniqAzCount > 1) {
+        return null;
+      }
+      return Helper.message.error(uid, sprintf(tmpTip, sbg.get('name')));
+    };
+    return {
+      isSbgHasSbin2Az: isSbgHasSbin2Az
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/stack/stack', '../validation/ec2/instance', '../validation/vpc/subnet', '../validation/vpc/vpc', '../validation/elb/elb', '../validation/ec2/securitygroup', '../validation/asg/asg', '../validation/ec2/eip', '../validation/ec2/az', '../validation/vpc/vgw', '../validation/vpc/vpn', '../validation/vpc/igw', '../validation/vpc/networkacl', '../validation/vpc/cgw', '../validation/vpc/eni', '../validation/vpc/rtb', '../validation/stateeditor/main', '../validation/state/state', '../validation/ec2/ebs', '../validation/ec2/kp', '../validation/rds/dbinstance', '../validation/rds/og', '../validation/rds/sbg'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og, sbg) {
     return {
       stack: stack,
       instance: instance,
@@ -3493,7 +3521,8 @@ This file use for validate component about state.
       ebs: ebs,
       kp: kp,
       dbinstance: dbinstance,
-      og: og
+      og: og,
+      sbg: sbg
     };
   });
 
@@ -3794,89 +3823,89 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title\" data-key=\""
+  buffer += "\n					<div class=\"title\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						";
+    + "\">\n						";
   stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n					</div>\r\n\r\n				";
+  buffer += "\n					</div>\n\n				";
   return buffer;
   }
 
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title empty\" data-key=\""
+  buffer += "\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No error here.\r\n					</div>\r\n				";
+    + "\">\n						Good job! No error here.\n					</div>\n				";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title\" data-key=\""
+  buffer += "\n					<div class=\"title\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						";
+    + "\">\n						";
   stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n					</div>\r\n				";
+  buffer += "\n					</div>\n				";
   return buffer;
   }
 
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title empty\" data-key=\""
+  buffer += "\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No warning here.\r\n					</div>\r\n				";
+    + "\">\n						Good job! No warning here.\n					</div>\n				";
   return buffer;
   }
 
 function program11(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n					<div class=\"title empty\" data-key=\""
+  buffer += "\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No notice here.\r\n					</div>\r\n				";
+    + "\">\n						Good job! No notice here.\n					</div>\n				";
   return buffer;
   }
 
-  buffer += "<div class=\"validation-content\">\r\n	<ul class=\"tab\">\r\n		<li class=\"active ";
+  buffer += "<div class=\"validation-content\">\n	<ul class=\"tab\">\n		<li class=\"active ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tab-target=\"#item-error\">Error<span class=\"validation-counter validation-counter-error\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\r\n		<li data-tab-target=\"#item-warning\" class=\"";
+    + "</span></li>\n		<li data-tab-target=\"#item-warning\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">Warning<span class=\"validation-counter validation-counter-warning\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\r\n		<li data-tab-target=\"#item-notice\" class=\"";
+    + "</span></li>\n		<li data-tab-target=\"#item-notice\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">Notice<span class=\"validation-counter validation-counter-notice\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\r\n	</ul>\r\n	<div class=\"scroll-wrap scroll-wrap-validation\">\r\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"content_wrap scroll-content\">\r\n\r\n			<div id=\"item-error\" class=\"content active\">\r\n\r\n				";
+    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\r\n\r\n			</div>\r\n			<div id=\"item-warning\" class=\"content\">\r\n				";
+  buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\n\n			</div>\n			<div id=\"item-warning\" class=\"content\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n			</div>\r\n			<div id=\"item-notice\" class=\"content\">\r\n				";
+  buffer += "\n			</div>\n			<div id=\"item-notice\" class=\"content\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.notice_list), {hash:{},inverse:self.program(11, program11, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>";
+  buffer += "\n			</div>\n		</div>\n	</div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('component/trustedadvisor/gui/tpl/modal_template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -3885,7 +3914,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"modal-header\">\r\n	<h3>Validation</h3>\r\n	<i class=\"modal-close\">×</i>\r\n</div>\r\n<div class=\"modal-body\">\r\n	<div id=\"modal-validation-statusbar\">\r\n	</div>\r\n</div>";
+  return "<div class=\"modal-header\">\n	<h3>Validation</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div id=\"modal-validation-statusbar\">\n	</div>\n</div>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('component/trustedadvisor/gui/view',['event', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template, modal_template) {
