@@ -623,8 +623,8 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
             origin.y = bbox.y;
           }
         }
-        origin.x = Math.floor(origin.x / 10) * 10 - 30;
-        origin.y = Math.floor(origin.y / 10) * 10 - 30;
+        origin.x -= 30;
+        origin.y -= 30;
       }
       replaceEl = document.createElementNS("http://www.w3.org/2000/svg", "g");
       replaceEl.textContent = "PLACEHOLDER";
@@ -919,7 +919,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         delete j._id;
       } catch (_error) {
         e = _error;
-        return lang.ide.POP_IMPORT_FORMAT_ERROR;
+        return lang.IDE.POP_IMPORT_FORMAT_ERROR;
       }
       signature = j.signature;
       delete j.signature;

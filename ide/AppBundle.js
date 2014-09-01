@@ -150,10 +150,31 @@
 define('ide/subviews/SessionDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>";
+  buffer += "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
+    + "</p>\n    </div>\n    <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
+    + "</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_RECONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_RECONNECT_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n</section>";
+  return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
@@ -198,7 +219,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           };
         })(this), function(error) {
           $("#SessionConnect").removeAttr("disabled");
-          notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
+          notification('error', lang.NOTIFY.WARN_AUTH_FAILED);
           $("#SessionPassword").toggleClass("parsley-error", true);
         });
       },
@@ -225,20 +246,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\n\n  <section class=\"dropdown\" >\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
+  buffer += "<nav id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
+    + "</a>\n\n  <section class=\"dropdown\" >\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
     + "</div>\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
     + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
     + "</li>\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
     + "</a></li>\n      <li id=\"HeaderSettings\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
     + "</li>\n      <li id=\"HeaderLogout\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
     + "</li>\n    </ul>\n  </section>\n</nav>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
@@ -369,7 +392,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
     + "</p><div class=\"loading-spinner\"></div></div>\n    <div id=\"CredUpdating\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"><button class=\"btn btn-blue right\" id=\"TokenCreate\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
     + "</button>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
@@ -429,12 +452,12 @@ function program3(depth0,data) {
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
           awsSecretKey: App.user.get("awsSecretKey"),
-          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
           credNeeded: !!App.model.appList().length
         };
         this.modal = new Modal({
           template: SettingsTpl(attributes),
-          title: lang.ide.HEAD_LABEL_SETTING,
+          title: lang.IDE.HEAD_LABEL_SETTING,
           disableFooter: true,
           compact: true,
           width: "490px"
@@ -448,7 +471,7 @@ function program3(depth0,data) {
           if (tab === SettingsDialog.TAB.CredentialInvalid) {
             this.showCredSetup();
             this.modal.tpl.find(".modal-close").hide();
-            this.modal.tpl.find("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+            this.modal.tpl.find("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           }
           if (tab < 0) {
             tab = Math.abs(tab);
@@ -465,7 +488,7 @@ function program3(depth0,data) {
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
           awsSecretKey: App.user.get("awsSecretKey"),
-          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
         };
         this.modal.setContent(SettingsTpl(attributes));
         return this.modal.$("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
@@ -507,19 +530,19 @@ function program3(depth0,data) {
         old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
         new_pwd = this.modal.$("#AccountNewPwd").val() || "";
         if (new_pwd.length < 6) {
-          this.modal.$('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
+          this.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_ERR_INVALID_PWD);
           return;
         }
         this.modal.$("#AccountInfo").empty();
         this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
         App.user.changePassword(old_pwd, new_pwd).then(function() {
-          notification('info', lang.ide.SETTINGS_UPDATE_PWD_SUCCESS);
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS);
           $("#AccountCancelPwd").click();
         }, function(err) {
           if (err.error === 2) {
-            that.modal.$('#AccountInfo').html("" + lang.ide.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.ide.SETTINGS_INFO_FORGET_PWD + "</a>");
+            that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
           } else {
-            that.modal.$('#AccountInfo').text(lang.ide.SETTINGS_UPDATE_PWD_FAILURE);
+            that.modal.$('#AccountInfo').text(lang.NOTIFY.SETTINGS_UPDATE_PWD_FAILURE);
           }
           return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         });
@@ -552,20 +575,20 @@ function program3(depth0,data) {
         $("#AccountEmailInfo").empty();
         $("#AccountUpdateEmail").attr("disabled", "disabled");
         App.user.changeEmail(email, pwd).then(function() {
-          notification('info', lang.ide.SETTINGS_UPDATE_EMAIL_SUCCESS);
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS);
           $("#AccountCancelEmail").click();
           $(".accountEmailRO").children("span").text(App.user.get("email"));
         }, function(err) {
           var text;
           switch (err.error) {
             case 116:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL3;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;
               break;
             case 117:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL2;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;
               break;
             default:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL1;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL1;
           }
           $('#AccountEmailInfo').text(text);
           return $("#AccountUpdateEmail").removeAttr("disabled");
@@ -599,7 +622,7 @@ function program3(depth0,data) {
         App.user.changeCredential().then(function() {
           self.updateCredSettings();
         }, function() {
-          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_REMOVE);
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_REMOVE);
           self.modal.$("#modal-box .modal-close").show();
           return self.showCredSetup();
         });
@@ -626,7 +649,7 @@ function program3(depth0,data) {
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           self.modal.$("#modal-box .modal-close").show();
           self.showCredSetup();
         });
@@ -652,7 +675,7 @@ function program3(depth0,data) {
         });
       },
       showCredUpdateFail: function() {
-        this.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+        this.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
         this.modal.$("#modal-box .modal-close").show();
         return this.showCredSetup();
       },
@@ -686,7 +709,7 @@ function program3(depth0,data) {
         this.rmToken = $p.children(".tokenToken").text();
         this.modal.$("#TokenManager").hide();
         this.modal.$("#TokenRmConfirm").show();
-        this.modal.$("#TokenRmTit").text(sprintf(lang.ide.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+        this.modal.$("#TokenRmTit").text(sprintf(lang.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
       },
       createToken: function() {
         var self;
@@ -696,7 +719,7 @@ function program3(depth0,data) {
           self.updateTokenTab();
           return self.modal.$("#TokenCreate").removeAttr("disabled");
         }, function() {
-          notification("error", "Fail to create token, please retry.");
+          notification("error", lang.NOTIFY.FAIL_TO_CREATE_TOKEN);
           return self.modal.$("#TokenCreate").removeAttr("disabled");
         });
       },
@@ -722,7 +745,7 @@ function program3(depth0,data) {
         App.user.updateToken(token, newTokenName).fail(function() {
           oldName = "";
           $p.children(".tokenName").val(oldName);
-          return notification("error", "Fail to update token, please retry.");
+          return notification("error", lang.NOTIFY.FAIL_TO_UPDATE_TOKEN);
         });
       },
       confirmRmToken: function() {
@@ -733,7 +756,7 @@ function program3(depth0,data) {
           self.updateTokenTab();
           return self.cancelRmToken();
         }, function() {
-          notification("Fail to delete token, please retry.");
+          notification(lang.NOTIFY.FAIL_TO_DELETE_TOKEN);
           return self.cancelRmToken();
         });
       },
@@ -916,10 +939,10 @@ function program3(depth0,data) {
           username: App.user.get("username")
         };
         if (options && options.askForCredential) {
-          title = lang.ide.WELCOME_PROVIDE_CRED_TIT;
+          title = lang.IDE.WELCOME_PROVIDE_CRED_TIT;
           attributes.noWelcome = true;
         } else {
-          title = lang.ide.WELCOME_DIALOG_TIT;
+          title = lang.IDE.WELCOME_DIALOG_TIT;
         }
         this.modal = new Modal({
           title: title,
@@ -991,7 +1014,7 @@ function program3(depth0,data) {
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           self.showCredSetup();
         });
       },
@@ -1008,7 +1031,7 @@ function program3(depth0,data) {
         return App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
           self.done();
         }, function(err) {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
           self.showCredSetup();
         });
       },
@@ -1036,7 +1059,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_APPS", {hash:{},data:data}))
     + "</button>\n    <button class=\"off-canvas-tab selected\" id=\"off-canvas-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_STACKS", {hash:{},data:data}))
-    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">Show unused regions</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
+    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.SHOW_UNUSED_REGIONS", {hash:{},data:data}))
+    + "</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
   return buffer;
   };
 TEMPLATE.navigation=Handlebars.template(__TEMPLATE__);
@@ -1305,13 +1330,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
     + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
     + escapeExpression(((stack1 = (depth0 && depth0.msg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"confirmRmStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -1325,167 +1350,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
     + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n      <label class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
     + "</label>\n      <input id=\"confirmDupStackIpt\" class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.newName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n    </div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn btn-red\" id=\"confirmDupStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
 TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
-
-function program1(depth0,data) {
-  
-  
-  return "\n          <li>\n              EC2 instances will be started.\n          </li>\n          ";
-  }
-
-function program3(depth0,data) {
-  
-  
-  return "\n          <li>\n              DB instances will be restored from final snapshot.\n          </li>\n          ";
-  }
-
-function program5(depth0,data) {
-  
-  
-  return "\n          <li>\n              Auto Scaling Group will be recreated.\n          </li>\n          ";
-  }
-
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <div class=\"modal-shrink\">\n          <div class=\"sub-gray\">Warning</div>\n          <div class=\"error\">\n              DB instance ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.lostDBSnapshot), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "’s final snapshot is missing. This DB instance cannot be restored.\n          </div>\n      </div>\n      ";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.index), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  return buffer;
-  }
-function program9(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_START_APP", {hash:{},data:data}))
-    + "</div>\n      <ul class=\"modal-list-items\">\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasASG), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      </ul>\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lostDBSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>";
-  return buffer;
-  };
-TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <div style=\"padding: 20px\">\n        <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_ASG", {hash:{},data:data}))
-    + "</p>\n        <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n        <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n    </div>\n";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n<div class=\"modal-center-align-helper\" style=\"padding: 20px\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_LEFT", {hash:{},data:data}))
-    + " "
-    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n    <ul class=\"modal-list-items\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasAsg), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </ul>\n</div>\n";
-  return buffer;
-  }
-function program4(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            <li>\n                EC2 instances will be stopped.\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasInstanceStore), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </li>\n        ";
-  return buffer;
-  }
-function program5(depth0,data) {
-  
-  
-  return "<span class=\"error\">Instance-stored instances will be deleted.</span>";
-  }
-
-function program7(depth0,data) {
-  
-  
-  return "\n            <li>\n                DB instances will be deleted final snapshot will be taken.\n                <span>Snapshots will be restored when the app is started.</span>\n            </li>\n        ";
-  }
-
-function program9(depth0,data) {
-  
-  
-  return "\n            <li>\n                Auto Scaling Group will be deleted.\n                <span>Auto Scaling Group will be recreated when the app is started.</span>\n            </li>\n        ";
-  }
-
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n<div class=\"estimate-stop clearfix\">\n    <div>\n        <span class=\"title\">Estimated Cost When Stopped</span>\n        <span class=\"price\" id=\"label-total-fee\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b> / month</span>\n    </div>\n    <div class=\"hide\">\n        <span class=\"title\">Saving Compared to Running App</span>\n        <span class=\"price\" id=\"label-total-saving\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b>/ month</span>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -1502,118 +1379,15 @@ TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)";
+
+  buffer += "<section class=\"disconnected-msg\">\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONNECTION_LOST_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CHANGES_MAY_NOT_BE_SAVED", {hash:{},data:data}))
+    + "</div>\n</section>";
   return buffer;
-  }
-function program2(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<p>DB Instance\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cantStop), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    cannot take final snapshot.</p>\n<p>Wait for the DB instance(s) to be available. Then try to stop the app again.</p>";
-  return buffer;
-  };
-TEMPLATE.cantStop=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
-    + "</p>\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n    <div><input class=\"input\" style=\"width:430px;\" id=\"appNameConfirmIpt\"/></div>\n";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n    <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_LEFT", {hash:{},data:data}))
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_RIGHT", {hash:{},data:data}))
-    + "</div></div>\n";
-  return buffer;
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <section class=\"check-final-snapshot checkbox-wrap\">\n        <div class=\"checkbox\">\n            <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n            <label for=\"take-rds-snapshot\"></label>\n        </div>\n        <label for=\"take-rds-snapshot\">Take final snapshot for DB instances.</label>\n    </section>\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  return buffer;
-  }
-function program6(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n        <p class=\"cant-snapshot\">DB Instance\n            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            cannot take final snapshot.</p>\n    ";
-  return buffer;
-  }
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<div class=\"confirm-padding\">\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
-  return buffer;
-  };
-TEMPLATE.terminateAppConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<section class=\"disconnected-msg\">\n  <div>Connection lost. Attempting to reconnect…</div>\n  <div>Changes made now may not be saved.</div>\n</section>";
   };
 TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 
@@ -1621,15 +1395,17 @@ TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>Force to delete app</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">The app "
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " failed to terminate. Do you want to force deleting it? After force deleting it, you need to manually manage the resource in aws console.</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DELETE_STACK", {hash:{},data:data}))
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE_CONTENT", (depth0 && depth0.name), {hash:{},data:data}))
+    + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -1672,7 +1448,7 @@ return TEMPLATE; });
         if (App.canQuit()) {
           return void 0;
         } else {
-          return lang.ide.BEFOREUNLOAD_MESSAGE;
+          return lang.IDE.BEFOREUNLOAD_MESSAGE;
         }
       },
       globalKeyEvent: function(event) {
@@ -1759,7 +1535,7 @@ return TEMPLATE; });
           model.terminate(true).fail(function(err) {
             var error;
             error = err.awsError ? err.error + "." + err.awsError : err.error;
-            return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
+            return notification(sprintf(lang.NOTIFY.ERROR_FAILED_TERMINATE, name, error));
           });
         });
       }
@@ -3742,7 +3518,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant) {
+  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "underscore", "i18n!/nls/lang.js"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant, lang) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -3759,7 +3535,7 @@ return TEMPLATE; });
       this.model = new ApplicationModel();
       this.__view = new ApplicationView();
       fetchModel = this.model.fetch().fail(function(err) {
-        notification("Cannot load application data. Please reload your browser.");
+        notification(lang.NOTIFY.CANNOT_LOAD_APPLICATION_DATA);
         throw err;
       });
       return Q.all([this.user.fetch(), fetchModel]);
