@@ -10361,7 +10361,11 @@
               compo.resource.Endpoint.Address = "";
               compo.resource.PreferredBackupWindow = "";
               compo.resource.PreferredMaintenanceWindow = "";
-              _results.push(compo.resource.MasterUserPassword = "12345678");
+              if (compo.resource.ReadReplicaSourceDBInstanceIdentifier) {
+                _results.push(compo.resource.MasterUserPassword = "****");
+              } else {
+                _results.push(compo.resource.MasterUserPassword = "12345678");
+              }
             } else {
               level2DBComp.resource.BackupRetentionPeriod = 0;
               _results.push(delete components[compo.uid]);
