@@ -9037,6 +9037,9 @@
           if (dbModel.category() === 'instance' && dbModel.get('appId')) {
             return false;
           }
+          if (that.category() === 'replica' && !that.get('appId')) {
+            return false;
+          }
           return true;
         });
       },
@@ -9721,7 +9724,9 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           slave = _ref[_i];
           if (!slave.get("appId")) {
-            slave.remove();
+            if (slave !== this) {
+              slave.remove();
+            }
           }
         }
         _ref1 = this.getAllRestoreDB();
