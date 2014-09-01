@@ -3417,10 +3417,7 @@ return TEMPLATE; });
           if (success.length === 1) {
             notification('info', "" + (success[0].get('Name')) + " is deleted.");
           } else if (success.length > 1) {
-            notification('info', "Selected " + success.length + " SNS topic are deleted.");
-          }
-          if (!that.model.get('keys').length) {
-            that.M$('#kp-select-all').get(0).checked = false;
+            notification('info', "Selected " + success.length + " SSL Certificate are deleted.");
           }
           return _.each(error, function(s) {
             return console.log(s);
