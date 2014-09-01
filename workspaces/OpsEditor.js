@@ -8912,7 +8912,15 @@ return TEMPLATE; });
         }
       },
       replicate: function(evt) {
+        var appData, backup, _ref;
         if (!this.canvas.design.modeIsApp() && this.model.slaves().length < 5) {
+          appData = CloudResources(this.model.type, this.model.design().region()).get(this.model.get("appId"));
+          if (appData) {
+            backup = ((_ref = appData.get('BackupRetentionPeriod')) !== 0 && _ref !== '0');
+          }
+          if (this.model.autobackup() && this.model.get('appId') && !backup) {
+            return false;
+          }
           this.canvas.dragItem(evt, {
             onDrop: this.onDropReplicate
           });
@@ -9005,6 +9013,9 @@ return TEMPLATE; });
           }), 0);
           if (this.model.master()) {
             svgEl.add(svg.plain("REPLICA").move(45, 60).classes("replica-text"));
+            svgEl.add(svg.use("replica_dragger").attr({
+              "class": "dbreplicate tooltip"
+            }));
           } else {
             svgEl.add(svg.plain("MASTER").move(45, 60).classes("master-text"));
             svgEl.add(svg.use("replica_dragger").attr({
@@ -9023,20 +9034,38 @@ return TEMPLATE; });
         return svgEl;
       },
       render: function() {
-        var $r, appData, enableRestore, m, penddingObj, tip;
+        var $r, appData, backup, m, penddingObj, tip, _ref, _ref1, _ref2;
         m = this.model;
         CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children(".type-image"), this.typeIcon(), "href");
         CanvasManager.update(this.$el.children(".engine-image"), this.engineIcon(), "href");
         CanvasManager.toggle(this.$el.children(".master-text"), m.design().modeIsApp() && m.slaves().length);
-        if (m.get('engine') === constant.DB_ENGINE.MYSQL && m.category() !== 'replica') {
+        if (m.get('engine') === constant.DB_ENGINE.MYSQL) {
           $r = this.$el.children(".dbreplicate");
-          CanvasManager.toggle($r, m.autobackup() !== 0);
-          if (this.model.slaves().length < 5) {
-            tip = "Drag to create a read replica.";
+          appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
+          if (appData) {
+            backup = ((_ref = appData.get('BackupRetentionPeriod')) !== 0 && _ref !== '0');
+          }
+          if (m.slaves().length < 5) {
             CanvasManager.removeClass($r, "disabled");
+            if (m.autobackup()) {
+              tip = "Drag to create a read replica.";
+              if (m.category() === 'replica' && m.master() && m.master().master()) {
+                CanvasManager.toggle($r, false);
+              } else {
+                CanvasManager.toggle($r, true);
+                if (m.get('appId') && !backup) {
+                  tip = "Please wait Automatic Backup to be enabled to create read replica.";
+                  CanvasManager.addClass($r, "disabled");
+                }
+              }
+            } else {
+              tip = "Drag to create a read replica.";
+              CanvasManager.toggle($r, false);
+            }
           } else {
             tip = "Cannot create more read replica.";
+            CanvasManager.toggle($r, true);
             CanvasManager.addClass($r, "disabled");
           }
           CanvasManager.update($r, tip, "tooltip");
@@ -9045,16 +9074,13 @@ return TEMPLATE; });
           }
         }
         $r = this.$el.children(".dbrestore");
-        enableRestore = m.autobackup() !== 0 && !!m.get("appId");
-        CanvasManager.toggle($r, enableRestore);
-        if (enableRestore) {
-          CanvasManager.update($r, 'Drag to restore to point in time', "tooltip");
-        }
+        CanvasManager.toggle($r, !!m.get("appId"));
+        CanvasManager.update($r, 'Drag to restore to point in time', "tooltip");
         appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
         if (appData) {
           penddingObj = appData.get('PendingModifiedValues');
-          if ((appData.get('BackupRetentionPeriod') === 0) || (penddingObj && penddingObj.BackupRetentionPeriod === 0)) {
-            CanvasManager.toggle(this.$el.children(".dbrestore"), false);
+          if (((_ref1 = appData.get('BackupRetentionPeriod')) === 0 || _ref1 === '0') || (penddingObj && ((_ref2 = penddingObj.BackupRetentionPeriod) === 0 || _ref2 === '0'))) {
+            CanvasManager.toggle($r, false);
           }
         }
         this.updateState();
@@ -9069,7 +9095,7 @@ return TEMPLATE; });
           return;
         }
         if (option && ((_ref = option.cloneSource) != null ? _ref.master() : void 0)) {
-          if (option.cloneSource.master().slaves().length >= 5) {
+          if (option.cloneSource.master().slaves().length > 5) {
             notification("error", "Cannot create more read replica.");
             return;
           } else {

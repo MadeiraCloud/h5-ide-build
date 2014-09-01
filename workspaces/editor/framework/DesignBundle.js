@@ -9028,11 +9028,17 @@
       slaveIndependentAttr: "id|appId|x|y|width|height|name|accessible|createdBy|instanceId|instanceClass|autoMinorVersionUpgrade|accessible|backupRetentionPeriod|multiAz|password|__connections|__parent",
       sourceDbIndependentAttrForRestore: "id|appId|x|y|width|height|name|accessible|createdBy|instanceId|instanceClass|autoMinorVersionUpgrade|multiAz|__connections|__parent|license|iops|port|ogName|pgName|az",
       slaves: function() {
-        if (this.master()) {
+        var that;
+        that = this;
+        if (this.master() && this.master().master()) {
           return [];
-        } else {
-          return this.connectionTargets("DbReplication");
         }
+        return _.filter(this.connectionTargets("DbReplication"), function(dbModel) {
+          if (dbModel.category() === 'instance' && dbModel.get('appId')) {
+            return false;
+          }
+          return true;
+        });
       },
       getAllRestoreDB: function() {
         var dbModels, srcDb, that;
@@ -9070,18 +9076,21 @@
         }
       },
       setMaster: function(master) {
-        var Replication, _ref;
-        if ((_ref = this.connections("DbReplication")[0]) != null) {
-          _ref.remove();
-        }
+        var Replication;
+        this.unsetMaster();
         Replication = Design.modelClassForType("DbReplication");
         new Replication(master, this);
         this.listenTo(master, 'change', this.syncMasterAttr);
         return null;
       },
       unsetMaster: function() {
-        var _ref;
-        return (_ref = this.connections("DbReplication")[0]) != null ? _ref.remove() : void 0;
+        var that;
+        that = this;
+        return _.each(this.connections("DbReplication"), function(connection) {
+          if (connection.slave() === that) {
+            return connection.remove();
+          }
+        });
       },
       setSourceDBForRestore: function(sourceDb) {
         var SgAsso, defaultSg;
@@ -9684,7 +9693,7 @@
       },
       isRemovable: function() {
         var allRestoreDB, dbNameAry, result;
-        if (this.slaves().length > 0) {
+        if (this.slaves(true).length > 0) {
           if (!this.get("appId")) {
             result = sprintf(lang.ide.CVS_CFM_DEL_NONEXISTENT_DBINSTANCE, this.get("name"));
             result = "<div class='modal-text-major'>" + result + "</div>";

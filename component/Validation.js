@@ -39,7 +39,7 @@
       elb: ['isSSLCertExist'],
       asg: ['isTopicNonexist'],
       vpc: ['isVPCUsingNonexistentDhcp'],
-      og: ['unusedOgWontCreate', 'isOGExeedCountLimit']
+      og: ['isOGExeedCountLimit']
     }
   });
 
@@ -3464,7 +3464,6 @@ This file use for validate component about state.
       }
     };
     return {
-      unusedOgWontCreate: unusedOgWontCreate,
       isOGExeedCountLimit: isOGExeedCountLimit
     };
   });

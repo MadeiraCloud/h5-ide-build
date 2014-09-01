@@ -15867,13 +15867,16 @@ function program77(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(78, program78, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">Backup Options</div>\n    <div class=\"option-group\">\n\n        <section class=\"property-control-group tooltip\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(80, program80, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.program(82, program82, data),fn:self.program(80, program80, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-auto-backup-check\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-dbinstance-auto-backup-check\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(82, program82, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(85, program85, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                <label for=\"property-dbinstance-auto-backup-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-auto-backup-check\">Enable Automatic Backups</label>\n        </section>\n\n        <div id=\"property-dbinstance-auto-backup-group\" class=\"";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
@@ -15884,10 +15887,10 @@ function program77(depth0,data) {
   buffer += "\" >\n                <label>Backup Retention Period</label>\n                <input class=\"input shorter-input\" title=\"hours\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.backupRetentionPeriod)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"property-dbinstance-backup-period\" type=\"text\" data-type=\"digits\" data-min=\"1\" data-max=\"35\" data-ignore=\"true\">\n                <label class=\"property-label-right\" for=\"property-dbinstance-backup-period\">day(s)</label>\n            </section>\n\n            <section id=\"property-dbinstance-backup-window-select\" class=\"property-control-group\">\n                <label>Backup Window</label>\n                <div class=\"property-dbinstance-radio-group\">\n                    <div class=\"radio\">\n                        <input id=\"property-dbinstance-backup-radio-no\" name=\"property-dbinstance-backup-radio\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"no\">\n                        <label for=\"property-dbinstance-backup-radio-no\"></label>\n                    </div>\n                    <label for=\"property-dbinstance-backup-radio-no\">No Preference</label>\n                </div>\n                <div class=\"property-dbinstance-radio-group\">\n                    <div class=\"radio\">\n                        <input id=\"property-dbinstance-backup-radio-window\" name=\"property-dbinstance-backup-radio\" type=\"radio\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"window\">\n                        <label for=\"property-dbinstance-backup-radio-window\"></label>\n                    </div>\n                    <label for=\"property-dbinstance-backup-radio-window\">Select Window</label>\n                </div>\n            </section>\n\n            <section id=\"property-dbinstance-backup-window-group\" class=\"";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
@@ -15895,16 +15898,16 @@ function program77(depth0,data) {
   buffer += " property-control-group\">\n                <section class=\"property-control-group\">\n                    <label>Start Time:</label>\n                    <input class=\"input shorter-input\" type=\"text\" id=\"property-dbinstance-backup-window-start-time\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.backup)),stack1 == null || stack1 === false ? stack1 : stack1.startTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\n                    <label>UTC</label>\n                </section>\n                <section class=\"property-control-group\">\n                    <label>Duration:</label>\n                    <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-backup-window-duration\">\n                        <div class=\"selection\"></div>\n                        <ul class=\"dropdown\">\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.backupDurations), {hash:{},inverse:self.noop,fn:self.program(86, program86, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.backupDurations), {hash:{},inverse:self.noop,fn:self.program(89, program89, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </ul>\n                    </div>\n                    <label for=\"property-dbinstance-maintenance-window-duration\">hour(s)</label>\n                </section>\n            </section>\n\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originBackupWindow), {hash:{},inverse:self.noop,fn:self.program(88, program88, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originBackupWindow), {hash:{},inverse:self.noop,fn:self.program(91, program91, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n\n        </div>\n    </div>\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(90, program90, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(93, program93, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(95, program95, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(98, program98, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
   return buffer;
@@ -15923,17 +15926,30 @@ function program80(depth0,data) {
 
 function program82(depth0,data) {
   
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(83, program83, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program83(depth0,data) {
+  
+  
+  return "data-tooltip=\"DB Backups not supported on a read replica running a mysql version before 5.6\"";
+  }
+
+function program85(depth0,data) {
+  
   
   return "disabled checked";
   }
 
-function program84(depth0,data) {
+function program87(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program86(depth0,data) {
+function program89(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <li class=\"item ";
@@ -15947,7 +15963,7 @@ function program86(depth0,data) {
   return buffer;
   }
 
-function program88(depth0,data) {
+function program91(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <section class=\"property-control-group\">\n                <label>Current Backup Window: "
@@ -15956,14 +15972,14 @@ function program88(depth0,data) {
   return buffer;
   }
 
-function program90(depth0,data) {
+function program93(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <div class=\"option-group-head\">Maintenance Options</div>\n    <div class=\"option-group\">\n\n        <section id=\"property-dbinstance-maintenance-window-select\" class=\"property-control-group\">\n            <label>Maintenance Window</label>\n            <div class=\"property-dbinstance-radio-group\">\n                <div class=\"radio\">\n                    <input id=\"property-dbinstance-maintenance-radio-no\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"no\">\n                    <label for=\"property-dbinstance-maintenance-radio-no\"></label>\n                </div>\n                <label for=\"property-dbinstance-maintenance-radio-no\">No Preference</label>\n            </div>\n            <div class=\"property-dbinstance-radio-group\">\n                <div class=\"radio\">\n                    <input id=\"property-dbinstance-maintenance-radio-window\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"window\">\n                    <label for=\"property-dbinstance-maintenance-radio-window\"></label>\n                </div>\n                <label for=\"property-dbinstance-maintenance-radio-window\">Select Window</label>\n            </div>\n        </section>\n\n        <section id=\"property-dbinstance-maintenance-window-group\" class=\"property-control-group ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
@@ -15971,15 +15987,15 @@ function program90(depth0,data) {
   buffer += "\">\n            <section class=\"property-control-group\" >\n                <label class=\"left\">Start Day</label>\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-start-day-select\">\n                    <div class=\"selection\">Monday</div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        <li class=\"item\" data-id=\"mon\">Monday</li>\n                        <li class=\"item\" data-id=\"tue\">Tuesday</li>\n                        <li class=\"item\" data-id=\"wed\">Wednesday</li>\n                        <li class=\"item\" data-id=\"thu\">Thursday</li>\n                        <li class=\"item\" data-id=\"fri\">Friday</li>\n                        <li class=\"item\" data-id=\"sat\">Saturday</li>\n                        <li class=\"item\" data-id=\"sun\">Sunday</li>\n                    </ul>\n                </div>\n            </section>\n            <section class=\"property-control-group\" >\n                <label>Start Time:</label>\n                <input class=\"input shorter-input\" type=\"text\" id=\"property-dbinstance-maintenance-window-start-time\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.maintenance)),stack1 == null || stack1 === false ? stack1 : stack1.startTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-required-rollback=\"true\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\n                <label>UTC</label>\n            </section>\n            <section class=\"property-control-group\" >\n                <label>Duration:</label>\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-duration\">\n                    <div class=\"selection\"></div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.maintenanceDurations), {hash:{},inverse:self.noop,fn:self.program(91, program91, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.maintenanceDurations), {hash:{},inverse:self.noop,fn:self.program(94, program94, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    </ul>\n                </div>\n                <label for=\"property-dbinstance-maintenance-window-duration\">hour(s)</label>\n            </section>\n\n        </section>\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(93, program93, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(96, program96, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </div>\n    ";
   return buffer;
   }
-function program91(depth0,data) {
+function program94(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <li class=\"item ";
@@ -15993,7 +16009,7 @@ function program91(depth0,data) {
   return buffer;
   }
 
-function program93(depth0,data) {
+function program96(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\">\n            <label>Current Maintenance Window: <br/>"
@@ -16002,25 +16018,25 @@ function program93(depth0,data) {
   return buffer;
   }
 
-function program95(depth0,data) {
+function program98(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "    \n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(97, program97, data),fn:self.program(96, program96, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(100, program100, data),fn:self.program(99, program99, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
   return buffer;
   }
-function program96(depth0,data) {
+function program99(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(99, program99, data),fn:self.program(97, program97, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(102, program102, data),fn:self.program(100, program100, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    \n    ";
   return buffer;
   }
-function program97(depth0,data) {
+function program100(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <div class=\"option-group-head\" id=\"sg-head\">"
@@ -16029,7 +16045,7 @@ function program97(depth0,data) {
   return buffer;
   }
 
-function program99(depth0,data) {
+function program102(depth0,data) {
   
   
   return "\n    ";
@@ -16806,9 +16822,13 @@ return TEMPLATE; });
         that = this;
         sourceDbModel = this.resModel.getSourceDBForRestore();
         sourceDbAppModel = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(sourceDbModel.get('appId'));
-        penddingObj = sourceDbAppModel.get('PendingModifiedValues');
-        noRestore = (!sourceDbAppModel.get('LatestRestorableTime')) || (sourceDbAppModel.get('BackupRetentionPeriod') === 0) || (penddingObj && penddingObj.BackupRetentionPeriod === 0);
-        if ((new Date(sourceDbAppModel.get('LatestRestorableTime'))) === 'Invalid Date') {
+        if (sourceDbAppModel) {
+          penddingObj = sourceDbAppModel.get('PendingModifiedValues');
+          noRestore = (!sourceDbAppModel.get('LatestRestorableTime')) || (sourceDbAppModel.get('BackupRetentionPeriod') === 0) || (penddingObj && penddingObj.BackupRetentionPeriod === 0);
+          if ((new Date(sourceDbAppModel.get('LatestRestorableTime'))) === 'Invalid Date') {
+            noRestore = true;
+          }
+        } else {
           noRestore = true;
         }
         if (noRestore) {
@@ -16992,15 +17012,17 @@ return TEMPLATE; });
           return differ.getChangeInfo().hasResChange;
         };
         if (e) {
-          return _.defer(function() {
-            if (diff()) {
-              $('.apply-immediately-section').show();
-              return $('.property-panel-wrapper').addClass('immediately');
-            } else {
-              $('.apply-immediately-section').hide();
-              return $('.property-panel-wrapper').removeClass('immediately');
-            }
-          });
+          if (!this.isPromoted()) {
+            return _.defer(function() {
+              if (diff()) {
+                $('.apply-immediately-section').show();
+                return $('.property-panel-wrapper').addClass('immediately');
+              } else {
+                $('.apply-immediately-section').hide();
+                return $('.property-panel-wrapper').removeClass('immediately');
+              }
+            });
+          }
         } else {
           return diff();
         }
@@ -17177,7 +17199,7 @@ return TEMPLATE; });
         return this.resModel.set('maintenanceWindow', timeStr);
       },
       getModelJSON: function() {
-        var attr, sourceDBForRestore;
+        var attr, sourceDBForRestore, _ref;
         attr = this.resModel.toJSON();
         if (this.isAppEdit) {
           attr.isAppEdit = this.isAppEdit;
@@ -17194,6 +17216,9 @@ return TEMPLATE; });
         if (sourceDBForRestore) {
           attr.isRestoreDB = true;
           attr.sourceDbIdForRestore = sourceDBForRestore.get('appId');
+        }
+        if (this.resModel.isMysql && this.resModel.master() && ((_ref = this.resModel.getMajorVersion()) === '5.1' || _ref === '5.5')) {
+          attr.disableBackupForOldMySQL = true;
         }
         return attr;
       },
@@ -17217,7 +17242,9 @@ return TEMPLATE; });
       },
       setPromote: function() {
         this.resModel.unsetMaster();
-        return this.resModel.autobackup(1);
+        if (!this.resModel.autobackup()) {
+          return this.resModel.autobackup(1);
+        }
       },
       unsetPromote: function() {
         var srcDBId, srcDBModel, _ref;
@@ -17306,7 +17333,7 @@ return TEMPLATE; });
         checkChange = this.checkChange.bind(this);
         changeApplyImmediately = this.changeApplyImmediately.bind(this);
         this.$el.find(".apply-immediately-section").insertAfter('header.property-sidebar-title').click(changeApplyImmediately).click(checkChange);
-        if (this.isAppEdit) {
+        if (this.isAppEdit && !this.isPromoted()) {
           $('.property-panel-wrapper').toggleClass('immediately', checkChange());
         }
         this.setTitle(attr.name);

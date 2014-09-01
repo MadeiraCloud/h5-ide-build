@@ -547,7 +547,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelDhcp',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelDhcp',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                           env:dev:end */
@@ -626,7 +626,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelKeypair',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelKeypair',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                              env:dev:end */
@@ -680,7 +680,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelSslcert',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelSslcert',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                              env:dev:end */
@@ -749,7 +749,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelTopic',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelTopic',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                            env:dev:end */
@@ -812,7 +812,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelSubscription',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelSubscription',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     var CrSubscriptionModel;
     CrSubscriptionModel = CrModel.extend({
 
@@ -892,7 +892,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelSnapshot',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+  define('cloudres/aws/CrModelSnapshot',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                               env:dev:end */
@@ -1003,7 +1003,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnSharedRes',["./CrCollection", "CloudResources", "ApiRequest", "constant", "./CrModelDhcp", "./CrModelKeypair", "./CrModelSslcert", "./CrModelTopic", "./CrModelSubscription", "./CrModelSnapshot"], function(CrCollection, CloudResources, ApiRequest, constant, CrDhcpModel, CrKeypairModel, CrSslcertModel, CrTopicModel, CrSubscriptionModel, CrSnapshotModel) {
+  define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "ApiRequest", "constant", "./CrModelDhcp", "./CrModelKeypair", "./CrModelSslcert", "./CrModelTopic", "./CrModelSubscription", "./CrModelSnapshot"], function(CrCollection, CloudResources, ApiRequest, constant, CrDhcpModel, CrKeypairModel, CrSslcertModel, CrTopicModel, CrSubscriptionModel, CrSnapshotModel) {
 
     /* Dhcp */
     CrCollection.extend({
@@ -1370,7 +1370,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelElb',["./CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelElb',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                          env:dev:end */
@@ -1406,7 +1406,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnCommonRes',["./CrCommonCollection", "./CrCollection", "./CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
+  define('cloudres/aws/CrClnCommonRes',["../CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
 
     /* Elb */
     CrCommonCollection.extend({
@@ -2284,7 +2284,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnOpsResource',["ApiRequest", "./CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+  define('cloudres/aws/CrClnOpsResource',["ApiRequest", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
 
     /* This Connection is used to fetch all the resource of an vpc */
     return CrCollection.extend({
@@ -2414,7 +2414,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnAmi',["ApiRequest", "./CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+  define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
     var INVALID_AMI_ID, MALFORM_AMI_ID, OS_TYPE_LIST, SQL_STANDARD_PATTERN, SQL_WEB_PATTERN, SpecificAmiCollection, fixDescribeImages, getOSFamily, getOSType;
     OS_TYPE_LIST = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'amazon', 'amzn'];
     SQL_WEB_PATTERN = /sql.*?web.*?/i;
@@ -2839,7 +2839,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelRdsSnapshot',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+  define('cloudres/aws/CrModelRdsSnapshot',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                                  env:dev:end */
@@ -2959,7 +2959,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelRdsInstance',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+  define('cloudres/aws/CrModelRdsInstance',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                                    env:dev:end */
@@ -2970,7 +2970,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrModelRdsPGroup',["./CrModel", "CloudResources", "ApiRequest", "constant"], function(CrModel, CloudResources, ApiRequest, constant) {
+  define('cloudres/aws/CrModelRdsPGroup',["../CrModel", "CloudResources", "ApiRequest", "constant"], function(CrModel, CloudResources, ApiRequest, constant) {
     return CrModel.extend({
 
       /* env:dev                                                   env:dev:end */
@@ -3057,7 +3057,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnRds',["ApiRequest", "./CrCollection", "constant", "CloudResources", "./CrModelRdsSnapshot", "./CrModelRdsInstance", "./CrModelRdsPGroup"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsSnapshotModel, CrRdsDbInstanceModel, CrRdsPGroupModel) {
+  define('cloudres/aws/CrClnRds',["ApiRequest", "../CrCollection", "constant", "CloudResources", "./CrModelRdsSnapshot", "./CrModelRdsInstance", "./CrModelRdsPGroup"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsSnapshotModel, CrRdsDbInstanceModel, CrRdsPGroupModel) {
 
     /* Engine */
     CrCollection.extend({
@@ -3383,7 +3383,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('cloudres/CrModelRdsParameter',["./CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+  define('cloudres/aws/CrModelRdsParameter',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
     return CrModel.extend({
 
       /* env:dev                                              env:dev:end */
@@ -3443,7 +3443,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrClnRdsParam',["ApiRequest", "./CrCollection", "constant", "CloudResources", "./CrModelRdsParameter"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsParamModel) {
+  define('cloudres/aws/CrClnRdsParam',["ApiRequest", "../CrCollection", "constant", "CloudResources", "./CrModelRdsParameter"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsParamModel) {
 
     /*
       This kind of collection can only be obtained by CrModelRdsPGroup.getParameters()
@@ -3512,12 +3512,12 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrBundle',["CloudResources", "./CrClnSharedRes", "./CrClnCommonRes", "./CrClnOpsResource", "./CrClnAmi", "./CrClnRds", "./CrClnRdsParam"], function(CloudResources) {
+  define('cloudres/CrBundle',["CloudResources", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnOpsResource", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam"], function(CloudResources) {
 
-    /* env:dev                                                         env:dev:end */
+    /* env:dev                                                             env:dev:end */
 
     /* env:debug */
-    require(["./cloudres/CloudImportVpc"], function() {});
+    require(["./cloudres/aws/CloudImportVpc"], function() {});
 
     /* env:debug:end */
     return CloudResources;
