@@ -32,26 +32,10 @@ TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_NAME", {hash:{},data:data}))
-    + "</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\" autofocus>\n    </div>\n    <div class=\"after-create hide\">";
-  stack1 = helpers.i18n.call(depth0, "PROP.KP_CREATED_NEED_TO_DOWNLAOD", {hash:{},data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DOWNLOAD", {hash:{},data:data}))
-    + "</a>\n        <button class=\"btn btn-silver cancel\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CLOSE", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
-  return buffer;
+  return "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <label for=\"create-kp-name\">Key Pair Name</label>\n        <input class=\"input\" type=\"text\" id=\"create-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\" autofocus>\n    </div>\n    <div class=\"after-create hide\">Key pair <span></span> is created. You have to download the private key file (*.pem file) before you can continue. Store it in a secure and accessible location. You will not be able to download the file again after it's created.</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
 
@@ -70,26 +54,16 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += escapeExpression(helpers.i18n.call(depth0, "PROP.KP_CONFIRM_DELETE_2", {hash:{},data:data}))
-    + " "
+  buffer += "selected "
     + escapeExpression(((stack1 = (depth0 && depth0.selectedCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_CONFIRM_DELETE_3", {hash:{},data:data}));
+    + " key pairs";
   return buffer;
   }
 
-  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_CONFIRM_DELETE_1", {hash:{},data:data}))
-    + " ";
+  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -98,23 +72,10 @@ TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"slide-import\" data-bind=\"true\">\n    <label for=\"import-kp-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_NAME", {hash:{},data:data}))
-    + "</label>\n    <input class=\"input\" type=\"text\" id=\"import-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    <div class=\"import-zone\">\n\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_IMPORT", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"ready action\" style=\"display:none;\">\n        <button class=\"btn btn-blue do-action\" data-action=\"import\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_IMPORT", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_IMPORTING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
-  return buffer;
+  return "<div class=\"slide-import\" data-bind=\"true\">\n    <label for=\"import-kp-name\">Key Pair Name</label>\n    <input class=\"input\" type=\"text\" id=\"import-kp-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"allow alphanumber, _ or - up to 255 characters\">\n    <div class=\"import-zone\">\n\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn\" disabled>Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"ready action\" style=\"display:none;\">\n        <button class=\"btn btn-blue do-action\" data-action=\"import\">Import</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Importing...</button>\n    </div>\n</div>";
   };
 TEMPLATE.slide_import=Handlebars.template(__TEMPLATE__);
 
@@ -127,13 +88,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"upload-kp-component drop-zone\">\n    <p class=\"upload-stuff\">\n        Drop "
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_SELECT_A_FILE", {hash:{},data:data}))
-    + "</label>\n        <span class=\"display-empty\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_OR_PASTE_KEY_CONTENT", {hash:{},data:data}))
-    + "</span>\n        <span class=\"display-filled\" style=\"display:none;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_OR_PASTE_TO_UPDATE", {hash:{},data:data}))
-    + "</span>\n        <input type=\"file\" id=\"modal-import\">\n    </p>\n    <p class=\"key-content\"></p>\n</div>";
+    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">select a file</label>\n        <span class=\"display-empty\">or paste the key content here.</span>\n        <span class=\"display-filled\" style=\"display:none;\">or paste the key content again to update.</span>\n        <input type=\"file\" id=\"modal-import\">\n    </p>\n    <p class=\"key-content\"></p>\n</div>";
   return buffer;
   };
 TEMPLATE.upload=Handlebars.template(__TEMPLATE__);
@@ -258,7 +213,7 @@ return TEMPLATE; });
           }
         } else {
           if (this.__needDownload) {
-            notification('warning', lang.NOTIFY.YOU_MUST_DOWNLOAD_THE_KEYPAIR);
+            notification('warning', 'You must download the keypair.');
           }
         }
         return this.__needDownload;
@@ -284,16 +239,16 @@ return TEMPLATE; });
             {
               icon: 'new-stack',
               type: 'create',
-              name: lang.IDE.COMPONENT_CREATE_KEYPAIR
+              name: 'Create Key Pair'
             }, {
               icon: 'import',
               type: 'import',
-              name: lang.IDE.COMPONENT_IMPORT_KEY_PAIR
+              name: 'Import Key Pair'
             }, {
               icon: 'del',
               type: 'delete',
               disabled: true,
-              name: lang.IDE.COMPONENT_DELETE_KEY_PAIR
+              name: 'Delete'
             }, {
               icon: 'refresh',
               type: 'refresh',
@@ -304,10 +259,10 @@ return TEMPLATE; });
             {
               sortable: true,
               width: "40%",
-              name: lang.IDE.COMPONENT_KEY_PAIR_COL_NAME
+              name: 'Name'
             }, {
               sortable: false,
-              name: lang.IDE.COMPONENT_KEY_PAIR_COL_FINGERPRINT
+              name: 'Fingerprint'
             }
           ]
         };
@@ -422,9 +377,9 @@ return TEMPLATE; });
           that.cancel();
           if (success.length === 1) {
             console.debug(success);
-            sprintf(lang.NOTIFY.XXX_IS_DELETED, success[0].attributes.keyName);
+            notification('info', "" + success[0].attributes.keyName + " is deleted.");
           } else if (success.length > 1) {
-            notification('info', sprintf(lang.NOTIFY.SELECTED_KEYPAIRS_ARE_DELETED, success.length));
+            notification('info', "Selected " + success.length + " key pairs are deleted.");
           }
           if (!that.collection.toJSON().length) {
             that.M$('#t-m-select-all').get(0).checked = false;
@@ -499,7 +454,7 @@ return TEMPLATE; });
             keyName: keyName,
             keyData: keyContent
           }).save().then(function(res) {
-            notification('info', sprintf(lang.NOTIFY.XXX_IS_IMPORTED(keyName)));
+            notification('info', "" + keyName + " is imported.");
             return that.cancel();
           }, function(err) {
             var msg;
@@ -617,7 +572,7 @@ function program7(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <i class=\"icon-info tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TIP_NO_KP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_NO_KP", {hash:{},data:data}))
     + "\"></i>\n    ";
   return buffer;
   }
@@ -644,9 +599,9 @@ function program1(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noKey), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" tabindex=\"-1\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NO_KP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_NO_KP", {hash:{},data:data}))
     + "\n        <i class=\"icon-info tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TIP_NO_KP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_NO_KP", {hash:{},data:data}))
     + "\"></i>\n    </li>\n";
   return buffer;
   }
@@ -657,9 +612,9 @@ function program2(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.defaultKey), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" tabindex=\"-1\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_DEFAULT_KP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_DEFAULT_KP", {hash:{},data:data}))
     + "\n        <i class=\"icon-info tooltip\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TIP_DEFAULT_KP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_INSTANCE_TIP_DEFAULT_KP", {hash:{},data:data}))
     + "'></i>\n    </li>\n    ";
   return buffer;
   }
@@ -754,8 +709,8 @@ return TEMPLATE; });
       initDropdown: function() {
         var options;
         options = {
-          manageBtnValue: lang.PROP.INSTANCE_MANAGE_KP,
-          filterPlaceHolder: lang.PROP.INSTANCE_FILTER_KP
+          manageBtnValue: lang.ide.PROP_INSTANCE_MANAGE_KP,
+          filterPlaceHolder: lang.ide.PROP_INSTANCE_FILTER_KP
         };
         this.dropdown = new comboDropdown(options);
         this.dropdown.on('open', this.show, this);
@@ -878,13 +833,10 @@ define('component/sns/snsTpl',['handlebars'], function(Handlebars){ var __TEMPLA
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<span>"
-    + escapeExpression(helpers.i18n.call(depth0, "NONE", {hash:{},data:data}))
-    + "</span>";
-  return buffer;
+  return "<span>None</span>";
   };
 TEMPLATE.dropdown_no_selection=Handlebars.template(__TEMPLATE__);
 
@@ -953,9 +905,7 @@ function program1(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "><b>"
     + escapeExpression(((stack1 = (depth0 && depth0.subCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b> "
-    + escapeExpression(helpers.i18n.call(depth0, "SUBSCRIPTIONS", {hash:{},data:data}))
-    + "</td>\n</tr>\n";
+    + "</b> Subscriptions</td>\n</tr>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -989,34 +939,10 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <div>\n          <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SELECT_TOPIC", {hash:{},data:data}))
-    + "</label>\n            <div class=\"selectbox dd-topic-name\">\n                <div class=\"selection\">"
-    + escapeExpression(helpers.i18n.call(depth0, "NEW_TOPIC", {hash:{},data:data}))
-    + "</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                  <li class=\"item selected new-topic\" data-id=\"@new\">"
-    + escapeExpression(helpers.i18n.call(depth0, "NEW_TOPIC", {hash:{},data:data}))
-    + "</li>\n                  ";
+  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <div>\n          <label>Select Topic</label>\n            <div class=\"selectbox dd-topic-name\">\n                <div class=\"selection\">New Topic</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                  <li class=\"item selected new-topic\" data-id=\"@new\">New Topic</li>\n                  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOPIC_NAME", {hash:{},data:data}))
-    + "</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "DISPLAY_NAME", {hash:{},data:data}))
-    + "</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "ACL_TIP_PROTOCOL", {hash:{},data:data}))
-    + "</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ENDPOINT", {hash:{},data:data}))
-    + "</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" placeholder=\"example@mail.com\" data-event-trigger=\"false\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATING_3PERIOD", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DOWNLOAD", {hash:{},data:data}))
-    + "</a>\n        <button class=\"btn btn-silver cancel\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CLOSE", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">Topic Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">Display Name</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label>Protocol</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">Endpoint</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" placeholder=\"example@mail.com\" data-event-trigger=\"false\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Creating...</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">Download</a>\n        <button class=\"btn btn-silver cancel\" disabled>Close</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -1047,13 +973,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " and all associated subscriptions?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "DELETING_3PERIOD", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += " and all associated subscriptions?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -1084,21 +1004,11 @@ function program2(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n                    <a class=\"icon-delete remove\"></a>\n                    <div class=\"do-remove-panel\">\n                        <button class=\"btn btn-blue btn-small do-remove\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.SubscriptionArn)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n                        <button class=\"btn btn-link btn-small cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n                    </div>\n                ";
+    + "\">Delete</button>\n                        <button class=\"btn btn-link btn-small cancel\">Cancel</button>\n                    </div>\n                ";
   return buffer;
   }
 
-  buffer += "<table class=\"table sns-detail\">\n    <thead>\n        <tr>\n            <th style=\"width: 48px;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ACL_TIP_PROTOCOL", {hash:{},data:data}))
-    + "</th>\n            <th>"
-    + escapeExpression(helpers.i18n.call(depth0, "Endpoint", {hash:{},data:data}))
-    + "</th>\n            <th style=\"wdith: 30%;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SUBSCRIPTION_ARN", {hash:{},data:data}))
-    + "</th>\n            <th style=\"width: 103px;\"></th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
+  buffer += "<table class=\"table sns-detail\">\n    <thead>\n        <tr>\n            <th style=\"width: 48px;\">Protocol</th>\n            <th>Endpoint</th>\n            <th style=\"wdith: 30%;\">Subscription ARN</th>\n            <th style=\"width: 103px;\"></th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </tbody>\n</table>";
@@ -1110,14 +1020,12 @@ TEMPLATE.detail=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"combo-dd-no-data\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "NO_SNS_TOPIC_IN_XXX", (depth0 && depth0.regionName), {hash:{},data:data}))
-    + "</p>\n\n    <a class=\"create-one\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATE_SNS_TOPIC", {hash:{},data:data}))
-    + "</a>\n</div>";
+  buffer += "<div class=\"combo-dd-no-data\">\n    <p>No SNS Topic in "
+    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</p>\n    <a class=\"create-one\">Create SNS Topic</a>\n</div>";
   return buffer;
   };
 TEMPLATE.nosns=Handlebars.template(__TEMPLATE__);
@@ -1251,7 +1159,7 @@ return TEMPLATE; });
           SubscriptionArn: subId
         });
         return m != null ? m.destroy().then(function(deletedModel) {
-          notification('info', lang.NOTIFY.REMOVE_SUBSCRIPTION_SUCCEED);
+          notification('info', "Remove Subscription Succeed.");
           return deletedModel;
         }).fail(function(err) {
           notification('error', err.awsResult);
@@ -1287,9 +1195,9 @@ return TEMPLATE; });
         finHandler = _.after(times, function() {
           that.modal.cancel();
           if (success.length === 1) {
-            notification('info', sprintf(lang.NOTIFY.XXX_IS_DELETED, success[0].get('Name')));
+            notification('info', "" + (success[0].get('Name')) + " is deleted.");
           } else if (success.length > 1) {
-            notification('info', sprintf(lang.NOTIFY.SELECTED_XXX_SNS_TOPIC_ARE_DELETED, success.length));
+            notification('info', "Selected " + success.length + " SNS topic are deleted.");
           }
           if (!error.length) {
             that.modal.unCheckSelectAll();
@@ -1329,7 +1237,7 @@ return TEMPLATE; });
             Protocol: protocol
           }).save().then(function(newSub) {
             that.processSubCreate(newSub);
-            notification('info', lang.NOTIFY.CREATE_SUBSCRIPTION_SUCCEED);
+            notification('info', 'Create Subscription Succeed');
             return that.modal.cancel();
           }).fail(function(awsError) {
             return that.errorHandler(awsError);
@@ -1440,39 +1348,39 @@ return TEMPLATE; });
               selectedProto = that.M$('.dd-protocol .selected').data('id');
               switch (selectedProto) {
                 case "sqs":
-                  placeholder = lang.PROP.STACK_AMAZON_ARN;
-                  type = lang.PROP.STACK_SQS;
-                  errorMsg = lang.PARSLEY.PLEASE_PROVIDE_A_VALID_AMAZON_SQS_ARN;
+                  placeholder = lang.ide.PROP_STACK_AMAZON_ARN;
+                  type = lang.ide.PROP_STACK_SQS;
+                  errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_AMAZON_SQS_ARN;
                   break;
                 case "arn":
-                  placeholder = lang.PROP.STACK_AMAZON_ARN;
-                  type = lang.PROP.STACK_ARN;
-                  errorMsg = lang.PARSLEY.PLEASE_PROVIDE_A_VALID_APPLICATION_ARN;
+                  placeholder = lang.ide.PROP_STACK_AMAZON_ARN;
+                  type = lang.ide.PROP_STACK_ARN;
+                  errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_APPLICATION_ARN;
                   break;
                 case "email":
-                  placeholder = lang.PROP.STACK_EXAMPLE_EMAIL;
-                  type = lang.PROP.STACK_EMAIL;
-                  errorMsg = lang.IDE.HEAD_MSG_ERR_UPDATE_EMAIL3;
+                  placeholder = lang.ide.PROP_STACK_EXAMPLE_EMAIL;
+                  type = lang.ide.PROP_STACK_EMAIL;
+                  errorMsg = lang.ide.HEAD_MSG_ERR_UPDATE_EMAIL3;
                   break;
                 case "email-json":
-                  placeholder = lang.PROP.STACK_EXAMPLE_EMAIL;
-                  type = lang.PROP.STACK_EMAIL;
-                  errorMsg = lang.IDE.HEAD_MSG_ERR_UPDATE_EMAIL3;
+                  placeholder = lang.ide.PROP_STACK_EXAMPLE_EMAIL;
+                  type = lang.ide.PROP_STACK_EMAIL;
+                  errorMsg = lang.ide.HEAD_MSG_ERR_UPDATE_EMAIL3;
                   break;
                 case "sms":
-                  placeholder = lang.PROP.STACK_E_G_1_206_555_6423;
-                  type = lang.PROP.STACK_USPHONE;
-                  errorMsg = lang.PARSLEY.PLEASE_PROVIDE_A_VALID_PHONE_NUMBER;
+                  placeholder = lang.ide.PROP_STACK_E_G_1_206_555_6423;
+                  type = lang.ide.PROP_STACK_USPHONE;
+                  errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_PHONE_NUMBER;
                   break;
                 case "http":
-                  placeholder = lang.PROP.STACK_HTTP_WWW_EXAMPLE_COM;
-                  type = lang.PROP.STACK_HTTP;
-                  errorMsg = lang.PARSLEY.PLEASE_PROVIDE_A_VALID_URL;
+                  placeholder = lang.ide.PROP_STACK_HTTP_WWW_EXAMPLE_COM;
+                  type = lang.ide.PROP_STACK_HTTP;
+                  errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_URL;
                   break;
                 case "https":
-                  placeholder = lang.PROP.STACK_HTTPS_WWW_EXAMPLE_COM;
-                  type = lang.PROP.STACK_HTTPS;
-                  errorMsg = lang.PARSLEY.PLEASE_PROVIDE_A_VALID_URL;
+                  placeholder = lang.ide.PROP_STACK_HTTPS_WWW_EXAMPLE_COM;
+                  type = lang.ide.PROP_STACK_HTTPS;
+                  errorMsg = lang.ide.PARSLEY_PLEASE_PROVIDE_A_VALID_URL;
               }
               endPoint = that.M$('#create-endpoint');
               endPoint.attr("placeholder", placeholder);
@@ -1606,8 +1514,8 @@ return TEMPLATE; });
       initDropdown: function() {
         var options;
         options = {
-          manageBtnValue: lang.PROP.INSTANCE_MANAGE_SNS,
-          filterPlaceHolder: lang.PROP.INSTANCE_FILTER_SNS,
+          manageBtnValue: lang.ide.PROP_INSTANCE_MANAGE_SNS,
+          filterPlaceHolder: lang.ide.PROP_INSTANCE_FILTER_SNS,
           classList: 'sns-dropdown'
         };
         this.dropdown = new comboDropdown(options);
@@ -1739,9 +1647,9 @@ function program1(depth0,data) {
   
   var buffer = "";
   buffer += "\n    "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_AUTO_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_AUTO_DHCP", {hash:{},data:data}))
     + "<i class=\"icon-info tooltip\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_AUTO_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_AUTO_DHCP", {hash:{},data:data}))
     + "'></i>\n";
   return buffer;
   }
@@ -1759,9 +1667,9 @@ function program4(depth0,data) {
   
   var buffer = "";
   buffer += "\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DEFAULT_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DEFAULT_DHCP", {hash:{},data:data}))
     + " <i class=\"icon-info tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_DEFAULT_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_DEFAULT_DHCP", {hash:{},data:data}))
     + "\"></i>\n    ";
   return buffer;
   }
@@ -1891,9 +1799,9 @@ function program1(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0['default']), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" tabindex=\"-1\">\n    "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DEFAULT_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DEFAULT_DHCP", {hash:{},data:data}))
     + "\n    <i class=\"icon-info tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_DEFAULT_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_DEFAULT_DHCP", {hash:{},data:data}))
     + "\"></i>\n</li>\n";
   return buffer;
   }
@@ -1904,9 +1812,9 @@ function program2(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.auto), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" tabindex=\"-1\">\n    "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_AUTO_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_AUTO_DHCP", {hash:{},data:data}))
     + "\n    <i class=\"icon-info tooltip\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_AUTO_DHCP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_AUTO_DHCP", {hash:{},data:data}))
     + "'></i>\n</li>\n";
   return buffer;
   }
@@ -1963,13 +1871,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -2002,11 +1904,11 @@ function program7(depth0,data) {
   
   var buffer = "";
   buffer += "\n                        <div class=\"multi-ipt-row\">\n                            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_UP_TO_4_DNS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_DNS", {hash:{},data:data}))
     + "\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" type=\"text\" maxlength=\"255\" placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_EG_172_16_16_16", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_EG_172_16_16_16", {hash:{},data:data}))
     + "\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n                        </div>\n                        ";
   return buffer;
   }
@@ -2015,9 +1917,9 @@ function program9(depth0,data) {
   
   var buffer = "";
   buffer += "\n                        <div class=\"multi-ipt-row\">\n                            <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                            <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_UP_TO_4_DNS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_DNS", {hash:{},data:data}))
     + "\"  placeholder=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_EG_172_16_16_16", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_EG_172_16_16_16", {hash:{},data:data}))
     + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n                        </div>\n                        ";
   return buffer;
   }
@@ -2026,7 +1928,7 @@ function program11(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"multi-ipt-row\">\n                        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                        <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_UP_TO_4_NTP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NTP", {hash:{},data:data}))
     + "\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n                    </div>\n                    ";
@@ -2037,7 +1939,7 @@ function program13(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"multi-ipt-row\">\n                        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                        <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_UP_TO_4_NTP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NTP", {hash:{},data:data}))
     + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n                    </div>\n                    ";
   return buffer;
   }
@@ -2046,7 +1948,7 @@ function program15(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"multi-ipt-row\">\n                        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                        <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_UP_TO_4_NETBIOS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NETBIOS", {hash:{},data:data}))
     + "\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n                    </div>\n                    ";
@@ -2057,7 +1959,7 @@ function program17(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <div class=\"multi-ipt-row\">\n                        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                        <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_UP_TO_4_NETBIOS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_UP_TO_4_NETBIOS", {hash:{},data:data}))
     + "\" type=\"text\" maxlength=\"255\" data-type=\"ipv4\" data-ignore=\"true\"></span>\n                    </div>\n                    ";
   return buffer;
   }
@@ -2065,7 +1967,7 @@ function program17(depth0,data) {
 function program19(depth0,data) {
   
   var stack1;
-  stack1 = helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE_NOT_SPECIFIED", {hash:{},data:data});
+  stack1 = helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE_NOT_SPECIFIED", {hash:{},data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
@@ -2090,16 +1992,16 @@ function program22(depth0,data) {
   }
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-dhcp-domain\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
     + "</label>\n                <div id=\"property-dhcp-domain\" class=\"multi-input\" data-max-row=\"100\">\n                    <div class=\"multi-ipt-row\">\n                        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                        <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_ENTER_THE_DOMAIN_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_ENTER_THE_DOMAIN_NAME", {hash:{},data:data}))
     + "\" type=\"text\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\"></span>\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div class=\"modal-right\" style=\"margin: 10px 0\">\n                        <div class=\"checkbox\">\n                            <input id=\"property-amazon-dns\" ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.amazonDNS), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "type=\"checkbox\">\n                            <label style=\"width: 14px\" for=\"property-amazon-dns\"></label>\n                        </div>\n                        <label for=\"property-amazon-dns\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_AMZN_PROVIDED_DNS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_AMZN_PROVIDED_DNS", {hash:{},data:data}))
     + "</label>\n                    </div>\n                    <div id=\"property-domain-server\" class=\"multi-input\" data-max-row=\"";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.amazonDNS), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -2107,32 +2009,26 @@ function program22(depth0,data) {
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.domainServers), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix\">\n                <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
     + "</label>\n                <div id=\"property-ntp-server\" class=\"multi-input\" data-max-row=\"4\">\n                    ";
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.ntpServers), {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix\">\n                <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NAME_SERVER", {hash:{},data:data}))
     + "</label>\n                <div id=\"property-netbios-server\" class=\"multi-input\" data-max-row=\"4\">\n                    ";
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosServers), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix\">\n                <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE", {hash:{},data:data}))
     + "</label>\n                <div class=\"selectbox selectbox-mega\" id=\"property-netbios-type\">\n                    <div class=\"selection tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIP_SELECT_NETBIOS_NODE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_VPC_TIP_SELECT_NETBIOS_NODE", {hash:{},data:data}))
     + "\">";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosType), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n                    <ul class=\"dropdown\" tabindex=\"-1\">\n                        ";
   stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.dhcp)),stack1 == null || stack1 === false ? stack1 : stack1.netbiosTypes), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                    </ul>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+  buffer += "\n                    </ul>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\">Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -2151,24 +2047,16 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"detail-info\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME", {hash:{},data:data}))
-    + "</label>\n            <div>";
+  buffer += "<div class=\"detail-info\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>Domain Name</label>\n            <div>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0['domain-name']), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_DOMAIN_NAME_SERVER", {hash:{},data:data}))
-    + "</label>\n            <div>";
+  buffer += "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Domain Name Server</label>\n            <div>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0['domain-name-servers']), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_NTP_SERVER", {hash:{},data:data}))
-    + "</label>\n            <div>";
+  buffer += "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>NTP Server</label>\n            <div>";
   stack1 = helpers.each.call(depth0, (depth0 && depth0['ntp-servers']), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </section>\n        <section class=\"property-control-group\">\n\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE", {hash:{},data:data}))
-    + "</label>\n            <div>"
+  buffer += "</div>\n        </section>\n        <section class=\"property-control-group\">\n\n            <label>NetBIOS Node Type</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0['netbios-node-type'])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n    </div>\n</div>";
   return buffer;
@@ -2220,8 +2108,8 @@ return TEMPLATE; });
           return this.renderManager();
         });
         option = {
-          manageBtnValue: lang.PROP.VPC_MANAGE_DHCP,
-          filterPlaceHolder: lang.PROP.VPC_FILTER_DHCP
+          manageBtnValue: lang.ide.PROP_VPC_MANAGE_DHCP,
+          filterPlaceHolder: lang.ide.PROP_VPC_FILTER_DHCP
         };
         this.dropdown = new comboDropdown(option);
         selection = template.selection({
@@ -2418,7 +2306,7 @@ return TEMPLATE; });
             data.dhcp.netbiosTypes = [
               {
                 id: "default",
-                value: lang.PROP.VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE_NOT_SPECIFIED,
+                value: lang.ide.PROP_VPC_DHCP_SPECIFIED_LBL_NETBIOS_NODE_TYPE_NOT_SPECIFIED,
                 selected: selectedType === 0
               }, {
                 id: 1,
@@ -2528,9 +2416,9 @@ return TEMPLATE; });
         }
         if (deleteCount === 0) {
           if (deleteErrorCount > 0) {
-            notification('error', sprintf(lang.NOTIFY.FAILED_TO_DELETE_DHCP, deleteErrorCount, result.awsResult));
+            notification('error', deleteErrorCount + (" DhcpOptions failed to delete because of: \"" + result.awsResult + "\""));
           } else {
-            notification('info', lang.NOTIFY.DELETE_SUCCESSFULLY);
+            notification('info', "Delete Successfully");
           }
           this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
@@ -2543,7 +2431,7 @@ return TEMPLATE; });
           this.switchAction();
           return false;
         }
-        notification('info', lang.NOTIFY.DHCP_CREATED_SUCCESSFULLY);
+        notification('info', "New DHCP Option is created successfully");
         return this.manager.cancel();
       },
       validate: function(action) {
@@ -2792,23 +2680,16 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += escapeExpression(helpers.i18n.call(depth0, "PROP.DELETE_SNAPSHOT_2", {hash:{},data:data}))
+  buffer += "selected "
     + escapeExpression(((stack1 = (depth0 && depth0.selectedCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DELETE_SNAPSHOT_3", {hash:{},data:data}));
+    + " Snapshot ";
   return buffer;
   }
 
-  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DELETE_SNAPSHOT_1", {hash:{},data:data}));
+  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -2821,18 +2702,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name-create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" data-ignore=\"true\" placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_VOLUME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_VOLUME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-volume-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc-create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id='property-snapshot-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -2845,28 +2720,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-duplicate\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-source\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SOURCE_SNAPSHOT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SOURCE_SNAPSHOT", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <p id=\"property-snapshot-source\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>\n                </div>\n            </div>\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "-copy\" data-ignore=\"true\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-snapshot-desc\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_DESC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_DESC", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id='property-snapshot-desc' class=\"input\" value=\"[Copied "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " from "
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DUPLICATE", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DUPLICATING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+    + "]\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>Duplicate</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Duplicating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
@@ -2902,11 +2771,11 @@ return TEMPLATE; });
       renderDropdown: function() {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_VOLUME
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
         this.volumes = CloudResources(constant.RESTYPE.VOL, Design.instance().region());
-        selection = lang.PROP.VOLUME_SNAPSHOT_SELECT;
+        selection = lang.ide.PROP_VOLUME_SNAPSHOT_SELECT;
         this.dropdown.setSelection(selection);
         this.dropdown.on('open', this.openDropdown, this);
         this.dropdown.on('filter', this.filterDropdown, this);
@@ -2916,11 +2785,11 @@ return TEMPLATE; });
       renderRegionDropdown: function() {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_REGION
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_REGION
         };
         this.regionsDropdown = new combo_dropdown(option);
         this.regions = _.keys(constant.REGION_LABEL);
-        selection = lang.PROP.VOLUME_SNAPSHOT_SELECT_REGION;
+        selection = lang.ide.PROP_VOLUME_SNAPSHOT_SELECT_REGION;
         this.regionsDropdown.setSelection(selection);
         this.regionsDropdown.on('open', this.openRegionDropdown, this);
         this.regionsDropdown.on('filter', this.filterRegionDropdown, this);
@@ -3168,25 +3037,25 @@ return TEMPLATE; });
       afterCreated: function(result, newSnapshot) {
         this.manager.cancel();
         if (result.error) {
-          notification('error', sprintf(lang.NOTIFY.CREATE_FAILED_BECAUSE_OF_XXX, result.msg));
+          notification('error', "Create failed because of: " + result.msg);
           return false;
         }
-        return notification('info', lang.NOTIFY.NEW_SNAPSHOT_IS_CREATED_SUCCESSFULLY);
+        return notification('info', "New Snapshot is created successfully!");
       },
       afterDuplicate: function(result) {
         var currentRegion;
         currentRegion = Design.instance().get('region');
         this.manager.cancel();
         if (result.error) {
-          notification('error', sprintf, lang.NOTIFY.DUPLICATE_FAILED_BECAUSE_OF_XXX, result.msg);
+          notification('error', "Duplicate failed because of: " + result.msg);
           return false;
         }
         if (result.attributes.region === currentRegion) {
           this.collection.add(result);
-          return notification('info', lang.NOTIFY.INFO_DUPLICATE_SNAPSHOT_SUCCESS);
+          return notification('info', "New Snapshot is duplicated successfully!");
         } else {
           this.initManager();
-          return notification('info', lang.NOTIFY.INFO_ANOTHER_REGION_DUPLICATE_SNAPSHOT_SUCCESS);
+          return notification('info', 'New Snapshot is duplicated to another region, you need to switch region to check the snapshot you just created.');
         }
       },
       afterDeleted: function(result) {
@@ -3196,9 +3065,9 @@ return TEMPLATE; });
         }
         if (deleteCount === 0) {
           if (deleteErrorCount > 0) {
-            notification('error', sprintf(lang.NOTIFY.XXX_SNAPSHOT_FAILED_TO_DELETE, deleteErrorCount));
+            notification('error', deleteErrorCount + " Snapshot failed to delete, Please try again later.");
           } else {
-            notification('info', lang.NOTIFY.INFO_DELETE_SNAPSHOT_SUCCESSFULLY);
+            notification('info', "Delete Successfully");
           }
           this.manager.unCheckSelectAll();
           deleteErrorCount = 0;
@@ -3362,20 +3231,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"modal-ssl-cert-create\">\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_LBL_LISTENER_CERT_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LBL_LISTENER_CERT_NAME", {hash:{},data:data}))
     + "</label>\n            <input placeholder=\"Required. Up to 128 characters\" class=\"input\" type=\"text\" data-required=\"true\" data-ignore=\"true\" id=\"ssl-cert-name-input\"/>\n        </div>\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_LBL_LISTENER_PRIVATE_KEY", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LBL_LISTENER_PRIVATE_KEY", {hash:{},data:data}))
     + "</label>\n            <textarea placeholder=\"Required. PEM Encoded\" class=\"input ssl-cert-input\" data-required=\"true\" id=\"ssl-cert-privatekey-input\"></textarea>\n        </div>\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\"  >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_LBL_LISTENER_PUBLIC_KEY", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LBL_LISTENER_PUBLIC_KEY", {hash:{},data:data}))
     + "</label>\n            <textarea placeholder=\"Required. PEM Encoded\" class=\"input ssl-cert-input\" data-required=\"true\" id=\"ssl-cert-publickey-input\"></textarea>\n        </div>\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\"  >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_LBL_LISTENER_CERTIFICATE_CHAIN", {hash:{},data:data}))
-    + "</label>\n            <textarea placeholder=\"Optional. PEM Encoded\" class=\"input ssl-cert-input\" id=\"ssl-cert-chain-input\"></textarea>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "UPLOAD", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "UPLOAD_3PERIOD", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_ELB_LBL_LISTENER_CERTIFICATE_CHAIN", {hash:{},data:data}))
+    + "</label>\n            <textarea placeholder=\"Optional. PEM Encoded\" class=\"input ssl-cert-input\" id=\"ssl-cert-chain-input\"></textarea>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Upload</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Upload...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -3406,13 +3269,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " ?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "DELETING_3PERIOD", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += " ?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -3421,20 +3278,12 @@ TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"slide-update\" data-bind=\"true\">\n    <div class=\"modal-ssl-cert-update\">\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ELB_LBL_LISTENER_CERT_NAME", {hash:{},data:data}))
-    + "</label>\n            <input class=\"input\" value=\""
+  buffer += "<div class=\"slide-update\" data-bind=\"true\">\n    <div class=\"modal-ssl-cert-update\">\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\">Certificate Name</label>\n            <input class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.cert_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"text\" data-required=\"true\" id=\"ssl-cert-name-update-input\"/>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"update\">"
-    + escapeExpression(helpers.i18n.call(depth0, "UPDATE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "UPDATING_3PERIOD", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+    + "\" type=\"text\" data-required=\"true\" id=\"ssl-cert-name-update-input\"/>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"update\">Update</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Updating...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_update=Handlebars.template(__TEMPLATE__);
@@ -3443,24 +3292,16 @@ TEMPLATE.slide_update=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"detail-info\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SERVER_CERTIFICATE_ID", {hash:{},data:data}))
-    + "</label>\n            <div>"
+  buffer += "<div class=\"detail-info\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>Server Certificate ID</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SERVER_CERTIFICATE_ARN", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Server Certificate ARN</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Arn)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "EXPIRATION_DATE", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>Expiration Date</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Expiration)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PATH", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Path</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Path)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n    </div>\n</div>";
   return buffer;
@@ -3471,15 +3312,10 @@ TEMPLATE.detail_info=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"combo-dd-no-data\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "NO_SSL_CERTIFICATE", {hash:{},data:data}))
-    + "</p>\n    <a class=\"create-one\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATE_SSL_CERTIFICATE", {hash:{},data:data}))
-    + "</a>\n</div>";
-  return buffer;
+  return "<div class=\"combo-dd-no-data\">\n    <p>No SSL Certificate.</p>\n    <a class=\"create-one\">Create SSL Certificate</a>\n</div>";
   };
 TEMPLATE.no_sslcert=Handlebars.template(__TEMPLATE__);
 
@@ -3579,12 +3415,9 @@ return TEMPLATE; });
         finHandler = _.after(times, function() {
           that.modal.cancel();
           if (success.length === 1) {
-            notification('info', sprintf(lang.NOTIFY.XXX_IS_DELETED, success[0].get('Name')));
+            notification('info', "" + (success[0].get('Name')) + " is deleted.");
           } else if (success.length > 1) {
-            notification('info', sprintf(lang.NOTIFY.SELECTED_XXX_SNS_TOPIC_ARE_DELETED, success.length));
-          }
-          if (!that.model.get('keys').length) {
-            that.M$('#kp-select-all').get(0).checked = false;
+            notification('info', "Selected " + success.length + " SSL Certificate are deleted.");
           }
           return _.each(error, function(s) {
             return console.log(s);
@@ -3609,7 +3442,7 @@ return TEMPLATE; });
         $certChain = $('#ssl-cert-chain-input');
         certName = $certName.val();
         if (certName === 'None') {
-          notification('error', sprintf(lang.NOTIFY.CERTIFICATE_NAME_XXX_IS_INVALID, certName));
+          notification('error', "Certificate name " + certName + " is invalid");
           return;
         }
         return this.sslCertCol.create({
@@ -3619,7 +3452,7 @@ return TEMPLATE; });
           CertificateChain: $certChain.val(),
           Path: ''
         }).save().then(function(result) {
-          notification('info', sprintf(lang.NOTIFY.CERTIFICATE_XXX_IS_UPLOADED, certName));
+          notification('info', "Certificate " + certName + " is uploaded");
           return that.modal.cancel();
         }, function(result) {
           that.switchAction();
@@ -3656,7 +3489,7 @@ return TEMPLATE; });
             }).then(function(result) {
               var certName, sslCertModelAry;
               certName = newCertName;
-              notification('info', sprintf(lang.NOTIFY.CERTIFICATE_XXX_IS_UPLOADED, certName));
+              notification('info', "Certificate " + certName + " is updated");
               sslCertModelAry = Design.modelClassForType(constant.RESTYPE.IAM).allObjects();
               _.each(sslCertModelAry, function(sslCertModel) {
                 if (sslCertModel.get('name') === oldCerName) {
@@ -3829,8 +3662,8 @@ return TEMPLATE; });
       initDropdown: function() {
         var options;
         options = {
-          manageBtnValue: lang.PROP.INSTANCE_MANAGE_SSL_CERT,
-          filterPlaceHolder: lang.PROP.INSTANCE_FILTER_SSL_CERT
+          manageBtnValue: lang.ide.PROP_INSTANCE_MANAGE_SSL_CERT,
+          filterPlaceHolder: lang.ide.PROP_INSTANCE_FILTER_SSL_CERT
         };
         this.dropdown = new comboDropdown(options);
         this.dropdown.on('open', this.show, this);
@@ -3971,9 +3804,11 @@ return TEMPLATE; });
           'DBINSTANCE.resource.AvailabilityZone': true,
           'DBINSTANCE.resource.Endpoint.Address': true,
           'DBINSTANCE.resource.ApplyImmediately': true,
+          'DBINSTANCE.resource.Endpoint': true,
+          'DBINSTANCE.resource.SourceDBInstanceIdentifierForPoint': true,
+          'DBINSTANCE.resource.UseLatestRestorableTime': true,
           'ASG.resource.AutoScalingGroupARN': true,
-          'ASG.resource.PolicyARN': true,
-          'DBINSTANCE.resource.Endpoint': true
+          'ASG.resource.PolicyARN': true
         };
       }
       if (!option.noDiffArrayAttrMap) {
@@ -5037,13 +4872,7 @@ function program3(depth0,data) {
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -5066,23 +4895,17 @@ function program1(depth0,data) {
   }
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_SET_FAMILY", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBPG_SET_FAMILY", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-family-choose\">\n                        <div class=\"selectbox selectbox-mega\" id=\"property-family\">\n                            <div class=\"selection\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.families)),stack1 == null || stack1 === false ? stack1 : stack1[0])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n                            <div class=\"scroll-wrap\" style=\"height: 160px\">\n                                <div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                                <div class=\"scroll-content\">\n                                    <ul class=\"dropdown\" tabindex=\"-1\">\n                                        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.families), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                                    </ul>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n\n\n            <div class=\"control-group clearfix\">\n                <label for=\"property-dbpg-name-create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_SET_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBPG_SET_NAME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id=\"property-dbpg-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-ignore-regexp=\"^[a-zA-Z][a-zA-Z0-9-]*$\" data-required=\"true\" data-type=\"database\" data-ignore=\"true\" placeholder=\"Begin with a letter; must contain only ASCII letters, digits, and hyphens; and must not end with a hyphen or contain two consecutive hyphens\">\n                </div>\n            </div>\n\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-dbpg-desc-create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_SET_DESC", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <input id='property-dbpg-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" data-required=\"true\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBPG_SET_DESC", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <input id='property-dbpg-desc-create' class=\"input\" placeholder=\"Up to 255 characters\" data-required=\"true\" type=\"text\"/>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -5091,20 +4914,12 @@ TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"slide-reset\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_CONFIRM_RESET_1", {hash:{},data:data}))
+  buffer += "<div class=\"slide-reset\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <div class=\"modal-text-major\">Do you confirm to reset all parameters for "
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_CONFIRM_RESET_2", {hash:{},data:data}))
-    + "</div>\n        <div class=\"init action\">\n            <button class=\"btn btn-red do-action\" data-action=\"reset\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_RESET", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_RESETTING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+    + " to their defaults?</div>\n        <div class=\"init action\">\n            <button class=\"btn btn-red do-action\" data-action=\"reset\">Reset</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Resetting...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_reset=Handlebars.template(__TEMPLATE__);
@@ -5113,30 +4928,18 @@ TEMPLATE.slide_reset=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n                <th width=\"40%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_NAME", {hash:{},data:data}))
-    + "</th>\n                <th width=\"20%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ORIGINAL_VALUE", {hash:{},data:data}))
-    + "</th>\n                <th width=\"40%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_EDIT_VALUE", {hash:{},data:data}))
-    + "</th>\n            ";
-  return buffer;
+  
+  return "\n                <th width=\"40%\">Parameter Name</th>\n                <th width=\"20%\">Origin Value</th>\n                <th width=\"40%\">Edit Value</th>\n            ";
   }
 
 function program3(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n                <th width=\"50%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_NAME", {hash:{},data:data}))
-    + "</th>\n                <th width=\"50%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_EDIT_VALUE", {hash:{},data:data}))
-    + "</th>\n            ";
-  return buffer;
+  
+  return "\n                <th width=\"50%\">Parameter Name</th>\n                <th width=\"50%\">Edit Value</th>\n            ";
   }
 
 function program5(depth0,data,depth1) {
@@ -5159,8 +4962,7 @@ function program5(depth0,data,depth1) {
   buffer += "\n                        ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                    </div>\n                    <div class=\"prop_main\">\n                        <div class=\"prop_sub\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_APPLY_IMMEDIATELY_1", {hash:{},data:data}));
+  buffer += "\n                    </div>\n                    <div class=\"prop_main\">\n                        <div class=\"prop_sub\">Changes will apply ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n                    </div>\n                </td>\n            </tr>\n        ";
@@ -5314,50 +5116,28 @@ function program31(depth0,data) {
 function program33(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_APPLY_IMMEDIATELY_2", {hash:{},data:data}));
+  return "immediately";
   }
 
 function program35(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_APPLY_IMMEDIATELY_3", {hash:{},data:data}));
+  return "after rebooting";
   }
 
 function program37(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n            <button class=\"btn do-action\" id=\"pg-back-to-edit\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_BACK_TO_EDITING", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-blue\" id=\"rds-pg-save\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_APPLY_CHANGES", {hash:{},data:data}))
-    + "</button>\n        ";
-  return buffer;
+  
+  return "\n            <button class=\"btn do-action\" id=\"pg-back-to-edit\">Back to Editing</button>\n            <button class=\"btn btn-blue\" id=\"rds-pg-save\">Apply Changes</button>\n        ";
   }
 
 function program39(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n            <button class=\"btn btn-blue do-action\" data-action=\"preview\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REVIEW_CHANGES_SAVE", {hash:{},data:data}))
-    + "</button>\n        ";
-  return buffer;
+  
+  return "\n            <button class=\"btn btn-blue do-action\" data-action=\"preview\" disabled>Review Changes & Save</button>\n        ";
   }
 
-  buffer += "<div class=\"clearfix\" id=\"pg-sort-filter\">\n    <div class=\"pull-left\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_FILTER", {hash:{},data:data}))
-    + " <input id=\"pg-filter-parameter-name\" class=\"input\" type=\"text\" placeholder=\"Filter by Parameter Name\"/>\n    </div>\n    <div class=\"pull-right\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_SORT_BY", {hash:{},data:data}))
-    + "\n        <div class=\"selectbox\" id=\"sort-parameter-name\">\n            <div class=\"selection\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_NAME", {hash:{},data:data}))
-    + "</div>\n            <ul class=\"dropdown\" tabindex=\"-1\">\n                <li class=\"item selected\" data-id=\"ParameterName\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_NAME", {hash:{},data:data}))
-    + "</li>\n                <li class=\"item\" data-id=\"IsModifiable\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ISMODIFIABLE", {hash:{},data:data}))
-    + "</li>\n                <li class=\"item\" data-id=\"ApplyType\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_APPLY_METHOD", {hash:{},data:data}))
-    + "</li>\n                <li class=\"item\" data-id=\"Source\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_SOURCE", {hash:{},data:data}))
-    + "</li>\n            </ul>\n        </div>\n    </div>\n</div>\n<div id=\"parameter-table\" style=\"height: "
+  buffer += "<div class=\"clearfix\" id=\"pg-sort-filter\">\n    <div class=\"pull-left\">\n        Filter: <input id=\"pg-filter-parameter-name\" class=\"input\" type=\"text\" placeholder=\"Filter by Parameter Name\"/>\n    </div>\n    <div class=\"pull-right\">\n        Sort by:\n        <div class=\"selectbox\" id=\"sort-parameter-name\">\n            <div class=\"selection\">Parameter Name</div>\n            <ul class=\"dropdown\" tabindex=\"-1\">\n                <li class=\"item selected\" data-id=\"ParameterName\">Parameter Name</li>\n                <li class=\"item\" data-id=\"IsModifiable\">Is Modifiable</li>\n                <li class=\"item\" data-id=\"ApplyType\">Apply Method</li>\n                <li class=\"item\" data-id=\"Source\">Source</li>\n            </ul>\n        </div>\n    </div>\n</div>\n<div id=\"parameter-table\" style=\"height: "
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.height), 310, {hash:{},data:data}))
     + "px\">\n    <table class=\"table\">\n        <thead>\n        <tr>\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
@@ -5365,18 +5145,10 @@ function program39(depth0,data) {
   buffer += "\n\n        </tr>\n        </thead>\n        <tbody>\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.programWithDepth(5, program5, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </tbody>\n    </table>\n</div>\n<div class=\"pg-edit-footer clearfix\">\n    <a target=\"_blank\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ParamValuesRef.html\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_VALUE_REFERENCE", {hash:{},data:data}))
-    + "</a>\n    <div class=\"init action\" style=\"padding: 10px 0\">\n        ";
+  buffer += "\n        </tbody>\n    </table>\n</div>\n<div class=\"pg-edit-footer clearfix\">\n    <a target=\"_blank\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ParamValuesRef.html\"> Parameter Value Reference</a>\n    <div class=\"init action\" style=\"padding: 10px 0\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.preview), {hash:{},inverse:self.program(39, program39, data),fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"padding: 10px 0;display: none\">\n        <button class=\"btn btn-blue\" id=\"rds-pg-save\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_APPLYING", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"padding: 10px 0;display: none\">\n        <button class=\"btn btn-blue\" id=\"rds-pg-save\" disabled>Applying</button>\n        <button class=\"btn btn-silver cancel\" disabled>Cancel</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_edit=Handlebars.template(__TEMPLATE__);
@@ -5385,30 +5157,18 @@ TEMPLATE.slide_edit=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n            <th width=\"40%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_NAME", {hash:{},data:data}))
-    + "</th>\n            <th width=\"20%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ORIGINAL_VALUE", {hash:{},data:data}))
-    + "</th>\n            <th width=\"40%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_EDIT_VALUE", {hash:{},data:data}))
-    + "</th>\n        ";
-  return buffer;
+  
+  return "\n            <th width=\"40%\">Parameter Name</th>\n            <th width=\"20%\">Origin Value</th>\n            <th width=\"40%\">Edit Value</th>\n        ";
   }
 
 function program3(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n            <th width=\"50%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_PARAMETER_NAME", {hash:{},data:data}))
-    + "</th>\n            <th width=\"50%\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_EDIT_VALUE", {hash:{},data:data}))
-    + "</th>\n        ";
-  return buffer;
+  
+  return "\n            <th width=\"50%\">Parameter Name</th>\n            <th width=\"50%\">Edit Value</th>\n        ";
   }
 
 function program5(depth0,data,depth1) {
@@ -5431,8 +5191,7 @@ function program5(depth0,data,depth1) {
   buffer += "\n                    ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                </div>\n                <div class=\"prop_main\">\n                    <div class=\"prop_sub\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_APPLY_IMMEDIATELY_1", {hash:{},data:data}));
+  buffer += "\n                </div>\n                <div class=\"prop_main\">\n                    <div class=\"prop_sub\">Changes will apply ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.ApplyType), "dynamic", {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n                </div>\n            </td>\n        </tr>\n    ";
@@ -5586,13 +5345,13 @@ function program31(depth0,data) {
 function program33(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_APPLY_IMMEDIATELY_2", {hash:{},data:data}));
+  return "immediately";
   }
 
 function program35(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.DBPG_APPLY_IMMEDIATELY_3", {hash:{},data:data}));
+  return "after rebooting";
   }
 
   buffer += "<table class=\"table\">\n    <thead>\n    <tr>\n        ";
@@ -6057,11 +5816,11 @@ return TEMPLATE; });
       },
       afterModify: function(result) {
         if ((result != null ? result.error : void 0)) {
-          notification('error', sprintf(lang.NOTIFY.PARAMETER_GROUP_UPDATED_FAILED, (result != null ? result.awsResult : void 0) || (result != null ? result.awsErrorCode : void 0) || (result != null ? result.msg : void 0)));
+          notification('error', "Parameter Group updated failed because of " + ((result != null ? result.awsResult : void 0) || (result != null ? result.awsErrorCode : void 0) || (result != null ? result.msg : void 0)));
           this.switchAction();
           return false;
         }
-        notification('info', lang.NOTIFY.PARAMETER_GROUP_IS_UPDATED);
+        notification('info', "Parameter Group is updated.");
         return this.manager.cancel();
       },
       doAction: function(action, checked) {
@@ -6112,10 +5871,10 @@ return TEMPLATE; });
       afterCreated: function(result) {
         this.manager.cancel();
         if (result.error) {
-          notification('error', sprintf(lang.NOTIFY.CREATE_FAILED_BECAUSE_OF_XXX, result.msg));
+          notification('error', "Create failed because of: " + result.msg);
           return false;
         }
-        return notification('info', lang.NOTIFY.NEW_RDS_PARAMETER_GROUP_IS_CREATED_SUCCESSFULLY);
+        return notification('info', "New RDS Parameter Group is created successfully!");
       },
       afterReset: function(result) {
         var currentRegion;
@@ -6125,7 +5884,7 @@ return TEMPLATE; });
           notification('error', result.awsResult);
           return false;
         }
-        return notification('info', lang.NOTIFY.RDS_PARAMETER_GROUP_IS_RESET_SUCCESSFULLY);
+        return notification('info', "RDS Parameter Group is reset successfully!");
       },
       afterDeleted: function(result) {
         deleteCount--;
@@ -6138,7 +5897,7 @@ return TEMPLATE; });
             this.switchAction();
             return deleteErrorCount = 0;
           } else {
-            notification('info', lang.NOTIFY.DELETE_SUCCESSFULLY);
+            notification('info', "Delete Successfully");
             this.manager.unCheckSelectAll();
             deleteErrorCount = 0;
             return this.manager.cancel();
@@ -6161,8 +5920,8 @@ return TEMPLATE; });
         var option, that;
         that = this;
         option = {
-          manageBtnValue: lang.PROP.VPC_MANAGE_RDS_PG,
-          filterPlaceHolder: lang.PROP.VPC_FILTER_RDS_PG
+          manageBtnValue: lang.ide.PROP_VPC_MANAGE_RDS_PG,
+          filterPlaceHolder: lang.ide.PROP_VPC_FILTER_RDS_PG
         };
         this.dropdown = new combo_dropdown(option);
         if (this.resModel && !this.resModel.attributes.pgName) {
@@ -6261,7 +6020,7 @@ return TEMPLATE; });
         region = Design.instance().get('region');
         regionName = constant.REGION_SHORT_LABEL[region];
         return {
-          title: sprintf(lang.IDE.COMPONENT_RDS_PG_MANAGER_TITLE, regionName),
+          title: "Manage DB Parameter Group in " + regionName,
           slideable: true,
           context: that,
           buttons: [
@@ -6446,24 +6205,16 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_DELETE_2", {hash:{},data:data}))
+  buffer += "selected "
     + escapeExpression(((stack1 = (depth0 && depth0.selectedCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_DELETE_3", {hash:{},data:data}));
+    + " Snapshot ";
   return buffer;
   }
 
-  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_DELETE_1", {hash:{},data:data}))
-    + " ";
+  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">Confirm to delete ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selectedId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
+  buffer += "?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">Delete</button>\n        <button class=\"btn btn-silver cancel\">Cancel</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>Deleting...</button>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
@@ -6472,13 +6223,10 @@ TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"no-credential tac\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_EMPTY", {hash:{},data:data}))
-    + "</p>\n</div>";
-  return buffer;
+  return "<div class=\"no-credential tac\">\n    <p>There are no available instance here.</p>\n</div>";
   };
 TEMPLATE.noinstance=Handlebars.template(__TEMPLATE__);
 
@@ -6490,16 +6238,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name-create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NAME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id=\"property-snapshot-name-create\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"database\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z][a-zA-Z0-9-]*$\" data-required=\"true\"  placeholder=\"Allow alpha number, _ or - up to 255 characters.\">\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-volume-choose\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_INSTANCE", {hash:{},data:data}))
-    + "</label>\n                <div>\n                    <div id=\"property-db-instance-choose\"></div>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_INSTANCE", {hash:{},data:data}))
+    + "</label>\n                <div>\n                    <div id=\"property-db-instance-choose\"></div>\n                </div>\n            </div>\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>Create</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Creating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
@@ -6512,22 +6254,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-duplicate\" data-bind=\"true\">\n    <div class=\"formart_toolbar_modal\" data-type=\"true\">\n        <section data-bind=\"true\">\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-source\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SOURCE_SNAPSHOT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SOURCE_SNAPSHOT", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <p id=\"property-snapshot-source\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.originSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix property-content\" style=\"background: none\">\n                <label for=\"property-region-choose\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_DESTINATION_REGION", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <div id=\"property-region-choose\"></div>\n                </div>\n            </div>\n\n            <div class=\"control-group clearfix\">\n                <label for=\"property-snapshot-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SNAPSHOT_SET_NEW_NAME", {hash:{},data:data}))
     + "</label>\n                <div>\n                    <input id=\"property-snapshot-name\" class=\"input\" type=\"text\" maxlength=\"255\" data-type=\"domain\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.newCopyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-ignore=\"true\">\n                </div>\n            </div>\n\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DUPLICATE", {hash:{},data:data}))
-    + "</button>\n            <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DUPLICATING", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n</div>";
+    + "\" data-ignore=\"true\">\n                </div>\n            </div>\n\n\n        </section>\n        <div class=\"init action\">\n            <button class=\"btn btn-blue do-action\" data-action=\"duplicate\" disabled>Duplicate</button>\n            <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n        <div class=\"processing action\" style=\"display:none;\">\n            <button class=\"btn\" disabled>Duplicating...</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
@@ -6536,68 +6272,38 @@ TEMPLATE.slide_duplicate=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"detail-info horizontal\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_ID", {hash:{},data:data}))
-    + "</label>\n            <div>"
+  buffer += "<div class=\"detail-info horizontal\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>DB Snapshot ID</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_VPC_ID", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Vpc ID</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.VpcId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_ENGINE", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>DB Engine</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Engine)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_LICENSE_MODEL", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>License Model</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.LicenseModel)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_STATUS", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Status</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_STORAGE", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Db Storage</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.AllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_CREATE_TIME", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Snapshot Creation Time</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.SnapshotCreateTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_SOURCE_REGION", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Source Region</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.AvailabilityZone)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_INSTANCE_NAME", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>DB Instance Name</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_TYPE", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Snapshot Type</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.SnapshotType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_ENGINE_VERSION", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>DB Engine Version</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.EngineVersion)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_MASTER_USERNAME", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Master Username</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.MasterUsername)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.OPTION_GROUP_NAME", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Option Groupname</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.OptionGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.PORT", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Port</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DB_SNAPSHOT_INSTANCE_CREATE_TIME", {hash:{},data:data}))
-    + "</label>\n            <div>"
+    + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>Instance Creation Time</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.InstanceCreateTime)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n\n    </div>\n</div>";
   return buffer;
@@ -6635,11 +6341,11 @@ return TEMPLATE; });
       renderDropdown: function() {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.NOTIFY.SNAPSHOT_FILTER_VOLUME
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
         this.instances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region());
-        selection = lang.NOTIFY.INSTANCE_SNAPSHOT_SELECT;
+        selection = lang.ide.PROP_INSTANCE_SNAPSHOT_SELECT;
         this.dropdown.setSelection(selection);
         this.dropdown.on('open', this.openDropdown, this);
         this.dropdown.on('filter', this.filterDropdown, this);
@@ -6649,14 +6355,14 @@ return TEMPLATE; });
       renderRegionDropdown: function(exceptRegion) {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.NOTIFY.SNAPSHOT_FILTER_REGION
+          filterPlaceHolder: lang.ide.PROP_SNAPSHOT_FILTER_REGION
         };
         this.regionsDropdown = new combo_dropdown(option);
         this.regions = _.keys(constant.REGION_LABEL);
         if (exceptRegion) {
           this.regions = _.without(this.regions, exceptRegion);
         }
-        selection = lang.NOTIFY.VOLUME_SNAPSHOT_SELECT_REGION;
+        selection = lang.ide.PROP_VOLUME_SNAPSHOT_SELECT_REGION;
         this.regionsDropdown.setSelection(selection);
         this.regionsDropdown.on('open', this.openRegionDropdown, this);
         this.regionsDropdown.on('filter', this.filterRegionDropdown, this);
@@ -6916,7 +6622,7 @@ return TEMPLATE; });
         afterDuplicate = this.afterDuplicate.bind(this);
         accountNumber = App.user.attributes.account;
         if (!/^\d+$/.test(accountNumber.split('-').join(''))) {
-          notification('error', lang.NOTIFY.DB_SNAPSHOT_ACCOUNT_NUMBER_INVALID);
+          notification('error', 'Please fill update your accountNumber to Numbered');
           return false;
         }
         return this.collection.findWhere({
@@ -6926,25 +6632,25 @@ return TEMPLATE; });
       afterCreated: function(result, newSnapshot) {
         this.manager.cancel();
         if (result.error) {
-          notification('error', sprintf(lang.NOTIFY.DB_SNAPSHOT_CREATE_FAILED, result.msg));
+          notification('error', "Create failed because of: " + result.msg);
           return false;
         }
-        return notification('info', lang.NOTIFY.NEW_SNAPSHOT_IS_CREATED_SUCCESSFULLY);
+        return notification('info', "New Snapshot is created successfully!");
       },
       afterDuplicate: function(result) {
         var currentRegion;
         currentRegion = Design.instance().get('region');
         this.manager.cancel();
         if (result.error) {
-          notification('error', sprintf(lang.NOTIFY.DUPLICATE_FAILED_BECAUSE_OF_XXX, result.awsResult || result.msg));
+          notification('error', "Duplicate failed because of: " + (result.awsResult || result.msg));
           return false;
         }
         if (result.attributes.region === currentRegion) {
           this.collection.add(result);
-          return notification('info', lang.NOTIFY.DB_SNAPSHOT_DUPLICATE_SUCCESS);
+          return notification('info', "New RDS Snapshot is duplicated successfully!");
         } else {
           this.initManager();
-          return notification('info', lang.NOTIFY.DB_SNAPSHOT_DUPLICATE_SUCCESS_OTHER_REGION);
+          return notification('info', 'New RDS Snapshot is duplicated to another region, you need to switch region to check the snapshot you just created.');
         }
       },
       afterDeleted: function(result) {
@@ -6954,9 +6660,9 @@ return TEMPLATE; });
         }
         if (deleteCount === 0) {
           if (deleteErrorCount > 0) {
-            notification('error', sprintf(lang.NOTIFY.XXX_SNAPSHOT_FAILED_TO_DELETE, deleteErrorCount));
+            notification('error', deleteErrorCount + " Snapshot failed to delete, Please try again later.");
           } else {
-            notification('info', lang.NOTIFY.DB_SNAPSHOT_DELETE_SUCCESS);
+            notification('info', "RDS Snapshot(s) Delete Successfully");
           }
           this.manager.unCheckSelectAll();
           deleteErrorCount = 0;

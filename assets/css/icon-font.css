@@ -2,8 +2,8 @@
   font-family: 'MCIcon';
   font-weight: normal;
   font-style: normal;
-  src: url('/assets/fonts/icon.eot?v=9ef89af3');
-  src: url('/assets/fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff?v=c6821948") format("woff"), url("../fonts/icon.ttf?v=8277f0b6") format("truetype"); }
+  src: url('/assets/fonts/icon.eot');
+  src: url('/assets/fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff") format("woff"), url("../fonts/icon.ttf") format("truetype"); }
 
 .icon-play:before,
 .icon-stop:before,
@@ -23,6 +23,7 @@
 .icon-export-json:before,
 .icon-caret-down:before,
 .icon-terminate:before,
+.icon-forget-app:before,
 .icon-close:before,
 .icon-caret-right:before,
 .icon-caret-left:before,
@@ -82,7 +83,8 @@
 .icon-cert:before,
 .icon-dhcp:before,
 .icon-pg:before,
-.icon-rds-snap:before {
+.icon-rds-snap:before,
+.icon-rds-restore:before {
   font: 16px/1em "MCIcon";
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
@@ -146,6 +148,9 @@
 
 .icon-terminate:before {
   content: "\F154"; }
+
+.icon-forget-app:before {
+  content: "\F11C"; }
 
 .icon-caret-right:before {
   content: "\F124"; }
@@ -320,3 +325,6 @@
 
 .icon-rds-snap:before {
   content: "\F167"; }
+
+.icon-rds-restore:before {
+  content: "\F168"; }

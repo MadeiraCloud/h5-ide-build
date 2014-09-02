@@ -17,7 +17,9 @@
       'AWS.VPC.RouteTable': ['rtb'],
       'AWS.EC2.EBS.Volume': ['ebs'],
       'AWS.EC2.KeyPair': ['kp'],
-      'AWS.RDS.DBInstance': ['dbinstance']
+      'AWS.RDS.DBInstance': ['dbinstance'],
+      'AWS.RDS.OptionGroup': ['og'],
+      'AWS.RDS.DBSubnetGroup': ['sbg']
     },
     globalList: {
       eip: ['isHasIGW'],
@@ -37,7 +39,7 @@
       elb: ['isSSLCertExist'],
       asg: ['isTopicNonexist'],
       vpc: ['isVPCUsingNonexistentDhcp'],
-      og: ['unusedOgWontCreate', 'isOGExeedCountLimit']
+      og: ['isOGExeedCountLimit']
     }
   });
 
@@ -110,7 +112,7 @@
               errMessage = returnInfoObj.message;
               errCompName = _getCompName(errCompUID);
               errCompType = _getCompType(errCompUID);
-              errInfoStr = sprintf(lang.TA.ERROR_STACK_FORMAT_VALID_FAILED, errCompName, errMessage);
+              errInfoStr = sprintf(lang.ide.TA_MSG_ERROR_STACK_FORMAT_VALID_FAILED, errCompName, errMessage);
               if (errCode === 'EMPTY_VALUE' && errKey === 'InstanceId' && errMessage === 'Key InstanceId can not empty' && errCompType === 'AWS.VPC.NetworkInterface') {
                 checkResult = true;
               }
@@ -140,7 +142,7 @@
         }, function(result) {
           return callback(null);
         });
-        tipInfo = sprintf(lang.TA.ERROR_STACK_CHECKING_FORMAT_VALID);
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_CHECKING_FORMAT_VALID);
         return {
           level: constant.TA.ERROR,
           info: tipInfo
@@ -211,7 +213,7 @@
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
                     }
-                    tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
+                    tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
                     tipInfoAry.push({
                       level: constant.TA.ERROR,
                       info: tipInfo,
@@ -246,7 +248,7 @@
                       infoObjType = 'Launch Configuration';
                       infoTagType = 'lc';
                     }
-                    tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_AUTHED_AMI, infoObjType, infoTagType, instanceName, amiId);
+                    tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_AUTHED_AMI, infoObjType, infoTagType, instanceName, amiId);
                     tipInfoAry.push({
                       level: constant.TA.ERROR,
                       info: tipInfo,
@@ -315,7 +317,7 @@
               infoObjType = 'Launch Configuration';
               infoTagType = 'lc';
             }
-            tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
+            tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
             tipInfoAry.push({
               level: constant.TA.ERROR,
               info: tipInfo,
@@ -378,7 +380,7 @@
       },
       i18n: {
         short: function() {
-          return LANG.TA;
+          return LANG.ide;
         }
       },
       component: {
@@ -546,7 +548,7 @@
         return null;
       } else {
         instanceName = instanceComp.name;
-        tipInfo = sprintf(i18n.NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME, instanceName);
+        tipInfo = sprintf(i18n.TA_MSG_NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME, instanceName);
         return {
           level: constant.TA.NOTICE,
           info: tipInfo,
@@ -602,7 +604,7 @@
         });
         if (totalSGRuleNum > 50) {
           instanceName = instanceComp.name;
-          tipInfo = sprintf(i18n.WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM, instanceName, 50);
+          tipInfo = sprintf(i18n.TA_MSG_WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM, instanceName, 50);
           return {
             level: constant.TA.WARNING,
             info: tipInfo,
@@ -631,7 +633,7 @@
         });
         if (totalSGRuleNum > 100) {
           instanceName = instanceComp.name;
-          tipInfo = sprintf(i18n.WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM, instanceName, 100);
+          tipInfo = sprintf(i18n.TA_MSG_WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM, instanceName, 100);
           return {
             level: constant.TA.WARNING,
             info: tipInfo,
@@ -665,7 +667,7 @@
       if (!isConnectRTB || hasEIP) {
         return null;
       }
-      tipInfo = sprintf(i18n.NOTICE_INSTANCE_HAS_RTB_NO_ELB, RTB.name, instance.name, instance.name);
+      tipInfo = sprintf(i18n.TA_MSG_NOTICE_INSTANCE_HAS_RTB_NO_ELB, RTB.name, instance.name, instance.name);
       return {
         level: constant.TA.NOTICE,
         info: tipInfo,
@@ -686,7 +688,7 @@
           return !eni.get('sourceDestCheck');
         });
         if (!hasUncheck) {
-          return Helper.message.error(uid, i18n.ERROR_INSTANCE_NAT_CHECKED_SOURCE_DEST, instance.get('name'));
+          return Helper.message.error(uid, i18n.TA_MSG_ERROR_INSTANCE_NAT_CHECKED_SOURCE_DEST, instance.get('name'));
         }
         null;
       }
@@ -772,7 +774,7 @@
       if (isHaveVPN || isHaveEIP || isHavePubIP) {
         return null;
       }
-      tipInfo = sprintf(lang.TA.WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE);
+      tipInfo = sprintf(lang.ide.TA_MSG_WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE);
       return {
         level: constant.TA.WARNING,
         info: tipInfo
@@ -788,7 +790,7 @@
       if (dhcpId !== 'default') {
         return null;
       }
-      return Helper.message.warning(vpc.id, i18n.WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
+      return Helper.message.warning(vpc.id, i18n.TA_MSG_WARNING_VPC_CANNOT_USE_DEFAULT_DHCP_WHEN_USE_VISUALOPS);
     };
     isVPCUsingNonexistentDhcp = function(callback) {
       var dhcpCol, dhcpId, vpc;
@@ -803,7 +805,7 @@
         if (dhcpCol.get(dhcpId)) {
           return callback(null);
         } else {
-          return callback(Helper.message.error(vpc.id, i18n.ERROR_VPC_DHCP_NONEXISTENT));
+          return callback(Helper.message.error(vpc.id, i18n.TA_MSG_ERROR_VPC_DHCP_NONEXISTENT));
         }
       });
       return null;
@@ -813,7 +815,7 @@
       vpc = Design.instance().component(uid);
       hasRdsInstance = !!Design.modelClassForType(constant.RESTYPE.DBINSTANCE).size();
       if (hasRdsInstance && (vpc.get('tenancy') !== 'default')) {
-        return Helper.message.error(uid, i18n.ERROR_RDS_TENANCY_MUST_DEFAULT);
+        return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_TENANCY_MUST_DEFAULT);
       }
       return null;
     };
@@ -831,7 +833,7 @@
       })) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_RDS_ACCESSIBLE_NOT_HAVE_IGW);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_ACCESSIBLE_NOT_HAVE_IGW);
     };
     isVPCWithRdsAccessibleEnableDNS = function(uid) {
       var hasRdsAccessible, vpc;
@@ -845,7 +847,7 @@
       if (vpc.get('dnsSupport') && vpc.get('dnsHostnames')) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_RDS_ACCESSIBLE_NOT_HAVE_DNS);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_ACCESSIBLE_NOT_HAVE_DNS);
     };
     return {
       isVPCAbleConnectToOutside: isVPCAbleConnectToOutside,
@@ -882,7 +884,7 @@
         return null;
       } else {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_VPC_HAVE_INTERNET_ELB_AND_NO_HAVE_IGW, elbName);
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_VPC_HAVE_INTERNET_ELB_AND_NO_HAVE_IGW, elbName);
         return {
           level: constant.TA.ERROR,
           info: tipInfo,
@@ -911,7 +913,7 @@
         return null;
       } else {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG, elbName);
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG, elbName);
         return {
           level: constant.TA.ERROR,
           info: tipInfo,
@@ -927,7 +929,7 @@
         return null;
       } else {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.WARNING_ELB_NO_ATTACH_TO_MULTI_AZ, elbName);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_ELB_NO_ATTACH_TO_MULTI_AZ, elbName);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -954,7 +956,7 @@
         return null;
       } else {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.NOTICE_ELB_REDIRECT_PORT_443_TO_443, elbName);
+        tipInfo = sprintf(lang.ide.TA_MSG_NOTICE_ELB_REDIRECT_PORT_443_TO_443, elbName);
         return {
           level: constant.TA.NOTICE,
           info: tipInfo,
@@ -983,7 +985,7 @@
         return null;
       } else {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_ELB_HAVE_REPEAT_LISTENER_ITEM, elbName);
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_HAVE_REPEAT_LISTENER_ITEM, elbName);
         return {
           level: constant.TA.ERROR,
           info: tipInfo,
@@ -1011,7 +1013,7 @@
         return null;
       } else {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_ELB_HAVE_NO_SSL_CERT, elbName);
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_HAVE_NO_SSL_CERT, elbName);
         return {
           level: constant.TA.ERROR,
           info: tipInfo,
@@ -1041,7 +1043,7 @@
       }
       if (!result) {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_NOT_INBOUND_TO_ELB_LISTENER, elbName, resultPortAry.join(', '));
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_RULE_NOT_INBOUND_TO_ELB_LISTENER, elbName, resultPortAry.join(', '));
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1071,7 +1073,7 @@
       }
       if (!result) {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_NOT_OUTBOUND_TO_INSTANCE_LISTENER, elbName, resultPortAry.join(', '));
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_RULE_NOT_OUTBOUND_TO_INSTANCE_LISTENER, elbName, resultPortAry.join(', '));
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1112,7 +1114,7 @@
             targetType = 'Instance';
             targetName = instanceComp.serverGroupName;
             portInfo = resultPortAry.join(', ');
-            tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER, targetType, targetName, portInfo, elbName);
+            tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER, targetType, targetName, portInfo, elbName);
             return resultAry.push({
               level: constant.TA.WARNING,
               info: tipInfo,
@@ -1164,7 +1166,7 @@
           targetType = 'Launch Configuration';
           targetName = lcComp.name;
           portInfo = resultPortAry.join(', ');
-          tipInfo = sprintf(lang.TA.ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER, targetType, targetName, portInfo, elbName);
+          tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER, targetType, targetName, portInfo, elbName);
           return resultAry.push({
             level: constant.TA.WARNING,
             info: tipInfo,
@@ -1192,7 +1194,7 @@
       isInRange = Helper.sg.isInRange('tcp', pingPort, portData, 'in');
       if (!isInRange) {
         elbName = elbComp.name;
-        tipInfo = sprintf(lang.TA.WARNING_ELB_RULE_NOT_INBOUND_TO_ELB_PING_PORT, elbName, pingPort);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_ELB_RULE_NOT_INBOUND_TO_ELB_PING_PORT, elbName, pingPort);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1217,7 +1219,7 @@
           subnetCIDR = subnetComp.resource.CidrBlock;
           suffixNum = Number(subnetCIDR.split('/')[1]);
           if (suffixNum > 27) {
-            tipInfo = sprintf(lang.TA.ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27, elbName, subnetName);
+            tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27, elbName, subnetName);
             resultAry.push({
               level: constant.TA.ERROR,
               info: tipInfo,
@@ -1230,7 +1232,7 @@
       return resultAry;
     };
     isSSLCertExist = function(callback) {
-      var allExistCertAry, eachListener, elbNameUIDMap, elbNotExistCertMap, err, haveCert, validResultAry;
+      var allExistCertAry, eachListener, elbNameUIDMap, elbNotExistCertMap, err, haveCert, sslCertCol, validResultAry;
       try {
         if (!callback) {
           callback = function() {};
@@ -1269,12 +1271,10 @@
           return haveCert = true;
         });
         if (haveCert) {
-          if (!window.sslCertCol) {
-            window.sslCertCol = CloudResources(constant.RESTYPE.IAM);
-          }
-          return window.sslCertCol.fetchForce().then(function(result) {
+          sslCertCol = CloudResources(constant.RESTYPE.IAM);
+          return sslCertCol.fetchForce().then(function(result) {
             var sslCertAry;
-            sslCertAry = window.sslCertCol.toJSON();
+            sslCertAry = sslCertCol.toJSON();
             _.each(sslCertAry, function(sslCertData) {
               return allExistCertAry.push(sslCertData.Name);
             });
@@ -1289,7 +1289,7 @@
             _.each(elbNotExistCertMap, function(sslCertNameAry, elbName) {
               var tipInfo, uniqSSLCertNameAry;
               uniqSSLCertNameAry = _.uniq(sslCertNameAry);
-              tipInfo = sprintf(lang.TA.ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, uniqSSLCertNameAry.join(', '));
+              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS, elbName, uniqSSLCertNameAry.join(', '));
               return validResultAry.push({
                 level: constant.TA.ERROR,
                 info: tipInfo,
@@ -1332,7 +1332,7 @@
       })) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_ELB_INTERNET_SHOULD_ATTACH_TO_PUBLIC_SB, elb.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_ELB_INTERNET_SHOULD_ATTACH_TO_PUBLIC_SB, elb.get('name'));
     };
     return {
       isHaveIGWForInternetELB: isHaveIGWForInternetELB,
@@ -1427,7 +1427,7 @@
       }
       if (sgTotalRuleNum > 50) {
         sgName = sgComp.name;
-        tipInfo = sprintf(lang.TA.WARNING_SG_RULE_EXCEED_FIT_NUM, sgName, 50);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_RULE_EXCEED_FIT_NUM, sgName, 50);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1451,7 +1451,7 @@
         return null;
       });
       if (refSGNum === 1) {
-        tipInfo = sprintf(lang.TA.NOTICE_STACK_USING_ONLY_ONE_SG);
+        tipInfo = sprintf(lang.ide.TA_MSG_NOTICE_STACK_USING_ONLY_ONE_SG);
         return {
           level: constant.TA.NOTICE,
           info: tipInfo
@@ -1493,7 +1493,7 @@
       }
       if (haveAllProtocolRule) {
         sgName = sgComp.name;
-        tipInfo = sprintf(lang.TA.WARNING_SG_USING_ALL_PROTOCOL_RULE, sgName);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_USING_ALL_PROTOCOL_RULE, sgName);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1527,7 +1527,7 @@
       });
       if (isFullZeroTargetOtherPort) {
         sgName = sgComp.name;
-        tipInfo = sprintf(lang.TA.WARNING_SG_RULE_FULL_ZERO_SOURCE_TARGET_TO_OTHER_PORT, sgName);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_RULE_FULL_ZERO_SOURCE_TARGET_TO_OTHER_PORT, sgName);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1559,7 +1559,7 @@
       });
       if (isUsingPort22) {
         sgName = sgComp.name;
-        tipInfo = sprintf(lang.TA.NOTICE_SG_RULE_USING_PORT_22, sgName);
+        tipInfo = sprintf(lang.ide.TA_MSG_NOTICE_SG_RULE_USING_PORT_22, sgName);
         return {
           level: constant.TA.NOTICE,
           info: tipInfo,
@@ -1588,7 +1588,7 @@
       });
       if (isHaveFullZeroOutbound) {
         sgName = sgComp.name;
-        tipInfo = sprintf(lang.TA.WARNING_SG_RULE_HAVE_FULL_ZERO_OUTBOUND, sgName);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_SG_RULE_HAVE_FULL_ZERO_OUTBOUND, sgName);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -1645,7 +1645,7 @@
           }
         }
         if (sgAry.length > maxSGNumLimit) {
-          tipInfo = sprintf(lang.TA.ERROR_RESOURCE_ASSOCIATED_SG_EXCEED_LIMIT, resTypeName, tagName, compName, maxSGNumLimit);
+          tipInfo = sprintf(lang.ide.TA_MSG_ERROR_RESOURCE_ASSOCIATED_SG_EXCEED_LIMIT, resTypeName, tagName, compName, maxSGNumLimit);
           taObj = {
             level: constant.TA.WARNING,
             info: tipInfo,
@@ -1683,7 +1683,7 @@
       if (asg.resource.LaunchConfigurationName) {
         return null;
       }
-      tipInfo = sprintf(lang.TA.ERROR_ASG_HAS_NO_LAUNCH_CONFIG, asg.name);
+      tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ASG_HAS_NO_LAUNCH_CONFIG, asg.name);
       return {
         level: constant.TA.ERROR,
         info: tipInfo,
@@ -1697,7 +1697,7 @@
       if (!isConnectELB || isConnectELB && asg.resource.HealthCheckType === 'ELB') {
         return null;
       }
-      tipInfo = sprintf(lang.TA.WARNING_ELB_HEALTH_NOT_CHECK, asg.name);
+      tipInfo = sprintf(lang.ide.TA_MSG_WARNING_ELB_HEALTH_NOT_CHECK, asg.name);
       return {
         level: constant.TA.WARNING,
         info: tipInfo,
@@ -1715,7 +1715,7 @@
       if (topic && topic.get('appId')) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_ASG_NOTIFICATION_NO_TOPIC, asg.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_ASG_NOTIFICATION_NO_TOPIC, asg.get('name'));
     };
     isPolicyNotHasTopic = function(uid) {
       var asg, p, policies, result, _i, _len;
@@ -1727,7 +1727,7 @@
         if (!p.isNotificate() || p.getTopic()) {
           continue;
         }
-        result.push(Helper.message.error(p.id, i18n.ERROR_ASG_POLICY_NO_TOPIC, asg.get('name'), p.get('name')));
+        result.push(Helper.message.error(p.id, i18n.TA_MSG_ERROR_ASG_POLICY_NO_TOPIC, asg.get('name'), p.get('name')));
       }
       return result;
     };
@@ -1775,9 +1775,9 @@
           obj = ta[2];
           if (!topicCol.get(topic.get('appId'))) {
             if (obj.type === constant.RESTYPE.SP) {
-              result.push(Helper.message.error(obj.id, i18n.ERROR_ASG_POLICY_TOPIC_NONEXISTENT, asg.get('name'), obj.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_POLICY_TOPIC_NONEXISTENT, asg.get('name'), obj.get('name'), topic.get('name')));
             } else if (obj.type === constant.RESTYPE.NC) {
-              result.push(Helper.message.error(obj.id, i18n.ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT, asg.get('name'), topic.get('name')));
+              result.push(Helper.message.error(obj.id, i18n.TA_MSG_ERROR_ASG_NOTIFICITION_TOPIC_NONEXISTENT, asg.get('name'), topic.get('name')));
             }
           }
         }
@@ -1803,7 +1803,7 @@
       if (!_hasType(constant.RESTYPE.EIP) || _hasType(constant.RESTYPE.IGW)) {
         return null;
       }
-      tipInfo = lang.TA.ERROR_HAS_EIP_NOT_HAS_IGW;
+      tipInfo = lang.ide.TA_MSG_ERROR_HAS_EIP_NOT_HAS_IGW;
       return {
         level: constant.TA.ERROR,
         info: tipInfo
@@ -1849,7 +1849,7 @@
       if (count.az > 1) {
         return null;
       }
-      tipInfo = lang.TA.WARNING_SINGLE_AZ;
+      tipInfo = lang.ide.TA_MSG_WARNING_SINGLE_AZ;
       return {
         level: constant.TA.WARNING,
         info: tipInfo
@@ -1884,7 +1884,7 @@
       if (isConnectRTB) {
         return null;
       }
-      tipInfo = lang.TA.WARNING_NO_RTB_CONNECT_VGW;
+      tipInfo = lang.ide.TA_MSG_WARNING_NO_RTB_CONNECT_VGW;
       return {
         level: constant.TA.WARNING,
         info: tipInfo,
@@ -1941,7 +1941,7 @@
             if (isStaticCGW && !isHaveNoEmptyRoute) {
               vgwName = vgwComp.name;
               cgwName = cgwComp.name;
-              tipInfo = sprintf(lang.TA.ERROR_VPN_NO_IP_FOR_STATIC_CGW, cgwName, vgwName);
+              tipInfo = sprintf(lang.ide.TA_MSG_ERROR_VPN_NO_IP_FOR_STATIC_CGW, cgwName, vgwName);
               returnObj = {
                 level: constant.TA.ERROR,
                 info: tipInfo,
@@ -1979,7 +1979,7 @@
         }
       });
       if (invalidRouteCIDRAry.length) {
-        tipInfo = sprintf(lang.TA.ERROR_VPN_NOT_PUBLIC_IP, vpnName, invalidRouteCIDRAry.join(', '));
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_VPN_NOT_PUBLIC_IP, vpnName, invalidRouteCIDRAry.join(', '));
         returnObj = {
           level: constant.TA.ERROR,
           info: tipInfo,
@@ -2018,7 +2018,7 @@
       if (isConnectRTB) {
         return null;
       }
-      tipInfo = lang.TA.WARNING_NO_RTB_CONNECT_IGW;
+      tipInfo = lang.ide.TA_MSG_WARNING_NO_RTB_CONNECT_IGW;
       return {
         level: constant.TA.WARNING,
         info: tipInfo,
@@ -2050,7 +2050,7 @@
       if (!connectSubnet || HasAllowACLRule) {
         return null;
       }
-      tipInfo = sprintf(lang.TA.NOTICE_ACL_HAS_NO_ALLOW_RULE, acl.name);
+      tipInfo = sprintf(lang.ide.TA_MSG_NOTICE_ACL_HAS_NO_ALLOW_RULE, acl.name);
       return {
         level: constant.TA.NOTICE,
         info: tipInfo,
@@ -2100,7 +2100,7 @@
                 cgwIP = cgwObj.ipAddress;
                 cgwState = cgwObj.state;
                 if (stackCGWIP === cgwIP && cgwState === 'available') {
-                  conflictInfo = sprintf(lang.TA.ERROR_CGW_IP_CONFLICT, stackCGWName, stackCGWIP, cgwId, cgwIP);
+                  conflictInfo = sprintf(lang.ide.TA_MSG_ERROR_CGW_IP_CONFLICT, stackCGWName, stackCGWIP, cgwId, cgwIP);
                   checkResult = false;
                 }
                 return null;
@@ -2120,7 +2120,7 @@
             }
             return null;
           });
-          tipInfo = sprintf(lang.TA.ERROR_CGW_CHECKING_IP_CONFLICT);
+          tipInfo = sprintf(lang.ide.TA_MSG_ERROR_CGW_CHECKING_IP_CONFLICT);
           return {
             level: constant.TA.ERROR,
             info: tipInfo
@@ -2140,7 +2140,7 @@
       cgwIP = cgwComp.resource.IpAddress;
       isInAnyPriIPRange = MC.aws.aws.isValidInIPRange(cgwIP, 'private');
       if (isInAnyPriIPRange) {
-        tipInfo = sprintf(lang.TA.WARNING_CGW_IP_RANGE_ERROR, cgwName, cgwIP);
+        tipInfo = sprintf(lang.ide.TA_MSG_WARNING_CGW_IP_RANGE_ERROR, cgwName, cgwIP);
         return {
           level: constant.TA.WARNING,
           info: tipInfo,
@@ -2156,7 +2156,7 @@
       if (hasAttachVgw) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_CGW_MUST_ATTACH_VPN, cgw.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_CGW_MUST_ATTACH_VPN, cgw.get('name'));
     };
     return {
       isCGWHaveIPConflict: isCGWHaveIPConflict,
@@ -2178,7 +2178,7 @@
         return null;
       } else {
         eniName = eniComp.name;
-        tipInfo = sprintf(lang.TA.ERROR_ENI_NOT_ATTACH_TO_INSTANCE, eniName);
+        tipInfo = sprintf(lang.ide.TA_MSG_ERROR_ENI_NOT_ATTACH_TO_INSTANCE, eniName);
         return {
           level: constant.TA.ERROR,
           info: tipInfo,
@@ -2212,7 +2212,7 @@
         for (_i = 0, _len = connectedInstances.length; _i < _len; _i++) {
           instance = connectedInstances[_i];
           instanceName = instance.get('name');
-          notices.push(Helper.message.notice(uid + instance.id, i18n.NOTICE_RT_ROUTE_NAT, instanceName, rtbName, instanceName, rtbName));
+          notices.push(Helper.message.notice(uid + instance.id, i18n.TA_MSG_NOTICE_RT_ROUTE_NAT, instanceName, rtbName, instanceName, rtbName));
         }
         return notices;
       }
@@ -2232,7 +2232,7 @@
           var SubnetModel, tipInfo;
           SubnetModel = Design.modelClassForType(CONST.RESTYPE.SUBNET);
           if ((currentRouteDes === routeDes) || (idx === 0 && SubnetModel.isCidrConflict(currentRouteDes, routeDes))) {
-            tipInfo = sprintf(i18n.ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
+            tipInfo = sprintf(i18n.TA_MSG_ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
             return notices.push({
               level: CONST.TA.ERROR,
               info: tipInfo,
@@ -2264,8 +2264,8 @@ This file use for validate state.
   define('component/trustedadvisor/validation/stateeditor/validation/reference',['constant', 'MC', 'i18n!/nls/lang.js'], function(CONST, MC, lang) {
     var Message, checkRefExist, takeplace, __componentTipMap, __findReference, __genError, __getComp, __getCompTip, __getRef, __isUid, __legalExist, __legalState, __refState;
     __componentTipMap = {
-      'AWS.EC2.Instance': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,
-      'AWS.AutoScaling.Group': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_ASG
+      'AWS.EC2.Instance': lang.ide.TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,
+      'AWS.AutoScaling.Group': lang.ide.TA_MSG_ERROR_STATE_EDITOR_INEXISTENT_ASG
     };
     __getCompTip = function(compType, str1, str2, str100) {
       var tip, type;
@@ -2591,11 +2591,11 @@ This file use for validate state.
         for (name in _ref) {
           param = _ref[name];
           if (param.required === true && !Validator.required(state.parameter[name])) {
-            tip = sprintf(lang.TA.ERROR_STATE_EDITOR_EMPTY_REQUIED_PARAMETER, data.name, data.stateId, name);
+            tip = sprintf(lang.ide.TA_MSG_ERROR_STATE_EDITOR_EMPTY_REQUIED_PARAMETER, data.name, data.stateId, name);
             type = 'requiredParameter';
             error.push(Helper.buildError(tip, data.stateId, type));
           } else if (cmd.module === 'meta.wait' && name === 'state' && !Validator.isRef(state.parameter[name])) {
-            tip = sprintf(lang.TA.ERROR_STATE_EDITOR_INVALID_FORMAT, data.name, data.stateId, 'wait');
+            tip = sprintf(lang.ide.TA_MSG_ERROR_STATE_EDITOR_INVALID_FORMAT, data.name, data.stateId, 'wait');
             type = 'invalidFormat';
             error.push(Helper.buildError(tip, data.stateId, type));
           }
@@ -2870,7 +2870,7 @@ This file use for validate component about state.
       }
       if (!__hasEipOrPublicIp(lcOrInstance)) {
         name = lcOrInstance.get('name');
-        result.push(Helper.message.error(lcOrInstance.id, i18n.ERROR_NO_EIP_OR_PIP, name, name, subnetName));
+        result.push(Helper.message.error(lcOrInstance.id, i18n.TA_MSG_ERROR_NO_EIP_OR_PIP, name, name, subnetName));
         return true;
       } else if (__isRouteIgw(component)) {
         return true;
@@ -2879,7 +2879,7 @@ This file use for validate component about state.
       }
     };
     __genConnectedError = function(subnetName, uid) {
-      return Helper.message.error(uid, i18n.ERROR_NOT_CONNECT_OUT, subnetName);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_NOT_CONNECT_OUT, subnetName);
     };
     __isLcConnectedOut = function(uid) {
       var asg, asgs, expandedAsgs, lc, result, subnet, subnetId, subnetName, subnetNameString, subnetNames, _i, _len;
@@ -2926,7 +2926,7 @@ This file use for validate component about state.
       if (__hasType(constant.RESTYPE.IGW)) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_NO_CGW);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_NO_CGW);
     };
     isHasOutPort80and443 = function(uid) {
       var component, sgs;
@@ -2935,7 +2935,7 @@ This file use for validate component about state.
       if (__sgsHasOutPort80and443(sgs)) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_NO_OUTBOUND_RULES, component.name);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_NO_OUTBOUND_RULES, component.name);
     };
     isHasOutPort80and443Strict = function(uid) {
       var component, sgs;
@@ -2944,7 +2944,7 @@ This file use for validate component about state.
       if (isHasOutPort80and443(uid) || __sgsHasOutPort80and443(sgs, true)) {
         return null;
       }
-      return Helper.message.warning(uid, i18n.WARNING_OUTBOUND_NOT_TO_ALL, component.name);
+      return Helper.message.warning(uid, i18n.TA_MSG_WARNING_OUTBOUND_NOT_TO_ALL, component.name);
     };
     isConnectedOut = function(uid) {
       var component, result;
@@ -3047,7 +3047,7 @@ This file use for validate component about state.
                       instanceId = instanceObj.resource.InstanceId;
                     }
                     if (!instanceId) {
-                      tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
+                      tipInfo = sprintf(lang.ide.TA_MSG_ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
                       tipInfoAry.push({
                         level: constant.TA.ERROR,
                         info: tipInfo,
@@ -3084,7 +3084,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore'], function(constant, MC, Design, Helper, keypair_service, _) {
+  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, keypair_service, _, CloudResources) {
     var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
     i18n = Helper.i18n.short();
     isNotDefaultAndRefInstance = function(uid) {
@@ -3115,13 +3115,13 @@ This file use for validate component about state.
         message += 'Launch Configuration' + lcStr;
       }
       message = message.slice(0, -2);
-      return Helper.message.error(uid, i18n.ERROR_INSTANCE_REF_OLD_KEYPAIR, message, kp.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_INSTANCE_REF_OLD_KEYPAIR, message, kp.get('name'));
     };
     longLiveNotice = function() {
-      return Helper.message.notice(null, i18n.NOTICE_KEYPAIR_LONE_LIVE);
+      return Helper.message.notice(null, i18n.TA_MSG_NOTICE_KEYPAIR_LONE_LIVE);
     };
     isKeyPairExistInAws = function(callback) {
-      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, needValidate, region, results, session, username, _i, _len;
+      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, kpCollection, needValidate, region, results, session, username, _i, _len;
       allInstances = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
       allLcs = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
       instanceLike = allInstances.concat(allLcs);
@@ -3145,12 +3145,10 @@ This file use for validate component about state.
         username = $.cookie("usercode");
         session = $.cookie("session_id");
         region = Design.instance().region();
-        return keypair_service.DescribeKeyPairs(null, username, session, region).then(function(res) {
+        kpCollection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
+        return kpCollection.fetchForce().then(function(col) {
           var kpList;
-          if (res.is_error) {
-            throw res;
-          }
-          kpList = res.resolved_data || [];
+          kpList = col.toJSON();
           _.each(needValidate, function(i) {
             var inexist, tag;
             inexist = _.every(kpList, function(kp) {
@@ -3185,10 +3183,10 @@ This file use for validate component about state.
               message += 'Launch Configuration' + err.lc;
             }
             message = message.slice(0, -2);
-            return results.push(Helper.message.error(keyName, i18n.ERROR_INSTANCE_REF_OLD_KEYPAIR, message, keyName));
+            return results.push(Helper.message.error(keyName, i18n.TA_MSG_ERROR_INSTANCE_REF_OLD_KEYPAIR, message, keyName));
           });
           return callback(results);
-        }).fail(function(error) {
+        }, function() {
           return callback(null);
         });
       }
@@ -3225,7 +3223,7 @@ This file use for validate component about state.
         taId += db.id;
       }
       nameStr = nameStr.slice(0, -2);
-      return Helper.message.error(taId, i18n.ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION, nameStr);
+      return Helper.message.error(taId, i18n.TA_MSG_ERROR_RDS_DB_T1_MICRO_DEFAULT_OPTION, nameStr);
     };
     isAzConsistent = function(uid) {
       var azName, db, sbg;
@@ -3240,7 +3238,7 @@ This file use for validate component about state.
       })) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_RDS_AZ_NOT_CONSISTENT, db.get('name'), azName);
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_AZ_NOT_CONSISTENT, db.get('name'), azName);
     };
     isHaveEnoughIPForDB = function(uid) {
       var dbModels, resultSubnetAry, subnetDBMap, _getSubnetRemainIPCount;
@@ -3283,7 +3281,7 @@ This file use for validate component about state.
       if (resultSubnetAry.length) {
         return {
           level: constant.TA.ERROR,
-          info: sprintf(i18n.ERROR_HAVE_NOT_ENOUGH_IP_FOR_DB, resultSubnetAry.join(', '))
+          info: sprintf(i18n.TA_MSG_ERROR_HAVE_NOT_ENOUGH_IP_FOR_DB, resultSubnetAry.join(', '))
         };
       }
       return null;
@@ -3300,7 +3298,7 @@ This file use for validate component about state.
         return {
           uid: uid,
           level: constant.TA.ERROR,
-          info: sprintf(i18n.ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN, dbModel.get('name'), dbModel.master().get('name'))
+          info: sprintf(i18n.TA_MSG_ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN, dbModel.get('name'), dbModel.master().get('name'))
         };
       }
       return null;
@@ -3327,7 +3325,7 @@ This file use for validate component about state.
       if (_.uniq(azs).length > 2) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_RDS_SQL_SERVER_MIRROR_MUST_HAVE3SUBNET, db.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_SQL_SERVER_MIRROR_MUST_HAVE3SUBNET, db.get('name'));
     };
     isBackupMaintenanceOverlap = function(uid) {
       var appData, appId, backupEnd, backupStart, backupTimeArray, backupWindow, db, maintenanceEnd, maintenanceStart, maintenanceTimeArray, maintenanceWindow;
@@ -3362,7 +3360,7 @@ This file use for validate component about state.
       } else if (backupStart >= maintenanceEnd || backupEnd <= maintenanceStart) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_RDS_BACKUP_MAINTENANCE_OVERLAP, db.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_RDS_BACKUP_MAINTENANCE_OVERLAP, db.get('name'));
     };
     isMasterPasswordValid = function(uid) {
       var db, password, _ref;
@@ -3371,7 +3369,7 @@ This file use for validate component about state.
       if (password && (password === '****' || (8 <= (_ref = password.length) && _ref <= 41))) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_MASTER_PASSWORD_INVALID, db.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_MASTER_PASSWORD_INVALID, db.get('name'));
     };
     isDBandOgBothModified = function(uid) {
       var db, dbOrigincomp, dbcomp, og, ogOrigincomp, ogcomp, originJson;
@@ -3388,7 +3386,7 @@ This file use for validate component about state.
       if (!(diff(dbOrigincomp, dbcomp) && diff(ogOrigincomp, ogcomp))) {
         return null;
       }
-      return Helper.message.error(uid, i18n.ERROR_OG_DB_BOTH_MODIFIED, db.get('name'), og.get('name'));
+      return Helper.message.error(uid, i18n.TA_MSG_ERROR_OG_DB_BOTH_MODIFIED, db.get('name'), og.get('name'));
     };
     return {
       isOgValid: isOgValid,
@@ -3425,7 +3423,7 @@ This file use for validate component about state.
         taId += og.id;
       }
       nameStr = nameStr.slice(0, -2);
-      callback(Helper.message.warning(taId, i18n.WARNING_RDS_UNUSED_OG_NOT_CREATE, nameStr));
+      callback(Helper.message.warning(taId, i18n.TA_MSG_WARNING_RDS_UNUSED_OG_NOT_CREATE, nameStr));
       return null;
     };
     isOGExeedCountLimit = function(callback) {
@@ -3450,7 +3448,7 @@ This file use for validate component about state.
               return model.get('id').indexOf('default:') !== 0;
             });
             if (customOgAry.length + customOGModels.length > 20) {
-              return callback(Helper.message.error('', i18n.ERROR_RDS_OG_EXCEED_20_LIMIT, regionName));
+              return callback(Helper.message.error('', i18n.TA_MSG_ERROR_RDS_OG_EXCEED_20_LIMIT, regionName));
             } else {
               return callback(null);
             }
@@ -3466,7 +3464,6 @@ This file use for validate component about state.
       }
     };
     return {
-      unusedOgWontCreate: unusedOgWontCreate,
       isOGExeedCountLimit: isOGExeedCountLimit
     };
   });
@@ -3474,7 +3471,33 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/stack/stack', '../validation/ec2/instance', '../validation/vpc/subnet', '../validation/vpc/vpc', '../validation/elb/elb', '../validation/ec2/securitygroup', '../validation/asg/asg', '../validation/ec2/eip', '../validation/ec2/az', '../validation/vpc/vgw', '../validation/vpc/vpn', '../validation/vpc/igw', '../validation/vpc/networkacl', '../validation/vpc/cgw', '../validation/vpc/eni', '../validation/vpc/rtb', '../validation/stateeditor/main', '../validation/state/state', '../validation/ec2/ebs', '../validation/ec2/kp', '../validation/rds/dbinstance', '../validation/rds/og'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og) {
+  define('component/trustedadvisor/validation/rds/sbg',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+    var i18n, isSbgHasSbin2Az;
+    i18n = Helper.i18n.short();
+    isSbgHasSbin2Az = function(uid) {
+      var azs, sbg, sbs, tmpTip, uniqAzCount;
+      tmpTip = "Subnet Group %s must have subnets in at least 2 Availability Zones.";
+      sbg = Design.instance().component(uid);
+      sbs = sbg.connectionTargets("SubnetgAsso");
+      azs = [];
+      azs = _.map(sbs, function(sb) {
+        return sb.parent();
+      });
+      uniqAzCount = _.uniq(azs).length;
+      if (uniqAzCount > 1) {
+        return null;
+      }
+      return Helper.message.error(uid, sprintf(tmpTip, sbg.get('name')));
+    };
+    return {
+      isSbgHasSbin2Az: isSbgHasSbin2Az
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/stack/stack', '../validation/ec2/instance', '../validation/vpc/subnet', '../validation/vpc/vpc', '../validation/elb/elb', '../validation/ec2/securitygroup', '../validation/asg/asg', '../validation/ec2/eip', '../validation/ec2/az', '../validation/vpc/vgw', '../validation/vpc/vpn', '../validation/vpc/igw', '../validation/vpc/networkacl', '../validation/vpc/cgw', '../validation/vpc/eni', '../validation/vpc/rtb', '../validation/stateeditor/main', '../validation/state/state', '../validation/ec2/ebs', '../validation/ec2/kp', '../validation/rds/dbinstance', '../validation/rds/og', '../validation/rds/sbg'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og, sbg) {
     return {
       stack: stack,
       instance: instance,
@@ -3497,7 +3520,8 @@ This file use for validate component about state.
       ebs: ebs,
       kp: kp,
       dbinstance: dbinstance,
-      og: og
+      og: og,
+      sbg: sbg
     };
   });
 
@@ -3798,107 +3822,98 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n					<div class=\"title\" data-key=\""
+  buffer += "\r\n					<div class=\"title\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n						";
+    + "\">\r\n						";
   stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n					</div>\n\n				";
+  buffer += "\r\n					</div>\r\n\r\n				";
   return buffer;
   }
 
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n					<div class=\"title empty\" data-key=\""
+  buffer += "\r\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n						Good job! No error here.\n					</div>\n				";
+    + "\">\r\n						Good job! No error here.\r\n					</div>\r\n				";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n					<div class=\"title\" data-key=\""
+  buffer += "\r\n					<div class=\"title\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n						";
+    + "\">\r\n						";
   stack1 = ((stack1 = (depth0 && depth0.info)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n					</div>\n				";
+  buffer += "\r\n					</div>\r\n				";
   return buffer;
   }
 
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n					<div class=\"title empty\" data-key=\""
+  buffer += "\r\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n						Good job! No warning here.\n					</div>\n				";
+    + "\">\r\n						Good job! No warning here.\r\n					</div>\r\n				";
   return buffer;
   }
 
 function program11(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n					<div class=\"title empty\" data-key=\""
+  buffer += "\r\n					<div class=\"title empty\" data-key=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n						Good job! No notice here.\n					</div>\n				";
+    + "\">\r\n						Good job! No notice here.\r\n					</div>\r\n				";
   return buffer;
   }
 
-  buffer += "<div class=\"validation-content\">\n	<ul class=\"tab\">\n		<li class=\"active ";
+  buffer += "<div class=\"validation-content\">\r\n	<ul class=\"tab\">\r\n		<li class=\"active ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-tab-target=\"#item-error\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ERROR", {hash:{},data:data}))
-    + "<span class=\"validation-counter validation-counter-error\">"
+  buffer += "\" data-tab-target=\"#item-error\">Error<span class=\"validation-counter validation-counter-error\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n		<li data-tab-target=\"#item-warning\" class=\"";
+    + "</span></li>\r\n		<li data-tab-target=\"#item-warning\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_WARNING", {hash:{},data:data}))
-    + "<span class=\"validation-counter validation-counter-warning\">"
+  buffer += "\">Warning<span class=\"validation-counter validation-counter-warning\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n		<li data-tab-target=\"#item-notice\" class=\"";
+    + "</span></li>\r\n		<li data-tab-target=\"#item-notice\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_NOTICE", {hash:{},data:data}))
-    + "<span class=\"validation-counter validation-counter-notice\">"
+  buffer += "\">Notice<span class=\"validation-counter validation-counter-notice\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
+    + "</span></li>\r\n	</ul>\r\n	<div class=\"scroll-wrap scroll-wrap-validation\">\r\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"content_wrap scroll-content\">\r\n\r\n			<div id=\"item-error\" class=\"content active\">\r\n\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\n\n			</div>\n			<div id=\"item-warning\" class=\"content\">\n				";
+  buffer += "\r\n\r\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\r\n\r\n			</div>\r\n			<div id=\"item-warning\" class=\"content\">\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</div>\n			<div id=\"item-notice\" class=\"content\">\n				";
+  buffer += "\r\n			</div>\r\n			<div id=\"item-notice\" class=\"content\">\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.notice_list), {hash:{},inverse:self.program(11, program11, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</div>\n		</div>\n	</div>\n</div>";
+  buffer += "\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('component/trustedadvisor/gui/tpl/modal_template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"modal-header\">\n	<h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_VALIDATION", {hash:{},data:data}))
-    + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div id=\"modal-validation-statusbar\">\n	</div>\n</div>";
-  return buffer;
+  return "<div class=\"modal-header\">\r\n	<h3>Validation</h3>\r\n	<i class=\"modal-close\">×</i>\r\n</div>\r\n<div class=\"modal-body\">\r\n	<div id=\"modal-validation-statusbar\">\r\n	</div>\r\n</div>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('component/trustedadvisor/gui/view',['event', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template, modal_template) {
