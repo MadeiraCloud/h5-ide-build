@@ -2365,7 +2365,7 @@
               eni = CloudResources(constant.RESTYPE.ENI, this.__region).where({
                 id: comp.resource.NetworkInterfaceId
               });
-              if (eni && eni.length > 0 && !comp.resource.Attachment.AttachmentId) {
+              if (eni && eni.length > 0 && eni.attachment && !comp.resource.Attachment.AttachmentId) {
                 eni = eni[0].attributes;
                 comp.resource.Attachment.AttachmentId = eni.attachment.attachmentId;
                 console.warn("[patch app_json] fill AttachmentId of eni");
