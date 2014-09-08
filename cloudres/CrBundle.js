@@ -2800,6 +2800,7 @@
           return d.promise;
         }
         return ApiRequest("favorite_remove", {
+          region_name: self.region(),
           resource_ids: [id]
         }).then(function() {
           idx = self.__models.indexOf(id);
