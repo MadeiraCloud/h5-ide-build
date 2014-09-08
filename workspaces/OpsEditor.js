@@ -2022,7 +2022,7 @@ return TEMPLATE; });
         });
       },
       doSearch: function(pageNum, perPage) {
-        var architecture, isPublic, name, perPageNum, platform, returnPage, rootDeviceType, self, visibility;
+        var amiId, amiRes, architecture, isPublic, name, perPageNum, platform, reg_ami, returnPage, rootDeviceType, self, visibility;
         pageNum = pageNum || 1;
         this.renderAmiLoading();
         name = $("#community-ami-input").val();
@@ -2049,30 +2049,57 @@ return TEMPLATE; });
         perPageNum = parseInt(perPage || 50, 10);
         returnPage = parseInt(pageNum, 10);
         self = this;
-        return ApiRequest("aws_public", {
-          region_name: this.region,
-          filters: {
-            ami: {
-              name: name,
-              platform: platform,
-              isPublic: isPublic,
-              architecture: architecture,
-              rootDeviceType: rootDeviceType,
-              perPageNum: perPageNum,
-              returnPage: returnPage
+        reg_ami = /ami-[a-zA-Z0-9]{8}$/;
+        amiId = name.trim();
+        if (amiId && reg_ami.test(amiId)) {
+          amiRes = CloudResources("AWS.EC2.AMI", self.region);
+          return amiRes.fetchAmis([amiId]).then(function() {
+            var amiData, result, _ref;
+            amiData = amiRes.where({
+              id: amiId
+            });
+            result = {
+              "ami": {
+                "curPageNum": 1,
+                "result": {},
+                "totalNum": 0,
+                "totalPageNum": 1
+              }
+            };
+            if (amiData.length > 0) {
+              result.ami.result[amiId] = amiData[0].toJSON();
+              result.ami.totalNum = 1;
             }
-          }
-        }).then(function(result) {
-          var _ref;
-          result = self.addFavStar(result);
-          self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
-          return self.communityAmiRender(result);
-        }, function(result) {
-          notification('error', lang.ide.RES_MSG_WARN_GET_COMMUNITY_AMI_FAILED);
-          return self.communityAmiRender({
-            ami: []
+            result = self.addFavStar(result);
+            self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
+            return self.communityAmiRender(result);
           });
-        });
+        } else {
+          return ApiRequest("aws_public", {
+            region_name: this.region,
+            filters: {
+              ami: {
+                name: name,
+                platform: platform,
+                isPublic: isPublic,
+                architecture: architecture,
+                rootDeviceType: rootDeviceType,
+                perPageNum: perPageNum,
+                returnPage: returnPage
+              }
+            }
+          }).then(function(result) {
+            var _ref;
+            result = self.addFavStar(result);
+            self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
+            return self.communityAmiRender(result);
+          }, function(result) {
+            notification('error', lang.ide.RES_MSG_WARN_GET_COMMUNITY_AMI_FAILED);
+            return self.communityAmiRender({
+              ami: []
+            });
+          });
+        }
       },
       searchPrev: function() {
         var page;

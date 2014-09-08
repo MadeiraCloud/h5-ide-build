@@ -2485,11 +2485,15 @@
         _ref1 = ((_ref = ami.blockDeviceMapping) != null ? _ref.item : void 0) || [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           item = _ref1[_j];
+          if (item.ebs && !ami.imageSize && ami.rootDeviceName.indexOf(item.deviceName) !== -1) {
+            ami.imageSize = Number(item.ebs.volumeSize);
+          }
           bdm[item.deviceName] = item.ebs || {};
         }
         ami.osType = getOSType(ami);
         ami.osFamily = getOSFamily(ami);
         ami.blockDeviceMapping = bdm;
+        ami.isPublic = ami.isPublic.toString();
         ms.push(ami.id);
       }
       return ms;
@@ -2815,6 +2819,7 @@
         }
         self = this;
         return ApiRequest("favorite_add", {
+          region_name: self.region(),
           resource: {
             id: imageId,
             provider: 'AWS',
