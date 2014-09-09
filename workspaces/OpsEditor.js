@@ -460,7 +460,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "</span></button>\n<button class=\"btn-toolbar tooltip icon-terminate seperator\" data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOL_TIP_TERMINATE_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator\" data-tooltip='"
+  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-forget-app seperator\" data-tooltip=\"Forget the App, but keep all Resources\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
     + "'></button>";
   return buffer;
