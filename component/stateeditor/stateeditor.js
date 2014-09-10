@@ -186,7 +186,7 @@ function program15(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n			<div class=\"parameter-name\">\n				"
     + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-expand\">Expand</div>\n				<div class=\"parameter-value editable-area text\">"
+    + "\n			</div>\n			<div class=\"parameter-container\">\n				<div class=\"parameter-text-expand icon-expand tooltip\" data-tooltip=\"Expand\"></div>\n				<div class=\"parameter-value editable-area text\">"
     + escapeExpression(((stack1 = (depth0 && depth0.para_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n			</div>\n		</div>\n	";
   return buffer;
@@ -366,9 +366,9 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n	<div class=\"parameter-dict-item\">\n		<div class=\"parameter-value editable-area line key\">"
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n		<div class=\"parameter-value editable-area line value\">"
+    + "</div>\n		<div class=\"parameter-value editable-area text value\">"
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n	</div>\n";
+    + "</div>\n		<div class=\"parameter-text-expand icon-expand tooltip\" data-tooltip=\"Expand\"></div>\n	</div>\n";
   return buffer;
   }
 
@@ -2371,7 +2371,7 @@ return Markdown;
         'keyup .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
         'paste .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
         'click .parameter-item .parameter-name': 'onParaNameClick',
-        'click .parameter-item.text .parameter-text-expand': 'onTextParaExpandClick',
+        'click .parameter-item .parameter-text-expand': 'onTextParaExpandClick',
         'SWITCH_STATE': 'onSwitchState',
         'EXPAND_STATE': 'onExpandState',
         'COLLAPSE_STATE': 'onCollapseState',
@@ -5087,11 +5087,15 @@ return Markdown;
         var $focusElem, $paraItem, $paraValue, $stateItem, cmdName, extName, filePath, filePathAry, paraEditor, paraName, stateData, that;
         that = this;
         $focusElem = $(event.target);
-        $paraValue = $focusElem.parents('.parameter-container').find('.parameter-value');
+        if ($focusElem.parents('.parameter-dict-item').length) {
+          $paraValue = $focusElem.parents('.parameter-dict-item').find('.parameter-value.value');
+        } else {
+          $paraValue = $focusElem.parents('.parameter-container').find('.parameter-value');
+        }
         paraEditor = $paraValue.data('editor');
         if (paraEditor) {
           $paraItem = $paraValue.parents('.parameter-item');
-          if ($paraItem.hasClass('text')) {
+          if ($paraItem.hasClass('text') || $paraItem.hasClass('dict')) {
             paraName = $paraItem.attr('data-para-name');
             $stateItem = $paraItem.parents('.state-item');
             extName = '';
@@ -5154,6 +5158,9 @@ return Markdown;
               }
             }
             originEditor.setValue(codeEditorValue);
+            if ($paraItem.hasClass('dict')) {
+              originEditor.getSelection().selectFileStart();
+            }
             originEditor.clearSelection();
             originEditor.focus();
             return modal.close();
