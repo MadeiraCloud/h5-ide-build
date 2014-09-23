@@ -2064,20 +2064,19 @@ return TEMPLATE; });
         }).then(function(res) {
           var attr;
           attr = {
-            name: newJson.name,
+            name: res.name,
             updateTime: +(new Date()),
-            stoppable: newJson.property.stoppable,
+            stoppable: res.property.stoppable,
             state: OpsModelState.UnRun
           };
           if (!self.get("id")) {
-            attr.id = res;
-            newJson.id = res;
+            attr.id = res.id;
           }
           if (thumbnail) {
-            ThumbUtil.save(self.id || attr.id, thumbnail);
+            ThumbUtil.save(self.get("id") || attr.id, thumbnail);
           }
           self.set(attr);
-          self.__jsonData = newJson;
+          self.__jsonData = res;
           self.trigger("jsonDataSaved", self);
           if (attr.id) {
             self.collection.__triggerUpdate(self);

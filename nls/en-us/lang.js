@@ -281,6 +281,7 @@ define({
         "TOOL_MSG_INFO_HDL_SUCCESS": "%s %s successfully.",
         "TOOL_MSG_ERR_HDL_FAILED": "%s %s failed.",
         "TOOL_MSG_ERR_SAVE_FAILED": "Save stack %s failed, please check and save it again.",
+        "TOOL_MSG_ERR_SAVE_FAILED_NAME": "The name of the stack is already been used, please change to a new one.",
         "TOOL_MSG_ERR_SAVE_SUCCESS": "Save stack %s successfully.",
         "TOOL_MSG_ERR_DEL_STACK_SUCCESS": "Delete stack %s successfully.",
         "TOOL_MSG_ERR_DEL_STACK_FAILED": "Delete stack %s failed.",

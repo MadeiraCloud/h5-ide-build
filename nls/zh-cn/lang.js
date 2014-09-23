@@ -281,6 +281,7 @@ define({
         "TOOL_MSG_INFO_HDL_SUCCESS": "%s %s 成功。",
         "TOOL_MSG_ERR_HDL_FAILED": "%s %s 失败。",
         "TOOL_MSG_ERR_SAVE_FAILED": "保存模块 %s 失败，请您检查并重新保存。",
+        "TOOL_MSG_ERR_SAVE_FAILED_NAME": "已存在相同名字的模块，请输入一个新的名字后重新保存。",
         "TOOL_MSG_ERR_SAVE_SUCCESS": "保存 %s 成功。",
         "TOOL_MSG_ERR_DEL_STACK_SUCCESS": "删除 %s 成功。",
         "TOOL_MSG_ERR_DEL_STACK_FAILED": "删除 %s 失败。",

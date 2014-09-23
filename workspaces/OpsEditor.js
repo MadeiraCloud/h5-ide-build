@@ -842,10 +842,16 @@ return TEMPLATE; });
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             return notification("info", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_SUCCESS, newJson.name));
-          }, function() {
+          }, function(err) {
+            var message;
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
-            return notification("error", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name));
+            if (err.error === 252) {
+              message = lang.ide.TOOL_MSG_ERR_SAVE_FAILED_NAME;
+            } else {
+              message = sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name);
+            }
+            return notification("error", message);
           });
         });
       },
