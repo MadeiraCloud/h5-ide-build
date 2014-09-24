@@ -15,7 +15,7 @@
     EmptyObject = {};
     logAndThrow = function(obj) {
 
-      /* env:dev                                     env:dev:end */
+      /* env:dev                                   env:dev:end */
       throw obj;
     };
     AjaxErrorHandler = function(jqXHR, textStatus, error) {
