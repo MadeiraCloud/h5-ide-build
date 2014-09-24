@@ -366,7 +366,7 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n	<div class=\"parameter-dict-item\">\n		<div class=\"parameter-value editable-area line key\">"
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n		<div class=\"parameter-value editable-area text value\">"
+    + "</div>\n		<div class=\"parameter-value editable-area line value\">"
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n		<div class=\"parameter-text-expand icon-expand tooltip\" data-tooltip=\"Expand\"></div>\n	</div>\n";
   return buffer;
@@ -2618,7 +2618,7 @@ return Markdown;
           return null;
         });
         if (!that.readOnlyMode) {
-          $lastDictInputList = $stateItemList.find('.parameter-item.dict .parameter-dict-item:last .key');
+          $lastDictInputList = $stateItemList.find('.parameter-item.dict .parameter-dict-item .key');
           _.each($lastDictInputList, function(lastDictInput) {
             return that.onDictInputChange({
               currentTarget: lastDictInput
@@ -3088,7 +3088,7 @@ return Markdown;
         }
       },
       onBlurInput: function(event) {
-        var $currentInput, content, editor, that;
+        var $currentInput, $paraItem, content, editor, that;
         that = this;
         $currentInput = $(event.currentTarget);
         editor = $currentInput.data('editor');
@@ -3097,7 +3097,12 @@ return Markdown;
             content = $.trim(editor.getValue());
             editor.setValue(content);
           }
-          return editor.clearSelection();
+          editor.clearSelection();
+          $paraItem = $currentInput.parents('.parameter-item');
+          if ($paraItem.hasClass('dict') && $currentInput.hasClass('value')) {
+            editor.getSelection().selectFileStart();
+            return editor.clearSelection();
+          }
         }
       },
       onParaNameClick: function(event) {
@@ -3771,7 +3776,8 @@ return Markdown;
             singleLine: editorSingleLine,
             enableTab: enableTab,
             useSoftTabs: false,
-            tabSize: 4
+            tabSize: 4,
+            lineHeight: 90
           });
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;
