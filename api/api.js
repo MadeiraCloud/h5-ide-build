@@ -75,7 +75,6 @@
       OperationFailure: -6,
       Network404: -404,
       Network500: -500,
-      InvalidSession: 19,
       ChangeCredConfirm: 325,
       InvalidCred: 326,
       GlobalErrorInit: 100,
@@ -174,6 +173,10 @@
     AwsHandlers = {};
     Handlers = {
       AwsHandlers: AwsHandlers
+    };
+    Handlers[Errors.GlobalErrorSession] = function(error) {
+      App.acquireSession();
+      throw error;
     };
     AwsHandlers[401] = function(error) {
       App.askForAwsCredential();

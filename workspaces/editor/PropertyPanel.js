@@ -19406,7 +19406,7 @@ return TEMPLATE; });
         this.refresh();
       },
       showStateEditor: function(jqueryEvent, uid) {
-        var allCompData, comp, compData, design, _ref;
+        var allCompData, comp, compData, design, resId, _ref;
         if ((jqueryEvent != null ? jqueryEvent.type : void 0) === "SHOW_STATEEDITOR" && this.__showingState) {
           return false;
         }
@@ -19434,7 +19434,10 @@ return TEMPLATE; });
         }
         allCompData = design.serialize().component;
         compData = allCompData[uid];
-        stateeditor.loadModule(allCompData, uid);
+        if (comp && comp.id.indexOf('i-') === 0) {
+          resId = comp.id;
+        }
+        stateeditor.loadModule(allCompData, uid, resId);
         this.forceShow();
       }
     });
