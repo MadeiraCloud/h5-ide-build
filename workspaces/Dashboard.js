@@ -27,20 +27,22 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div>\n\n<header id=\"global-region-header\">\n	<button id=\"RefreshResource\" class=\"icon-refresh\">just now</button>\n\n	<button class=\"btn btn-primary icon-new-stack js-toggle-dropdown\">"
+  buffer += "<div>\n\n<header id=\"global-region-header\">\n	<button id=\"RefreshResource\" class=\"icon-refresh\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
+    + "</button>\n\n	<button class=\"btn btn-primary icon-new-stack js-toggle-dropdown\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n\n	<ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">\n	";
+    + "<i class=\"icon-caret-down\"></i></button>\n\n	<ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">\n  <li data-region=\"guangzhou\" data-cloud=\"openstack\" data-provider=\"awcloud\">AwCloud - OpenStack</li>\n	";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</ul>\n\n	<button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
     + "</button>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
-    + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n	<div id=\"global-region-map-wrap\"> <div id=\"global-region-map-content\" class=\"clearfix\">\n		<ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n		<div id=\"global-region-status-widget\">\n			<header class=\"clearfix\">\n			  <div class=\"global-region-status-tab\">\n			    <span>0</span><h5>"
+    + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n    <div id=\"global-region-map-wrap\">\n        <div id=\"global-region-map-content\" class=\"clearfix\">\n            <ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n            <div id=\"global-region-status-widget\">\n                <header class=\"clearfix\">\n                    <div class=\"global-region-status-tab\">\n                        <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
-    + "</h5>\n			  </div>\n			  <div class=\"global-region-status-tab on stack\">\n		      <span>0</span><h5>"
+    + "</h5>\n                    </div>\n                    <div class=\"global-region-status-tab on stack\">\n                        <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}))
-    + "</h5>\n			  </div>\n			</header>\n			<section id=\"global-region-recent-list\"></section>\n		</div>\n	</div> </div>\n	<!-- Global Map -->\n\n<section id=\"dashboard-data-wrap\">\n\n	<nav class=\"pos-r\">\n		<button id=\"region-switch\" class=\"btn-blue btn js-toggle-dropdown\">\n			<i class=\"icon-caret-down right\"></i><span>"
+    + "</h5>\n                    </div>\n                </header>\n                <section id=\"global-region-recent-list\"></section>\n            </div>\n        </div>\n    </div>\n	<!-- Global Map -->\n\n<section id=\"dashboard-data-wrap\">\n\n	<nav class=\"pos-r\">\n		<button id=\"region-switch\" class=\"btn-blue btn js-toggle-dropdown\">\n			<i class=\"icon-caret-down right\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
     + "</span>\n		</button>\n\n		<ul id=\"region-switch-list\" class=\"dropdown-menu\">\n			<li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
@@ -67,7 +69,13 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CLOUDWATCH_ALARM", {hash:{},data:data}))
     + "</span><span class=\"count-bubble\"></span></div>\n		  <div class=\"resource-tab snss\" data-type=\"SUBSCRIPTION\">\n		    <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SNS_SUBSCRIPTION", {hash:{},data:data}))
-    + "</span><span class=\"count-bubble\"></span></div>\n		</nav>\n		<div id=\"RegionResourceData\" class=\"table-head-fix\"></div>\n		</div>\n	</section><!-- Region view -->\n\n	<div id=\"DashboardDemo\">\n	  <div class=\"enter-credential\">\n	    This is only sample data of global resource sumary.</br>\n	    <a class=\"show-credential\">Provide your AWS Credential</a> to see real data\n	  </div>\n	  <img src=\"/assets/images/ide/global-demo.png\"/>\n	</div>\n</section>\n\n</div></div></div>\n\n</div>";
+    + "</span><span class=\"count-bubble\"></span></div>\n		</nav>\n		<div id=\"RegionResourceData\" class=\"table-head-fix\"></div>\n		</div>\n	</section><!-- Region view -->\n\n	<div id=\"DashboardDemo\">\n	  <div class=\"enter-credential\">\n	    "
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_SAMPLE_INSTRUCTION", {hash:{},data:data}))
+    + "</br>\n	    <a class=\"show-credential\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_PROVIDE_YOUR_CREDENTIAL_1", {hash:{},data:data}))
+    + "</a> "
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_PROVIDE_YOUR_CREDENTIAL_2", {hash:{},data:data}))
+    + "\n	  </div>\n	  <img src=\"/assets/images/ide/global-demo.png\"/>\n	</div>\n</section>\n\n</div></div></div>\n\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/dashboard/DashboardTplData',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -151,8 +159,11 @@ function program5(depth0,data) {
 
 function program7(depth0,data) {
   
-  
-  return "\n  <span class=\"empty-text\">No recently launched app in 30 days</span>\n";
+  var buffer = "";
+  buffer += "\n  <span class=\"empty-text\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_NO_RECENT_APP", {hash:{},data:data}))
+    + "</span>\n";
+  return buffer;
   }
 
 function program9(depth0,data) {
@@ -183,8 +194,11 @@ function program10(depth0,data) {
 
 function program12(depth0,data) {
   
-  
-  return "\n  <span class=\"empty-text\">No recently edited stack in 30 days</span>\n";
+  var buffer = "";
+  buffer += "\n  <span class=\"empty-text\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_NO_RECENT_STACK", {hash:{},data:data}))
+    + "</span>\n";
+  return buffer;
   }
 
   buffer += "<section ";
@@ -347,12 +361,12 @@ function program11(depth0,data) {
   buffer += "\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  <div class=\"thumbnail app-thumbnail\"> <img src=\""
+  buffer += "\n  <div class=\"thumbnail app-thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/> </div>\n  <div class=\"region-resource-info\">\n    <i class=\"icon-terminate terminate-app\"></i>\n    ";
+  buffer += "/></div>\n  <div class=\"region-resource-info\">\n    <i class=\"icon-terminate terminate-app\"></i>\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    <span class=\"";
@@ -425,12 +439,12 @@ function program27(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n  <li data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    <div class=\"thumbnail\"> <img src=\""
+    + "\">\n    <div class=\"thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/> </div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack\"></i>\n      <i class=\"icon-duplicate duplicate-stack\"></i>\n      <span class=\"truncate\">"
+  buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack\"></i>\n      <i class=\"icon-duplicate duplicate-stack\"></i>\n      <span class=\"truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n    </div>\n  </li>\n";
   return buffer;
@@ -462,20 +476,20 @@ function program29(depth0,data) {
     + "</small>\n        <button id=\"btn-create-stack\" class=\"icon-new-stack\" data-region=\""
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" title=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_CREATE_STACK", {hash:{},data:data}))
-    + "\"></button>\n    </li>\n</ul> <!-- Resource tab -->\n\n<div class=\"scroll-wrap\">\n<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n\n<ul id=\"region-resource-app-wrap\" class=\"region-resource-list clearfix\" ";
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CREATE_STACK", {hash:{},data:data}))
+    + "\"></button>\n    </li>\n</ul><!-- Resource tab -->\n\n<div class=\"scroll-wrap\">\n<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n\n<ul id=\"region-resource-app-wrap\" class=\"region-resource-list clearfix\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stack), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(25, program25, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul> <!-- Resource App -->\n\n<ul id=\"region-resource-stack-wrap\" class=\"region-resource-list clearfix\" ";
+  buffer += "\n</ul><!-- Resource App -->\n\n<ul id=\"region-resource-stack-wrap\" class=\"region-resource-list clearfix\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.app), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul> <!-- Resource Stack -->\n</div>\n</div>\n<!-- Region App & Stack -->";
+  buffer += "\n</ul><!-- Resource Stack -->\n</div>\n</div>\n<!-- Region App & Stack -->";
   return buffer;
   };
 TEMPLATE.region_app_stack=Handlebars.template(__TEMPLATE__);
@@ -594,28 +608,28 @@ function program14(depth0,data) {
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead><tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_INSTANCE_NAME", {hash:{},data:data}))
     + "/"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ID", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:10%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:10%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:18%\" data-row-type=\"datetime\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:18%\" data-row-type=\"datetime\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LAUNCH_TIME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:15%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:15%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_AMI", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:12%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:12%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_INSTANCE_TYPE", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:12%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:12%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_PUBLIC_IP", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:12%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:12%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_AVAILABILITY_ZONE", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr></thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n    <thead> <tr>\n      <th></th>\n      <th style=\"width: 10%\"></th>\n      <th style=\"width: 18%\"></th>\n      <th style=\"width: 15%\"></th>\n      <th style=\"width: 11%\"></th>\n      <th style=\"width: 14%\"></th>\n      <th style=\"width: 11%\"></th>\n      <th style=\"width: 40px\"></th>\n    </tr> </thead>\n    <tbody> ";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n      <thead>\n          <tr>\n              <th></th>\n              <th style=\"width: 10%\"></th>\n              <th style=\"width: 18%\"></th>\n              <th style=\"width: 15%\"></th>\n              <th style=\"width: 11%\"></th>\n              <th style=\"width: 14%\"></th>\n              <th style=\"width: 11%\"></th>\n              <th style=\"width: 40px\"></th>\n          </tr>\n      </thead>\n    <tbody> ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(14, program14, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " </tbody>\n  </table>\n</div> </div>";
+  buffer += " </tbody>\n  </table>\n</div></div>";
   return buffer;
   };
 TEMPLATE.resourceINSTANCE=Handlebars.template(__TEMPLATE__);
@@ -631,45 +645,45 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      ";
+  buffer += "\n        ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += " <tr>\n        <td>"
+  buffer += "\n            <tr>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.instanceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td><i title=\""
+    + "</td>\n                <td><i title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
     + "\" class=\"icon-detail\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></td>\n      </tr>";
+    + "\"></i></td>\n            </tr>";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "";
-  buffer += "\n      <div class=\"blank-widget\">"
+  buffer += "\n            <div class=\"blank-widget\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_LEFT", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ELASTIC_IP", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_RIGHT", {hash:{},data:data}))
-    + ".</div>\n      ";
+    + "\n                .\n            </div>\n        ";
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead><tr>\n  <th class=\"sortable\" style=\"width:40%\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\" style=\"width:40%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_IP", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\">"
+    + "</th>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ASSOCIATED_INSTANCE", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr></thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n    <thead> <tr> <th style=\"width:40%\"></th><th></th><th style=\"width:40px\"></th> </tr> </thead>\n    <tbody>";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n    <table class=\"table\">\n        <thead>\n        <tr>\n            <th style=\"width:40%\"></th>\n            <th></th>\n            <th style=\"width:40px\"></th>\n        </tr>\n        </thead>\n        <tbody>";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </tbody>\n  </table>\n</div> </div>";
+  buffer += "\n        </tbody>\n    </table>\n</div>\n</div>";
   return buffer;
   };
 TEMPLATE.resourceEIP=Handlebars.template(__TEMPLATE__);
@@ -685,54 +699,54 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
+  buffer += "\n        ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += " <tr>\n        <td>\n        ";
+  buffer += "\n            <tr>\n                <td>\n                    ";
   stack1 = helpers.doubleIf.call(depth0, (depth0 && depth0.visopsTag), ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1.app), {hash:{},inverse:self.program(6, program6, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          <div>"
+  buffer += "\n                    <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </td>\n        <td><i class=\"status status-"
+    + "</div>\n                </td>\n                <td><i class=\"status status-"
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " icon-label\"></i>"
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(helpers.simpleTime.call(depth0, (depth0 && depth0.createTime), {hash:{},data:data}))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.device)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " GiB</td>\n        <td><i class=\"status ";
+    + " GiB</td>\n                <td>\n                    <i class=\"status ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.attachmentStatus), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " icon-label\"></i>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.attachmentStatus), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n        <td><i title=\""
+  buffer += "</td>\n                <td><i title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
     + "\" class=\"icon-detail\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></td>\n    </tr>";
+    + "\"></i></td>\n            </tr>";
   return buffer;
   }
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n          <div class=\"table-app-link-wrap\"><span class=\"";
+  buffer += "\n                        <div class=\"table-app-link-wrap\"><span\n                                class=\"";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1.isOwner), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " truncate tooltip\" data-tooltip=\""
+  buffer += " truncate tooltip\"\n                                data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
     + escapeExpression(helpers.getInvalidKey.call(depth0, (depth0 && depth0.visopsTag), "Created by", {hash:{},data:data}))
-    + "\" data-id=\""
+    + "\"\n                                data-id=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1['app-id'])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">["
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span></div>\n        ";
+    + "]</span></div>\n                    ";
   return buffer;
   }
 function program4(depth0,data) {
@@ -744,9 +758,9 @@ function program4(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "";
-  buffer += "\n          <div>"
+  buffer += "\n                        <div>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_UNMANAGED", {hash:{},data:data}))
-    + "</div>\n        ";
+    + "</div>\n                    ";
   return buffer;
   }
 
@@ -765,7 +779,7 @@ function program10(depth0,data) {
 function program12(depth0,data) {
   
   
-  return "attached";
+  return "\n                    attached";
   }
 
 function program14(depth0,data) {
@@ -777,34 +791,34 @@ function program14(depth0,data) {
 function program16(depth0,data) {
   
   var buffer = "";
-  buffer += "\n    <div class=\"blank-widget\">"
+  buffer += "\n            <div class=\"blank-widget\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_LEFT", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VOLUME", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_RIGHT", {hash:{},data:data}))
-    + ".</div>\n    ";
+    + "\n                .\n            </div>\n        ";
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NAME", {hash:{},data:data}))
     + "/"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ID", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:15%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:15%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\" data-row-type=\"datetime\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\" data-row-type=\"datetime\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CREATE_TIME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:18%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:18%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DEVICE_NAME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:12%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:12%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VOLUME_SIZE", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:15%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:15%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ATTACHMENT_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n    <thead> <tr>\n      <th></th>\n      <th style=\"width: 15%\"></th>\n      <th style=\"width: 20%\"></th>\n      <th style=\"width: 18%\"></th>\n      <th style=\"width: 12%\"></th>\n      <th style=\"width: 15%\"></th>\n      <th style=\"width:40px\"></th>\n    </tr> </thead>\n    <tbody>";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n    <table class=\"table\">\n        <thead>\n        <tr>\n            <th></th>\n            <th style=\"width: 15%\"></th>\n            <th style=\"width: 20%\"></th>\n            <th style=\"width: 18%\"></th>\n            <th style=\"width: 12%\"></th>\n            <th style=\"width: 15%\"></th>\n            <th style=\"width:40px\"></th>\n        </tr>\n        </thead>\n        <tbody>";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(16, program16, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </tbody>\n  </table>\n</div> </div>";
+  buffer += "\n        </tbody>\n    </table>\n</div>\n</div>";
   return buffer;
   };
 TEMPLATE.resourceVOL=Handlebars.template(__TEMPLATE__);
@@ -906,19 +920,19 @@ function program12(depth0,data) {
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NAME", {hash:{},data:data}))
     + "/"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ID", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:25%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:25%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CIDR", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DHCP_SETTINGS", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n    <thead> <tr>\n<th></th><th style=\"width:20%\"></th><th style=\"width:25%\"></th><th style=\"width:20%\"></th><th style=\"width:40px\"></th>\n    </tr> </thead>\n    <tbody>";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n      <thead>\n      <tr>\n          <th></th>\n          <th style=\"width:20%\"></th>\n          <th style=\"width:25%\"></th>\n          <th style=\"width:20%\"></th>\n          <th style=\"width:40px\"></th>\n      </tr>\n      </thead>\n    <tbody>";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(12, program12, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    </tbody>\n</table>\n</div>\n</div>";
@@ -1009,19 +1023,19 @@ function program8(depth0,data) {
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NAME", {hash:{},data:data}))
     + "/"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ID", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:25%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:25%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_VIRTUAL_PRIVATE_GATEWAY", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CUSTOMER_GATEWAY", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n    <table class=\"table\"> <thead> <tr>\n      <th></th>\n      <th style=\"width: 20%\"></th>\n      <th style=\"width: 25%\"></th>\n      <th style=\"width: 20%\"></th>\n      <th style=\"width: 40px\"></th>\n    </tr> </thead>\n    <tbody>";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n    <table class=\"table\">\n        <thead>\n        <tr>\n            <th></th>\n            <th style=\"width: 20%\"></th>\n            <th style=\"width: 25%\"></th>\n            <th style=\"width: 20%\"></th>\n            <th style=\"width: 40px\"></th>\n        </tr>\n        </thead>\n    <tbody>";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(8, program8, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </tbody>\n  </table>\n</div>\n</div>";
@@ -1040,53 +1054,53 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      ";
+  buffer += "\n        ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += " <tr>\n        <td>"
+  buffer += "\n            <tr>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.DNSName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(helpers.simpleTime.call(depth0, (depth0 && depth0.CreatedTime), {hash:{},data:data}))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.AvailabilityZones)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td><i title=\""
+    + "</td>\n                <td><i title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
     + "\" class=\"icon-detail\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></td>\n      </tr>";
+    + "\"></i></td>\n            </tr>";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "";
-  buffer += "\n      <div class=\"blank-widget\">"
+  buffer += "\n            <div class=\"blank-widget\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_LEFT", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LOAD_BALANCER", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_RIGHT", {hash:{},data:data}))
-    + ".</div>\n      ";
+    + "\n                .\n            </div>\n        ";
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DNS_NAME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\" data-row-type=\"datetime\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\" data-row-type=\"datetime\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CREATE_TIME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:25%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:25%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_AVAILABILITY_ZONE", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n    <thead> <tr>\n      <th></th>\n      <th style=\"width: 20%\"></th>\n      <th style=\"width: 25%\"></th>\n      <th style=\"width: 20%\"></th>\n      <th style=\"width: 40px\"></th>\n    </tr> </thead>\n    <tbody>";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n    <table class=\"table\">\n        <thead>\n        <tr>\n            <th></th>\n            <th style=\"width: 20%\"></th>\n            <th style=\"width: 25%\"></th>\n            <th style=\"width: 20%\"></th>\n            <th style=\"width: 40px\"></th>\n        </tr>\n        </thead>\n        <tbody>";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </tbody>\n  </table>\n</div>\n</div>";
+  buffer += "\n        </tbody>\n    </table>\n</div>\n</div>";
   return buffer;
   };
 TEMPLATE.resourceELB=Handlebars.template(__TEMPLATE__);
@@ -1102,42 +1116,42 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      ";
+  buffer += "\n            ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <tr>\n        <td>\n          ";
+  buffer += "\n                <tr>\n                    <td>\n                        ";
   stack1 = helpers.doubleIf.call(depth0, (depth0 && depth0.visopsTag), ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1.app), {hash:{},inverse:self.program(6, program6, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          <div>"
+  buffer += "\n                        <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.AutoScalingGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        </td>\n        <td>"
+    + "</div>\n                    </td>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.last_activity)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.activity_state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td><i title=\""
+    + "</td>\n                    <td><i title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
     + "\" class=\"icon-detail\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></td>\n      </tr>";
+    + "\"></i>\n                    </td>\n                </tr>";
   return buffer;
   }
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            <div class=\"table-app-link-wrap\"><span class=\"";
+  buffer += "\n                            <div class=\"table-app-link-wrap\"><span\n                                    class=\"";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1.isOwner), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " truncate tooltip\" data-tooltip=\""
+  buffer += " truncate tooltip\"\n                                    data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_APP_CREATED_BY", {hash:{},data:data}))
     + escapeExpression(helpers.getInvalidKey.call(depth0, (depth0 && depth0.visopsTag), "Created by", {hash:{},data:data}))
-    + "\" data-id=\""
+    + "\"\n                                    data-id=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1['app-id'])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">["
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.visopsTag)),stack1 == null || stack1 === false ? stack1 : stack1.app)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "]</span></div>\n          ";
+    + "]</span></div>\n                        ";
   return buffer;
   }
 function program4(depth0,data) {
@@ -1149,37 +1163,37 @@ function program4(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "";
-  buffer += "\n            <div>"
+  buffer += "\n                            <div>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_UNMANAGED", {hash:{},data:data}))
-    + "</div>\n          ";
+    + "</div>\n                        ";
   return buffer;
   }
 
 function program8(depth0,data) {
   
   var buffer = "";
-  buffer += "\n      <div class=\"blank-widget\">"
+  buffer += "\n                <div class=\"blank-widget\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_LEFT", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_AUTO_SCALING_GROUP", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_RIGHT", {hash:{},data:data}))
-    + ".</div>\n      ";
+    + "\n                </div>\n            ";
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NAME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:50%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:50%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CURRENT", {hash:{},data:data}))
     + "/"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LAST_ACTIVITY", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:20%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ACTIVITY_STATUS", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n  <div class=\"scroll-content\">\n    <table class=\"table\"> <thead> <tr>\n      <th></th>\n      <th style=\"width: 50%\"></th>\n      <th style=\"width: 20%\"></th>\n      <th style=\"width:40px\"></th>\n    </tr> </thead>\n    <tbody> ";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n        <table class=\"table\">\n            <thead>\n            <tr>\n                <th></th>\n                <th style=\"width: 50%\"></th>\n                <th style=\"width: 20%\"></th>\n                <th style=\"width:40px\"></th>\n            </tr>\n            </thead>\n            <tbody> ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(8, program8, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </tbody>\n  </table>\n</div> </div>";
+  buffer += "\n            </tbody>\n        </table>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.resourceASG=Handlebars.template(__TEMPLATE__);
@@ -1195,18 +1209,18 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
+  buffer += "\n            ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <tr>\n          <td>"
+  buffer += "\n            <tr>\n              <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n          <td>";
+    + "</td>\n              <td>";
   stack1 = helpers.doubleIf.call(depth0, (depth0 && depth0.Dimensions), ((stack1 = ((stack1 = (depth0 && depth0.Dimensions)),stack1 == null || stack1 === false ? stack1 : stack1.member)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n          <td>"
+  buffer += "</td>\n              <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.MetricName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(((stack1 = (depth0 && depth0.ComparisonOperator)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1214,16 +1228,16 @@ function program2(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.Threshold)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " for "
     + escapeExpression(((stack1 = (depth0 && depth0.Period)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " seconds</td>\n          <td><i class=\"status ";
+    + " seconds</td>\n              <td><i class=\"status ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.StateValue), "OK", {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " icon-label\"></i>"
     + escapeExpression(((stack1 = (depth0 && depth0.StateValue)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n          <td><i title=\""
+    + "</td>\n              <td><i title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
     + "\" class=\"icon-detail\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></td>\n        </tr>";
+    + "\"></i></td>\n            </tr>";
   return buffer;
   }
 function program3(depth0,data) {
@@ -1263,28 +1277,28 @@ function program10(depth0,data) {
 function program12(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <div class=\"blank-widget\">"
+  buffer += "\n            <div class=\"blank-widget\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_LEFT", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CLOUDWATCH_ALARM", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_RIGHT", {hash:{},data:data}))
-    + ".</div>\n        ";
+    + ".</div>\n            ";
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NAME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:30%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:30%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DIMENSION", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:30%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:30%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_THRESHOLD", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:10%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:10%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATE", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n    <table class=\"table\">\n      <thead> <tr>\n        <th></th>\n        <th style=\"width: 30%\"></th>\n        <th style=\"width: 30%\"></th>\n        <th style=\"width: 10%\"></th>\n        <th style=\"width:40px\"></th>\n      </tr> </thead>\n      <tbody> ";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n        <table class=\"table\">\n            <thead>\n                <tr>\n                    <th></th>\n                    <th style=\"width: 30%\"></th>\n                    <th style=\"width: 30%\"></th>\n                    <th style=\"width: 10%\"></th>\n                    <th style=\"width:40px\"></th>\n                </tr>\n            </thead>\n          <tbody>";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(12, program12, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      </tbody>\n    </table>\n</div>\n</div>";
+  buffer += "\n          </tbody>\n        </table>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.resourceCW=Handlebars.template(__TEMPLATE__);
@@ -1293,70 +1307,76 @@ TEMPLATE.resourceCW=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
   stack1 = helpers['with'].call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      ";
+  buffer += "\n            ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += " <tr>\n        <td>"
+  buffer += "\n                <tr>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.TopicName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
+    + "</td>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.Protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ": "
     + escapeExpression(((stack1 = (depth0 && depth0.Endpoint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        ";
+    + "</td>\n                    ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.SubscriptionArn), "PendingConfirmation", {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <td><i title=\""
+  buffer += "\n                    <td><i title=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIT_VIEW_RESOURCE_DETAIL", {hash:{},data:data}))
     + "\" class=\"icon-detail\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i></td>\n      </tr>";
+    + "\"></i>\n                    </td>\n                </tr>";
   return buffer;
   }
 function program3(depth0,data) {
   
-  
-  return "\n        <td><i class=\"status status-red icon-label\"></i>Pending Confirmation</td>\n        ";
+  var buffer = "";
+  buffer += "\n                        <td><i class=\"status status-red icon-label\"></i>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_PENDING_CONFIRMATION", {hash:{},data:data}))
+    + "</td>\n                    ";
+  return buffer;
   }
 
 function program5(depth0,data) {
   
-  
-  return "\n        <td><i class=\"status status-green icon-label\"></i>Success</td>\n        ";
+  var buffer = "";
+  buffer += "\n                        <td><i class=\"status status-green icon-label\"></i>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_SUCCESS", {hash:{},data:data}))
+    + "</td>\n                    ";
+  return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "";
-  buffer += "\n      <div class=\"blank-widget\">"
+  buffer += "\n                <div class=\"blank-widget\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_LEFT", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SNS_SUBSCRIPTION", {hash:{},data:data}))
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_NO_RESOURCE_RIGHT", {hash:{},data:data}))
-    + ".</div>\n    ";
+    + "</div>\n            ";
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead> <tr>\n  <th class=\"sortable\" style=\"width:20%\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\" style=\"width:20%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_TOPIC_NAME", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\">"
+    + "</th>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ENDPOINT_AND_PROTOCOL", {hash:{},data:data}))
-    + "</th>\n  <th class=\"sortable\" style=\"width:30%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:30%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CONFIRMATION", {hash:{},data:data}))
-    + "</th>\n  <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr> </thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n<div class=\"scroll-content\">\n  <table class=\"table\">\n    <thead> <tr>\n      <th style=\"width:20%\"></th>\n      <th></th>\n      <th style=\"width:30%\"></th>\n      <th style=\"width:40px\"></th>\n    </tr> </thead>\n\n    <tbody> ";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n        <table class=\"table\">\n            <thead>\n            <tr>\n                <th style=\"width:20%\"></th>\n                <th></th>\n                <th style=\"width:30%\"></th>\n                <th style=\"width:40px\"></th>\n            </tr>\n            </thead>\n            <tbody> ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </tbody>\n  </table>\n</div>";
+  buffer += "\n            </tbody>\n        </table>\n    </div>";
   return buffer;
   };
 TEMPLATE.resourceSUBSCRIPTION=Handlebars.template(__TEMPLATE__);
@@ -1423,19 +1443,19 @@ function program7(depth0,data) {
   return buffer;
   }
 
-  buffer += "<table class=\"table-head\"> <thead><tr>\n    <th class=\"sortable\">"
+  buffer += "<table class=\"table-head\">\n    <thead>\n    <tr>\n        <th class=\"sortable\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DBINSTANCE_NAME", {hash:{},data:data}))
-    + "</th>\n    <th class=\"sortable\" style=\"width:18%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:18%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STATUS", {hash:{},data:data}))
-    + "</th>\n    <th class=\"sortable\" style=\"width:21%\" data-row-type=\"datetime\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:21%\" data-row-type=\"datetime\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_FAMILY", {hash:{},data:data}))
-    + "</th>\n    <th class=\"sortable\" style=\"width:15%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:15%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_CLASS", {hash:{},data:data}))
-    + "</th>\n    <th class=\"sortable\" style=\"width:15%\">"
+    + "</th>\n        <th class=\"sortable\" style=\"width:15%\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STORAGE", {hash:{},data:data}))
-    + "</th>\n    <th style=\"width:40px\">"
+    + "</th>\n        <th style=\"width:40px\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_DETAIL", {hash:{},data:data}))
-    + "</th>\n</tr></thead> </table>\n<div class=\"scroll-wrap\"> <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n        <table class=\"table\">\n            <thead> <tr>\n                <th></th>\n                <th style=\"width: 18%\"></th>\n                <th style=\"width: 21%\"></th>\n                <th style=\"width: 15%\"></th>\n                <th style=\"width: 15%\"></th>\n                <th style=\"width: 40px\"></th>\n            </tr> </thead>\n            <tbody> ";
+    + "</th>\n    </tr>\n    </thead>\n</table>\n<div class=\"scroll-wrap\"><div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n        <table class=\"table\">\n            <thead>\n                <tr>\n                    <th></th>\n                    <th style=\"width: 18%\"></th>\n                    <th style=\"width: 21%\"></th>\n                    <th style=\"width: 15%\"></th>\n                    <th style=\"width: 15%\"></th>\n                    <th style=\"width: 40px\"></th>\n                </tr>\n            </thead>\n            <tbody> ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n        </table>\n    </div>\n</div>";
@@ -1453,7 +1473,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <dt>"
-    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(helpers.i18n.call(depth0, (data == null || data === false ? data : data.key), {hash:{},data:data}))
     + ":</dt>\n        <dd>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.bubble), {hash:{},inverse:self.program(10, program10, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -1593,8 +1613,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  
-  return "\n<div class=\"unmanaged-vpc-empty\">Oops, loading VPC failed.\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">Retry</button>\n</div>\n<div class=\"loading-spinner hide\"></div>\n";
+  var buffer = "";
+  buffer += "\n<div class=\"unmanaged-vpc-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_LOADING_VPC_FAILED", {hash:{},data:data}))
+    + "\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_POP_BTN_RETRY", {hash:{},data:data}))
+    + "</button>\n</div>\n<div class=\"loading-spinner hide\"></div>\n";
+  return buffer;
   }
 
 function program3(depth0,data) {
@@ -1660,17 +1685,29 @@ function program9(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</h5>\n					<ol class=\"tac\">\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subnet)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">subnet</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SUBNETS", {hash:{},data:data}))
+    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">running instance</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RUNNING_INSTANCE", {hash:{},data:data}))
+    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.stopped)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">stopped instance</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STOPPED_INSTANCE", {hash:{},data:data}))
+    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">network interface</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NETWORK_INTERFACE", {hash:{},data:data}))
+    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eip)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">elastic ip</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ELASTIC_IP", {hash:{},data:data}))
+    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.elb)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div><span class=\"vis-res-name\">load balancer</span></li>\n					</ol>\n					<button class=\"btn btn-blue visualize-vpc-btn";
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LOAD_BALANCER", {hash:{},data:data}))
+    + "</span></li>\n					</ol>\n					<button class=\"btn btn-blue visualize-vpc-btn";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.username), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" ";
@@ -1733,19 +1770,22 @@ function program20(depth0,data) {
 function program22(depth0,data) {
   
   
-  return "Already Imported";
+  return escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_ALREADY_IMPORTED", {hash:{},data:data}));
   }
 
 function program24(depth0,data) {
   
   
-  return "Import";
+  return escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_TO_IMPORT", {hash:{},data:data}));
   }
 
 function program26(depth0,data) {
   
-  
-  return "<div class=\"unmanaged-vpc-empty\">There is no VPC to import.</div>";
+  var buffer = "";
+  buffer += "<div class=\"unmanaged-vpc-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_NO_VPC_TO_IMPORT", {hash:{},data:data}))
+    + "</div>";
+  return buffer;
   }
 
   buffer += "<div class=\"scroll-wrap scrollbar-auto-hide\" style=\"height:500px;\">\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div id=\"VisualizeVpcDialog\" class=\"scroll-content\">\n";
@@ -1755,7 +1795,530 @@ function program26(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", 'appAction', "CloudResources", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang, appAction, CloudResources) {
+  define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, OpsModel, CloudResources) {
+
+    /* env:prod */
+    var Design, createRecursiveCheck, noop, __instance, __modelClassMap, __resolveFirstMap;
+    createRecursiveCheck = function() {
+      return createRecursiveCheck.o || (createRecursiveCheck.o = {
+        check: function() {}
+      });
+    };
+
+    /* env:prod:end */
+
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
+    noop = function() {};
+    __modelClassMap = {};
+    __resolveFirstMap = {};
+    __instance = null;
+
+    /*
+      -------------------------------
+       Design is the main controller of the framework. It handles the input / ouput of the Application ( a.k.a the DesignCanvas ).
+       The input and ouput is the same : the JSON data.
+      -------------------------------
+    
+    
+      ++ Class Method ++
+    
+       * instance() : Design
+          description : returns the currently used Design object.
+    
+       * modelClassForType( typeString ) : Class
+          description : returns an Class for the specified typeString.
+    
+       * debug() :
+          description : prints all the resource in the console.
+    
+       * debug.selectedComp() :
+          description : prints the selected resouorce in console.
+    
+    
+      ++ Object Method ++
+    
+       * component( uid ) : ResourceModel
+          description : returns a resource model of uid
+    
+       * eachComponent( iterator ) :
+          description : the iterator will execute with all the components.
+    
+       * use() :
+          description : make the design object to be Design.instance()
+    
+       * save( component_data, layout_data ) :
+          description : save the data, so that isModified() will use the saved data.
+    
+       * isModified() : Boolean
+          description : returns true if the stack is modified since last save.
+    
+       * serialize() : Object
+          description : returns a Plain JS Object that is indentical to JSON data.
+    
+       * serializeAsStack() : Object
+          description : same as serialize(), but it ensure that the JSON will be a stack JSON.
+    
+       * getCost() : Array
+          description : return an array of cost object to represent the cost of the stack.
+     */
+    Design = Backbone.Model.extend({
+      constructor: function(opsModel) {
+        var json;
+        this.__opsModel = opsModel;
+        Backbone.Model.call(this);
+        this.use();
+        json = opsModel.getJsonData();
+        this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+      },
+      initialize: function() {
+        var canvas_data, component, layout;
+        this.__componentMap = {};
+        this.__classCache = {};
+        this.__usedUidCache = {};
+        this.__initializing = false;
+        canvas_data = this.__opsModel.getJsonData();
+        if (this.__opsModel.testState(OpsModel.State.UnRun)) {
+          this.__mode = Design.MODE.Stack;
+        } else {
+          this.__mode = Design.MODE.App;
+        }
+        component = canvas_data.component;
+        layout = canvas_data.layout;
+        delete canvas_data.component;
+        delete canvas_data.layout;
+        this.attributes = $.extend(true, {
+          canvasSize: layout.size
+        }, canvas_data);
+        canvas_data.component = component;
+        canvas_data.layout = layout;
+        return null;
+      },
+      deserialize: function(json_data, layout_data) {
+        var ModelClass, comp, defaultLayout, devistor, recursiveCheck, resolveDeserialize, that, uid, version, _i, _len, _old_get_component_, _ref;
+        console.assert(Design.instance() === this);
+        console.debug("Deserializing data :", [json_data, layout_data]);
+        version = this.get("version");
+        _ref = this.constructor.__deserializeVisitors || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          devistor = _ref[_i];
+          devistor(json_data, layout_data, version);
+        }
+        this.trigger = noop;
+        this.__initializing = true;
+        defaultLayout = {
+          coordinate: [0, 0],
+          size: [0, 0]
+        };
+        that = this;
+        resolveDeserialize = function(uid) {
+          var ModelClass, component_data, obj;
+          if (!uid) {
+            return null;
+          }
+          obj = that.__componentMap[uid];
+          if (obj) {
+            return obj;
+          }
+          recursiveCheck.check(uid);
+          component_data = json_data[uid];
+          if (!component_data) {
+            console.warn("Unknown uid for resolving component :", uid, json_data);
+            return;
+          }
+          ModelClass = Design.modelClassForType(component_data.type);
+          if (!ModelClass) {
+            console.warn("We do not support deserializing resource of type : " + component_data.type);
+            return;
+          }
+          ModelClass.deserialize(component_data, layout_data[uid] || defaultLayout, resolveDeserialize);
+          return __instance.__componentMap[uid];
+        };
+        _old_get_component_ = this.component;
+        this.component = null;
+        for (uid in json_data) {
+          comp = json_data[uid];
+          this.__usedUidCache[uid] = true;
+          if (__resolveFirstMap[comp.type] === true) {
+            ModelClass = Design.modelClassForType(comp.type);
+            if (!ModelClass) {
+              console.warn("We do not support deserializing resource of type : " + component_data.type);
+              continue;
+            }
+            if (!ModelClass.preDeserialize) {
+              console.error("The class is marked as resolveFirst, yet it doesn't implement preDeserialize()");
+              continue;
+            }
+            ModelClass.preDeserialize(comp, layout_data[uid] || defaultLayout);
+          }
+        }
+        this.component = resolveDeserialize;
+        for (uid in json_data) {
+          comp = json_data[uid];
+          if (__resolveFirstMap[comp.type] === true) {
+            recursiveCheck = createRecursiveCheck(uid);
+            Design.modelClassForType(comp.type).deserialize(comp, layout_data[uid] || defaultLayout, resolveDeserialize);
+          } else {
+            recursiveCheck = createRecursiveCheck();
+            resolveDeserialize(uid);
+          }
+        }
+        this.component = _old_get_component_;
+        for (uid in json_data) {
+          comp = json_data[uid];
+          ModelClass = Design.modelClassForType(comp.type);
+          if (ModelClass && ModelClass.postDeserialize) {
+            ModelClass.postDeserialize(comp, layout_data[uid] || defaultLayout);
+          }
+        }
+        this.__initializing = false;
+        Backbone.Events.trigger.call(this, Design.EVENT.Deserialized);
+        this.trigger = Backbone.Events.trigger;
+        return null;
+      },
+      reload: function() {
+        var json, oldDesign;
+        oldDesign = Design.instance();
+        this.use();
+        DesignImpl.call(this, this.__opsModel);
+        json = this.__opsModel.getJsonData();
+        this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+        if (oldDesign) {
+          oldDesign.use();
+        }
+      },
+      classCacheForCid: function(cid) {
+        var cache;
+        if (this.__classCache[cid]) {
+          return this.__classCache[cid];
+        }
+        cache = this.__classCache[cid] = [];
+        return cache;
+      },
+      cacheComponent: function(id, comp) {
+        if (!comp) {
+          comp = this.__componentMap;
+          delete this.__componentMap[id];
+          if (this.modeIsAppEdit()) {
+            this.reclaimGuid(id);
+          }
+        } else {
+          this.__componentMap[id] = comp;
+        }
+        return null;
+      },
+      reclaimGuid: function(guid) {
+        return delete this.__usedUidCache[guid];
+      },
+      guid: function() {
+        var newId;
+        newId = MC.guid();
+        while (this.__usedUidCache[newId]) {
+          console.warn("GUID collision detected, the generated GUID is " + newId + ". Try generating a new one.");
+          newId = MC.guid();
+        }
+        this.__usedUidCache[newId] = true;
+        return newId;
+      },
+      set: function(key, value) {
+        this.attributes[key] = value;
+        this.trigger("change:" + key);
+        this.trigger("change");
+      },
+      get: function(key) {
+        if (key === "id") {
+          return this.__opsModel.get("id");
+        } else if (key === "state") {
+          return this.__opsModel.getStateDesc();
+        } else {
+          return this.attributes[key];
+        }
+      },
+      type: function() {
+        return Design.TYPE.Vpc;
+      },
+      region: function() {
+        return this.attributes.region;
+      },
+      modeIsStack: function() {
+        return this.__mode === Design.MODE.Stack;
+      },
+      modeIsApp: function() {
+        return this.__mode === Design.MODE.App;
+      },
+      modeIsAppView: function() {
+        return false;
+      },
+      modeIsAppEdit: function() {
+        return this.__mode === Design.MODE.AppEdit;
+      },
+      mode: function() {
+        return this.__mode;
+      },
+      setMode: function(m) {
+        if (this.__mode === m) {
+          return;
+        }
+        this.__mode = m;
+        this.preserveName();
+        this.trigger("change:mode", m);
+      },
+      initializing: function() {
+        return this.__initializing;
+      },
+      use: function() {
+        __instance = this;
+        return this;
+      },
+      unuse: function() {
+        if (__instance === this) {
+          __instance = null;
+        }
+      },
+      component: function(uid) {
+        return this.__componentMap[uid];
+      },
+      componentsOfType: function(type) {
+        return this.classCacheForCid(Design.modelClassForType(type).prototype.classId).slice(0);
+      },
+      eachComponent: function(func, context) {
+        var comp, uid, _ref;
+        console.assert(_.isFunction(func), "User must pass in a function for Design.instance().eachComponent()");
+        context = context || this;
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (func.call(context, comp) === false) {
+            break;
+          }
+        }
+        return null;
+      },
+      isModified: function() {
+        var backing, newData;
+        if (this.modeIsApp()) {
+          console.warn("Testing Design.isModified() in app mode and visualize mode. This should not be happening.");
+          return false;
+        }
+        backing = this.__opsModel.getJsonData();
+        if (this.attributes.name !== backing.name) {
+          return true;
+        }
+        newData = this.serialize();
+        if (_.isEqual(backing.component, newData.component)) {
+          if (_.isEqual(backing.layout, newData.layout)) {
+            return false;
+          }
+        }
+        return true;
+      },
+      serialize: function(options) {
+        var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        currentDesignObj = Design.instance();
+        this.use();
+        console.debug("Design is serializing.");
+        component_data = {};
+        layout_data = {};
+        connections = [];
+        mockArray = [];
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.isRemoved()) {
+            console.warn("Resource has been removed, yet it remains in cache when serializing :", comp);
+            continue;
+          }
+          if (comp.node_line) {
+            connections.push(comp);
+            continue;
+          }
+          try {
+            json = comp.serialize(options);
+
+            /* env:prod */
+          } catch (_error) {
+            error = _error;
+            console.error("Error occur while serializing", error);
+
+            /* env:prod:end */
+          } finally {
+
+          }
+          if (!json) {
+            continue;
+          }
+          if (!_.isArray(json)) {
+            mockArray[0] = json;
+            json = mockArray;
+          }
+          for (_i = 0, _len = json.length; _i < _len; _i++) {
+            j = json[_i];
+            if (j.component) {
+              console.assert(j.component.uid, "Serialized JSON data has no uid.");
+              console.assert(!component_data[j.component.uid], "ResourceModel cannot modify existing JSON data.");
+              component_data[j.component.uid] = j.component;
+            }
+            if (j.layout) {
+              layout_data[j.layout.uid] = j.layout;
+            }
+          }
+        }
+        for (_j = 0, _len1 = connections.length; _j < _len1; _j++) {
+          c = connections[_j];
+          p1 = c.port1Comp();
+          p2 = c.port2Comp();
+          if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
+            try {
+              c.serialize(component_data, layout_data);
+
+              /* env:prod */
+            } catch (_error) {
+              error = _error;
+              console.error("Error occur while serializing", error);
+
+              /* env:prod:end */
+            } finally {
+
+            }
+          } else {
+            console.error("Serializing an connection while one of the port is isRemoved() or null");
+          }
+        }
+        data = $.extend(true, {}, this.attributes);
+        data.component = component_data;
+        data.layout = layout_data;
+        _ref1 = this.constructor.__serializeVisitors || [];
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          visitor = _ref1[_k];
+          visitor(component_data, layout_data, options);
+        }
+        data.layout.size = data.canvasSize;
+        delete data.canvasSize;
+        data.property = this.attributes.property || {};
+        data.version = "2014-02-17";
+        data.state = this.__opsModel.getStateDesc() || "Enabled";
+        data.id = this.__opsModel.get("id");
+        if (currentDesignObj) {
+          currentDesignObj.use();
+        }
+        return data;
+      },
+      serializeAsStack: function(new_name) {
+        var json;
+        json = this.serialize({
+          toStack: true
+        });
+        json.name = new_name || json.name;
+        json.state = "Enabled";
+        json.id = "";
+        json.owner = "";
+        json.usage = "";
+        delete json.history;
+        delete json.stack_id;
+        return json;
+      },
+      preserveName: function() {
+        var comp, names, uid, _ref;
+        if (!this.modeIsAppEdit()) {
+          return;
+        }
+        this.__preservedNames = {};
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          names = this.__preservedNames[comp.type] || (this.__preservedNames[comp.type] = {});
+          names[comp.get("name")] = true;
+        }
+      },
+      isPreservedName: function(type, name) {
+        var names;
+        if (!this.modeIsAppEdit()) {
+          return false;
+        }
+        if (!this.__preservedNames) {
+          return false;
+        }
+        names = this.__preservedNames[type];
+        return names && names[name];
+      },
+      getCost: function(stopped) {
+        return {
+          costList: [],
+          totalFee: 0
+        };
+      }
+    }, {
+      TYPE: {
+        Vpc: "ec2-vpc"
+      },
+      MODE: {
+        Stack: "stack",
+        App: "app",
+        AppEdit: "appedit"
+      },
+      EVENT: {
+        ChangeResource: "CHANGE_RESOURCE",
+        AddResource: "ADD_RESOURCE",
+        RemoveResource: "REMOVE_RESOURCE",
+        Deserialized: "DESERIALIZED"
+      },
+      registerModelClass: function(type, modelClass, resolveFirst) {
+        __modelClassMap[type] = modelClass;
+        if (resolveFirst) {
+          __resolveFirstMap[type] = resolveFirst;
+        }
+        return null;
+      },
+      registerSerializeVisitor: function(func) {
+        if (!this.__serializeVisitors) {
+          this.__serializeVisitors = [];
+        }
+        this.__serializeVisitors.push(func);
+        return null;
+      },
+      registerDeserializeVisitor: function(func) {
+        if (!this.__deserializeVisitors) {
+          this.__deserializeVisitors = [];
+        }
+        this.__deserializeVisitors.push(func);
+        return null;
+      },
+      instance: function() {
+        return __instance;
+      },
+      modelClassForType: function(type) {
+        return __modelClassMap[type];
+      },
+      modelClassForPorts: function(port1, port2) {
+        var type;
+        if (port1 < port2) {
+          type = port1 + ">" + port2;
+        } else {
+          type = port2 + ">" + port1;
+        }
+        return __modelClassMap[type];
+      },
+      lineModelClasses: function() {
+        var cs, modelClass, type;
+        if (this.__lineModelClasses) {
+          return this.__lineModelClasses;
+        }
+        this.__lineModelClasses = cs = [];
+        for (type in __modelClassMap) {
+          modelClass = __modelClassMap[type];
+          if (modelClass.__isLineClass && type.indexOf(">") === -1) {
+            cs.push(modelClass);
+          }
+        }
+        return this.__lineModelClasses;
+      }
+    });
+    return Design;
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", 'AppAction', "CloudResources", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang, appAction, CloudResources) {
     Handlebars.registerHelper("awsAmiIcon", function(amiId, region) {
       var ami;
       ami = CloudResources(constant.RESTYPE.AMI, region).get(amiId);
@@ -2028,7 +2591,7 @@ function program26(depth0,data) {
       importJson: function() {
         var hanldeFile, modal, reader, zone;
         modal = new Modal({
-          title: lang.ide.POP_IMPORT_JSON_TIT,
+          title: lang.IDE.POP_IMPORT_JSON_TIT,
           template: tplPartials.importJSON(),
           width: "470",
           disableFooter: true
@@ -2046,7 +2609,7 @@ function program26(depth0,data) {
           return null;
         };
         reader.onerror = function() {
-          $("#import-json-error").html(lang.ide.POP_IMPORT_ERROR);
+          $("#import-json-error").html(lang.IDE.POP_IMPORT_ERROR);
           return null;
         };
         hanldeFile = function(evt) {
@@ -2087,7 +2650,9 @@ function program26(depth0,data) {
         return App.openOps($(event.currentTarget).attr("data-id"));
       },
       createStack: function(event) {
-        return App.createOps($(event.currentTarget).attr("data-region") || this.region);
+        var $tgt;
+        $tgt = $(event.currentTarget);
+        return App.createOps($tgt.attr("data-region") || this.region, $tgt.attr("data-cloud"), $tgt.attr("data-provider"));
       },
       markUpdated: function() {
         this.lastUpdate = +(new Date());
@@ -2145,7 +2710,7 @@ function program26(depth0,data) {
           return self.updateVisModel();
         }, 60 * 8 * 1000 + 1000);
         this.visModal = new Modal({
-          title: "Import Existing VPC as App",
+          title: lang.IDE.DASH_IMPORT_VPC_AS_APP,
           width: "770",
           template: VisualizeVpcTpl(attributes),
           disableFooter: true,
@@ -2236,142 +2801,142 @@ function program26(depth0,data) {
         switch (type) {
           case "SUBSCRIPTION":
             return {
-              title: data.Endpoint,
-              Endpoint: data.Endpoint,
-              Owner: data.Owner,
-              Protocol: data.Protocol,
-              "Subscription ARN": data.SubscriptionArn,
-              "Topic ARN": data.TopicArn
+              DASH_LBL_TITLE: data.Endpoint,
+              DASH_LBL_ENDPOINT: data.Endpoint,
+              DASH_LBL_OWNER: data.Owner,
+              DASH_LBL_PROTOCOL: data.Protocol,
+              DASH_LBL_SUBSCRIPTION_ARN: data.SubscriptionArn,
+              DASH_LBL_TOPIC_ARN: data.TopicArn
             };
           case "VPC":
             return {
-              State: data.state,
-              CIDR: data.cidrBlock,
-              Tenancy: data.instanceTenancy
+              DASH_LBL_STATE: data.state,
+              DASH_LBL_CIDR: data.cidrBlock,
+              DASH_LBL_TENANCY: data.instanceTenancy
             };
           case "ASG":
             return {
-              "title": data.Name,
-              "Name": data.Name,
-              "Availability Zone": data.AvailabilityZones.join(", "),
-              "Create Time": data.CreatedTime,
-              "Default Cooldown": data.DefaultCooldown,
-              "Desired Capacity": data.DesiredCapacity,
-              "Max Size": data.MaxSize,
-              "Min Size": data.MinSize,
-              "HealthCheck Grace Period": data.HealthCheckGracePeriod,
-              "Health Check Type": data.HealthCheckType,
-              "Launch Configuration": data.LaunchConfigurationName,
-              "Termination Policy": data.TerminationPolicies.join(", "),
-              "Arn": data.id
+              DASH_LBL_TITLE: data.Name,
+              DASH_BUB_NAME: data.Name,
+              DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZones.join(", "),
+              DASH_LBL_CREATE_TIME: data.CreatedTime,
+              DASH_LBL_DEFAULT_COOLDOWN: data.DefaultCooldown,
+              DASH_LBL_DESIRED_CAPACITY: data.DesiredCapacity,
+              DASH_LBL_MAX_SIZE: data.MaxSize,
+              DASH_LBL_MIN_SIZE: data.MinSize,
+              DASH_LBL_HEALTH_CHECK_GRACE_PERIOD: data.HealthCheckGracePeriod,
+              DASH_LBL_HEALTH_CHECK_TYPE: data.HealthCheckType,
+              DASH_LBL_LAUNCH_CONFIGURATION_NAME: data.LaunchConfigurationName,
+              DASH_LBL_TERMINATION_POLICIES: data.TerminationPolicies.join(", "),
+              DASH_LBL_AUTOSCALING_GROUP_ARN: data.id
             };
           case "ELB":
             return {
-              "Availability Zone": data.AvailabilityZones.join(", "),
-              "Create Time": data.CreatedTime,
-              "DNSName": data.DNSName,
-              "Health Check": this.formartDetail('HealthCheck', [data.HealthCheck], "Health Check", true),
-              "Instance": data.Instances.join(", "),
-              "Listener Descriptions": this.formartDetail('ListenerDescriptions', _.pluck(data.ListenerDescriptions.member, "Listener"), "Listener Descriptions", true),
-              "Security Groups": data.SecurityGroups.join(", "),
-              Subnets: data.Subnets.join(", ")
+              DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZones.join(", "),
+              DASH_LBL_CREATE_TIME: data.CreatedTime,
+              DASH_LBL_DNS_NAME: data.DNSName,
+              DASH_LBL_HEALTH_CHECK: this.formartDetail('HealthCheck', [data.HealthCheck], "Health Check", true),
+              DASH_LBL_INSTANCE: data.Instances.join(", "),
+              DASH_LBL_LISTENER_DESC: this.formartDetail('ListenerDescriptions', _.pluck(data.ListenerDescriptions.member, "Listener"), "Listener Descriptions", true),
+              DASH_LBL_SECURITY_GROUPS: data.SecurityGroups.join(", "),
+              DASH_LBL_SUBNETS: data.Subnets.join(", ")
             };
           case "VPN":
             return {
-              State: data.state,
-              "VGW Id": data.vpnGatewayId,
-              "CGW Id": data.customerGatewayId,
-              Type: data.type
+              DASH_LBL_STATE: data.state,
+              DASH_LBL_VGW_ID: data.vpnGatewayId,
+              DASH_LBL_CGW_ID: data.customerGatewayId,
+              DASH_LBL_TYPE: data.type
             };
           case "VOL":
             return {
-              "Volume ID": data.id,
-              "Device Name": data.device,
-              "Snapshot ID": data.snapshotId,
-              "Volume Size(GiB)": data.size,
-              "Status": data.status,
-              "Instance Id": data.instanceId,
-              'Delete on Termination': data.deleteOnTermination,
-              "Availability Zone": data.availabilityZone,
-              "Volume Type": data.volumeType,
-              "Create Time": data.createTime,
-              "Attach Time": data.attachTime
+              DASH_LBL_VOLUME_ID: data.id,
+              DASH_LBL_DEVICE_NAME: data.device,
+              DASH_LBL_SNAPSHOT_ID: data.snapshotId,
+              DASH_LBL_VOLUME_SIZE: data.size,
+              DASH_LBL_STATUS: data.status,
+              DASH_LBL_INSTANCE_ID: data.instanceId,
+              DASH_LBL_DELETE_ON_TERM: data.deleteOnTermination,
+              DASH_LBL_AVAILABILITY_ZONE: data.availabilityZone,
+              DASH_LBL_VOLUME_TYPE: data.volumeType,
+              DASH_LBL_CREATE_TIME: data.createTime,
+              DASH_LBL_ATTACH_TIME: data.attachTime
             };
           case "INSTANCE":
             return {
-              Status: data.instanceState.name,
-              Monitoring: data.monitoring.state,
-              "Primary Private IP": data.privateIpAddress,
-              "Private DNS": data.privateDnsName,
-              "Launch Time": data.launchTime,
-              "Availability Zone": data.placement.availabilityZone,
-              "AMI Launch Index": data.amiLaunchIndex,
-              "Instance Type": data.instanceType,
-              "Block Device Type": data.rootDeviceType,
-              "Block Devices": data.blockDeviceMapping ? this.formartDetail("BlockDevice", data.blockDeviceMapping, "deviceName") : null,
-              "Network Interface": data.networkInterfaceSet ? this.formartDetail("ENI", data.networkInterfaceSet, "networkInterfaceId") : null
+              DASH_LBL_STATUS: data.instanceState.name,
+              DASH_LBL_MONITORING: data.monitoring.state,
+              DASH_LBL_PRIMARY_PRIVATE_IP: data.privateIpAddress,
+              DASH_LBL_PRIVATE_DNS: data.privateDnsName,
+              DASH_LBL_LAUNCH_TIME: data.launchTime,
+              DASH_LBL_AVAILABILITY_ZONE: data.placement.availabilityZone,
+              DASH_LBL_AMI_LAUNCH_INDEX: data.amiLaunchIndex,
+              DASH_LBL_INSTANCE_TYPE: data.instanceType,
+              DASH_LBL_BLOCK_DEVICE_TYPE: data.rootDeviceType,
+              DASH_LBL_BLOCK_DEVICES: data.blockDeviceMapping ? this.formartDetail("BlockDevice", data.blockDeviceMapping, "deviceName") : null,
+              DASH_LBL_NETWORK_INTERFACE: data.networkInterfaceSet ? this.formartDetail("ENI", data.networkInterfaceSet, "networkInterfaceId") : null
             };
           case 'EIP':
             result = {
-              'Public IP': data.publicIp,
-              'Domain': data.domain,
-              'Allocation ID': data.id,
-              'Category': data.category,
-              'title': data.publicIp
+              DASH_LBL_PUBLIC_IP: data.publicIp,
+              DASH_LBL_DOMAIN: data.domain,
+              DASH_LBL_ALLOCATION_ID: data.id,
+              DASH_LBL_CATEGORY: data.category,
+              DASH_LBL_TITLE: data.publicIp
             };
             if (data.associationId) {
-              result['Association Id'] = data.associationId;
+              result.DASH_LBL_ASSOCIATION_ID = data.associationId;
             }
             if (data.networkInterfaceId) {
-              result['NetworkInterface Id'] = data.networkInterfaceId;
+              result.DASH_LBL_NETWORK_INTERFACE_ID = data.networkInterfaceId;
             }
             if (data.instanceId) {
-              result['Instance Id'] = data.instanceId;
+              result.DASH_LBL_INSTANCE_ID = data.instanceId;
             }
             if (data.privateIpAddresse) {
-              result['Private Ip Address'] = data.privateIpAddresses;
+              result.DASH_LBL_PRIVATE_IP_ADDRESS = data.privateIpAddresses;
             }
             return result;
           case 'CW':
             return {
-              'Alarm Name': data.Name,
-              'Comparison Operator': data.ComparisonOperator,
-              'Dimensions': this.formartDetail('Dimensions', data.Dimensions, 'Dimensions', true),
-              'Evaluation Periods': data.EvaluationPeriods,
-              'Insufficient Data Actions': data.InsufficientDataActions,
-              'Metric Name': data.MetricName,
-              "Name Space": data.Namespace,
-              'OK Actions': data.OKActions,
-              'Period': data.Period,
-              'State Reason': data.StateReason,
-              'State Updated Timestamp': data.StateUpdatedTimestamp,
-              'State Value': data.StateValue,
-              'Statistic': data.Statistic,
-              'Threshold': data.Threshold,
-              'Category': data.category,
-              'title': data.Name,
-              'Actions Enabled': data.ActionsEnabled ? "true" : 'false',
-              'Alarm Actions': data.AlarmActions.member,
-              'Alarm Arn': data.id
+              DASH_LBL_ALARM_NAME: data.Name,
+              DASH_LBL_COMPARISON_OPERATOR: data.ComparisonOperator,
+              DASH_LBL_DIMENSIONS: this.formartDetail('Dimensions', data.Dimensions, 'Dimensions', true),
+              DASH_LBL_EVALUATION_PERIODS: data.EvaluationPeriods,
+              DASH_LBL_INSUFFICIENT_DATA_ACTIONS: data.InsufficientDataActions,
+              DASH_LBL_METRIC_NAME: data.MetricName,
+              DASH_LBL_NAMESPACE: data.Namespace,
+              DASH_LBL_OK_ACTIONS: data.OKActions,
+              DASH_LBL_PERIOD: data.Period,
+              DASH_LBL_STATE_REGION: data.StateReason,
+              DASH_LBL_STATE_UPDATED_TIMESTAMP: data.StateUpdatedTimestamp,
+              DASH_LBL_STATE_VALUE: data.StateValue,
+              DASH_LBL_STATISTIC: data.Statistic,
+              DASH_LBL_THRESHOLD: data.Threshold,
+              DASH_LBL_CATEGORY: data.category,
+              DASH_LBL_TITLE: data.Name,
+              DASH_LBL_ACTIONS_ENABLED: data.ActionsEnabled ? "true" : 'false',
+              DASH_LBL_ALARM_ACTIONS: data.AlarmActions.member,
+              DASH_LBL_ALARM_ARN: data.id
             };
           case "DBINSTANCE":
             json = {
-              "Status": data.DBInstanceStatus,
-              "Endpoint": data.Endpoint.Address + "" + data.Endpoint.Port,
-              "Engine": data.Engine,
-              "DB Name": data.name || data.Name || data.DBName || "None",
-              "Option Group": ((_ref = data.OptionGroupMemberships) != null ? (_ref1 = _ref.OptionGroupMembership) != null ? _ref1.OptionGroupName : void 0 : void 0) || "None",
-              "Parameter Group": ((_ref2 = data.DBParameterGroups) != null ? _ref2.DBParameterGroupName : void 0) || "None",
-              "Availability Zone": data.AvailabilityZone,
-              "Subnet Group": data.sbgId || "None",
-              "Publicly Accessible": data.PubliclyAccessible.toString(),
-              "IOPS": data.Iops || "OFF",
-              "Multi AZ": data.MultiAZ.toString(),
-              "Automated Backup": data.AutoMinorVersionUpgrade,
-              "Latest Restore Time": data.LatestRestorableTime,
-              "Auto Minor Version Upgrade": data.AutoMinorVersionUpgrade,
-              "Maintenance Window": data.PreferredMaintenanceWindow,
-              "Backup Window": data.PreferredBackupWindow
+              DASH_LBL_STATUS: data.DBInstanceStatus,
+              DASH_LBL_ENDPOINT: data.Endpoint.Address + "" + data.Endpoint.Port,
+              DASH_LBL_ENGINE: data.Engine,
+              DASH_LBL_DB_NAME: data.name || data.Name || data.DBName || "None",
+              DASH_LBL_OPTION_GROUP: ((_ref = data.OptionGroupMemberships) != null ? (_ref1 = _ref.OptionGroupMembership) != null ? _ref1.OptionGroupName : void 0 : void 0) || "None",
+              DASH_LBL_PARAMETER_GROUP: ((_ref2 = data.DBParameterGroups) != null ? _ref2.DBParameterGroupName : void 0) || "None",
+              DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZone,
+              DASH_LBL_SUBNET_GROUP: data.sbgId || "None",
+              DASH_LBL_PUBLICLY_ACCESSIBLE: data.PubliclyAccessible.toString(),
+              DASH_LBL_IOPS: data.Iops || "OFF",
+              DASH_LBL_MULTI_AZ: data.MultiAZ.toString(),
+              DASH_LBL_AUTOMATED_BACKUP: data.AutoMinorVersionUpgrade,
+              DASH_LBL_LATEST_RESTORE_TIME: data.LatestRestorableTime,
+              DASH_LBL_AUTO_MINOR_VERSION_UPGRADE: data.AutoMinorVersionUpgrade,
+              DASH_LBL_MAINTENANCE_WINDOW: data.PreferredMaintenanceWindow,
+              DASH_LBL_BACKUP_WINDOW: data.PreferredBackupWindow
             };
             return json;
         }
@@ -2780,7 +3345,7 @@ function program26(depth0,data) {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('workspaces/Dashboard',["Workspace", "workspaces/dashboard/DashboardView", "workspaces/dashboard/DashboardModel"], function(Workspace, DashboardView, DashboardModel) {
+  define('workspaces/Dashboard',["Workspace", "workspaces/dashboard/DashboardView", "workspaces/dashboard/DashboardModel", 'i18n!/nls/lang.js'], function(Workspace, DashboardView, DashboardModel, lang) {
     var Dashboard;
     Dashboard = (function(_super) {
       __extends(Dashboard, _super);
@@ -2798,7 +3363,7 @@ function program26(depth0,data) {
       };
 
       Dashboard.prototype.title = function() {
-        return "Dashboard";
+        return lang.IDE.NAV_TIT_DASHBOARD;
       };
 
       Dashboard.prototype.url = function() {
@@ -2869,10 +3434,6 @@ function program26(depth0,data) {
         } else {
           this.view[method].apply(this.view, args);
         }
-      };
-
-      Dashboard.prototype.isDashboard = function() {
-        return true;
       };
 
       return Dashboard;

@@ -150,10 +150,31 @@
 define('ide/subviews/SessionDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\n  </footer>\n  </div>\n</section>";
+  buffer += "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
+    + "</p>\n    </div>\n    <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
+    + "</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_RECONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_RECONNECT_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n</section>";
+  return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
@@ -198,7 +219,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           };
         })(this), function(error) {
           $("#SessionConnect").removeAttr("disabled");
-          notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
+          notification('error', lang.NOTIFY.WARN_AUTH_FAILED);
           $("#SessionPassword").toggleClass("parsley-error", true);
         });
       },
@@ -225,20 +246,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\n\n  <section class=\"dropdown\" >\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
+  buffer += "<nav id=\"header\">\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
+    + "</a>\n\n  <section class=\"dropdown\" >\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
     + "</div>\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
     + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
     + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
     + "</li>\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
     + "</a></li>\n      <li id=\"HeaderSettings\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
     + "</li>\n      <li id=\"HeaderLogout\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
     + "</li>\n    </ul>\n  </section>\n</nav>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
@@ -369,7 +392,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
     + "</p><div class=\"loading-spinner\"></div></div>\n    <div id=\"CredUpdating\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"><button class=\"btn btn-blue right\" id=\"TokenCreate\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
     + "</button>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
@@ -429,12 +452,12 @@ function program3(depth0,data) {
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
           awsSecretKey: App.user.get("awsSecretKey"),
-          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
           credNeeded: !!App.model.appList().length
         };
         this.modal = new Modal({
           template: SettingsTpl(attributes),
-          title: lang.ide.HEAD_LABEL_SETTING,
+          title: lang.IDE.HEAD_LABEL_SETTING,
           disableFooter: true,
           compact: true,
           width: "490px"
@@ -448,7 +471,7 @@ function program3(depth0,data) {
           if (tab === SettingsDialog.TAB.CredentialInvalid) {
             this.showCredSetup();
             this.modal.tpl.find(".modal-close").hide();
-            this.modal.tpl.find("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+            this.modal.tpl.find("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           }
           if (tab < 0) {
             tab = Math.abs(tab);
@@ -465,7 +488,7 @@ function program3(depth0,data) {
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
           awsSecretKey: App.user.get("awsSecretKey"),
-          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
         };
         this.modal.setContent(SettingsTpl(attributes));
         return this.modal.$("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
@@ -507,19 +530,19 @@ function program3(depth0,data) {
         old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
         new_pwd = this.modal.$("#AccountNewPwd").val() || "";
         if (new_pwd.length < 6) {
-          this.modal.$('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
+          this.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_ERR_INVALID_PWD);
           return;
         }
         this.modal.$("#AccountInfo").empty();
         this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
         App.user.changePassword(old_pwd, new_pwd).then(function() {
-          notification('info', lang.ide.SETTINGS_UPDATE_PWD_SUCCESS);
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS);
           $("#AccountCancelPwd").click();
         }, function(err) {
           if (err.error === 2) {
-            that.modal.$('#AccountInfo').html("" + lang.ide.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.ide.SETTINGS_INFO_FORGET_PWD + "</a>");
+            that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
           } else {
-            that.modal.$('#AccountInfo').text(lang.ide.SETTINGS_UPDATE_PWD_FAILURE);
+            that.modal.$('#AccountInfo').text(lang.NOTIFY.SETTINGS_UPDATE_PWD_FAILURE);
           }
           return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         });
@@ -552,20 +575,20 @@ function program3(depth0,data) {
         $("#AccountEmailInfo").empty();
         $("#AccountUpdateEmail").attr("disabled", "disabled");
         App.user.changeEmail(email, pwd).then(function() {
-          notification('info', lang.ide.SETTINGS_UPDATE_EMAIL_SUCCESS);
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS);
           $("#AccountCancelEmail").click();
           $(".accountEmailRO").children("span").text(App.user.get("email"));
         }, function(err) {
           var text;
           switch (err.error) {
             case 116:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL3;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;
               break;
             case 117:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL2;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;
               break;
             default:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL1;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL1;
           }
           $('#AccountEmailInfo').text(text);
           return $("#AccountUpdateEmail").removeAttr("disabled");
@@ -599,7 +622,7 @@ function program3(depth0,data) {
         App.user.changeCredential().then(function() {
           self.updateCredSettings();
         }, function() {
-          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_REMOVE);
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_REMOVE);
           self.modal.$("#modal-box .modal-close").show();
           return self.showCredSetup();
         });
@@ -626,7 +649,7 @@ function program3(depth0,data) {
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           self.modal.$("#modal-box .modal-close").show();
           self.showCredSetup();
         });
@@ -652,7 +675,7 @@ function program3(depth0,data) {
         });
       },
       showCredUpdateFail: function() {
-        this.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+        this.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
         this.modal.$("#modal-box .modal-close").show();
         return this.showCredSetup();
       },
@@ -686,7 +709,7 @@ function program3(depth0,data) {
         this.rmToken = $p.children(".tokenToken").text();
         this.modal.$("#TokenManager").hide();
         this.modal.$("#TokenRmConfirm").show();
-        this.modal.$("#TokenRmTit").text(sprintf(lang.ide.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+        this.modal.$("#TokenRmTit").text(sprintf(lang.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
       },
       createToken: function() {
         var self;
@@ -696,7 +719,7 @@ function program3(depth0,data) {
           self.updateTokenTab();
           return self.modal.$("#TokenCreate").removeAttr("disabled");
         }, function() {
-          notification("error", "Fail to create token, please retry.");
+          notification("error", lang.NOTIFY.FAIL_TO_CREATE_TOKEN);
           return self.modal.$("#TokenCreate").removeAttr("disabled");
         });
       },
@@ -722,7 +745,7 @@ function program3(depth0,data) {
         App.user.updateToken(token, newTokenName).fail(function() {
           oldName = "";
           $p.children(".tokenName").val(oldName);
-          return notification("error", "Fail to update token, please retry.");
+          return notification("error", lang.NOTIFY.FAIL_TO_UPDATE_TOKEN);
         });
       },
       confirmRmToken: function() {
@@ -733,7 +756,7 @@ function program3(depth0,data) {
           self.updateTokenTab();
           return self.cancelRmToken();
         }, function() {
-          notification("Fail to delete token, please retry.");
+          notification(lang.NOTIFY.FAIL_TO_DELETE_TOKEN);
           return self.cancelRmToken();
         });
       },
@@ -916,10 +939,10 @@ function program3(depth0,data) {
           username: App.user.get("username")
         };
         if (options && options.askForCredential) {
-          title = lang.ide.WELCOME_PROVIDE_CRED_TIT;
+          title = lang.IDE.WELCOME_PROVIDE_CRED_TIT;
           attributes.noWelcome = true;
         } else {
-          title = lang.ide.WELCOME_DIALOG_TIT;
+          title = lang.IDE.WELCOME_DIALOG_TIT;
         }
         this.modal = new Modal({
           title: title,
@@ -991,7 +1014,7 @@ function program3(depth0,data) {
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           self.showCredSetup();
         });
       },
@@ -1008,7 +1031,7 @@ function program3(depth0,data) {
         return App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
           self.done();
         }, function(err) {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
           self.showCredSetup();
         });
       },
@@ -1036,7 +1059,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_APPS", {hash:{},data:data}))
     + "</button>\n    <button class=\"off-canvas-tab selected\" id=\"off-canvas-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_STACKS", {hash:{},data:data}))
-    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">Show unused regions</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
+    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.SHOW_UNUSED_REGIONS", {hash:{},data:data}))
+    + "</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
   return buffer;
   };
 TEMPLATE.navigation=Handlebars.template(__TEMPLATE__);
@@ -1305,13 +1330,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
     + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
     + escapeExpression(((stack1 = (depth0 && depth0.msg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"confirmRmStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -1325,167 +1350,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
     + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n      <label class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
     + "</label>\n      <input id=\"confirmDupStackIpt\" class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.newName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n    </div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn btn-red\" id=\"confirmDupStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
 TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
-
-function program1(depth0,data) {
-  
-  
-  return "\n          <li>\n              EC2 instances will be started.\n          </li>\n          ";
-  }
-
-function program3(depth0,data) {
-  
-  
-  return "\n          <li>\n              DB instances will be restored from final snapshot.\n          </li>\n          ";
-  }
-
-function program5(depth0,data) {
-  
-  
-  return "\n          <li>\n              Auto Scaling Group will be recreated.\n          </li>\n          ";
-  }
-
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <div class=\"modal-shrink\">\n          <div class=\"sub-gray\">Warning</div>\n          <div class=\"error\">\n              DB instance ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.lostDBSnapshot), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "’s final snapshot is missing. This DB instance cannot be restored.\n          </div>\n      </div>\n      ";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.index), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  return buffer;
-  }
-function program9(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_START_APP", {hash:{},data:data}))
-    + "</div>\n      <ul class=\"modal-list-items\">\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasASG), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      </ul>\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lostDBSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>";
-  return buffer;
-  };
-TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <div style=\"padding: 20px\">\n        <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_ASG", {hash:{},data:data}))
-    + "</p>\n        <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n        <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n    </div>\n";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n<div class=\"modal-center-align-helper\" style=\"padding: 20px\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_LEFT", {hash:{},data:data}))
-    + " "
-    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n    <ul class=\"modal-list-items\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasAsg), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </ul>\n</div>\n";
-  return buffer;
-  }
-function program4(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            <li>\n                EC2 instances will be stopped.\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasInstanceStore), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </li>\n        ";
-  return buffer;
-  }
-function program5(depth0,data) {
-  
-  
-  return "<span class=\"error\">Instance-stored instances will be deleted.</span>";
-  }
-
-function program7(depth0,data) {
-  
-  
-  return "\n            <li>\n                DB instances will be deleted final snapshot will be taken.\n                <span>Snapshots will be restored when the app is started.</span>\n            </li>\n        ";
-  }
-
-function program9(depth0,data) {
-  
-  
-  return "\n            <li>\n                Auto Scaling Group will be deleted.\n                <span>Auto Scaling Group will be recreated when the app is started.</span>\n            </li>\n        ";
-  }
-
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n<div class=\"estimate-stop clearfix\">\n    <div>\n        <span class=\"title\">Estimated Cost When Stopped</span>\n        <span class=\"price\" id=\"label-total-fee\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b> / month</span>\n    </div>\n    <div class=\"hide\">\n        <span class=\"title\">Saving Compared to Running App</span>\n        <span class=\"price\" id=\"label-total-saving\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b>/ month</span>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -1502,118 +1379,15 @@ TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)";
+
+  buffer += "<section class=\"disconnected-msg\">\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONNECTION_LOST_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CHANGES_MAY_NOT_BE_SAVED", {hash:{},data:data}))
+    + "</div>\n</section>";
   return buffer;
-  }
-function program2(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<p>DB Instance\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cantStop), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    cannot take final snapshot.</p>\n<p>Wait for the DB instance(s) to be available. Then try to stop the app again.</p>";
-  return buffer;
-  };
-TEMPLATE.cantStop=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
-    + "</p>\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n    <div><input class=\"input\" style=\"width:430px;\" id=\"appNameConfirmIpt\"/></div>\n";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n    <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_LEFT", {hash:{},data:data}))
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_RIGHT", {hash:{},data:data}))
-    + "</div></div>\n";
-  return buffer;
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <section class=\"check-final-snapshot checkbox-wrap\">\n        <div class=\"checkbox\">\n            <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n            <label for=\"take-rds-snapshot\"></label>\n        </div>\n        <label for=\"take-rds-snapshot\">Take final snapshot for DB instances.</label>\n    </section>\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  return buffer;
-  }
-function program6(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n        <p class=\"cant-snapshot\">DB Instance\n            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            cannot take final snapshot.</p>\n    ";
-  return buffer;
-  }
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<div class=\"confirm-padding\">\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
-  return buffer;
-  };
-TEMPLATE.terminateAppConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<section class=\"disconnected-msg\">\n  <div>Connection lost. Attempting to reconnect…</div>\n  <div>Changes made now may not be saved.</div>\n</section>";
   };
 TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 
@@ -1621,15 +1395,17 @@ TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>Force to delete app</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">The app "
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " failed to terminate. Do you want to force deleting it? After force deleting it, you need to manually manage the resource in aws console.</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DELETE_STACK", {hash:{},data:data}))
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE_CONTENT", (depth0 && depth0.name), {hash:{},data:data}))
+    + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -1672,7 +1448,7 @@ return TEMPLATE; });
         if (App.canQuit()) {
           return void 0;
         } else {
-          return lang.ide.BEFOREUNLOAD_MESSAGE;
+          return lang.IDE.BEFOREUNLOAD_MESSAGE;
         }
       },
       globalKeyEvent: function(event) {
@@ -1759,7 +1535,7 @@ return TEMPLATE; });
           model.terminate(true).fail(function(err) {
             var error;
             error = err.awsError ? err.error + "." + err.awsError : err.error;
-            return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
+            return notification(sprintf(lang.NOTIFY.ERROR_FAILED_TERMINATE, name, error));
           });
         });
       }
@@ -1779,7 +1555,11 @@ return TEMPLATE; });
 
 (function() {
   define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", "backbone"], function(ApiRequest, constant, CloudResources, ThumbUtil) {
-    var OpsModel, OpsModelState, OpsModelStateDesc;
+    var KnownOpsModelClass, OpsModel, OpsModelState, OpsModelStateDesc, __detailExtend;
+    KnownOpsModelClass = {};
+    __detailExtend = Backbone.Model.extend;
+
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        env:dev:end */
     OpsModelState = {
       UnRun: 0,
       Running: 1,
@@ -1794,14 +1574,35 @@ return TEMPLATE; });
     };
     OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
     OpsModel = Backbone.Model.extend({
+      type: "GenericOps",
       defaults: function() {
         return {
           updateTime: +(new Date()),
           region: "",
           state: OpsModelState.UnRun,
           stoppable: true,
-          name: ""
+          name: "",
+          cloudType: "",
+          provider: ""
         };
+      },
+      constructor: function(attr, opts) {
+        var Model, cloudType, type;
+        attr = attr || {};
+        opts = opts || {};
+        if (this.type === "GenericOps") {
+          if (opts.jsonData) {
+            cloudType = opts.jsonData.cloud_type;
+          }
+          cloudType = cloudType || attr.cloudType || "aws";
+          type = cloudType.replace(/[a-z]/, function(w) {
+            return w.toUpperCase();
+          }) + "Ops";
+          console.assert(KnownOpsModelClass[type], "Cannot find specific OpsModel for cloudType: " + cloudType);
+          Model = KnownOpsModelClass[type];
+          return new Model(attr, opts);
+        }
+        Backbone.Model.apply(this, arguments);
       },
       initialize: function(attr, options) {
         if (options) {
@@ -1836,7 +1637,7 @@ return TEMPLATE; });
         return !this.isStack();
       },
       isImported: function() {
-        return !!this.attributes.importVpcId;
+        return !!this.attributes.importMsrId;
       },
       testState: function(state) {
         return this.attributes.state === state;
@@ -1870,22 +1671,8 @@ return TEMPLATE; });
         }
         return !!(this.get("id") && state !== OpsModelState.Destroyed);
       },
-      getVpcId: function() {
-        var comp, uid, _ref;
-        if (this.get("importVpcId")) {
-          return this.get("importVpcId");
-        }
-        if (!this.__jsonData) {
-          return void 0;
-        }
-        _ref = this.__jsonData.component;
-        for (uid in _ref) {
-          comp = _ref[uid];
-          if (comp.type === constant.RESTYPE.VPC) {
-            return comp.resource.VpcId;
-          }
-        }
-        return void 0;
+      getMsrId: function() {
+        return this.get("importMsrId") || void 0;
       },
       getThumbnail: function() {
         return ThumbUtil.fetch(this.get("id"));
@@ -1948,12 +1735,20 @@ return TEMPLATE; });
         if (!this.isImported()) {
           return;
         }
-        return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
+        return CloudResources("OpsResource", this.getMsrId()).init(this.get("region")).fetchForceDedup().then(function() {
           return self.__onFjdImported();
         });
       },
       generateJsonFromRes: function() {
-        return CloudResources('OpsResource', this.getVpcId()).generatedJson;
+        var json;
+        json = CloudResources('OpsResource', this.getMsrId()).generatedJson;
+        if (!json.agent.module.repo) {
+          json.agent.module = {
+            repo: App.user.get("repo"),
+            tag: App.user.get("tag")
+          };
+        }
+        return json;
       },
       __onFjdImported: function() {
         var json;
@@ -2064,19 +1859,20 @@ return TEMPLATE; });
         }).then(function(res) {
           var attr;
           attr = {
-            name: res.name,
+            name: newJson.name,
             updateTime: +(new Date()),
-            stoppable: res.property.stoppable,
+            stoppable: newJson.property.stoppable,
             state: OpsModelState.UnRun
           };
           if (!self.get("id")) {
-            attr.id = res.id;
+            attr.id = res;
+            newJson.id = res;
           }
           if (thumbnail) {
-            ThumbUtil.save(self.get("id") || attr.id, thumbnail);
+            ThumbUtil.save(self.id || attr.id, thumbnail);
           }
           self.set(attr);
-          self.__jsonData = res;
+          self.__jsonData = newJson;
           self.trigger("jsonDataSaved", self);
           if (attr.id) {
             self.collection.__triggerUpdate(self);
@@ -2123,6 +1919,8 @@ return TEMPLATE; });
             state: OpsModelState.Initializing,
             progress: 0,
             region: region,
+            cloudType: toRunJson.cloud_type,
+            provider: toRunJson.provider,
             usage: toRunJson.usage,
             updateTime: +(new Date()),
             stoppable: toRunJson.property.stoppable,
@@ -2140,7 +1938,9 @@ return TEMPLATE; });
         thumbnail = ThumbUtil.fetch(this.get("id"));
         attr = $.extend(true, {}, this.attributes, {
           name: name,
-          updateTime: +(new Date())
+          updateTime: +(new Date()),
+          cloudType: this.get("cloudType"),
+          provider: this.get("provider")
         });
         collection = this.collection;
         return ApiRequest("stack_save_as", {
@@ -2189,13 +1989,10 @@ return TEMPLATE; });
           throw err;
         });
       },
-      terminate: function(force, create_db_snapshot) {
-        var oldState, self;
+      terminate: function(force, extraOption) {
+        var oldState, options, self;
         if (force == null) {
           force = false;
-        }
-        if (create_db_snapshot == null) {
-          create_db_snapshot = false;
         }
         if (!this.isApp()) {
           return this.__returnErrorPromise();
@@ -2205,13 +2002,13 @@ return TEMPLATE; });
         this.attributes.progress = 0;
         this.attributes.terminateFail = false;
         self = this;
-        return ApiRequest("app_terminate", {
+        options = $.extend({
           region_name: this.get("region"),
           app_id: this.get("id"),
           app_name: this.get("name"),
-          flag: force,
-          create_snapshot: create_db_snapshot
-        }).then(function() {
+          flag: force
+        }, extraOption || {});
+        return ApiRequest("app_terminate", options).then(function() {
           if (force) {
             self.__destroy();
           }
@@ -2260,7 +2057,7 @@ return TEMPLATE; });
           self.__jsonData = null;
           return self.fetchJsonData().then(function() {
             self.__updateAppDefer = null;
-            self.importVpcId = void 0;
+            self.importMsrId = void 0;
             return self.set({
               name: newJson.name,
               state: OpsModelState.Running
@@ -2302,7 +2099,7 @@ return TEMPLATE; });
           if (!self.id) {
             self.attributes.requestId = res[0];
           }
-          self.attributes.importVpcId = void 0;
+          self.attributes.importMsrId = void 0;
         }, function(error) {
           return self.__saveAppDefer.reject(error);
         });
@@ -2426,13 +2223,14 @@ return TEMPLATE; });
         return console.info("OpsModel's destroy() doesn't do anything. You probably want to call remove(), stop() or terminate()");
       },
       __destroy: function() {
-        var _ref;
+        var msrId, _ref;
         if (this.attributes.state === OpsModelState.Destroyed) {
           return;
         }
         ThumbUtil.remove(this.get("id"));
-        if (this.getVpcId()) {
-          if ((_ref = CloudResources("OpsResource", this.getVpcId())) != null) {
+        msrId = this.getMsrId();
+        if (msrId) {
+          if ((_ref = CloudResources("OpsResource", msrId)) != null) {
             _ref.destroy();
           }
         }
@@ -2455,6 +2253,8 @@ return TEMPLATE; });
           state: "Enabled",
           version: "2014-02-17",
           component: {},
+          cloud_type: this.get("cloudType"),
+          provider: this.get("provider"),
           layout: {
             size: [240, 240]
           },
@@ -2469,6 +2269,493 @@ return TEMPLATE; });
             stoppable: true
           }
         };
+      },
+      __initJsonData: function() {
+        this.__jsonData = this.__createRawJson();
+      }
+    }, {
+      extend: function(protoProps, staticProps) {
+        var subClass;
+        subClass = __detailExtend.call(this, protoProps, staticProps);
+        KnownOpsModelClass[protoProps.type] = subClass;
+        return subClass;
+      }
+    });
+    OpsModel.State = OpsModelState;
+    return OpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The collection for stack / app
+----------------------------
+
+  This collection will trigger an "update" event when the list ( containing all visible items ) is changed.
+ */
+
+(function() {
+  define('ide/submodels/OpsCollection',["OpsModel", "constant", "backbone"], function(OpsModel, constant) {
+    return Backbone.Collection.extend({
+      model: OpsModel,
+      newNameTmpl: "untitled",
+      comparator: function(m1, m2) {
+        return -(m1.attributes.updateTime - m2.attributes.updateTime);
+      },
+      initialize: function() {
+        this.on("change:updateTime", this.sort, this);
+        this.on("add remove", this.__triggerUpdate, this);
+        this.on("change:id", this.__triggerUpdate, this);
+        this.__debounceUpdate = _.debounce(function() {
+          return this.trigger("update");
+        });
+      },
+      getNewName: function(possibleName) {
+        var base, nameMap, nameMatch, newName, tmpl;
+        nameMap = this.groupBy("name");
+        base = 0;
+        if (possibleName) {
+          nameMatch = possibleName.match(/(.+)(-\d*)$/);
+          tmpl = nameMatch ? nameMatch[1] : possibleName;
+        } else {
+          tmpl = this.newNameTmpl;
+        }
+        newName = tmpl + "-0";
+        while (true) {
+          if (nameMap[newName]) {
+            base += 1;
+          } else {
+            break;
+          }
+          newName = tmpl + "-" + base;
+        }
+        return newName;
+      },
+      isNameAvailable: function(name) {
+        return name && !this.findWhere({
+          name: name
+        });
+      },
+      groupByRegion: function(includeEmptyRegion, toJSON, includeEveryOps) {
+        var R, list, m, models, r, regionMap, regions, _i, _j, _len, _len1, _ref, _ref1;
+        if (includeEmptyRegion == null) {
+          includeEmptyRegion = false;
+        }
+        if (toJSON == null) {
+          toJSON = true;
+        }
+        if (includeEveryOps == null) {
+          includeEveryOps = false;
+        }
+        regionMap = {};
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (!includeEveryOps && !m.isExisting()) {
+            continue;
+          }
+          r = m.attributes.region;
+          list = regionMap[r] || (regionMap[r] = []);
+          list.push(toJSON ? m.toJSON() : m);
+        }
+        regions = [];
+        _ref1 = constant.REGION_KEYS;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          R = _ref1[_j];
+          models = regionMap[R];
+          if (!models && !includeEmptyRegion) {
+            continue;
+          }
+          regions.push({
+            region: R,
+            regionName: constant.REGION_SHORT_LABEL[R],
+            data: models || []
+          });
+        }
+        return regions;
+      },
+      filterRecent: function(toJSON) {
+        var filters, m, now, time, _i, _len, _ref;
+        if (toJSON == null) {
+          toJSON = false;
+        }
+        now = Math.round(+(new Date()) / 1000);
+        filters = [];
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (m.testState(OpsModel.State.Terminating)) {
+            continue;
+          }
+          time = m.get("updateTime");
+          if (now - time >= 2592000) {
+            break;
+          }
+          if (toJSON) {
+            m = m.toJSON();
+            m.formatedTime = MC.intervalDate(time);
+          }
+          filters.push(m);
+        }
+        return filters;
+      },
+      __triggerUpdate: function(model) {
+        if (!model) {
+          return;
+        }
+        if (this.indexOf(model) !== -1 && !model.isExisting()) {
+          return;
+        }
+        this.__debounceUpdate();
+      },
+      add: function(model) {
+        var newName;
+        if (!this.isNameAvailable(model.get("name"))) {
+          newName = this.getNewName();
+          model.attributes.name = newName;
+          if (model.__jsonData) {
+            model.__jsonData.name = newName;
+          }
+        }
+        return Backbone.Collection.prototype.add.apply(this, arguments);
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('ide/submodels/OpsModelOs',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
+    var AwsOpsModel;
+    AwsOpsModel = OpsModel.extend({
+      type: "OpenstackOps",
+      initialize: function(attr, options) {
+        OpsModel.prototype.initialize.call(this, attr, options);
+        this.attributes.cloudType = "openstack";
+        if (!this.get("provider")) {
+          this.attributes.provider = options.jsonData.provider ? options.jsonData.provider : "awcloud";
+        }
+      },
+      getMsrId: function() {
+        var comp, msrId, uid, _ref;
+        msrId = OpsModel.prototype.getMsrId.call(this);
+        if (msrId) {
+          return msrId;
+        }
+        if (!this.__jsonData) {
+          return void 0;
+        }
+        _ref = this.__jsonData.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === constant.RESTYPE.OSNETWORK) {
+            return comp.resource.id;
+          }
+        }
+        return void 0;
+      },
+      __initJsonData: function() {
+        var json;
+        json = this.__createRawJson();
+        json.layout = {
+          size: [240, 240],
+          "83F25207-4AC4-4B88-A320-D951AC4DF5DC": {
+            coordinate: [5, 5]
+          },
+          "23B00CA6-74C3-4A25-A3A8-274A33BD9D87": {
+            coordinate: [20, 5]
+          },
+          "2A6EB27F-9D7B-4324-A998-F4C87C2ED6A1": {
+            coordinate: [34, 3],
+            size: [60, 60]
+          },
+          "CC7676DB-BDB9-4F05-8AD1-DAA0DA3B3EF6": {
+            coordinate: [36, 6],
+            size: [20, 50]
+          },
+          "2B278175-83AF-4C65-9F1C-3D0570F86DA4": {
+            coordinate: [60, 6],
+            size: [20, 50]
+          },
+          "3DF9EDE3-41C6-4DB7-93B7-E0FBBB59B142": {
+            coordinate: [42, 10]
+          },
+          "B7BE7F97-7C59-42CD-ACE5-4EC09F2D88A3": {
+            coordinate: [65, 40]
+          },
+          "4627F42F-8DB9-436A-8272-EFE26816DDB1": {
+            coordinate: [42, 40]
+          }
+        };
+        json.component = {
+          "60973E93-4180-4B27-B0B2-9440094D9F26": {
+            type: "OS::Nova::KeyPair",
+            uid: "60973E93-4180-4B27-B0B2-9440094D9F26",
+            name: "DefaultKP",
+            resource: {
+              name: "",
+              id: ""
+            }
+          },
+          "83F25207-4AC4-4B88-A320-D951AC4DF5DC": {
+            type: "OS::ExternalNetwork",
+            uid: "83F25207-4AC4-4B88-A320-D951AC4DF5DC",
+            resource: {
+              name: "ExternalNetwork",
+              id: ""
+            }
+          },
+          "3DF9EDE3-41C6-4DB7-93B7-E0FBBB59B142": {
+            type: "OS::Nova::Server",
+            uid: "3DF9EDE3-41C6-4DB7-93B7-E0FBBB59B142",
+            resource: {
+              name: "webserver",
+              flavor: "6",
+              image: "2e973595-7f72-4528-a69f-9cf070e445af",
+              meta: "",
+              userdata: "",
+              availabilityZone: "",
+              blockDeviceMapping: [],
+              key_name: "testkp",
+              NICS: [
+                {
+                  "port-id": "@{92C407D2-7B62-449F-83E7-E88D2A9B8369.resource.id}"
+                }
+              ],
+              adminPass: "12345678",
+              id: ""
+            }
+          },
+          "2A6EB27F-9D7B-4324-A998-F4C87C2ED6A1": {
+            type: "OS::Neutron::Network",
+            uid: "2A6EB27F-9D7B-4324-A998-F4C87C2ED6A1",
+            resource: {
+              name: "network1",
+              admin_state_up: "",
+              shared: "",
+              id: ""
+            }
+          },
+          "CC7676DB-BDB9-4F05-8AD1-DAA0DA3B3EF6": {
+            type: "OS::Neutron::Subnet",
+            uid: "CC7676DB-BDB9-4F05-8AD1-DAA0DA3B3EF6",
+            resource: {
+              name: "subnet1",
+              network_id: "@{2A6EB27F-9D7B-4324-A998-F4C87C2ED6A1.resource.id}",
+              allocation_pools: [
+                {
+                  start: "10.0.0.10",
+                  end: "10.0.0.250"
+                }
+              ],
+              gateway_ip: "10.0.0.1",
+              ip_version: "4",
+              cidr: "10.0.0.0/24",
+              enable_dhcp: true,
+              id: ""
+            }
+          },
+          "2B278175-83AF-4C65-9F1C-3D0570F86DA4": {
+            type: "OS::Neutron::Subnet",
+            uid: "2B278175-83AF-4C65-9F1C-3D0570F86DA4",
+            resource: {
+              name: "subnet2",
+              network_id: "@{2A6EB27F-9D7B-4324-A998-F4C87C2ED6A1.resource.id}",
+              allocation_pools: [
+                {
+                  start: "10.0.1.10",
+                  end: "10.0.1.250"
+                }
+              ],
+              gateway_ip: "10.0.1.1",
+              ip_version: "4",
+              cidr: "10.0.1.0/24",
+              enable_dhcp: true,
+              id: ""
+            }
+          },
+          "92C407D2-7B62-449F-83E7-E88D2A9B8369": {
+            type: "OS::Neutron::Port",
+            uid: "92C407D2-7B62-449F-83E7-E88D2A9B8369",
+            resource: {
+              name: "port-1",
+              admin_state_up: "",
+              mac_address: "",
+              fixed_ips: [
+                {
+                  subnet_id: "@{CC7676DB-BDB9-4F05-8AD1-DAA0DA3B3EF6.resource.id}",
+                  ip_address: "10.0.0.12"
+                }
+              ],
+              security_groups: ["@{E8B4645B-2713-42BF-B8C6-80C83A272D70.resource.id}"],
+              network_id: "@{2A6EB27F-9D7B-4324-A998-F4C87C2ED6A1.resource.id}",
+              id: ""
+            }
+          },
+          "E8B4645B-2713-42BF-B8C6-80C83A272D70": {
+            type: "OS::Neutron::SecurityGroup",
+            uid: "E8B4645B-2713-42BF-B8C6-80C83A272D70",
+            resource: {
+              name: "DefaultSG",
+              description: "default security group",
+              rules: [
+                {
+                  direction: "egress",
+                  ethertype: "IPv4",
+                  port_range_min: null,
+                  port_range_max: null,
+                  protocol: null,
+                  remote_group_id: null,
+                  remote_ip_prefix: null,
+                  id: ""
+                }
+              ],
+              id: ""
+            }
+          },
+          "23B00CA6-74C3-4A25-A3A8-274A33BD9D87": {
+            type: "OS::Neutron::Router",
+            uid: "23B00CA6-74C3-4A25-A3A8-274A33BD9D87",
+            resource: {
+              name: "router1",
+              external_gateway_info: {
+                network_id: "@{83F25207-4AC4-4B88-A320-D951AC4DF5DC.resource.id}"
+              },
+              admin_state_up: true,
+              id: "",
+              router_interface: [
+                {
+                  subnet_id: "@{CC7676DB-BDB9-4F05-8AD1-DAA0DA3B3EF6.resource.id}"
+                }
+              ]
+            }
+          },
+          "B7BE7F97-7C59-42CD-ACE5-4EC09F2D88A3": {
+            type: "OS::Neutron::Pool",
+            uid: "B7BE7F97-7C59-42CD-ACE5-4EC09F2D88A3",
+            resource: {
+              name: "pool1",
+              protocol: "HTTP",
+              lb_method: "ROUND_ROBIN",
+              subnet_id: "@{2B278175-83AF-4C65-9F1C-3D0570F86DA4.resource.id}",
+              healthmonitors: ["@{1A63B8E1-0470-4BA7-84CC-E956F63C9F81.resource.id}"],
+              member: [
+                {
+                  protocol_port: 80,
+                  address: "@{92C407D2-7B62-449F-83E7-E88D2A9B8369.resource.fixed_ips.0.ip_address}",
+                  weight: 1,
+                  id: ""
+                }
+              ],
+              id: ""
+            }
+          },
+          "4627F42F-8DB9-436A-8272-EFE26816DDB1": {
+            type: "OS::Neutron::VIP",
+            uid: "4627F42F-8DB9-436A-8272-EFE26816DDB1",
+            resource: {
+              name: "listener1",
+              pool_id: "@{B7BE7F97-7C59-42CD-ACE5-4EC09F2D88A3.resource.id}",
+              subnet_id: "@{CC7676DB-BDB9-4F05-8AD1-DAA0DA3B3EF6.resource.id}",
+              connection_limit: "1000",
+              protocol: "HTTP",
+              protocol_port: "80",
+              admin_state_up: "",
+              address: "10.0.0.20",
+              port_id: "",
+              security_groups: ["@{E8B4645B-2713-42BF-B8C6-80C83A272D70.resource.id}"],
+              id: ""
+            }
+          },
+          "1A63B8E1-0470-4BA7-84CC-E956F63C9F81": {
+            type: "OS::Neutron::HealthMonitor",
+            uid: "1A63B8E1-0470-4BA7-84CC-E956F63C9F81",
+            resource: {
+              type: "HTTP",
+              delay: 30,
+              timeout: 30,
+              max_retries: 3,
+              url_path: "/index.html",
+              expected_codes: "200-299",
+              id: ""
+            }
+          },
+          "A54DA416-3BE1-40C7-9A44-B7616924D0C6": {
+            type: "OS::Cinder::Volume",
+            uid: "A54DA416-3BE1-40C7-9A44-B7616924D0C6",
+            resource: {
+              availability_zone: "",
+              source_volid: "",
+              display_description: "test",
+              snapshot_id: "",
+              size: 1,
+              display_name: "vol1",
+              imageRef: "",
+              volume_type: "",
+              bootable: "",
+              server_id: "@{3DF9EDE3-41C6-4DB7-93B7-E0FBBB59B142.resource.id}",
+              mount_point: "/dev/sdf",
+              id: ""
+            }
+          }
+        };
+        this.__jsonData = json;
+      }
+    });
+    return AwsOpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
+    var AwsOpsModel;
+    AwsOpsModel = OpsModel.extend({
+      type: "AwsOps",
+      initialize: function(attr, opts) {
+        OpsModel.prototype.initialize.apply(this, arguments);
+        this.attributes.cloudType = "aws";
+        if (!this.get("provider")) {
+          this.attributes.provider = "global";
+        }
+      },
+      getMsrId: function() {
+        var comp, msrId, uid, _ref;
+        msrId = OpsModel.prototype.getMsrId.call(this);
+        if (msrId) {
+          return msrId;
+        }
+        if (!this.__jsonData) {
+          return void 0;
+        }
+        _ref = this.__jsonData.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === constant.RESTYPE.VPC) {
+            return comp.resource.VpcId;
+          }
+        }
+        return void 0;
       },
       __initJsonData: function() {
         var comp, component, id, json, l, layout, vpcId, vpcRef;
@@ -2645,136 +2932,7 @@ return TEMPLATE; });
         this.__jsonData = json;
       }
     });
-    OpsModel.State = OpsModelState;
-    return OpsModel;
-  });
-
-}).call(this);
-
-
-/*
-----------------------------
-  The collection for stack / app
-----------------------------
-
-  This collection will trigger an "update" event when the list ( containing all visible items ) is changed.
- */
-
-(function() {
-  define('ide/submodels/OpsCollection',["OpsModel", "constant", "backbone"], function(OpsModel, constant) {
-    return Backbone.Collection.extend({
-      model: OpsModel,
-      newNameTmpl: "untitled",
-      comparator: function(m1, m2) {
-        return -(m1.attributes.updateTime - m2.attributes.updateTime);
-      },
-      initialize: function() {
-        this.on("change:updateTime", this.sort, this);
-        this.on("add remove", this.__triggerUpdate, this);
-        this.on("change:id", this.__triggerUpdate, this);
-        this.__debounceUpdate = _.debounce(function() {
-          return this.trigger("update");
-        });
-      },
-      getNewName: function(possibleName) {
-        var base, nameMap, nameMatch, newName, tmpl;
-        nameMap = this.groupBy("name");
-        base = 0;
-        if (possibleName) {
-          nameMatch = possibleName.match(/(.+)(-\d*)$/);
-          tmpl = nameMatch ? nameMatch[1] : possibleName;
-        } else {
-          tmpl = this.newNameTmpl;
-        }
-        newName = tmpl + "-0";
-        while (true) {
-          if (nameMap[newName]) {
-            base += 1;
-          } else {
-            break;
-          }
-          newName = tmpl + "-" + base;
-        }
-        return newName;
-      },
-      isNameAvailable: function(name) {
-        return !this.findWhere({
-          name: name
-        });
-      },
-      groupByRegion: function(includeEmptyRegion, toJSON, includeEveryOps) {
-        var R, list, m, models, r, regionMap, regions, _i, _j, _len, _len1, _ref, _ref1;
-        if (includeEmptyRegion == null) {
-          includeEmptyRegion = false;
-        }
-        if (toJSON == null) {
-          toJSON = true;
-        }
-        if (includeEveryOps == null) {
-          includeEveryOps = false;
-        }
-        regionMap = {};
-        _ref = this.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          m = _ref[_i];
-          if (!includeEveryOps && !m.isExisting()) {
-            continue;
-          }
-          r = m.attributes.region;
-          list = regionMap[r] || (regionMap[r] = []);
-          list.push(toJSON ? m.toJSON() : m);
-        }
-        regions = [];
-        _ref1 = constant.REGION_KEYS;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          R = _ref1[_j];
-          models = regionMap[R];
-          if (!models && !includeEmptyRegion) {
-            continue;
-          }
-          regions.push({
-            region: R,
-            regionName: constant.REGION_SHORT_LABEL[R],
-            data: models || []
-          });
-        }
-        return regions;
-      },
-      filterRecent: function(toJSON) {
-        var filters, m, now, time, _i, _len, _ref;
-        if (toJSON == null) {
-          toJSON = false;
-        }
-        now = Math.round(+(new Date()) / 1000);
-        filters = [];
-        _ref = this.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          m = _ref[_i];
-          if (m.testState(OpsModel.State.Terminating)) {
-            continue;
-          }
-          time = m.get("updateTime");
-          if (now - time >= 2592000) {
-            break;
-          }
-          if (toJSON) {
-            m = m.toJSON();
-            m.formatedTime = MC.intervalDate(time);
-          }
-          filters.push(m);
-        }
-        return filters;
-      },
-      __triggerUpdate: function(model) {
-        if (!model) {
-          return;
-        }
-        if (this.indexOf(model) !== -1 && !model.isExisting()) {
-          return;
-        }
-        this.__debounceUpdate();
-      }
-    });
+    return AwsOpsModel;
   });
 
 }).call(this);
@@ -2789,7 +2947,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "backbone", "constant", "ThumbnailUtil"], function(OpsCollection, OpsModel, ApiRequest, Backbone, constant, ThumbUtil) {
+  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "backbone", "constant", "ThumbnailUtil", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, Backbone, constant, ThumbUtil) {
     return Backbone.Model.extend({
       defaults: function() {
         return {
@@ -2824,14 +2982,14 @@ return TEMPLATE; });
       createImportOps: function(region, vpcId) {
         var m;
         m = this.attributes.appList.findWhere({
-          importVpcId: vpcId
+          importMsrId: vpcId
         });
         if (m) {
           return m;
         }
         m = new OpsModel({
-          name: "",
-          importVpcId: vpcId,
+          name: "ImportedVpc",
+          importMsrId: vpcId,
           region: region,
           state: OpsModel.State.Running
         });
@@ -2846,12 +3004,18 @@ return TEMPLATE; });
         this.attributes.stackList.add(m);
         return m;
       },
-      createStack: function(region) {
+      createStack: function(region, cloudType, provider) {
         var m;
-        console.assert(constant.REGION_KEYS.indexOf(region) >= 0, "Region is not recongnised when creating stack:", region);
+        if (cloudType == null) {
+          cloudType = "aws";
+        }
+        if (provider == null) {
+          provider = "amazon";
+        }
         m = new OpsModel({
-          name: this.stackList().getNewName(),
-          region: region
+          region: region,
+          cloudType: cloudType,
+          provider: provider
         }, {
           initJsonData: true
         });
@@ -2984,6 +3148,8 @@ return TEMPLATE; });
             region: ops.region,
             usage: ops.usage,
             name: ops.name,
+            cloudType: ops.cloud_type,
+            provider: ops.provider,
             state: OpsModel.State[ops.state] || OpsModel.State.UnRun,
             stoppable: !(ops.property && ops.property.stoppable === false)
           });
@@ -3741,7 +3907,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant) {
+  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "i18n!/nls/lang.js", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant, lang) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -3758,7 +3924,7 @@ return TEMPLATE; });
       this.model = new ApplicationModel();
       this.__view = new ApplicationView();
       fetchModel = this.model.fetch().fail(function(err) {
-        notification("Cannot load application data. Please reload your browser.");
+        notification(lang.NOTIFY.CANNOT_LOAD_APPLICATION_DATA);
         throw err;
       });
       return Q.all([this.user.fetch(), fetchModel]);
@@ -3874,12 +4040,12 @@ return TEMPLATE; });
       editor.activate();
       return editor;
     };
-    VisualOps.prototype.createOps = function(region) {
+    VisualOps.prototype.createOps = function(region, cloudType, provider) {
       var editor;
       if (!region) {
         return;
       }
-      editor = new OpsEditor(this.model.createStack(region));
+      editor = new OpsEditor(this.model.createStack(region, cloudType, provider));
       editor.activate();
       return editor;
     };
