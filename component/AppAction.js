@@ -503,13 +503,11 @@ return TEMPLATE; });
           };
         })(this));
         App.user.on('change:credential', function() {
-          console.log('We got it.');
           if (App.user.hasCredential() && that.modal.isOpen()) {
             return that.modal.find(".modal-confirm").text(lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN);
           }
         });
         return this.modal.on('close', function() {
-          console.log('We gave up.');
           return App.user.off('change:credential');
         });
       },

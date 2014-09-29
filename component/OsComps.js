@@ -218,7 +218,6 @@ return TEMPLATE; });
         has = false;
         Design.instance().eachComponent(function(comp) {
           if (comp.type === constant.RESTYPE.OSSERVER) {
-            console.log(comp);
             if (comp.get('keypair') === "$DefaultKeyPair" && comp.get('credential') === 'keypair') {
               has = true;
             }
@@ -240,8 +239,7 @@ return TEMPLATE; });
                 return obj.get("name") === "DefaultKP";
               });
               defaultKp.set('keyName', targetKeypair.get('name'));
-              defaultKp.set('fingerprint', targetKeypair.get('fingerprint'));
-              return defaultKp;
+              return defaultKp.set('fingerprint', targetKeypair.get('fingerprint'));
             }
           }
         });
@@ -299,11 +297,6 @@ return TEMPLATE; });
       },
       denySlide: function() {
         return !this.needDownload();
-      },
-      getRegion: function() {
-        var region;
-        region = Design.instance().get('region');
-        return constant.REGION_SHORT_LABEL[region];
       },
       selectionTemplate: {
         kpButton: function() {

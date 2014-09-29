@@ -1333,6 +1333,7 @@ return TEMPLATE; });
         }
         if (attr === 'name') {
           this.sgModel.set('name', value);
+          this.setTitle(value);
           this.listView.refreshList();
         }
         if (attr === 'description') {
@@ -2293,11 +2294,24 @@ function program3(depth0,data) {
 
 function program5(depth0,data) {
   
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program6(depth0,data) {
+  
+  
+  return "disabled";
+  }
+
+function program8(depth0,data) {
+  
   
   return "true";
   }
 
-function program7(depth0,data) {
+function program10(depth0,data) {
   
   
   return "false";
@@ -2310,8 +2324,11 @@ function program7(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    <section class=\"group required\">\n        <label class=\"name\">Fixed IP</label>\n        <input data-target=\"ip\" class=\"selection string ipv4\" data-tip=\"blablablabla...\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.ip)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">Associate Floating IP</label>\n        <select data-target=\"float_ip\" class=\"selection bool\" value=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasFloatIP), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+    + "\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPurePort), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">Associate Floating IP</label>\n        <select data-target=\"float_ip\" class=\"selection bool\" value=\"";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasFloatIP), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" ></select>\n    </section>\n</div>";
   return buffer;
@@ -2606,7 +2623,7 @@ function program3(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"protocol\" data-id=\"pool-protocol\">\n            <option value='HTTP'>HTTP</option>\n            <option value='HTTPS'>HTTPS</option>\n            <option value='TCP'>TCP</option>\n        </select>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Load Balancing Method</label>\n        <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.method)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-target=\"method\" data-id=\"listener-method\">\n            <option value='Round_Robin'>Round Robin</option>\n            <option value='Least_Connections'>Least Connections</option>\n            <option value='Source_IP'>Source IP</option>\n        </select>\n    </section>\n</div>\n\n<div class=\"option-group-head expand\">\n    Member("
+    + "\" data-target=\"method\" data-id=\"listener-method\">\n            <option value='ROUND_ROBIN'>Round Robin</option>\n            <option value='LEAST_CONNECTIONS'>Least Connections</option>\n            <option value='SOURCE_IP'>Source IP</option>\n        </select>\n    </section>\n</div>\n\n<div class=\"option-group-head expand\">\n    Member("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.mems)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")\n</div>\n<div class=\"option-group\" data-model=\"mem\">\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.mems), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -5616,7 +5633,7 @@ return TEMPLATE; });
       type: constant.RESTYPE.OSFIP,
       newNameTmpl: "FloatIp-",
       serialize: function() {
-        var extNetworkAry, extNetworkId, port, port_id;
+        var extNetworkAry, extNetworkId, fixed_ip_address, port, port_id;
         port = this.connectionTargets("OsFloatIpUsage")[0];
         if (!port) {
           return;
@@ -5626,6 +5643,7 @@ return TEMPLATE; });
           extNetworkId = extNetworkAry[0].getResourceId();
         }
         port_id = port.createRef(port.type === constant.RESTYPE.OSLISTENER ? "port_id" : "id");
+        fixed_ip_address = port.createRef(port.type === constant.RESTYPE.OSLISTENER ? "address" : "fixed_ips.0.ip_address");
         return {
           component: {
             name: this.get("name"),
@@ -5633,7 +5651,7 @@ return TEMPLATE; });
             uid: this.id,
             resource: {
               id: this.get("appId"),
-              fixed_ip_address: port.createRef("fixed_ips.0.ip_address"),
+              fixed_ip_address: fixed_ip_address,
               floating_ip_address: this.get("address") || '',
               port_id: port_id,
               floating_network_id: extNetworkId
@@ -5773,7 +5791,7 @@ return TEMPLATE; });
         return this.owner() && this.owner().embedPort() === this;
       },
       setFloatingIp: function(hasFip) {
-        var Usage, oldUsage;
+        var Usage, oldUsage, _ref;
         oldUsage = this.connections("OsFloatIpUsage")[0];
         if (!hasFip) {
           if (oldUsage) {
@@ -5785,7 +5803,9 @@ return TEMPLATE; });
             new Usage(this);
           }
         }
-        this.owner().trigger('change:fip');
+        if ((_ref = this.owner()) != null) {
+          _ref.trigger('change:fip');
+        }
       },
       getFloatingIp: function() {
         return this.connectionTargets("OsFloatIpUsage")[0];

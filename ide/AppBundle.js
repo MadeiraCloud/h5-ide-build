@@ -2947,7 +2947,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "backbone", "constant", "ThumbnailUtil", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, Backbone, constant, ThumbUtil) {
+  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil) {
     return Backbone.Model.extend({
       defaults: function() {
         return {
@@ -3037,16 +3037,16 @@ return TEMPLATE; });
         return m;
       },
       getPriceData: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).price;
+        return (this.__awsdata[awsRegion] || {}).price;
       },
       getOsFamilyConfig: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).osFamilyConfig;
+        return (this.__awsdata[awsRegion] || {}).osFamilyConfig;
       },
       getInstanceTypeConfig: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).instanceTypeConfig;
+        return (this.__awsdata[awsRegion] || {}).instanceTypeConfig;
       },
       getRdsData: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).rds;
+        return (this.__awsdata[awsRegion] || {}).rds;
       },
       getStateModule: function(repo, tag) {
         return this.__stateModuleData[repo + ":" + tag];
@@ -3056,12 +3056,13 @@ return TEMPLATE; });
         Internal methods
        */
       initialize: function() {
-        this.__appdata = {};
+        this.__awsdata = {};
+        this.__osdata = {};
         this.__stateModuleData = {};
         this.__initializeNotification();
       },
       fetch: function() {
-        var ap, appdata, self, sp;
+        var ap, awsData, osData, self, sp;
         self = this;
         sp = ApiRequest("stack_list", {
           region_name: null
@@ -3073,38 +3074,18 @@ return TEMPLATE; });
         }).then(function(res) {
           return self.get("appList").set(self.__parseListRes(res));
         });
-        appdata = ApiRequest("aws_aws", {
+        awsData = ApiRequest("aws_aws", {
           fields: ["region", "price", "instance_types", "rds"]
         }).then(function(res) {
-          var cpu, i, instanceTypeConfig, storage, typeInfo, _i, _j, _len, _len1, _ref;
-          for (_i = 0, _len = res.length; _i < _len; _i++) {
-            i = res[_i];
-            instanceTypeConfig = {};
-            self.__appdata[i.region] = {
-              price: i.price,
-              osFamilyConfig: i.instance_types.sort,
-              instanceTypeConfig: instanceTypeConfig,
-              rds: i.rds
-            };
-            _ref = i.instance_types.info || [];
-            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-              typeInfo = _ref[_j];
-              if (!typeInfo) {
-                continue;
-              }
-              cpu = typeInfo.cpu || {};
-              typeInfo.name = typeInfo.description;
-              typeInfo.formated_desc = [typeInfo.name || "", cpu.units + " ECUs", cpu.cores + " vCPUs", typeInfo.memory + " GiB memory"];
-              typeInfo.description = typeInfo.formated_desc.join(", ");
-              storage = typeInfo.storage;
-              if (storage && storage.ssd === true) {
-                typeInfo.description += ", " + storage.count + " x " + storage.size + " GiB SSD Storage Capacity";
-              }
-              instanceTypeConfig[typeInfo.typeName] = typeInfo;
-            }
-          }
+          return self.__parseAwsData(res);
         });
-        return Q.all([sp, ap, appdata]).then(function() {
+        osData = ApiRequestOs("os_os", {
+          provider: "awcloud",
+          regions: []
+        }).then(function(res) {
+          return self.__parseOsData(res);
+        });
+        return Q.all([sp, ap, awsData, osData]).then(function() {
           var e;
           try {
             ThumbUtil.cleanup(self.appList().pluck("id").concat(self.stackList().pluck("id")));
@@ -3112,6 +3093,46 @@ return TEMPLATE; });
             e = _error;
           }
         });
+      },
+      __parseAwsData: function(res) {
+        var cpu, i, instanceTypeConfig, storage, typeInfo, _i, _j, _len, _len1, _ref;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          instanceTypeConfig = {};
+          this.__awsdata[i.region] = {
+            price: i.price,
+            osFamilyConfig: i.instance_types.sort,
+            instanceTypeConfig: instanceTypeConfig,
+            rds: i.rds
+          };
+          _ref = i.instance_types.info || [];
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            typeInfo = _ref[_j];
+            if (!typeInfo) {
+              continue;
+            }
+            cpu = typeInfo.cpu || {};
+            typeInfo.name = typeInfo.description;
+            typeInfo.formated_desc = [typeInfo.name || "", cpu.units + " ECUs", cpu.cores + " vCPUs", typeInfo.memory + " GiB memory"];
+            typeInfo.description = typeInfo.formated_desc.join(", ");
+            storage = typeInfo.storage;
+            if (storage && storage.ssd === true) {
+              typeInfo.description += ", " + storage.count + " x " + storage.size + " GiB SSD Storage Capacity";
+            }
+            instanceTypeConfig[typeInfo.typeName] = typeInfo;
+          }
+          return;
+        }
+      },
+      __parseOsData: function(res) {
+        var dataset, providerData, regionData, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          dataset = res[_i];
+          providerData = this.__osdata[dataset.provider] || (this.__osdata[dataset.provider] = {});
+          regionData = providerData[dataset.region] = {};
+          regionData.flavors = new Backbone.Collection(_.keys(regionData.flavor));
+          regionData.images = new Backbone.Collection(_.keys(regionData.image));
+        }
       },
       fetchStateModule: function(repo, tag) {
         var d, data, self;

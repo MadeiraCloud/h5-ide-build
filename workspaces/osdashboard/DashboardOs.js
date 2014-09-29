@@ -182,7 +182,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<nav class=\"clearfix resource-list-nav\">\n  <div class=\"resource-tab servers on\" data-type=\"OSSERVER\">\n    <span class=\"resource-count\">Server</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab volumes\" data-type=\"OSVOL\">\n    <span class=\"resource-count\">Volume</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n\n  </div>\n  <div class=\"resource-tab snaps\" data-type=\"OSSNAP\">\n    <span class=\"resource-count\">Snapshot</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab fips\" data-type=\"OSFIP\">\n    <span class=\"resource-count\">Floating IP</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab rts\" data-type=\"OSRT\">\n    <span class=\"resource-count\">Router</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n\n  </div>\n  <div class=\"resource-tab elbs\" data-type=\"OSLISTENER\">\n    <span class=\"resource-count\">Load Balancer</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n\n  </div>\n</nav>\n<div class=\"resource-list-body table-head-fix\"></div>";
+  return "<nav class=\"clearfix resource-list-nav\">\n  <div class=\"resource-tab servers on\" data-type=\"OSSERVER\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Server</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab volumes\" data-type=\"OSVOL\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Volume</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab snaps\" data-type=\"OSSNAP\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Snapshot</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab fips\" data-type=\"OSFIP\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Floating IP</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab rts\" data-type=\"OSRT\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Router</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n  <div class=\"resource-tab elbs\" data-type=\"OSLISTENER\">\n    <svg class=\"quota-chart\" viewbox=\"0 0 282 282\">\n      <path class=\"quota-path\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\"/>\n      <path class=\"quota-path usage\" d=\"M48.6 221.4a125 125 0 1 1 176.8 0\" stroke-dashoffset=\"589.1\"/>\n    </svg>\n    <span class=\"resource-count\">Load Balancer</span>\n    <p class=\"count\"><span class=\"count-usage\">-</span><span class=\"count-quota\">-</span></p>\n  </div>\n</nav>\n<div class=\"resource-list-body table-head-fix\"></div>";
   };
 TEMPLATE.resourceList=Handlebars.template(__TEMPLATE__);
 
@@ -647,73 +647,26 @@ return TEMPLATE; });
         this.resourcesTab = $(evt.currentTarget).addClass("on").attr("data-type");
         this.updateRegionResources();
       },
-      updateResourceCount: function() {
+      updateResourceCount: function(type) {
         var $nav, child, count, r, resourceCount;
         resourceCount = this.model.getResourcesCount(this.region);
         $nav = $(".resource-list-nav");
         for (r in resourceCount) {
           count = resourceCount[r];
           child = $nav.children("." + r);
-          this.animateResourceCount(child);
+          this.animateUsage(child, Math.round(Math.random() * 100), 100);
         }
       },
-      animateResourceCount: function(element) {
-        if (element.find("svg").size() > 0) {
-          return false;
-        }
-        element.prepend("<svg class=\"rotate\" viewbox=\"0 0 250 250\">\n  <path class=\"loader usage-quota\" fill=\"#0099ff\" transform=\"translate(125, 125)\"/>\n  <path class=\"loader usage-active\" fill=\"#0099ff\" transform=\"translate(125, 125)\"/>\n  <circle class=\"cover\" cx=\"50%\" cy=\"50%\" r=\"112\" fill=\"#fcfcfc\"></circle>\n  <circle class=\"blue-dot\" cx=\"6.5\" cy=\"50%\" r=\"6.5\" fill=\"#e6e6e6\"></circle>\n  <circle class=\"gray-dot\" cx=\"50%\" cy=\"6.5\" r=\"6.5\" fill=\"#4c92e5\"></circle>\n  <circle class=\"active-dot\" cx=\"50%\" cy=\"6.5\" r=\"6.5\" fill=\"#4c92e5\"></circle>\n</svg>");
-        return this.animateUsage(element, Math.round(Math.random() * 100), 100);
-      },
-      animateUsage: function(elem, active, quota) {
-        var PI, activeCircle, activeDot, animate, circleRadius, circleRadiusForDot, maxAngle, quotaAngle, quotaCircle, quotaCount, seconds, t, usageCount;
-        seconds = 2;
-        circleRadius = 125;
-        circleRadiusForDot = circleRadius - 6.5;
-        PI = Math.PI;
-        quotaCircle = elem.find('.usage-quota');
-        activeCircle = elem.find('.usage-active');
-        usageCount = elem.find('.count-usage');
-        quotaCount = elem.find('.count-quota');
-        activeDot = elem.find('.active-dot');
-        quotaAngle = 270;
-        maxAngle = quotaAngle / quota * active;
-        t = seconds * 1000 / 360 * quota / active;
-        if (activeCircle.timeout) {
-          window.clearTimeout(activeCircle.timeout);
-          activeCircle.timeout = void 0;
-        }
-        animate = function(element, currentAngle, noAnimate) {
-          var dotX, dotY, mid, radius, svgAttr, usage, x, y;
-          radius = currentAngle * PI / 180;
-          x = Math.sin(radius) * circleRadius;
-          y = Math.cos(radius) * -circleRadius;
-          mid = currentAngle > 180 ? 1 : 0;
-          usage = currentAngle / maxAngle * active;
-          dotX = Math.sin(radius) * circleRadiusForDot + 125;
-          dotY = Math.cos(radius) * -circleRadiusForDot + 125;
-          svgAttr = "M 0 0 v -125 A 125 125 1 " + mid + " 1 " + x + " " + y + " z";
-          element.attr('d', svgAttr);
-          activeDot.attr('cx', dotX).attr('cy', dotY);
-          if (!noAnimate) {
-            usage = usage > quota ? quota : usage;
-            usageCount.text(Math.round(usage));
-            currentAngle += 1;
-            if (currentAngle <= maxAngle) {
-              return activeCircle.timeout = window.setTimeout(function() {
-                return animate(element, currentAngle);
-              }, t);
-            }
-          }
-        };
-        quotaCircle.attr('fill', "#e6e6e6");
-        activeCircle.attr('fill', "#4c92e5");
-        quotaCount.text("/" + quota);
-        animate(quotaCircle, 270, true);
-        return animate(activeCircle, 0);
+      animateUsage: function(elem, usage, quota) {
+        var $path;
+        $path = elem.find(".quota-path.usage");
+        $path.attr("stroke-dashoffset", ($path[0].getTotalLength() * (1 - usage / quota)).toFixed(2));
+        elem.find('.count-usage').text(usage);
+        return elem.find('.count-quota').text("/" + quota);
       },
       updateRegionResources: function(type) {
         var tpl, _ref;
-        this.updateResourceCount();
+        this.updateResourceCount(type);
         if (type && (_ref = this.resourcesTab, __indexOf.call(type, _ref) < 0)) {
           return;
         }

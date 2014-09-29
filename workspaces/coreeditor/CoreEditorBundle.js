@@ -552,7 +552,7 @@ return TEMPLATE; });
         var json, oldDesign;
         oldDesign = Design.instance();
         this.use();
-        DesignImpl.call(this, this.__opsModel);
+        this.initialize();
         json = this.__opsModel.getJsonData();
         this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
         if (oldDesign) {
