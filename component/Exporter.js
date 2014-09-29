@@ -919,7 +919,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
         delete j._id;
       } catch (_error) {
         e = _error;
-        return lang.IDE.POP_IMPORT_FORMAT_ERROR;
+        return lang.ide.POP_IMPORT_FORMAT_ERROR;
       }
       signature = j.signature;
       delete j.signature;
