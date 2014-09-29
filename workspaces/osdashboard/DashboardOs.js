@@ -898,7 +898,7 @@ return TEMPLATE; });
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('workspaces/DashboardOs',["Workspace", "workspaces/osdashboard/DashboardView", "workspaces/osdashboard/DashboardModel", 'i18n!/nls/lang.js'], function(Workspace, DashboardView, DashboardModel, lang) {
+  define('workspaces/osdashboard/DashboardOs',["Workspace", "./DashboardView", "./DashboardModel", 'i18n!/nls/lang.js'], function(Workspace, DashboardView, DashboardModel, lang) {
     var Dashboard;
     Dashboard = (function(_super) {
       __extends(Dashboard, _super);

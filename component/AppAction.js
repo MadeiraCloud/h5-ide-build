@@ -435,7 +435,7 @@ return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('AppAction',["backbone", "component/AppAction/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus, ApiRequest, kpDropdown, OsKp, TA) {
+  define('AppAction',["backbone", "component/AppAction/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus, ApiRequest, AwsKp, OsKp, TA) {
     var AppAction;
     AppAction = Backbone.View.extend({
       runStack: function(event, workspace) {
@@ -529,8 +529,8 @@ return TEMPLATE; });
           });
           return false;
         }
-        if (kpDropdown.hasResourceWithDefaultKp()) {
-          keyPairDropdown = new kpDropdown();
+        if (AwsKp.hasResourceWithDefaultKp()) {
+          keyPairDropdown = new AwsKp();
           if (modal) {
             modal.tpl.find("#kp-runtime-placeholder").html(keyPairDropdown.render().el);
           } else {
@@ -567,7 +567,7 @@ return TEMPLATE; });
           }
           return !OsKp.prototype.hasResourceWithDefaultKp();
         }
-        if (!kpDropdown.hasResourceWithDefaultKp()) {
+        if (!AwsKp.hasResourceWithDefaultKp()) {
           return true;
         }
         kpModal = Design.modelClassForType(constant.RESTYPE.KP);

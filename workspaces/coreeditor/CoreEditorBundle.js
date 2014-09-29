@@ -368,6 +368,529 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
+  define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, OpsModel, CloudResources) {
+
+    /* env:prod */
+    var Design, createRecursiveCheck, noop, __instance, __modelClassMap, __resolveFirstMap;
+    createRecursiveCheck = function() {
+      return createRecursiveCheck.o || (createRecursiveCheck.o = {
+        check: function() {}
+      });
+    };
+
+    /* env:prod:end */
+
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                         env:dev:end */
+    noop = function() {};
+    __modelClassMap = {};
+    __resolveFirstMap = {};
+    __instance = null;
+
+    /*
+      -------------------------------
+       Design is the main controller of the framework. It handles the input / ouput of the Application ( a.k.a the DesignCanvas ).
+       The input and ouput is the same : the JSON data.
+      -------------------------------
+    
+    
+      ++ Class Method ++
+    
+       * instance() : Design
+          description : returns the currently used Design object.
+    
+       * modelClassForType( typeString ) : Class
+          description : returns an Class for the specified typeString.
+    
+       * debug() :
+          description : prints all the resource in the console.
+    
+       * debug.selectedComp() :
+          description : prints the selected resouorce in console.
+    
+    
+      ++ Object Method ++
+    
+       * component( uid ) : ResourceModel
+          description : returns a resource model of uid
+    
+       * eachComponent( iterator ) :
+          description : the iterator will execute with all the components.
+    
+       * use() :
+          description : make the design object to be Design.instance()
+    
+       * save( component_data, layout_data ) :
+          description : save the data, so that isModified() will use the saved data.
+    
+       * isModified() : Boolean
+          description : returns true if the stack is modified since last save.
+    
+       * serialize() : Object
+          description : returns a Plain JS Object that is indentical to JSON data.
+    
+       * serializeAsStack() : Object
+          description : same as serialize(), but it ensure that the JSON will be a stack JSON.
+    
+       * getCost() : Array
+          description : return an array of cost object to represent the cost of the stack.
+     */
+    Design = Backbone.Model.extend({
+      constructor: function(opsModel) {
+        var json;
+        this.__opsModel = opsModel;
+        Backbone.Model.call(this);
+        this.use();
+        json = opsModel.getJsonData();
+        this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+      },
+      initialize: function() {
+        var canvas_data, component, layout;
+        this.__componentMap = {};
+        this.__classCache = {};
+        this.__usedUidCache = {};
+        this.__initializing = false;
+        canvas_data = this.__opsModel.getJsonData();
+        if (this.__opsModel.testState(OpsModel.State.UnRun)) {
+          this.__mode = Design.MODE.Stack;
+        } else {
+          this.__mode = Design.MODE.App;
+        }
+        component = canvas_data.component;
+        layout = canvas_data.layout;
+        delete canvas_data.component;
+        delete canvas_data.layout;
+        this.attributes = $.extend(true, {
+          canvasSize: layout.size
+        }, canvas_data);
+        canvas_data.component = component;
+        canvas_data.layout = layout;
+        return null;
+      },
+      deserialize: function(json_data, layout_data) {
+        var ModelClass, comp, defaultLayout, devistor, recursiveCheck, resolveDeserialize, that, uid, version, _i, _len, _old_get_component_, _ref;
+        console.assert(Design.instance() === this);
+        console.debug("Deserializing data :", [json_data, layout_data]);
+        version = this.get("version");
+        _ref = this.constructor.__deserializeVisitors || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          devistor = _ref[_i];
+          devistor(json_data, layout_data, version);
+        }
+        this.trigger = noop;
+        this.__initializing = true;
+        defaultLayout = {
+          coordinate: [0, 0],
+          size: [0, 0]
+        };
+        that = this;
+        resolveDeserialize = function(uid) {
+          var ModelClass, component_data, obj;
+          if (!uid) {
+            return null;
+          }
+          obj = that.__componentMap[uid];
+          if (obj) {
+            return obj;
+          }
+          recursiveCheck.check(uid);
+          component_data = json_data[uid];
+          if (!component_data) {
+            console.warn("Unknown uid for resolving component :", uid, json_data);
+            return;
+          }
+          ModelClass = Design.modelClassForType(component_data.type);
+          if (!ModelClass) {
+            console.warn("We do not support deserializing resource of type : " + component_data.type);
+            return;
+          }
+          ModelClass.deserialize(component_data, layout_data[uid] || defaultLayout, resolveDeserialize);
+          return __instance.__componentMap[uid];
+        };
+        _old_get_component_ = this.component;
+        this.component = null;
+        for (uid in json_data) {
+          comp = json_data[uid];
+          this.__usedUidCache[uid] = true;
+          if (__resolveFirstMap[comp.type] === true) {
+            ModelClass = Design.modelClassForType(comp.type);
+            if (!ModelClass) {
+              console.warn("We do not support deserializing resource of type : " + component_data.type);
+              continue;
+            }
+            if (!ModelClass.preDeserialize) {
+              console.error("The class is marked as resolveFirst, yet it doesn't implement preDeserialize()");
+              continue;
+            }
+            ModelClass.preDeserialize(comp, layout_data[uid] || defaultLayout);
+          }
+        }
+        this.component = resolveDeserialize;
+        for (uid in json_data) {
+          comp = json_data[uid];
+          if (__resolveFirstMap[comp.type] === true) {
+            recursiveCheck = createRecursiveCheck(uid);
+            Design.modelClassForType(comp.type).deserialize(comp, layout_data[uid] || defaultLayout, resolveDeserialize);
+          } else {
+            recursiveCheck = createRecursiveCheck();
+            resolveDeserialize(uid);
+          }
+        }
+        this.component = _old_get_component_;
+        for (uid in json_data) {
+          comp = json_data[uid];
+          ModelClass = Design.modelClassForType(comp.type);
+          if (ModelClass && ModelClass.postDeserialize) {
+            ModelClass.postDeserialize(comp, layout_data[uid] || defaultLayout);
+          }
+        }
+        this.__initializing = false;
+        Backbone.Events.trigger.call(this, Design.EVENT.Deserialized);
+        this.trigger = Backbone.Events.trigger;
+        return null;
+      },
+      reload: function() {
+        var json, oldDesign;
+        oldDesign = Design.instance();
+        this.use();
+        DesignImpl.call(this, this.__opsModel);
+        json = this.__opsModel.getJsonData();
+        this.deserialize($.extend(true, {}, json.component), $.extend(true, {}, json.layout));
+        if (oldDesign) {
+          oldDesign.use();
+        }
+      },
+      classCacheForCid: function(cid) {
+        var cache;
+        if (this.__classCache[cid]) {
+          return this.__classCache[cid];
+        }
+        cache = this.__classCache[cid] = [];
+        return cache;
+      },
+      cacheComponent: function(id, comp) {
+        if (!comp) {
+          comp = this.__componentMap;
+          delete this.__componentMap[id];
+          if (this.modeIsAppEdit()) {
+            this.reclaimGuid(id);
+          }
+        } else {
+          this.__componentMap[id] = comp;
+        }
+        return null;
+      },
+      reclaimGuid: function(guid) {
+        return delete this.__usedUidCache[guid];
+      },
+      guid: function() {
+        var newId;
+        newId = MC.guid();
+        while (this.__usedUidCache[newId]) {
+          console.warn("GUID collision detected, the generated GUID is " + newId + ". Try generating a new one.");
+          newId = MC.guid();
+        }
+        this.__usedUidCache[newId] = true;
+        return newId;
+      },
+      set: function(key, value) {
+        this.attributes[key] = value;
+        this.trigger("change:" + key);
+        this.trigger("change");
+      },
+      get: function(key) {
+        if (key === "id") {
+          return this.__opsModel.get("id");
+        } else if (key === "state") {
+          return this.__opsModel.getStateDesc();
+        } else {
+          return this.attributes[key];
+        }
+      },
+      type: function() {
+        return Design.TYPE.Vpc;
+      },
+      region: function() {
+        return this.attributes.region;
+      },
+      modeIsStack: function() {
+        return this.__mode === Design.MODE.Stack;
+      },
+      modeIsApp: function() {
+        return this.__mode === Design.MODE.App;
+      },
+      modeIsAppView: function() {
+        return false;
+      },
+      modeIsAppEdit: function() {
+        return this.__mode === Design.MODE.AppEdit;
+      },
+      mode: function() {
+        return this.__mode;
+      },
+      setMode: function(m) {
+        if (this.__mode === m) {
+          return;
+        }
+        this.__mode = m;
+        this.preserveName();
+        this.trigger("change:mode", m);
+      },
+      initializing: function() {
+        return this.__initializing;
+      },
+      use: function() {
+        __instance = this;
+        return this;
+      },
+      unuse: function() {
+        if (__instance === this) {
+          __instance = null;
+        }
+      },
+      component: function(uid) {
+        return this.__componentMap[uid];
+      },
+      componentsOfType: function(type) {
+        return this.classCacheForCid(Design.modelClassForType(type).prototype.classId).slice(0);
+      },
+      eachComponent: function(func, context) {
+        var comp, uid, _ref;
+        console.assert(_.isFunction(func), "User must pass in a function for Design.instance().eachComponent()");
+        context = context || this;
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (func.call(context, comp) === false) {
+            break;
+          }
+        }
+        return null;
+      },
+      isModified: function() {
+        var backing, newData;
+        if (this.modeIsApp()) {
+          console.warn("Testing Design.isModified() in app mode and visualize mode. This should not be happening.");
+          return false;
+        }
+        backing = this.__opsModel.getJsonData();
+        if (this.attributes.name !== backing.name) {
+          return true;
+        }
+        newData = this.serialize();
+        if (_.isEqual(backing.component, newData.component)) {
+          if (_.isEqual(backing.layout, newData.layout)) {
+            return false;
+          }
+        }
+        return true;
+      },
+      serialize: function(options) {
+        var c, comp, component_data, connections, currentDesignObj, data, error, j, json, layout_data, mockArray, p1, p2, uid, visitor, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        currentDesignObj = Design.instance();
+        this.use();
+        console.debug("Design is serializing.");
+        component_data = {};
+        layout_data = {};
+        connections = [];
+        mockArray = [];
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.isRemoved()) {
+            console.warn("Resource has been removed, yet it remains in cache when serializing :", comp);
+            continue;
+          }
+          if (comp.node_line) {
+            connections.push(comp);
+            continue;
+          }
+          try {
+            json = comp.serialize(options);
+
+            /* env:prod */
+          } catch (_error) {
+            error = _error;
+            console.error("Error occur while serializing", error);
+
+            /* env:prod:end */
+          } finally {
+
+          }
+          if (!json) {
+            continue;
+          }
+          if (!_.isArray(json)) {
+            mockArray[0] = json;
+            json = mockArray;
+          }
+          for (_i = 0, _len = json.length; _i < _len; _i++) {
+            j = json[_i];
+            if (j.component) {
+              console.assert(j.component.uid, "Serialized JSON data has no uid.");
+              console.assert(!component_data[j.component.uid], "ResourceModel cannot modify existing JSON data.");
+              component_data[j.component.uid] = j.component;
+            }
+            if (j.layout) {
+              layout_data[j.layout.uid] = j.layout;
+            }
+          }
+        }
+        for (_j = 0, _len1 = connections.length; _j < _len1; _j++) {
+          c = connections[_j];
+          p1 = c.port1Comp();
+          p2 = c.port2Comp();
+          if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
+            try {
+              c.serialize(component_data, layout_data);
+
+              /* env:prod */
+            } catch (_error) {
+              error = _error;
+              console.error("Error occur while serializing", error);
+
+              /* env:prod:end */
+            } finally {
+
+            }
+          } else {
+            console.error("Serializing an connection while one of the port is isRemoved() or null");
+          }
+        }
+        data = $.extend(true, {}, this.attributes);
+        data.component = component_data;
+        data.layout = layout_data;
+        _ref1 = this.constructor.__serializeVisitors || [];
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          visitor = _ref1[_k];
+          visitor(component_data, layout_data, options);
+        }
+        data.layout.size = data.canvasSize;
+        delete data.canvasSize;
+        data.property = this.attributes.property || {};
+        data.version = "2014-02-17";
+        data.state = this.__opsModel.getStateDesc() || "Enabled";
+        data.id = this.__opsModel.get("id");
+        if (currentDesignObj) {
+          currentDesignObj.use();
+        }
+        return data;
+      },
+      serializeAsStack: function(new_name) {
+        var json;
+        json = this.serialize({
+          toStack: true
+        });
+        json.name = new_name || json.name;
+        json.state = "Enabled";
+        json.id = "";
+        json.owner = "";
+        json.usage = "";
+        delete json.history;
+        delete json.stack_id;
+        return json;
+      },
+      preserveName: function() {
+        var comp, names, uid, _ref;
+        if (!this.modeIsAppEdit()) {
+          return;
+        }
+        this.__preservedNames = {};
+        _ref = this.__componentMap;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          names = this.__preservedNames[comp.type] || (this.__preservedNames[comp.type] = {});
+          names[comp.get("name")] = true;
+        }
+      },
+      isPreservedName: function(type, name) {
+        var names;
+        if (!this.modeIsAppEdit()) {
+          return false;
+        }
+        if (!this.__preservedNames) {
+          return false;
+        }
+        names = this.__preservedNames[type];
+        return names && names[name];
+      },
+      getCost: function(stopped) {
+        return {
+          costList: [],
+          totalFee: 0
+        };
+      }
+    }, {
+      TYPE: {
+        Vpc: "ec2-vpc"
+      },
+      MODE: {
+        Stack: "stack",
+        App: "app",
+        AppEdit: "appedit"
+      },
+      EVENT: {
+        ChangeResource: "CHANGE_RESOURCE",
+        AddResource: "ADD_RESOURCE",
+        RemoveResource: "REMOVE_RESOURCE",
+        Deserialized: "DESERIALIZED"
+      },
+      registerModelClass: function(type, modelClass, resolveFirst) {
+        __modelClassMap[type] = modelClass;
+        if (resolveFirst) {
+          __resolveFirstMap[type] = resolveFirst;
+        }
+        return null;
+      },
+      registerSerializeVisitor: function(func) {
+        if (!this.__serializeVisitors) {
+          this.__serializeVisitors = [];
+        }
+        this.__serializeVisitors.push(func);
+        return null;
+      },
+      registerDeserializeVisitor: function(func) {
+        if (!this.__deserializeVisitors) {
+          this.__deserializeVisitors = [];
+        }
+        this.__deserializeVisitors.push(func);
+        return null;
+      },
+      instance: function() {
+        return __instance;
+      },
+      modelClassForType: function(type) {
+        return __modelClassMap[type];
+      },
+      modelClassForPorts: function(port1, port2) {
+        var type;
+        if (port1 < port2) {
+          type = port1 + ">" + port2;
+        } else {
+          type = port2 + ">" + port1;
+        }
+        return __modelClassMap[type];
+      },
+      lineModelClasses: function() {
+        var cs, modelClass, type;
+        if (this.__lineModelClasses) {
+          return this.__lineModelClasses;
+        }
+        this.__lineModelClasses = cs = [];
+        for (type in __modelClassMap) {
+          modelClass = __modelClassMap[type];
+          if (modelClass.__isLineClass && type.indexOf(">") === -1) {
+            cs.push(modelClass);
+          }
+        }
+        return this.__lineModelClasses;
+      }
+    });
+    return Design;
+  });
+
+}).call(this);
+
+(function() {
   define('ResourceModel',["Design", 'CloudResources', "constant", "backbone"], function(Design, CloudResources, constant) {
     var ResourceModel, deepClone, __detailExtend, __emptyObj;
     deepClone = function(base) {
@@ -6861,4 +7384,4 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 
-define("workspaces/CoreEditorBundle", function(){});
+define("workspaces/coreeditor/CoreEditorBundle", function(){});

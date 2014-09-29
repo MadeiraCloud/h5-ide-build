@@ -1034,7 +1034,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "<div class=\"os-sg-remove icon-delete\"></div>";
+  return "<div class=\"os-sg-remove icon-delete bubble-popup\"></div>";
   }
 
 function program3(depth0,data) {
@@ -1163,9 +1163,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 TEMPLATE.newItem=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"info\">Confirm to remove the Security Group ?</div>\n<ul class=\"operate\">\n    <li class=\"confirm\">Remove</li>\n    <li class=\"cancel\">Cancel</li>\n</ul>";
+  };
+TEMPLATE.sgRemovePopup=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 (function() {
-  define('workspaces/oseditor/property/ossg/view',['constant', '../OsPropertyView', './template', 'CloudResources', 'UI.selection'], function(constant, OsPropertyView, template, CloudResources, bindSelection) {
+  define('workspaces/oseditor/property/ossg/view',['constant', '../OsPropertyView', './template', 'CloudResources', 'UI.selection', 'UI.bubblepopup'], function(constant, OsPropertyView, template, CloudResources, bindSelection, bubblePopup) {
     return OsPropertyView.extend({
       events: {
         "change [data-target]": "updateAttribute",
@@ -1516,9 +1527,15 @@ return TEMPLATE; });
         };
       },
       removeSG: function(event) {
-        this.sgModel.remove();
-        this.listView.refreshList();
-        return this.listView.hideFloatPanel();
+        var that;
+        that = this;
+        return bubblePopup($(event.currentTarget), template.sgRemovePopup(), {
+          '.confirm': function() {
+            that.sgModel.remove();
+            that.listView.refreshList();
+            return that.listView.hideFloatPanel();
+          }
+        });
       },
       updateCount: function() {
         var ingressRules, sgRules;
@@ -7795,7 +7812,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/EditorOs',["OpsEditor", "./oseditor/OsEditorStack", "./oseditor/OsEditorApp", "./oseditor/model/OsModelFloatIp", "./oseditor/model/OsModelHealthMonitor", "./oseditor/model/OsModelListener", "./oseditor/model/OsModelNetwork", "./oseditor/model/OsModelPool", "./oseditor/model/OsModelPort", "./oseditor/model/OsModelRt", "./oseditor/model/OsModelKeypair", "./oseditor/model/OsModelServer", "./oseditor/model/OsModelSg", "./oseditor/model/OsModelSgRule", "./oseditor/model/OsModelSubnet", "./oseditor/model/OsModelVolume", "./oseditor/model/OsModelExtNetwork", "./oseditor/model/connection/OsFloatIpUsage", "./oseditor/model/connection/OsListenerAsso", "./oseditor/model/connection/OsPoolMembership", "./oseditor/model/connection/OsPortUsage", "./oseditor/model/connection/OsRouterAsso", "./oseditor/model/connection/OsSgAsso", "./oseditor/model/connection/OsVolumeUsage", "./oseditor/model/seVisitors/AppToStack", "./oseditor/canvas/CeNetwork", "./oseditor/canvas/CeSubnet", "./oseditor/canvas/CeRt", "./oseditor/canvas/CePool", "./oseditor/canvas/CeListener", "./oseditor/canvas/CeExtNetwork", "./oseditor/canvas/CeServer", "./oseditor/canvas/CePort", "./oseditor/canvas/CeOsLine"], function(OpsEditor, StackEditor, AppEditor) {
+  define('workspaces/oseditor/EditorOs',["OpsEditor", "./OsEditorStack", "./OsEditorApp", "./model/OsModelFloatIp", "./model/OsModelHealthMonitor", "./model/OsModelListener", "./model/OsModelNetwork", "./model/OsModelPool", "./model/OsModelPort", "./model/OsModelRt", "./model/OsModelKeypair", "./model/OsModelServer", "./model/OsModelSg", "./model/OsModelSgRule", "./model/OsModelSubnet", "./model/OsModelVolume", "./model/OsModelExtNetwork", "./model/connection/OsFloatIpUsage", "./model/connection/OsListenerAsso", "./model/connection/OsPoolMembership", "./model/connection/OsPortUsage", "./model/connection/OsRouterAsso", "./model/connection/OsSgAsso", "./model/connection/OsVolumeUsage", "./model/seVisitors/AppToStack", "./canvas/CeNetwork", "./canvas/CeSubnet", "./canvas/CeRt", "./canvas/CePool", "./canvas/CeListener", "./canvas/CeExtNetwork", "./canvas/CeServer", "./canvas/CePort", "./canvas/CeOsLine"], function(OpsEditor, StackEditor, AppEditor) {
     var OsEditor;
     OsEditor = function(opsModel) {
       if (opsModel.isStack()) {

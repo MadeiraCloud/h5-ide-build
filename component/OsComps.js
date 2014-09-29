@@ -218,9 +218,9 @@ return TEMPLATE; });
         has = false;
         Design.instance().eachComponent(function(comp) {
           if (comp.type === constant.RESTYPE.OSSERVER) {
-            if (comp.get('keypair') === "$DefaultKeyPair") {
+            console.log(comp);
+            if (comp.get('keypair') === "$DefaultKeyPair" && comp.get('credential') === 'keypair') {
               has = true;
-              return false;
             }
           }
         });
@@ -230,9 +230,18 @@ return TEMPLATE; });
         var that;
         that = this;
         return Design.instance().eachComponent(function(comp) {
+          var KeypairModel, defaultKp, targetKeypair;
           if (comp.type === constant.RESTYPE.OSSERVER) {
-            if (comp.get('keypair') === "$DefaultKeyPair") {
-              return comp.set('keypair', that.$input.val());
+            if (comp.get('keypair') === "$DefaultKeyPair" && comp.get('credential') === 'keypair') {
+              console.log(comp);
+              targetKeypair = that.collection.get(that.$input.val());
+              KeypairModel = Design.modelClassForType(constant.RESTYPE.OSKP);
+              defaultKp = _.find(KeypairModel.allObjects(), function(obj) {
+                return obj.get("name") === "DefaultKP";
+              });
+              defaultKp.set('keyName', targetKeypair.get('name'));
+              defaultKp.set('fingerprint', targetKeypair.get('fingerprint'));
+              return defaultKp;
             }
           }
         });
