@@ -1,5 +1,5 @@
 (function() {
-  define(["ApiRequest", "ApiRequestOs", "ApiRequestDefs", "UI.modalplus", "vender/select2/select2", "UI.modal"], function(ApiRequest, ApiRequestOs, ApiRequestDefs, Modal) {
+  define(["ApiRequest", "ApiRequestDefs", "UI.modalplus", "vender/select2/select2", "UI.modal"], function(ApiRequest, ApiRequestDefs, Modal) {
     var ApiDialog, DebugTool, SessionDialog, clearApp, clearStack, debugApi, debugSession, dispatchClick, tmpl;
     tmpl = "<div id=\"DebugTool\" class=\"debugToolBg\"><ul>\n<li id=\"DtDiff\" class=\"icon-toolbar-diff tooltip\" data-tooltip=\"Json Diff\"></li>\n<li id=\"DtView\" class=\"icon-toolbar-cloudformation tooltip\" data-tooltip=\"Json View\"></li>\n<li id=\"DtApi\" class=\"tooltip debugToolBg\" data-tooltip=\"Debug Api\"></li>\n<li id=\"DtSession\" class=\"icon-user tooltip\" data-tooltip=\"Share Session\"></li>\n<li id=\"DtClearStack\" class=\"icon-delete tooltip\" data-tooltip=\"Clear Stacks\"></li>\n<li id=\"DtClearApp\" class=\"icon-terminate tooltip\" data-tooltip=\"Terminate Apps\"></li>\n</ul>\n<div id=\"DebugTooltip\">console输入man查看快捷debug</div>\n</div>";
     ApiDialog = "<div class=\"modal-header\"> <h3>Api Debugger</h3> <i class=\"modal-close\">×</i> </div>\n<div id=\"diffWrap\"><div id=\"ApiDebugger\">\n<button class=\"btn btn-blue\" id=\"ApiDebugSend\">Send Request</button>\n<section><label>Api : </label><select id=\"ApiSelect\" data-placeholder=\"Select an api\"></select></section>\n<section><label>Parameters :</label><section id=\"ApiParamsWrap\" class=\"clearfix\"></section></section>\n<section><label>Result :</label><pre id=\"ApiResult\"></pre></section>\n</div></div>";
@@ -129,37 +129,12 @@
         }
         $("#ApiDebugSend").attr("disabled", "disabled");
         $("#ApiResult").text("Loading...").attr("finish", "false");
-        (apiDef.type === "openstack" ? ApiRequestOs : ApiRequest)(api, params).then(function(result) {
-          var c, i, idx, item, _k, _l, _len2, _len3;
+        ApiRequest(api, params).then(function(result) {
           if (apiDef.url.indexOf("/aws/") === 0 && apiDef.url.length > 5 && (typeof result[1] === "string")) {
             try {
               result[1] = $.xml2json($.parseXML(result[1]));
             } catch (_error) {
 
-            }
-          } else if (apiDef.url.indexOf("/os/") === 0) {
-            if (apiDef.method === "Info") {
-              for (idx = _k = 0, _len2 = result.length; _k < _len2; idx = ++_k) {
-                item = result[idx];
-                try {
-                  if ($.type(result) === 'array') {
-                    for (i = _l = 0, _len3 = item.length; _l < _len3; i = ++_l) {
-                      c = item[i];
-                      result[idx][i] = JSON.parse(c);
-                    }
-                  } else {
-                    result[idx] = JSON.parse(item);
-                  }
-                } catch (_error) {
-
-                }
-              }
-            } else {
-              try {
-                result[1] = JSON.parse(result[1]);
-              } catch (_error) {
-
-              }
             }
           }
           $("#ApiResult").text(JSON.stringify(result, void 0, 4));
