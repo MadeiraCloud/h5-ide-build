@@ -103,11 +103,9 @@
       this.collection.user_state.find().fetch();
       this.collection.user_state.find().observeChanges({
         added: function(idx, dag) {
-          console.log("user_state changes", idx, dag);
           return self.trigger("userStateChange", idx, dag);
         },
         changed: function(idx, dag) {
-          console.log("user_state changes", idx, dag);
           return self.trigger("userStateChange", idx, dag);
         }
       });
@@ -150,10 +148,31 @@
 define('ide/subviews/SessionDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  return "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\r\n  <div class=\"confirmSession\">\r\n  <div class=\"modal-header\"><h3>Invalid Session</h3></div>\r\n\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\"> <p>Your account has signed in from other location or you last login has timed out.</p> <p>Would you like to reconnect this session or close it?</p> </div>\r\n    <div class=\"modal-text-minor\">If you have unsaved changes, close this session will cause all your change to lose.</div>\r\n  </article>\r\n\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">Reconnect</button>\r\n    <button id=\"SessionClose\" class=\"btn btn-silver\">Close Session</button>\r\n  </footer>\r\n  </div>\r\n\r\n  <div class=\"reconnectSession\" style=\"display:none;\">\r\n  <div class=\"modal-header\"><h3>Reconnect Session</h3></div>\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\">Please provide your password to reconnect:</div>\r\n    <div class=\"modal-input\">\r\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n    </div>\r\n  </article>\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>Connect</button>\r\n    <button id=\"SessionClose2\" class=\"btn btn-red\">Close Session</button>\r\n  </footer>\r\n  </div>\r\n</section>";
+  buffer += "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
+    + "</p>\n    </div>\n    <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
+    + "</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_RECONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_RECONNECT_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n</section>";
+  return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
@@ -198,7 +217,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           };
         })(this), function(error) {
           $("#SessionConnect").removeAttr("disabled");
-          notification('error', lang.ide.NOTIFY_MSG_WARN_AUTH_FAILED);
+          notification('error', lang.NOTIFY.WARN_AUTH_FAILED);
           $("#SessionPassword").toggleClass("parsley-error", true);
         });
       },
@@ -225,21 +244,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\r\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">Support</a>\r\n\r\n  <section class=\"dropdown\" >\r\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\r\n      <i class=\"icon-notification\"></i>\r\n      <span id=\"NotificationCounter\"></span>\r\n    </div>\r\n\r\n    <div class=\"dropdown-menu\">\r\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\r\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n        <ul class=\"scroll-content\"></ul>\r\n\r\n        <div class=\"notification-empty\">\r\n          <div class=\"title\">"
-    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
-    + "</div>\r\n          <div class=\"description\">"
+  buffer += "<nav id=\"header\">\n  <section class=\"voquota tooltip\" data-tooltip=\"\" data-tooltip-type=\"html\">\n    <div class=\"percentage\"><div class=\"payment-exclamation\">!</div><div class=\"currquota\"></div></div>\n    <span class=\"current\">0</span>/<span class=\"limit\">0</span>\n  </section>\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
+    + "</a>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
+    + "</div>\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
-    + "</div>\r\n        </div>\r\n      </div>\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown\">\r\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\r\n      <i class=\"icon-caret-down\"></i>\r\n    </div>\r\n\r\n    <ul class=\"dropdown-menu\">\r\n      <li id=\"HeaderShortcuts\">"
+    + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
-    + "</li>\r\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
+    + "</li>\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
-    + "</a></li>\r\n      <li id=\"HeaderSettings\">"
+    + "</a></li>\n      <li id=\"HeaderSettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
-    + "</li>\r\n      <li id=\"HeaderLogout\">"
+    + "</li>\n      <li id=\"HeaderBilling\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_BILLING", {hash:{},data:data}))
+    + "</li>\n      <li id=\"HeaderLogout\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
-    + "</li>\r\n    </ul>\r\n  </section>\r\n</nav>";
+    + "</li>\n    </ul>\n  </section>\n</nav>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('ide/subviews/SettingsDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -256,138 +279,154 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
+  buffer += "\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
-    + "</button>\r\n        ";
+    + "</button>\n        ";
   return buffer;
   }
 
-  buffer += "<nav id=\"SettingsNav\">\r\n  <span data-target=\"AccountTab\">"
+  buffer += "<nav id=\"SettingsNav\">\n  <span data-target=\"AccountTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</span>\r\n  <span data-target=\"CredentialTab\">"
+    + "</span>\n  <span data-target=\"CredentialTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CREDENTIAL", {hash:{},data:data}))
-    + "</span>\r\n  <span data-target=\"TokenTab\">"
+    + "</span>\n  <span data-target=\"TokenTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</span>\r\n</nav>\r\n\r\n<div class=\"tabContent\" id=\"SettingsBody\">\r\n  <section id=\"AccountTab\">\r\n    <dl class=\"dl-horizontal\">\r\n      <dt>"
+    + "</span>\n</nav>\n\n<div class=\"tabContent\" id=\"SettingsBody\">\n  <section id=\"AccountTab\">\n    <dl class=\"dl-horizontal\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      <dt class=\"accountEmailRO\">"
+    + "</dd>\n    </dl>\n\n    <dl class=\"dl-horizontal\">\n      <dt class=\"accountFullNameRO\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
+    + "</dt><dd class=\"accountFullNameRO\"> <span class=\"fullNameText\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = (depth0 && depth0.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " </span> <button class=\"icon-edit link-style tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
+    + "' id=\"AccountFullName\"></button></dd>\n    </dl>\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap\">\n      <dl class=\"dl-horizontal\">\n          <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
+    + "</dt>\n          <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\n          <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
+    + "</dt>\n          <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\n      </dl>\n      <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\n      <div class=\"accountPwdBtns\">\n          <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
+    + "</button>\n          <span id=\"AccountCancelFullName\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
+    + "</span>\n      </div>\n    </div>\n\n    <dl class=\"dl-horizontal\">\n      <dt class=\"accountEmailRO\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
     + "</dt><dd class=\"accountEmailRO\"><span>"
     + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span><button class=\"icon-edit link-style tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "' id=\"AccountEmail\"></button></dd>\r\n    </dl>\r\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap\">\r\n      <dl class=\"dl-horizontal\">\r\n        <dt>"
+    + "' id=\"AccountEmail\"></button></dd>\n    </dl>\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap\">\n      <dl class=\"dl-horizontal\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\r\n\r\n        <dt>"
+    + "</dt>\n        <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\n\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\r\n      </dl>\r\n\r\n      <div id=\"AccountEmailInfo\" class=\"empty-hide\"></div>\r\n\r\n      <div class=\"accountPwdBtns\">\r\n        <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountEmailInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"accountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n        <span id=\"AccountCancelEmail\" class=\"link-style\">"
+    + "</button>\n        <span id=\"AccountCancelEmail\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\r\n      </div>\r\n    </div>\r\n\r\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + "</span>\n      </div>\n    </div>\n\n    <button id=\"AccountPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
-    + "</button>\r\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap\">\r\n\r\n      <dl class=\"dl-horizontal\">\r\n        <dt>"
+    + "</button>\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap\">\n\n      <dl class=\"dl-horizontal\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\r\n\r\n        <dt>"
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
-    + "</dt>\r\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\r\n      </dl>\r\n\r\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\r\n\r\n      <div class=\"accountPwdBtns\">\r\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"accountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
+    + "</button>\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section id=\"CredentialTab\">\r\n    <div id=\"CredDemoWrap\" ";
+    + "</span>\n      </div>\n    </div>\n  </section>\n\n  <section id=\"CredentialTab\">\n    <div id=\"CredDemoWrap\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\r\n      <h3>"
+  buffer += ">\n      <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <p>"
+    + "</h3>\n      <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TEXT", {hash:{},data:data}))
-    + "</p>\r\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
+    + "</p>\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_SETUP", {hash:{},data:data}))
-    + "</button></p>\r\n    </div>\r\n\r\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
+    + "</button></p>\n    </div>\n\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\r\n      <h3>"
+  buffer += ">\n      <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_CONNECTED_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <button class=\"cred-setup link-style\">"
+    + "</h3>\n      <button class=\"cred-setup link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_UPDATE", {hash:{},data:data}))
-    + "</button>\r\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\r\n        <dt>"
+    + "</button>\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>"
+    + "</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>"
+    + "</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      </dl>\r\n    </div>\r\n\r\n    <div id=\"CredSetupWrap\">\r\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\r\n      <ul>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</dd>\n      </dl>\n    </div>\n\n    <div id=\"CredSetupWrap\">\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n      <ul>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
     + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n        <li>\r\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
-    + "\"></i>\r\n          <label>"
+    + "\"></i>\n          <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
-    + "</label>\r\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
     + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n        </li>\r\n      </ul>\r\n\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        ";
+    + "\">\n        </li>\n      </ul>\n\n      <div class=\"cred-btn-wrap clearfix\">\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.credNeeded), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        <button class=\"right link-style cred-setup-cancel\">"
+  buffer += "\n        <button class=\"right link-style cred-setup-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
+    + "</button>\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n\r\n    </div>\r\n\r\n    <div id=\"CredRemoveWrap\">\r\n      <h3>"
+    + "</button>\n      </div>\n\n    </div>\n\n    <div id=\"CredRemoveWrap\">\n      <h3>"
     + escapeExpression(((stack1 = (depth0 && depth0.credRemoveTitle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3>\r\n      <div>"
+    + "</h3>\n      <div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVE_TEXT", {hash:{},data:data}))
-    + "</div>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style cred-cancel\">"
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
+    + "</button>\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"CredConfirmWrap\">\r\n      <h3>"
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredConfirmWrap\">\n      <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TIT", {hash:{},data:data}))
-    + "</h3>\r\n      <div>"
+    + "</h3>\n      <div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TEXT", {hash:{},data:data}))
-    + "</div>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style cred-cancel\">"
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
+    + "</button>\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_UPDATE_CONFIRM", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div id=\"CredRemoving\"><p>"
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredRemoving\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\r\n    <div id=\"CredUpdating\"><p>"
+    + "</p><div class=\"loading-spinner\"></div></div>\n    <div id=\"CredUpdating\"><p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p><div class=\"loading-spinner\"></div></div>\r\n\r\n  </section>\r\n\r\n  <section id=\"TokenTab\">\r\n    <div id=\"TokenManager\">\r\n      <p class=\"clearfix\"> <button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"><button class=\"btn btn-blue right\" id=\"TokenCreate\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
     + "</button>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
     + "<a href=\"http://docs.visualops.io/app_management/reload_states.html\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\r\n      <section class=\"token-table\">\r\n        <header class=\"clearfix\">\r\n          <span class=\"tokenName\">"
+    + "</a> </p>\n      <section class=\"token-table\">\n        <header class=\"clearfix\">\n          <span class=\"tokenName\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\r\n          <span class=\"tokenToken\">"
+    + "</span>\n          <span class=\"tokenToken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\r\n        </header>\r\n        <div class=\"scroll-wrap\">\r\n          <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n          <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</span>\n        </header>\n        <div class=\"scroll-wrap\">\n          <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n          <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\r\n        </div>\r\n      </section>\r\n    </div>\r\n    <div id=\"TokenRmConfirm\" class=\"hide\">\r\n      <h3 id=\"TokenRmTit\"></h3>\r\n      <p>"
+    + "\"></ul>\n        </div>\n      </section>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n      <h3 id=\"TokenRmTit\"></h3>\n      <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
-    + "</p>\r\n      <div class=\"cred-btn-wrap clearfix\">\r\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
+    + "</p>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\r\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + "</button>\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
-    + "</button>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>";
+    + "</button>\n      </div>\n    </div>\n  </section>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -418,23 +457,30 @@ function program3(depth0,data) {
         "click #AccountEmail": "showEmail",
         "click #AccountCancelEmail": "hideEmail",
         "click #AccountUpdateEmail": "changeEmail",
+        "click #AccountCancelFullName": "hideFullName",
         "change #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn",
-        "keyup  #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn"
+        "keyup  #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn",
+        "click #AccountUpdateFullName": "changeFullName",
+        "change #AccountFirstName, #AccountLastName": "updateFullNameBtn",
+        "keyup #AccountFirstName, #AccountLastName": "updateFullNameBtn",
+        'click #AccountFullName': "showFullName"
       },
       initialize: function(options) {
         var attributes, tab;
         attributes = {
           username: App.user.get("username"),
+          firstName: App.user.get("firstName") || "",
+          lastName: App.user.get("lastName") || "",
           email: App.user.get("email"),
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
           awsSecretKey: App.user.get("awsSecretKey"),
-          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
           credNeeded: !!App.model.appList().length
         };
         this.modal = new Modal({
           template: SettingsTpl(attributes),
-          title: lang.ide.HEAD_LABEL_SETTING,
+          title: lang.IDE.HEAD_LABEL_SETTING,
           disableFooter: true,
           compact: true,
           width: "490px"
@@ -448,7 +494,7 @@ function program3(depth0,data) {
           if (tab === SettingsDialog.TAB.CredentialInvalid) {
             this.showCredSetup();
             this.modal.tpl.find(".modal-close").hide();
-            this.modal.tpl.find("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+            this.modal.tpl.find("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           }
           if (tab < 0) {
             tab = Math.abs(tab);
@@ -465,7 +511,7 @@ function program3(depth0,data) {
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
           awsSecretKey: App.user.get("awsSecretKey"),
-          credRemoveTitle: sprintf(lang.ide.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
         };
         this.modal.setContent(SettingsTpl(attributes));
         return this.modal.$("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
@@ -507,24 +553,25 @@ function program3(depth0,data) {
         old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
         new_pwd = this.modal.$("#AccountNewPwd").val() || "";
         if (new_pwd.length < 6) {
-          this.modal.$('#AccountInfo').text(lang.ide.SETTINGS_ERR_INVALID_PWD);
+          this.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_ERR_INVALID_PWD);
           return;
         }
         this.modal.$("#AccountInfo").empty();
         this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
         App.user.changePassword(old_pwd, new_pwd).then(function() {
-          notification('info', lang.ide.SETTINGS_UPDATE_PWD_SUCCESS);
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS);
           $("#AccountCancelPwd").click();
         }, function(err) {
           if (err.error === 2) {
-            that.modal.$('#AccountInfo').html("" + lang.ide.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.ide.SETTINGS_INFO_FORGET_PWD + "</a>");
+            that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
           } else {
-            that.modal.$('#AccountInfo').text(lang.ide.SETTINGS_UPDATE_PWD_FAILURE);
+            that.modal.$('#AccountInfo').text(lang.NOTIFY.SETTINGS_UPDATE_PWD_FAILURE);
           }
           return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         });
       },
       showEmail: function() {
+        this.hideFullName();
         $(".accountEmailRO").hide();
         $("#AccountEmailWrap").show();
         $("#AccountNewEmail").focus();
@@ -534,6 +581,18 @@ function program3(depth0,data) {
         $("#AccountEmailWrap").hide();
         $("#AccountNewEmail, #AccountEmailPwd").val("");
         $("#AccountEmailInfo").empty();
+      },
+      showFullName: function() {
+        this.hideEmail();
+        $(".accountFullNameRO").hide();
+        $("#AccountFullNameWrap").show();
+        $("#AccountFirstName").val(App.user.get("firstName") || "").focus();
+        $("#AccountLastName").val(App.user.get("lastName") || "");
+      },
+      hideFullName: function() {
+        $(".accountFullNameRO").show();
+        $("#AccountFullNameWrap").hide();
+        return $("#AccountFirstName, #AccountLastName").val("");
       },
       updateEmailBtn: function() {
         var new_pwd, old_pwd;
@@ -545,6 +604,28 @@ function program3(depth0,data) {
           $("#AccountUpdateEmail").attr("disabled", "disabled");
         }
       },
+      updateFullNameBtn: function() {
+        var first_name, last_name;
+        first_name = $("#AccountFirstName").val() || "";
+        last_name = $("#AccountLastName").val() || "";
+        if (first_name.length && last_name.length) {
+          $("#AccountUpdateFullName").removeAttr("disabled");
+        } else {
+          $("#AccountUpdateFullName").attr("disabled", "disabled");
+        }
+      },
+      changeFullName: function() {
+        var first_name, last_name, that;
+        that = this;
+        first_name = $("#AccountFirstName").val() || "";
+        last_name = $("#AccountLastName").val() || "";
+        if (first_name && last_name) {
+          return App.user.changeName(first_name, last_name).then(function(result) {
+            that.hideFullName();
+            return $(".fullNameText").text(first_name + " " + last_name);
+          });
+        }
+      },
       changeEmail: function() {
         var email, pwd;
         email = $("#AccountNewEmail").val() || "";
@@ -552,20 +633,20 @@ function program3(depth0,data) {
         $("#AccountEmailInfo").empty();
         $("#AccountUpdateEmail").attr("disabled", "disabled");
         App.user.changeEmail(email, pwd).then(function() {
-          notification('info', lang.ide.SETTINGS_UPDATE_EMAIL_SUCCESS);
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS);
           $("#AccountCancelEmail").click();
           $(".accountEmailRO").children("span").text(App.user.get("email"));
         }, function(err) {
           var text;
           switch (err.error) {
             case 116:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL3;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;
               break;
             case 117:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL2;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;
               break;
             default:
-              text = lang.ide.SETTINGS_UPDATE_EMAIL_FAIL1;
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL1;
           }
           $('#AccountEmailInfo').text(text);
           return $("#AccountUpdateEmail").removeAttr("disabled");
@@ -599,7 +680,7 @@ function program3(depth0,data) {
         App.user.changeCredential().then(function() {
           self.updateCredSettings();
         }, function() {
-          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_REMOVE);
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_REMOVE);
           self.modal.$("#modal-box .modal-close").show();
           return self.showCredSetup();
         });
@@ -626,7 +707,7 @@ function program3(depth0,data) {
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          self.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           self.modal.$("#modal-box .modal-close").show();
           self.showCredSetup();
         });
@@ -652,7 +733,7 @@ function program3(depth0,data) {
         });
       },
       showCredUpdateFail: function() {
-        this.modal.$("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+        this.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
         this.modal.$("#modal-box .modal-close").show();
         return this.showCredSetup();
       },
@@ -686,7 +767,7 @@ function program3(depth0,data) {
         this.rmToken = $p.children(".tokenToken").text();
         this.modal.$("#TokenManager").hide();
         this.modal.$("#TokenRmConfirm").show();
-        this.modal.$("#TokenRmTit").text(sprintf(lang.ide.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+        this.modal.$("#TokenRmTit").text(sprintf(lang.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
       },
       createToken: function() {
         var self;
@@ -696,7 +777,7 @@ function program3(depth0,data) {
           self.updateTokenTab();
           return self.modal.$("#TokenCreate").removeAttr("disabled");
         }, function() {
-          notification("error", "Fail to create token, please retry.");
+          notification("error", lang.NOTIFY.FAIL_TO_CREATE_TOKEN);
           return self.modal.$("#TokenCreate").removeAttr("disabled");
         });
       },
@@ -722,7 +803,7 @@ function program3(depth0,data) {
         App.user.updateToken(token, newTokenName).fail(function() {
           oldName = "";
           $p.children(".tokenName").val(oldName);
-          return notification("error", "Fail to update token, please retry.");
+          return notification("error", lang.NOTIFY.FAIL_TO_UPDATE_TOKEN);
         });
       },
       confirmRmToken: function() {
@@ -733,7 +814,7 @@ function program3(depth0,data) {
           self.updateTokenTab();
           return self.cancelRmToken();
         }, function() {
-          notification("Fail to delete token, please retry.");
+          notification(lang.NOTIFY.FAIL_TO_DELETE_TOKEN);
           return self.cancelRmToken();
         });
       },
@@ -765,20 +846,358 @@ function program3(depth0,data) {
 
 }).call(this);
 
+define('ide/subviews/BillingDialogTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div id=\"no-payment-card\" class=\"text-center\" xmlns=\"http://www.w3.org/1999/html\">\n    <div class=\"payment-credit-card\"></div>\n    <div class=\"text-left no-payment-card-info\">\n        <p class=\"payment-text\">Upgrade your VisualOps account to run the applications you’ve built and import existing VPCs.</p>\n        <p><a class=\"link-blue\" href=\"#\">Pricing in detail</a></p>\n    </div>\n    <div class=\"provide-payment-info\">\n        <a href=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\" class=\"btn btn-blue btn-xlarge\">Provide Billing Information <i\n                class=\"icon-right\"></i></a>\n\n        <p>\n            This will open a new window with Chargify.<br>\n            Meanwhile please keep this page open.\n        </p>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.noPaymentCard=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <p class=\"warning-red\">\n                    Your account is limited status now. Import VPC, app operation, monitoring and state ensuring are disabled.\n                    <a class=\"update-payment\" href=\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</a>\n                    as soon as possible.\n                </p>\n            ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "Update Billing Information";
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "Provide Billing Information";
+  }
+
+function program6(depth0,data) {
+  
+  
+  return "\n                <p class=\"warning-red\" style=\"display: none\"></p>\n            ";
+  }
+
+function program8(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">Date</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Amount</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Status</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Action</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\">\n                        <table class=\"table\">\n                            <thead>\n                            <tr>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class=\"t-m-content\">\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                ";
+  return buffer;
+  }
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                <tr class=\"item\" data-id=\""
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n                                    <td>"
+    + escapeExpression(helpers.formatTime.call(depth0, (depth0 && depth0.updated_at), "MMMM d, yyyy", {hash:{},data:data}))
+    + "</td>\n                                    <td>$ "
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
+    + "</td>\n                                    <td>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n                                    <td>\n                                        <a class=\"payment-receipt link-blue\" href=\"#\">View Receipt</a></td>\n                                </tr>\n                            ";
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  return "Paid";
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "<span class=\"link-red\">Failed</span>";
+  }
+
+function program14(depth0,data) {
+  
+  
+  return "\n                    <div class=\"full-space\">\n                        No billing event yet.\n                    </div>\n                ";
+  }
+
+  buffer += "<div id=\"billing-status\">\n    <nav id=\"PaymentNav\">\n        <span data-target=\"PaymentBillingTab\" class=\"selected\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
+    + "</span>\n        <span data-target=\"UsageTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_USAGE_TAB", {hash:{},data:data}))
+    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.shouldPay), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            <h5>Credit Card Infomation</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">"
+    + escapeExpression(helpers.or.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), "No Card", {hash:{},data:data}))
+    + "</p>\n                        <p class=\"payment-username\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.first_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>\n                    </div>\n                </div>\n                <div class=\"right\">\n                    <a class=\"btn btn-blue update-payment\" href=\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">Update Billing Information <i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>Billing History <span class=\"payment-next-billing\">Next Billing on "
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingCircle), "MMMM d, yyyy", {hash:{},data:data}))
+    + "</span></h5>\n            <div class=\"table-head-fix\">\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(14, program14, data),fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.shouldPay), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            <h5 class=\"billing_usage_title\">Current Usage <span class=\"billing_start_from\">Since "
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
+    + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <p>Used Points</p>\n                    <div class=\"usage-number\">\n                        "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                    </div>\n                </div>\n                <div class=\"billable-points\">\n                    <p>Billable Points</p>\n                    <div class=\"usage-number\">\n                        "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.billable_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                    </div>\n                </div>\n                <div class=\"usage-block\">\n                    <div class=\"billable-usage tooltip\"></div>\n                    <div class=\"free-usage tooltip\"></div>\n                    <div class=\"current-usage tooltip\"></div>\n                </div>\n                <p class=\"renew-points\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " free points renew in "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " days</p>\n            </div>\n        </section>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.billingTemplate=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
 (function() {
-  define('ide/subviews/HeaderView',["./HeaderTpl", "./SettingsDialog", 'backbone', "UI.selectbox"], function(tmpl, SettingsDialog) {
+  define('ide/subviews/BillingDialog',["./BillingDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "UI.modalplus", "ApiRequestR", "backbone"], function(BillingDialogTpl, lang, ApiRequest, Modal, ApiRequestR) {
+    var BillingDialog;
+    BillingDialog = Backbone.View.extend({
+      events: {
+        "click #PaymentNav span": "switchTab",
+        'click #PaymentBody a.payment-receipt': "viewPaymentReceipt",
+        'click .update-payment': "_bindPaymentEvent"
+      },
+      initialize: function(modal) {
+        var paymentState, that;
+        that = this;
+        paymentState = App.user.get("paymentState");
+        if (modal) {
+          this.modal = modal;
+          this.modal.setWidth("650px").setTitle(lang.IDE.PAYMENT_SETTING_TITLE).setContent(MC.template.loadingSpiner).find('.modal-confirm').hide();
+        } else {
+          this.modal = new Modal({
+            title: lang.IDE.PAYMENT_SETTING_TITLE,
+            width: "650px",
+            template: MC.template.loadingSpiner,
+            disableClose: true,
+            confirm: {
+              hide: true
+            }
+          });
+        }
+        ApiRequestR("payment_statement").then(function(paymentHistory) {
+          var billable_quota, hasPaymentHistory, paymentUpdate, paymentUsage, tempArray;
+          console.log(paymentHistory);
+          paymentUpdate = {
+            paymentState: App.user.get("paymentState"),
+            first_name: App.user.get("firstName"),
+            last_name: App.user.get("lastName"),
+            url: App.user.get("paymentUrl"),
+            card: App.user.get("creditCard"),
+            billingCircle: App.user.get("billingCircle")
+          };
+          paymentUsage = {
+            current_quota: App.user.get("voQuotaCurrent"),
+            max_quota: App.user.get("voQuotaPerMonth"),
+            outOfQuota: App.user.get("voQuotaCurrent") >= App.user.get("voQuotaPerMonth"),
+            renewRemainDays: Math.round((App.user.get("renewDate") - (new Date())) / (1000 * 60 * 60 * 24)),
+            last_billing_time: App.user.get("billingCircleStart"),
+            shouldPay: App.user.shouldPay() || App.user.isUnpaid()
+          };
+          billable_quota = App.user.get("voQuotaCurrent") - App.user.get("voQuotaPerMonth");
+          paymentUsage.billable_quota = billable_quota > 0 ? billable_quota : 0;
+          that.modal.find(".modal-body").css('padding', "0");
+          hasPaymentHistory = (_.keys(paymentHistory)).length;
+          tempArray = [];
+          _.each(paymentHistory, function(e) {
+            e.ending_balance = e.ending_balance_in_cents / 100;
+            e.total_balance = e.total_in_cents / 100;
+            e.start_balance = e.starting_balance_in_cents / 100;
+            return tempArray.push(e);
+          });
+          tempArray.reverse();
+          paymentHistory = tempArray;
+          that.paymentHistory = tempArray;
+          that.paymentUsage = _.clone(paymentUsage);
+          return that.modal.setContent(BillingDialogTpl.billingTemplate({
+            paymentUpdate: paymentUpdate,
+            paymentHistory: paymentHistory,
+            paymentUsage: paymentUsage,
+            hasPaymentHistory: hasPaymentHistory
+          }));
+        }, function() {
+          var _ref;
+          notification('error', "Error while getting user payment info, please try again later.");
+          return (_ref = that.modal) != null ? _ref.close() : void 0;
+        });
+        this.listenTo(App.user, "paymentUpdate", (function(_this) {
+          return function() {
+            return _this.animateUsage();
+          };
+        })(this));
+        return this.setElement(this.modal.tpl);
+      },
+      switchTab: function(event) {
+        var target;
+        target = $(event.currentTarget);
+        console.log("Switching Tabs");
+        this.modal.find("#PaymentNav").find("span").removeClass("selected");
+        this.modal.find(".tabContent > section").addClass("hide");
+        $("#" + target.addClass("selected").data('target')).removeClass("hide");
+        return this.animateUsage(event);
+      },
+      _bindPaymentEvent: function(event) {
+        var that;
+        that = this;
+        event.preventDefault();
+        window.open($(event.currentTarget).attr("href"), "");
+        this.modal.listenTo(App.user, 'change:paymentState', function() {
+          var paymentState;
+          paymentState = App.user.get('paymentState');
+          if (that.modal.isClosed) {
+            return false;
+          }
+          if (paymentState === 'active') {
+            return that._renderBillingDialog(that.modal);
+          }
+        });
+        this.modal.on('close', function() {
+          return that.modal.stopListening(App.user);
+        });
+        return false;
+      },
+      _renderBillingDialog: function(modal) {
+        return new BillingDialog(modal);
+      },
+      animateUsage: function(event) {
+        var $billable_usage, $current_usage, $free_usage, billable_quota, current_quota, current_quota_length, free_quota, free_quota_length, max_length, shouldPay;
+        if (this.modal.isClosed) {
+          return false;
+        }
+        free_quota_length = 250;
+        max_length = 580;
+        shouldPay = App.user.shouldPay();
+        this.modal.$(".usage-block").toggleClass("error", shouldPay);
+        this.modal.$(".used-points").toggleClass("error", shouldPay);
+        $current_usage = this.modal.find(".usage-block .current-usage");
+        $billable_usage = this.modal.find(".usage-block .billable-usage");
+        $free_usage = this.modal.find(".usage-block .free-usage");
+        if (event) {
+          $current_usage.addClass("freeze").width(0);
+          _.defer((function(_this) {
+            return function() {
+              return $current_usage.removeClass("freeze");
+            };
+          })(this));
+          this.modal.$(".usage-block").find(".billable-usage, .free-usage").addClass("freeze").width(free_quota_length);
+          _.defer((function(_this) {
+            return function() {
+              return _this.modal.$(".usage-block").find(".billable-usage, .free-usage").removeClass("freeze");
+            };
+          })(this));
+        }
+        current_quota = App.user.get("voQuotaCurrent");
+        free_quota = App.user.get("voQuotaPerMonth");
+        billable_quota = current_quota > free_quota ? current_quota - free_quota : 0;
+        this.modal.find(".payment-number").text(App.user.get("creditCard") || "No Card");
+        this.modal.find(".used-points .usage-number").text(current_quota);
+        this.modal.find(".billable-points .usage-number").text(billable_quota);
+        if (App.user.shouldPay() || App.user.isUnpaid()) {
+          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("creditCard"), (App.user.get("creditCard") ? "Update" : "Provide")));
+        } else {
+          this.modal.find(".warning-red").hide();
+        }
+        current_quota_length = current_quota * free_quota_length / free_quota;
+        if (free_quota > current_quota) {
+          return _.defer(function() {
+            $current_usage.width(current_quota_length).attr("data-tooltip", current_quota + " used points");
+            $free_usage.attr('data-tooltip', "" + free_quota + " free points").width(free_quota_length);
+            return $billable_usage.width(0);
+          });
+        } else {
+          return _.defer(function() {
+            if (current_quota_length < max_length) {
+              $current_usage.width(free_quota_length);
+              $billable_usage.width(current_quota_length);
+              $free_usage.width(free_quota_length);
+            } else {
+              $billable_usage.width(max_length);
+              $free_usage.width(0);
+              $current_usage.width(free_quota_length * max_length / current_quota_length);
+            }
+            $current_usage.attr('data-tooltip', free_quota + " free points");
+            return $billable_usage.attr("data-tooltip", (current_quota - free_quota) + " billable points");
+          });
+        }
+      },
+      viewPaymentReceipt: function(event) {
+        var $target, cssToInsert, id, makeNewWindow, paymentHistory;
+        $target = $(event.currentTarget);
+        id = $target.parent().parent().data("id");
+        paymentHistory = this.paymentHistory[id];
+        cssToInsert = ".billing_statement_section {\n    display: block;\n    position: relative;\n}\n.billing_statement_section h2 {\n    display: block;\n    background: #E6E6E6;\n    font-size: 16px;\n    padding: 10px;\n    font-weight: bold;\n    margin-bottom: 0;\n    border-bottom: 1px solid #727272;\n}\n.billing_statement_section_content {\n    display: block;\n    position: relative;\n    padding-top: 10px;\n}\ntable {\n    border-collapse: collapse;\n    width: 100%;\n}\ntable, td, th {\n    border: 1px solid #333;\n    padding: 7px;\n    text-align: left;\n    font-size: 14px;\n}\ntable thead {\n    background: #dedede;\n}\ntable tr.billing_statement_listing_tfoot {\n    font-weight: bold;\n    text-align: right;\n}\n#billing_statement {\n    width: 800px;\n    margin: 20px auto;\n    padding-bottom: 50px;\n}\n.billing_statement_section .billing_statement_section_content h3 {\n    font-size: 14px;\n    position: relative;\n    margin: 10px 0;\n    font-weight: bold;\n    margin-bottom: 14px;\n    background: #F3F3F3;\n    padding: 5px;\n}\ndiv#billing_statement_account_information_section {\n    width: 49%;\n    float: left;\n}\ndiv#billing_statement_summary_section {\n    width: 49%;\n    float: right;\n}\ndiv#billing_statement_detail_section {\n    clear: both;\n    padding-top: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_label {\n    font-weight: bold;\n    font-size: 16px;\n    width: 44%;\n    display: inline-block;\n    text-align: right;\n}\n.billing_statement_section_content> div {\n    margin-bottom: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_value {\n    text-align: right;\n    float: right;\n    color: #666;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_paid {\n    float: right;\n    font-size: 30px;\n    color: #50B816;\n    margin-top: 10px;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_unpaid {\n    float: right;\n    font-size: 30px;\n    color: #C70000;\n    margin-top: 10px;\n}\nbody {font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;}";
+        makeNewWindow = function() {
+          var content, headTag, newWindow, styleTag;
+          newWindow = window.open("", "");
+          newWindow.focus();
+          content = paymentHistory.html;
+          newWindow.document.write(content);
+          headTag = newWindow.document.head || newWindow.document.getElementsByTagName('head')[0];
+          styleTag = document.createElement('style');
+          styleTag.type = 'text/css';
+          if (styleTag.styleSheet) {
+            styleTag.styleSheet.cssText = cssToInsert;
+          } else {
+            styleTag.appendChild(document.createTextNode(cssToInsert));
+          }
+          headTag.appendChild(styleTag);
+          return newWindow.document.close();
+        };
+        return makeNewWindow();
+      }
+    });
+    return BillingDialog;
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/subviews/HeaderView',["./HeaderTpl", "./SettingsDialog", './BillingDialog', 'i18n!/nls/lang.js', 'backbone', "UI.selectbox"], function(tmpl, SettingsDialog, BillingDialog, lang) {
     var HeaderView;
     HeaderView = Backbone.View.extend({
       events: {
         'click #HeaderLogout': 'logout',
         'click #HeaderSettings': 'settings',
         'click #HeaderShortcuts': 'shortcuts',
+        'click #HeaderBilling': 'billingSettings',
+        'click .voquota': "billingSettings",
         'DROPDOWN_CLOSE #HeaderNotification': 'dropdownClosed'
       },
       initialize: function() {
         this.listenTo(App.user, "change", this.update);
         this.listenTo(App.model, "change:notification", this.updateNotification);
         this.setElement($(tmpl(App.user.toJSON())).prependTo("#wrapper"));
+        this.update();
       },
       logout: function() {
         return App.logout();
@@ -790,7 +1209,22 @@ function program3(depth0,data) {
         return new SettingsDialog();
       },
       update: function() {
-        return $("#HeaderUser").data("tooltip", App.user.get("email")).children("span").text(App.user.get("username"));
+        var $percent, $quota, overview, user;
+        user = App.user;
+        overview = user.getBillingOverview();
+        $("#HeaderUser").data("tooltip", user.get("email")).children("span").text(user.get("username"));
+        $quota = $("#header").children(".voquota").attr("data-tooltip", sprintf(lang.IDE.PAYMENT_HEADER_TOOLTIP, overview.quotaRemain, overview.billingRemain));
+        $quota.find(".currquota").css({
+          "width": overview.quotaPercent + "%"
+        });
+        $quota.find(".current").text(overview.quotaCurrent);
+        $quota.find(".limit").text(overview.quotaTotal);
+        $percent = $quota.find(".percentage").removeClass("error full");
+        if (user.shouldPay()) {
+          $percent.addClass("error");
+        } else if (overview.quotaCurrent >= overview.quotaTotal) {
+          $percent.addClass("full");
+        }
       },
       setAlertCount: function(count) {
         return $('#NotificationCounter').text(count || "");
@@ -818,6 +1252,9 @@ function program3(depth0,data) {
         this.setAlertCount();
         App.model.markNotificationRead();
         return null;
+      },
+      billingSettings: function() {
+        return new BillingDialog();
       }
     });
     return HeaderView;
@@ -833,74 +1270,75 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n    <p>"
+  buffer += "\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_PROVIDE_CRED_DESC", {hash:{},data:data}))
-    + "</p>\r\n  ";
+    + "</p>\n  ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n    <h2>"
+  buffer += "\n    <h2>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_TIT", {hash:{},data:data}))
     + "<span>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></h2>\r\n    <p>"
+    + "</span></h2>\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DESC", {hash:{},data:data}))
-    + "</p>\r\n  ";
+    + "</p>\n  ";
   return buffer;
   }
 
-  buffer += "<section id=\"WelcomeSettings\">\r\n  <header>\r\n  ";
+  buffer += "<section id=\"WelcomeSettings\">\n  <header>\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.noWelcome), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n  </header>\r\n  <div id=\"CredSetupWrap\">\r\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\r\n    <ul>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+  buffer += "\n  </header>\n  <div id=\"CredSetupWrap\">\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n    <ul>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\r\n      </li>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\r\n      </li>\r\n      <li>\r\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
-    + "\"></i>\r\n        <label>"
+    + "\"></i>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
-    + "</label>\r\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\r\n      </li>\r\n    </ul>\r\n\r\n    <footer class=\"cred-btn-wrap clearfix tar\">\r\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\n      </li>\n    </ul>\n\n    <footer class=\"cred-btn-wrap clearfix tar\">\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_SKIP", {hash:{},data:data}))
-    + "</button>\r\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
+    + "</button>\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
-    + "</button>\r\n    </footer>\r\n  </div>\r\n</section>\r\n\r\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\r\n  <p>"
+    + "</button>\n    </footer>\n  </div>\n</section>\n\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
-    + "</p>\r\n  <div class=\"loading-spinner\"></div>\r\n</section>\r\n\r\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\r\n  <h3>"
+    + "</p>\n  <div class=\"loading-spinner\"></div>\n</section>\n\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_TIT", {hash:{},data:data}))
-    + "</h3>\r\n  <h5>"
+    + "</h3>\n  <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_SUBTIT", {hash:{},data:data}))
-    + "</h5>\r\n  <p>"
+    + "</h5>\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG", {hash:{},data:data}))
-    + "</p>\r\n  <p>"
+    + "</p>\n  <p>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG_EXTRA", {hash:{},data:data}))
-    + "</p>\r\n  <footer class=\"cred-btn-wrap clearfix tar\">\r\n    <button id=\"WelcomeBack\" class=\"link-style\">"
+    + "</p>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeBack\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
-    + "</button>\r\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
+    + "</button>\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n</section>\r\n\r\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\r\n  <p id=\"WelcomeDoneTitDemo\">"
+    + "</button>\n  </footer>\n</section>\n\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\n  <p id=\"WelcomeDoneTitDemo\">"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT_DEMO", {hash:{},data:data}))
-    + "</p>\r\n  <p id=\"WelcomeDoneTit\">"
+    + "</p>\n  <p id=\"WelcomeDoneTit\">"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT", {hash:{},data:data}))
-    + " <span></span></p>\r\n  <h3>"
+    + " <span></span></p>\n  <h3>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_TIT", {hash:{},data:data}))
-    + "</h3>\r\n  <ul>"
+    + "</h3>\n  <ul>"
     + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_MSG", {hash:{},data:data}))
-    + "</ul>\r\n  <footer class=\"cred-btn-wrap clearfix tar\">\r\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
+    + "</ul>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n</section>";
+    + "</button>\n  </footer>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/WelcomeDialog',["./WelcomeTpl", "UI.modalplus", 'i18n!/nls/lang.js', "backbone"], function(WelcomeTpl, Modal, lang) {
-    var WelcomeDialog;
+    var SingletonWelcome, WelcomeDialog;
+    SingletonWelcome = null;
     WelcomeDialog = Backbone.View.extend({
       events: {
         "click #WelcomeSkip": "skip",
@@ -910,16 +1348,23 @@ function program3(depth0,data) {
         "click #CredSetupSubmit": "submitCred",
         "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn"
       },
+      constructor: function() {
+        if (SingletonWelcome) {
+          return SingletonWelcome;
+        }
+        SingletonWelcome = this;
+        return Backbone.View.apply(this, arguments);
+      },
       initialize: function(options) {
         var attributes, title;
         attributes = {
           username: App.user.get("username")
         };
         if (options && options.askForCredential) {
-          title = lang.ide.WELCOME_PROVIDE_CRED_TIT;
+          title = lang.IDE.WELCOME_PROVIDE_CRED_TIT;
           attributes.noWelcome = true;
         } else {
-          title = lang.ide.WELCOME_DIALOG_TIT;
+          title = lang.IDE.WELCOME_DIALOG_TIT;
         }
         this.modal = new Modal({
           title: title,
@@ -968,6 +1413,7 @@ function program3(depth0,data) {
         }
       },
       close: function() {
+        SingletonWelcome = null;
         return this.modal.close();
       },
       updateSubmitBtn: function() {
@@ -991,7 +1437,7 @@ function program3(depth0,data) {
         return App.user.validateCredential(accesskey, privatekey).then(function() {
           self.setCred();
         }, function() {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_VALIDATE);
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
           self.showCredSetup();
         });
       },
@@ -1008,7 +1454,7 @@ function program3(depth0,data) {
         return App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
           self.done();
         }, function(err) {
-          $("#CredSetupMsg").text(lang.ide.SETTINGS_ERR_CRED_UPDATE);
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
           self.showCredSetup();
         });
       },
@@ -1036,7 +1482,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_APPS", {hash:{},data:data}))
     + "</button>\n    <button class=\"off-canvas-tab selected\" id=\"off-canvas-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_STACKS", {hash:{},data:data}))
-    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">Show unused regions</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
+    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.SHOW_UNUSED_REGIONS", {hash:{},data:data}))
+    + "</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
   return buffer;
   };
 TEMPLATE.navigation=Handlebars.template(__TEMPLATE__);
@@ -1305,13 +1753,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
     + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
     + escapeExpression(((stack1 = (depth0 && depth0.msg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"confirmRmStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -1325,167 +1773,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
     + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n      <label class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
     + "</label>\n      <input id=\"confirmDupStackIpt\" class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.newName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n    </div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn btn-red\" id=\"confirmDupStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
 TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
-
-function program1(depth0,data) {
-  
-  
-  return "\n          <li>\n              EC2 instances will be started.\n          </li>\n          ";
-  }
-
-function program3(depth0,data) {
-  
-  
-  return "\n          <li>\n              DB instances will be restored from final snapshot.\n          </li>\n          ";
-  }
-
-function program5(depth0,data) {
-  
-  
-  return "\n          <li>\n              Auto Scaling Group will be recreated.\n          </li>\n          ";
-  }
-
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n      <div class=\"modal-shrink\">\n          <div class=\"sub-gray\">Warning</div>\n          <div class=\"error\">\n              DB instance ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.lostDBSnapshot), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "’s final snapshot is missing. This DB instance cannot be restored.\n          </div>\n      </div>\n      ";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.index), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  return buffer;
-  }
-function program9(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_START_APP", {hash:{},data:data}))
-    + "</div>\n      <ul class=\"modal-list-items\">\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasASG), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      </ul>\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lostDBSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>";
-  return buffer;
-  };
-TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <div style=\"padding: 20px\">\n        <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_ASG", {hash:{},data:data}))
-    + "</p>\n        <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n        <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n    </div>\n";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n<div class=\"modal-center-align-helper\" style=\"padding: 20px\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_LEFT", {hash:{},data:data}))
-    + " "
-    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n    <ul class=\"modal-list-items\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasAsg), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </ul>\n</div>\n";
-  return buffer;
-  }
-function program4(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n            <li>\n                EC2 instances will be stopped.\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasInstanceStore), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </li>\n        ";
-  return buffer;
-  }
-function program5(depth0,data) {
-  
-  
-  return "<span class=\"error\">Instance-stored instances will be deleted.</span>";
-  }
-
-function program7(depth0,data) {
-  
-  
-  return "\n            <li>\n                DB instances will be deleted final snapshot will be taken.\n                <span>Snapshots will be restored when the app is started.</span>\n            </li>\n        ";
-  }
-
-function program9(depth0,data) {
-  
-  
-  return "\n            <li>\n                Auto Scaling Group will be deleted.\n                <span>Auto Scaling Group will be recreated when the app is started.</span>\n            </li>\n        ";
-  }
-
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n<div class=\"estimate-stop clearfix\">\n    <div>\n        <span class=\"title\">Estimated Cost When Stopped</span>\n        <span class=\"price\" id=\"label-total-fee\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b> / month</span>\n    </div>\n    <div class=\"hide\">\n        <span class=\"title\">Saving Compared to Running App</span>\n        <span class=\"price\" id=\"label-total-saving\"><b>$"
-    + escapeExpression(((stack1 = (depth0 && depth0.savingFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</b>/ month</span>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -1502,118 +1802,15 @@ TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)";
+
+  buffer += "<section class=\"disconnected-msg\">\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONNECTION_LOST_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CHANGES_MAY_NOT_BE_SAVED", {hash:{},data:data}))
+    + "</div>\n</section>";
   return buffer;
-  }
-function program2(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<p>DB Instance\n    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cantStop), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    cannot take final snapshot.</p>\n<p>Wait for the DB instance(s) to be available. Then try to stop the app again.</p>";
-  return buffer;
-  };
-TEMPLATE.cantStop=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <p><b style=\"color:#ec3c38;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
-    + "</p>\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
-    + "</p>\n    <div><input class=\"input\" style=\"width:430px;\" id=\"appNameConfirmIpt\"/></div>\n";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n    <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_LEFT", {hash:{},data:data}))
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_TERMINATE_APP_RIGHT", {hash:{},data:data}))
-    + "</div></div>\n";
-  return buffer;
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <section class=\"check-final-snapshot checkbox-wrap\">\n        <div class=\"checkbox\">\n            <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n            <label for=\"take-rds-snapshot\"></label>\n        </div>\n        <label for=\"take-rds-snapshot\">Take final snapshot for DB instances.</label>\n    </section>\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  return buffer;
-  }
-function program6(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n        <p class=\"cant-snapshot\">DB Instance\n            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            cannot take final snapshot.</p>\n    ";
-  return buffer;
-  }
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>)";
-  return buffer;
-  }
-function program8(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-  buffer += "<div class=\"confirm-padding\">\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
-  return buffer;
-  };
-TEMPLATE.terminateAppConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<section class=\"disconnected-msg\">\n  <div>Connection lost. Attempting to reconnect…</div>\n  <div>Changes made now may not be saved.</div>\n</section>";
   };
 TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 
@@ -1621,15 +1818,17 @@ TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>Force to delete app</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">The app "
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " failed to terminate. Do you want to force deleting it? After force deleting it, you need to manually manage the resource in aws console.</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DELETE_STACK", {hash:{},data:data}))
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE_CONTENT", (depth0 && depth0.name), {hash:{},data:data}))
+    + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -1637,6 +1836,69 @@ TEMPLATE.forceTerminateApp=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
+define('ide/subviews/FullnameTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"complete-fullname\">\n    <h3>Complete your profile</h3>\n\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">You can later update this information in Settings &gt; Account</p>\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/FullnameSetup',["./FullnameTpl", "UI.modalplus", 'i18n!/nls/lang.js', 'ApiRequest', "backbone"], function(FullnameTpl, Modal, lang, ApiRequest) {
+    return Backbone.View.extend({
+      events: {
+        "click #submitFullName": "submit"
+      },
+      initialize: function() {
+        this.modal = new Modal({
+          title: lang.IDE.COMPLETE_YOUR_PROFILE,
+          template: FullnameTpl(),
+          width: "600",
+          disableClose: true,
+          hideClose: true,
+          cancel: {
+            hide: true
+          }
+        });
+        this.modal.on('confirm', this.submit.bind(this));
+        return this.setElement(this.modal.tpl);
+      },
+      submit: function() {
+        var firstname, lastname, that;
+        that = this;
+        firstname = that.modal.$("#complete-firstname").val();
+        lastname = that.modal.$("#complete-lastname").val();
+        if (!(firstname && lastname)) {
+          return false;
+        }
+        this.modal.find(".modal-confirm").attr('disabled', true);
+        this.modal.setContent(MC.template.loadingSpiner());
+        return ApiRequest("account_update_account", {
+          attributes: {
+            first_name: firstname,
+            last_name: lastname
+          }
+        }).then(function() {
+          App.user.set("firstName", firstname);
+          App.user.set("lastName", lastname);
+          this.modal.close();
+          return notification("info", lang.IDE.PROFILE_UPDATED_SUCCESSFULLY);
+        }, function() {
+          this.modal.close();
+          return notification('error', lang.IDE.PROFILE_UPDATED_FAILED);
+        });
+      }
+    });
+  });
+
+}).call(this);
+
 
 /*
 ----------------------------
@@ -1645,7 +1907,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, lang, CloudResources, constant, modalPlus) {
+  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", "./subviews/FullnameSetup", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, FullnameSetup, lang, CloudResources, constant, modalPlus) {
     return Backbone.View.extend({
       el: $("body")[0],
       events: {
@@ -1657,7 +1919,7 @@ return TEMPLATE; });
         this.listenTo(App.user, "change:state", this.toggleWelcome);
         this.listenTo(App.model.appList(), "change:terminateFail", this.askForForceTerminate);
 
-        /* env:dev                                                                             env:dev:end */
+        /* env:dev                                                                           env:dev:end */
 
         /* env:debug */
         require(["./ide/subviews/DebugTool"], function(DT) {
@@ -1672,7 +1934,7 @@ return TEMPLATE; });
         if (App.canQuit()) {
           return void 0;
         } else {
-          return lang.ide.BEFOREUNLOAD_MESSAGE;
+          return lang.IDE.BEFOREUNLOAD_MESSAGE;
         }
       },
       globalKeyEvent: function(event) {
@@ -1720,6 +1982,8 @@ return TEMPLATE; });
       toggleWelcome: function() {
         if (App.user.isFirstVisit()) {
           new WelcomeDialog();
+        } else if (App.user.fullnameNotSet()) {
+          new FullnameSetup();
         }
       },
       askForAwsCredential: function() {
@@ -1759,9 +2023,12 @@ return TEMPLATE; });
           model.terminate(true).fail(function(err) {
             var error;
             error = err.awsError ? err.error + "." + err.awsError : err.error;
-            return notification("Fail to terminate your app \"" + name + "\". (ErrorCode: " + error + ")");
+            return notification(sprintf(lang.NOTIFY.ERROR_FAILED_TERMINATE, name, error));
           });
         });
+      },
+      notifyUnpay: function() {
+        notification("error", "Failed to charge your account. Please update your billing info.");
       }
     });
   });
@@ -1779,7 +2046,7 @@ return TEMPLATE; });
 
 (function() {
   define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", "backbone"], function(ApiRequest, constant, CloudResources, ThumbUtil) {
-    var OpsModel, OpsModelState, OpsModelStateDesc;
+    var OpsModel, OpsModelLastestVersion, OpsModelState, OpsModelStateDesc;
     OpsModelState = {
       UnRun: 0,
       Running: 1,
@@ -1793,6 +2060,7 @@ return TEMPLATE; });
       Saving: 9
     };
     OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
+    OpsModelLastestVersion = "2014-09-18";
     OpsModel = Backbone.Model.extend({
       defaults: function() {
         return {
@@ -1800,7 +2068,8 @@ return TEMPLATE; });
           region: "",
           state: OpsModelState.UnRun,
           stoppable: true,
-          name: ""
+          name: "",
+          version: OpsModelLastestVersion
         };
       },
       initialize: function(attr, options) {
@@ -1813,7 +2082,7 @@ return TEMPLATE; });
           }
         }
 
-        /* env:dev                                                                                                                          env:dev:end */
+        /* env:dev                                                                                                                        env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -1837,6 +2106,9 @@ return TEMPLATE; });
       },
       isImported: function() {
         return !!this.attributes.importVpcId;
+      },
+      isPMRestricted: function() {
+        return this.get("version") >= "2014-09-18" && this.isApp();
       },
       testState: function(state) {
         return this.attributes.state === state;
@@ -2026,7 +2298,7 @@ return TEMPLATE; });
           json.layout.size = [240, 240];
         }
         if ((json.version || "").split("-").length < 3) {
-          json.version = "2013-09-13";
+          json.version = OpsModelLastestVersion;
         }
         this.__jsonData = json;
         if (this.attributes.name !== json.name) {
@@ -2064,7 +2336,8 @@ return TEMPLATE; });
         }).then(function(res) {
           var attr;
           attr = {
-            name: res.name,
+            name: newJson.name,
+            version: newJson.version,
             updateTime: +(new Date()),
             stoppable: res.property.stoppable,
             state: OpsModelState.UnRun
@@ -2124,6 +2397,7 @@ return TEMPLATE; });
             progress: 0,
             region: region,
             usage: toRunJson.usage,
+            version: toRunJson.version,
             updateTime: +(new Date()),
             stoppable: toRunJson.property.stoppable,
             resource_diff: false
@@ -2453,7 +2727,8 @@ return TEMPLATE; });
           region: this.get("region"),
           platform: "ec2-vpc",
           state: "Enabled",
-          version: "2014-02-17",
+          version: this.get("version"),
+          resource_diff: true,
           component: {},
           layout: {
             size: [240, 240]
@@ -2646,6 +2921,7 @@ return TEMPLATE; });
       }
     });
     OpsModel.State = OpsModelState;
+    OpsModel.LatestVersion = OpsModelLastestVersion;
     return OpsModel;
   });
 
@@ -2984,6 +3260,7 @@ return TEMPLATE; });
             region: ops.region,
             usage: ops.usage,
             name: ops.name,
+            version: ops.version,
             state: OpsModel.State[ops.state] || OpsModel.State.UnRun,
             stoppable: !(ops.property && ops.property.stoppable === false)
           });
@@ -3162,12 +3439,23 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/User',["ApiRequest", "backbone"], function(ApiRequest) {
-    var UserState;
+  define('ide/User',["ApiRequest", "ApiRequestR", "backbone"], function(ApiRequest, ApiRequestR) {
+    var Model, PaymentState, UserState;
     UserState = {
       NotFirstTime: 2
     };
-    return Backbone.Model.extend({
+    PaymentState = {
+      NoInfo: "",
+      Pastdue: "pastdue",
+      Unpaid: "unpaid",
+      Active: "active"
+    };
+    Model = Backbone.Model.extend({
+      defaults: {
+        paymentState: "",
+        voQuotaPerMonth: 1000,
+        voQuotaCurrent: 0
+      },
       initialize: function() {
         this.set({
           usercode: $.cookie("usercode"),
@@ -3181,8 +3469,34 @@ return TEMPLATE; });
       isFirstVisit: function() {
         return !(UserState.NotFirstTime & this.get("state"));
       },
+      fullnameNotSet: function() {
+        return !this.get("firstName") || !this.get("lastName");
+      },
+      isUnpaid: function() {
+        return this.get("paymentState") === PaymentState.Unpaid;
+      },
+      shouldPay: function() {
+        return (this.get("voQuotaCurrent") >= this.get("voQuotaPerMonth")) && (!this.get("creditCard") || this.isUnpaid());
+      },
+      getBillingOverview: function() {
+        var ov;
+        ov = {
+          quotaTotal: this.get("voQuotaPerMonth"),
+          quotaCurrent: this.get("voQuotaCurrent"),
+          billingStart: this.get("billingStart"),
+          billingEnd: this.get("billingEnd"),
+          billingRemain: Math.round((this.get("billingEnd") - new Date()) / 24 / 3600000)
+        };
+        ov.quotaRemain = Math.max(ov.quotaTotal - ov.quotaCurrent, 0);
+        ov.billingRemain = Math.min(ov.billingRemain, 31);
+        ov.billingRemain = Math.max(ov.billingRemain, 0);
+        ov.quotaPercent = Math.round(Math.min(ov.quotaCurrent, ov.quotaTotal) / Math.max(ov.quotaCurrent, ov.quotaTotal) * 100);
+        return ov;
+      },
       userInfoAccuired: function(result) {
-        var idx, res, t, _i, _len, _ref;
+        var idx, paymentInfo, res, selfpage, t, _i, _len, _ref;
+        paymentInfo = result.payment || {};
+        selfpage = paymentInfo.self_page || {};
         res = {
           email: MC.base64Decode(result.email),
           repo: result.mod_repo,
@@ -3190,11 +3504,21 @@ return TEMPLATE; });
           state: parseInt(result.state, 10),
           intercomHash: result.intercom_secret,
           account: result.account_id,
+          firstName: MC.base64Decode(result.first_name || ""),
+          lastName: MC.base64Decode(result.last_name || ""),
+          voQuotaCurrent: paymentInfo.current_quota || 0,
+          voQuotaPerMonth: paymentInfo.max_quota || 1000,
+          has_card: !!paymentInfo.has_card,
+          paymentUrl: selfpage.url,
+          creditCard: selfpage.card,
+          billingEnd: new Date(selfpage.current_period_ends_at || null),
+          billingStart: new Date(selfpage.current_period_started_at || null),
+          renewDate: paymentInfo ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
+          paymentState: paymentInfo.state || "",
           awsAccessKey: result.access_key,
           awsSecretKey: result.secret_key,
           tokens: result.tokens || [],
-          defaultToken: "",
-          paymentState: result.payment_state || "unpay"
+          defaultToken: ""
         };
         if (result.account_id === "demo_account") {
           res.account = res.awsAccessKey = res.awsSecretKey = "";
@@ -3212,10 +3536,50 @@ return TEMPLATE; });
         if (this.isFirstVisit()) {
           ApiRequest("account_update_account", {
             attributes: {
-              state: this.get("state") | UserState.NotFirstTime
+              state: "" + (this.get("state") | UserState.NotFirstTime)
             }
           });
         }
+      },
+      onWsUserStateChange: function(changes) {
+        var attr, changed, key, paymentInfo, that, toChange, value;
+        console.log(changes);
+        that = this;
+        paymentInfo = changes.payment;
+        if (!changes) {
+          return;
+        }
+        attr = {
+          current_quota: "voQuotaCurrent",
+          max_quota: "voQuotaPerMonth",
+          has_card: "creditCard",
+          state: "paymentState"
+        };
+        changed = !!changes.time_update;
+        toChange = {};
+        for (key in attr) {
+          value = attr[key];
+          if (paymentInfo != null ? paymentInfo.hasOwnProperty(key) : void 0) {
+            changed = true;
+            toChange[value] = paymentInfo[key];
+          }
+        }
+        if (changed) {
+          this.set(toChange);
+        }
+        if (paymentInfo != null ? paymentInfo.next_reset_time : void 0) {
+          App.user.set("renewDate", new Date(paymentInfo.next_reset_time * 1000));
+        }
+        ApiRequestR("payment_self").then(function(result) {
+          paymentInfo = {
+            creditCard: result.card,
+            billingCircle: new Date(result.current_period_ends_at || null),
+            billingCircleStart: new Date(result.current_period_started_at || null),
+            paymentUrl: result.url
+          };
+          that.set(paymentInfo);
+          return that.trigger("paymentUpdate");
+        });
       },
       bootIntercom: function() {
         var intId;
@@ -3322,15 +3686,23 @@ return TEMPLATE; });
           return self.set("email", email);
         });
       },
+      changeName: function(firstName, lastName) {
+        var self;
+        self = this;
+        return ApiRequest("account_update_account", {
+          attributes: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }).then(function(res) {
+          return this.userInfoAccuired(res);
+        });
+      },
       validateCredential: function(accessKey, secretKey) {
-        var d;
-        ApiRequest("account_validate_credential", {
+        return ApiRequest("account_validate_credential", {
           access_key: accessKey,
           secret_key: secretKey
         });
-        d = Q.defer();
-        d.resolve();
-        return d.promise;
       },
       changeCredential: function(account, accessKey, secretKey, force) {
         var self;
@@ -3436,6 +3808,8 @@ return TEMPLATE; });
         });
       }
     });
+    Model.PaymentState = PaymentState;
+    return Model;
   });
 
 }).call(this);
@@ -3701,6 +4075,17 @@ return TEMPLATE; });
         return workspace;
       };
 
+      WorkspaceManager.prototype.removeAllSpaces = function(filter) {
+        var space, _i, _len, _ref;
+        _ref = this.__spaces.slice(0);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          space = _ref[_i];
+          if (!space.isFixed() && (!filter || filter(space))) {
+            this.remove(space, true);
+          }
+        }
+      };
+
       WorkspaceManager.prototype.find = function(attribute) {
         return _.find(this.__spaces, function(space) {
           return space.isWorkingOn(attribute);
@@ -3741,7 +4126,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant) {
+  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "underscore", "i18n!/nls/lang.js"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant, lang) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {
@@ -3758,26 +4143,25 @@ return TEMPLATE; });
       this.model = new ApplicationModel();
       this.__view = new ApplicationView();
       fetchModel = this.model.fetch().fail(function(err) {
-        notification("Cannot load application data. Please reload your browser.");
+        notification(lang.NOTIFY.CANNOT_LOAD_APPLICATION_DATA);
         throw err;
       });
       return Q.all([this.user.fetch(), fetchModel]);
     };
     VisualOps.prototype.__createWebsocket = function() {
       this.WS = new Websocket();
-      this.WS.on("Disconnected", (function(_this) {
-        return function() {
-          return _this.acquireSession();
-        };
-      })(this));
-      this.WS.on("StatusChanged", (function(_this) {
-        return function(isConnected) {
-          console.info("Websocket Status changed, isConnected:", isConnected);
-          if (_this.__view) {
-            return _this.__view.toggleWSStatus(isConnected);
-          }
-        };
-      })(this));
+      this.WS.on("Disconnected", function() {
+        return App.acquireSession();
+      });
+      this.WS.on("StatusChanged", function(isConnected) {
+        console.info("Websocket Status changed, isConnected:", isConnected);
+        if (App.__view) {
+          return App.__view.toggleWSStatus(isConnected);
+        }
+      });
+      this.WS.on("userStateChange", function(idx, dag) {
+        return App.user.onWsUserStateChange(dag);
+      });
     };
     VisualOps.prototype.__createUser = function() {
       this.user = new User();
@@ -3881,7 +4265,7 @@ return TEMPLATE; });
       }
       editor = new OpsEditor(this.model.createStack(region));
       editor.activate();
-      return editor;
+      editor;
     };
     return VisualOps;
   });
