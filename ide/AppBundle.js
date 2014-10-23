@@ -1010,8 +1010,8 @@ return TEMPLATE; });
           console.log(paymentHistory);
           paymentUpdate = {
             paymentState: App.user.get("paymentState"),
-            first_name: App.user.get("firstName"),
-            last_name: App.user.get("lastName"),
+            first_name: App.user.get("cardFirstName"),
+            last_name: App.user.get("cardLastName"),
             url: App.user.get("paymentUrl"),
             card: App.user.get("creditCard"),
             billingCircle: App.user.get("billingCircle")
@@ -1050,6 +1050,7 @@ return TEMPLATE; });
           notification('error', "Error while getting user payment info, please try again later.");
           return (_ref = that.modal) != null ? _ref.close() : void 0;
         });
+        this.animateUsage();
         this.listenTo(App.user, "paymentUpdate", (function(_this) {
           return function() {
             return _this.animateUsage();
@@ -1122,8 +1123,10 @@ return TEMPLATE; });
         this.modal.find(".payment-number").text(App.user.get("creditCard") || "No Card");
         this.modal.find(".used-points .usage-number").text(current_quota);
         this.modal.find(".billable-points .usage-number").text(billable_quota);
-        if (App.user.shouldPay() || App.user.isUnpaid()) {
-          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("creditCard"), (App.user.get("creditCard") ? "Update" : "Provide")));
+        if (App.user.shouldPay()) {
+          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("url"), (App.user.get("creditCard") ? "Update" : "Provide")));
+        } else if (App.user.isUnpaid()) {
+          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("url")));
         } else {
           this.modal.find(".warning-red").hide();
         }
@@ -3506,6 +3509,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           account: result.account_id,
           firstName: MC.base64Decode(result.first_name || ""),
           lastName: MC.base64Decode(result.last_name || ""),
+          cardFirstName: "",
+          cardLastName: "",
           voQuotaCurrent: paymentInfo.current_quota || 0,
           voQuotaPerMonth: paymentInfo.max_quota || 1000,
           has_card: !!paymentInfo.has_card,
@@ -3575,7 +3580,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             creditCard: result.card,
             billingCircle: new Date(result.current_period_ends_at || null),
             billingCircleStart: new Date(result.current_period_started_at || null),
-            paymentUrl: result.url
+            paymentUrl: result.url,
+            cardFirstName: result.card ? result.first_name : "",
+            cardLastName: result.card ? result.last_name : ""
           };
           that.set(paymentInfo);
           return that.trigger("paymentUpdate");
@@ -3695,7 +3702,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             last_name: lastName
           }
         }).then(function(res) {
-          return this.userInfoAccuired(res);
+          return self.userInfoAccuired(res);
         });
       },
       validateCredential: function(accessKey, secretKey) {

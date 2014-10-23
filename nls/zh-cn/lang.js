@@ -595,6 +595,7 @@ define({
         "PAYMENT_SETTING_TITLE": "",
         "PAYMENT_HEADER_TOOLTIP": "",
         "PAYMENT_PROVIDE_UPDATE_CREDITCARD": "",
+        "PAYMENT_UNPAID_BUT_IN_FREE_QUOTA": "",
         "STATE_TIP_DELETE_STATE": "",
         "STATE_TIP_SELECT_STATE": "",
         "STATE_TIP_DESCRIPTION": "",
@@ -1851,8 +1852,8 @@ define({
         "ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN": "",
         "ERROR_MASTER_PASSWORD_INVALID": "",
         "ERROR_OG_DB_BOTH_MODIFIED": ""
-    }
-});  "TOOLBAR": {
+    },
+    "TOOLBAR": {
         "LOADING_DATA": "",
         "ROLLING_BACK": "",
         "RELOADING_DATA": "",

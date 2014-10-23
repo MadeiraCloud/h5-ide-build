@@ -595,6 +595,7 @@ define({
         "PAYMENT_SETTING_TITLE": "Billing & Usage",
         "PAYMENT_HEADER_TOOLTIP": "<div class=\"payment-header-tooltip\"><strong>%s</strong> free points remaining. <span> Free points will renew in %s days.</span></div>",
         "PAYMENT_PROVIDE_UPDATE_CREDITCARD": "Your account is limited status now. Import VPC, app operation, monitoring and state ensuring are disabled. <a class='update-payment' href='%s' target='_blank'> %s Billing Information</a> as soon as possible.",
+        "PAYMENT_UNPAID_BUT_IN_FREE_QUOTA": "You have unpaid bill. You can still use the free quota before getting into limited status.<a class='update-payment' href='%s' target='_blank'> Update Billing Information</a> as soon as possible.",
         "STATE_TIP_DELETE_STATE": "Delete State",
         "STATE_TIP_SELECT_STATE": "Select State",
         "STATE_TIP_DESCRIPTION": "Help",
@@ -1851,8 +1852,8 @@ define({
         "ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN": "Read Replica <span class='validation-tag tag-rds'>%s</span> should have same or larger storage than its source <span class='validation-tag tag-rds'>%s</span>.",
         "ERROR_MASTER_PASSWORD_INVALID": "DB instance <span class='validation-tag tag-rds'>%s</span>'s Master Password must contain 8 to 41 characters.",
         "ERROR_OG_DB_BOTH_MODIFIED": "DB Instance %s cannot be modified in the same update with the Option Group %s it is using."
-    },
-    "TOOLBAR": {
+    }
+});  "TOOLBAR": {
         "LOADING_DATA": "Loading data...",
         "ROLLING_BACK": "Rolling back...",
         "RELOADING_DATA": "Reloading data...",
