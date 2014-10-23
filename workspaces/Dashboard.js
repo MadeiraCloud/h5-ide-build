@@ -1614,21 +1614,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\n<div class=\"unmanaged-vpc-empty\">"
+  buffer += "\r\n<div class=\"unmanaged-vpc-empty\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_LOADING_VPC_FAILED", {hash:{},data:data}))
-    + "\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">"
+    + "\r\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_POP_BTN_RETRY", {hash:{},data:data}))
-    + "</button>\n</div>\n<div class=\"loading-spinner hide\"></div>\n";
+    + "</button>\r\n</div>\r\n<div class=\"loading-spinner hide\"></div>\r\n";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	";
+  buffer += "\r\n	";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.ready), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
+  buffer += "\r\n\r\n";
   return buffer;
   }
 function program4(depth0,data) {
@@ -1640,10 +1640,10 @@ function program4(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		";
+  buffer += "\r\n		";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(26, program26, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
+  buffer += "\r\n	";
   return buffer;
   }
 function program7(depth0,data) {
@@ -1651,63 +1651,63 @@ function program7(depth0,data) {
   var buffer = "", stack1;
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.vpcs)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\r\n		";
   return buffer;
   }
 function program8(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<section>\n			<header class=\"region-header\"><span class=\"region-name\">"
+  buffer += "<section>\r\n			<header class=\"region-header\"><span class=\"region-name\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>"
     + escapeExpression(((stack1 = (depth0 && depth0.subname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<span class=\"vpc-count\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.vpcs)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></header>\n\n			<ul class=\"region-group clearfix\" data-region=\""
+    + "</span></header>\r\n\r\n			<ul class=\"region-group clearfix\" data-region=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n				";
+    + "\">\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.vpcs), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</ul>\n		</section>";
+  buffer += "\r\n			</ul>\r\n		</section>";
   return buffer;
   }
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<li class=\"visualize-vpc ";
+  buffer += "\r\n				<li class=\"visualize-vpc ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"\n					";
+  buffer += "\"\r\n					";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n					<h5>";
+  buffer += ">\r\n					<h5>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</h5>\n					<ol class=\"tac\">\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+  buffer += "</h5>\r\n					<ol class=\"tac\">\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subnet)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SUBNETS", {hash:{},data:data}))
-    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RUNNING_INSTANCE", {hash:{},data:data}))
-    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.stopped)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STOPPED_INSTANCE", {hash:{},data:data}))
-    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NETWORK_INTERFACE", {hash:{},data:data}))
-    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eip)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ELASTIC_IP", {hash:{},data:data}))
-    + "</span></li>\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.elb)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LOAD_BALANCER", {hash:{},data:data}))
-    + "</span></li>\n					</ol>\n					<button class=\"btn btn-blue visualize-vpc-btn";
+    + "</span></li>\r\n					</ol>\r\n					<button class=\"btn btn-blue visualize-vpc-btn";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.username), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" ";
@@ -1718,7 +1718,7 @@ function program9(depth0,data) {
     + "\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.username), {hash:{},inverse:self.program(24, program24, data),fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</button>\n				</li>\n				";
+  buffer += "</button>\r\n				</li>\r\n				";
   return buffer;
   }
 function program10(depth0,data) {
@@ -1788,10 +1788,10 @@ function program26(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"scroll-wrap scrollbar-auto-hide\" style=\"height:500px;\">\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div id=\"VisualizeVpcDialog\" class=\"scroll-content\">\n";
+  buffer += "<div class=\"scroll-wrap scrollbar-auto-hide\" style=\"height:500px;\">\r\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n	<div id=\"VisualizeVpcDialog\" class=\"scroll-content\">\r\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.fail), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n	</div>\n</div>";
+  buffer += "\r\n\r\n	</div>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
