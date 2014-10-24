@@ -851,61 +851,18 @@ define('ide/subviews/BillingDialogTpl',['handlebars'], function(Handlebars){ var
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div id=\"no-payment-card\" class=\"text-center\" xmlns=\"http://www.w3.org/1999/html\">\n    <div class=\"payment-credit-card\"></div>\n    <div class=\"text-left no-payment-card-info\">\n        <p class=\"payment-text\">Upgrade your VisualOps account to run the applications you’ve built and import existing VPCs.</p>\n        <p><a class=\"link-blue\" href=\"#\">Pricing in detail</a></p>\n    </div>\n    <div class=\"provide-payment-info\">\n        <a href=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" target=\"_blank\" class=\"btn btn-blue btn-xlarge\">Provide Billing Information <i\n                class=\"icon-right\"></i></a>\n\n        <p>\n            This will open a new window with Chargify.<br>\n            Meanwhile please keep this page open.\n        </p>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.noPaymentCard=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <p class=\"warning-red\">\n                    Your account is limited status now. Import VPC, app operation, monitoring and state ensuring are disabled.\n                    <a class=\"update-payment\" href=\""
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" target=\"_blank\">";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</a>\n                    as soon as possible.\n                </p>\n            ";
-  return buffer;
-  }
-function program2(depth0,data) {
-  
-  
-  return "Update Billing Information";
-  }
-
-function program4(depth0,data) {
-  
-  
-  return "Provide Billing Information";
-  }
-
-function program6(depth0,data) {
-  
-  
-  return "\n                <p class=\"warning-red\" style=\"display: none\"></p>\n            ";
-  }
-
-function program8(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">Date</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Amount</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Status</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Action</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\">\n                        <table class=\"table\">\n                            <thead>\n                            <tr>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class=\"t-m-content\">\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                ";
   return buffer;
   }
-function program9(depth0,data) {
+function program2(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                <tr class=\"item\" data-id=\""
@@ -915,24 +872,24 @@ function program9(depth0,data) {
     + "</td>\n                                    <td>$ "
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
     + "</td>\n                                    <td>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n                                    <td>\n                                        <a class=\"payment-receipt link-blue\" href=\"#\">View Receipt</a></td>\n                                </tr>\n                            ";
   return buffer;
   }
-function program10(depth0,data) {
+function program3(depth0,data) {
   
   
   return "Paid";
   }
 
-function program12(depth0,data) {
+function program5(depth0,data) {
   
   
   return "<span class=\"link-red\">Failed</span>";
   }
 
-function program14(depth0,data) {
+function program7(depth0,data) {
   
   
   return "\n                    <div class=\"full-space\">\n                        No billing event yet.\n                    </div>\n                ";
@@ -942,10 +899,7 @@ function program14(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
     + "</span>\n        <span data-target=\"UsageTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_USAGE_TAB", {hash:{},data:data}))
-    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.shouldPay), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <h5>Credit Card Infomation</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">"
+    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            <p class=\"warning-red\"></p>\n            <h5>Credit Card Infomation</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">"
     + escapeExpression(helpers.or.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), "No Card", {hash:{},data:data}))
     + "</p>\n                        <p class=\"payment-username\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.first_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -956,21 +910,18 @@ function program14(depth0,data) {
     + "\" target=\"_blank\">Update Billing Information <i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>Billing History <span class=\"payment-next-billing\">Next Billing on "
     + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingCircle), "MMMM d, yyyy", {hash:{},data:data}))
     + "</span></h5>\n            <div class=\"table-head-fix\">\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(14, program14, data),fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.shouldPay), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <h5 class=\"billing_usage_title\">Current Usage <span class=\"billing_start_from\">Since "
-    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
+  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">Current Usage <span class=\"billing_start_from\">Since "
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
     + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <p>Used Points</p>\n                    <div class=\"usage-number\">\n                        "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n                    </div>\n                </div>\n                <div class=\"billable-points\">\n                    <p>Billable Points</p>\n                    <div class=\"usage-number\">\n                        "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.billable_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billable_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n                    </div>\n                </div>\n                <div class=\"usage-block\">\n                    <div class=\"billable-usage tooltip\"></div>\n                    <div class=\"free-usage tooltip\"></div>\n                    <div class=\"current-usage tooltip\"></div>\n                </div>\n                <p class=\"renew-points\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " free points renew in "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUsage)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " days</p>\n            </div>\n        </section>\n    </div>\n</div>";
   return buffer;
   };
@@ -1005,27 +956,28 @@ return TEMPLATE; });
             }
           });
         }
+        if (!App.user.get("creditCard")) {
+          this.modal.setContent(MC.template.paymentSubscribe);
+          this.modal.listenTo(App.user, "paymentUpdate", function() {
+            that.initialize(that.modal);
+            return that.modal.stopListening();
+          });
+          return false;
+        }
         ApiRequestR("payment_statement").then(function(paymentHistory) {
-          var billable_quota, hasPaymentHistory, paymentUpdate, paymentUsage, tempArray;
+          var billable_quota, hasPaymentHistory, paymentUpdate, tempArray;
           console.log(paymentHistory);
           paymentUpdate = {
-            paymentState: App.user.get("paymentState"),
-            first_name: App.user.get("cardFirstName"),
-            last_name: App.user.get("cardLastName"),
             url: App.user.get("paymentUrl"),
             card: App.user.get("creditCard"),
-            billingCircle: App.user.get("billingCircle")
-          };
-          paymentUsage = {
+            billingCircle: App.user.get("billingCircle"),
             current_quota: App.user.get("voQuotaCurrent"),
             max_quota: App.user.get("voQuotaPerMonth"),
-            outOfQuota: App.user.get("voQuotaCurrent") >= App.user.get("voQuotaPerMonth"),
             renewRemainDays: Math.round((App.user.get("renewDate") - (new Date())) / (1000 * 60 * 60 * 24)),
-            last_billing_time: App.user.get("billingCircleStart"),
-            shouldPay: App.user.shouldPay() || App.user.isUnpaid()
+            last_billing_time: App.user.get("billingCircleStart")
           };
           billable_quota = App.user.get("voQuotaCurrent") - App.user.get("voQuotaPerMonth");
-          paymentUsage.billable_quota = billable_quota > 0 ? billable_quota : 0;
+          paymentUpdate.billable_quota = billable_quota > 0 ? billable_quota : 0;
           that.modal.find(".modal-body").css('padding', "0");
           hasPaymentHistory = (_.keys(paymentHistory)).length;
           tempArray = [];
@@ -1038,19 +990,18 @@ return TEMPLATE; });
           tempArray.reverse();
           paymentHistory = tempArray;
           that.paymentHistory = tempArray;
-          that.paymentUsage = _.clone(paymentUsage);
-          return that.modal.setContent(BillingDialogTpl.billingTemplate({
+          that.paymentUpdate = _.clone(paymentUpdate);
+          that.modal.setContent(BillingDialogTpl.billingTemplate({
             paymentUpdate: paymentUpdate,
             paymentHistory: paymentHistory,
-            paymentUsage: paymentUsage,
             hasPaymentHistory: hasPaymentHistory
           }));
+          return that.animateUsage();
         }, function() {
           var _ref;
           notification('error', "Error while getting user payment info, please try again later.");
           return (_ref = that.modal) != null ? _ref.close() : void 0;
         });
-        this.animateUsage();
         this.listenTo(App.user, "paymentUpdate", (function(_this) {
           return function() {
             return _this.animateUsage();
@@ -1121,12 +1072,13 @@ return TEMPLATE; });
         free_quota = App.user.get("voQuotaPerMonth");
         billable_quota = current_quota > free_quota ? current_quota - free_quota : 0;
         this.modal.find(".payment-number").text(App.user.get("creditCard") || "No Card");
+        this.modal.find(".payment-username").text("" + (App.user.get("cardFirstName")) + " " + (App.user.get("cardLastName")));
         this.modal.find(".used-points .usage-number").text(current_quota);
         this.modal.find(".billable-points .usage-number").text(billable_quota);
         if (App.user.shouldPay()) {
-          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("url"), (App.user.get("creditCard") ? "Update" : "Provide")));
+          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
         } else if (App.user.isUnpaid()) {
-          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("url")));
+          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
         } else {
           this.modal.find(".warning-red").hide();
         }

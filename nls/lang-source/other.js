@@ -1370,7 +1370,7 @@
         zh: ""
       },
       PAYMENT_UNPAID_BUT_IN_FREE_QUOTA: {
-        en: "You have unpaid bill. You can still use the free quota before getting into limited status.<a class='update-payment' href='%s' target='_blank'> Update Billing Information</a> as soon as possible.",
+        en: "You have unpaid bill. You can still use the free quota before getting into limited status. <a class='update-payment' href='%s' target='_blank'>Update Billing Information</a> as soon as possible.",
         zh: ""
       }
     }
