@@ -407,7 +407,7 @@ define({
         "SETTINGS_ERR_WRONG_PWD": "密码错误",
         "SETTINGS_INFO_FORGET_PWD": "是否重置密码?",
         "COMPLETE_YOUR_PROFILE": "完善您的资料",
-        "PROFILE_UPDATED_SUCCESSFULLY": "您的资料已经成功更新!",
+        "PROFILE_UPDATED_SUCCESSFULLY": "您的资料已经成功更新",
         "FIRST_NAME": "名",
         "LAST_NAME": "姓",
         "WELCOME_DIALOG_TIT": "欢迎使用 VisualOps",
@@ -856,7 +856,9 @@ define({
         "RELOAD_STATE_INTERNAL_SERVER_ERROR": "",
         "RELOAD_STATE_SUCCESS": "",
         "RELOAD_STATE_NOT_READY": "",
-        "FAILA_TO_RUN_STACK_BECAUSE_OF_XXX": ""
+        "FAILA_TO_RUN_STACK_BECAUSE_OF_XXX": "",
+        "UPDATED_FULLNAME_SUCCESS": "",
+        "UPDATED_FULLNAME_FAIL": ""
     },
     "PARSLEY": {
         "MUST_BE_A_VALID_FORMAT_OF_NUMBER": "",

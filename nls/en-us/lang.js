@@ -407,7 +407,7 @@ define({
         "SETTINGS_ERR_WRONG_PWD": "Current password is wrong.",
         "SETTINGS_INFO_FORGET_PWD": "Forget password?",
         "COMPLETE_YOUR_PROFILE": "Complete your profile",
-        "PROFILE_UPDATED_SUCCESSFULLY": "Your profile updated successfully!",
+        "PROFILE_UPDATED_SUCCESSFULLY": "Your profile updated successfully",
         "FIRST_NAME": "First Name",
         "LAST_NAME": "Last Name",
         "WELCOME_DIALOG_TIT": "Welcome to VisualOps",
@@ -856,7 +856,9 @@ define({
         "RELOAD_STATE_INTERNAL_SERVER_ERROR": "Sorry, Internal server error, please try again later.",
         "RELOAD_STATE_SUCCESS": "States reloaded successfully!",
         "RELOAD_STATE_NOT_READY": "App Agent is not ready yet, Please try again later.",
-        "FAILA_TO_RUN_STACK_BECAUSE_OF_XXX": "Failed to run your stack %s because of %s"
+        "FAILA_TO_RUN_STACK_BECAUSE_OF_XXX": "Failed to run your stack %s because of %s",
+        "UPDATED_FULLNAME_SUCCESS": "Full name Updated successfully",
+        "UPDATED_FULLNAME_FAIL": "Failed to update full name, please try again later."
     },
     "PARSLEY": {
         "MUST_BE_A_VALID_FORMAT_OF_NUMBER": "Must be a valid format of number.",

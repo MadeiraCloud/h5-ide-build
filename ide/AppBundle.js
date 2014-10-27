@@ -151,27 +151,27 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\r\n  <div class=\"confirmSession\">\r\n  <div class=\"modal-header\"><h3>"
+  buffer += "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION", {hash:{},data:data}))
-    + "</h3></div>\r\n\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\">\r\n        <p>"
+    + "</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\r\n        <p>"
+    + "</p>\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\r\n    </div>\r\n    <div class=\"modal-text-minor\">"
+    + "</p>\n    </div>\n    <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\r\n  </article>\r\n\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">"
+    + "</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_RECONNECT", {hash:{},data:data}))
-    + "</button>\r\n    <button id=\"SessionClose\" class=\"btn btn-silver\">"
+    + "</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n  </div>\r\n\r\n  <div class=\"reconnectSession\" style=\"display:none;\">\r\n  <div class=\"modal-header\"><h3>"
+    + "</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_RECONNECT_SESSION", {hash:{},data:data}))
-    + "</h3></div>\r\n  <article class=\"modal-body\">\r\n    <div class=\"modal-text-major\">"
+    + "</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\r\n    <div class=\"modal-input\">\r\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n    </div>\r\n  </article>\r\n  <footer class=\"modal-footer\">\r\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>"
+    + "</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CONNECT", {hash:{},data:data}))
-    + "</button>\r\n    <button id=\"SessionClose2\" class=\"btn btn-red\">"
+    + "</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
-    + "</button>\r\n  </footer>\r\n  </div>\r\n</section>";
+    + "</button>\n  </footer>\n  </div>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -592,7 +592,8 @@ function program3(depth0,data) {
       hideFullName: function() {
         $(".accountFullNameRO").show();
         $("#AccountFullNameWrap").hide();
-        return $("#AccountFirstName, #AccountLastName").val("");
+        $("#AccountFirstName, #AccountLastName").val("");
+        return $("#AccountUpdateFullName").attr("disabled", false);
       },
       updateEmailBtn: function() {
         var new_pwd, old_pwd;
@@ -620,9 +621,17 @@ function program3(depth0,data) {
         first_name = $("#AccountFirstName").val() || "";
         last_name = $("#AccountLastName").val() || "";
         if (first_name && last_name) {
+          $("#AccountUpdateFullName").attr("disabled", true);
           return App.user.changeName(first_name, last_name).then(function(result) {
             that.hideFullName();
-            return $(".fullNameText").text(first_name + " " + last_name);
+            $(".fullNameText").text(first_name + " " + last_name);
+            if (result) {
+              return notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
+            }
+          }, function(err) {
+            notification("error", lang.NOTIFY.UPDATED_FULLNAME_FAIL);
+            $("#AccountUpdateFullName").attr("disabled", false);
+            return console.error("Change Full name Failed due to ->", err);
           });
         }
       },
@@ -1797,18 +1806,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"complete-fullname\">\n    <h3>Complete your profile</h3>\n\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
+  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
     + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">You can later update this information in Settings &gt; Account</p>\n</div>";
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">You can later update this information in <em>Settings &gt; Account</em></p>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/FullnameSetup',["./FullnameTpl", "UI.modalplus", 'i18n!/nls/lang.js', 'ApiRequest', "backbone"], function(FullnameTpl, Modal, lang, ApiRequest) {
     return Backbone.View.extend({
       events: {
-        "click #submitFullName": "submit"
+        "click #submitFullName": "submit",
+        "change #complete-firstname": "changeInput",
+        "change #complete-lastname": "changeInput"
       },
       initialize: function() {
         this.modal = new Modal({
@@ -1819,10 +1830,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           hideClose: true,
           cancel: {
             hide: true
+          },
+          confirm: {
+            disabled: true
           }
         });
         this.modal.on('confirm', this.submit.bind(this));
         return this.setElement(this.modal.tpl);
+      },
+      changeInput: function() {
+        var confirmBtn;
+        confirmBtn = this.modal.find(".modal-confirm");
+        if (this.modal.find("#complete-firstname").val() && this.modal.find("#complete-lastname").val()) {
+          return confirmBtn.attr("disabled", false);
+        } else {
+          return confirmBtn.attr("disabled", true);
+        }
       },
       submit: function() {
         var firstname, lastname, that;
@@ -3527,18 +3550,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (paymentInfo != null ? paymentInfo.next_reset_time : void 0) {
           App.user.set("renewDate", new Date(paymentInfo.next_reset_time * 1000));
         }
-        ApiRequestR("payment_self").then(function(result) {
-          paymentInfo = {
-            creditCard: result.card,
-            billingCircle: new Date(result.current_period_ends_at || null),
-            billingCircleStart: new Date(result.current_period_started_at || null),
-            paymentUrl: result.url,
-            cardFirstName: result.card ? result.first_name : "",
-            cardLastName: result.card ? result.last_name : ""
-          };
-          that.set(paymentInfo);
-          return that.trigger("paymentUpdate");
-        });
+        if (App.user.get("firstName") && App.user.get("lastName")) {
+          ApiRequestR("payment_self").then(function(result) {
+            paymentInfo = {
+              creditCard: result.card,
+              billingCircle: new Date(result.current_period_ends_at || null),
+              billingCircleStart: new Date(result.current_period_started_at || null),
+              paymentUrl: result.url,
+              cardFirstName: result.card ? result.first_name : "",
+              cardLastName: result.card ? result.last_name : ""
+            };
+            that.set(paymentInfo);
+            return that.trigger("paymentUpdate");
+          });
+        }
       },
       bootIntercom: function() {
         var intId;
@@ -3646,16 +3671,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         });
       },
       changeName: function(firstName, lastName) {
-        var self;
+        var defer, self;
         self = this;
-        return ApiRequest("account_update_account", {
+        defer = new Q.defer();
+        if (firstName === self.get("firstName") && lastName === self.get("lastName")) {
+          defer.resolve();
+        }
+        ApiRequest("account_update_account", {
           attributes: {
             first_name: firstName,
             last_name: lastName
           }
         }).then(function(res) {
-          return self.userInfoAccuired(res);
+          self.userInfoAccuired(res);
+          return defer.resolve(res);
+        }, function(err) {
+          return defer.reject(err);
         });
+        return defer.promise;
       },
       validateCredential: function(accessKey, secretKey) {
         return ApiRequest("account_validate_credential", {

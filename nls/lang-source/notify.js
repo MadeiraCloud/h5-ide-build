@@ -312,6 +312,14 @@
       FAILA_TO_RUN_STACK_BECAUSE_OF_XXX: {
         en: "Failed to run your stack %s because of %s",
         zh: ""
+      },
+      UPDATED_FULLNAME_SUCCESS: {
+        en: "Full name Updated successfully",
+        zh: ""
+      },
+      UPDATED_FULLNAME_FAIL: {
+        en: "Failed to update full name, please try again later.",
+        zh: ""
       }
     }
   };
