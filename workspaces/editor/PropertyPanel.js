@@ -17727,7 +17727,8 @@ return TEMPLATE; });
         };
         _switch = function(flag) {
           if (flag) {
-            return _check('standard');
+            _check('standard');
+            return $('.property-dbinstance-iops-value-section').hide();
           } else {
             return _check('io1');
           }
