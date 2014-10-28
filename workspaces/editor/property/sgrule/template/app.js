@@ -36,7 +36,7 @@ function program2(depth0,data) {
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.ipProtocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span></div>\n        <div class=\"rule-port tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SG_TIP_PORT_CODE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_SG_TIP_PORT_CODE", {hash:{},data:data}))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.dispPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n      </div>\n    </li>\n    ";
@@ -63,9 +63,7 @@ function program7(depth0,data) {
   return "Destination";
   }
 
-  buffer += "<article class=\"property-info\" style=\"margin-top:0;\">\n   <section class=\"property-control-group\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.SGRULE_SELECTED_CONNECTION_REFLECTS_FOLLOWING_SGR", {hash:{},data:data}))
-    + "</section>\n</article>\n\n";
+  buffer += "<article class=\"property-info\" style=\"margin-top:0;\">\n   <section class=\"property-control-group\">The selected connection reflects following security group rule(s):</section>\n</article>\n\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.sg_group), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;

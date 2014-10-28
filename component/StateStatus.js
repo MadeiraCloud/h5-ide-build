@@ -3,13 +3,10 @@ define('component/statestatus/template',['handlebars'], function(Handlebars){ va
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"modal-header\">\n	<h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "FAILED_STATE", {hash:{},data:data}))
-    + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-state-statusbar\">\n	</div>\n</div>";
-  return buffer;
+  return "<div class=\"modal-header\">\n	<h3>Failed State</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-state-statusbar\">\n	</div>\n</div>";
   };
 TEMPLATE.modal=Handlebars.template(__TEMPLATE__);
 
@@ -17,13 +14,10 @@ TEMPLATE.modal=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"state-status-content\">\n\n	<div class=\"scroll-wrap scroll-wrap-validation\" style=\"height:200px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n			<div class=\"update-tip\"></div>\n			<div class=\"status-item\">\n				<p class=\"no-item\">"
-    + escapeExpression(helpers.i18n.call(depth0, "NO_FAILED_ITEM_PERIOD", {hash:{},data:data}))
-    + "</p>\n			</div>\n		</div>\n	</div>\n</div>";
-  return buffer;
+  return "<div class=\"state-status-content\">\n\n	<div class=\"scroll-wrap scroll-wrap-validation\" style=\"height:200px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n			<div class=\"update-tip\"></div>\n			<div class=\"status-item\">\n				<p class=\"no-item\">No failed item.</p>\n			</div>\n		</div>\n	</div>\n</div>";
   };
 TEMPLATE.content=Handlebars.template(__TEMPLATE__);
 
@@ -86,15 +80,10 @@ TEMPLATE.item=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<dl class=\"state-status-pending\">\n	<dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "ALL_STATES_ARE_PENDING_PERIOLD", {hash:{},data:data}))
-    + "</dt>\n	<dd>"
-    + escapeExpression(helpers.i18n.call(depth0, "A_MESSAGE_WILL_SHOW_HERE", {hash:{},data:data}))
-    + "</dd>\n</dl>";
-  return buffer;
+  return "<dl class=\"state-status-pending\">\n	<dt>All states are pending.</dt>\n	<dd>A message will show here when a state succeeds or fails.</dd>\n</dl>";
   };
 TEMPLATE.pending=Handlebars.template(__TEMPLATE__);
 
@@ -113,12 +102,12 @@ TEMPLATE.container=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  var buffer = "", functionType="function", escapeExpression=this.escapeExpression;
 
 
   buffer += "<div class=\"state-status-update\">\n	"
-    + escapeExpression(helpers.i18n.call(depth0, "XXX_STATES_HAS_UPDATED_STATUS", depth0, {hash:{},data:data}))
-    + "\n</div>";
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + " states has updated status.\n</div>";
   return buffer;
   };
 TEMPLATE.update=Handlebars.template(__TEMPLATE__);

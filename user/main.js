@@ -51,7 +51,7 @@
     return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || "en-us";
   };
 
-  deepth = 'RESET';
+  deepth = 'reset';
 
   userRoute = function(routes) {
     var hashArray, pathArray, _name;
@@ -173,12 +173,12 @@
       }
     }
     if ((parseInt(browser[2], 10) || 0) < support[browser[1]]) {
-      $("header").after("<div id='unsupported-browser'><p>" + langsrc.LOGIN.browser_not_support_1 + "</p> <p>" + langsrc.LOGIN.browser_not_support_2 + "<a href='https://www.google.com/intl/en/chrome/browser/' target='_blank'>Chrome</a>, <a href='http://www.mozilla.org/en-US/firefox/all/' target='_blank'>Firefox</a> or <a href='http://windows.microsoft.com/en-us/internet-explorer/download-ie' target='_blank'>IE</a>" + langsrc.LOGIN.browser_not_support_3 + "</p></div>");
+      $("header").after('<div id="unsupported-browser"><p>MadeiraCloud IDE does not support the browser you are using.</p> <p>For a better experience, we suggest you use the latest version of <a href="https://www.google.com/intl/en/chrome/browser/" target="_blank">Chrome</a>, <a href="http://www.mozilla.org/en-US/firefox/all/" target="_blank">Firefox</a> or <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie" target="_blank">IE</a>.</p></div>');
     }
     return userRoute({
       "reset": function(pathArray, hashArray) {
         var hashTarget;
-        deepth = 'RESET';
+        deepth = 'reset';
         hashTarget = hashArray[0];
         if (hashTarget === 'password') {
           return checkPassKey(hashArray[1], function(statusCode, result) {
@@ -190,14 +190,14 @@
               return $('#reset-form').on('submit', function(e) {
                 e.preventDefault();
                 if (validPassword()) {
-                  $("#reset-password").attr('disabled', true).val(langsrc.RESET.reset_waiting);
+                  $("#reset-password").attr('disabled', true).val(langsrc.reset.reset_waiting);
                   ajaxChangePassword(hashArray, $("#reset-pw").val());
                 }
                 return false;
               });
             } else {
-              tempLang = tempLang || langsrc.RESET['expired-info'];
-              langsrc.RESET['expired-info'] = langsrc.SERVICE['RESET_PASSWORD_ERROR_' + statusCode] || tempLang;
+              tempLang = tempLang || langsrc.reset['expired-info'];
+              langsrc.reset['expired-info'] = langsrc.service['RESET_PASSWORD_ERROR_' + statusCode] || tempLang;
               window.location.hash = "expire";
             }
           });
@@ -226,7 +226,7 @@
             $('#reset-pw-email').off('keyup');
             $("#reset-btn").attr('disabled', true);
             $("#reset-pw-email").attr('disabled', true);
-            $('#reset-btn').val(window.langsrc.RESET.reset_waiting);
+            $('#reset-btn').val(window.langsrc.reset.reset_waiting);
             sendEmail($("#reset-pw-email").val());
             return false;
           });
@@ -237,7 +237,7 @@
         if (checkAllCookie()) {
           window.location = getRef();
         }
-        deepth = 'LOGIN';
+        deepth = 'login';
         render("#login-template");
         $(".account-btn-wrap a").attr("href", "/reset/" + getSearch());
         $("#login-register").find("a").attr("href", "/register/" + getSearch());
@@ -257,16 +257,10 @@
           if ($user.val() && $password.val()) {
             $(".error-msg").hide();
             $(".control-group").removeClass('error');
-            submitBtn.attr('disabled', true).val(langsrc.RESET.reset_waiting);
+            submitBtn.attr('disabled', true).val(langsrc.reset.reset_waiting);
             return ajaxLogin([$user.val(), $password.val()], function(statusCode) {
-              if (statusCode === 100) {
-                $('#error-msg-1').hide();
-                $('#error-msg-3').show().text(langsrc.SERVICE['ERROR_CODE_100_MESSAGE']);
-              } else {
-                $('#error-msg-1').show();
-                $('#error-msg-3').hide();
-              }
-              return submitBtn.attr('disabled', false).val(langsrc.LOGIN['login-btn']);
+              $('#error-msg-1').show();
+              return submitBtn.attr('disabled', false).val(langsrc.login['login-btn']);
             });
           } else {
             $("#error-msg-2").show();
@@ -285,8 +279,8 @@
         });
       },
       'register': function(pathArray, hashArray) {
-        var $email, $firstName, $form, $lastName, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkFullname, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
-        deepth = 'REGISTER';
+        var $email, $form, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
+        deepth = 'register';
         if (hashArray[0] === 'success') {
           render("#success-template");
           $('#register-get-start').click(function() {
@@ -301,27 +295,12 @@
         $(".title-link a").attr("href", "/login/" + getSearch());
         $form = $("#register-form");
         $form.find('input').eq(0).focus();
-        $firstName = $("#register-firstname");
-        $lastName = $("#register-lastname");
         $username = $('#register-username');
         $email = $('#register-email');
         $password = $('#register-password');
         usernameTimeout = void 0;
         emailTimeout = void 0;
         $('#register-btn').attr('disabled', false);
-        checkFullname = function(e, cb) {
-          var firstName, lastName, status;
-          status = $("#fullname-verification-status");
-          firstName = $firstName.val();
-          lastName = $lastName.val();
-          if (firstName.trim() === "" || lastName.trim() === "") {
-            status.removeClass("verification-status").addClass('error-status').text(langsrc.REGISTER.firstname_and_lastname_required);
-            return false;
-          } else {
-            status.removeClass('verification-status').removeClass('error-status').text("");
-            return true;
-          }
-        };
         checkUsername = function(e, cb) {
           var status, username;
           username = $username.val();
@@ -329,7 +308,7 @@
           if (username.trim() !== "") {
             if (/[^A-Za-z0-9\_]{1}/.test(username) !== true) {
               if (username.length > 40) {
-                status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_maxlength);
+                status.removeClass('verification-status').addClass('error-status').text(langsrc.register.username_maxlength);
                 if (cb) {
                   return cb(0);
                 } else {
@@ -346,7 +325,7 @@
                 }
               }
             } else {
-              status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_not_matched);
+              status.removeClass('verification-status').addClass('error-status').text(langsrc.register.username_not_matched);
               if (cb) {
                 return cb(0);
               } else {
@@ -354,7 +333,7 @@
               }
             }
           } else {
-            status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_required);
+            status.removeClass('verification-status').addClass('error-status').text(langsrc.register.username_required);
             if (cb) {
               return cb(0);
             } else {
@@ -378,7 +357,7 @@
                 return true;
               }
             } else {
-              status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.email_not_valid);
+              status.removeClass('verification-status').addClass('error-status').text(langsrc.register.email_not_valid);
               if (cb) {
                 return cb(0);
               } else {
@@ -386,7 +365,7 @@
               }
             }
           } else {
-            status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.email_required);
+            status.removeClass('verification-status').addClass('error-status').text(langsrc.register.email_required);
             if (cb) {
               return cb(0);
             } else {
@@ -407,7 +386,7 @@
                 return true;
               }
             } else {
-              status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.password_shorter);
+              status.removeClass('verification-status').addClass('error-status').text(langsrc.register.password_shorter);
               if (cb) {
                 return cb(0);
               } else {
@@ -415,7 +394,7 @@
               }
             }
           } else {
-            status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.password_required);
+            status.removeClass('verification-status').addClass('error-status').text(langsrc.register.password_required);
             if (cb) {
               return cb();
             } else {
@@ -434,13 +413,13 @@
                 if (!checkUsername()) {
                   return false;
                 }
-                status.removeClass('error-status').addClass('verification-status').show().text(langsrc.REGISTER.username_available);
+                status.removeClass('error-status').addClass('verification-status').show().text(langsrc.register.username_available);
                 return typeof cb === "function" ? cb(1) : void 0;
               } else if (statusCode === 'error') {
-                $('.error-msg').eq(0).text(langsrc.SERVICE.NETWORK_ERROR).show();
-                return $('#register-btn').attr('disabled', false).val(langsrc.REGISTER["register-btn"]);
+                $('.error-msg').eq(0).text(langsrc.service.NETWORK_ERROR).show();
+                return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
               } else if (checkUsername()) {
-                status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.username_taken);
+                status.removeClass('verification-status').addClass('error-status').text(langsrc.register.username_taken);
                 return typeof cb === "function" ? cb(0) : void 0;
               } else {
                 return typeof cb === "function" ? cb(0) : void 0;
@@ -459,13 +438,13 @@
                 if (!checkEmail()) {
                   return false;
                 }
-                status.removeClass('error-status').addClass('verification-status').show().text(langsrc.REGISTER.email_available);
+                status.removeClass('error-status').addClass('verification-status').show().text(langsrc.register.email_available);
                 return typeof cb === "function" ? cb(1) : void 0;
               } else if (statusCode === 'error') {
-                $('.error-msg').eq(0).text(langsrc.SERVICE.NETWORK_ERROR).show();
-                return $('#register-btn').attr('disabled', false).val(langsrc.REGISTER["register-btn"]);
+                $('.error-msg').eq(0).text(langsrc.service.NETWORK_ERROR).show();
+                return $('#register-btn').attr('disabled', false).val(langsrc.register["register-btn"]);
               } else {
-                status.removeClass('verification-status').addClass('error-status').text(langsrc.REGISTER.email_used);
+                status.removeClass('verification-status').addClass('error-status').text(langsrc.register.email_used);
                 return typeof cb === "function" ? cb(0) : void 0;
               }
             });
@@ -476,7 +455,7 @@
             $(".verification-status").removeAttr('style');
             $('.error-status').removeClass('error-status');
           }
-          return $('#register-btn').attr('disabled', false).val(langsrc.REGISTER['register-btn']);
+          return $('#register-btn').attr('disabled', false).val(langsrc.register['register-btn']);
         };
         $username.on('keyup blur change', function(e) {
           return checkUsername(e, function(a) {
@@ -485,12 +464,6 @@
             }
             return a;
           });
-        });
-        $firstName.on('keyup blur change', function() {
-          return checkFullname();
-        });
-        $lastName.on('keyup blur change', function() {
-          return checkFullname();
         });
         $email.on('keyup blur change', function(e) {
           return checkEmail(e, function(a) {
@@ -509,20 +482,19 @@
           });
         });
         return $form.on('submit', function(e) {
-          var emailResult, fullnameResult, passwordResult, userResult;
+          var emailResult, passwordResult, userResult;
           e.preventDefault();
           $('.error-msg').removeAttr('style');
           if ($username.next().hasClass('error-status') || $email.next().hasClass('error-status')) {
             return false;
           }
-          fullnameResult = checkFullname();
           userResult = checkUsername();
           emailResult = checkEmail();
           passwordResult = checkPassword();
-          if (!(userResult && emailResult && passwordResult && fullnameResult)) {
+          if (!(userResult && emailResult && passwordResult)) {
             return false;
           }
-          $('#register-btn').attr('disabled', true).val(langsrc.REGISTER.reginster_waiting);
+          $('#register-btn').attr('disabled', true).val(langsrc.register.reginster_waiting);
           return checkUsername(e, function(usernameAvl) {
             if (!usernameAvl) {
               resetRegForm();
@@ -539,14 +511,9 @@
                   return false;
                 }
                 if (usernameAvl && emailAvl && passwordAvl) {
-                  return ajaxRegister([
-                    $username.val(), $password.val(), $email.val(), {
-                      first_name: $firstName.val(),
-                      last_name: $lastName.val()
-                    }
-                  ], function(statusCode) {
+                  return ajaxRegister([$username.val(), $password.val(), $email.val()], function(statusCode) {
                     resetRegForm(true);
-                    $("#register-status").show().text(langsrc.SERVICE['ERROR_CODE_' + statusCode + '_MESSAGE']);
+                    $("#register-status").show().text(langsrc.service['ERROR_CODE_' + statusCode + '_MESSAGE']);
                     return false;
                   });
                 }
@@ -568,24 +535,24 @@
         status.hide();
         return true;
       } else {
-        status.addClass("error-status").show().text(langsrc.RESET.reset_password_shorter);
+        status.addClass("error-status").show().text(langsrc.reset.reset_password_shorter);
         return false;
       }
     } else {
-      status.addClass("error-status").show().text(langsrc.RESET.reset_password_required);
+      status.addClass("error-status").show().text(langsrc.reset.reset_password_required);
       return false;
     }
   };
 
   showErrorMessage = function() {
     $('#reset-pw-email').attr('disabled', false);
-    $("#reset-btn").attr('disabled', false).val(window.langsrc.RESET.reset_btn);
-    $("#reset-status").removeClass('verification-status').addClass("error-msg").show().text(langsrc.RESET.reset_error_state);
+    $("#reset-btn").attr('disabled', false).val(window.langsrc.reset.reset_btn);
+    $("#reset-status").removeClass('verification-status').addClass("error-msg").show().text(langsrc.reset.reset_error_state);
     return false;
   };
 
   handleErrorCode = function(statusCode) {
-    return console.error('ERROR_CODE_MESSAGE', langsrc.SERVICE["ERROR_CODE_" + statusCode + "_MESSAGE"]);
+    return console.error('ERROR_CODE_MESSAGE', langsrc.service["ERROR_CODE_" + statusCode + "_MESSAGE"]);
   };
 
   handleNetError = function(status) {

@@ -29,11 +29,9 @@ function program5(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\n    <header class=\"processing rolling-back-content\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ROLLING_BACK", {hash:{},data:data}))
-    + "</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\">\n        <div class=\"bar\" style=\"width:"
+    + "%</span></header>\n    <header class=\"processing rolling-back-content\">Rolling back...</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\"> <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div>\n    </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
+    + "%;\"></div> </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
     + "</p>\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
@@ -216,19 +214,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1;
 
 
-  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\n  <aside class=\"OEPanelLeft\"></aside>\n  <aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\n\n<div class=\"OEMiddleWrap\">\n  <nav class=\"OEPanelTop\"></nav>\n  <div class=\"OEPanelBottom\"></div>\n\n    <section class=\"OEPanelCenter nano\">\n        <div class=\"nano-content\">\n            <div class=\"canvas-view\">\n                <button class=\"svg_resizer icon-resize-down tooltip\"\n                        data-tooltip='";
-  stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_EXPAND_H", {hash:{},data:data});
+  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\n  <aside class=\"OEPanelLeft\"></aside>\n  <aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\n\n<div class=\"OEMiddleWrap\">\n  <nav class=\"OEPanelTop\"></nav>\n  <div class=\"OEPanelBottom\"></div>\n\n  <section class=\"OEPanelCenter nano\"> <div class=\"nano-content\">\n    <div class=\"canvas-view\">\n      <button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
+  stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n                <button class=\"svg_resizer icon-resize-up tooltip\"\n                        data-tooltip='";
-  stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_SHRINK_H", {hash:{},data:data});
+  buffer += "'></button>\n      <button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
+  stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n                <button class=\"svg_resizer icon-resize-right tooltip\"\n                        data-tooltip='";
-  stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_EXPAND_W", {hash:{},data:data});
+  buffer += "'></button>\n      <button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
+  stack1 = helpers.i18n.call(depth0, "CVS_TIP_EXPAND_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n                <button class=\"svg_resizer icon-resize-left tooltip\"\n                        data-tooltip='";
-  stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_SHRINK_W", {hash:{},data:data});
+  buffer += "'></button>\n      <button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
+  stack1 = helpers.i18n.call(depth0, "CVS_TIP_SHRINK_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n                <svg width=\"100%\" height=\"100%\"></svg>\n            </div>\n        </div>\n    </section>\n</div>\n</div>";
+  buffer += "'></button>\n      <svg width=\"100%\" height=\"100%\"></svg>\n    </div>\n  </div> </section>\n</div>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -237,13 +235,10 @@ TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"ops-process\">\n  <header class=\"processing\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LOADING_DATA", {hash:{},data:data}))
-    + "</header>\n  <section class=\"loading-spinner\"></section>\n</div>";
-  return buffer;
+  return "<div class=\"ops-process\">\n  <header class=\"processing\">Loading data...</header>\n  <section class=\"loading-spinner\"></section>\n</div>";
   };
 TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 
@@ -254,11 +249,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"ops-process\">\n    <header class=\"processing\">"
+  buffer += "<div class=\"ops-process\">\n  <header class=\"processing\">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "<span class=\"process-info\">0%</span></header>\n    <header class=\"processing rolling-back-content\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.ROLLING_BACK", {hash:{},data:data}))
-    + "</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\">\n        <div class=\"bar\" style=\"width:0%;\"></div>\n    </section>\n</div>";
+    + "<span class=\"process-info\">0%</span></header>\n  <header class=\"processing rolling-back-content\">Rolling back...</header>\n  <section class=\"loading-spinner\"></section>\n  <section class=\"progress\"> <div class=\"bar\" style=\"width:0%;\"></div> </section>\n</div>";
   return buffer;
   };
 TEMPLATE.appProcessing=Handlebars.template(__TEMPLATE__);
@@ -271,11 +264,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n  <header class=\"processing\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOADING_DATA", {hash:{},data:data}))
-    + "</header>\n  <section class=\"loading-spinner\"></section>\n";
-  return buffer;
+  
+  return "\n  <header class=\"processing\">Reloading data...</header>\n  <section class=\"loading-spinner\"></section>\n";
   }
 
 function program3(depth0,data) {
@@ -287,21 +277,19 @@ function program3(depth0,data) {
   buffer += "</header>\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.error), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  <button class=\"btn btn-silver\" id=\"processDoneBtn\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_DONE", {hash:{},data:data}))
-    + "</button>\n";
+  buffer += "\n  <button class=\"btn btn-silver\" id=\"processDoneBtn\">Done</button>\n";
   return buffer;
   }
 function program4(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_UPDATE_SUCCESSFULLY_TITLE", {hash:{},data:data}));
+  return "App has updated successfully.";
   }
 
 function program6(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_UPDATE_FAILED_TITLE", {hash:{},data:data}));
+  return "The app failed to update.";
   }
 
 function program8(depth0,data) {
@@ -314,9 +302,7 @@ function program8(depth0,data) {
     + "</p>\n      <p class=\"detail\">";
   stack1 = ((stack1 = (depth0 && depth0.error)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</p>\n    </div>\n    <div class=\"result-error-notice\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_ROllBACK_DESC", {hash:{},data:data}))
-    + "</div>\n  </div>\n  ";
+  buffer += "</p>\n    </div>\n    <div class=\"result-error-notice\">The state of your app has been rolled back, except for the already deleted resources.</div>\n  </div>\n  ";
   return buffer;
   }
 
@@ -336,9 +322,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar tooltip icon-export-png toolbar-btn-primary\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_PNG", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
     + "' data-analytics-plus=\"export_vis_png\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_PNG", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
     + "</button>";
   return buffer;
   };
@@ -352,9 +338,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar icon-zoom-in tooltip\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_ZOOM_IN", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_ZOOM_IN", {hash:{},data:data}))
     + "'></button>\n<button class=\"btn-toolbar icon-zoom-out seperator tooltip\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_ZOOM_OUT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_ZOOM_OUT", {hash:{},data:data}))
     + "'></button>";
   return buffer;
   };
@@ -368,13 +354,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\n  <button class=\"selection tooltip\" data-tooltip=\"SecurityGroup Line Style\"></button>\n  <ul class=\"dropdown\">\n    <li class='item' data-id=\"0\"><span class=\"icon-straight\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_LINESTYLE_STRAIGHT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_STRAIGHT", {hash:{},data:data}))
     + "</span></li>\n    <li class='item' data-id=\"1\"><span class=\"icon-elbow\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_LINESTYLE_ELBOW", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_ELBOW", {hash:{},data:data}))
     + "</span></li>\n    <li class='item' data-id=\"2\"><span class=\"icon-bezier-q\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_LINESTYLE_CURVE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_CURVE", {hash:{},data:data}))
     + "</span></li>\n  </ul>\n</div>\n<button class=\"btn-toolbar icon-hide-sg tooltip\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_LINESTYLE_HIDE_SG", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_LBL_LINESTYLE_HIDE_SG", {hash:{},data:data}))
     + "'></button>";
   return buffer;
   };
@@ -388,9 +374,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary runApp\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_BTN_RUN_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_BTN_RUN_STACK", {hash:{},data:data}))
     + "'>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.BTN_RUN_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_BTN_RUN_STACK", {hash:{},data:data}))
     + "</button>";
   return buffer;
   };
@@ -404,13 +390,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar tooltip icon-save\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_SAVE_STACK", {hash:{},data:data}))
     + "'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DELETE_STACK", {hash:{},data:data}))
     + "'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_DUPLICATE_STACK", {hash:{},data:data}))
     + "'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CREATE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_CREATE_STACK", {hash:{},data:data}))
     + "'></button>";
   return buffer;
   };
@@ -424,13 +410,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"selectbox btn-toolbar seperator\">\n  <button class=\"selection tooltip icon-send\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT", {hash:{},data:data}))
     + "'></button>\n  <ul class=\"dropdown\">\n    <li data-analytics-plus=\"export_png\" class=\"icon-export-png\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_PNG", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
     + "</li>\n    <li data-analytics-plus=\"export_json\" class=\"icon-export-json\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_JSON", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_JSON", {hash:{},data:data}))
     + "</li>\n    <li data-analytics-plus=\"cloudformation\" class=\"icon-toolbar-cloudformation\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_CF", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_CF", {hash:{},data:data}))
     + "</li>\n  </ul>\n</div>";
   return buffer;
   };
@@ -444,15 +430,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"tooltip btn-toolbar icon-update-app toolbar-btn-primary\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_UPDATE_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_UPDATE_APP", {hash:{},data:data}))
     + "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EDIT_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EDIT_APP", {hash:{},data:data}))
     + "</button>\n<button class=\"tooltip btn-toolbar icon-apply-app toolbar-btn-primary\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_UPDATE_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_SAVE_UPDATE_APP", {hash:{},data:data}))
     + "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APPLY_EDIT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_APPLY_EDIT", {hash:{},data:data}))
     + "</button>\n<button class=\"tooltip btn-toolbar icon-cancel-update-app seperator\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CANCEL_UPDATE_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_CANCEL_UPDATE_APP", {hash:{},data:data}))
     + "\"></button>";
   return buffer;
   };
@@ -466,16 +452,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"tooltip btn-toolbar icon-stop\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_STOP_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_STOP_APP", {hash:{},data:data}))
     + "\"></button>\n<button class=\"tooltip btn-toolbar icon-play startApp\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_START_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_START_APP", {hash:{},data:data}))
     + "\"><span style=\"display: none\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.START_APP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_START_APP", {hash:{},data:data}))
     + "</span></button>\n<button class=\"btn-toolbar tooltip icon-terminate seperator\" data-tooltip=\"";
-  stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_TERMINATE_APP", {hash:{},data:data});
+  stack1 = helpers.i18n.call(depth0, "TOOL_TIP_TERMINATE_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-forget-app seperator\" data-tooltip=\"Forget the App, but keep all Resources\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
     + "'></button>";
   return buffer;
   };
@@ -489,7 +475,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar icon-export-png tooltip seperator\" data-analytics-plus=\"export_png\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_AS_PNG", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_EXPORT_AS_PNG", {hash:{},data:data}))
     + "'></button>";
   return buffer;
   };
@@ -503,7 +489,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar tooltip icon-refresh seperator\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_REFRESH_REOURCES", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_REFRESH_REOURCES", {hash:{},data:data}))
     + "\"></button>";
   return buffer;
   };
@@ -525,11 +511,11 @@ function program1(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stateOn), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CUSTOM_USER_DATA", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TIP_CUSTOM_USER_DATA", {hash:{},data:data}))
     + "\">\n    <span class=\"switch-label\" data-on=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOGGLE_VISUALOPS_ON", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TOGGLE_VISUALOPS_ON", {hash:{},data:data}))
     + "\" data-off=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOGGLE_VISUALOPS_OFF", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_TOGGLE_VISUALOPS_OFF", {hash:{},data:data}))
     + "\"></span>\n    <span class=\"switch-handle\"></span>\n</label>";
   return buffer;
   };
@@ -539,13 +525,10 @@ TEMPLATE.toolbar.BtnSwitchStates=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
-    + "</button>";
-  return buffer;
+  return "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">Reload States</button>";
   };
 TEMPLATE.toolbar.BtnReloadStates=Handlebars.template(__TEMPLATE__);
 
@@ -553,13 +536,10 @@ TEMPLATE.toolbar.BtnReloadStates=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONFIRM_ENABLE_STATE", {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>";
-  return buffer;
+  return "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">Enable VisualOps will override your custom User Data. Are you sure to continue?</div>\n    </div>\n</div>";
   };
 TEMPLATE.confirm.enableState=Handlebars.template(__TEMPLATE__);
 
@@ -567,30 +547,23 @@ TEMPLATE.confirm.enableState=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n            <div class=\"modal-text-highlight\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_CLOUDFORMATION_WARNNING", {hash:{},data:data}))
-    + "</div>";
-  return buffer;
+  
+  return "<div class=\"modal-text-highlight\">\n      DB Instance using custom Option Group is not supported in CloudFormation Template. Default Option Group will be\n      used instead.\n  </div>";
   }
 
-  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        ";
+  buffer += "<div class=\"modal-text-wraper\"> <div class=\"modal-center-align-helper\">\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasCustomOG), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_EXPORT_CF_INFO", {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>\n<div class=\"stack-validation\">\n    <details open style=\"display:none;\">\n        <summary>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.STACK_VALIDATION", {hash:{},data:data}))
-    + "</summary>\n        <div id=\"stack-run-validation-container\"></div>\n    </details>\n    <div class=\"nutshell\">:<label></label></div>\n    <div class=\"validating\">\n        <div class=\"loading-spinner loading-spinner-small\"></div>\n        <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.VALIDATING_STACK", {hash:{},data:data}))
-    + "</p>\n    </div>\n</div>\n<div style=\"padding-top:20px;text-align:right;\">\n    <a class=\"btn btn-blue disabled\">"
+  buffer += "\n  <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_EXPORT_CF_INFO", {hash:{},data:data}))
+    + "</div>\n</div> </div>\n<div class=\"stack-validation\">\n  <details open style=\"display:none;\">\n    <summary>Stack Validation</summary>\n    <div id=\"stack-run-validation-container\"></div>\n  </details>\n  <div class=\"nutshell\">:<label></label></div>\n  <div class=\"validating\">\n    <div class=\"loading-spinner loading-spinner-small\"></div>\n    <p>Validating your stack...</p>\n  </div>\n</div>\n<div style=\"padding-top:20px;text-align:right;\">\n  <a class=\"btn btn-blue disabled\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_INFO_LOADING", {hash:{},data:data}))
-    + "</a>\n    <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</a>\n  <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -603,14 +576,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\" style=\"padding:40px 20px;\">\n        <div class=\"modal-text-major\"></div>\n        <div class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_EXPORT_AS_JSON", {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <a class=\"btn btn-blue\" href=\""
+  buffer += "<div class=\"modal-text-wraper\"> <div class=\"modal-center-align-helper\" style=\"padding:40px 20px;\">\n  <div class=\"modal-text-major\"></div>\n  <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BODY_EXPORT_AS_JSON", {hash:{},data:data}))
+    + "</div>\n</div> </div>\n<div class=\"modal-footer\">\n  <a class=\"btn btn-blue\" href=\""
     + escapeExpression(((stack1 = (depth0 && depth0.data)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" target=\"_blank\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DOWNLOAD", {hash:{},data:data}))
-    + "</a>\n    <button id=\"tpl-cancel\" class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_DOWNLOAD", {hash:{},data:data}))
+    + "</a>\n  <button id=\"tpl-cancel\" class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n</div>";
   return buffer;
   };
@@ -620,15 +593,10 @@ TEMPLATE.export.JSON=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"loading-spinner\"></div>\n<section style=\"margin:10px 10px 0;max-height:420px;overflow:hidden;text-align:center;display:none;\"></section>\n<div class=\"modal-footer\">\n    <a class=\"btn btn-blue\" style=\"display: inline-block;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_DOWNLOAD", {hash:{},data:data}))
-    + "</a>\n    <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
-  return buffer;
+  return "<div class=\"loading-spinner\"></div>\n<section style=\"margin:10px 10px 0;max-height:420px;overflow:hidden;text-align:center;display:none;\"></section>\n<div class=\"modal-footer\">\n  <a class=\"btn btn-blue\" style=\"display: inline-block;\">Download</a>\n  <button class=\"btn modal-close btn-silver\">Cancel</button>\n</div>";
   };
 TEMPLATE.export.PNG=Handlebars.template(__TEMPLATE__);
 
@@ -639,13 +607,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
+  buffer += "<div class=\"modal-text-wraper\"> <div class=\"modal-center-align-helper\">\n  <div class=\"modal-text-major\">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + " "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.HAS_UNSAVED_CHANGES", {hash:{},data:data}))
-    + "</div>\n        <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOSE_CONFIRM", {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>";
+    + " has unsaved changes.</div>\n  <div class=\"modal-text-major\">Do you confirm to close it?</div>\n</div> </div>";
   return buffer;
   };
 TEMPLATE.modal.onClose=Handlebars.template(__TEMPLATE__);
@@ -654,15 +618,10 @@ TEMPLATE.modal.onClose=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"modal-text-wraper\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CANCEL_UPDATE_CONFIRM", {hash:{},data:data}))
-    + "</div>\n        <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.DISCARD_UPDATE_CHANGE", {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>";
-  return buffer;
+  return "<div class=\"modal-text-wraper\"> <div class=\"modal-center-align-helper\">\n  <div class=\"modal-text-major\">This app has been changed.</div>\n  <div class=\"modal-text-major\">Do you confirm to discard the changes?</div>\n</div> </div>";
   };
 TEMPLATE.modal.cancelUpdate=Handlebars.template(__TEMPLATE__);
 
@@ -670,20 +629,14 @@ TEMPLATE.modal.cancelUpdate=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_SUCCESSFULLY_WELL_DONE", (depth0 && depth0.name), {hash:{},data:data}))
-    + "</p>\n<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.NAME_IMPORTED_APP", {hash:{},data:data}))
-    + "</p>\n<div class=\"modal-control-group\">\n    <label for=\"ImportSaveAppName\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_NAME", {hash:{},data:data}))
-    + "</label>\n    <input id=\"ImportSaveAppName\" class=\"input\" value=\""
+  buffer += "<p class=\"modal-text-major\">Well done! Your VPC "
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"string\" autofocus>\n</div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n    <label for=\"\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_USAGE", {hash:{},data:data}))
-    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">Monitor and report external resource change of this app</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\"If resource has been changed outside VisualOps, an email notification will be sent to you.\" style=\"color:#148BE6;vertical-align:-3px;\"></i>\n</section>\n\n<p>Now you can easily manage the resources and lifecycle of the app within VisualOps.</p>";
+    + " has been successfully imported as VisualOps app.</p>\n<p class=\"modal-text-major\">Give this app an appropriate name.</p>\n<div class=\"modal-control-group\">\n<label for=\"ImportSaveAppName\">App Name</label> <input id=\"ImportSaveAppName\" class=\"input\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"string\" autofocus> </div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n  <label for=\"\">App Usage</label>\n  <div id=\"app-usage-selectbox\" class=\"selectbox\">\n    <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n    <ul class=\"dropdown\" tabindex=\"-1\">\n      <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n      <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n      <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n      <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n    </ul>\n  </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">Monitor and report external resource change of this app</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\"If resource has been changed outside VisualOps, an email notification will be sent to you.\" style=\"color:#148BE6;vertical-align:-3px;\"></i>\n</section>\n\n<p>Now you can easily manage the resources and lifecycle of the app within VisualOps.</p>";
   return buffer;
   };
 TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
@@ -692,15 +645,10 @@ TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.VPC_REMOVED_OUTSIDE_VISUALOPS", {hash:{},data:data}))
-    + "</p>\n<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONFIRM_REMOVE_APP", {hash:{},data:data}))
-    + "</p>";
-  return buffer;
+  return "<p class=\"modal-text-major\">VPC of this app has been deleted outside VisualOps.</p>\n<p class=\"modal-text-major\">Do you want to remove the app?</p>";
   };
 TEMPLATE.modal.confirmRemoveApp=Handlebars.template(__TEMPLATE__);
 
@@ -714,21 +662,21 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div id=\"replace_stack\" style=\"padding: 10px 0\">\n            <div class=\"radio\">\n                <input id=\"radio-replace-stack\" type=\"radio\" name=\"save-stack-type\" value=\"replace\" checked>\n                <label for=\"radio-replace-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-replace-stack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_REPLACE_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK", {hash:{},data:data}))
     + "</label>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_REPLACE_STACK_INTRO", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO", {hash:{},data:data}))
     + " \""
     + escapeExpression(((stack1 = (depth0 && depth0.input)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_REPLACE_STACK_INTRO_END", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_REPLACE_STACK_INTRO_END", {hash:{},data:data}))
     + "\n            </div>\n        </div>\n        <div id=\"save_new_stack\">\n            <div class=\"radio\">\n                <input id=\"radio-new-stack\" type=\"radio\" name=\"save-stack-type\">\n                <label for=\"radio-new-stack\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"radio-new-stack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_SAVE_NEW_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_NEW_STACK", {hash:{},data:data}))
     + "</label>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction hide\">\n                <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
     + "</p>\n                <input class=\"input\" id=\"modal-input-value\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.stackName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"text\" style=\"width: 400px\"/>\n                <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">\n                  "
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STACK_NAME_ERROR", {hash:{},data:data}))
+    + "\" type=\"text\" style=\"width: 400px\"/>\n                <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_STACK_NAME_ERROR", {hash:{},data:data}))
     + "</div>\n            </div>\n        </div>\n        ";
   return buffer;
   }
@@ -737,19 +685,19 @@ function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div id=\"name_new_stack\">\n            <input id=\"radio-new-stack\" type=\"hidden\" name=\"save-stack-type\" checked>\n            <div style=\"padding: 10px 22px\" class=\"radio-instruction\">\n                <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_SAVE_STACK_INSTRUCTION", {hash:{},data:data}))
     + "</p>\n                <input class=\"input\" id=\"modal-input-value\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.stackName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"text\" style=\"width: 400px\"/>\n                <div id=\"stack-name-exist\" class=\"hide\" style=\"color: #ec3c38\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STACK_NAME_ERROR", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_STACK_NAME_ERROR", {hash:{},data:data}))
     + "</div>\n            </div>\n        </div>\n        ";
   return buffer;
   }
 
   buffer += "<p class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_INTRO_1", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_1", {hash:{},data:data}))
     + "</p>\n<p class=\"modal-text-minor\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_INTRO_2", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOL_POP_INTRO_2", {hash:{},data:data}))
     + "</p>\n<div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.originStackExist), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -875,9 +823,9 @@ return TEMPLATE; });
         sgBtn = $(".icon-hide-sg");
         show = sgBtn.hasClass("selected");
         if (show) {
-          sgBtn.data("tooltip", lang.TOOLBAR.LBL_LINESTYLE_HIDE_SG).removeClass("selected");
+          sgBtn.data("tooltip", lang.ide.TOOL_LBL_LINESTYLE_HIDE_SG).removeClass("selected");
         } else {
-          sgBtn.data("tooltip", lang.TOOLBAR.LBL_LINESTYLE_SHOW_SG).addClass("selected");
+          sgBtn.data("tooltip", lang.ide.TOOL_LBL_LINESTYLE_SHOW_SG).addClass("selected");
         }
         this.parent.canvas.toggleSgLine(show);
       },
@@ -893,15 +841,15 @@ return TEMPLATE; });
           self.workspace.opsModel.save(newJson, thumbnail).then(function() {
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
-            return notification("info", sprintf(lang.NOTIFY.ERR_SAVE_SUCCESS, newJson.name));
+            return notification("info", sprintf(lang.ide.TOOL_MSG_ERR_SAVE_SUCCESS, newJson.name));
           }, function(err) {
             var message;
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             if (err.error === 252) {
-              message = lang.NOTIFY.ERR_SAVE_FAILED_NAME;
+              message = lang.ide.TOOL_MSG_ERR_SAVE_FAILED_NAME;
             } else {
-              message = sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name);
+              message = sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name);
             }
             return notification("error", message);
           });
@@ -993,7 +941,7 @@ return TEMPLATE; });
         data = JsonExporter.exportJson(design.serialize(), "" + name + ".json");
         if (data) {
           return new Modal({
-            title: lang.TOOLBAR.EXPORT_AS_JSON,
+            title: lang.ide.TOOL_EXPORT_AS_JSON,
             template: OpsEditorTpl["export"].JSON(data),
             width: "470",
             disableFooter: true,
@@ -1014,7 +962,7 @@ return TEMPLATE; });
           }
         });
         modal = new Modal({
-          title: lang.TOOLBAR.POP_EXPORT_CF,
+          title: lang.ide.TOOL_POP_EXPORT_CF,
           template: OpsEditorTpl["export"].CF({
             hasCustomOG: hasCustomOG
           }),
@@ -1032,7 +980,7 @@ return TEMPLATE; });
           if (modal != null) {
             modal.resize();
           }
-          btn = modal.tpl.find("a.btn-blue").text(lang.TOOLBAR.POP_BTN_EXPORT_CF).removeClass("disabled");
+          btn = modal.tpl.find("a.btn-blue").text(lang.ide.TOOL_POP_BTN_EXPORT_CF).removeClass("disabled");
           JsonExporter.genericExport(btn, apiReturn, "" + name + ".json");
           btn.click(function() {
             return modal.close();
@@ -1041,9 +989,9 @@ return TEMPLATE; });
           if (modal != null) {
             modal.resize();
           }
-          modal.tpl.find("a.btn-blue").text(lang.TOOLBAR.POP_BTN_EXPORT_CF);
+          modal.tpl.find("a.btn-blue").text(lang.ide.TOOL_POP_BTN_EXPORT_CF);
           if (err.error) {
-            notification("error", sprintf(lang.NOTIFY.FAIL_TO_EXPORT_TO_CLOUDFORMATION, err.error));
+            notification("error", "Fail to export to AWS CloudFormation Template, Error code:" + err.error);
           }
         });
       },
@@ -1066,20 +1014,20 @@ return TEMPLATE; });
           dataType: 'json',
           statusCode: {
             200: function() {
-              notification('info', lang.NOTIFY.RELOAD_STATE_SUCCESS);
+              notification('info', lang.ide.RELOAD_STATE_SUCCESS);
               return ide_event.trigger(ide_event.REFRESH_PROPERTY);
             },
             401: function() {
-              return notification('error', lang.NOTIFY.RELOAD_STATE_INVALID_REQUEST);
+              return notification('error', lang.ide.RELOAD_STATE_INVALID_REQUEST);
             },
             404: function() {
-              return notification('error', lang.NOTIFY.RELOAD_STATE_NETWORKERROR);
+              return notification('error', lang.ide.RELOAD_STATE_NETWORKERROR);
             },
             429: function() {
-              return notification('error', lang.NOTIFY.RELOAD_STATE_NOT_READY);
+              return notification('error', lang.ide.RELOAD_STATE_NOT_READY);
             },
             500: function() {
-              return notification('error', lang.NOTIFY.RELOAD_STATE_INTERNAL_SERVER_ERROR);
+              return notification('error', lang.ide.RELOAD_STATE_INTERNAL_SERVER_ERROR);
             }
           },
           error: function() {
@@ -1095,48 +1043,25 @@ return TEMPLATE; });
         });
       },
       runStack: function(event) {
-        var that;
+        var appNameDom, checkAppNameRepeat, cost, self, that;
         that = this;
         if ($(event.currentTarget).attr('disabled')) {
           return false;
         }
-        return appAction.showPayment().then(function(result) {
-          var paymentModal, paymentUpdate;
-          paymentUpdate = result.result;
-          paymentModal = result.modal;
-          return that.__runStack(paymentUpdate, paymentModal);
+        this.modal = new Modal({
+          title: lang.ide.RUN_STACK_MODAL_TITLE,
+          template: MC.template.modalRunStack,
+          disableClose: true,
+          width: '450px',
+          confirm: {
+            text: App.user.hasCredential() ? lang.ide.RUN_STACK_MODAL_CONFIRM_BTN : lang.ide.RUN_STACK_MODAL_NEED_CREDENTIAL,
+            disabled: true
+          }
         });
-      },
-      __runStack: function(paymentUpdate, paymentModal) {
-        var appNameDom, checkAppNameRepeat, cost, paymentState, self, that;
-        that = this;
-        paymentState = App.user.get('paymentState');
-        if (paymentModal) {
-          this.modal = paymentModal;
-          this.modal.setTitle(lang.IDE.RUN_STACK_MODAL_TITLE).setWidth('665px').setContent(MC.template.modalRunStack({
-            paymentState: paymentState,
-            paymentUpdate: paymentUpdate
-          })).compact().find('.modal-footer').show();
-        } else {
-          this.modal = new Modal({
-            title: lang.IDE.RUN_STACK_MODAL_TITLE,
-            template: MC.template.modalRunStack({
-              paymentState: paymentState
-            }),
-            disableClose: true,
-            width: '665px',
-            compact: true,
-            confirm: {
-              text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
-              disabled: true
-            }
-          });
-        }
         this.renderKpDropdown(this.modal);
         cost = Design.instance().getCost();
-        this.modal.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
-        this.modal.find("#label-total-fee").find('b').text("$" + cost.totalFee);
-        this.modal.find("#label-visualops-fee").find('b').text("$" + cost.visualOpsFee);
+        this.modal.tpl.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
+        this.modal.tpl.find("#label-total-fee").find('b').text("$" + cost.totalFee);
         TA.loadModule('stack').then((function(_this) {
           return function() {
             var _ref;
@@ -1175,18 +1100,19 @@ return TEMPLATE; });
               var error;
               self.modal.close();
               error = err.awsError ? err.error + "." + err.awsError : " " + err.error + " : " + (err.result || err.msg);
-              return notification('error', sprintf(lang.NOTIFY.FAILA_TO_RUN_STACK_BECAUSE_OF_XXX, self.workspace.opsModel.get('name'), error));
+              return notification('error', sprintf(lang.ide.PROP_MSG_WARN_FAILA_TO_RUN_BECAUSE, self.workspace.opsModel.get('name'), error));
             });
           };
         })(this));
-        this.modal.listenTo(App.user, 'change:credential', function() {
+        App.user.on('change:credential', function() {
           console.log('We got it.');
           if (App.user.hasCredential() && that.modal.isOpen()) {
-            return that.modal.find(".modal-confirm").text(lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN);
+            return that.modal.find(".modal-confirm").text(lang.ide.RUN_STACK_MODAL_CONFIRM_BTN);
           }
         });
         return this.modal.on('close', function() {
-          return that.modal.stopListening(App.user);
+          console.log('We gave up.');
+          return App.user.off('change:credential');
         });
       },
       appToStack: function() {
@@ -1209,24 +1135,24 @@ return TEMPLATE; });
               appToStackModal.close();
               newJson.name = stack.get("name");
               return stack.save(newJson).then(function() {
-                notification("info", sprintf(lang.NOTIFY.INFO_HDL_SUCCESS, lang.IDE.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
+                notification("info", sprintf(lang.ide.TOOL_MSG_INFO_HDL_SUCCESS, lang.ide.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
                 return App.openOps(stack, true);
               }, function() {
-                return notification('error', sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name));
+                return notification('error', sprintf(lang.ide.TOOL_MSG_ERR_SAVE_FAILED, newJson.name));
               });
             }
           };
         })(this);
         originStackExist = !!stack;
         appToStackModal = new Modal({
-          title: lang.TOOLBAR.POP_TIT_APP_TO_STACK,
+          title: lang.ide.TOOL_POP_TIT_APP_TO_STACK,
           template: OpsEditorTpl.saveAppToStack({
             input: name,
             stackName: newName,
             originStackExist: originStackExist
           }),
           confirm: {
-            text: lang.TOOLBAR.POP_BTN_SAVE_TO_STACK
+            text: lang.ide.TOOL_POP_BTN_SAVE_TO_STACK
           },
           onConfirm: onConfirm
         });
@@ -1272,10 +1198,10 @@ return TEMPLATE; });
         if (App.model.appList().findWhere({
           name: nameVal
         })) {
-          this.showError('appname', lang.PROP.MSG_WARN_REPEATED_APP_NAME);
+          this.showError('appname', lang.ide.PROP_MSG_WARN_REPEATED_APP_NAME);
           return true;
         } else if (!nameVal) {
-          this.showError('appname', lang.PROP.MSG_WARN_NO_APP_NAME);
+          this.showError('appname', lang.ide.PROP_MSG_WARN_NO_APP_NAME);
           return true;
         } else {
           this.hideError('appname');
@@ -1328,7 +1254,7 @@ return TEMPLATE; });
         kpModal = Design.modelClassForType(constant.RESTYPE.KP);
         defaultKP = kpModal.getDefaultKP();
         if (!defaultKP.get('isSet') || !((this.modal || this.updateModal) && (this.modal || this.updateModal).tpl.find("#kp-runtime-placeholder .item.selected").size())) {
-          this.showError('kp', lang.IDE.RUN_STACK_MODAL_KP_WARNNING);
+          this.showError('kp', lang.ide.RUN_STACK_MODAL_KP_WARNNING);
           return false;
         }
         return true;
@@ -1371,7 +1297,7 @@ return TEMPLATE; });
         return checkDB.promise;
       },
       applyAppEdit: function() {
-        var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
+        var components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
         that = this;
         oldJson = this.workspace.opsModel.getJsonData();
         newJson = this.workspace.design.serialize({
@@ -1395,11 +1321,12 @@ return TEMPLATE; });
             return dbInstanceList.push(e.resource.DBInstanceIdentifier);
           }
         });
-        DBInstances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().get("region"));
         this.updateModal = new Modal({
-          title: lang.IDE.HEAD_INFO_LOADING,
+          title: lang.ide.HEAD_INFO_LOADING,
           template: MC.template.loadingSpiner,
           disableClose: true,
+          hasScroll: true,
+          maxHeight: "450px",
           cancel: "Close"
         });
         this.updateModal.tpl.find(".modal-footer").hide();
@@ -1410,7 +1337,7 @@ return TEMPLATE; });
           }
         });
         return this.checkDBinstance(oldDBInstanceList).then(function(DBInstances) {
-          var $diffTree, cost, notAvailableDB, removeList, removeListNotReady;
+          var $diffTree, notAvailableDB, removeList, removeListNotReady;
           notAvailableDB = DBInstances.filter(function(e) {
             var _ref;
             return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(dbInstanceList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
@@ -1420,7 +1347,7 @@ return TEMPLATE; });
             that.updateModal.setContent(MC.template.cantUpdateApp({
               data: notAvailableDB
             }));
-            that.updateModal.setTitle(lang.IDE.UPDATE_APP_MODAL_TITLE);
+            that.updateModal.setTitle(lang.ide.UPDATE_APP_MODAL_TITLE);
             return false;
           }
           removeList = [];
@@ -1437,18 +1364,14 @@ return TEMPLATE; });
             return e.attributes.DBInstanceStatus !== "available";
           });
           that.updateModal.tpl.children().css('width', "450px").find(".modal-footer").show();
-          that.updateModal.find(".modal-wrapper-fix").width(665).find('.modal-body').css('padding', 0);
           that.updateModal.setContent(MC.template.updateApp({
             isRunning: that.workspace.opsModel.testState(OpsModel.State.Running),
             notReadyDB: removeListNotReady,
             removeList: removeList
           }));
-          that.updateModal.tpl.find(".modal-header").find("h3").text(lang.IDE.UPDATE_APP_MODAL_TITLE);
-          that.updateModal.tpl.find('.modal-confirm').prop("disabled", true).text((App.user.hasCredential() ? lang.IDE.UPDATE_APP_CONFIRM_BTN : lang.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL));
+          that.updateModal.tpl.find(".modal-header").find("h3").text(lang.ide.UPDATE_APP_MODAL_TITLE);
+          that.updateModal.tpl.find('.modal-confirm').prop("disabled", true).text((App.user.hasCredential() ? lang.ide.UPDATE_APP_CONFIRM_BTN : lang.ide.UPDATE_APP_MODAL_NEED_CREDENTIAL));
           that.updateModal.resize();
-          cost = Design.instance().getCost();
-          that.updateModal.find("#label-total-fee").find('b').text("$" + cost.totalFee);
-          that.updateModal.find("#label-visualops-fee").find('b').text("$" + cost.visualOpsFee);
           window.setTimeout(function() {
             return that.updateModal.resize();
           }, 100);
@@ -1577,37 +1500,19 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
     + "\n  <i class=\"icon-resources js-toggle-dropdown menu-manage-shard-res tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_SHARED_RESOURCES", {hash:{},data:data}))
-    + "\"></i>\n  <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n    <li data-action=\"keypair\" class=\"icon-kp\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_KEY_PAIR", {hash:{},data:data}))
-    + "</span></li>\n    <li data-action=\"snapshot\" class=\"icon-ebs-snap\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_EBS_SNAPSHOT", {hash:{},data:data}))
-    + "</span></li>\n    <li data-action=\"sns\" class=\"icon-sns\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SNS_SUBSCRIPTION", {hash:{},data:data}))
-    + "</span></li>\n    <li data-action=\"sslcert\" class=\"icon-cert\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SERVER_CERTIFICATE", {hash:{},data:data}))
-    + "</span></li>\n    <li data-action=\"dhcp\" class=\"icon-dhcp\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_DHCP_OPTION_SETS", {hash:{},data:data}))
-    + "</span></li>\n    <li data-action=\"rdspg\" class=\"icon-pg ";
+    + "\"></i>\n  <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n    <li data-action=\"keypair\" class=\"icon-kp\"><span>Key Pair</span></li>\n    <li data-action=\"snapshot\" class=\"icon-ebs-snap\"><span>EBS Snapshot</span></li>\n    <li data-action=\"sns\" class=\"icon-sns\"><span>SNS Topic & Subscription</span></li>\n    <li data-action=\"sslcert\" class=\"icon-cert\"><span>Server Certificate</span></li>\n    <li data-action=\"dhcp\" class=\"icon-dhcp\"><span>DHCP Option Sets</span></li>\n    <li data-action=\"rdspg\" class=\"icon-pg ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.rdsDisabled), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_DB_PARAMETER_GROUPS", {hash:{},data:data}))
-    + "</span></li>\n    <li data-action=\"rdssnapshot\" class=\"icon-rds-snap ";
+  buffer += "\"><span>DB Parameter Groups</span></li>\n    <li data-action=\"rdssnapshot\" class=\"icon-rds-snap ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.rdsDisabled), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"><span>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_DB_SNAPSHOT", {hash:{},data:data}))
-    + "</span></li>\n  </ul>\n  <i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_REFRESH_RESOURCE_LIST", {hash:{},data:data}))
-    + "\"></i>\n</header>\n\n<div class=\"fixedaccordion accordion-default\">\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+  buffer += "\"><span>DB Snapshot</span></li>\n  </ul>\n  <i class=\"refresh-resource-panel icon-refresh tooltip\" data-tooltip=\"Refresh resource list\"></i>\n</header>\n\n<div class=\"fixedaccordion accordion-default\">\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AZ", {hash:{},data:data}))
     + "</header>\n    <ul class=\"resource-list-az clearfix accordion-body\">\n      <li class=\"tooltip resource-item az\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_AZ", {hash:{},data:data}))
     + "' data-type=\"AZ\">\n        <div class=\"resource-count\">"
     + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        <div class=\"res-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.AZ_AND_SUBNET", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"tooltip resource-item subnet\" data-tooltip='"
+    + "</div>\n        <div class=\"res-name\">AZ & subnet</div>\n      </li>\n      <li class=\"tooltip resource-item subnet\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_SUBNET", {hash:{},data:data}))
     + "' data-type=\"SUBNET\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_SUBNET", {hash:{},data:data}))
@@ -1637,13 +1542,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL", {hash:{},data:data}))
     + "</li></ul>\n        <div class=\"resource-list-head\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VOL_FROM_SNAPSHOT", {hash:{},data:data}))
-    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-snapshot\">\n            <div class=\"selection\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_DATE", {hash:{},data:data}))
-    + "</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_DATE", {hash:{},data:data}))
-    + "</li>\n              <li class=\"item\" data-id=\"storge\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_STORAGE", {hash:{},data:data}))
-    + "</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-snapshot\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-snapshot\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RDS", {hash:{},data:data}))
     + "</header>\n    <div class=\"accordion-body nano ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.rdsDisabled), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -1656,15 +1555,7 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RDS_INSTANCE", {hash:{},data:data}))
     + "</div>\n        <ul class=\"resource-list-rds\"></ul>\n        <div class=\"resource-list-head\">\n          "
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_RDS_INSTANCE_FROM_SNAPSHOT", {hash:{},data:data}))
-    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-rds-snapshot\">\n            <div class=\"selection\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_DATE", {hash:{},data:data}))
-    + "</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_DATE", {hash:{},data:data}))
-    + "</li>\n              <li class=\"item\" data-id=\"engine\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_ENGINE", {hash:{},data:data}))
-    + "</li>\n              <li class=\"item\" data-id=\"storge\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_SORT_BY_STORAGE", {hash:{},data:data}))
-    + "</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-rds-snapshot\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+    + "\n          <div class=\"selectbox resource-list-sort-select dark\" id=\"resource-list-sort-select-rds-snapshot\">\n            <div class=\"selection\">By Date</div>\n            <ul class=\"dropdown\">\n              <li class=\"item selected focused\" data-id=\"date\">By Date</li>\n              <li class=\"item\" data-id=\"engine\">By Engine</li>\n              <li class=\"item\" data-id=\"storge\">By Storage</li>\n            </ul>\n          </div>\n        </div>\n        <ul class=\"resource-list-rds-snapshot\"></ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_ELB_ASG", {hash:{},data:data}))
     + "</header>\n    <ul class=\"resource-list-asg clearfix accordion-body\">\n      <li class=\"tooltip resource-item elb\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ELB", {hash:{},data:data}))
@@ -1753,10 +1644,10 @@ function program5(depth0,data) {
 
 function program7(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n<div style=\"padding-bottom:15px;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_NO_EBS_SNAPSHOT", (depth0 && depth0.region), {hash:{},data:data}))
-    + "</div>\n";
+  var buffer = "", stack1;
+  buffer += "\n<div style=\"padding-bottom:15px;\">No EBS Snapshot in "
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</div>\n";
   return buffer;
   }
 
@@ -1838,10 +1729,10 @@ function program1(depth0,data,depth1) {
 
 function program3(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n<div style=\"padding-bottom:15px;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_NO_DB_SNAPSHOT", (depth0 && depth0.region), {hash:{},data:data}))
-    + "</div>\n";
+  var buffer = "", stack1;
+  buffer += "\n<div style=\"padding-bottom:15px;\">No DB Snapshot in "
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".</div>\n";
   return buffer;
   }
 
@@ -1908,11 +1799,8 @@ function program5(depth0,data) {
   }
 function program6(depth0,data) {
   
-  var buffer = "";
-  buffer += "<p class=\"blank-slate\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_BROWSE_COMMUNITY_AMI", {hash:{},data:data}))
-    + "</p>";
-  return buffer;
+  
+  return "<p class=\"blank-slate\">Use \"Browse Community AMI\" to add Favourite AMI.</p>";
   }
 
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(5, program5, data),fn:self.programWithDepth(1, program1, data, depth0),data:data});
@@ -1934,9 +1822,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.cachedAmi)),stack1 == null || stack1 === false ? stack1 : stack1.architecture)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "."
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.cachedAmi)),stack1 == null || stack1 === false ? stack1 : stack1.rootDeviceType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".png\"/>\n</div>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_AUTO_SCALING_GROUP", {hash:{},data:data}))
-    + " ("
+    + ".png\"/>\n</div>Auto Scaling Group ("
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")";
   return buffer;
@@ -2022,7 +1908,7 @@ TEMPLATE.dialog=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -2061,13 +1947,13 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "AMI_TYPE_PUBLIC", {hash:{},data:data}));
+  return "public";
   }
 
 function program6(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "AMI_TYPE_PRIVATE", {hash:{},data:data}));
+  return "private";
   }
 
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -2093,7 +1979,7 @@ return TEMPLATE; });
         var modal, self;
         $.extend(this, attr);
         modal = new Modal({
-          title: lang.IDE.AMI_LBL_COMMUNITY_AMIS,
+          title: lang.ide.AMI_LBL_COMMUNITY_AMIS,
           width: "855px",
           template: TplAmiBrowser.dialog(),
           disableFooter: true,
@@ -2214,7 +2100,7 @@ return TEMPLATE; });
             self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
             return self.communityAmiRender(result);
           }, function(result) {
-            notification('error', lang.NOTIFY.UNABLE_TO_LOAD_COMMUNITY_AMIS);
+            notification('error', lang.ide.RES_MSG_WARN_GET_COMMUNITY_AMI_FAILED);
             return self.communityAmiRender({
               ami: []
             });
@@ -2270,7 +2156,7 @@ return TEMPLATE; });
         if (itemEnd > total) {
           itemEnd = total;
         }
-        $('.page-tip').text(sprintf(lang.IDE.AMI_LBL_PAGEINFO, itemBegin, itemEnd, total));
+        $('.page-tip').text(sprintf(lang.ide.AMI_LBL_PAGEINFO, itemBegin, itemEnd, total));
         pagination = $('.pagination');
         if (max_page === 0) {
           pagination.hide();
@@ -2297,13 +2183,13 @@ return TEMPLATE; });
       communityShowContent: function() {
         $(".show-loading").hide();
         $("#ami-table-wrap .scroll-content").show();
-        $("#btn-search-ami").text(lang.IDE.AMI_LBL_SEARCH).removeAttr("disabled");
+        $("#btn-search-ami").text(lang.ide.AMI_LBL_SEARCH).removeAttr("disabled");
         return $("#community-ami-page>div").show();
       },
       renderAmiLoading: function() {
         $("#ami-table-wrap .scroll-content").hide();
         $(".show-loading").show();
-        $("#btn-search-ami").text(lang.IDE.AMI_LBL_SEARCHING).attr("disabled", "");
+        $("#btn-search-ami").text(lang.ide.AMI_LBL_SEARCHING).attr("disabled", "");
         return $("#community-ami-page>div").hide();
       }
     });
@@ -2660,11 +2546,11 @@ return TEMPLATE; });
           this.sbg.toggleClass("disabled", true).attr("data-tooltip");
         } else {
           disabled = false;
-          tooltip = lang.IDE.RES_TIP_DRAG_NEW_SUBNET_GROUP;
+          tooltip = lang.ide.RES_TIP_DRAG_NEW_SUBNET_GROUP;
         }
         if (this.workspace.isRdsDisabled()) {
           disabled = true;
-          tooltip = lang.IDE.RES_MSG_RDS_DISABLED;
+          tooltip = lang.ide.RES_MSG_RDS_DISABLED;
         }
         this.sbg.toggleClass("disabled", disabled).attr("data-tooltip", tooltip);
       },
@@ -3198,19 +3084,10 @@ return TEMPLATE; });
 define('workspaces/editor/canvas/TplSvgDef',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<svg style=\"display:none;\" id=\"svgDefs\"><defs>\n  <path d=\"M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z\" id=\"port_diamond\"></path>\n  <path d=\"M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z\" id=\"port_right\"></path>\n  <path d=\"M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z\" id=\"port_left\"></path>\n  <path d=\"M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z\" id=\"port_top\"></path>\n  <path d=\"M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z\" id=\"port_bottom\"></path>\n  <path d=\"M0 74h90v11a5 5 0 0 1 -5 5h-80a5 5 0 0 1 -5 -5z\" id=\"label_path\" data-readonly=\"true\"></path>\n\n  <g id=\"asg_frame\">\n    <rect class=\"group-asg\" rx=\"5\" ry=\"5\" height=\"129\" x=\"1\" y=\"1\" width=\"129\"></rect>\n    <path d=\"M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z\" class=\"asg-title\"></path>\n  </g>\n  <text id=\"asg_prompt\">\n    <tspan x=\"25\" y=\"47\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_1", {hash:{},data:data}))
-    + "</tspan>\n    <tspan x=\"20\" y=\"67\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_2", {hash:{},data:data}))
-    + "</tspan>\n    <tspan x=\"30\" y=\"87\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_3", {hash:{},data:data}))
-    + "</tspan>\n    <tspan x=\"30\" y=\"107\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_4", {hash:{},data:data}))
-    + "</tspan>\n  </text>\n\n  <g id=\"asg_dragger\">\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\n  </g>\n\n  <g id=\"clone_indicator\" data-readonly=\"true\">\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\n  </g>\n\n  <g id=\"replica_dragger\">\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\n  </g>\n\n  <g id=\"restore_dragger\">\n    <rect x=\"34\" y=\"0\" width=\"22\" height=\"22\" rx=\"3\" class=\"restore-bg\"/>\n    <path d=\"M53.131,0C30.902,0,12.832,17.806,12.287,39.976H0l18.393,20.5l18.391-20.5H22.506C23.045,23.468,36.545,10.25,53.131,10.25  c16.93,0,30.652,13.767,30.652,30.75S70.061,71.75,53.131,71.75c-6.789,0-13.059-2.218-18.137-5.966l-7.029,7.521  C34.904,78.751,43.639,82,53.131,82C75.703,82,94,63.645,94,41S75.703,0,53.131,0z M49.498,19v23.45l15.027,15.024l4.949-4.949  L56.5,39.55V19H49.498z\" transform=\"scale(0.17) translate(215,28) rotate(0 822.5 296)\" stroke-width=\"0\" style=\"position: relative;\" />\n  </g>\n\n  <g id=\"sbg_info\" data-readonly=\"true\">\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\n  </g>\n\n</defs></svg>";
-  return buffer;
+  return "<svg style=\"display:none;\" id=\"svgDefs\"><defs>\n  <path d=\"M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z\" id=\"port_diamond\"></path>\n  <path d=\"M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z\" id=\"port_right\"></path>\n  <path d=\"M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z\" id=\"port_left\"></path>\n  <path d=\"M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z\" id=\"port_top\"></path>\n  <path d=\"M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z\" id=\"port_bottom\"></path>\n  <path d=\"M0 74h90v11a5 5 0 0 1 -5 5h-80a5 5 0 0 1 -5 -5z\" id=\"label_path\" data-readonly=\"true\"></path>\n\n  <g id=\"asg_frame\">\n    <rect class=\"group-asg\" rx=\"5\" ry=\"5\" height=\"129\" x=\"1\" y=\"1\" width=\"129\"></rect>\n    <path d=\"M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z\" class=\"asg-title\"></path>\n  </g>\n  <text id=\"asg_prompt\">\n    <tspan x=\"25\" y=\"47\">Drop AMI from</tspan>\n    <tspan x=\"20\" y=\"67\">resource panel to</tspan>\n    <tspan x=\"30\" y=\"87\">create launch</tspan>\n    <tspan x=\"30\" y=\"107\">configuration</tspan>\n  </text>\n\n  <g id=\"asg_dragger\">\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\n  </g>\n\n  <g id=\"clone_indicator\" data-readonly=\"true\">\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\n  </g>\n\n  <g id=\"replica_dragger\">\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\n  </g>\n\n  <g id=\"restore_dragger\">\n    <rect x=\"34\" y=\"0\" width=\"22\" height=\"22\" rx=\"3\" class=\"restore-bg\"/>\n    <path d=\"M53.131,0C30.902,0,12.832,17.806,12.287,39.976H0l18.393,20.5l18.391-20.5H22.506C23.045,23.468,36.545,10.25,53.131,10.25  c16.93,0,30.652,13.767,30.652,30.75S70.061,71.75,53.131,71.75c-6.789,0-13.059-2.218-18.137-5.966l-7.029,7.521  C34.904,78.751,43.639,82,53.131,82C75.703,82,94,63.645,94,41S75.703,0,53.131,0z M49.498,19v23.45l15.027,15.024l4.949-4.949  L56.5,39.55V19H49.498z\" transform=\"scale(0.17) translate(215,28) rotate(0 822.5 296)\" stroke-width=\"0\" style=\"position: relative;\" />\n  </g>\n\n  <g id=\"sbg_info\" data-readonly=\"true\">\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\n  </g>\n\n</defs></svg>";
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('workspaces/editor/canvas/CanvasManager',['CloudResources'], function(CloudResources) {
@@ -3777,15 +3654,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         model = this.model;
         name = model.get("name");
         if (result === true && model.node_group && model.children().length > 0) {
-          result = sprintf(lang.IDE.CVS_CFM_DEL_GROUP, name);
+          result = sprintf(lang.ide.CVS_CFM_DEL_GROUP, name);
         }
         if (_.isString(result)) {
           self = this;
           modal = new Modal({
-            title: sprintf(lang.IDE.CVS_CFM_DEL, name),
+            title: sprintf(lang.ide.CVS_CFM_DEL, name),
             template: result,
             confirm: {
-              text: lang.IDE.CFM_BTN_DELETE,
+              text: lang.ide.CFM_BTN_DELETE,
               color: "red"
             },
             onConfirm: function() {
@@ -3860,7 +3737,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return;
         }
         if (this.model.get("appId")) {
-          notification("error", lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET);
+          notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
           return;
         }
         if (!this.parent() && newParent) {
@@ -4752,9 +4629,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<header class=\"volume-pph\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_POP_ATTACHED_VOLUMES", {hash:{},data:data}))
-    + " <span>("
+  buffer += "\n<header class=\"volume-pph\">Attached Volume <span>("
     + escapeExpression(((stack1 = (depth0 && depth0.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span></header>\n<ul class=\"popup-content popup-volume\">\n\n    ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
@@ -4805,11 +4680,8 @@ function program7(depth0,data) {
 
 function program9(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n<div class=\"volume-pp-empty\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_POP_NO_ATTACHED_VOLUME", {hash:{},data:data}))
-    + "</div>\n";
-  return buffer;
+  
+  return "\n<div class=\"volume-pp-empty\">No attached volumes</div>\n";
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.length), {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
@@ -4848,17 +4720,14 @@ function program2(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.volume)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n    <div class=\"vpp-ins-name\">"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div></li>";
+    + "</div> </li>";
   return buffer;
   }
 
 function program4(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n<div class=\"instance-pp-empty\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_POP_NO_INSTANCES", {hash:{},data:data}))
-    + "</div>\n";
-  return buffer;
+  
+  return "\n<div class=\"instance-pp-empty\">No instances</div>\n";
   }
 
   buffer += "<header class=\"instance-pph\">"
@@ -4909,11 +4778,8 @@ function program3(depth0,data) {
 
 function program5(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n<div class=\"instance-pp-empty\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_POP_NO_NETWORK_INTERFACE", {hash:{},data:data}))
-    + "</div>\n";
-  return buffer;
+  
+  return "\n<div class=\"instance-pp-empty\">No network interfaces</div>\n";
   }
 
   buffer += "<header class=\"instance-pph\">"
@@ -5075,29 +4941,29 @@ return TEMPLATE; });
       errorMessageForDrop: function(type) {
         switch (type) {
           case constant.RESTYPE.VOL:
-            return lang.CANVAS.WARN_NOTMATCH_VOLUME;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_VOLUME;
           case constant.RESTYPE.SUBNET:
-            return lang.CANVAS.WARN_NOTMATCH_SUBNET;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_SUBNET;
           case constant.RESTYPE.INSTANCE:
-            return lang.CANVAS.WARN_NOTMATCH_INSTANCE_SUBNET;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_INSTANCE_SUBNET;
           case constant.RESTYPE.ENI:
-            return lang.CANVAS.WARN_NOTMATCH_ENI;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_ENI;
           case constant.RESTYPE.RT:
-            return lang.CANVAS.WARN_NOTMATCH_RTB;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_RTB;
           case constant.RESTYPE.ELB:
-            return lang.CANVAS.WARN_NOTMATCH_ELB;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_ELB;
           case constant.RESTYPE.CGW:
-            return lang.CANVAS.WARN_NOTMATCH_CGW;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_CGW;
           case constant.RESTYPE.ASG:
-            return lang.CANVAS.WARN_NOTMATCH_ASG;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_ASG;
           case constant.RESTYPE.IGW:
-            return lang.CANVAS.WARN_NOTMATCH_IGW;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_IGW;
           case constant.RESTYPE.VGW:
-            return lang.CANVAS.WARN_NOTMATCH_VGW;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_VGW;
           case constant.RESTYPE.DBSBG:
-            return lang.CANVAS.WARN_NOTMATCH_SGP_VPC;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_SGP_VPC;
           case constant.RESTYPE.DBINSTANCE:
-            return lang.CANVAS.WARN_NOTMATCH_DBINSTANCE_SGP;
+            return lang.ide.CVS_MSG_WARN_NOTMATCH_DBINSTANCE_SGP;
         }
       },
       selectVolume: function(volumeId) {
@@ -5220,7 +5086,7 @@ return TEMPLATE; });
           return;
         }
         if (owner.type === constant.RESTYPE.LC && owner.get("appId")) {
-          notification("error", lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET);
+          notification("error", lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET);
           return;
         }
         attr.owner = owner;
@@ -5309,7 +5175,7 @@ return TEMPLATE; });
       if (!ItemClassProto.sticky) {
         dropRect = this.__bestFitRect(dropRect, group, excludeChild);
         if (!dropRect) {
-          return lang.CANVAS.WARN_NO_ENOUGH_SPACE;
+          return lang.ide.CVS_MSG_WARN_NO_ENOUGH_SPACE;
         }
       }
       return {
@@ -5659,7 +5525,7 @@ return TEMPLATE; });
       }
       result = data.context.__handleDropData(data, ignore, true);
       if (_.isString(result)) {
-        if (result === lang.CANVAS.WARN_NO_ENOUGH_SPACE) {
+        if (result === lang.ide.CVS_MSG_WARN_NO_ENOUGH_SPACE) {
           notification("warning", result);
         }
         return;
@@ -7163,11 +7029,11 @@ return TEMPLATE; });
           svg.use("port_right").attr({
             'class': 'port port-gray tooltip',
             'data-name': 'subnet-assoc-in',
-            'data-tooltip': lang.IDE.PORT_TIP_L
+            'data-tooltip': lang.ide.PORT_TIP_L
           }), svg.use("port_right").attr({
             'class': 'port port-gray tooltip',
             'data-name': 'subnet-assoc-out',
-            'data-tooltip': lang.IDE.PORT_TIP_M
+            'data-tooltip': lang.ide.PORT_TIP_M
           })
         ]);
         m = this.model;
@@ -7238,22 +7104,22 @@ return TEMPLATE; });
             'class': 'port port-blue tooltip',
             'data-name': 'rtb-tgt',
             'data-alias': 'rtb-tgt-left',
-            'data-tooltip': lang.IDE.PORT_TIP_B
+            'data-tooltip': lang.ide.PORT_TIP_B
           }), svg.use("port_right").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'rtb-tgt',
             'data-alias': 'rtb-tgt-right',
-            'data-tooltip': lang.IDE.PORT_TIP_B
+            'data-tooltip': lang.ide.PORT_TIP_B
           }), svg.use("port_bottom").attr({
             'class': 'port port-gray tooltip',
             'data-name': 'rtb-src',
             'data-alias': 'rtb-src-top',
-            'data-tooltip': lang.IDE.PORT_TIP_A
+            'data-tooltip': lang.ide.PORT_TIP_A
           }), svg.use("port_top").attr({
             'class': 'port port-gray tooltip',
             'data-name': 'rtb-src',
             'data-alias': 'rtb-src-bottom',
-            'data-tooltip': lang.IDE.PORT_TIP_A
+            'data-tooltip': lang.ide.PORT_TIP_A
           })
         ]);
         this.canvas.appendNode(node);
@@ -7298,7 +7164,7 @@ return TEMPLATE; });
         }).add(svg.use("port_left").attr({
           'class': 'port port-blue tooltip',
           'data-name': 'igw-tgt',
-          'data-tooltip': lang.IDE.PORT_TIP_C
+          'data-tooltip': lang.ide.PORT_TIP_C
         }));
         this.canvas.appendNode(svgEl);
         this.initNode(svgEl, m.x(), m.y());
@@ -7337,11 +7203,11 @@ return TEMPLATE; });
           svg.use("port_right").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'vgw-tgt',
-            'data-tooltip': lang.IDE.PORT_TIP_C
+            'data-tooltip': lang.ide.PORT_TIP_C
           }), svg.use("port_right").attr({
             'class': 'port port-purple tooltip',
             'data-name': 'vgw-vpn',
-            'data-tooltip': lang.IDE.PORT_TIP_H
+            'data-tooltip': lang.ide.PORT_TIP_H
           })
         ]);
         this.canvas.appendNode(svgEl);
@@ -7389,7 +7255,7 @@ return TEMPLATE; });
           svg.text("").move(90, 95).classes('node-label'), svg.use("port_right").attr({
             'class': 'port port-purple tooltip',
             'data-name': 'cgw-vpn',
-            'data-tooltip': lang.IDE.PORT_TIP_I
+            'data-tooltip': lang.ide.PORT_TIP_I
           })
         ]);
         this.canvas.appendNode(svgEl);
@@ -7446,15 +7312,15 @@ return TEMPLATE; });
           svg.use("port_right").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'elb-sg-in',
-            'data-tooltip': lang.IDE.PORT_TIP_D
+            'data-tooltip': lang.ide.PORT_TIP_D
           }), svg.use("port_right").attr({
             'class': 'port port-gray tooltip',
             'data-name': 'elb-assoc',
-            'data-tooltip': lang.IDE.PORT_TIP_K
+            'data-tooltip': lang.ide.PORT_TIP_K
           }), svg.use("port_right").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'elb-sg-out',
-            'data-tooltip': lang.IDE.PORT_TIP_J
+            'data-tooltip': lang.ide.PORT_TIP_J
           })
         ]);
         this.canvas.appendNode(svgEl);
@@ -7640,20 +7506,20 @@ return TEMPLATE; });
             'class': 'port port-blue tooltip',
             'data-name': 'eni-sg',
             'data-alias': 'eni-sg-left',
-            'data-tooltip': lang.IDE.PORT_TIP_D
+            'data-tooltip': lang.ide.PORT_TIP_D
           }), svg.use("port_right").attr({
             'class': 'port port-green tooltip',
             'data-name': 'eni-attach',
-            'data-tooltip': lang.IDE.PORT_TIP_G
+            'data-tooltip': lang.ide.PORT_TIP_G
           }), svg.use("port_diamond").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'eni-sg',
             'data-alias': 'eni-sg-right',
-            'data-tooltip': lang.IDE.PORT_TIP_F
+            'data-tooltip': lang.ide.PORT_TIP_F
           }), svg.use("port_bottom").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'eni-rtb',
-            'data-tooltip': lang.IDE.PORT_TIP_C
+            'data-tooltip': lang.ide.PORT_TIP_C
           }), svg.group().add([svg.rect(20, 14).move(36, 2).radius(3).classes("server-number-bg"), svg.plain("0").move(46, 13).classes("server-number")]).classes("server-number-group")
         ]);
         this.canvas.appendNode(svgEl);
@@ -7820,20 +7686,20 @@ return TEMPLATE; });
             'class': 'port port-blue tooltip',
             'data-name': 'instance-sg',
             'data-alias': 'instance-sg-left',
-            'data-tooltip': lang.IDE.PORT_TIP_D
+            'data-tooltip': lang.ide.PORT_TIP_D
           }), svg.use("port_right").attr({
             'class': 'port port-green tooltip',
             'data-name': 'instance-attach',
-            'data-tooltip': lang.IDE.PORT_TIP_E
+            'data-tooltip': lang.ide.PORT_TIP_E
           }), svg.use("port_diamond").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'instance-sg',
             'data-alias': 'instance-sg-right',
-            'data-tooltip': lang.IDE.PORT_TIP_D
+            'data-tooltip': lang.ide.PORT_TIP_D
           }), svg.use("port_bottom").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'instance-rtb',
-            'data-tooltip': lang.IDE.PORT_TIP_C
+            'data-tooltip': lang.ide.PORT_TIP_C
           }), svg.group().add([svg.rect(20, 14).move(36, 2).radius(3).classes("server-number-bg"), svg.plain("0").move(46, 13).classes("server-number")]).classes("server-number-group")
         ]);
         if (!this.model.design().modeIsStack() && m.get("appId")) {
@@ -8015,13 +7881,13 @@ return TEMPLATE; });
         if (res && res.id) {
           return;
         }
-        notification('error', sprintf(lang.CANVAS.ERR_DROP_ASG, originalAsg.get("name"), target.parent().get("name")));
+        notification('error', sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, originalAsg.get("name"), target.parent().get("name")));
       },
       create: function() {
         var m, svg, svgEl;
         m = this.model;
         svg = this.canvas.svg;
-        svgEl = svg.group().add([svg.rect(129, 129).move(1, 1).radius(5).classes("asg-group"), svg.use("asg_frame", true).classes("asg-frame"), svg.use("asg_prompt", true).classes("asg-prompt"), svg.use("asg_dragger").classes("asg-dragger tooltip").attr("data-tooltip", lang.CANVAS.CVS_TIP_ASG_DRAGGER), svg.plain("").move(4, 14).classes('group-label')]).attr({
+        svgEl = svg.group().add([svg.rect(129, 129).move(1, 1).radius(5).classes("asg-group"), svg.use("asg_frame", true).classes("asg-frame"), svg.use("asg_prompt", true).classes("asg-prompt"), svg.use("asg_dragger").classes("asg-dragger tooltip").attr("data-tooltip", 'Expand the group by drag-and-drop in other availability zone.'), svg.plain("").move(4, 14).classes('group-label')]).attr({
           "data-id": this.cid
         }).classes('canvasel ' + this.type.split(".").join("-"));
         this.canvas.appendAsg(svgEl);
@@ -8217,12 +8083,12 @@ return TEMPLATE; });
               'class': 'port port-blue tooltip',
               'data-name': 'launchconfig-sg',
               'data-alias': 'launchconfig-sg-left',
-              'data-tooltip': lang.IDE.PORT_TIP_D
+              'data-tooltip': lang.ide.PORT_TIP_D
             }), svg.use("port_diamond").move(80, 20).attr({
               'class': 'port port-blue tooltip',
               'data-name': 'launchconfig-sg',
               'data-alias': 'launchconfig-sg-right',
-              'data-tooltip': lang.IDE.PORT_TIP_D
+              'data-tooltip': lang.ide.PORT_TIP_D
             }), svg.image(MC.IMG_URL + "ide/icon/icn-vol.png", 29, 24).move(31, 46).classes('volume-image'), svg.plain("").move(45, 58).classes('volume-number'), svg.group().add([svg.rect(20, 14).move(36, 2).radius(3).classes("server-number-bg"), svg.plain("0").move(46, 13).classes("server-number")]).classes("server-number-group")
           ]).classes("canvasel fixed AWS-AutoScaling-LaunchConfiguration").move(20, 30);
           this.addView(svgEl);
@@ -9111,7 +8977,7 @@ return TEMPLATE; });
         var DbInstance, name, nameMatch, replica, targetSubnetGroup;
         targetSubnetGroup = dataTransfer.parent.model;
         if (targetSubnetGroup !== dataTransfer.item.model.parent()) {
-          notification("error", lang.NOTIFY.READ_REPLICA_MUST_BE_DROPPED_IN_THE_SAME_SBG);
+          notification("error", "Read replica must be dropped in the same subnet group with source DB instance.");
           return;
         }
         name = dataTransfer.item.model.get("name");
@@ -9171,12 +9037,12 @@ return TEMPLATE; });
             'class': 'port port-blue tooltip',
             'data-name': 'db-sg',
             'data-alias': 'db-sg-left',
-            'data-tooltip': lang.IDE.PORT_TIP_D
+            'data-tooltip': lang.ide.PORT_TIP_D
           }), svg.use("port_diamond").attr({
             'class': 'port port-blue tooltip',
             'data-name': 'db-sg',
             'data-alias': 'db-sg-right',
-            'data-tooltip': lang.IDE.PORT_TIP_D
+            'data-tooltip': lang.ide.PORT_TIP_D
           })
         ]);
         if (this.model.get('engine') === constant.DB_ENGINE.MYSQL) {
@@ -9268,7 +9134,7 @@ return TEMPLATE; });
         }
         if (option && ((_ref = option.cloneSource) != null ? _ref.master() : void 0)) {
           if (option.cloneSource.master().slaves().length > 5) {
-            notification("error", lang.NOTIFY.CANNOT_CREATE_MORE_READ_REPLICA);
+            notification("error", "Cannot create more read replica.");
             return;
           } else {
             option.master = option.cloneSource.master();
@@ -9287,7 +9153,7 @@ return TEMPLATE; });
               parent: attr.parent
             }, option);
             if (!attr.parent.id) {
-              notification("error", lang.NOTIFY.CANNOT_CREATE_SBG_DUE_TO_INSUFFICIENT_SUBNETS);
+              notification("error", "Cannot create subnet group due to insufficient subnets.");
               return;
             }
             attr.x += 2;
@@ -9368,7 +9234,7 @@ return TEMPLATE; });
           sb = _ref[_i];
           tt.push(sb.get("name"));
         }
-        CanvasManager.update(this.$el.children(".tooltip"), tt.join(", ") || lang.IDE.CVS_NO_SUBNET_ASSIGNED_TO_SG, "tooltip");
+        CanvasManager.update(this.$el.children(".tooltip"), tt.join(", ") || "No subnet is assigned to this subnet group yet", "tooltip");
       },
       doDestroyModel: function() {
         this.hoverOut();
@@ -9624,7 +9490,7 @@ return TEMPLATE; });
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('workspaces/editor/OpsEditorBase',["Workspace", "./OpsViewBase", "./template/TplOpsEditor", "ThumbnailUtil", "OpsModel", "Design", "ApiRequest", "UI.modalplus", "i18n!/nls/lang.js"], function(Workspace, OpsEditorView, OpsEditorTpl, Thumbnail, OpsModel, Design, ApiRequest, Modal, lang) {
+  define('workspaces/editor/OpsEditorBase',["Workspace", "./OpsViewBase", "./template/TplOpsEditor", "ThumbnailUtil", "OpsModel", "Design", "ApiRequest", "UI.modalplus"], function(Workspace, OpsEditorView, OpsEditorTpl, Thumbnail, OpsModel, Design, ApiRequest, Modal) {
     var LoadingView, OpsEditorBase;
     LoadingView = Backbone.View.extend({
       isLoadingView: true,
@@ -9641,7 +9507,7 @@ return TEMPLATE; });
           title: "Confirm to remove the app " + name + "?",
           template: OpsEditorTpl.modal.confirmRemoveApp(),
           confirm: {
-            text: lang.IDE.POP_CONFIRM_TO_REMOVE,
+            text: "Confirm to Remove",
             color: "red"
           },
           disableClose: true,
@@ -9752,7 +9618,7 @@ return TEMPLATE; });
         if (err.error === ApiRequest.Errors.MissingDataInServer) {
           return;
         }
-        notification("error", lang.NOTIFY.FAILED_TO_LOAD_DATA);
+        notification("error", "Failed to load data, please retry.");
         return this.remove();
       };
 
@@ -9773,7 +9639,7 @@ return TEMPLATE; });
         if (this.isRemoved()) {
           return;
         }
-        notification("error", lang.NOTIFY.FAILED_TO_LOAD_AWS_DATA);
+        notification("error", "Failed to load aws data, please retry.");
         return this.remove();
       };
 
@@ -10006,7 +9872,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/editor/OpsViewApp',["./OpsViewBase", "OpsModel", "./template/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "appAction"], function(OpsViewBase, OpsModel, OpsEditorTpl, Modal, lang, AppAction) {
+  define('workspaces/editor/OpsViewApp',["./OpsViewBase", "OpsModel", "./template/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js"], function(OpsViewBase, OpsModel, OpsEditorTpl, Modal, lang) {
     return OpsViewBase.extend({
       initialize: function() {
         OpsViewBase.prototype.initialize.apply(this, arguments);
@@ -10048,7 +9914,7 @@ return TEMPLATE; });
             $ipt.parsley('custom', function(val) {
               var apps;
               if (!MC.validate('awsName', val)) {
-                return lang.PARSLEY.SHOULD_BE_A_VALID_STACK_NAME;
+                return lang.ide.PARSLEY_SHOULD_BE_A_VALID_STACK_NAME;
               }
               apps = App.model.appList().where({
                 name: val
@@ -10056,7 +9922,7 @@ return TEMPLATE; });
               if (apps.length === 1 && apps[0] === self.workspace.opsModel || apps.length === 0) {
                 return;
               }
-              return sprintf(lang.PARSLEY.TYPE_NAME_CONFLICT, 'App', val);
+              return sprintf(lang.ide.PARSLEY_TYPE_NAME_CONFLICT, 'App', val);
             });
             if (!$ipt.parsley('validate')) {
               return;
@@ -10138,39 +10004,6 @@ return TEMPLATE; });
         })).appendTo(this.$el).find("#processDoneBtn").click(function() {
           return self.$el.find(".ops-process").remove();
         });
-      },
-      showUnpayUI: function() {
-        this.statusbar.remove();
-        this.propertyPanel.remove();
-        this.toolbar.remove();
-        this.canvas.updateSize();
-        AppAction.showPayment($("<div class='ops-apppm-wrapper'></div>").appendTo(this.$el)[0]);
-        notification("error", "Your account is limited now.");
-      },
-      listenToPayment: function() {
-        var self;
-        self = this;
-        return this.workspace.listenTo(App.user, "paymentUpdate", function() {
-          if (!$(".ops-apppm-wrapper").size()) {
-            if (App.user.shouldPay()) {
-              return self.showUnpayUI();
-            }
-          } else {
-            if (!App.user.shouldPay()) {
-              return self.reopenApp();
-            }
-          }
-        });
-      },
-      reopenApp: function() {
-        var appId, index;
-        appId = this.workspace.opsModel.get("id");
-        index = this.workspace.index();
-        this.workspace.remove();
-        return _.defer(function() {
-          App.openOps(appId).setIndex(index);
-          return notification("info", "User payment status change detected, reloading app resource.");
-        });
       }
     });
   });
@@ -10250,12 +10083,7 @@ return TEMPLATE; });
           this.view.confirmImport();
           return;
         }
-        if (App.user.shouldPay() && this.opsModel.isPMRestricted()) {
-          this.view.showUnpayUI();
-        } else {
-          this.diff();
-        }
-        this.view.listenToPayment();
+        this.diff();
       };
 
       AppEditor.prototype.diff = function() {

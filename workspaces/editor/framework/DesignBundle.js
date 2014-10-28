@@ -481,7 +481,7 @@
       delete data.canvasSize;
       data.property = this.attributes.property || {};
       data.property.stoppable = this.isStoppable();
-      data.version = OpsModel.LatestVersion;
+      data.version = "2014-02-17";
       data.state = this.__opsModel.getStateDesc() || "Enabled";
       data.id = this.__opsModel.get("id");
       if (currentDesignObj) {
@@ -567,8 +567,7 @@
       }
       return {
         costList: costList,
-        totalFee: Math.round(totalFee * 100) / 100,
-        visualOpsFee: Math.round(0.01 * 24 * 30 * 100) / 100
+        totalFee: Math.round(totalFee * 100) / 100
       };
     };
     DesignImpl.prototype.isStoppable = function() {
@@ -1455,13 +1454,13 @@
         }
         maxEniCount = instance.getMaxEniCount();
         if (instance.connections("EniAttachment").length + 1 >= maxEniCount) {
-          return sprintf(lang.IDE.CVS_WARN_EXCEED_ENI_LIMIT, instance.get("name"), instance.get("instanceType"), maxEniCount);
+          return sprintf(lang.ide.CVS_WARN_EXCEED_ENI_LIMIT, instance.get("name"), instance.get("instanceType"), maxEniCount);
         }
         if (instance.getEmbedEni().get("assoPublicIp") === true) {
           return {
             confirm: true,
-            title: lang.CANVAS.ATTACH_NETWORK_INTERFACE_TO_INTERFACE,
-            action: lang.CANVAS.ATTACH_AND_REMOVE_PUBLIC_IP,
+            title: "Attach Network Interface to Instance",
+            action: "Attach and Remove Public IP",
             template: MC.template.modalAttachingEni({
               host: instance.get("name"),
               eni: eni.get("name")
@@ -1976,7 +1975,7 @@
           check = true;
         }
         if (check && this.connectionTargets("EniAttachment").length > 0) {
-          return lang.CANVAS.ERR_MOVE_ATTACHED_ENI;
+          return lang.ide.CVS_MSG_ERR_MOVE_ATTACHED_ENI;
         }
         return true;
       },
@@ -2907,7 +2906,7 @@
           check = true;
         }
         if (check && this.connectionTargets("EniAttachment").length > 0) {
-          return lang.CANVAS.ERR_MOVE_ATTACHED_ENI;
+          return lang.ide.CVS_MSG_ERR_MOVE_ATTACHED_ENI;
         }
         return true;
       },
@@ -3038,9 +3037,9 @@
         validObj = Design.modelClassForType(constant.RESTYPE.SUBNET).isIPInSubnet(ip, cidr);
         if (!validObj.isValid) {
           if (validObj.isReserved) {
-            return lang.IDE.VALIDATION_IP_IN_SUBNET_REVERSED_RANGE;
+            return "This IP address is in subnet’s reserved address range";
           }
-          return lang.IDE.VALIDATION_IP_CONFLICTS_WITH_SUBNET_IP_RANGE;
+          return 'This IP address conflicts with subnet’s IP range';
         }
         realNewIp = this.getRealIp(ip, cidr);
         _ref = Model.allObjects();
@@ -3058,9 +3057,9 @@
             realIp = eni.getRealIp(ipObj.ip);
             if (realIp === realNewIp) {
               if (eni === this) {
-                return lang.IDE.VALIDATION_IP_CONFLICTS_WITH_OTHER_IP;
+                return 'This IP address conflicts with other IP';
               } else {
-                return lang.IDE.VALIDATION_IP_CONFLICTS_WITH_OTHER_NETWORK_INTERFACE_IP;
+                return 'This IP address conflicts with other network interface’s IP';
               }
             }
           }
@@ -3120,7 +3119,7 @@
         maxIp = this.maxIpCount();
         ips = this.get("ips");
         if (ips.length >= maxIp) {
-          return sprintf(lang.PROP.MSG_WARN_ENI_IP_EXTEND, instance.get("instanceType"), maxIp);
+          return sprintf(lang.ide.PROP_MSG_WARN_ENI_IP_EXTEND, instance.get("instanceType"), maxIp);
         }
         subnet = this.__embedInstance ? this.__embedInstance.parent() : this.parent();
         result = true;
@@ -3640,17 +3639,17 @@
             return true;
           }
           if (parent.get("count") > 1) {
-            return lang.CANVAS.ERR_SERVERGROUP_VOLUME;
+            return lang.ide.CVS_MSG_ERR_SERVERGROUP_VOLUME;
           }
           if (newParent.get("count") > 1) {
-            return lang.CANVAS.ERR_SERVERGROUP_VOLUME2;
+            return lang.ide.CVS_MSG_ERR_SERVERGROUP_VOLUME2;
           }
           while (parent && parent.type !== constant.RESTYPE.AZ) {
             parent = parent.parent();
             newParent = newParent.parent();
           }
           if (parent && newParent && parent !== newParent) {
-            return lang.IDE.VALIDATION_CANNOT_MOVE_VOLUME_ACROSS_AZ;
+            return "Cannot move volume across availability zone.";
           }
         }
         return true;
@@ -3664,7 +3663,7 @@
       isRemovable: function() {
         if (this.design().modeIsAppEdit()) {
           if ((this.get("owner") || {}).type === constant.RESTYPE.LC) {
-            return lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET;
+            return lang.ide.NOTIFY_MSG_WARN_OPERATE_NOT_SUPPORT_YET;
           }
         }
         return true;
@@ -3781,7 +3780,7 @@
         ami_info = owner.getAmi();
         if (!ami_info) {
           if (!ami_info) {
-            notification("warning", sprintf(lang.NOTIFY.WARN_AMI_NOT_EXIST_TRY_USE_OTHER, imageId), false);
+            notification("warning", sprintf(lang.ide.NOTIFY_MSG_WARN_AMI_NOT_EXIST_TRY_USE_OTHER, imageId), false);
           }
           return null;
         } else {
@@ -3813,7 +3812,7 @@
             });
           }
           if (deviceName.length === 0) {
-            notification("warning", lang.NOTIFY.WARN_ATTACH_VOLUME_REACH_INSTANCE_LIMIT, false);
+            notification("warning", lang.ide.NOTIFY_MSG_WARN_ATTACH_VOLUME_REACH_INSTANCE_LIMIT, false);
             return null;
           }
           if (ami_info.osType !== "windows") {
@@ -4377,7 +4376,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           expand = _ref[_i];
           if (newParent.parent() === expand.parent().parent()) {
-            return sprintf(lang.CANVAS.ERR_DROP_ASG, this.get("name"), newParent.parent().get("name"));
+            return sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, this.get("name"), newParent.parent().get("name"));
           }
         }
         return true;
@@ -4895,11 +4894,11 @@
           return sb.connections("SubnetgAsso").length > 0;
         })) {
           return {
-            error: lang.IDE.RDS_MSG_ERR_REMOVE_AZ_FAILED_CAUSEDBY_CHILD_USEDBY_SBG
+            error: lang.ide.RDS_MSG_ERR_REMOVE_AZ_FAILED_CAUSEDBY_CHILD_USEDBY_SBG
           };
         }
         if (this.children().length > 0) {
-          return sprintf(lang.IDE.CVS_CFM_DEL_GROUP, this.get("name"));
+          return sprintf(lang.ide.CVS_CFM_DEL_GROUP, this.get("name"));
         }
         return true;
       },
@@ -5866,7 +5865,7 @@
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             attach = _ref[_i];
             if (attach === p2Comp) {
-              return lang.CANVAS.NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE;
+              return "The Network Interface is attached to the instance. No need to connect them by security group rule.";
             }
           }
         }
@@ -6466,7 +6465,7 @@
         if (this.design().modeIsAppEdit()) {
           if (this.hasAppUpdateRestriction()) {
             return {
-              error: lang.CANVAS.ERR_DEL_ELB_LINE_2
+              error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_2
             };
           }
         }
@@ -6504,7 +6503,7 @@
         }
         if (connected) {
           return {
-            error: lang.CANVAS.ERR_DEL_ELB_LINE_2
+            error: lang.ide.CVS_MSG_ERR_DEL_ELB_LINE_2
           };
         }
         return true;
@@ -6642,7 +6641,7 @@
             lc = comp2;
           }
           if (lc && lc.get("appId")) {
-            return lang.NOTIFY.WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH;
+            return lang.ide.NOTIFY_MSG_WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH;
           }
         }
         return true;
@@ -6654,7 +6653,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/ElbModel',["Design", "constant", "../ResourceModel", "../ComplexResModel", "./VpcModel", "./SgModel", "./SslCertModel", "../connection/SgAsso", "i18n!/nls/lang.js", "../connection/ElbAsso"], function(Design, constant, ResourceModel, ComplexResModel, VpcModel, SgModel, SslCertModel, SgAsso, lang) {
+  define('workspaces/editor/framework/resource/ElbModel',["Design", "constant", "../ResourceModel", "../ComplexResModel", "./VpcModel", "./SgModel", "./SslCertModel", "../connection/SgAsso", "../connection/ElbAsso"], function(Design, constant, ResourceModel, ComplexResModel, VpcModel, SgModel, SslCertModel, SgAsso) {
     var Model;
     Model = ComplexResModel.extend({
       defaults: function() {
@@ -6692,7 +6691,7 @@
           sg = new SgModel({
             name: this.getElbSgName(),
             isElbSg: true,
-            description: lang.IDE.AUTOMATICALLY_CREATED_SG_FOR_LOAD_BALANCER
+            description: "Automatically created SG for load-balancer"
           });
           this.__elbSg = sg;
           SgAssoModel = Design.modelClassForType("SgAsso");
@@ -6774,8 +6773,7 @@
       removeSSLCert: function(idx) {
         var listeners;
         listeners = this.get("listeners");
-        listeners[idx].sslCert = null;
-        return null;
+        return listeners[idx].sslCert = null;
       },
       getSSLCert: function(idx) {
         var listeners;
@@ -7141,7 +7139,7 @@
         var state;
         if (this.design().modeIsAppEdit() && this.get("appId")) {
           return {
-            error: lang.CANVAS.ERR_DEL_LC
+            error: lang.ide.CVS_MSG_ERR_DEL_LC
           };
         }
         state = this.get("state");
@@ -7692,7 +7690,7 @@
       isRemovable: function() {
         if (this.get("main")) {
           return {
-            error: sprintf(lang.CANVAS.ERR_DEL_MAIN_RT, this.get("name"))
+            error: sprintf(lang.ide.CVS_MSG_ERR_DEL_MAIN_RT, this.get("name"))
           };
         }
         return true;
@@ -7907,7 +7905,7 @@
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               attach = _ref1[_j];
               if (attach.parent() !== this) {
-                return lang.CANVAS.ERR_MOVE_ATTACHED_ENI;
+                return lang.ide.CVS_MSG_ERR_MOVE_ATTACHED_ENI;
               }
             }
           }
@@ -7916,7 +7914,7 @@
               child = child.get("originalAsg");
             }
             if (child.getExpandAzs().indexOf(newParent) !== -1) {
-              return sprintf(lang.CANVAS.ERR_DROP_ASG, child.get("name"), newParent.get("name"));
+              return sprintf(lang.ide.CVS_MSG_ERR_DROP_ASG, child.get("name"), newParent.get("name"));
             }
           }
         }
@@ -7928,7 +7926,7 @@
         SBGAsso = this.connectionTargets("SubnetgAsso");
         if (SBGAsso.length > 0) {
           return {
-            error: sprintf(lang.IDE.RDS_MSG_ERR_REMOVE_SUBNET_FAILED_CAUSEDBY_USEDBY_SBG, this.get("name"), SBGAsso[0].get("name"))
+            error: sprintf(lang.ide.RDS_MSG_ERR_REMOVE_SUBNET_FAILED_CAUSEDBY_USEDBY_SBG, this.get("name"), SBGAsso[0].get("name"))
           };
         }
         _ref = this.connections("ElbSubnetAsso");
@@ -7937,7 +7935,7 @@
           if (cn.isRemovable() !== true) {
             if (!this.design().modeIsStack()) {
               return {
-                error: lang.CANVAS.ERR_DEL_LINKED_ELB
+                error: lang.ide.CVS_MSG_ERR_DEL_LINKED_ELB
               };
             }
             _ref1 = cn.getOtherTarget(this).connectionTargets("ElbAmiAsso");
@@ -7950,7 +7948,7 @@
               while (childAZ) {
                 if (childAZ === az) {
                   return {
-                    error: lang.CANVAS.ERR_DEL_LINKED_ELB
+                    error: lang.ide.CVS_MSG_ERR_DEL_LINKED_ELB
                   };
                 }
                 childAZ = childAZ.parent();
@@ -8285,7 +8283,7 @@
         }
         if (cannotDel) {
           return {
-            error: lang.IDE.CVS_CFM_DEL_IGW
+            error: lang.ide.CVS_CFM_DEL_IGW
           };
         }
         return true;
@@ -8316,7 +8314,7 @@
         if (Model.allObjects().length > 0) {
           return;
         }
-        notification('info', lang.IDE.CVS_CFM_ADD_IGW_MSG);
+        notification('info', lang.ide.CVS_CFM_ADD_IGW_MSG);
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         new Model({
           x: -1,
@@ -8881,7 +8879,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/resource/DBOgModel',["../ComplexResModel", "Design", "constant", 'i18n!/nls/lang.js'], function(ComplexResModel, Design, constant, lang) {
+  define('workspaces/editor/framework/resource/DBOgModel',["../ComplexResModel", "Design", "constant"], function(ComplexResModel, Design, constant) {
     var Model;
     Model = ComplexResModel.extend({
       newNameTmpl: "-og-",
@@ -8893,7 +8891,7 @@
         return false;
       },
       initialize: function(attributes, option) {
-        var prefix, self;
+        var prefix;
         if (this.isDefault()) {
           return;
         }
@@ -8901,8 +8899,7 @@
           prefix = this.engineType() + this.get('engineVersion').replace(/\./g, '-');
           this.set('name', prefix + this.get('name'));
           this.set('name', prefix + this.getNewName(void 0, this.newNameTmpl));
-          self = this;
-          this.set('description', sprintf(lang.IDE.CUSTOM_OPTION_GROUP_FOR_ENGINE, self.get('engineName'), self.get('engineVersion')));
+          this.set('description', "custom option group for " + (this.get('engineName')) + " " + (this.get('engineVersion')));
         }
         return null;
       },
@@ -9020,7 +9017,8 @@
         pgName: '',
         applyImmediately: false,
         dbRestoreTime: '',
-        isRestored: false
+        isRestored: false,
+        storageType: "standard"
       },
       type: constant.RESTYPE.DBINSTANCE,
       newNameTmpl: "db",
@@ -9701,10 +9699,10 @@
         var allRestoreDB, dbNameAry, result;
         if (this.slaves(true).length > 0) {
           if (!this.get("appId")) {
-            result = sprintf(lang.CANVAS.CVS_CFM_DEL_NONEXISTENT_DBINSTANCE, this.get("name"));
+            result = sprintf(lang.ide.CVS_CFM_DEL_NONEXISTENT_DBINSTANCE, this.get("name"));
             result = "<div class='modal-text-major'>" + result + "</div>";
           } else {
-            result = sprintf(lang.CANVAS.CVS_CFM_DEL_EXISTENT_DBINSTANCE, this.get("name"));
+            result = sprintf(lang.ide.CVS_CFM_DEL_EXISTENT_DBINSTANCE, this.get("name"));
             result = "<div class='modal-text-major'>" + result + "</div>";
           }
           return result;
@@ -9715,7 +9713,7 @@
           _.each(allRestoreDB, function(dbModel) {
             return dbNameAry.push("<span class='resource-tag'>" + (dbModel.get('name')) + "</span>");
           });
-          result = sprintf(lang.CANVAS.CVS_CFM_DEL_RELATED_RESTORE_DBINSTANCE, this.get("name"), dbNameAry.join(', '));
+          result = sprintf(lang.ide.CVS_CFM_DEL_RELATED_RESTORE_DBINSTANCE, this.get("name"), dbNameAry.join(', '));
           result = "<div class='modal-text-major'>" + result + "</div>";
           return result;
         }
@@ -9805,7 +9803,8 @@
             ReadReplicaSourceDBInstanceIdentifier: (master != null ? master.createRef('DBInstanceIdentifier') : void 0) || '',
             SourceDBInstanceIdentifierForPoint: ((_ref1 = this.getSourceDBForRestore()) != null ? _ref1.createRef('DBInstanceIdentifier') : void 0) || '',
             UseLatestRestorableTime: useLatestRestorableTime,
-            RestoreTime: restoreTime
+            RestoreTime: restoreTime,
+            StorageType: this.get('storageType')
           }
         };
         return {
@@ -9874,6 +9873,7 @@
           accessible: resource.PubliclyAccessible,
           pgName: (_ref1 = resource.DBParameterGroups) != null ? _ref1.DBParameterGroupName : void 0,
           applyImmediately: resource.ApplyImmediately,
+          storageType: resource.StorageType,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
           parent: resolve(layout_data.groupUId)
@@ -10015,7 +10015,7 @@
 }).call(this);
 
 (function() {
-  define('workspaces/editor/framework/util/deserializeVisitor/FixOldStack',["Design", "constant", "i18n!/nls/lang.js"], function(Design, constant, lang) {
+  define('workspaces/editor/framework/util/deserializeVisitor/FixOldStack',["Design", "constant"], function(Design, constant) {
     Design.registerDeserializeVisitor(function(data, layout_data, version) {
       var comp, foundKP, foundSG, uid;
       if (version >= "2014-01-15") {
@@ -10078,7 +10078,7 @@
             IpPermissionsEgress: [],
             Default: "true",
             GroupName: "DefaultSG",
-            GroupDescription: lang.IDE.DESERIALIZE_VISITOR_GROUP_DESCRIPTION
+            GroupDescription: 'default VPC security group'
           }
         };
       }
