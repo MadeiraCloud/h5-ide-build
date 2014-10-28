@@ -9239,6 +9239,9 @@
             snapshotId: "",
             multiAz: !!attr.multiAz
           }));
+          if (attr.iops && Number(attr.iops) > 0) {
+            this.set('storageType', 'io1');
+          }
           this.setDefaultOptionGroup();
           this.setDefaultParameterGroup();
         }
@@ -9840,9 +9843,17 @@
         });
       },
       deserialize: function(data, layout_data, resolve) {
-        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, that, _i, _len, _ref, _ref1, _ref2, _ref3;
+        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, storageType, that, _i, _len, _ref, _ref1, _ref2, _ref3;
         that = this;
         resource = data.resource;
+        storageType = resource.StorageType;
+        if (!storageType) {
+          if (resource.Iops && Number(resource.Iops) > 0) {
+            storageType = 'io1';
+          } else {
+            storageType = 'standard';
+          }
+        }
         model = new Model({
           id: data.uid,
           name: data.name,
@@ -9873,7 +9884,7 @@
           accessible: resource.PubliclyAccessible,
           pgName: (_ref1 = resource.DBParameterGroups) != null ? _ref1.DBParameterGroupName : void 0,
           applyImmediately: resource.ApplyImmediately,
-          storageType: resource.StorageType,
+          storageType: storageType,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
           parent: resolve(layout_data.groupUId)
