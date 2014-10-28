@@ -847,6 +847,7 @@ define({
         "PROP_DBINSTANCE_CLASS": "DB Instance Class",
         "PROP_DBINSTANCE_IOPS": "IOPS",
         "PROP_DBINSTANCE_STORAGE": "Storage",
+        "PROP_DBINSTANCE_STORAGE_TYPE": "Storage Type",
         "PROP_DBINSTANCE_USERNAME": "Username",
         "PROP_DBINSTANCE_READ_REPLICAS": "Read Replicas",
         "PROP_DBINSTANCE_REPLICAS_SOURCE": "Read Replicas Source",
