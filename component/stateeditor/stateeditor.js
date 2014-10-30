@@ -2534,7 +2534,7 @@ return Markdown;
         that.currentState = that.model.get('currentState');
         that.resAttrRegexStr = that.model.get('resAttrRegexStr');
         that.markdownConvert = new Markdown.Converter();
-        that.generalTip = lang.ide.STATE_HELP_INTRO_LBL;
+        that.generalTip = lang.IDE.STATE_HELP_INTRO_LBL;
         that.resNoState = true;
         if (that.originCompStateData && _.isArray(that.originCompStateData) && that.originCompStateData.length) {
           that.resNoState = false;
@@ -4529,10 +4529,10 @@ return Markdown;
         parseErrList = stateListObj.err_list;
         if (parseErrList.length) {
           if (__indexOf.call(parseErrList, 'command') >= 0 || __indexOf.call(parseErrList, 'parameter') >= 0) {
-            notification('warning', lang.ide.NOTIFY_MSG_INFO_STATE_PARSE_COMMAND_FAILED);
+            notification('warning', lang.NOTIFY.INFO_STATE_PARSE_COMMAND_FAILED);
           }
           if (__indexOf.call(parseErrList, 'reference') >= 0) {
-            notification('warning', lang.ide.NOTIFY_MSG_INFO_STATE_PARSE_REFRENCE_FAILED);
+            notification('warning', lang.NOTIFY.INFO_STATE_PARSE_REFRENCE_FAILED);
           }
         }
         newStateItems = $.trim(template.stateListTpl(stateListObj));
@@ -4699,7 +4699,7 @@ return Markdown;
         if (stack.length) {
           StateClipboard = stack;
           that.updateToolbar();
-          notification('info', lang.ide.NOTIFY_MSG_INFO_STATE_COPY_TO_CLIPBOARD);
+          notification('info', lang.NOTIFY.INFO_STATE_COPY_TO_CLIPBOARD);
         }
         return true;
       },
@@ -4712,7 +4712,7 @@ return Markdown;
         });
         StateClipboard = stack;
         that.updateToolbar();
-        notification('info', lang.ide.NOTIFY_MSG_INFO_STATE_COPY_TO_CLIPBOARD);
+        notification('info', lang.NOTIFY.INFO_STATE_COPY_TO_CLIPBOARD);
         return true;
       },
       moveState: function(direction) {
