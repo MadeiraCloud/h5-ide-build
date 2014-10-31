@@ -334,7 +334,7 @@
         zh: "登出"
       },
       HEAD_LABEL_MENUITEM_BILLING: {
-        en: "Billing",
+        en: "Billings",
         zh: "账单"
       },
       HEAD_LABEL_SETTING: {
