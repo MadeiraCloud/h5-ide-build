@@ -2001,6 +2001,10 @@
         en: 'Storage',
         zh: ""
       },
+      DBINSTANCE_STORAGE_TYPE: {
+        en: 'Storage Type',
+        zh: ""
+      },
       DBINSTANCE_USERNAME: {
         en: "Username",
         zh: ""

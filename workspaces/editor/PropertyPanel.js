@@ -15667,18 +15667,18 @@ function program11(depth0,data) {
   stack1 = helpers.ifLogic.call(depth0, (depth0 && depth0.isRestoreDB), "and", (depth0 && depth0.isSqlserver), {hash:{},inverse:self.program(32, program32, data),fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    </div>\n\n    <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DATABASE_CONFIG", {hash:{},data:data}))
     + "</div>\n    <div class=\"option-group\">\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(60, program60, data),fn:self.program(53, program53, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(61, program61, data),fn:self.program(54, program54, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        <div class=\"property-control-group clearfix property-dbinstance-optiongroup\"></div>\n\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(67, program67, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(68, program68, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    </div>\n\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideAZConfig), {hash:{},inverse:self.noop,fn:self.program(74, program74, data),data:data});
@@ -15809,21 +15809,28 @@ function program30(depth0,data) {
 function program32(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-iops-check\" class=\"tooltip\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
+  buffer += "\n        <section class=\"property-control-group\">\n            <label class=\"left\">Storage Type</label>\n            <div class=\"selectbox\" id=\"property-dbinstance-storage-type\">\n                <div class=\"selection\"></div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "gp2", {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  buffer += "\" data-id=\"gp2\">General Purpose (SSD)</li>\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "io1", {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-iops-check\">\n                <label for=\"property-dbinstance-iops-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-iops-check\" class=\"property-dbinstance-iops-check-tooltip tooltip\" data-tooltip=\"dsaasd\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_USE_PROVISIONED_IOPS", {hash:{},data:data}))
-    + "</label>\n        </section>\n        <section class=\"property-control-group property-dbinstance-iops-value-section ";
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " data-id=\"io1\">Provisioned IOPS (SSD)</li>\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "standard", {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\"standard\">Magnetic</li>\n                </ul>\n            </div>\n        </section>\n        <section class=\"property-control-group property-dbinstance-iops-value-section ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PROVISIONED_IOPS", {hash:{},data:data}))
     + "</label>\n            <div class=\"ranged-number-input\">\n                <input class=\"input\" id=\"property-dbinstance-iops-value\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15834,31 +15841,32 @@ function program32(depth0,data) {
   }
 function program33(depth0,data) {
   
-  var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
-  }
-function program34(depth0,data) {
   
-  
-  return "disabled=\"disabled\"";
+  return "selected";
   }
 
-function program36(depth0,data) {
+function program35(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
+
 function program37(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program38(depth0,data) {
   
   
   return "disabled";
   }
 
-function program39(depth0,data) {
+function program40(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div class=\"property-info property-info-iops-adjust-tip ";
@@ -15873,26 +15881,26 @@ function program39(depth0,data) {
   return buffer;
   }
 
-function program41(depth0,data) {
+function program42(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(44, program44, data),fn:self.program(42, program42, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(45, program45, data),fn:self.program(43, program43, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-master-password\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_MASTER_PASSWORD", {hash:{},data:data}))
     + "</label>\n            <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\n            <input class=\"input tooltip\" data-tooltip=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(48, program48, data),fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" type=\"password\" placeholder=\"****\" id=\"property-dbinstance-master-password\" value=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(51, program51, data),fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(52, program52, data),fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-type=\"ascii\" data-ignore=\"true\" data-required=\"true\"/>\n        </section>\n        ";
   return buffer;
   }
-function program42(depth0,data) {
+function program43(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group clearfix\">\n            <label>"
@@ -15903,7 +15911,7 @@ function program42(depth0,data) {
   return buffer;
   }
 
-function program44(depth0,data) {
+function program45(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-master-username\" >"
@@ -15916,46 +15924,46 @@ function program44(depth0,data) {
   return buffer;
   }
 
-function program46(depth0,data) {
+function program47(depth0,data) {
   
   var buffer = "";
   return buffer;
   }
 
-function program48(depth0,data) {
+function program49(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.password), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.password), {hash:{},inverse:self.noop,fn:self.program(50, program50, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program49(depth0,data) {
+function program50(depth0,data) {
   
   
   return "Default Password: 12345678";
   }
 
-function program51(depth0,data) {
+function program52(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.password)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program53(depth0,data) {
+function program54(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group clearfix\">\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PORT", {hash:{},data:data}))
     + "</label>\n            <div>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(58, program58, data),fn:self.program(56, program56, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(59, program59, data),fn:self.program(57, program57, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n        </section>\n        ";
   return buffer;
   }
-function program54(depth0,data) {
+function program55(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<label>"
@@ -15966,23 +15974,23 @@ function program54(depth0,data) {
   return buffer;
   }
 
-function program56(depth0,data) {
+function program57(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.Endpoint)),stack1 == null || stack1 === false ? stack1 : stack1.Port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program58(depth0,data) {
+function program59(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NOT_READY", {hash:{},data:data}));
   }
 
-function program60(depth0,data) {
+function program61(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(62, program62, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-database-port\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DATABASE_PORT", {hash:{},data:data}))
@@ -15991,25 +15999,25 @@ function program60(depth0,data) {
     + "\" data-ignore=\"true\" data-type=\"number\" data-required=\"true\" data-min=\"1150\" data-max=\"65535\"/>\n        </section>\n        ";
   return buffer;
   }
-function program61(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(62, program62, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        ";
-  return buffer;
-  }
 function program62(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(65, program65, data),fn:self.program(63, program63, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(63, program63, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
   return buffer;
   }
 function program63(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(66, program66, data),fn:self.program(64, program64, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  return buffer;
+  }
+function program64(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-database-name\" >"
@@ -16020,29 +16028,29 @@ function program63(depth0,data) {
   return buffer;
   }
 
-function program65(depth0,data) {
+function program66(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMysql), {hash:{},inverse:self.noop,fn:self.program(63, program63, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMysql), {hash:{},inverse:self.noop,fn:self.program(64, program64, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
   return buffer;
   }
 
-function program67(depth0,data) {
+function program68(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(68, program68, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(69, program69, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOracle), {hash:{},inverse:self.noop,fn:self.program(70, program70, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOracle), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
   return buffer;
   }
-function program68(depth0,data) {
+function program69(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <section class=\"property-control-group\">\n            <label class=\"left\">"
@@ -16051,22 +16059,22 @@ function program68(depth0,data) {
   return buffer;
   }
 
-function program70(depth0,data) {
+function program71(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group\">\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_CHARACTER_SET_NAME", {hash:{},data:data}))
     + "</label>\n            <div class=\"selectbox combo-dd\" id=\"property-dbinstance-charset-select\">\n                <div class=\"selection\"></div>\n                <div class=\"dropdown\">\n                    <div class=\"scroll-wrap scrollbar-auto-hide clearfix\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <ul>\n                                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.oracleCharset), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.oracleCharset), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </ul>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </section>\n        ";
   return buffer;
   }
-function program71(depth0,data) {
+function program72(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.charset)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -16074,11 +16082,6 @@ function program71(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.charset)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</li>\n                                ";
   return buffer;
-  }
-function program72(depth0,data) {
-  
-  
-  return "selected";
   }
 
 function program74(depth0,data) {
@@ -16122,7 +16125,7 @@ function program77(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(85, program85, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                <label for=\"property-dbinstance-auto-backup-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-auto-backup-check\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_ENABLE_AUTOMATIC_BACKUP", {hash:{},data:data}))
@@ -16220,7 +16223,7 @@ function program89(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                            <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -16299,7 +16302,7 @@ function program94(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -16417,34 +16420,62 @@ function program6(depth0,data) {
 function program8(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-iops-check\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  buffer += "\n        <section class=\"property-control-group\">\n            <label class=\"left\">Storage Type</label>\n            <div class=\"selectbox\" id=\"property-dbinstance-storage-type\">\n                <div class=\"selection\"></div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "gp2", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-iops-check\">\n                <label for=\"property-dbinstance-iops-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-iops-check\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_USE_PROVISIONED_IOPS", {hash:{},data:data}))
-    + "</label>\n        </section>\n        ";
+  buffer += "\" data-id=\"gp2\">General Purpose (SSD)</li>\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "io1", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " data-id=\"io1\">Provisioned IOPS (SSD)</li>\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "standard", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\"standard\">Magnetic</li>\n                </ul>\n            </div>\n        </section>\n        ";
   return buffer;
   }
+function program9(depth0,data) {
+  
+  
+  return "selected";
+  }
 
-function program10(depth0,data) {
+function program11(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program12(depth0,data) {
+  
+  
+  return "hide";
+  }
+
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n\n        <div class=\"property-control-group clearfix\">\n            ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.program(14, program14, data),fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.program(18, program18, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </div>\n\n    ";
   return buffer;
   }
-function program11(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
   return buffer;
   }
-function program12(depth0,data) {
+function program16(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    <label>"
@@ -16455,16 +16486,16 @@ function program12(depth0,data) {
   return buffer;
   }
 
-function program14(depth0,data) {
+function program18(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
   return buffer;
   }
-function program15(depth0,data) {
+function program19(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <label>"
@@ -16475,16 +16506,16 @@ function program15(depth0,data) {
   return buffer;
   }
 
-function program17(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azNotEnough), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azNotEnough), {hash:{},inverse:self.program(24, program24, data),fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
   return buffer;
   }
-function program18(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <section class=\"property-control-group\">\n            <div class=\"property-info\">"
@@ -16493,21 +16524,16 @@ function program18(depth0,data) {
   return buffer;
   }
 
-function program20(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <section class=\"property-control-group property-dbinstance-preferred-az ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PREFERRED_ZONE", {hash:{},data:data}))
     + "</label>\n            <div class=\"selectbox\" id=\"property-dbinstance-preferred-az\"></div>\n        </section>\n        ";
   return buffer;
-  }
-function program21(depth0,data) {
-  
-  
-  return "hide";
   }
 
   buffer += "<article class=\"property-dbinstance\">\n    <div class=\"option-group-head expand\">"
@@ -16544,7 +16570,7 @@ function program21(depth0,data) {
   buffer += " value=\"None\" name=\"property-dbinstance-public-access-check\">\n                <label for=\"property-dbinstance-public-access-check\"></label>\n            </div>\n            <label for=\"property-dbinstance-public-access-check\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PUBLIC_ACCESS", {hash:{},data:data}))
     + "</label>\n        </section>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(17, program17, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(21, program21, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    </div>\n\n</article>";
   return buffer;
@@ -17117,7 +17143,7 @@ return TEMPLATE; });
         'change #property-dbinstance-mutil-az-check': 'changeMutilAZ',
         'change #property-dbinstance-storage': 'changeAllocatedStorage',
         'keyup #property-dbinstance-storage': 'inputAllocatedStorage',
-        'change #property-dbinstance-iops-check': 'changeProvisionedIOPSCheck',
+        'OPTION_CHANGE #property-dbinstance-storage-type': 'changeStorageType',
         'change #property-dbinstance-iops-value': 'changeProvisionedIOPS',
         'change #property-dbinstance-master-username': 'changeUserName',
         'change #property-dbinstance-master-password': 'changePassWord',
@@ -18038,26 +18064,48 @@ return TEMPLATE; });
         }
       },
       _disableIOPSCheck: function(isDisable) {
-        var checked, checkedDom;
-        checkedDom = $('#property-dbinstance-iops-check')[0];
-        if (checkedDom) {
-          if (isDisable) {
-            $('#property-dbinstance-iops-check').attr('disabled', 'disabled');
-            $('.property-dbinstance-iops-value-section').hide();
-            $('#property-dbinstance-iops-value').val('');
-            this.resModel.setIops(0);
-            return checkedDom.checked = false;
+        var _check, _checked, _hide, _switch;
+        _check = function(id) {
+          var $selectedDom;
+          $('#property-dbinstance-storage-type').find('.item').removeClass('selected');
+          $selectedDom = $('#property-dbinstance-storage-type').find('.item[data-id="' + id + '"]');
+          $selectedDom.addClass('selected');
+          return $('#property-dbinstance-storage-type').find('.selection').text($selectedDom.text());
+        };
+        _switch = function(flag) {
+          if (flag) {
+            _check('standard');
+            return $('.property-dbinstance-iops-value-section').hide();
           } else {
-            $('#property-dbinstance-iops-check').removeAttr('disabled');
-            checked = checkedDom.checked;
-            if (checked) {
-              $('.property-dbinstance-iops-value-section').show();
-              return checkedDom.checked = true;
-            } else {
-              $('.property-dbinstance-iops-value-section').hide();
-              return checkedDom.checked = false;
-            }
+            return _check('io1');
           }
+        };
+        _hide = function(flag) {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          if (flag) {
+            $dom.hide();
+            if (_checked()) {
+              return _switch(true);
+            }
+          } else {
+            return $dom.show();
+          }
+        };
+        _checked = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          return $dom.hasClass('selected');
+        };
+        if (isDisable) {
+          if (_checked()) {
+            _switch(true);
+          }
+          _hide(true);
+          $('#property-dbinstance-iops-value').val('');
+          return this.resModel.setIops(0);
+        } else {
+          return _hide(false);
         }
       },
       _getIOPSRange: function(storage) {
@@ -18106,19 +18154,29 @@ return TEMPLATE; });
         value = Number(target.val());
         return that.updateIOPSCheckStatus(value);
       },
-      changeProvisionedIOPSCheck: function(event) {
-        var defaultIOPS, fillValue, iopsRange, originValue, storage, that, value;
+      changeStorageType: function() {
+        var defaultIOPS, fillValue, iopsRange, originValue, storage, that, value, _checked, _value;
         that = this;
-        value = event.target.checked;
+        _checked = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          return $dom.hasClass('selected');
+        };
+        _value = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item.selected');
+          return $dom.attr('data-id');
+        };
+        value = _checked();
         fillValue = $('#property-dbinstance-storage').val();
         originValue = this.resModel.get('allocatedStorage');
         storage = Number(fillValue || originValue);
         iopsRange = this._getIOPSRange(storage);
         if (this.resModel.master() && !this.isAppEdit) {
           if (value) {
-            return this.resModel.setIops(this.resModel.master().get('iops'));
+            this.resModel.setIops(this.resModel.master().get('iops'));
           } else {
-            return this.resModel.setIops(0);
+            this.resModel.setIops(0);
           }
         } else {
           if (value) {
@@ -18127,20 +18185,26 @@ return TEMPLATE; });
               defaultIOPS = this._getDefaultIOPS(storage);
               if (defaultIOPS) {
                 $('#property-dbinstance-iops-value').val(defaultIOPS);
-                return that.changeProvisionedIOPS();
+                that.changeProvisionedIOPS();
               }
             }
           } else {
             $('.property-dbinstance-iops-value-section').hide();
             $('#property-dbinstance-iops-value').val('');
-            return this.resModel.setIops(0);
+            this.resModel.setIops(0);
           }
         }
+        return this.resModel.set('storageType', _value());
       },
       changeProvisionedIOPS: function(event) {
-        var fillValue, iops, originValue, storage, target, that, value;
+        var fillValue, iops, originValue, storage, target, that, value, _checked;
         that = this;
-        if ($('#property-dbinstance-iops-check')[0].checked) {
+        _checked = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          return $dom.hasClass('selected');
+        };
+        if (_checked()) {
           target = $('#property-dbinstance-iops-value');
           value = target.val();
           iops = Number(value);
@@ -18503,13 +18567,22 @@ function program36(depth0,data) {
 function program38(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "<span class=\"highlight-status\">(Pending)=>["
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.StorageType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "]</span>";
+  return buffer;
+  }
+
+function program40(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.ReadReplicaDBInstanceIdentifiers), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.ReadReplicaDBInstanceIdentifiers), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
   return buffer;
   }
-function program39(depth0,data) {
+function program41(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <dt>"
@@ -18520,7 +18593,7 @@ function program39(depth0,data) {
   return buffer;
   }
 
-function program41(depth0,data) {
+function program43(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18531,7 +18604,7 @@ function program41(depth0,data) {
   return buffer;
   }
 
-function program43(depth0,data) {
+function program45(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<dt>"
@@ -18542,27 +18615,27 @@ function program43(depth0,data) {
   return buffer;
   }
 
-function program45(depth0,data) {
+function program47(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_OG", {hash:{},data:data}))
     + "</dt>\n                <dd>";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.optionGroups), {hash:{},inverse:self.noop,fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.optionGroups), {hash:{},inverse:self.noop,fn:self.program(48, program48, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </dd>\n            ";
   return buffer;
   }
-function program46(depth0,data) {
+function program48(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDefault), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDefault), {hash:{},inverse:self.program(51, program51, data),fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                ";
   return buffer;
   }
-function program47(depth0,data) {
+function program49(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        "
@@ -18575,7 +18648,7 @@ function program47(depth0,data) {
   return buffer;
   }
 
-function program49(depth0,data) {
+function program51(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <a class=\"db-og-in-app\">"
@@ -18588,18 +18661,18 @@ function program49(depth0,data) {
   return buffer;
   }
 
-function program51(depth0,data) {
+function program53(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PG", {hash:{},data:data}))
     + "</dt>\n                <dd>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DBParameterGroups), {hash:{},inverse:self.noop,fn:self.program(52, program52, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DBParameterGroups), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </dd>\n            ";
   return buffer;
   }
-function program52(depth0,data) {
+function program54(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        "
@@ -18612,16 +18685,16 @@ function program52(depth0,data) {
   return buffer;
   }
 
-function program54(depth0,data) {
+function program56(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "(";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets), {hash:{},inverse:self.noop,fn:self.program(57, program57, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ")";
   return buffer;
   }
-function program55(depth0,data) {
+function program57(depth0,data) {
   
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.SubnetIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -18629,7 +18702,7 @@ function program55(depth0,data) {
   return buffer;
   }
 
-function program57(depth0,data) {
+function program59(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18640,7 +18713,7 @@ function program57(depth0,data) {
   return buffer;
   }
 
-function program59(depth0,data) {
+function program61(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18651,19 +18724,19 @@ function program59(depth0,data) {
   return buffer;
   }
 
-function program61(depth0,data) {
+function program63(depth0,data) {
   
   
   return "true";
   }
 
-function program63(depth0,data) {
+function program65(depth0,data) {
   
   
   return "false";
   }
 
-function program65(depth0,data) {
+function program67(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "Enabled ("
@@ -18672,7 +18745,7 @@ function program65(depth0,data) {
   return buffer;
   }
 
-function program67(depth0,data) {
+function program69(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18683,7 +18756,7 @@ function program67(depth0,data) {
   return buffer;
   }
 
-function program69(depth0,data) {
+function program71(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18752,19 +18825,25 @@ function program69(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.AllocatedStorage), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_USERNAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_STORAGE_TYPE", {hash:{},data:data}))
+    + "</dt>\n            <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.StorageType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.StorageType), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\n            <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP_DBINSTANCE_USERNAME", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.MasterUsername)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ReadReplicaDBInstanceIdentifiers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ReadReplicaDBInstanceIdentifiers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ReadReplicaSourceDBInstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ReadReplicaSourceDBInstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(43, program43, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </dl>\n    </div>\n\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DBCONFIG", {hash:{},data:data}))
     + "</div>\n    <div class=\"option-group\">\n        <dl class=\"dl-vertical\">\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.DBName), {hash:{},inverse:self.noop,fn:self.program(43, program43, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.DBName), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PORT", {hash:{},data:data}))
@@ -18774,10 +18853,10 @@ function program69(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.Port), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.optionGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.optionGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.DBParameterGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(51, program51, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.DBParameterGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        </dl>\n    </div>\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NETWORK_AVAILABILITY", {hash:{},data:data}))
@@ -18786,18 +18865,18 @@ function program69(depth0,data) {
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.DBSubnetGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n                ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(56, program56, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(57, program57, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(59, program59, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(59, program59, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PUBLIC_ACCESS", {hash:{},data:data}))
     + "</dt>\n            <dd>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PubliclyAccessible), {hash:{},inverse:self.program(63, program63, data),fn:self.program(61, program61, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PubliclyAccessible), {hash:{},inverse:self.program(65, program65, data),fn:self.program(63, program63, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_LICENSE_MODEL", {hash:{},data:data}))
@@ -18808,17 +18887,17 @@ function program69(depth0,data) {
     + "</div>\n    <div class=\"option-group\">\n        <dl class=\"dl-vertical\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_AUTOBACKUP", {hash:{},data:data}))
     + "</dt>\n            <dd>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.BackupRetentionPeriod), {hash:{},inverse:self.program(32, program32, data),fn:self.program(65, program65, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.BackupRetentionPeriod), {hash:{},inverse:self.program(32, program32, data),fn:self.program(67, program67, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_LAST_RESTORE", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, (depth0 && depth0.LatestRestorableTime), {hash:{},data:data}))
     + "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredBackupWindow), {hash:{},inverse:self.noop,fn:self.program(67, program67, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredBackupWindow), {hash:{},inverse:self.noop,fn:self.program(69, program69, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(69, program69, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </dl>\n    </div>\n\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))

@@ -9020,7 +9020,8 @@
         pgName: '',
         applyImmediately: false,
         dbRestoreTime: '',
-        isRestored: false
+        isRestored: false,
+        storageType: "standard"
       },
       type: constant.RESTYPE.DBINSTANCE,
       newNameTmpl: "db",
@@ -9241,6 +9242,9 @@
             snapshotId: "",
             multiAz: !!attr.multiAz
           }));
+          if (attr.iops && Number(attr.iops) > 0) {
+            this.set('storageType', 'io1');
+          }
           this.setDefaultOptionGroup();
           this.setDefaultParameterGroup();
         }
@@ -9805,7 +9809,8 @@
             ReadReplicaSourceDBInstanceIdentifier: (master != null ? master.createRef('DBInstanceIdentifier') : void 0) || '',
             SourceDBInstanceIdentifierForPoint: ((_ref1 = this.getSourceDBForRestore()) != null ? _ref1.createRef('DBInstanceIdentifier') : void 0) || '',
             UseLatestRestorableTime: useLatestRestorableTime,
-            RestoreTime: restoreTime
+            RestoreTime: restoreTime,
+            StorageType: this.get('storageType')
           }
         };
         return {
@@ -9841,9 +9846,17 @@
         });
       },
       deserialize: function(data, layout_data, resolve) {
-        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, that, _i, _len, _ref, _ref1, _ref2, _ref3;
+        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, storageType, that, _i, _len, _ref, _ref1, _ref2, _ref3;
         that = this;
         resource = data.resource;
+        storageType = resource.StorageType;
+        if (!storageType) {
+          if (resource.Iops && Number(resource.Iops) > 0) {
+            storageType = 'io1';
+          } else {
+            storageType = 'standard';
+          }
+        }
         model = new Model({
           id: data.uid,
           name: data.name,
@@ -9874,6 +9887,7 @@
           accessible: resource.PubliclyAccessible,
           pgName: (_ref1 = resource.DBParameterGroups) != null ? _ref1.DBParameterGroupName : void 0,
           applyImmediately: resource.ApplyImmediately,
+          storageType: storageType,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
           parent: resolve(layout_data.groupUId)

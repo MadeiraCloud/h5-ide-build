@@ -244,7 +244,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\n  <section class=\"voquota tooltip\" data-tooltip=\"\" data-tooltip-type=\"html\">\n    <div class=\"percentage\"><div class=\"payment-exclamation\">!</div><div class=\"currquota\"></div></div>\n    <span class=\"current\">0</span>/<span class=\"limit\">0</span>\n  </section>\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "<nav id=\"header\">\n  <section class=\"voquota tooltip\" data-tooltip=\"<span>3600 free instance hours used up <br>\nYou are in limited status now</span>\" data-tooltip-type=\"html\">\n      <div class=\"payment-exclamation\">!</div>\n  </section>\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
     + "</a>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
@@ -917,21 +917,19 @@ function program7(depth0,data) {
     + "</p>\n                    </div>\n                </div>\n                <div class=\"right\">\n                    <a class=\"btn btn-blue update-payment\" href=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" target=\"_blank\">Update Billing Information <i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>Billing History <span class=\"payment-next-billing\">Next Billing on "
-    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingCircle), "MMMM d, yyyy", {hash:{},data:data}))
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingEnd), "MMMM d, yyyy", {hash:{},data:data}))
     + "</span></h5>\n            <div class=\"table-head-fix\">\n                ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">Current Usage <span class=\"billing_start_from\">Since "
     + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
-    + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <p>Used Points</p>\n                    <div class=\"usage-number\">\n                        "
+    + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <div class=\"usage-number\">\n                        "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n                    </div>\n                </div>\n                <div class=\"billable-points\">\n                    <p>Billable Points</p>\n                    <div class=\"usage-number\">\n                        "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billable_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n                    </div>\n                </div>\n                <div class=\"usage-block\">\n                    <div class=\"billable-usage tooltip\"></div>\n                    <div class=\"free-usage tooltip\"></div>\n                    <div class=\"current-usage tooltip\"></div>\n                </div>\n                <p class=\"renew-points\">"
+    + "\n                    </div>\n                    <span>Instance Hour</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " free points renew in "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " days</p>\n            </div>\n        </section>\n    </div>\n</div>";
+    + " days</p>\n        </section>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.billingTemplate=Handlebars.template(__TEMPLATE__);
@@ -965,25 +963,17 @@ return TEMPLATE; });
             }
           });
         }
-        if (!App.user.get("creditCard")) {
-          this.modal.setContent(MC.template.paymentSubscribe);
-          this.modal.listenTo(App.user, "paymentUpdate", function() {
-            that.initialize(that.modal);
-            return that.modal.stopListening();
-          });
-          return false;
-        }
-        ApiRequestR("payment_statement").then(function(paymentHistory) {
+        this.getPaymentHistory().then(function(paymentHistory) {
           var billable_quota, hasPaymentHistory, paymentUpdate, tempArray;
           console.log(paymentHistory);
           paymentUpdate = {
             url: App.user.get("paymentUrl"),
             card: App.user.get("creditCard"),
-            billingCircle: App.user.get("billingCircle"),
+            billingEnd: App.user.get("billingEnd"),
             current_quota: App.user.get("voQuotaCurrent"),
             max_quota: App.user.get("voQuotaPerMonth"),
             renewRemainDays: Math.round((App.user.get("renewDate") - (new Date())) / (1000 * 60 * 60 * 24)),
-            last_billing_time: App.user.get("billingCircleStart")
+            last_billing_time: App.user.get("billingStart") || new Date()
           };
           billable_quota = App.user.get("voQuotaCurrent") - App.user.get("voQuotaPerMonth");
           paymentUpdate.billable_quota = billable_quota > 0 ? billable_quota : 0;
@@ -1005,18 +995,39 @@ return TEMPLATE; });
             paymentHistory: paymentHistory,
             hasPaymentHistory: hasPaymentHistory
           }));
-          return that.animateUsage();
+          if (!App.user.get("creditCard")) {
+            that.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({
+              url: App.user.get("paymentUrl")
+            }));
+            that.modal.listenTo(App.user, "paymentUpdate", function() {
+              that.initialize(that.modal);
+              return that.modal.stopListening();
+            });
+          }
+          return that.updateUsage();
         }, function() {
           var _ref;
           notification('error', "Error while getting user payment info, please try again later.");
           return (_ref = that.modal) != null ? _ref.close() : void 0;
         });
-        this.listenTo(App.user, "paymentUpdate", (function(_this) {
-          return function() {
-            return _this.animateUsage();
-          };
-        })(this));
+        this.listenTo(App.user, "paymentUpdate", function() {
+          return that.updateUsage();
+        });
         return this.setElement(this.modal.tpl);
+      },
+      getPaymentHistory: function() {
+        var historyDefer;
+        historyDefer = new Q.defer();
+        if (!App.user.get("creditCard")) {
+          historyDefer.resolve({});
+        } else {
+          ApiRequestR("payment_statement").then(function(paymentHistory) {
+            return historyDefer.resolve(paymentHistory);
+          }, function(err) {
+            return historyDefer.reject(err);
+          });
+        }
+        return historyDefer.promise;
       },
       switchTab: function(event) {
         var target;
@@ -1025,7 +1036,7 @@ return TEMPLATE; });
         this.modal.find("#PaymentNav").find("span").removeClass("selected");
         this.modal.find(".tabContent > section").addClass("hide");
         $("#" + target.addClass("selected").data('target')).removeClass("hide");
-        return this.animateUsage(event);
+        return this.updateUsage();
       },
       _bindPaymentEvent: function(event) {
         var that;
@@ -1050,68 +1061,24 @@ return TEMPLATE; });
       _renderBillingDialog: function(modal) {
         return new BillingDialog(modal);
       },
-      animateUsage: function(event) {
-        var $billable_usage, $current_usage, $free_usage, billable_quota, current_quota, current_quota_length, free_quota, free_quota_length, max_length, shouldPay;
+      updateUsage: function() {
+        var current_quota, shouldPay;
         if (this.modal.isClosed) {
           return false;
         }
-        free_quota_length = 250;
-        max_length = 580;
         shouldPay = App.user.shouldPay();
         this.modal.$(".usage-block").toggleClass("error", shouldPay);
         this.modal.$(".used-points").toggleClass("error", shouldPay);
-        $current_usage = this.modal.find(".usage-block .current-usage");
-        $billable_usage = this.modal.find(".usage-block .billable-usage");
-        $free_usage = this.modal.find(".usage-block .free-usage");
-        if (event) {
-          $current_usage.addClass("freeze").width(0);
-          _.defer((function(_this) {
-            return function() {
-              return $current_usage.removeClass("freeze");
-            };
-          })(this));
-          this.modal.$(".usage-block").find(".billable-usage, .free-usage").addClass("freeze").width(free_quota_length);
-          _.defer((function(_this) {
-            return function() {
-              return _this.modal.$(".usage-block").find(".billable-usage, .free-usage").removeClass("freeze");
-            };
-          })(this));
-        }
         current_quota = App.user.get("voQuotaCurrent");
-        free_quota = App.user.get("voQuotaPerMonth");
-        billable_quota = current_quota > free_quota ? current_quota - free_quota : 0;
         this.modal.find(".payment-number").text(App.user.get("creditCard") || "No Card");
         this.modal.find(".payment-username").text("" + (App.user.get("cardFirstName")) + " " + (App.user.get("cardLastName")));
         this.modal.find(".used-points .usage-number").text(current_quota);
-        this.modal.find(".billable-points .usage-number").text(billable_quota);
         if (App.user.shouldPay()) {
-          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
+          return this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
         } else if (App.user.isUnpaid()) {
-          this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
+          return this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
         } else {
-          this.modal.find(".warning-red").hide();
-        }
-        current_quota_length = current_quota * free_quota_length / free_quota;
-        if (free_quota > current_quota) {
-          return _.defer(function() {
-            $current_usage.width(current_quota_length).attr("data-tooltip", current_quota + " used points");
-            $free_usage.attr('data-tooltip', "" + free_quota + " free points").width(free_quota_length);
-            return $billable_usage.width(0);
-          });
-        } else {
-          return _.defer(function() {
-            if (current_quota_length < max_length) {
-              $current_usage.width(free_quota_length);
-              $billable_usage.width(current_quota_length);
-              $free_usage.width(free_quota_length);
-            } else {
-              $billable_usage.width(max_length);
-              $free_usage.width(0);
-              $current_usage.width(free_quota_length * max_length / current_quota_length);
-            }
-            $current_usage.attr('data-tooltip', free_quota + " free points");
-            return $billable_usage.attr("data-tooltip", (current_quota - free_quota) + " billable points");
-          });
+          return this.modal.find(".warning-red").hide();
         }
       },
       viewPaymentReceipt: function(event) {
@@ -1173,21 +1140,12 @@ return TEMPLATE; });
         return new SettingsDialog();
       },
       update: function() {
-        var $percent, $quota, overview, user;
-        user = App.user;
-        overview = user.getBillingOverview();
-        $("#HeaderUser").data("tooltip", user.get("email")).children("span").text(user.get("username"));
-        $quota = $("#header").children(".voquota").attr("data-tooltip", sprintf(lang.IDE.PAYMENT_HEADER_TOOLTIP, overview.quotaRemain, overview.billingRemain));
-        $quota.find(".currquota").css({
-          "width": overview.quotaPercent + "%"
-        });
-        $quota.find(".current").text(overview.quotaCurrent);
-        $quota.find(".limit").text(overview.quotaTotal);
-        $percent = $quota.find(".percentage").removeClass("error full");
-        if (user.shouldPay()) {
-          $percent.addClass("error");
-        } else if (overview.quotaCurrent >= overview.quotaTotal) {
-          $percent.addClass("full");
+        var $quota;
+        $quota = $("#header").children(".voquota");
+        if (App.user.shouldPay()) {
+          return $quota.addClass("show");
+        } else {
+          return $quota.removeClass("show");
         }
       },
       setAlertCount: function(count) {
@@ -1819,7 +1777,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       events: {
         "click #submitFullName": "submit",
         "change #complete-firstname": "changeInput",
-        "change #complete-lastname": "changeInput"
+        "change #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput"
       },
       initialize: function() {
         this.modal = new Modal({
@@ -1839,9 +1799,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.setElement(this.modal.tpl);
       },
       changeInput: function() {
-        var confirmBtn;
+        var $firstNameInput, $lastNameInput, confirmBtn;
         confirmBtn = this.modal.find(".modal-confirm");
-        if (this.modal.find("#complete-firstname").val() && this.modal.find("#complete-lastname").val()) {
+        $firstNameInput = this.modal.find("#complete-firstname");
+        $lastNameInput = this.modal.find("#complete-lastname");
+        if (!!$firstNameInput.val() && !!$lastNameInput.val()) {
           return confirmBtn.attr("disabled", false);
         } else {
           return confirmBtn.attr("disabled", true);
@@ -3472,9 +3434,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return ov;
       },
       userInfoAccuired: function(result) {
-        var idx, paymentInfo, res, selfpage, t, _i, _len, _ref;
+        var idx, paymentInfo, res, selfPage, t, _i, _len, _ref;
         paymentInfo = result.payment || {};
-        selfpage = paymentInfo.self_page || {};
+        selfPage = paymentInfo.self_page || {};
         res = {
           email: MC.base64Decode(result.email),
           repo: result.mod_repo,
@@ -3484,15 +3446,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           account: result.account_id,
           firstName: MC.base64Decode(result.first_name || ""),
           lastName: MC.base64Decode(result.last_name || ""),
-          cardFirstName: "",
-          cardLastName: "",
+          cardFirstName: MC.base64Decode(selfPage.first_name || ""),
+          cardLastName: MC.base64Decode(selfPage.last_name || ""),
           voQuotaCurrent: paymentInfo.current_quota || 0,
           voQuotaPerMonth: paymentInfo.max_quota || 1000,
           has_card: !!paymentInfo.has_card,
-          paymentUrl: selfpage.url,
-          creditCard: selfpage.card,
-          billingEnd: new Date(selfpage.current_period_ends_at || null),
-          billingStart: new Date(selfpage.current_period_started_at || null),
+          paymentUrl: selfPage.url,
+          creditCard: selfPage.card,
+          billingEnd: new Date(selfPage.current_period_ends_at || null),
+          billingStart: new Date(selfPage.current_period_started_at || null),
           renewDate: paymentInfo ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
           paymentState: paymentInfo.state || "",
           awsAccessKey: result.access_key,
@@ -3554,11 +3516,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           ApiRequestR("payment_self").then(function(result) {
             paymentInfo = {
               creditCard: result.card,
-              billingCircle: new Date(result.current_period_ends_at || null),
-              billingCircleStart: new Date(result.current_period_started_at || null),
+              billingEnd: new Date(result.current_period_ends_at || null),
+              billingStart: new Date(result.current_period_started_at || null),
               paymentUrl: result.url,
-              cardFirstName: result.card ? result.first_name : "",
-              cardLastName: result.card ? result.last_name : ""
+              cardFirstName: result.card ? MC.base64Decode(result.first_name || "") : void 0,
+              cardLastName: result.card ? MC.base64Decode(result.last_name || "") : void 0
             };
             that.set(paymentInfo);
             return that.trigger("paymentUpdate");

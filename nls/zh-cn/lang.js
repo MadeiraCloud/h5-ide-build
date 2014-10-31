@@ -1424,6 +1424,7 @@ define({
         "DBINSTANCE_CLASS": "",
         "DBINSTANCE_IOPS": "",
         "DBINSTANCE_STORAGE": "",
+        "DBINSTANCE_STORAGE_TYPE": "",
         "DBINSTANCE_USERNAME": "",
         "DBINSTANCE_READ_REPLICAS": "",
         "DBINSTANCE_REPLICAS_SOURCE": "",
