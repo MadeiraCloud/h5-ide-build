@@ -338,7 +338,7 @@ define({
         "HEAD_LABEL_MENUITEM_DOC": "Documentation",
         "HEAD_LABEL_MENUITEM_SETTING": "Settings",
         "HEAD_LABEL_MENUITEM_LOGOUT": "Log Out",
-        "HEAD_LABEL_MENUITEM_BILLING": "Billings",
+        "HEAD_LABEL_MENUITEM_BILLING": "Billing",
         "HEAD_LABEL_SETTING": "Settings",
         "HEAD_LABEL_ACCOUNT": "Account",
         "HEAD_LABEL_CREDENTIAL": "AWS Credentials",
@@ -1854,8 +1854,8 @@ define({
         "ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN": "Read Replica <span class='validation-tag tag-rds'>%s</span> should have same or larger storage than its source <span class='validation-tag tag-rds'>%s</span>.",
         "ERROR_MASTER_PASSWORD_INVALID": "DB instance <span class='validation-tag tag-rds'>%s</span>'s Master Password must contain 8 to 41 characters.",
         "ERROR_OG_DB_BOTH_MODIFIED": "DB Instance %s cannot be modified in the same update with the Option Group %s it is using."
-    },
-    "TOOLBAR": {
+    }
+});  "TOOLBAR": {
         "LOADING_DATA": "Loading data...",
         "ROLLING_BACK": "Rolling back...",
         "RELOADING_DATA": "Reloading data...",

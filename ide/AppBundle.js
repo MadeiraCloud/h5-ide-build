@@ -244,7 +244,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\n  <section class=\"voquota tooltip\" data-tooltip=\"\" data-tooltip-type=\"html\">\n    <div class=\"percentage\"><div class=\"payment-exclamation\">!</div><div class=\"currquota\"></div></div>\n    <span class=\"current\">0</span>/<span class=\"limit\">0</span>\n  </section>\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "<nav id=\"header\">\n  <section class=\"voquota tooltip\" data-tooltip=\"<span>3600 free instance hours used up <br>\nYou are in limited status now</span>\" data-tooltip-type=\"html\">\n      <div class=\"payment-exclamation\">!</div>\n  </section>\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
     + "</a>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
@@ -923,15 +923,13 @@ function program7(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">Current Usage <span class=\"billing_start_from\">Since "
     + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
-    + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <p>Used Points</p>\n                    <div class=\"usage-number\">\n                        "
+    + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <div class=\"usage-number\">\n                        "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n                    </div>\n                </div>\n                <div class=\"billable-points\">\n                    <p>Billable Points</p>\n                    <div class=\"usage-number\">\n                        "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billable_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n                    </div>\n                </div>\n                <div class=\"usage-block\">\n                    <div class=\"billable-usage tooltip\"></div>\n                    <div class=\"free-usage tooltip\"></div>\n                    <div class=\"current-usage tooltip\"></div>\n                </div>\n                <p class=\"renew-points\">"
+    + "\n                    </div>\n                    <span>Instance Hour</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " free points renew in "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " days</p>\n            </div>\n        </section>\n    </div>\n</div>";
+    + " days</p>\n        </section>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.billingTemplate=Handlebars.template(__TEMPLATE__);
@@ -965,15 +963,7 @@ return TEMPLATE; });
             }
           });
         }
-        if (!App.user.get("creditCard")) {
-          this.modal.setContent(MC.template.paymentSubscribe);
-          this.modal.listenTo(App.user, "paymentUpdate", function() {
-            that.initialize(that.modal);
-            return that.modal.stopListening();
-          });
-          return false;
-        }
-        ApiRequestR("payment_statement").then(function(paymentHistory) {
+        this.getPaymentHistory().then(function(paymentHistory) {
           var billable_quota, hasPaymentHistory, paymentUpdate, tempArray;
           console.log(paymentHistory);
           paymentUpdate = {
@@ -983,7 +973,7 @@ return TEMPLATE; });
             current_quota: App.user.get("voQuotaCurrent"),
             max_quota: App.user.get("voQuotaPerMonth"),
             renewRemainDays: Math.round((App.user.get("renewDate") - (new Date())) / (1000 * 60 * 60 * 24)),
-            last_billing_time: App.user.get("billingCircleStart")
+            last_billing_time: App.user.get("billingCircleStart") || new Date()
           };
           billable_quota = App.user.get("voQuotaCurrent") - App.user.get("voQuotaPerMonth");
           paymentUpdate.billable_quota = billable_quota > 0 ? billable_quota : 0;
@@ -1005,6 +995,15 @@ return TEMPLATE; });
             paymentHistory: paymentHistory,
             hasPaymentHistory: hasPaymentHistory
           }));
+          if (!App.user.get("creditCard")) {
+            that.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({
+              url: App.user.get("paymentUrl")
+            }));
+            that.modal.listenTo(App.user, "paymentUpdate", function() {
+              that.initialize(that.modal);
+              return that.modal.stopListening();
+            });
+          }
           return that.animateUsage();
         }, function() {
           var _ref;
@@ -1017,6 +1016,20 @@ return TEMPLATE; });
           };
         })(this));
         return this.setElement(this.modal.tpl);
+      },
+      getPaymentHistory: function() {
+        var historyDefer;
+        historyDefer = new Q.defer();
+        if (!App.user.get("creditCard")) {
+          historyDefer.resolve({});
+        } else {
+          ApiRequestR("payment_statement").then(function(paymentHistory) {
+            return historyDefer.resolve(paymentHistory);
+          }, function(err) {
+            return historyDefer.reject(err);
+          });
+        }
+        return historyDefer.promise;
       },
       switchTab: function(event) {
         var target;
@@ -1173,21 +1186,12 @@ return TEMPLATE; });
         return new SettingsDialog();
       },
       update: function() {
-        var $percent, $quota, overview, user;
-        user = App.user;
-        overview = user.getBillingOverview();
-        $("#HeaderUser").data("tooltip", user.get("email")).children("span").text(user.get("username"));
-        $quota = $("#header").children(".voquota").attr("data-tooltip", sprintf(lang.IDE.PAYMENT_HEADER_TOOLTIP, overview.quotaRemain, overview.billingRemain));
-        $quota.find(".currquota").css({
-          "width": overview.quotaPercent + "%"
-        });
-        $quota.find(".current").text(overview.quotaCurrent);
-        $quota.find(".limit").text(overview.quotaTotal);
-        $percent = $quota.find(".percentage").removeClass("error full");
-        if (user.shouldPay()) {
-          $percent.addClass("error");
-        } else if (overview.quotaCurrent >= overview.quotaTotal) {
-          $percent.addClass("full");
+        var $quota;
+        $quota = $("#header").children(".voquota");
+        if (App.user.shouldPay()) {
+          return $quota.addClass("show");
+        } else {
+          return $quota.removeClass("show");
         }
       },
       setAlertCount: function(count) {
@@ -1819,7 +1823,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       events: {
         "click #submitFullName": "submit",
         "change #complete-firstname": "changeInput",
-        "change #complete-lastname": "changeInput"
+        "change #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput"
       },
       initialize: function() {
         this.modal = new Modal({
@@ -1839,9 +1845,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.setElement(this.modal.tpl);
       },
       changeInput: function() {
-        var confirmBtn;
+        var $firstNameInput, $lastNameInput, confirmBtn;
         confirmBtn = this.modal.find(".modal-confirm");
-        if (this.modal.find("#complete-firstname").val() && this.modal.find("#complete-lastname").val()) {
+        $firstNameInput = this.modal.find("#complete-firstname");
+        $lastNameInput = this.modal.find("#complete-lastname");
+        if (!!$firstNameInput.val() && !!$lastNameInput.val()) {
           return confirmBtn.attr("disabled", false);
         } else {
           return confirmBtn.attr("disabled", true);
