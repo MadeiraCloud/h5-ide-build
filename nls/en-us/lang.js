@@ -254,8 +254,9 @@ define({
         "DASH_LBL_CLOSE_SESSION": "Close Session",
         "DASH_RECONNECT_SESSION": "Reconnect Session",
         "DASH_PROVIDE_PASSWORD_TO_RECONNECT": "Please provide your password to reconnect:",
-        "DASH_LBL_CONNECT": "Connect",
-        "NAV_TIT_DASHBOARD": "Dashboard",
+        "DASH_LBL_CONNECT": "Connect"
+    }
+});"NAV_TIT_DASHBOARD": "Dashboard",
         "NAV_TIT_APPS": "Apps",
         "NAV_TIT_STACKS": "Stacks",
         "NAV_LBL_GLOBAL": "Global",
