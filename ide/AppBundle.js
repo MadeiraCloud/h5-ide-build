@@ -998,7 +998,8 @@ return TEMPLATE; });
           if (!App.user.get("creditCard")) {
             that.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({
               url: App.user.get("paymentUrl"),
-              freePointsPerMonth: App.user.get("voQuotaPerMonth")
+              freePointsPerMonth: App.user.get("voQuotaPerMonth"),
+              shouldPay: App.user.shouldPay()
             }));
             that.modal.listenTo(App.user, "paymentUpdate", function() {
               that.initialize(that.modal);
