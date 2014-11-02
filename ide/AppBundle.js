@@ -997,7 +997,8 @@ return TEMPLATE; });
           }));
           if (!App.user.get("creditCard")) {
             that.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({
-              url: App.user.get("paymentUrl")
+              url: App.user.get("paymentUrl"),
+              freePointsPerMonth: App.user.get("voQuotaPerMonth")
             }));
             that.modal.listenTo(App.user, "paymentUpdate", function() {
               that.initialize(that.modal);
@@ -3449,7 +3450,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           cardFirstName: MC.base64Decode(selfPage.first_name || ""),
           cardLastName: MC.base64Decode(selfPage.last_name || ""),
           voQuotaCurrent: paymentInfo.current_quota || 0,
-          voQuotaPerMonth: paymentInfo.max_quota || 1000,
+          voQuotaPerMonth: paymentInfo.max_quota || 3600,
           has_card: !!paymentInfo.has_card,
           paymentUrl: selfPage.url,
           creditCard: selfPage.card,
