@@ -1855,8 +1855,8 @@ define({
         "ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN": "",
         "ERROR_MASTER_PASSWORD_INVALID": "",
         "ERROR_OG_DB_BOTH_MODIFIED": ""
-    }
-});  "TOOLBAR": {
+    },
+    "TOOLBAR": {
         "LOADING_DATA": "",
         "ROLLING_BACK": "",
         "RELOADING_DATA": "",

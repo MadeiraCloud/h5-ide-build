@@ -1350,7 +1350,7 @@
         zh: ""
       },
       PAYMENT_BILLING_TAB: {
-        en: "Payment & Billing",
+        en: "Billing",
         zh: ""
       },
       PAYMENT_SETTING_TITLE: {

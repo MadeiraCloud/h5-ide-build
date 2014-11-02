@@ -254,9 +254,8 @@ define({
         "DASH_LBL_CLOSE_SESSION": "Close Session",
         "DASH_RECONNECT_SESSION": "Reconnect Session",
         "DASH_PROVIDE_PASSWORD_TO_RECONNECT": "Please provide your password to reconnect:",
-        "DASH_LBL_CONNECT": "Connect"
-    }
-});"NAV_TIT_DASHBOARD": "Dashboard",
+        "DASH_LBL_CONNECT": "Connect",
+        "NAV_TIT_DASHBOARD": "Dashboard",
         "NAV_TIT_APPS": "Apps",
         "NAV_TIT_STACKS": "Stacks",
         "NAV_LBL_GLOBAL": "Global",
@@ -592,7 +591,7 @@ define({
         "PAYMENT_LOADING_BILLING": "Getting Billing Information ...",
         "PROFILE_UPDATED_FAILED": "Your Profile failed to update.",
         "PAYMENT_USAGE_TAB": "Usage",
-        "PAYMENT_BILLING_TAB": "Payment & Billing",
+        "PAYMENT_BILLING_TAB": "Billing",
         "PAYMENT_SETTING_TITLE": "Billing & Usage",
         "PAYMENT_HEADER_TOOLTIP": "<div class=\"payment-header-tooltip\"><strong>%s</strong> free points remaining. <span> Free points will renew in %s days.</span></div>",
         "PAYMENT_PROVIDE_UPDATE_CREDITCARD": "Your account is limited status now. Import VPC, app operation, monitoring and state ensuring are disabled. <a class='update-payment' href='%s' target='_blank'> %s Billing Information</a> as soon as possible.",

@@ -927,7 +927,7 @@ function program7(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n                    </div>\n                    <span>Instance Hour</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " free points renew in "
+    + " free instance hours will be renewed in "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " days</p>\n        </section>\n    </div>\n</div>";
   return buffer;
@@ -1075,11 +1075,11 @@ return TEMPLATE; });
         this.modal.find(".payment-username").text("" + (App.user.get("cardFirstName")) + " " + (App.user.get("cardLastName")));
         this.modal.find(".used-points .usage-number").text(current_quota);
         if (App.user.shouldPay()) {
-          return this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
+          return this.modal.find(".warning-red").not(".no-change").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
         } else if (App.user.isUnpaid()) {
-          return this.modal.find(".warning-red").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
+          return this.modal.find(".warning-red").not(".no-change").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
         } else {
-          return this.modal.find(".warning-red").hide();
+          return this.modal.find(".warning-red").not(".no-change").hide();
         }
       },
       viewPaymentReceipt: function(event) {
