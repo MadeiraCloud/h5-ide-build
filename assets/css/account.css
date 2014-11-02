@@ -2,14 +2,14 @@
 	font-family: 'Lato';
 	font-style: normal;
 	font-weight: 400;
-	src: local('Lato Regular'), local('Lato-Regular'), url('../fonts/Lato-regular.woff') format('woff');
+	src: local('Lato Regular'), local('Lato-Regular'), url('../fonts/Lato-regular.woff?v=c62bcc99') format('woff');
 }
 
 @font-face {
 	font-family: 'Lato';
 	font-style: normal;
 	font-weight: 700;
-	src: local('Lato Bold'), local('Lato-Bold'), url('../fonts/Lato-Bold.woff') format('woff');
+	src: local('Lato Bold'), local('Lato-Bold'), url('../fonts/Lato-Bold.woff?v=eba02393') format('woff');
 }
 
 .font-mono {
@@ -265,7 +265,7 @@ body {
 
 #body {
 	color      : #222;
-	background : #000 url('../images/login/bg.jpeg');
+	background : #000 url('../images/login/bg.jpeg?v=5e70e91c');
 	background-size : cover;
 }
 
@@ -284,7 +284,7 @@ header {
 }
 
 #logo-link {
-	background: url('../images/login/logo.svg') center no-repeat;
+	background: url('../images/login/logo.svg?v=cc0eff8d') center no-repeat;
 	background-size: 240px auto;
 	height: 80px;
 	width: 240px;
@@ -580,7 +580,7 @@ footer {
 }
 
 #arn {
-	background      : url('../images/login/arn-dark.png') center no-repeat;
+	background      : url('../images/login/arn-dark.png?v=a9e27585') center no-repeat;
 	background-size : 261px 85px;
 	width           : 261px;
 	height          : 85px;
