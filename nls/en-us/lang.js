@@ -1773,8 +1773,8 @@ define({
         "CONSTANT_MSG_E_ERROR": "Sorry, we're experiencing techincal difficulty",
         "CONSTANT_MSG_E_UNKNOW": "Something is wrong, Please contact support@visualops.io",
         "CONSTANT_MSG_E_PARAM": "Parameter Error!"
-    },
-    "TA": {
+    }
+});  "TA": {
         "WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE": "No instance in VPC has Elastic IP or auto-assigned public IP, which means this VPC can only connect to outside via VPN.",
         "ERROR_CIDR_ERROR_CONNECT_TO_ELB": "Subnet <span class='validation-tag tag-subnet'>%s</span> is attached with a Load Balancer. Its mask must be smaller than /27.",
         "NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME": "Instance <span class='validation-tag tag-instance'>%s</span> has an attached Provisioned IOPS volume but is not EBS-Optimized.",
