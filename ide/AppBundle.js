@@ -2050,7 +2050,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return !!this.attributes.importVpcId;
       },
       isPMRestricted: function() {
-        return this.get("version") >= "2014-11-11" && this.isApp();
+        return this.get("version") >= "2014-09-18" && this.isApp();
       },
       testState: function(state) {
         return this.attributes.state === state;

@@ -1773,8 +1773,8 @@ define({
         "CONSTANT_MSG_E_ERROR": "",
         "CONSTANT_MSG_E_UNKNOW": "",
         "CONSTANT_MSG_E_PARAM": ""
-    },
-    "TA": {
+    }
+});  "TA": {
         "WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE": "",
         "ERROR_CIDR_ERROR_CONNECT_TO_ELB": "",
         "NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME": "",
