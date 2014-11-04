@@ -461,6 +461,7 @@ define({
         "IDE_LBL_REGION_NAME_us-west-1": "美国西部",
         "IDE_LBL_REGION_NAME_us-west-2": "美国西部",
         "IDE_LBL_REGION_NAME_eu-west-1": "欧洲西部",
+        "IDE_LBL_REGION_NAME_eu-central-1": "欧洲中部",
         "IDE_LBL_REGION_NAME_ap-southeast-1": "亚太地区",
         "IDE_LBL_REGION_NAME_ap-southeast-2": "亚太地区",
         "IDE_LBL_REGION_NAME_ap-northeast-1": "亚太地区",
@@ -469,6 +470,7 @@ define({
         "IDE_LBL_REGION_NAME_SHORT_us-west-1": "加利福尼亚北部",
         "IDE_LBL_REGION_NAME_SHORT_us-west-2": "俄勒冈",
         "IDE_LBL_REGION_NAME_SHORT_eu-west-1": "爱尔兰",
+        "IDE_LBL_REGION_NAME_SHORT_eu-central-1": "法兰克福",
         "IDE_LBL_REGION_NAME_SHORT_ap-southeast-1": "新加坡",
         "IDE_LBL_REGION_NAME_SHORT_ap-southeast-2": "悉尼",
         "IDE_LBL_REGION_NAME_SHORT_ap-northeast-1": "东京",
@@ -1855,8 +1857,8 @@ define({
         "ERROR_REPLICA_STORAGE_SMALL_THAN_ORIGIN": "",
         "ERROR_MASTER_PASSWORD_INVALID": "",
         "ERROR_OG_DB_BOTH_MODIFIED": ""
-    },
-    "TOOLBAR": {
+    }
+});  "TOOLBAR": {
         "LOADING_DATA": "",
         "ROLLING_BACK": "",
         "RELOADING_DATA": "",
