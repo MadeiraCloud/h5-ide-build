@@ -3401,7 +3401,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       initialize: function() {
         this.set({
           usercode: $.cookie("usercode"),
-          username: MC.base64Decode($.cookie("usercode")),
+          username: window.atob($.cookie("usercode")),
           session: $.cookie("session_id")
         });
       },
@@ -3440,16 +3440,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         paymentInfo = result.payment || {};
         selfPage = paymentInfo.self_page || {};
         res = {
-          email: MC.base64Decode(result.email),
+          email: window.atob(result.email),
           repo: result.mod_repo,
           tag: result.mod_tag,
           state: parseInt(result.state, 10),
           intercomHash: result.intercom_secret,
           account: result.account_id,
-          firstName: MC.base64Decode(result.first_name || ""),
-          lastName: MC.base64Decode(result.last_name || ""),
-          cardFirstName: MC.base64Decode(selfPage.first_name || ""),
-          cardLastName: MC.base64Decode(selfPage.last_name || ""),
+          firstName: window.atob(result.first_name || ""),
+          lastName: window.atob(result.last_name || ""),
+          cardFirstName: window.atob(selfPage.first_name || ""),
+          cardLastName: window.atob(selfPage.last_name || ""),
           voQuotaCurrent: paymentInfo.current_quota || 0,
           voQuotaPerMonth: paymentInfo.max_quota || 3600,
           has_card: !!paymentInfo.has_card,
@@ -3521,8 +3521,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               billingEnd: new Date(result.current_period_ends_at || null),
               billingStart: new Date(result.current_period_started_at || null),
               paymentUrl: result.url,
-              cardFirstName: result.card ? MC.base64Decode(result.first_name || "") : void 0,
-              cardLastName: result.card ? MC.base64Decode(result.last_name || "") : void 0
+              cardFirstName: result.card ? window.atob(result.first_name || "") : void 0,
+              cardLastName: result.card ? window.atob(result.last_name || "") : void 0
             };
             that.set(paymentInfo);
             return that.trigger("paymentUpdate");

@@ -318,8 +318,6 @@ return TEMPLATE; });
         } else if (component.self) {
           extend.name = component.self.get('name');
           extend.uid = component.self.id;
-        } else {
-          extend.name = resId;
         }
         return extend;
       },

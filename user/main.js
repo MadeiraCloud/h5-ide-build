@@ -1,5 +1,5 @@
 (function() {
-  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, userRoute, validPassword, xhr;
+  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, userRoute, validPassword, xhr;
 
   (function() {
     var MC_DOMAIN, hosts, location;
@@ -34,14 +34,6 @@
   };
 
   xhr = null;
-
-  base64Encode = function(string) {
-    return window.btoa(unescape(encodeURIComponent(string)));
-  };
-
-  base64Decode = function(string) {
-    return decodeURIComponent(escape(window.atob(string)));
-  };
 
   checkAllCookie = function() {
     return !!($.cookie('usercode') && $.cookie('session_id'));
