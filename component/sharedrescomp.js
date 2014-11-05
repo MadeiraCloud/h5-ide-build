@@ -882,7 +882,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<span>"
-    + escapeExpression(helpers.i18n.call(depth0, "NONE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NONE", {hash:{},data:data}))
     + "</span>";
   return buffer;
   };
@@ -954,7 +954,7 @@ function program1(depth0,data) {
   buffer += "><b>"
     + escapeExpression(((stack1 = (depth0 && depth0.subCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</b> "
-    + escapeExpression(helpers.i18n.call(depth0, "SUBSCRIPTIONS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBSCRIPTIONS", {hash:{},data:data}))
     + "</td>\n</tr>\n";
   return buffer;
   }
@@ -990,32 +990,32 @@ function program1(depth0,data) {
   }
 
   buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <div>\n          <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SELECT_TOPIC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SELECT_TOPIC", {hash:{},data:data}))
     + "</label>\n            <div class=\"selectbox dd-topic-name\">\n                <div class=\"selection\">"
-    + escapeExpression(helpers.i18n.call(depth0, "NEW_TOPIC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NEW_TOPIC", {hash:{},data:data}))
     + "</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                  <li class=\"item selected new-topic\" data-id=\"@new\">"
-    + escapeExpression(helpers.i18n.call(depth0, "NEW_TOPIC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NEW_TOPIC", {hash:{},data:data}))
     + "</li>\n                  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </ul>\n            </div>\n\n        </div>\n        <div class=\"create-sns-topic\">\n            <label for=\"create-topic-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOPIC_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.TOPIC_NAME", {hash:{},data:data}))
     + "</label>\n            <input class=\"input\" type=\"text\" id=\"create-topic-name\" data-ignore=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9,_-]*$\" data-required=\"true\" maxlength=\"255\" placeholder=\"Required. Up to 256 characters\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label for=\"create-display-name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "DISPLAY_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DISPLAY_NAME", {hash:{},data:data}))
     + "</label>\n            <input class=\"input\" type=\"text\" id=\"create-display-name\" maxlength=\"255\" placeholder=\"Required for SMS subscriptions (up to 10 characters)\" data-event-trigger=\"false\">\n        </div>\n        <div>\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "ACL_TIP_PROTOCOL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_TIP_PROTOCOL", {hash:{},data:data}))
     + "</label>\n            <div class=\"selectbox dd-protocol\">\n                <div class=\"selection\">email</div>\n                <ul class=\"dropdown\" tabindex=\"-1\">\n                    <li class=\"item\" data-id=\"https\">HTTPS</li>\n                    <li class=\"item\" data-id=\"http\">HTTP</li>\n                    <li class=\"item selected\" data-id=\"email\">Email</li>\n                    <li class=\"item\" data-id=\"email-json\">Email-JSON</li>\n                    <li class=\"item\" data-id=\"sms\">SMS</li>\n                    <li class=\"item\" data-id=\"arn\">Application</li>\n                    <li class=\"item\" data-id=\"sqs\">Amazon SQS</li>\n                </ul>\n            </div>\n        </div>\n        <div>\n            <label for=\"create-endpoint\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ENDPOINT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ENDPOINT", {hash:{},data:data}))
     + "</label>\n            <input type=\"text\" class=\"input\" id=\"create-endpoint\" max-length=\"255\" data-required=\"true\" placeholder=\"example@mail.com\" data-event-trigger=\"false\">\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CREATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATING_3PERIOD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATING_3PERIOD", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"download action\" style=\"display:none;\">\n        <a class=\"btn btn-blue do-action pulse\" data-action=\"download\" id=\"download-kp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DOWNLOAD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DOWNLOAD", {hash:{},data:data}))
     + "</a>\n        <button class=\"btn btn-silver cancel\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CLOSE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CLOSE", {hash:{},data:data}))
     + "</button>\n    </div>\n</div>";
   return buffer;
   };
@@ -1048,11 +1048,11 @@ function program3(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " and all associated subscriptions?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "DELETING_3PERIOD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DELETING_3PERIOD", {hash:{},data:data}))
     + "</button>\n    </div>\n</div>";
   return buffer;
   };
@@ -1085,19 +1085,19 @@ function program2(depth0,data) {
   buffer += "\n                    <a class=\"icon-delete remove\"></a>\n                    <div class=\"do-remove-panel\">\n                        <button class=\"btn btn-blue btn-small do-remove\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.SubscriptionArn)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
     + "</button>\n                        <button class=\"btn btn-link btn-small cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n                    </div>\n                ";
   return buffer;
   }
 
   buffer += "<table class=\"table sns-detail\">\n    <thead>\n        <tr>\n            <th style=\"width: 48px;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ACL_TIP_PROTOCOL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_TIP_PROTOCOL", {hash:{},data:data}))
     + "</th>\n            <th>"
-    + escapeExpression(helpers.i18n.call(depth0, "Endpoint", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ENDPOINT", {hash:{},data:data}))
     + "</th>\n            <th style=\"wdith: 30%;\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SUBSCRIPTION_ARN", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBSCRIPTION_ARN", {hash:{},data:data}))
     + "</th>\n            <th style=\"width: 103px;\"></th>\n        </tr>\n    </thead>\n    <tbody>\n        ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -1114,9 +1114,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"combo-dd-no-data\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "NO_SNS_TOPIC_IN_XXX", (depth0 && depth0.regionName), {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NO_SNS_TOPIC_IN_XXX", (depth0 && depth0.regionName), {hash:{},data:data}))
     + "</p>\n\n    <a class=\"create-one\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATE_SNS_TOPIC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATE_SNS_TOPIC", {hash:{},data:data}))
     + "</a>\n</div>";
   return buffer;
   };
@@ -3370,11 +3370,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "</label>\n            <textarea placeholder=\"Required. PEM Encoded\" class=\"input ssl-cert-input\" data-required=\"true\" id=\"ssl-cert-publickey-input\"></textarea>\n        </div>\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\"  >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_LBL_LISTENER_CERTIFICATE_CHAIN", {hash:{},data:data}))
     + "</label>\n            <textarea placeholder=\"Optional. PEM Encoded\" class=\"input ssl-cert-input\" id=\"ssl-cert-chain-input\"></textarea>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "UPLOAD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.UPLOAD", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "UPLOAD_3PERIOD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.UPLOAD_3PERIOD", {hash:{},data:data}))
     + "</button>\n    </div>\n</div>";
   return buffer;
   };
@@ -3407,11 +3407,11 @@ function program3(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteKeyName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ?</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "DELETING_3PERIOD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DELETING_3PERIOD", {hash:{},data:data}))
     + "</button>\n    </div>\n</div>";
   return buffer;
   };
@@ -3425,15 +3425,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-update\" data-bind=\"true\">\n    <div class=\"modal-ssl-cert-update\">\n        <div class=\"modal-ssl-cert-item clearfix\">\n            <label class=\"left\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ELB_LBL_LISTENER_CERT_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_LBL_LISTENER_CERT_NAME", {hash:{},data:data}))
     + "</label>\n            <input class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.cert_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"text\" data-required=\"true\" id=\"ssl-cert-name-update-input\"/>\n        </div>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"update\">"
-    + escapeExpression(helpers.i18n.call(depth0, "UPDATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.UPDATE", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "UPDATING_3PERIOD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.UPDATING_3PERIOD", {hash:{},data:data}))
     + "</button>\n    </div>\n</div>";
   return buffer;
   };
@@ -3447,19 +3447,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"detail-info\">\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SERVER_CERTIFICATE_ID", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SERVER_CERTIFICATE_ID", {hash:{},data:data}))
     + "</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SERVER_CERTIFICATE_ARN", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SERVER_CERTIFICATE_ARN", {hash:{},data:data}))
     + "</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Arn)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n    </div>\n    <div class=\"detail-info-row\">\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "EXPIRATION_DATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EXPIRATION_DATE", {hash:{},data:data}))
     + "</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Expiration)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n        <section class=\"property-control-group\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PATH", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.PATH", {hash:{},data:data}))
     + "</label>\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.Path)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </section>\n    </div>\n</div>";
@@ -3475,9 +3475,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"combo-dd-no-data\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "NO_SSL_CERTIFICATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NO_SSL_CERTIFICATE", {hash:{},data:data}))
     + "</p>\n    <a class=\"create-one\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATE_SSL_CERTIFICATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATE_SSL_CERTIFICATE", {hash:{},data:data}))
     + "</a>\n</div>";
   return buffer;
   };

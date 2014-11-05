@@ -90,7 +90,7 @@ function program11(depth0,data) {
   }
 
   buffer += "<header class=\"modal-header sg-rule-create-h\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATE_SECURITY_GROUP_RULE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATE_SECURITY_GROUP_RULE", {hash:{},data:data}))
     + "</h3><i class=\"btn-modal-close\">&times;</i></header>\n\n\n<article class=\"modal-body\" id=\"sg-rule-create-modal\" data-bind=\"true\">\n  <section class=\"sg-rule-create-add-wrap\">\n\n    <section class=\"sg-node-wrap clearfix\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ALLOW", {hash:{},data:data}))
     + "</label>\n\n      ";
@@ -114,15 +114,15 @@ function program11(depth0,data) {
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isClassic), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </div>\n    </section>\n    <button class=\"btn btn-blue sg-rule-create-add\">"
-    + escapeExpression(helpers.i18n.call(depth0, "ADD_RULE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ADD_RULE", {hash:{},data:data}))
     + "</button>\n  </section>\n\n  <section class=\"sg-rule-create-done-wrap\">\n    <div>\n      <p id=\"sg-rule-create-msg\" class=\"modal-text-major\"></p>\n      <p id=\"sg-rule-self-ref\" class=\"hide\"><i class=\"icon-info icon-label\"></i>"
-    + escapeExpression(helpers.i18n.call(depth0, "RULE_REF_ITS_OWN_SG", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RULE_REF_ITS_OWN_SG", {hash:{},data:data}))
     + "</p>\n    </div>\n    <button class=\"btn sg-rule-create-readd\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CREATE_ANOTHER_RULE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATE_ANOTHER_RULE", {hash:{},data:data}))
     + "</button>\n    <button class=\"btn btn-silver btn-modal-close\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CLOSE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CLOSE", {hash:{},data:data}))
     + "</button>\n  </section>\n</article>\n\n\n\n<aside class=\"sg-rule-create-sidebar\">\n  <div class=\"sidebar-wrap\">\n  <header class=\"sg-create-sb-h\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RELATED_RULE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RELATED_RULE", {hash:{},data:data}))
     + "<span class=\"num-wrap\" id=\"sgRuleCreateCount\">("
     + escapeExpression(((stack1 = (depth0 && depth0.ruleCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span></header>\n  <section class=\"scroll-wrap scrollbar-auto-hide\" style=\"max-height:358px\">\n      <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n      <div class=\"scroll-content sg-create-rule-list\" id=\"sgRuleCreateSidebar\"></div>\n  </section>\n</div>\n</aside>";
@@ -482,7 +482,7 @@ function program3(depth0,data) {
   }
 
   buffer += "<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.POP_SELECT_SUBNET_FOR_SUBNET_GROUP_CONTENT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.POP_SELECT_SUBNET_FOR_SUBNET_GROUP_CONTENT", {hash:{},data:data}))
     + "</p>\n\n<div class=\"scroll-wrap\" style=\"max-height:256px;\">\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<div class=\"scroll-content\">\n		";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -2136,11 +2136,11 @@ function program1(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <div class=\"port-sg\">\n        <div>\n            <label for=\"og-port\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PORT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.PORT", {hash:{},data:data}))
     + "</label>\n            <input type=\"text\" id=\"og-port\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-required=\"true\" data-type=\"number\" autocomplete=\"off\" data-min=\"1150\" data-max=\"65535\"/>\n        </div>\n        <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "SECURITY_GROUP", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SECURITY_GROUP", {hash:{},data:data}))
     + "</label>\n        <ul class=\"acl-sg-info-list property-list\" id=\"og-sg\">\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.sgs), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -2273,9 +2273,9 @@ function program13(depth0,data) {
   buffer += "\n    <div class=\"action\">\n        <a class=\"btn btn-blue do-action add-option\" data-option-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SAVE_OPTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SAVE_OPTION", {hash:{},data:data}))
     + "</a>\n        <a class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</a>\n    </div>\n</form>";
   return buffer;
   };
@@ -2289,11 +2289,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "CONFIRM_TO_DELETE_THIS_OPTION_GROUP_QUESTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CONFIRM_TO_DELETE_THIS_OPTION_GROUP_QUESTION", {hash:{},data:data}))
     + "</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red remove-confirm\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DELETE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver remove-cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n</div>";
   return buffer;
   };
@@ -2345,7 +2345,7 @@ function program8(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppPortChanged), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                    <label for=\"option-apply-immediately\"></label>\n                </div>\n                <label for=\"option-apply-immediately\">"
-    + escapeExpression(helpers.i18n.call(depth0, "DBINSTANCE_APPLY_IMMEDIATELY", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APPLY_IMMEDIATELY", {hash:{},data:data}))
     + "</label>\n            </div>\n            ";
   return buffer;
   }
@@ -2421,11 +2421,11 @@ function program20(depth0,data) {
     + "</label>\n                <input class=\"input og-name\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n            </div>\n            <div class=\"input-item\">\n                <label class=\"left\">"
-    + escapeExpression(helpers.i18n.call(depth0, "DESCRIPTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
     + "</label>\n                <input class=\"input og-description\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n            </div>\n            <div class=\"left option-list-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "OPTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.OPTION", {hash:{},data:data}))
     + "</div>\n            <ul class=\"option-list\"></ul>\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -2433,9 +2433,9 @@ function program20(depth0,data) {
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isCreate), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <span class=\"err-tip\"></span>\n            <button class=\"save-btn btn btn-blue\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SAVE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SAVE", {hash:{},data:data}))
     + "</button>\n            <button class=\"btn btn-silver modal-close cancel-btn\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_CANCEL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
@@ -2480,7 +2480,7 @@ function program2(depth0,data) {
   
   var buffer = "";
   buffer += "<div class=\"persistent\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PERSISTENT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.PERSISTENT", {hash:{},data:data}))
     + "</div>";
   return buffer;
   }
@@ -2489,7 +2489,7 @@ function program4(depth0,data) {
   
   var buffer = "";
   buffer += "<div class=\"permenant\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PERMENANT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.PERMENANT", {hash:{},data:data}))
     + "</div>";
   return buffer;
   }
@@ -2567,7 +2567,7 @@ function program1(depth0,data) {
   buffer += "\n            <table class=\"table\">\n                <tr><th>"
     + escapeExpression(helpers.i18n.call(depth0, (depth0 && depth0.SETTING), {hash:{},data:data}))
     + "</th><th>"
-    + escapeExpression(helpers.i18n.call(depth0, "VALUE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.VALUE", {hash:{},data:data}))
     + "</th></tr>\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.OptionSettings), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -2596,7 +2596,7 @@ function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <div>\n                <span>"
-    + escapeExpression(helpers.i18n.call(depth0, "PORT_COLON", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.PORT_COLON", {hash:{},data:data}))
     + "</span>\n                <span>"
     + escapeExpression(((stack1 = (depth0 && depth0.Port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n            </div>\n            ";
@@ -2626,23 +2626,23 @@ function program10(depth0,data) {
   }
 
   buffer += "<div class=\"summary clearfix\">\n    <dl>\n        <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "OPTION_GROUP_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.OPTION_GROUP_NAME", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.OptionGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n    <dl>\n        <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "ENGINE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ENGINE", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.EngineName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n    <dl>\n        <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "OPTION_GROUP_DESCRIPTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.OPTION_GROUP_DESCRIPTION", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.OptionGroupDescription)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n    <dl>\n        <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "ENGINE_VERSION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ENGINE_VERSION", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.MajorEngineVersion)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n</div>\n<div class=\"left option-list-head\">"
-    + escapeExpression(helpers.i18n.call(depth0, "OPTION", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.OPTION", {hash:{},data:data}))
     + "("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.Options)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</div>\n<ul class=\"option-list\">\n    ";
