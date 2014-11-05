@@ -3466,7 +3466,7 @@ return Markdown;
                 }
                 if (paraModelType === 'line' || paraModelType === 'text') {
                   renderParaValue = that.model.replaceParaUIDToName(renderParaValue);
-                  if (renderParaValue && renderParaValue.indexOf('unknown') !== -1) {
+                  if (renderParaValue && renderParaValue.indexOf('@{unknown') !== -1) {
                     renderObj.err_list.push('reference');
                   }
                 }
@@ -3475,7 +3475,7 @@ return Markdown;
                 if (_.isArray(paraValue)) {
                   _.each(paraValue, function(paraValueObj) {
                     paraValueObj.value = that.model.replaceParaUIDToName(paraValueObj.value);
-                    if (paraValueObj.value && paraValueObj.value.indexOf('unknown') !== -1) {
+                    if (paraValueObj.value && paraValueObj.value.indexOf('@{unknown') !== -1) {
                       renderObj.err_list.push('reference');
                     }
                     renderParaValue.push({
@@ -3487,7 +3487,7 @@ return Markdown;
                 } else if (_.isObject(paraValue)) {
                   _.each(paraValue, function(paraValueStr, paraKey) {
                     paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
-                    if (paraValueStr && paraValueStr.indexOf('unknown') !== -1) {
+                    if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
                       renderObj.err_list.push('reference');
                     }
                     renderParaValue.push({
@@ -3519,7 +3519,7 @@ return Markdown;
                   } else {
                     paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
                   }
-                  if (paraValueStr && paraValueStr.indexOf('unknown') !== -1) {
+                  if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
                     renderObj.err_list.push('reference');
                   }
                   renderParaValue.push(paraValueStr);

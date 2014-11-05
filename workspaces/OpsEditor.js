@@ -674,7 +674,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_SUCCESSFULLY_WELL_DONE", (depth0 && depth0.name), {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.IMPORT_SUCCESSFULLY_WELL_DONE", (depth0 && depth0.name), {hash:{},data:data}))
     + "</p>\n<p class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.NAME_IMPORTED_APP", {hash:{},data:data}))
     + "</p>\n<div class=\"modal-control-group\">\n    <label for=\"ImportSaveAppName\">"
@@ -3777,12 +3777,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         model = this.model;
         name = model.get("name");
         if (result === true && model.node_group && model.children().length > 0) {
-          result = sprintf(lang.IDE.CVS_CFM_DEL_GROUP, name);
+          result = sprintf(lang.CANVAS.CVS_CFM_DEL_GROUP, name);
         }
         if (_.isString(result)) {
           self = this;
           modal = new Modal({
-            title: sprintf(lang.IDE.CVS_CFM_DEL, name),
+            title: sprintf(lang.CANVAS.CVS_CFM_DEL, name),
             template: result,
             confirm: {
               text: lang.IDE.CFM_BTN_DELETE,

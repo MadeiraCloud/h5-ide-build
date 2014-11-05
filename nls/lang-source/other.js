@@ -825,6 +825,10 @@
         en: "EU West",
         zh: "欧洲西部"
       },
+      "IDE_LBL_REGION_NAME_eu-central-1": {
+        en: "EU Central",
+        zh: "欧洲中部"
+      },
       "IDE_LBL_REGION_NAME_ap-southeast-1": {
         en: "Asia Pacific",
         zh: "亚太地区"
@@ -856,6 +860,10 @@
       "IDE_LBL_REGION_NAME_SHORT_eu-west-1": {
         en: "Ireland",
         zh: "爱尔兰"
+      },
+      "IDE_LBL_REGION_NAME_SHORT_eu-central-1": {
+        en: "Frankfurt",
+        zh: "法兰克福"
       },
       "IDE_LBL_REGION_NAME_SHORT_ap-southeast-1": {
         en: "Singapore",
