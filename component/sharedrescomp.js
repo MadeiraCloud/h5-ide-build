@@ -6634,11 +6634,11 @@ return TEMPLATE; });
       renderDropdown: function() {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.NOTIFY.SNAPSHOT_FILTER_VOLUME
+          filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
         this.instances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region());
-        selection = lang.NOTIFY.INSTANCE_SNAPSHOT_SELECT;
+        selection = lang.PROP.INSTANCE_SNAPSHOT_SELECT;
         this.dropdown.setSelection(selection);
         this.dropdown.on('open', this.openDropdown, this);
         this.dropdown.on('filter', this.filterDropdown, this);
@@ -6648,14 +6648,14 @@ return TEMPLATE; });
       renderRegionDropdown: function(exceptRegion) {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.NOTIFY.SNAPSHOT_FILTER_REGION
+          filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_REGION
         };
         this.regionsDropdown = new combo_dropdown(option);
         this.regions = _.keys(constant.REGION_LABEL);
         if (exceptRegion) {
           this.regions = _.without(this.regions, exceptRegion);
         }
-        selection = lang.NOTIFY.VOLUME_SNAPSHOT_SELECT_REGION;
+        selection = lang.PROP.VOLUME_SNAPSHOT_SELECT_REGION;
         this.regionsDropdown.setSelection(selection);
         this.regionsDropdown.on('open', this.openRegionDropdown, this);
         this.regionsDropdown.on('filter', this.filterRegionDropdown, this);
@@ -6915,7 +6915,7 @@ return TEMPLATE; });
         afterDuplicate = this.afterDuplicate.bind(this);
         accountNumber = App.user.attributes.account;
         if (!/^\d+$/.test(accountNumber.split('-').join(''))) {
-          notification('error', lang.NOTIFY.DB_SNAPSHOT_ACCOUNT_NUMBER_INVALID);
+          notification('error', lang.PROP.DB_SNAPSHOT_ACCOUNT_NUMBER_INVALID);
           return false;
         }
         return this.collection.findWhere({

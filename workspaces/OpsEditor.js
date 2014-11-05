@@ -1209,7 +1209,7 @@ return TEMPLATE; });
               appToStackModal.close();
               newJson.name = stack.get("name");
               return stack.save(newJson).then(function() {
-                notification("info", sprintf(lang.NOTIFY.INFO_HDL_SUCCESS, lang.IDE.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
+                notification("info", sprintf(lang.NOTIFY.INFO_HDL_SUCCESS, lang.TOOLBAR.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
                 return App.openOps(stack, true);
               }, function() {
                 return notification('error', sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name));
@@ -9368,7 +9368,7 @@ return TEMPLATE; });
           sb = _ref[_i];
           tt.push(sb.get("name"));
         }
-        CanvasManager.update(this.$el.children(".tooltip"), tt.join(", ") || lang.IDE.CVS_NO_SUBNET_ASSIGNED_TO_SG, "tooltip");
+        CanvasManager.update(this.$el.children(".tooltip"), tt.join(", ") || lang.CANVAS.CVS_NO_SUBNET_ASSIGNED_TO_SG, "tooltip");
       },
       doDestroyModel: function() {
         this.hoverOut();

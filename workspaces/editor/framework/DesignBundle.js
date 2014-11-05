@@ -1455,7 +1455,7 @@
         }
         maxEniCount = instance.getMaxEniCount();
         if (instance.connections("EniAttachment").length + 1 >= maxEniCount) {
-          return sprintf(lang.IDE.CVS_WARN_EXCEED_ENI_LIMIT, instance.get("name"), instance.get("instanceType"), maxEniCount);
+          return sprintf(lang.CANVAS.CVS_WARN_EXCEED_ENI_LIMIT, instance.get("name"), instance.get("instanceType"), maxEniCount);
         }
         if (instance.getEmbedEni().get("assoPublicIp") === true) {
           return {
@@ -4899,7 +4899,7 @@
           };
         }
         if (this.children().length > 0) {
-          return sprintf(lang.IDE.CVS_CFM_DEL_GROUP, this.get("name"));
+          return sprintf(lang.CANVAS.CVS_CFM_DEL_GROUP, this.get("name"));
         }
         return true;
       },
@@ -8285,7 +8285,7 @@
         }
         if (cannotDel) {
           return {
-            error: lang.IDE.CVS_CFM_DEL_IGW
+            error: lang.CANVAS.CVS_CFM_DEL_IGW
           };
         }
         return true;
@@ -8316,7 +8316,7 @@
         if (Model.allObjects().length > 0) {
           return;
         }
-        notification('info', lang.IDE.CVS_CFM_ADD_IGW_MSG);
+        notification('info', lang.CANVAS.CVS_CFM_ADD_IGW_MSG);
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         new Model({
           x: -1,
