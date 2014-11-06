@@ -7,7 +7,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"modal-header\">\n	<h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "FAILED_STATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.FAILED_STATE", {hash:{},data:data}))
     + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-state-statusbar\">\n	</div>\n</div>";
   return buffer;
   };
@@ -21,7 +21,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"state-status-content\">\n\n	<div class=\"scroll-wrap scroll-wrap-validation\" style=\"height:200px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n			<div class=\"update-tip\"></div>\n			<div class=\"status-item\">\n				<p class=\"no-item\">"
-    + escapeExpression(helpers.i18n.call(depth0, "NO_FAILED_ITEM_PERIOD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NO_FAILED_ITEM_PERIOD", {hash:{},data:data}))
     + "</p>\n			</div>\n		</div>\n	</div>\n</div>";
   return buffer;
   };
@@ -90,9 +90,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<dl class=\"state-status-pending\">\n	<dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "ALL_STATES_ARE_PENDING_PERIOLD", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ALL_STATES_ARE_PENDING_PERIOLD", {hash:{},data:data}))
     + "</dt>\n	<dd>"
-    + escapeExpression(helpers.i18n.call(depth0, "A_MESSAGE_WILL_SHOW_HERE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.A_MESSAGE_WILL_SHOW_HERE", {hash:{},data:data}))
     + "</dd>\n</dl>";
   return buffer;
   };
@@ -117,7 +117,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"state-status-update\">\n	"
-    + escapeExpression(helpers.i18n.call(depth0, "XXX_STATES_HAS_UPDATED_STATUS", depth0, {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.XXX_STATES_HAS_UPDATED_STATUS", depth0, {hash:{},data:data}))
     + "\n</div>";
   return buffer;
   };
@@ -318,6 +318,8 @@ return TEMPLATE; });
         } else if (component.self) {
           extend.name = component.self.get('name');
           extend.uid = component.self.id;
+        } else {
+          extend.name = resId;
         }
         return extend;
       },

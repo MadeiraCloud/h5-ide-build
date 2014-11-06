@@ -73,30 +73,6 @@
         en: "Desired Capacity must be >= Minimal Size and <= Maximum Size",
         zh: ""
       },
-      THIS_VALUE_SHOULD_BE_A_VALID_XXX: {
-        en: "This value should be a valid %s.",
-        zh: ""
-      },
-      THIS_VALUE_SHOULD_BE_BETWEEN_XXX_AND_XXX: {
-        en: "This value should be between %s and %s.",
-        zh: ""
-      },
-      THIS_VALUE_SHOULD_BE_GREATER_THAN_OR_EQUAL_TO_XXX: {
-        en: "This value should be greater than or equal to %s.",
-        zh: ""
-      },
-      THIS_VALUE_SHOULD_BE_LOWER_THAN_OR_EQUAL_TO_XXX: {
-        en: "This value should be lower than or equal to %s.",
-        zh: ""
-      },
-      THIS_VALUE_SHOULD_BE_GREATER_THAN_XXX: {
-        en: "This value should be greater than %s.",
-        zh: ""
-      },
-      THIS_VALUE_SHOULD_BE_LOWER_THAN_XXX: {
-        en: "This value should be lower than %s.",
-        zh: ""
-      },
       THIS_VALUE_SHOULD_BE_A_VALID_TYPE_NAME: {
         en: "This value should be a valid %s name.",
         zh: ""
@@ -151,10 +127,6 @@
       },
       THIS_VALUE_MUST_BETWEEN_1_99: {
         en: "This value must be >= 1 and <= 99",
-        zh: ""
-      },
-      THIS_VALUE_MUST_BETWEEN_XXX_XXX: {
-        en: "This value should be between %s and %s.",
         zh: ""
       },
       SHOULD_BE_A_VALID_STACK_NAME: {

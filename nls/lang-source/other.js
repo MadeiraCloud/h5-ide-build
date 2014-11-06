@@ -333,6 +333,10 @@
         en: "Log Out",
         zh: "登出"
       },
+      HEAD_LABEL_MENUITEM_BILLING: {
+        en: "Billing",
+        zh: "账单"
+      },
       HEAD_LABEL_SETTING: {
         en: "Settings",
         zh: "用户设置"
@@ -348,6 +352,10 @@
       HEAD_LABEL_ACCOUNT_USERNAME: {
         en: "Username",
         zh: "用户名"
+      },
+      HEAD_LABEL_ACCOUNT_FULLNAME: {
+        en: "Full Name",
+        zh: ""
       },
       HEAD_LABEL_ACCOUNT_EMAIL: {
         en: "Email Address",
@@ -597,6 +605,22 @@
         en: "Forget password?",
         zh: "是否重置密码?"
       },
+      COMPLETE_YOUR_PROFILE: {
+        en: "Complete your profile",
+        zh: "完善您的资料"
+      },
+      PROFILE_UPDATED_SUCCESSFULLY: {
+        en: "Your profile updated successfully",
+        zh: "您的资料已经成功更新"
+      },
+      FIRST_NAME: {
+        en: "First Name",
+        zh: "名"
+      },
+      LAST_NAME: {
+        en: "Last Name",
+        zh: "姓"
+      },
       WELCOME_DIALOG_TIT: {
         en: "Welcome to VisualOps",
         zh: "欢迎使用 VisualOps"
@@ -801,6 +825,10 @@
         en: "EU West",
         zh: "欧洲西部"
       },
+      "IDE_LBL_REGION_NAME_eu-central-1": {
+        en: "EU Central",
+        zh: "欧洲中部"
+      },
       "IDE_LBL_REGION_NAME_ap-southeast-1": {
         en: "Asia Pacific",
         zh: "亚太地区"
@@ -816,14 +844,6 @@
       "IDE_LBL_REGION_NAME_sa-east-1": {
         en: "South America",
         zh: "南美洲"
-      },
-      "IDE_LBL_REGION_NAME_guangzhou": {
-        en: "Guangzhou",
-        zh: "广州"
-      },
-      "IDE_LBL_REGION_NAME_beijing": {
-        en: "BeiJing",
-        zh: "北京"
       },
       "IDE_LBL_REGION_NAME_SHORT_us-east-1": {
         en: "Virginia",
@@ -841,6 +861,10 @@
         en: "Ireland",
         zh: "爱尔兰"
       },
+      "IDE_LBL_REGION_NAME_SHORT_eu-central-1": {
+        en: "Frankfurt",
+        zh: "法兰克福"
+      },
       "IDE_LBL_REGION_NAME_SHORT_ap-southeast-1": {
         en: "Singapore",
         zh: "新加坡"
@@ -856,14 +880,6 @@
       "IDE_LBL_REGION_NAME_SHORT_sa-east-1": {
         en: "Sao Paulo",
         zh: "圣保罗"
-      },
-      "IDE_LBL_REGION_NAME_SHORT_guangzhou": {
-        en: "Guangzhou",
-        zh: "广州"
-      },
-      "IDE_LBL_REGION_NAME_SHORT_beijing": {
-        en: "BeiJing",
-        zh: "北京"
       },
       IDE_LBL_LAST_STATUS_CHANGE: {
         en: "Last Changed",
@@ -984,34 +1000,6 @@
       PORT_TIP_M: {
         en: 'Connect to route table to assoicate',
         zh: ''
-      },
-      PORT_TIP_N: {
-        en: "Connect to Port",
-        zh: ""
-      },
-      PORT_TIP_O: {
-        en: "Connect to Load Balancer to regeister as member",
-        zh: ""
-      },
-      PORT_TIP_P: {
-        en: "Connect to Pool",
-        zh: ""
-      },
-      PORT_TIP_Q: {
-        en: "Connect to Listener",
-        zh: ""
-      },
-      PORT_TIP_R: {
-        en: "Connect to Server",
-        zh: ""
-      },
-      PORT_TIP_S: {
-        en: "Connect to Subnet",
-        zh: ""
-      },
-      PORT_TIP_T: {
-        en: "Connect to Router",
-        zh: ""
       },
       POP_CONFIRM_STOP_ASG: {
         en: "Any auto scaling group will be deleted when application is stopped.",
@@ -1345,60 +1333,52 @@
         en: "Provide AWS Credential <br/> to manage key pairs",
         zh: ""
       },
-      DRAG_AND_DROP_IN_NETOWRK_TO_CREATE_SUBNET: {
-        en: "Drag and drop in Netowrk to create subnet",
+      PAYMENT_PAYMENT_NEEDED: {
+        en: "Upgrade your account",
         zh: ""
       },
-      DRAG_AND_DROP_OUTSIDE_NETOWRK_TO_CREATE_ROUTER: {
-        en: "Drag and drop outside Netowrk to create router",
+      PAYMENT_INVALID_BILLING: {
+        en: "Your Billing Information is Invalid",
         zh: ""
       },
-      DRAG_AND_DROP_IN_SUBNET_TO_CREATE_PORT: {
-        en: "Drag and drop in subnet to create port",
+      PAYMENT_LOADING: {
+        en: "Loading...",
+        zh: "加载中..."
+      },
+      PAYMENT_LOADING_BILLING: {
+        en: "Getting Billing Information ...",
         zh: ""
       },
-      DRAG_AND_DROP_IN_SUBNET_TO_CREATE_LOAD_BALANCE: {
-        en: "Drag and drop in subnet to create Load Balance",
+      PROFILE_UPDATED_FAILED: {
+        en: "Your Profile failed to update.",
         zh: ""
       },
-      DRAG_AND_DROP_IN_SUBNET_TO_CREATE_LISTENER: {
-        en: "Drag and drop in subnet to create listener",
+      PAYMENT_USAGE_TAB: {
+        en: "Usage",
         zh: ""
       },
-      DRAG_AND_DROP_IN_SUBNET_TO_CREATE_POOL: {
-        en: "Drag and drop in subnet to create pool",
+      PAYMENT_BILLING_TAB: {
+        en: "Billing",
         zh: ""
       },
-      DRAG_AND_DROP_ON_SERVER_TO_ATTACH_VOLUME: {
-        en: "Drag and drop on server to attach volume",
+      PAYMENT_SETTING_TITLE: {
+        en: "Billing & Usage",
         zh: ""
       },
-      LBL_OSSUBNET: {
-        en: "Subnet",
+      HEAD_LABEL_ACCOUNT_FULLNAME: {
+        en: "Full Name",
         zh: ""
       },
-      LBL_OSRT: {
-        en: "Router",
+      PAYMENT_HEADER_TOOLTIP: {
+        en: "<div class=\"payment-header-tooltip\"><strong>%s</strong> free points remaining. <span> Free points will renew in %s days.</span></div>",
         zh: ""
       },
-      LBL_OSPORT: {
-        en: "Port",
+      PAYMENT_PROVIDE_UPDATE_CREDITCARD: {
+        en: "Your account is limited status now. Import VPC, app operation, monitoring and state ensuring are disabled. <a class='update-payment' href='%s' target='_blank'> %s Billing Information</a> as soon as possible.",
         zh: ""
       },
-      LBL_OSELB: {
-        en: "Load Balancer",
-        zh: ""
-      },
-      LBL_OSLISTENER: {
-        en: "Listener",
-        zh: ""
-      },
-      LBL_OSPOOL: {
-        en: "Pool",
-        zh: ""
-      },
-      LBL_OSVOL: {
-        en: "Volume",
+      PAYMENT_UNPAID_BUT_IN_FREE_QUOTA: {
+        en: "You have unpaid bill. You can still use the free quota before getting into limited status. <a class='update-payment' href='%s' target='_blank'>Update Billing Information</a> as soon as possible.",
         zh: ""
       }
     }

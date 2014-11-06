@@ -198,23 +198,19 @@
         zh: ""
       },
       ERROR_STATE_EDITOR_INEXISTENT_INSTANCE: {
-        en: "Instance <span class='validation-tag tag-instance'>%s</span> state <span class='validation-tag tag-state'>%s</span> has referenced the inexistent %s.",
+        en: "Instance <span class='validation-tag tag-instance'>%s</span> <span class='validation-tag tag-state'>state %s</span> has referenced the inexistent <span class='validation-tag tag-state-ref'>%s</span>.",
         zh: ""
       },
       ERROR_STATE_EDITOR_INEXISTENT_ASG: {
-        en: "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span> state <span class='validation-tag tag-state'>%s</span> has referenced the inexistent %s.",
-        zh: ""
-      },
-      ERROR_STATE_EDITOR_INEXISTENT_OSSERVER: {
-        en: "Server <span class='validation-tag tag-osserver'>%s</span> state <span class='validation-tag tag-state'>%s</span> has referenced the inexistent %s.",
+        en: "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span> <span class='validation-tag tag-state'>state %s</span> has referenced the inexistent <span class='validation-tag tag-state-ref'>%s</span>.",
         zh: ""
       },
       ERROR_STATE_EDITOR_EMPTY_REQUIED_PARAMETER: {
-        en: "<span class='validation-tag tag-instance'>%s</span>'s state <span class='validation-tag tag-state'>%s</span> is missing required parameter <span class='validation-tag tag-parameter'>%s</span>.",
+        en: "<span class='validation-tag tag-instance'>%s</span>'s <span class='validation-tag tag-state'>state %s</span> is missing required parameter <span class='validation-tag tag-parameter'>%s</span>.",
         zh: ""
       },
       ERROR_STATE_EDITOR_INVALID_FORMAT: {
-        en: "<span class='validation-tag tag-instance'>%s</span>'s state <span class='validation-tag tag-state'>%s [%s]</span> should reference a state in correct format. For example, <span class='validation-tag'>@{host1.state.3}</span>.",
+        en: "<span class='validation-tag tag-instance'>%s</span>'s <span class='validation-tag tag-state'>state %s [%s]</span> should reference a state in correct format. For example, <span class='validation-tag'>@{host1.state.3}</span>.",
         zh: ""
       },
       ERROR_NOT_CONNECT_OUT: {
@@ -323,42 +319,6 @@
       },
       ERROR_OG_DB_BOTH_MODIFIED: {
         en: "DB Instance %s cannot be modified in the same update with the Option Group %s it is using.",
-        zh: ""
-      },
-      ERROR_PORT_MUST_CONNECT_WITH_SERVER: {
-        en: "Port <span class='validation-tag tag-osport'>%s</span> must connect with a server.",
-        zh: ""
-      },
-      ERROR_SUBNET_HAS_PORT_SHOULD_CONNECTED_OUT: {
-        en: "Subnet %s should be connected to a router associated with External Gateway, so that Floating IP would work. ",
-        zh: ""
-      },
-      ERROR_SUBNET_HAS_CONFLICT_CIDR_WITH_OTHERS: {
-        en: "Subnet <span class='validation-tag tag-ossubnet'>%s</span>'s CIDR block(%s) conflicts with  Subnet <span class='validation-tag tag-ossubnet'>%s</span>'s CIDR block(%s).",
-        zh: ""
-      },
-      ERROR_ROUTER_ENABLING_NAT_MUST_CONNECT_EXT: {
-        en: "Router enabling NAT must be connected to external network.",
-        zh: ""
-      },
-      ERROR_ROUTER_XXX_MUST_CONNECT_TO_AT_LEAST_ONE_SUBNET: {
-        en: "Router <span class='validation-tag tag-osrt'>%s</span> must connect to at least one subnet.",
-        zh: ""
-      },
-      ERROR_POOL_XXX_MUST_BE_CONNECTED_TO_A_LISTENER: {
-        en: "Pool <span class='validation-tag tag-pool'>%s</span> must be connected to a listener",
-        zh: ""
-      },
-      ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL: {
-        en: "Listener <span class='validation-tag tag-oslistener'>%s</span> must be connected to a pool",
-        zh: ""
-      },
-      ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED: {
-        en: "Load Balancer's Pool <span class='validation-tag tag-ospool'>%s</span> and Member %s must belong to the same subnet or subnets interconnected by the same router. ",
-        zh: ""
-      },
-      ERROR_STACK_RESOURCE_EXCCED_LIMIT: {
-        en: "Resource %s does not have enough quota. %s/%s used.",
         zh: ""
       }
     }

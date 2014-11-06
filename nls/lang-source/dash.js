@@ -2,20 +2,16 @@
   module.exports = {
     IDE: {
       DASH_CREATE_NEW_STACK: {
-        en: "Create New Stack",
+        en: "Create new stack",
         zh: "创建模板"
       },
       DASH_IMPORT_JSON: {
-        en: "Import Stack",
+        en: "Import stack",
         zh: "导入Stack"
       },
       DASH_VISUALIZE_VPC: {
         en: "Import VPC",
         zh: "可视化VPC"
-      },
-      DASH_VISUALIZE_APP: {
-        en: "Import Network",
-        zh: "可视化网络"
       },
       DASH_TIT_VIEW_RESOURCE_DETAIL: {
         en: "View resource detail",

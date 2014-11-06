@@ -101,6 +101,10 @@
         en: "Save stack %s failed, please check and save it again.",
         zh: "保存模块 %s 失败，请您检查并重新保存。"
       },
+      ERR_SAVE_FAILED_NAME: {
+        en: "The name of the stack has already been used, please change to a new one.",
+        zh: "已存在相同名字的模块，请输入一个新的名字后重新保存。"
+      },
       ERR_SAVE_SUCCESS: {
         en: "Save stack %s successfully.",
         zh: "保存 %s 成功。"
@@ -130,7 +134,7 @@
         zh: ""
       },
       XXX_IS_DELETED: {
-        en: "Keypair %s is deleted successfully",
+        en: "%s is deleted.",
         zh: ""
       },
       SELECTED_KEYPAIRS_ARE_DELETED: {
@@ -138,7 +142,7 @@
         zh: ""
       },
       XXX_IS_IMPORTED: {
-        en: "Keypair %s is imported successfully",
+        en: "%s is imported.",
         zh: ""
       },
       PARAMETER_GROUP_UPDATED_FAILED: {
@@ -307,6 +311,14 @@
       },
       FAILA_TO_RUN_STACK_BECAUSE_OF_XXX: {
         en: "Failed to run your stack %s because of %s",
+        zh: ""
+      },
+      UPDATED_FULLNAME_SUCCESS: {
+        en: "Full name Updated successfully",
+        zh: ""
+      },
+      UPDATED_FULLNAME_FAIL: {
+        en: "Failed to update full name, please try again later.",
         zh: ""
       }
     }
