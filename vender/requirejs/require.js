@@ -1607,7 +1607,7 @@ var requirejs, require, define;
                         var fmn = moduleName.substring(1);
                     }
                     if ( !ext && window.FileVersions ) {
-                        ext = window.FileVersions[ fmn || moduleName ];
+                        ext = "?v=" + window.FileVersions[ fmn || moduleName ];
                     }
                     url = moduleName + (ext || '');
                 } else {
