@@ -1639,7 +1639,7 @@ var requirejs, require, define;
 
                     var args = "";
                     if ( window.FileVersions && window.FileVersions[url] ) {
-                        args = window.FileVersions[url];
+                        args = "v=" + window.FileVersions[url];
                     } else {
                         args = config.urlArgs;
                     }
