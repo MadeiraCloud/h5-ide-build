@@ -3,43 +3,68 @@
     validDebug: '',
     syncTimeout: 10000,
     componentTypeToFileMap: {
-      'AWS.AutoScaling.Group': ['asg'],
-      'AWS.EC2.SecurityGroup': ['sg'],
-      'AWS.VPC.VPNGateway': ['vgw'],
-      'AWS.VPC.VPNConnection': ['vpn'],
-      'AWS.VPC.CustomerGateway': ['cgw'],
-      'AWS.VPC.InternetGateway': ['igw'],
-      'AWS.EC2.Instance': ['instance', 'state'],
-      'AWS.ELB': ['elb'],
-      'AWS.VPC.NetworkInterface': ['eni'],
-      'AWS.VPC.NetworkAcl': ['acl'],
-      'AWS.AutoScaling.LaunchConfiguration': ['state'],
-      'AWS.VPC.RouteTable': ['rtb'],
-      'AWS.EC2.EBS.Volume': ['ebs'],
-      'AWS.EC2.KeyPair': ['kp'],
-      'AWS.RDS.DBInstance': ['dbinstance'],
-      'AWS.RDS.OptionGroup': ['og'],
-      'AWS.RDS.DBSubnetGroup': ['sbg']
+      aws: {
+        'AWS.AutoScaling.Group': ['asg'],
+        'AWS.EC2.SecurityGroup': ['sg'],
+        'AWS.VPC.VPNGateway': ['vgw'],
+        'AWS.VPC.VPNConnection': ['vpn'],
+        'AWS.VPC.CustomerGateway': ['cgw'],
+        'AWS.VPC.InternetGateway': ['igw'],
+        'AWS.EC2.Instance': ['instance', 'state'],
+        'AWS.ELB': ['elb'],
+        'AWS.VPC.NetworkInterface': ['eni'],
+        'AWS.VPC.NetworkAcl': ['acl'],
+        'AWS.AutoScaling.LaunchConfiguration': ['state'],
+        'AWS.VPC.RouteTable': ['rtb'],
+        'AWS.EC2.EBS.Volume': ['ebs'],
+        'AWS.EC2.KeyPair': ['kp'],
+        'AWS.RDS.DBInstance': ['dbinstance'],
+        'AWS.RDS.OptionGroup': ['og'],
+        'AWS.RDS.DBSubnetGroup': ['sbg']
+      },
+      openstack: {
+        'OS::Neutron::Port': ['osport'],
+        'OS::Neutron::Subnet': ['ossubnet'],
+        'OS::Neutron::Router': ['osrouter'],
+        'OS::Neutron::Pool': ['ospool'],
+        'OS::Neutron::VIP': ['oslistener']
+      }
     },
     globalList: {
-      eip: ['isHasIGW'],
-      az: ['isAZAlone'],
-      sg: ['isStackUsingOnlyOneSG', 'isAssociatedSGNumExceedLimit'],
-      vpc: ['isVPCAbleConnectToOutside'],
-      stack: ['~isHaveNotExistAMI'],
-      kp: ['longLiveNotice'],
-      dbinstance: ['isOgValid', 'isHaveEnoughIPForDB']
+      aws: {
+        eip: ['isHasIGW'],
+        az: ['isAZAlone'],
+        sg: ['isStackUsingOnlyOneSG', 'isAssociatedSGNumExceedLimit'],
+        vpc: ['isVPCAbleConnectToOutside'],
+        stack: ['~isHaveNotExistAMI'],
+        kp: ['longLiveNotice'],
+        dbinstance: ['isOgValid', 'isHaveEnoughIPForDB']
+      },
+      openstack: {
+        ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
+        osstack: ['isResExtendQuotaLimit']
+      }
     },
     asyncList: {
-      cgw: ['isCGWHaveIPConflict'],
-      stack: ['verify', 'isHaveNotExistAMIAsync'],
-      subnet: ['getAllAWSENIForAppEditAndDefaultVPC'],
-      ebs: ['isSnapshotExist'],
-      kp: ['isKeyPairExistInAws'],
-      elb: ['isSSLCertExist'],
-      asg: ['isTopicNonexist'],
-      vpc: ['isVPCUsingNonexistentDhcp'],
-      og: ['isOGExeedCountLimit']
+      aws: {
+        cgw: ['isCGWHaveIPConflict'],
+        stack: ['verify', 'isHaveNotExistAMIAsync'],
+        subnet: ['getAllAWSENIForAppEditAndDefaultVPC'],
+        ebs: ['isSnapshotExist'],
+        kp: ['isKeyPairExistInAws'],
+        elb: ['isSSLCertExist'],
+        asg: ['isTopicNonexist'],
+        vpc: ['isVPCUsingNonexistentDhcp'],
+        og: ['isOGExeedCountLimit']
+      },
+      openstack: {}
+    },
+    get: function(key, platform) {
+      var _ref;
+      if (platform == null) {
+        platform = Design.instance().get('cloud_type');
+      }
+      return ((_ref = this[key]) != null ? _ref[platform] : void 0) || this[key];
     }
   });
 
@@ -48,7 +73,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources"], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
+  define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources"], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
     var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
@@ -516,7 +541,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
+  define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
     var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isNatCheckedSourceDest, _getSGCompRuleLength;
     i18n = Helper.i18n.short();
     isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
@@ -705,7 +730,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js'], function(constant, $, MC, lang) {
+  define('component/trustedadvisor/validation/aws/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js'], function(constant, $, MC, lang) {
     return {
       getAllAWSENIForAppEditAndDefaultVPC: function(callback) {
         return callback(null);
@@ -716,7 +741,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpc',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'CloudResources', 'TaHelper'], function(constant, MC, lang, Design, CloudResources, Helper) {
+  define('component/trustedadvisor/validation/aws/vpc/vpc',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'CloudResources', 'TaHelper'], function(constant, MC, lang, Design, CloudResources, Helper) {
     var i18n, isVPCAbleConnectToOutside, isVPCUsingNoneDHCPAndVisualops, isVPCUsingNonexistentDhcp, isVPCWithRdsAccessibleEnableDNS, isVPCWithRdsAccessibleHasNoIgw, isVPCWithRdsTenancyDefault, __hasState;
     i18n = Helper.i18n.short();
     __hasState = function(uid) {
@@ -864,7 +889,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/aws/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
     var i18n, isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isInternetElbRouteOut, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
     i18n = Helper.i18n.short();
     isHaveIGWForInternetELB = function(elbUID) {
@@ -1356,7 +1381,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/securitygroup',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/ec2/securitygroup',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var getAllRefComp, isAssociatedSGNumExceedLimit, isELBDefaultSG, isHaveFullZeroOutboundRule, isHaveFullZeroSourceToHTTPRule, isHaveUsingAllProtocolRule, isHaveUsingPort22Rule, isSGRuleExceedFitNum, isStackUsingOnlyOneSG;
     getAllRefComp = function(sgUID) {
       var refCompAry, refNum, sgAry;
@@ -1674,7 +1699,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/aws/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
     var i18n, isELBHasHealthCheck, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
     i18n = Helper.i18n.short();
     isHasLaunchConfiguration = function(uid) {
@@ -1796,7 +1821,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/eip',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/ec2/eip',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isHasIGW, _hasType;
     isHasIGW = function() {
       var tipInfo;
@@ -1824,7 +1849,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/az',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/ec2/az',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isAZAlone;
     isAZAlone = function() {
       var count, instanceCount, tipInfo;
@@ -1863,7 +1888,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vgw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/vpc/vgw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isConnectToRTB;
     isConnectToRTB = function(uid) {
       var components, isConnectRTB, tipInfo, vpn, vpnId;
@@ -1899,7 +1924,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/vpn',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/vpc/vpn',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isVPNHaveIPForStaticCGW, isVPNPrefixIPNotValid;
     isVPNHaveIPForStaticCGW = function(uid) {
       var bgpAsn, cgwComp, cgwName, cgwRef, cgwUID, isHaveNoEmptyRoute, isStaticCGW, returnObj, routeAry, tipInfo, vgwComp, vgwName, vgwRef, vgwUID, vpnComp;
@@ -1997,7 +2022,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/igw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/vpc/igw',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isConnectToRTB;
     isConnectToRTB = function(uid) {
       var components, igw, igwId, isConnectRTB, tipInfo;
@@ -2033,7 +2058,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/networkacl',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/vpc/networkacl',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isConnectSubnetButNoAllowRule;
     isConnectSubnetButNoAllowRule = function(uid) {
       var HasAllowACLRule, acl, components, connectSubnet, tipInfo;
@@ -2065,7 +2090,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'customergateway_service', 'TaHelper'], function(constant, $, MC, lang, cgwService, Helper) {
+  define('component/trustedadvisor/validation/aws/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'customergateway_service', 'TaHelper'], function(constant, $, MC, lang, cgwService, Helper) {
     var i18n, isAttachVGW, isCGWHaveIPConflict, isValidCGWIP;
     i18n = Helper.i18n.short();
     isCGWHaveIPConflict = function(callback) {
@@ -2168,7 +2193,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/eni',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/vpc/eni',['constant', 'MC', 'i18n!/nls/lang.js'], function(constant, MC, lang) {
     var isENIAttachToInstance;
     isENIAttachToInstance = function(eniUID) {
       var attachedInstanceId, eniComp, eniName, tipInfo;
@@ -2194,7 +2219,7 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/vpc/rtb',['constant', 'MC', 'TaHelper', 'Design'], function(CONST, MC, Helper, Design) {
+  define('component/trustedadvisor/validation/aws/vpc/rtb',['constant', 'MC', 'TaHelper', 'Design'], function(CONST, MC, Helper, Design) {
     var i18n, isRtbConnectedNatAndItConnectedSubnet, isRtbHaveConflictDestination;
     i18n = Helper.i18n.short();
     isRtbConnectedNatAndItConnectedSubnet = function(uid) {
@@ -2261,11 +2286,12 @@ This file use for validate state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/stateeditor/validation/reference',['constant', 'MC', 'i18n!/nls/lang.js'], function(CONST, MC, lang) {
+  define('component/trustedadvisor/validation/aws/stateeditor/validation/reference',['constant', 'MC', 'i18n!/nls/lang.js'], function(CONST, MC, lang) {
     var Message, checkRefExist, takeplace, __componentTipMap, __findReference, __genError, __getComp, __getCompTip, __getRef, __isUid, __legalExist, __legalState, __refState;
     __componentTipMap = {
       'AWS.EC2.Instance': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_INSTANCE,
-      'AWS.AutoScaling.Group': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_ASG
+      'AWS.AutoScaling.Group': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_ASG,
+      'OS::Nova::Server': lang.TA.ERROR_STATE_EDITOR_INEXISTENT_OSSERVER
     };
     __getCompTip = function(compType, str1, str2, str100) {
       var tip, type;
@@ -2369,14 +2395,16 @@ This file use for validate state.
       }
     };
     checkRefExist = function(obj, data) {
-      var error, legalRef, r, ref, refName, tip, _i, _len;
+      var error, legalRef, r, ref, refName, refNames, tip, _i, _len;
       ref = __getRef(obj, data);
       error = [];
+      refNames = [];
       if (ref.length) {
         legalRef = MC.aws.aws.genAttrRefList(data.comp, MC.canvas_data.component);
       }
       for (_i = 0, _len = ref.length; _i < _len; _i++) {
         r = ref[_i];
+        refName = '';
         if (__refState(r)) {
           if (!__legalState(r)) {
             refName = Message.state(r);
@@ -2387,9 +2415,12 @@ This file use for validate state.
           }
         }
         if (refName) {
-          tip = __getCompTip(data.type, data.name, data.stateId, refName);
-          error.push(__genError(tip, data.stateId));
+          refNames.push("<span class='validation-tag tag-state-ref'>" + refName + "</span>");
         }
+      }
+      if (refNames.length) {
+        tip = __getCompTip(data.type, data.name, data.stateId, refNames.join(', '));
+        error.push(__genError(tip, data.stateId));
       }
       return error;
     };
@@ -2409,7 +2440,7 @@ This file use for validate state.
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/stateeditor/validation/format',['Design', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC'], function(Design, constant, lang) {
+  define('component/trustedadvisor/validation/aws/stateeditor/validation/format',['Design', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC'], function(Design, constant, lang) {
     var Helper, Message, Validator, checkFormat, __matchModule;
     Message = {};
     Validator = {
@@ -2612,7 +2643,7 @@ This file use for validate state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/stateeditor/register',['./validation/reference', './validation/format'], function(reference, format) {
+  define('component/trustedadvisor/validation/aws/stateeditor/register',['./validation/reference', './validation/format'], function(reference, format) {
     return [reference, format];
   });
 
@@ -2624,7 +2655,7 @@ This file use for validate state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/stateeditor/main',['./register', 'constant', 'MC', 'i18n!/nls/lang.js'], function(validators, constant, MC, lang) {
+  define('component/trustedadvisor/validation/aws/stateeditor/main',['./register', 'constant', 'MC', 'i18n!/nls/lang.js'], function(validators, constant, MC, lang) {
     var isStateValid, __checkState, __modifyUid;
     __modifyUid = function(result, uid, index) {
       var r, _i, _len, _ref;
@@ -2688,7 +2719,7 @@ This file use for validate component about state.
  */
 
 (function() {
-  define('component/trustedadvisor/validation/state/state',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
+  define('component/trustedadvisor/validation/aws/state/state',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
     var i18n, isConnectedOut, isHasIgw, isHasOutPort80and443, isHasOutPort80and443Strict, __genConnectedError, __getComp, __getEniByInstance, __getSg, __getSubnetRtb, __hasEipOrPublicIp, __hasState, __hasType, __isEniSourceDestUncheck, __isInstanceConnectedOut, __isInstanceNat, __isLcConnectedOut, __isPortTcpAllowed, __isRouteIgw, __natOut, __selfOut, __sgsHasOutPort80and443, __wrap;
     i18n = Helper.i18n.short();
     __wrap = function(method) {
@@ -2969,7 +3000,7 @@ This file use for validate component about state.
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ebs_service'], function(constant, $, MC, lang, ebsService) {
+  define('component/trustedadvisor/validation/aws/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ebs_service'], function(constant, $, MC, lang, ebsService) {
     var isSnapshotExist;
     isSnapshotExist = function(callback) {
       var currentRegion, err, snaphostAry, snaphostMap;
@@ -3084,7 +3115,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, keypair_service, _, CloudResources) {
+  define('component/trustedadvisor/validation/aws/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, keypair_service, _, CloudResources) {
     var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
     i18n = Helper.i18n.short();
     isNotDefaultAndRefInstance = function(uid) {
@@ -3201,7 +3232,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/rds/dbinstance',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/aws/rds/dbinstance',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
     var diff, i18n, isAzConsistent, isBackupMaintenanceOverlap, isDBandOgBothModified, isHaveEnoughIPForDB, isHaveReplicaStorageSmallThanOrigin, isMasterPasswordValid, isOgValid, isSqlServerCross3Subnet;
     i18n = Helper.i18n.short();
     diff = function(oldcomp, newcomp) {
@@ -3403,7 +3434,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/rds/og',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/aws/rds/og',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
     var i18n, isOGExeedCountLimit, unusedOgWontCreate;
     i18n = Helper.i18n.short();
     unusedOgWontCreate = function(callback) {
@@ -3471,7 +3502,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/rds/sbg',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/aws/rds/sbg',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
     var i18n, isSbgHasSbin2Az;
     i18n = Helper.i18n.short();
     isSbgHasSbin2Az = function(uid) {
@@ -3497,7 +3528,241 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/stack/stack', '../validation/ec2/instance', '../validation/vpc/subnet', '../validation/vpc/vpc', '../validation/elb/elb', '../validation/ec2/securitygroup', '../validation/asg/asg', '../validation/ec2/eip', '../validation/ec2/az', '../validation/vpc/vgw', '../validation/vpc/vpn', '../validation/vpc/igw', '../validation/vpc/networkacl', '../validation/vpc/cgw', '../validation/vpc/eni', '../validation/vpc/rtb', '../validation/stateeditor/main', '../validation/state/state', '../validation/ec2/ebs', '../validation/ec2/kp', '../validation/rds/dbinstance', '../validation/rds/og', '../validation/rds/sbg'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og, sbg) {
+  define('component/trustedadvisor/validation/os/osport',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+    var i18n, isPortConnectwithServer;
+    i18n = Helper.i18n.short();
+    isPortConnectwithServer = function(uid) {
+      var connectedServer, port;
+      port = Design.instance().component(uid);
+      connectedServer = _.some(port.connectionTargets('OsPortUsage'), function(target) {
+        return target.type === constant.RESTYPE.OSSERVER;
+      });
+      if (connectedServer) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.ERROR_PORT_MUST_CONNECT_WITH_SERVER, port.get('name'));
+    };
+    return {
+      isPortConnectwithServer: isPortConnectwithServer
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/os/ossubnet',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+    var i18n, isSubnetCIDRConflict, subnetHasPortShouldConncectedOut, __isSbConnectOut;
+    i18n = Helper.i18n.short();
+    __isSbConnectOut = function(sb) {
+      var rt, rts;
+      rts = _.filter(sb.connectionTargets('OsRouterAsso'), function(obj) {
+        return obj.type === constant.RESTYPE.OSRT;
+      });
+      rt = rts[0];
+      if (!rt || !rt.get('extNetworkId')) {
+        return false;
+      }
+      return true;
+    };
+    subnetHasPortShouldConncectedOut = function() {
+      var badSbs, child, port, sb, sbNames, subnets, _i, _j, _len, _len1, _ref, _ref1;
+      badSbs = [];
+      subnets = Design.modelClassForType(constant.RESTYPE.OSSUBNET).allObjects();
+      for (_i = 0, _len = subnets.length; _i < _len; _i++) {
+        sb = subnets[_i];
+        _ref = sb.children();
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          child = _ref[_j];
+          port = null;
+          if ((_ref1 = child.type) === constant.RESTYPE.OSPORT || _ref1 === constant.RESTYPE.OSLISTENER) {
+            port = child;
+          } else if (child.type === constant.RESTYPE.OSSERVER) {
+            port = child.embedPort();
+          }
+          if (port && port.getFloatingIp() && !__isSbConnectOut(sb)) {
+            badSbs.push(sb);
+          }
+        }
+      }
+      sbNames = _.map(_.uniq(badSbs), function(sb) {
+        return "<span class='validation-tag tag-ossubnet'>" + (sb.get('name')) + "</span>";
+      }).join(', ');
+      if (!sbNames) {
+        return null;
+      }
+      return Helper.message.error(null, i18n.ERROR_SUBNET_HAS_PORT_SHOULD_CONNECTED_OUT, sbNames);
+    };
+    isSubnetCIDRConflict = function() {
+      var cidr1, cidr2, conflictSubnet1, conflictSubnet2, haveConflict, isCidrConflict, name1, name2, subnetModel1, subnetModel2, subnetModels, _i, _j, _len, _len1;
+      subnetModels = Design.modelClassForType(constant.RESTYPE.OSSUBNET).allObjects();
+      isCidrConflict = Design.modelClassForType(constant.RESTYPE.SUBNET).isCidrConflict;
+      conflictSubnet1 = null;
+      conflictSubnet2 = null;
+      for (_i = 0, _len = subnetModels.length; _i < _len; _i++) {
+        subnetModel1 = subnetModels[_i];
+        for (_j = 0, _len1 = subnetModels.length; _j < _len1; _j++) {
+          subnetModel2 = subnetModels[_j];
+          if (subnetModel1 === subnetModel2) {
+            continue;
+          }
+          haveConflict = isCidrConflict(subnetModel1.get('cidr'), subnetModel2.get('cidr'));
+          if (haveConflict) {
+            conflictSubnet1 = subnetModel1;
+            conflictSubnet2 = subnetModel2;
+            break;
+          }
+        }
+        if (conflictSubnet1) {
+          break;
+        }
+      }
+      if (conflictSubnet1) {
+        name1 = conflictSubnet1.get('name');
+        name2 = conflictSubnet2.get('name');
+        cidr1 = conflictSubnet1.get('cidr');
+        cidr2 = conflictSubnet2.get('cidr');
+        return Helper.message.error(null, i18n.ERROR_SUBNET_HAS_CONFLICT_CIDR_WITH_OTHERS, name1, cidr1, name2, cidr2);
+      }
+    };
+    return {
+      subnetHasPortShouldConncectedOut: subnetHasPortShouldConncectedOut,
+      isSubnetCIDRConflict: isSubnetCIDRConflict
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/os/osrouter',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+    var i18n, rtMustConnecteToOneSubnet;
+    i18n = Helper.i18n.short();
+    rtMustConnecteToOneSubnet = function(uid) {
+      var rt;
+      rt = Design.instance().component(uid);
+      if (rt.connections('OsRouterAsso').length) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.ERROR_ROUTER_XXX_MUST_CONNECT_TO_AT_LEAST_ONE_SUBNET, rt.get('name'));
+    };
+    return {
+      rtMustConnecteToOneSubnet: rtMustConnecteToOneSubnet
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/os/ospool',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+    var i18n, isMemberBelongsConnectedSubnet, isPoolConnectedwithListener;
+    i18n = Helper.i18n.short();
+    isPoolConnectedwithListener = function(uid) {
+      var pool;
+      pool = Design.instance().component(uid);
+      if (pool.connections('OsListenerAsso').length) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.ERROR_POOL_XXX_MUST_BE_CONNECTED_TO_A_LISTENER, pool.get('name'));
+    };
+    isMemberBelongsConnectedSubnet = function(uid) {
+      var memberNames, members, notConnectedMembers, pool;
+      pool = Design.instance().component(uid);
+      members = pool.connectionTargets('OsPoolMembership');
+      notConnectedMembers = _.reject(members, function(m) {
+        var memberRt, poolRt;
+        if (m.parent() === pool.parent()) {
+          return true;
+        }
+        memberRt = m.parent().connectionTargets('OsRouterAsso')[0];
+        poolRt = pool.parent().connectionTargets('OsRouterAsso')[0];
+        if (memberRt && memberRt === poolRt) {
+          return true;
+        }
+        return false;
+      });
+      memberNames = _.map(notConnectedMembers, function(nc) {
+        return "<span class='validation-tag tag-ospoolmember'>" + (nc.get('name')) + "</span>";
+      }).join(', ');
+      if (!memberNames) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED, pool.get('name'), memberNames);
+    };
+    return {
+      isPoolConnectedwithListener: isPoolConnectedwithListener,
+      isMemberBelongsConnectedSubnet: isMemberBelongsConnectedSubnet
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/os/oslistener',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+    var i18n, isListenerConnectedwithPool;
+    i18n = Helper.i18n.short();
+    isListenerConnectedwithPool = function(uid) {
+      var listener;
+      listener = Design.instance().component(uid);
+      if (listener.connections('OsListenerAsso').length) {
+        return null;
+      }
+      return Helper.message.error(uid, i18n.ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL, listener.get('name'));
+    };
+    return {
+      isListenerConnectedwithPool: isListenerConnectedwithPool
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/validation/os/osstack',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+    var i18n, isResExtendQuotaLimit;
+    i18n = Helper.i18n.short();
+    isResExtendQuotaLimit = function() {
+      var existMap, getNewCount, limitMap, newMap, provider, quotaMap, region, typeShortMap, validAry;
+      region = Design.instance().region();
+      provider = App.user.get("default_provider");
+      quotaMap = App.model.getOpenstackQuotas(provider);
+      getNewCount = function(type) {
+        return _.filter(Design.modelClassForType(type).allObjects(), function(model) {
+          return !model.get('appId');
+        }).length;
+      };
+      typeShortMap = {};
+      existMap = {};
+      newMap = {};
+      limitMap = {};
+      _.each([constant.RESTYPE.OSPORT, constant.RESTYPE.OSFIP, constant.RESTYPE.OSRT, constant.RESTYPE.OSSG, constant.RESTYPE.OSSUBNET], function(type) {
+        typeShortMap[type] = existMap[type] = CloudResources(type, region).length;
+        return newMap[type] = getNewCount(type);
+      });
+      limitMap[constant.RESTYPE.OSPORT] = quotaMap['Neutron::port'];
+      limitMap[constant.RESTYPE.OSFIP] = quotaMap['Neutron::floatingip'];
+      limitMap[constant.RESTYPE.OSRT] = quotaMap['Neutron::router'];
+      limitMap[constant.RESTYPE.OSSG] = quotaMap['Neutron::security_group'];
+      limitMap[constant.RESTYPE.OSSUBNET] = quotaMap['Neutron::subnet'];
+      validAry = [];
+      _.each(existMap, function(count, type) {
+        var limitCount, typeName, usedCount;
+        usedCount = existMap[type] + newMap[type];
+        limitCount = limitMap[type];
+        typeName = constant.RESNAME[type];
+        if (usedCount > limitCount && typeName) {
+          validAry.push(Helper.message.error(null, i18n.ERROR_STACK_RESOURCE_EXCCED_LIMIT, typeName, usedCount, limitCount));
+        }
+        return null;
+      });
+      return validAry;
+    };
+    return {
+      isResExtendQuotaLimit: isResExtendQuotaLimit
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('component/trustedadvisor/lib/TA.Bundle',['MC', '../validation/aws/stack/stack', '../validation/aws/ec2/instance', '../validation/aws/vpc/subnet', '../validation/aws/vpc/vpc', '../validation/aws/elb/elb', '../validation/aws/ec2/securitygroup', '../validation/aws/asg/asg', '../validation/aws/ec2/eip', '../validation/aws/ec2/az', '../validation/aws/vpc/vgw', '../validation/aws/vpc/vpn', '../validation/aws/vpc/igw', '../validation/aws/vpc/networkacl', '../validation/aws/vpc/cgw', '../validation/aws/vpc/eni', '../validation/aws/vpc/rtb', '../validation/aws/stateeditor/main', '../validation/aws/state/state', '../validation/aws/ec2/ebs', '../validation/aws/ec2/kp', '../validation/aws/rds/dbinstance', '../validation/aws/rds/og', '../validation/aws/rds/sbg', '../validation/os/osport', '../validation/os/ossubnet', '../validation/os/osrouter', '../validation/os/ospool', '../validation/os/oslistener', '../validation/os/osstack'], function(MC, stack, instance, subnet, vpc, elb, sg, asg, eip, az, vgw, vpn, igw, acl, cgw, eni, rtb, stateEditor, state, ebs, kp, dbinstance, og, sbg, osport, ossubnet, osrouter, ospool, oslistener, osstack) {
     return {
       stack: stack,
       instance: instance,
@@ -3521,7 +3786,13 @@ This file use for validate component about state.
       kp: kp,
       dbinstance: dbinstance,
       og: og,
-      sbg: sbg
+      sbg: sbg,
+      osport: osport,
+      ossubnet: ossubnet,
+      osrouter: osrouter,
+      ospool: ospool,
+      oslistener: oslistener,
+      osstack: osstack
     };
   });
 
@@ -3628,20 +3899,20 @@ This file use for validate component about state.
 
 (function() {
   define('validation',['constant', 'event', 'component/trustedadvisor/lib/TA.Config', 'component/trustedadvisor/lib/TA.Bundle', 'component/trustedadvisor/lib/TA.Core', 'jquery', 'underscore', "MC"], function(constant, ide_event, config, TaBundle, TaCore) {
-    var validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
+    var validAll, validComp, validRun, _asyncCallback, _genSyncFinish, _getFilename, _handleException, _init, _isAsync, _isGlobal, _pushResult, _syncFinish, _syncStart, _validAsync, _validComponents, _validGlobal, _validState;
     _init = function() {
       return TaCore.reset();
     };
     _isGlobal = function(filename, method) {
-      return config.globalList[filename] && _.contains(config.globalList[filename], method);
+      return config.get('globalList')[filename] && _.contains(config.get('globalList')[filename], method);
     };
     _isAsync = function(filename, method) {
-      return config.asyncList[filename] && _.contains(config.asyncList[filename], method);
+      return config.get('asyncList')[filename] && _.contains(config.get('asyncList')[filename], method);
     };
     _getFilename = function(componentType) {
       var filename;
-      if (config.componentTypeToFileMap[componentType]) {
-        return config.componentTypeToFileMap[componentType];
+      if (config.get('componentTypeToFileMap')[componentType]) {
+        return config.get('componentTypeToFileMap')[componentType];
       }
       filename = _.last(componentType.split('.'));
       filename = filename.toLowerCase();
@@ -3653,9 +3924,12 @@ This file use for validate component about state.
     _syncStart = function() {
       return ide_event.trigger(ide_event.TA_SYNC_START);
     };
+    _syncFinish = function() {
+      return ide_event.trigger(ide_event.TA_SYNC_FINISH);
+    };
     _genSyncFinish = function(times) {
       return _.after(times, function() {
-        return ide_event.trigger(ide_event.TA_SYNC_FINISH);
+        return _syncFinish();
       });
     };
     _asyncCallback = function(method, filename, done) {
@@ -3681,7 +3955,7 @@ This file use for validate component about state.
       return console.log('TA Exception: ', err);
     };
     _validGlobal = function(env) {
-      _.each(config.globalList, function(methods, filename) {
+      _.each(config.get('globalList'), function(methods, filename) {
         return _.each(methods, function(method) {
           var err, result;
           try {
@@ -3740,13 +4014,18 @@ This file use for validate component about state.
       return null;
     };
     _validAsync = function() {
-      var finishTimes, syncFinish;
-      finishTimes = _.reduce(config.asyncList, function(memo, arr) {
+      var asyncList, finishTimes, syncFinish;
+      asyncList = config.get('asyncList');
+      if (!asyncList || !asyncList.length) {
+        _syncFinish();
+        return;
+      }
+      finishTimes = _.reduce(asyncList, function(memo, arr) {
         return memo + arr.length;
       }, 0);
       _syncStart();
       syncFinish = _genSyncFinish(finishTimes);
-      _.each(config.asyncList, function(methods, filename) {
+      _.each(asyncList, function(methods, filename) {
         return _.each(methods, function(method) {
           var err, result;
           try {
@@ -3944,6 +4223,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.$el.find('#modal-validation-statusbar').html(template(this.model.attributes));
           this.processStatusBarDetails();
           $('.status-bar-modal').show();
+        } else if (type === 'openstack') {
+          $('.validating').hide();
+          false;
         }
         return null;
       },
@@ -4089,7 +4371,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/gui/main',['jquery', 'event', './view', './model'], function($, ide_event, View, Model) {
+  define('TaGui',['jquery', 'event', 'component/trustedadvisor/gui/view', 'component/trustedadvisor/gui/model'], function($, ide_event, View, Model) {
     var loadModule, unLoadModule;
     loadModule = function(type, status) {
       var model, processBar, processRun, view;

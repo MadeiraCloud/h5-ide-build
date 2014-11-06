@@ -2,8 +2,8 @@
   font-family: 'MCIcon';
   font-weight: normal;
   font-style: normal;
-  src: url('/assets/fonts/icon.eot?v=75209712');
-  src: url('/assets/fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff?v=a79c0048") format("woff"), url("../fonts/icon.ttf?v=674b0e7f") format("truetype"); }
+  src: url('/assets/fonts/icon.eot');
+  src: url('/assets/fonts/../fonts/icon.eot?#iefix') format("embedded-opentype"), url("../fonts/icon.woff") format("woff"), url("../fonts/icon.ttf") format("truetype"); }
 
 .icon-play:before,
 .icon-stop:before,
@@ -84,7 +84,10 @@
 .icon-dhcp:before,
 .icon-pg:before,
 .icon-rds-snap:before,
-.icon-rds-restore:before {
+.icon-rds-restore:before,
+.icon-resource:before,
+.icon-config:before,
+.icon-property:before {
   font: 16px/1em "MCIcon";
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
@@ -328,3 +331,12 @@
 
 .icon-rds-restore:before {
   content: "\F168"; }
+
+.icon-resource:before {
+  content: "\F170"; }
+
+.icon-config:before {
+  content: "\F171"; }
+
+.icon-property:before {
+  content: "\F172"; }
