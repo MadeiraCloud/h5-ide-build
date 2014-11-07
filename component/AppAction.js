@@ -1,1 +1,1034 @@
-define("component/appactions/template",["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function";return s+='<header class="modal-header" style="width:390px;"><h3>'+u(n.i18n.call(t,"TOOLBAR.TIP_DELETE_STACK",{hash:{},data:i}))+'</h3><i class="modal-close">&times;</i></header>\n<div class="modal-body modal-text-wraper" style="width:390px;">\n    <div class="modal-center-align-helper">\n        <div class="modal-text-major">'+u((o=t&&t.msg,typeof o===a?o.apply(t):o))+'</div>\n    </div>\n</div>\n<div class="modal-footer">\n    <button class="btn modal-close btn-red" id="confirmRmStack">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_DELETE_STACK",{hash:{},data:i}))+'</button>\n    <button class="btn modal-close btn-silver">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.removeStackConfirm=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function";return s+='<header class="modal-header" style="width:390px;"><h3>'+u(n.i18n.call(t,"TOOLBAR.TIP_DUPLICATE_STACK",{hash:{},data:i}))+'</h3><i class="modal-close">&times;</i></header>\n<div class="modal-body modal-text-wraper" style="width:390px;">\n    <div class="modal-center-align-helper">\n        <div class="modal-control-group">\n            <label class="modal-text-major">'+u(n.i18n.call(t,"TOOLBAR.POP_BODY_DUPLICATE_STACK",{hash:{},data:i}))+'</label>\n            <input id="confirmDupStackIpt" class="input" type="text" value="'+u((o=t&&t.newName,typeof o===a?o.apply(t):o))+'">\n        </div>\n    </div>\n</div>\n<div class="modal-footer">\n    <button class="btn btn-red" id="confirmDupStack">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_DUPLICATE_STACK",{hash:{},data:i}))+'</button>\n    <button class="btn modal-close btn-silver">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.dupStackConfirm=e.template(t),t=function(e,t,n,r,i){function l(e,t){var r="";return r+="\n            <li>\n                "+u(n.i18n.call(e,"TOOLBAR.POP_START_CONFIRM_LIST_1",{hash:{},data:t}))+"\n            </li>\n        ",r}function c(e,t){var r="";return r+="\n            <li>\n                "+u(n.i18n.call(e,"TOOLBAR.POP_START_CONFIRM_LIST_2",{hash:{},data:t}))+"\n            </li>\n        ",r}function h(e,t){var r="";return r+="\n            <li>\n                "+u(n.i18n.call(e,"TOOLBAR.POP_START_CONFIRM_LIST_3",{hash:{},data:t}))+"\n            </li>\n        ",r}function p(e,t){var r="",i;r+='\n        <div class="modal-shrink">\n            <div class="sub-gray">'+u(n.i18n.call(e,"TOOLBAR.POP_START_WARNNING",{hash:{},data:t}))+'</div>\n            <div class="error">\n                '+u(n.i18n.call(e,"TOOLBAR.POP_START_MISSING_SNAPSHOT_1",{hash:{},data:t}))+" ",i=n.each.call(e,e&&e.lostDBSnapshot,{hash:{},inverse:a.noop,fn:a.program(8,d,t),data:t});if(i||i===0)r+=i;return r+=" "+u(n.i18n.call(e,"TOOLBAR.POP_START_MISSING_SNAPSHOT_2",{hash:{},data:t}))+"\n            </div>\n        </div>\n    ",r}function d(e,t){var r="",i;i=n["if"].call(e,e&&e.index,{hash:{},inverse:a.noop,fn:a.program(9,v,t),data:t});if(i||i===0)r+=i;return r+=u((i=e&&e.name,typeof i===f?i.apply(e):i)),r}function v(e,t){return", "}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a=this,f="function";s+='<div class="modal-center-align-helper">\n    <div class="modal-text-major">'+u(n.i18n.call(t,"TOOLBAR.POP_BODY_START_APP",{hash:{},data:i}))+'</div>\n    <ul class="modal-list-items">\n        ',o=n["if"].call(t,t&&t.hasEC2Instance,{hash:{},inverse:a.noop,fn:a.program(1,l,i),data:i});if(o||o===0)s+=o;s+="\n        ",o=n["if"].call(t,t&&t.hasDBInstance,{hash:{},inverse:a.noop,fn:a.program(3,c,i),data:i});if(o||o===0)s+=o;s+="\n        ",o=n["if"].call(t,t&&t.hasASG,{hash:{},inverse:a.noop,fn:a.program(5,h,i),data:i});if(o||o===0)s+=o;s+="\n    </ul>\n    ",o=n["if"].call(t,(o=t&&t.lostDBSnapshot,o==null||o===!1?o:o.length),{hash:{},inverse:a.noop,fn:a.program(7,p,i),data:i});if(o||o===0)s+=o;return s+="\n</div>",s},n.startAppConfirm=e.template(t),t=function(e,t,n,r,i){function f(e,t){var r="",i;return r+='\n    <div style="padding: 20px">\n        <p><b style="color:#ec3c38;">'+u((i=e&&e.appName,typeof i===o?i.apply(e):i))+" "+u(n.i18n.call(e,"POP_CONFIRM_PROD_APP_WARNING_MSG",{hash:{},data:t}))+"</b>"+u(n.i18n.call(e,"POP_CONFIRM_TERMINATE_PROD_APP_MSG",{hash:{},data:t}))+" "+u(n.i18n.call(e,"POP_CONFIRM_STOP_ASG",{hash:{},data:t}))+"</p>\n        <p>"+u(n.i18n.call(e,"POP_CONFIRM_STOP_PROD_APP_INPUT_LBL",{hash:{},data:t}))+'</p>\n        <div><input class="input" style="width:351px;" id="appNameConfirmIpt"/></div>\n    </div>\n',r}function l(e,t){var r="",i;r+='\n    <div class="modal-center-align-helper" style="padding: 20px">\n        <div class="modal-text-major">'+u(n.i18n.call(e,"TOOLBAR.POP_BODY_STOP_APP_LEFT",{hash:{},data:t}))+" "+u((i=e&&e.appName,typeof i===o?i.apply(e):i))+" "+u(n.i18n.call(e,"TOOLBAR.POP_BODY_STOP_APP_RIGHT",{hash:{},data:t}))+'</div>\n        <ul class="modal-list-items">\n            ',i=n["if"].call(e,e&&e.hasEC2Instance,{hash:{},inverse:a.noop,fn:a.program(4,c,t),data:t});if(i||i===0)r+=i;r+="\n            ",i=n["if"].call(e,e&&e.hasDBInstance,{hash:{},inverse:a.noop,fn:a.program(7,p,t),data:t});if(i||i===0)r+=i;r+="\n            ",i=n["if"].call(e,e&&e.hasAsg,{hash:{},inverse:a.noop,fn:a.program(9,d,t),data:t});if(i||i===0)r+=i;return r+="\n        </ul>\n    </div>\n",r}function c(e,t){var r="",i;r+="\n                <li>\n                    "+u(n.i18n.call(e,"TOOLBAR.POP_STOP_CONFIRM_LIST_1",{hash:{},data:t}))+"\n                    ",i=n["if"].call(e,e&&e.hasInstanceStore,{hash:{},inverse:a.noop,fn:a.program(5,h,t),data:t});if(i||i===0)r+=i;return r+="\n                </li>\n            ",r}function h(e,t){var r="";return r+='<span class="error">'+u(n.i18n.call(e,"TOOLBAR.POP_STOP_CONFIRM_LIST_1_SPAN",{hash:{},data:t}))+"</span>",r}function p(e,t){var r="";return r+="\n                <li>\n                    "+u(n.i18n.call(e,"TOOLBAR.POP_STOP_CONFIRM_LIST_2",{hash:{},data:t}))+"\n                    <span>"+u(n.i18n.call(e,"TOOLBAR.POP_STOP_CONFIRM_LIST_2_SPAN",{hash:{},data:t}))+"</span>\n                </li>\n            ",r}function d(e,t){var r="";return r+="\n                <li>\n                    "+u(n.i18n.call(e,"TOOLBAR.POP_STOP_CONFIRM_LIST_3",{hash:{},data:t}))+"\n                    <span>"+u(n.i18n.call(e,"TOOLBAR.POP_STOP_CONFIRM_LIST_3_SPAN",{hash:{},data:t}))+"</span>\n                </li>\n            ",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o="function",u=this.escapeExpression,a=this;return s=n["if"].call(t,t&&t.isProduction,{hash:{},inverse:a.program(3,l,i),fn:a.program(1,f,i),data:i}),s||s===0?s:""},n.stopAppConfirm=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<div class="loading-spinner"></div>'},n.loading=e.template(t),t=function(e,t,n,r,i){function l(e,t){var r="",i;i=n["if"].call(e,t==null||t===!1?t:t.index,{hash:{},inverse:u.noop,fn:u.program(2,c,t),data:t});if(i||i===0)r+=i;return r+=f((i=(i=e&&e.attributes,i==null||i===!1?i:i.DBInstanceIdentifier),typeof i===a?i.apply(e):i))+'(<span class="db-stop-status">'+f((i=(i=e&&e.attributes,i==null||i===!1?i:i.DBInstanceStatus),typeof i===a?i.apply(e):i))+"</span>)",r}function c(e,t){return", "}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this,a="function",f=this.escapeExpression;s+="<p>DB Instance\n    ",o=n.each.call(t,t&&t.cantStop,{hash:{},inverse:u.noop,fn:u.program(1,l,i),data:i});if(o||o===0)s+=o;return s+="\n    "+f(n.i18n.call(t,"TOOLBAR.POP_CANT_STOP_1",{hash:{},data:i}))+"</p>\n<p>"+f(n.i18n.call(t,"TOOLBAR.POP_CANT_STOP_2",{hash:{},data:i}))+"</p>",s},n.cantStop=e.template(t),t=function(e,t,n,r,i){function l(e,t){var r="",i;return r+='\n        <p><b style="color:#ec3c38;">'+a((i=e&&e.name,typeof i===u?i.apply(e):i))+" "+a(n.i18n.call(e,"POP_CONFIRM_PROD_APP_WARNING_MSG",{hash:{},data:t}))+"</b>"+a(n.i18n.call(e,"POP_CONFIRM_TERMINATE_PROD_APP_MSG",{hash:{},data:t}))+"</p>\n        <p>"+a(n.i18n.call(e,"POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL",{hash:{},data:t}))+'</p>\n        <div><input class="input" style="width:390px;" id="appNameConfirmIpt"/></div>\n    ',r}function c(e,t){var r="";return r+='\n        <div class="modal-center-align-helper"><div class="modal-text-major">'+a(n.i18n.call(e,"TOOLBAR.POP_BODY_TERMINATE_APP_LEFT",{hash:{},data:t}))+a(n.i18n.call(e,"TOOLBAR.POP_BODY_TERMINATE_APP_RIGHT",{hash:{},data:t}))+"</div></div>\n    ",r}function h(e,t){var r="",i;r+='\n        <section class="check-final-snapshot checkbox-wrap">\n            <div class="checkbox">\n                <input id="take-rds-snapshot" type="checkbox" checked="checked" name="dns-resolution">\n                <label for="take-rds-snapshot"></label>\n            </div>\n            <label for="take-rds-snapshot">'+a(n.i18n.call(e,"TOOLBAR.POP_TAKE_DB_SNAPSHOT",{hash:{},data:t}))+"</label>\n        </section>\n        ",i=n["if"].call(e,(i=e&&e.notReadyDB,i==null||i===!1?i:i.length),{hash:{},inverse:f.noop,fn:f.program(6,p,t),data:t});if(i||i===0)r+=i;return r+="\n    ",r}function p(e,t){var r="",i;r+='\n            <p class="cant-snapshot">'+a(n.i18n.call(e,"TOOLBAR.POP_CANT_TAKE_SNAPSHOT_1",{hash:{},data:t}))+"\n                ",i=n.each.call(e,e&&e.notReadyDB,{hash:{},inverse:f.noop,fn:f.program(7,d,t),data:t});if(i||i===0)r+=i;return r+="\n                "+a(n.i18n.call(e,"TOOLBAR.POP_CANT_TAKE_SNAPSHOT_2",{hash:{},data:t}))+"</p>\n        ",r}function d(e,t){var r="",i;i=n["if"].call(e,t==null||t===!1?t:t.index,{hash:{},inverse:f.noop,fn:f.program(8,v,t),data:t});if(i||i===0)r+=i;return r+='<span class="resource-tag">'+a((i=(i=e&&e.attributes,i==null||i===!1?i:i.DBInstanceIdentifier),typeof i===u?i.apply(e):i))+'</span>(<span class="db-stop-status">'+a((i=(i=e&&e.attributes,i==null||i===!1?i:i.DBInstanceStatus),typeof i===u?i.apply(e):i))+"</span>)",r}function v(e,t){return", "}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div class="confirm-padding">\n    ',o=n["if"].call(t,t&&t.production,{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+="\n    ",o=n["if"].call(t,(o=t&&t.hasDBInstance,o==null||o===!1?o:o.length),{hash:{},inverse:f.noop,fn:f.program(5,h,i),data:i});if(o||o===0)s+=o;return s+="\n</div>",s},n.terminateAppConfirm=e.template(t),t=function(e,t,n,r,i){function l(e,t){return'\n        <div class="modal-center-align-helper"> <div class="modal-text-major">This app is created by Visualops with state, do not support forget currently</div></div>\n    '}function c(e,t){var r="",i;r+="\n        ",i=n["if"].call(e,e&&e.production,{hash:{},inverse:f.program(6,p,t),fn:f.program(4,h,t),data:t});if(i||i===0)r+=i;return r+="\n    ",r}function h(e,t){var r="",i;return r+='\n            <p><b style="color:#ec3c38;">'+a((i=e&&e.name,typeof i===u?i.apply(e):i))+" "+a(n.i18n.call(e,"POP_CONFIRM_PROD_APP_WARNING_MSG",{hash:{},data:t}))+"</b>Forget it will not make your service unavailable. but Visualops will stop ensure your state in all instances.</p>\n            <p>"+a(n.i18n.call(e,"POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL",{hash:{},data:t}))+'</p>\n            <div><input class="input" style="width:390px;" id="appNameConfirmIpt"/></div>\n        ',r}function p(e,t){return'\n            <div class="modal-center-align-helper"> <div class="modal-text-major">Only remove app info from Visualops, all resources in the app will not be deleted. <br/>Do you confirm to forget app?</div></div>\n        '}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div class="confirm-padding">\n    ',o=n["if"].call(t,t&&t.hasState,{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;return s+="\n</div>",s},n.forgetAppConfirm=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<section class="disconnected-msg">\n    <div>Connection lost. Attempting to reconnect…</div>\n    <div>Changes made now may not be saved.</div>\n</section>'},n.disconnectedMsg=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<header class="modal-header" style="width:390px;"><h3>'+o(n.i18n.call(t,"TOOLBAR.POP_FORCE_TERMINATE",{hash:{},data:i}))+'</h3><i class="modal-close">&times;</i></header>\n<div class="modal-body modal-text-wraper" style="width:390px;">\n    <div class="modal-center-align-helper">\n        <div class="modal-text-major">'+o(n.i18n.call(t,"TOOLBAR.POP_FORCE_TERMINATE_CONTENT",t&&t.name,{hash:{},data:i}))+'</div>\n    </div>\n</div>\n<div class="modal-footer">\n    <button class="btn modal-close btn-red" id="forceTerminateApp">'+o(n.i18n.call(t,"TOOLBAR.POP_BTN_DELETE_STACK",{hash:{},data:i}))+'</button>\n    <button class="btn modal-close btn-silver">'+o(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.forceTerminateApp=e.template(t),n}),function(){var e=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("AppAction",["backbone","component/appactions/template","i18n!/nls/lang.js","CloudResources","constant","UI.modalplus","ApiRequest","kp_dropdown","OsKp","TaGui"],function(t,n,r,i,s,o,u,a,f,l){var c;return c=t.View.extend({runStack:function(e,t){var n,i,s,u,a,f;return this.workspace=t,s=this.workspace.opsModel.get("cloudType"),f=this,$(e.currentTarget).attr("disabled")?!1:(this.modal=new o({title:r.IDE.RUN_STACK_MODAL_TITLE,template:MC.template.modalRunStack,disableClose:!0,width:"450px",confirm:{text:App.user.hasCredential()?r.IDE.RUN_STACK_MODAL_CONFIRM_BTN:r.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,disabled:!0}}),s==="openstack"&&(this.modal.find(".estimate").hide(),this.modal.resize()),this.renderKpDropdown(this.modal,s),u=Design.instance().getCost(),this.modal.tpl.find(".modal-input-value").val(this.workspace.opsModel.get("name")),this.modal.tpl.find("#label-total-fee").find("b").text("$"+u.totalFee),l.loadModule("stack").then(function(e){return function(){var t;return e.modal.resize(),(t=e.modal)!=null?t.toggleConfirm(!1):void 0}}(this)),n=this.modal.tpl.find("#app-name"),i=this.checkAppNameRepeat.bind(this),n.keyup(function(){return i(n.val())}),a=this,this.modal.on("confirm",function(e){return function(){var t;return e.hideError(),App.user.hasCredential()?(t=e.checkAppNameRepeat(n.val()),!e.defaultKpIsSet(s)||t?!1:(e.modal.tpl.find(".btn.modal-confirm").attr("disabled","disabled"),e.json=e.workspace.design.serialize({usage:"runStack"}),e.json.usage=$("#app-usage-selectbox").find(".dropdown .item.selected").data("value"),e.json.name=n.val(),e.workspace.opsModel.run(e.json,n.val()).then(function(e){return a.modal.close(),App.openOps(e)},function(e){var t;return a.modal.close(),t=e.awsError?e.error+"."+e.awsError:" "+e.error+" : "+(e.result||e.msg),notification("error",sprintf(r.NOTIFY.FAILA_TO_RUN_STACK_BECAUSE_OF_XXX,a.workspace.opsModel.get("name"),t))}))):(App.showSettings(App.showSettings.TAB.Credential),!1)}}(this)),App.user.on("change:credential",function(){if(App.user.hasCredential()&&f.modal.isOpen())return f.modal.find(".modal-confirm").text(r.IDE.RUN_STACK_MODAL_CONFIRM_BTN)}),this.modal.on("close",function(){return App.user.off("change:credential")}))},renderKpDropdown:function(e,t){var n,r,i,o,u;if(t==="openstack")return f.prototype.hasResourceWithDefaultKp()?(u=new f,n=Design.modelClassForType(s.RESTYPE.OSKP),r=_.find(n.allObjects(),function(e){return e.get("name")==="DefaultKP"}),e.isOpen()&&e.find("#kp-runtime-placeholder").html(u.render(r.get("keyName")).$el),e.tpl.find(".default-kp-group").show(),u.$input.on("change",function(){return u.setDefaultKeyPair()}),!1):!1;if(a.hasResourceWithDefaultKp()){o=new a;if(!e)return!1;e.tpl.find("#kp-runtime-placeholder").html(o.render().el),i=this.hideError.bind(this),o.dropdown.on("change",function(){return i("kp")}),e.tpl.find(".default-kp-group").show(),e.on("close",function(){return o.remove()})}return null},hideError:function(e){var t;return t=e?$("#runtime-error-"+e):$(".runtime-error"),t.hide()},defaultKpIsSet:function(e){var t,n;return e==="openstack"?f.prototype.hasResourceWithDefaultKp()&&f.prototype.defaultKpNotSet()?(this.showError("kp",r.IDE.RUN_STACK_MODAL_KP_WARNNING),!1):!0:a.hasResourceWithDefaultKp()?(n=Design.modelClassForType(s.RESTYPE.KP),t=n.getDefaultKP(),!t.get("isSet")||!this.modal&&!this.updateModal||!(this.modal||this.updateModal).tpl.find("#kp-runtime-placeholder .item.selected").size()?(this.showError("kp",r.IDE.RUN_STACK_MODAL_KP_WARNNING),!1):!0):!0},checkAppNameRepeat:function(e){return App.model.appList().findWhere({name:e})?(this.showError("appname",r.PROP.MSG_WARN_REPEATED_APP_NAME),!0):e?(this.hideError("appname"),!1):(this.showError("appname",r.PROP.MSG_WARN_NO_APP_NAME),!0)},showError:function(e,t){return $("#runtime-error-"+e).text(t).show()},deleteStack:function(e,t){t=t||App.model.stackList().get(e).get("name"),modal(n.removeStackConfirm({msg:sprintf(r.TOOLBAR.POP_BODY_DELETE_STACK,t)})),$("#confirmRmStack").on("click",function(){var n,i;n=App.model.stackList().get(e),i=n.remove();if(n.isPersisted())return i.then(function(){return notification("info",sprintf(r.NOTIFY.ERR_DEL_STACK_SUCCESS,t))},function(){return notification("error",sprintf(r.NOTIFY.ERR_DEL_STACK_FAILED,t))})})},duplicateStack:function(e){var t;t=App.model.stackList().get(e);if(!t)return;t.fetchJsonData().then(function(){return App.openOps(App.model.createStackByJson(t.getJsonData()))},function(){return notification("error",r.NOTIFY.ERROR_CANT_DUPLICATE)})},startApp:function(e){var t,i;return t=App.model.appList().get(e),i=new o({template:n.loading(),title:r.TOOLBAR.TIP_START_APP,confirm:{text:r.TOOLBAR.POP_BTN_START_APP,color:"blue",disabled:!1},disableClose:!0}),i.tpl.find(".modal-footer").hide(),this.checkBeforeStart(t).then(function(t){var s,o,u,a,f;a=t.hasEC2Instance,u=t.hasDBInstance,o=t.hasASG,f=t.lostDBSnapshot,s=t.awsError;if(s&&s!==403)return i.close(),notification("error",r.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA),!1;i.tpl.find(".modal-footer").show(),i.tpl.find(".modal-body").html(n.startAppConfirm({hasEC2Instance:a,hasDBInstance:u,hasASG:o,lostDBSnapshot:f})),i.on("confirm",function(){i.close(),App.model.appList().get(e).start().fail(function(e){var t;t=e.awsError?e.error+"."+e.awsError:e.error,notification("error",sprintf(r.NOTIFY.ERROR_FAILED_START,name,t))})})})},checkBeforeStart:function(e){var t,n,r;return n=null,t=e.get("cloudType"),r=new Q.defer,t==="openstack"?(void 0,r.resolve({})):u("app_info",{region_name:e.get("region"),app_ids:[e.get("id")]}).then(function(e){return n=e[0].component}).then(function(){var t,o,u,a,f,l,c;return l=App.model.appList().get(id).get("name"),f=!!_.filter(n,function(e){return e.type===s.RESTYPE.INSTANCE}).length,a=!!_.filter(n,function(e){return e.type===s.RESTYPE.DBINSTANCE}).length,u=!!_.filter(n,function(e){return e.type===s.RESTYPE.ASG}).length,o=_.filter(n,function(e){return e.type===s.RESTYPE.DBINSTANCE}),c=i(s.RESTYPE.DBSNAP,e.get("region")),t=null,c.fetchForce().fail(function(e){return t=e.awsError})["finally"](function(){var e;return e=_.filter(o,function(e){return e.resource.DBSnapshotIdentifier&&!c.findWhere({id:e.resource.DBSnapshotIdentifier})}),r.resolve({hasEC2Instance:f,hasDBInstance:a,hasASG:u,lostDBSnapshot:e,awsError:t})})}),r.promise},checkBeforeStop:function(e){var t,n,r;return t=e.get("cloudType"),t==="openstack"?(void 0,n=new Q.defer,n.resolve(),n.promise):(r=i(s.RESTYPE.DBINSTANCE,e.get("region")),r.fetchForce())},stopApp:function(t){var u,a,f,l,c,h,p,d;return u=App.model.appList().get(t),h=u.get("name"),d=this,l=u.get("cloudType"),c=u.get("usage")==="production",a=u.get("name"),p=new o({template:n.loading(),title:c?r.TOOLBAR.POP_TIT_STOP_PRD_APP:r.TOOLBAR.POP_TIT_STOP_APP,confirm:{text:r.TOOLBAR.POP_BTN_STOP_APP,color:"red",disabled:c},disableClose:!0}),p.tpl.find(".modal-footer").hide(),f=null,this.checkBeforeStop(u).fail(function(e){void 0;if(e.awsError)return f=e.awsError})["finally"](function(){var t;return t=i(s.RESTYPE.DBINSTANCE,u.get("region")),f&&f!==403?(p.close(),notification("error",r.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA),!1):(l==="openstack"?(p.tpl.find(".modal-footer").show(),p.tpl.find(".modal-body").css("padding","0").html(n.stopAppConfirm({isProduction:c,appName:a})),p.resize(),$("#appNameConfirmIpt").on("keyup change",function(){return $("#appNameConfirmIpt").val()===h?p.tpl.find(".modal-confirm").removeAttr("disabled"):p.tpl.find(".modal-confirm").attr("disabled","disabled")})):u.fetchJsonData().then(function(){var r,o,f,l,d,v,m;f=u.getJsonData().component,d={};for(m in f){o=f[m];if(o.type===s.RESTYPE.INSTANCE||o.type===s.RESTYPE.LC)l=o.resource.ImageId,l&&(d[l]=!0)}return v=_.keys(d),r=i(s.RESTYPE.AMI,u.get("region")),r.fetchAmis(_.keys(d)).then(function(){var i,o,u,l,d,m,g,y;return d=!1,r.each(function(t){var n;if((n=t.id,e.call(v,n)>=0)&&t.get("rootDeviceType")==="instance-store")return d=!0}),l=(g=_.filter(f,function(e){return e.type===s.RESTYPE.INSTANCE}))!=null?g.length:void 0,u=_.filter(f,function(e){return e.type===s.RESTYPE.DBINSTANCE}),i=_.map(u,function(e){return e.resource.DBInstanceIdentifier}),m=t.filter(function(t){var n;return(n=t.get("DBInstanceIdentifier"),e.call(i,n)>=0)&&t.get("DBInstanceStatus")!=="available"}),o=(y=_.filter(f,function(e){return e.type===s.RESTYPE.ASG}))!=null?y.length:void 0,p.tpl.find(".modal-footer").show(),m&&m.length?(p.tpl.find(".modal-body").html(n.cantStop({cantStop:m})),p.tpl.find(".modal-confirm").remove()):(u=u!=null?u.length:void 0,p.tpl.find(".modal-body").css("padding","0").html(n.stopAppConfirm({isProduction:c,appName:a,hasEC2Instance:l,hasDBInstance:u,hasAsg:o,hasInstanceStore:d}))),p.resize(),$("#appNameConfirmIpt").on("keyup change",function(){return $("#appNameConfirmIpt").val()===h?p.tpl.find(".modal-confirm").removeAttr("disabled"):p.tpl.find(".modal-confirm").attr("disabled","disabled")})})}),p.on("confirm",function(){return p.close(),u.stop().fail(function(e){var t;return void 0,t=e.awsError?e.error+"."+e.awsError:e.error,notification(sprintf(r.NOTIFY.ERROR_FAILED_STOP,h,t))})}))})},terminateApp:function(e){var t,u,a,f,l,c,h;return c=this,t=App.model.appList().get(e),a=t.get("name"),f=t.get("usage")==="production",h=new o({title:f?r.TOOLBAR.POP_TIT_TERMINATE_PRD_APP:r.TOOLBAR.POP_TIT_TERMINATE_APP,template:n.loading(),confirm:{text:r.TOOLBAR.POP_BTN_TERMINATE_APP,color:"red",disabled:f},disableClose:!0}),u=t.get("cloudType"),u==="openstack"?(this.__terminateApp(e,null,h),!1):(h.tpl.find(".modal-footer").hide(),l=i(s.RESTYPE.DBINSTANCE,t.get("region")),l.fetchForce().then(function(t){return c.__terminateApp(e,l,h)}).fail(function(t){return t.awsError===403?c.__terminateApp(e,l,h):(h.close(),notification("error",r.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA),!1)}))},__terminateApp:function(t,i,o){var u,a,f,l,c;return u=App.model.appList().get(t),l=u.get("name"),c=u.get("usage")==="production",a=u.get("cloudType"),f=function(){var e;return a==="openstack"?(e=new Q.defer,e.resolve(),e.promise):u.fetchJsonData()},f().then(function(){var t,f,h,p;a==="openstack"?(h=null,p=[]):(t=u.getJsonData().component,h=_.filter(t,function(e){return e.type===s.RESTYPE.DBINSTANCE}),f=_.map(h,function(e){return e.resource.DBInstanceIdentifier}),p=i.filter(function(t){var n;return(n=t.get("DBInstanceIdentifier"),e.call(f,n)>=0)&&t.get("DBInstanceStatus")!=="available"})),o.tpl.find(".modal-body").html(n.terminateAppConfirm({production:c,name:l,hasDBInstance:h,notReadyDB:p})),o.tpl.find(".modal-footer").show(),o.resize(),(p!=null?p.length:void 0)&&o.tpl.find("#take-rds-snapshot").attr("checked",!1).change(function(){return o.tpl.find(".modal-confirm").attr("disabled",$(this).is(":checked"))}),$("#appNameConfirmIpt").on("keyup change",function(){$("#appNameConfirmIpt").val()===l?o.tpl.find(".modal-confirm").removeAttr("disabled"):o.tpl.find(".modal-confirm").attr("disabled","disabled")}),o.on("confirm",function(){var e;o.close(),e=o.tpl.find("#take-rds-snapshot").is(":checked"),u.terminate(null,{create_snapshot:e}).fail(function(e){var t;return t=e.awsError?e.error+"."+e.awsError:e.error,notification(sprintf(r.NOTIFY.ERROR_FAILED_TERMINATE,l,t))})})})},forgetApp:function(e){var t,r,i,s,u;return u=this,t=App.model.appList().get(e),i=t.get("name"),s=t.get("usage")==="production",r=new o({title:"Confirm to Forget App",template:n.loading(),confirm:{text:"Forget",color:"red",disabled:s},disableClose:!0}),r.tpl.find(".modal-footer").hide(),u.__forgetApp(e,r)},__forgetApp:function(e,t){var r,i,o,u,a,f,l,c;r=App.model.appList().get(e),u=r.get("name"),a=r.get("usage")==="production",o=!1;if(Design.instance().get("agent").enabled){l=Design.instance().serialize().component;for(f in l){i=l[f];if(((c=i.type)===s.RESTYPE.INSTANCE||c===s.RESTYPE.LC)&&i.state&&i.state.length>0){o=!0;break}null}}return r.fetchJsonData().then(function(){t.tpl.find(".modal-body").html(n.forgetAppConfirm({production:a,name:u,hasState:o})),t.tpl.find(".modal-footer").show(),t.resize(),o&&t.tpl.find(".modal-confirm").attr("disabled","disabled"),$("#appNameConfirmIpt").on("keyup change",function(){$("#appNameConfirmIpt").val()===u?t.tpl.find(".modal-confirm").removeAttr("disabled"):t.tpl.find(".modal-confirm").attr("disabled","disabled")}),t.on("confirm",function(){t.close(),r.terminate(!0).fail(function(e){var t;return t=e.awsError?e.error+"."+e.awsError:e.error,notification('Fail to forget your app "'+u+'". (ErrorCode: '+t+")")})})})}}),new c})}.call(this),define("component/AppAction",function(){});
+define('component/appactions/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.msg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn modal-close btn-red\" id=\"confirmRmStack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + "</button>\n    <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.removeStackConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-control-group\">\n            <label class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
+    + "</label>\n            <input id=\"confirmDupStackIpt\" class=\"input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.newName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-red\" id=\"confirmDupStack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
+    + "</button>\n    <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n            <li>\n                "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_CONFIRM_LIST_1", {hash:{},data:data}))
+    + "\n            </li>\n        ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n            <li>\n                "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_CONFIRM_LIST_2", {hash:{},data:data}))
+    + "\n            </li>\n        ";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n            <li>\n                "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_CONFIRM_LIST_3", {hash:{},data:data}))
+    + "\n            </li>\n        ";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <div class=\"modal-shrink\">\n            <div class=\"sub-gray\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_WARNNING", {hash:{},data:data}))
+    + "</div>\n            <div class=\"error\">\n                "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_MISSING_SNAPSHOT_1", {hash:{},data:data}))
+    + " ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.lostDBSnapshot), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_MISSING_SNAPSHOT_2", {hash:{},data:data}))
+    + "\n            </div>\n        </div>\n    ";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  var buffer = "", stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.index), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  return buffer;
+  }
+function program9(depth0,data) {
+  
+  
+  return ", ";
+  }
+
+  buffer += "<div class=\"modal-center-align-helper\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_START_APP", {hash:{},data:data}))
+    + "</div>\n    <ul class=\"modal-list-items\">\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasASG), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </ul>\n    ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.lostDBSnapshot)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.startAppConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div style=\"padding: 20px\">\n        <p><b style=\"color:#ec3c38;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
+    + "</b>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_ASG", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL", {hash:{},data:data}))
+    + "</p>\n        <div><input class=\"input\" style=\"width:351px;\" id=\"appNameConfirmIpt\"/></div>\n    </div>\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"modal-center-align-helper\" style=\"padding: 20px\">\n        <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_STOP_APP_LEFT", {hash:{},data:data}))
+    + " "
+    + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
+    + "</div>\n        <ul class=\"modal-list-items\">\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDBInstance), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasAsg), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        </ul>\n    </div>\n";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <li>\n                    "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STOP_CONFIRM_LIST_1", {hash:{},data:data}))
+    + "\n                    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasInstanceStore), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                </li>\n            ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<span class=\"error\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STOP_CONFIRM_LIST_1_SPAN", {hash:{},data:data}))
+    + "</span>";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                <li>\n                    "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STOP_CONFIRM_LIST_2", {hash:{},data:data}))
+    + "\n                    <span>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STOP_CONFIRM_LIST_2_SPAN", {hash:{},data:data}))
+    + "</span>\n                </li>\n            ";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                <li>\n                    "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STOP_CONFIRM_LIST_3", {hash:{},data:data}))
+    + "\n                    <span>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_STOP_CONFIRM_LIST_3_SPAN", {hash:{},data:data}))
+    + "</span>\n                </li>\n            ";
+  return buffer;
+  }
+
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProduction), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.stopAppConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"loading-spinner\"></div>";
+  };
+TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "(<span class=\"db-stop-status\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>)";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return ", ";
+  }
+
+  buffer += "<p>DB Instance\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cantStop), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_CANT_STOP_1", {hash:{},data:data}))
+    + "</p>\n<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_CANT_STOP_2", {hash:{},data:data}))
+    + "</p>";
+  return buffer;
+  };
+TEMPLATE.cantStop=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <p><b style=\"color:#ec3c38;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
+    + "</b>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_MSG", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
+    + "</p>\n        <div><input class=\"input\" style=\"width:390px;\" id=\"appNameConfirmIpt\"/></div>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <div class=\"modal-center-align-helper\"><div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_TERMINATE_APP_LEFT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_TERMINATE_APP_RIGHT", {hash:{},data:data}))
+    + "</div></div>\n    ";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <section class=\"check-final-snapshot checkbox-wrap\">\n            <div class=\"checkbox\">\n                <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n                <label for=\"take-rds-snapshot\"></label>\n            </div>\n            <label for=\"take-rds-snapshot\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_TAKE_DB_SNAPSHOT", {hash:{},data:data}))
+    + "</label>\n        </section>\n        ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <p class=\"cant-snapshot\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_CANT_TAKE_SNAPSHOT_1", {hash:{},data:data}))
+    + "\n                ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                "
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_CANT_TAKE_SNAPSHOT_2", {hash:{},data:data}))
+    + "</p>\n        ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "<span class=\"resource-tag\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>(<span class=\"db-stop-status\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>)";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  
+  return ", ";
+  }
+
+  buffer += "<div class=\"confirm-padding\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.terminateAppConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n        <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">This app is created by Visualops with state, do not support forget currently</div></div>\n    ";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    ";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <p><b style=\"color:#ec3c38;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
+    + "</b>Forget it will not make your service unavailable. but Visualops will stop ensure your state in all instances.</p>\n            <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
+    + "</p>\n            <div><input class=\"input\" style=\"width:390px;\" id=\"appNameConfirmIpt\"/></div>\n        ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  
+  return "\n            <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">Only remove app info from Visualops, all resources in the app will not be deleted. <br/>Do you confirm to forget app?</div></div>\n        ";
+  }
+
+  buffer += "<div class=\"confirm-padding\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasState), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.forgetAppConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<section class=\"disconnected-msg\">\n    <div>Connection lost. Attempting to reconnect…</div>\n    <div>Changes made now may not be saved.</div>\n</section>";
+  };
+TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE_CONTENT", (depth0 && depth0.name), {hash:{},data:data}))
+    + "</div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + "</button>\n    <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.forceTerminateApp=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+
+/*
+----------------------------
+  App Action Method
+----------------------------
+ */
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('AppAction',["backbone", "component/appactions/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus, ApiRequest, AwsKp, OsKp, TA) {
+    var AppAction;
+    AppAction = Backbone.View.extend({
+      runStack: function(event, workspace) {
+        var appNameDom, checkAppNameRepeat, cloudType, cost, self, that;
+        this.workspace = workspace;
+        cloudType = this.workspace.opsModel.get('cloudType');
+        that = this;
+        if ($(event.currentTarget).attr('disabled')) {
+          return false;
+        }
+        this.modal = new modalPlus({
+          title: lang.IDE.RUN_STACK_MODAL_TITLE,
+          template: MC.template.modalRunStack,
+          disableClose: true,
+          width: '450px',
+          confirm: {
+            text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
+            disabled: true
+          }
+        });
+        if (cloudType === 'openstack') {
+          this.modal.find(".estimate").hide();
+          this.modal.resize();
+        }
+        this.renderKpDropdown(this.modal, cloudType);
+        cost = Design.instance().getCost();
+        this.modal.tpl.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
+        this.modal.tpl.find("#label-total-fee").find('b').text("$" + cost.totalFee);
+        TA.loadModule('stack').then((function(_this) {
+          return function() {
+            var _ref;
+            _this.modal.resize();
+            return (_ref = _this.modal) != null ? _ref.toggleConfirm(false) : void 0;
+          };
+        })(this));
+        appNameDom = this.modal.tpl.find('#app-name');
+        checkAppNameRepeat = this.checkAppNameRepeat.bind(this);
+        appNameDom.keyup(function() {
+          return checkAppNameRepeat(appNameDom.val());
+        });
+        self = this;
+        this.modal.on('confirm', (function(_this) {
+          return function() {
+            var appNameRepeated;
+            _this.hideError();
+            if (!App.user.hasCredential()) {
+              App.showSettings(App.showSettings.TAB.Credential);
+              return false;
+            }
+            appNameRepeated = _this.checkAppNameRepeat(appNameDom.val());
+            if (!_this.defaultKpIsSet(cloudType) || appNameRepeated) {
+              return false;
+            }
+            _this.modal.tpl.find(".btn.modal-confirm").attr("disabled", "disabled");
+            _this.json = _this.workspace.design.serialize({
+              usage: 'runStack'
+            });
+            _this.json.usage = $("#app-usage-selectbox").find(".dropdown .item.selected").data('value');
+            _this.json.name = appNameDom.val();
+            return _this.workspace.opsModel.run(_this.json, appNameDom.val()).then(function(ops) {
+              self.modal.close();
+              return App.openOps(ops);
+            }, function(err) {
+              var error;
+              self.modal.close();
+              error = err.awsError ? err.error + "." + err.awsError : " " + err.error + " : " + (err.result || err.msg);
+              return notification('error', sprintf(lang.NOTIFY.FAILA_TO_RUN_STACK_BECAUSE_OF_XXX, self.workspace.opsModel.get('name'), error));
+            });
+          };
+        })(this));
+        App.user.on('change:credential', function() {
+          if (App.user.hasCredential() && that.modal.isOpen()) {
+            return that.modal.find(".modal-confirm").text(lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN);
+          }
+        });
+        return this.modal.on('close', function() {
+          return App.user.off('change:credential');
+        });
+      },
+      renderKpDropdown: function(modal, cloudType) {
+        var KeypairModel, defaultKp, hideKpError, keyPairDropdown, osKeypair;
+        if (cloudType === 'openstack') {
+          if (!OsKp.prototype.hasResourceWithDefaultKp()) {
+            return false;
+          }
+          osKeypair = new OsKp();
+          KeypairModel = Design.modelClassForType(constant.RESTYPE.OSKP);
+          defaultKp = _.find(KeypairModel.allObjects(), function(obj) {
+            return obj.get('name') === 'DefaultKP';
+          });
+          if (modal.isOpen()) {
+            modal.find("#kp-runtime-placeholder").html(osKeypair.render(defaultKp.get("keyName")).$el);
+          }
+          modal.tpl.find('.default-kp-group').show();
+          osKeypair.$input.on('change', function() {
+            return osKeypair.setDefaultKeyPair();
+          });
+          return false;
+        }
+        if (AwsKp.hasResourceWithDefaultKp()) {
+          keyPairDropdown = new AwsKp();
+          if (modal) {
+            modal.tpl.find("#kp-runtime-placeholder").html(keyPairDropdown.render().el);
+          } else {
+            return false;
+          }
+          hideKpError = this.hideError.bind(this);
+          keyPairDropdown.dropdown.on('change', function() {
+            return hideKpError('kp');
+          });
+          modal.tpl.find('.default-kp-group').show();
+          modal.on('close', function() {
+            return keyPairDropdown.remove();
+          });
+        }
+        return null;
+      },
+      hideError: function(type) {
+        var selector;
+        selector = type ? $("#runtime-error-" + type) : $(".runtime-error");
+        return selector.hide();
+      },
+      defaultKpIsSet: function(cloudType) {
+        var defaultKP, kpModal;
+        if (cloudType === 'openstack') {
+          if (OsKp.prototype.hasResourceWithDefaultKp() && OsKp.prototype.defaultKpNotSet()) {
+            this.showError('kp', lang.IDE.RUN_STACK_MODAL_KP_WARNNING);
+            return false;
+          } else {
+            return true;
+          }
+        }
+        if (!AwsKp.hasResourceWithDefaultKp()) {
+          return true;
+        }
+        kpModal = Design.modelClassForType(constant.RESTYPE.KP);
+        defaultKP = kpModal.getDefaultKP();
+        if (!defaultKP.get('isSet') || !((this.modal || this.updateModal) && (this.modal || this.updateModal).tpl.find("#kp-runtime-placeholder .item.selected").size())) {
+          this.showError('kp', lang.IDE.RUN_STACK_MODAL_KP_WARNNING);
+          return false;
+        }
+        return true;
+      },
+      checkAppNameRepeat: function(nameVal) {
+        if (App.model.appList().findWhere({
+          name: nameVal
+        })) {
+          this.showError('appname', lang.PROP.MSG_WARN_REPEATED_APP_NAME);
+          return true;
+        } else if (!nameVal) {
+          this.showError('appname', lang.PROP.MSG_WARN_NO_APP_NAME);
+          return true;
+        } else {
+          this.hideError('appname');
+          return false;
+        }
+      },
+      showError: function(id, msg) {
+        return $("#runtime-error-" + id).text(msg).show();
+      },
+      deleteStack: function(id, name) {
+        name = name || App.model.stackList().get(id).get("name");
+        modal(AppTpl.removeStackConfirm({
+          msg: sprintf(lang.TOOLBAR.POP_BODY_DELETE_STACK, name)
+        }));
+        $("#confirmRmStack").on("click", function() {
+          var opsModel, p;
+          opsModel = App.model.stackList().get(id);
+          p = opsModel.remove();
+          if (opsModel.isPersisted()) {
+            return p.then(function() {
+              return notification("info", sprintf(lang.NOTIFY.ERR_DEL_STACK_SUCCESS, name));
+            }, function() {
+              return notification("error", sprintf(lang.NOTIFY.ERR_DEL_STACK_FAILED, name));
+            });
+          }
+        });
+      },
+      duplicateStack: function(id) {
+        var opsModel;
+        opsModel = App.model.stackList().get(id);
+        if (!opsModel) {
+          return;
+        }
+        opsModel.fetchJsonData().then(function() {
+          return App.openOps(App.model.createStackByJson(opsModel.getJsonData()));
+        }, function() {
+          return notification("error", lang.NOTIFY.ERROR_CANT_DUPLICATE);
+        });
+      },
+      startApp: function(id) {
+        var app, startAppModal;
+        app = App.model.appList().get(id);
+        startAppModal = new modalPlus({
+          template: AppTpl.loading(),
+          title: lang.TOOLBAR.TIP_START_APP,
+          confirm: {
+            text: lang.TOOLBAR.POP_BTN_START_APP,
+            color: 'blue',
+            disabled: false
+          },
+          disableClose: true
+        });
+        startAppModal.tpl.find('.modal-footer').hide();
+        return this.checkBeforeStart(app).then(function(result) {
+          var awsError, hasASG, hasDBInstance, hasEC2Instance, lostDBSnapshot;
+          hasEC2Instance = result.hasEC2Instance, hasDBInstance = result.hasDBInstance, hasASG = result.hasASG, lostDBSnapshot = result.lostDBSnapshot, awsError = result.awsError;
+          if (awsError && awsError !== 403) {
+            startAppModal.close();
+            notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
+            return false;
+          }
+          startAppModal.tpl.find('.modal-footer').show();
+          startAppModal.tpl.find('.modal-body').html(AppTpl.startAppConfirm({
+            hasEC2Instance: hasEC2Instance,
+            hasDBInstance: hasDBInstance,
+            hasASG: hasASG,
+            lostDBSnapshot: lostDBSnapshot
+          }));
+          startAppModal.on('confirm', function() {
+            startAppModal.close();
+            App.model.appList().get(id).start().fail(function(err) {
+              var error;
+              error = err.awsError ? err.error + "." + err.awsError : err.error;
+              notification('error', sprintf(lang.NOTIFY.ERROR_FAILED_START, name, error));
+            });
+          });
+        });
+      },
+      checkBeforeStart: function(app) {
+        var cloudType, comp, defer;
+        comp = null;
+        cloudType = app.get("cloudType");
+        defer = new Q.defer();
+        if (cloudType === "openstack") {
+          console.log("CloudType is OpenStack");
+          defer.resolve({});
+        } else {
+          ApiRequest("app_info", {
+            region_name: app.get("region"),
+            app_ids: [app.get("id")]
+          }).then(function(ds) {
+            return comp = ds[0].component;
+          }).then(function() {
+            var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
+            name = App.model.appList().get(id).get("name");
+            hasEC2Instance = !!(_.filter(comp, function(e) {
+              return e.type === constant.RESTYPE.INSTANCE;
+            })).length;
+            hasDBInstance = !!(_.filter(comp, function(e) {
+              return e.type === constant.RESTYPE.DBINSTANCE;
+            })).length;
+            hasASG = !!(_.filter(comp, function(e) {
+              return e.type === constant.RESTYPE.ASG;
+            })).length;
+            dbInstance = _.filter(comp, function(e) {
+              return e.type === constant.RESTYPE.DBINSTANCE;
+            });
+            snapshots = CloudResources(constant.RESTYPE.DBSNAP, app.get("region"));
+            awsError = null;
+            return snapshots.fetchForce().fail(function(error) {
+              return awsError = error.awsError;
+            })["finally"](function() {
+              var lostDBSnapshot;
+              lostDBSnapshot = _.filter(dbInstance, function(e) {
+                return e.resource.DBSnapshotIdentifier && !snapshots.findWhere({
+                  id: e.resource.DBSnapshotIdentifier
+                });
+              });
+              return defer.resolve({
+                hasEC2Instance: hasEC2Instance,
+                hasDBInstance: hasDBInstance,
+                hasASG: hasASG,
+                lostDBSnapshot: lostDBSnapshot,
+                awsError: awsError
+              });
+            });
+          });
+        }
+        return defer.promise;
+      },
+      checkBeforeStop: function(app) {
+        var cloudType, defer, resourceList;
+        cloudType = app.get('cloudType');
+        if (cloudType === "openstack") {
+          console.log("CloudType is OpenStack");
+          defer = new Q.defer();
+          defer.resolve();
+          return defer.promise;
+        } else {
+          resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
+          return resourceList.fetchForce();
+        }
+      },
+      stopApp: function(id) {
+        var app, appName, awsError, cloudType, isProduction, name, stopModal, that;
+        app = App.model.appList().get(id);
+        name = app.get("name");
+        that = this;
+        cloudType = app.get('cloudType');
+        isProduction = app.get('usage') === "production";
+        appName = app.get('name');
+        stopModal = new modalPlus({
+          template: AppTpl.loading(),
+          title: isProduction ? lang.TOOLBAR.POP_TIT_STOP_PRD_APP : lang.TOOLBAR.POP_TIT_STOP_APP,
+          confirm: {
+            text: lang.TOOLBAR.POP_BTN_STOP_APP,
+            color: 'red',
+            disabled: isProduction
+          },
+          disableClose: true
+        });
+        stopModal.tpl.find(".modal-footer").hide();
+        awsError = null;
+        return this.checkBeforeStop(app).fail(function(error) {
+          console.log(error);
+          if (error.awsError) {
+            return awsError = error.awsError;
+          }
+        })["finally"](function() {
+          var resourceList;
+          resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
+          if (awsError && awsError !== 403) {
+            stopModal.close();
+            notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
+            return false;
+          }
+          if (cloudType === 'openstack') {
+            stopModal.tpl.find(".modal-footer").show();
+            stopModal.tpl.find('.modal-body').css('padding', "0").html(AppTpl.stopAppConfirm({
+              isProduction: isProduction,
+              appName: appName
+            }));
+            stopModal.resize();
+            $("#appNameConfirmIpt").on("keyup change", function() {
+              if ($("#appNameConfirmIpt").val() === name) {
+                return stopModal.tpl.find('.modal-confirm').removeAttr("disabled");
+              } else {
+                return stopModal.tpl.find('.modal-confirm').attr("disabled", "disabled");
+              }
+            });
+          } else {
+            app.fetchJsonData().then(function() {
+              var amiRes, com, comp, imageId, toFetch, toFetchArray, uid;
+              comp = app.getJsonData().component;
+              toFetch = {};
+              for (uid in comp) {
+                com = comp[uid];
+                if (com.type === constant.RESTYPE.INSTANCE || com.type === constant.RESTYPE.LC) {
+                  imageId = com.resource.ImageId;
+                  if (imageId) {
+                    toFetch[imageId] = true;
+                  }
+                }
+              }
+              toFetchArray = _.keys(toFetch);
+              amiRes = CloudResources(constant.RESTYPE.AMI, app.get("region"));
+              return amiRes.fetchAmis(_.keys(toFetch)).then(function() {
+                var dbInstanceName, hasAsg, hasDBInstance, hasEC2Instance, hasInstanceStore, hasNotReadyDB, _ref, _ref1;
+                hasInstanceStore = false;
+                amiRes.each(function(e) {
+                  var _ref;
+                  if ((_ref = e.id, __indexOf.call(toFetchArray, _ref) >= 0) && e.get("rootDeviceType") === 'instance-store') {
+                    return hasInstanceStore = true;
+                  }
+                });
+                hasEC2Instance = (_ref = _.filter(comp, function(e) {
+                  return e.type === constant.RESTYPE.INSTANCE;
+                })) != null ? _ref.length : void 0;
+                hasDBInstance = _.filter(comp, function(e) {
+                  return e.type === constant.RESTYPE.DBINSTANCE;
+                });
+                dbInstanceName = _.map(hasDBInstance, function(e) {
+                  return e.resource.DBInstanceIdentifier;
+                });
+                hasNotReadyDB = resourceList.filter(function(e) {
+                  var _ref1;
+                  return (_ref1 = e.get('DBInstanceIdentifier'), __indexOf.call(dbInstanceName, _ref1) >= 0) && e.get('DBInstanceStatus') !== 'available';
+                });
+                hasAsg = (_ref1 = _.filter(comp, function(e) {
+                  return e.type === constant.RESTYPE.ASG;
+                })) != null ? _ref1.length : void 0;
+                stopModal.tpl.find(".modal-footer").show();
+                if (hasNotReadyDB && hasNotReadyDB.length) {
+                  stopModal.tpl.find('.modal-body').html(AppTpl.cantStop({
+                    cantStop: hasNotReadyDB
+                  }));
+                  stopModal.tpl.find('.modal-confirm').remove();
+                } else {
+                  hasDBInstance = hasDBInstance != null ? hasDBInstance.length : void 0;
+                  stopModal.tpl.find('.modal-body').css('padding', "0").html(AppTpl.stopAppConfirm({
+                    isProduction: isProduction,
+                    appName: appName,
+                    hasEC2Instance: hasEC2Instance,
+                    hasDBInstance: hasDBInstance,
+                    hasAsg: hasAsg,
+                    hasInstanceStore: hasInstanceStore
+                  }));
+                }
+                stopModal.resize();
+                return $("#appNameConfirmIpt").on("keyup change", function() {
+                  if ($("#appNameConfirmIpt").val() === name) {
+                    return stopModal.tpl.find('.modal-confirm').removeAttr("disabled");
+                  } else {
+                    return stopModal.tpl.find('.modal-confirm').attr("disabled", "disabled");
+                  }
+                });
+              });
+            });
+          }
+          return stopModal.on("confirm", function() {
+            stopModal.close();
+            return app.stop().fail(function(err) {
+              var error;
+              console.log(err);
+              error = err.awsError ? err.error + "." + err.awsError : err.error;
+              return notification(sprintf(lang.NOTIFY.ERROR_FAILED_STOP, name, error));
+            });
+          });
+        });
+      },
+      terminateApp: function(id) {
+        var app, cloudType, name, production, resourceList, self, terminateConfirm;
+        self = this;
+        app = App.model.appList().get(id);
+        name = app.get("name");
+        production = app.get("usage") === 'production';
+        terminateConfirm = new modalPlus({
+          title: production ? lang.TOOLBAR.POP_TIT_TERMINATE_PRD_APP : lang.TOOLBAR.POP_TIT_TERMINATE_APP,
+          template: AppTpl.loading(),
+          confirm: {
+            text: lang.TOOLBAR.POP_BTN_TERMINATE_APP,
+            color: "red",
+            disabled: production
+          },
+          disableClose: true
+        });
+        cloudType = app.get('cloudType');
+        if (cloudType === 'openstack') {
+          this.__terminateApp(id, null, terminateConfirm);
+          return false;
+        }
+        terminateConfirm.tpl.find('.modal-footer').hide();
+        resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
+        return resourceList.fetchForce().then(function(result) {
+          return self.__terminateApp(id, resourceList, terminateConfirm);
+        }).fail(function(error) {
+          if (error.awsError === 403) {
+            return self.__terminateApp(id, resourceList, terminateConfirm);
+          } else {
+            terminateConfirm.close();
+            notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
+            return false;
+          }
+        });
+      },
+      __terminateApp: function(id, resourceList, terminateConfirm) {
+        var app, cloudType, fetchJsonData, name, production;
+        app = App.model.appList().get(id);
+        name = app.get("name");
+        production = app.get("usage") === 'production';
+        cloudType = app.get('cloudType');
+        fetchJsonData = function() {
+          var defer;
+          if (cloudType === 'openstack') {
+            defer = new Q.defer();
+            defer.resolve();
+            return defer.promise;
+          } else {
+            return app.fetchJsonData();
+          }
+        };
+        return fetchJsonData().then(function() {
+          var comp, dbInstanceName, hasDBInstance, notReadyDB;
+          if (cloudType === 'openstack') {
+            hasDBInstance = null;
+            notReadyDB = [];
+          } else {
+            comp = app.getJsonData().component;
+            hasDBInstance = _.filter(comp, function(e) {
+              return e.type === constant.RESTYPE.DBINSTANCE;
+            });
+            dbInstanceName = _.map(hasDBInstance, function(e) {
+              return e.resource.DBInstanceIdentifier;
+            });
+            notReadyDB = resourceList.filter(function(e) {
+              var _ref;
+              return (_ref = e.get('DBInstanceIdentifier'), __indexOf.call(dbInstanceName, _ref) >= 0) && e.get('DBInstanceStatus') !== 'available';
+            });
+          }
+          terminateConfirm.tpl.find('.modal-body').html(AppTpl.terminateAppConfirm({
+            production: production,
+            name: name,
+            hasDBInstance: hasDBInstance,
+            notReadyDB: notReadyDB
+          }));
+          terminateConfirm.tpl.find('.modal-footer').show();
+          terminateConfirm.resize();
+          if (notReadyDB != null ? notReadyDB.length : void 0) {
+            terminateConfirm.tpl.find("#take-rds-snapshot").attr("checked", false).change(function() {
+              return terminateConfirm.tpl.find(".modal-confirm").attr('disabled', $(this).is(":checked"));
+            });
+          }
+          $("#appNameConfirmIpt").on("keyup change", function() {
+            if ($("#appNameConfirmIpt").val() === name) {
+              terminateConfirm.tpl.find('.modal-confirm').removeAttr("disabled");
+            } else {
+              terminateConfirm.tpl.find('.modal-confirm').attr("disabled", "disabled");
+            }
+          });
+          terminateConfirm.on("confirm", function() {
+            var takeSnapshot;
+            terminateConfirm.close();
+            takeSnapshot = terminateConfirm.tpl.find("#take-rds-snapshot").is(':checked');
+            app.terminate(null, {
+              create_snapshot: takeSnapshot
+            }).fail(function(err) {
+              var error;
+              error = err.awsError ? err.error + "." + err.awsError : err.error;
+              return notification(sprintf(lang.NOTIFY.ERROR_FAILED_TERMINATE, name, error));
+            });
+          });
+        });
+      },
+      forgetApp: function(id) {
+        var app, forgetConfirm, name, production, self;
+        self = this;
+        app = App.model.appList().get(id);
+        name = app.get("name");
+        production = app.get("usage") === 'production';
+        forgetConfirm = new modalPlus({
+          title: "Confirm to Forget App",
+          template: AppTpl.loading(),
+          confirm: {
+            text: "Forget",
+            color: "red",
+            disabled: production
+          },
+          disableClose: true
+        });
+        forgetConfirm.tpl.find('.modal-footer').hide();
+        return self.__forgetApp(id, forgetConfirm);
+      },
+      __forgetApp: function(id, forgetConfirm) {
+        var app, comp, hasState, name, production, uid, _ref, _ref1;
+        app = App.model.appList().get(id);
+        name = app.get("name");
+        production = app.get("usage") === 'production';
+        hasState = false;
+        if (Design.instance().get("agent").enabled) {
+          _ref = Design.instance().serialize().component;
+          for (uid in _ref) {
+            comp = _ref[uid];
+            if (((_ref1 = comp.type) === constant.RESTYPE.INSTANCE || _ref1 === constant.RESTYPE.LC) && comp.state && comp.state.length > 0) {
+              hasState = true;
+              break;
+            }
+            null;
+          }
+        }
+        return app.fetchJsonData().then(function() {
+          forgetConfirm.tpl.find('.modal-body').html(AppTpl.forgetAppConfirm({
+            production: production,
+            name: name,
+            hasState: hasState
+          }));
+          forgetConfirm.tpl.find('.modal-footer').show();
+          forgetConfirm.resize();
+          if (hasState) {
+            forgetConfirm.tpl.find('.modal-confirm').attr("disabled", "disabled");
+          }
+          $("#appNameConfirmIpt").on("keyup change", function() {
+            if ($("#appNameConfirmIpt").val() === name) {
+              forgetConfirm.tpl.find('.modal-confirm').removeAttr("disabled");
+            } else {
+              forgetConfirm.tpl.find('.modal-confirm').attr("disabled", "disabled");
+            }
+          });
+          forgetConfirm.on("confirm", function() {
+            forgetConfirm.close();
+            app.terminate(true).fail(function(err) {
+              var error;
+              error = err.awsError ? err.error + "." + err.awsError : err.error;
+              return notification("Fail to forget your app \"" + name + "\". (ErrorCode: " + error + ")");
+            });
+          });
+        });
+      }
+    });
+    return new AppAction();
+  });
+
+}).call(this);
+
+
+define("component/AppAction", function(){});

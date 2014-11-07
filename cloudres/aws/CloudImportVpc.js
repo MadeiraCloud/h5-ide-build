@@ -1,1 +1,1951 @@
-(function(){var e=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define(["CloudResources","cloudres/CrCollection","constant","ApiRequest","DiffTree"],function(t,n,r,i,s){var o,u,a,f,l,c,h,p,d;u=function(e,t){return e?t?"@{"+(e.uid||e)+"."+t+"}":"@{"+(e.uid||e)+".r.p}":""},c=MC.guid,o=function(e,t){var n;return n=r.AWS_RESOURCE_KEY[t],e[n]||e.resource&&e.resource[n]},l=function(e){var t;return t=null,e.tagSet&&(t=e.tagSet.name||e.tagSet.Name||e.tagSet["aws:cloudformation:logical-id"]),t},a=function(){function e(e,t,n){this.region=e,this.vpcId=t,this.azs={},this.subnets={},this.instances={},this.enis={},this.gateways={},this.volumes={},this.sgs={},this.iams={},this.elbs={},this.lcs={},this.asgs={},this.topics={},this.sps={},this.sbgs={},this.dbinstances={},this.ogs={},this.ins_in_asg=[],this.component={},this.layout={},this.originalJson=jQuery.extend(!0,{component:[],layout:[]},n),this.originAppJSON=n,this.DEFAULT_KP=null,this.COMPARISONOPERATOR={GreaterThanOrEqualToThreshold:">=",GreaterThanThreshold:">",LessThanThreshold:"<",LessThanOrEqualToThreshold:"<="}}return e.prototype.CrPartials=function(e){return t(r.RESTYPE[e],this.region)},e.prototype.getResourceByType=function(e){return t(r.RESTYPE[e],this.region).filter(function(e){return function(t){return t.RES_TAG===e.vpcId||t.get("vpcId")===e.vpcId}}(this))},e.prototype.add=function(e,t,n){var i,s,u;return u=r.RESTYPE[e],t&&t.uid?(this.component[t.uid]=t,t):(s=this.getOriginalComp(t,u),s?(_.extend(s.resource,t),this.component[s.uid]=s,this.component[s.uid]):(i={uid:c(),name:n||o(t,u)||e,type:u,resource:t},this.component[i.uid]=i,i))},e.prototype.addLayout=function(e,t,n){var r;r=this.originalJson.layout[e.uid],r||(r={uid:e.uid,coordinate:[0,0]},t&&(r.size=[0,0]),n&&(r.groupUId=n.uid)),this.layout[r.uid]=r},e.prototype.addExpandedAsg=function(e,t){var n,r,i,s;s=this.originalJson.layout;for(n in s){i=s[n];if(i.type==="ExpandedAsg"&&i.originalId===e.uid&&i.groupUId===t.uid){r=this.originalJson.layout[i.uid];break}}r||(r={uid:c(),coordinate:[0,0],originalId:e.uid,type:"ExpandedAsg",groupUId:t.uid}),this.layout[r.uid]=r},e.prototype.addAz=function(e){var t,n;return t=this.azs[e],t?t:(n=this.getOriginalComp(e,"AZ"),n||(n={RegionName:this.region,ZoneName:e}),t=this.add("AZ",n,e),this.addLayout(t,!0,this.theVpc),this.azs[e]=t,t)},e.prototype.addIAM=function(e){var t,n,r,i,s;return t=this.iams[e],t?t:(i=/arn:aws:iam::.*:server-certificate\/.*/g,e.match(i)?(s=e.split(":"),r=s[s.length-1].replace("server-certificate/",""),n={CertificateBody:"",CertificateChain:"",PrivateKey:"",ServerCertificateMetadata:{Arn:e,ServerCertificateId:"",ServerCertificateName:r}},t=this.add("IAM",n,r),this.iams[e]=t,t):(void 0,null))},e.prototype.addTopic=function(e){var t,n,r,i;return n=this.topics[e],n?n:(i={TopicArn:e},t=e.split(":"),t.length>0&&(r=t[t.length-1]),n=this.add("TOPIC",i,r),this.topics[e]=n,n)},e.prototype.getOriginalComp=function(e,t){var n,i,s,o,u,a;if(t===r.RESTYPE.NC){u=this.originalJson.component;for(o in u){n=u[o];if(n.type!==t)continue;if(n.resource.AutoScalingGroupName===e.AutoScalingGroupName&&n.resource.TopicARN===e.TopicARN)return n}}else{t=r.RESTYPE[t]||t,s=r.AWS_RESOURCE_KEY[t],i=_.isObject(e)?e[s]:e;if(!i)return null;a=this.originalJson.component;for(o in a){n=a[o];if(n.type!==t)continue;if((n[s]||n.resource[s])===i)return n}}return null},e.prototype._mapProperty=function(e,t){var n,r,i;for(n in e)r=e[n],((i=typeof r)==="string"||i==="number"||i==="boolean")&&t[n[0].toUpperCase()+n.slice(1)]!==void 0&&(t[n[0].toUpperCase()+n.slice(1)]=r);return t},e.prototype._genCompMap=function(e){var t,n,i,s,o;n={},o=e.component;for(s in o){t=o[s],i=r.AWS_RESOURCE_KEY[t.type];if(!t.resource)continue;if(!i)continue;t.resource[i]||void 0,n[t.resource[i]]={uid:s,name:t.name}}return n},e.prototype._removeAppId=function(e){var t,n;return t=/app-[a-z0-9]{8}$/g,n=e.match(t),n&&n.length===1&&(e=e.replace(n[0],"")),e},e}(),f=[function(){var t,n,i,s,o,u,a;s=["AWS.EC2.Tag","AWS.AutoScaling.Tag",r.RESTYPE.KP,r.RESTYPE.TOPIC,r.RESTYPE.SUBSCRIPTION,r.RESTYPE.IAM,r.RESTYPE.DHCP],u=this.originalJson.component;for(o in u)t=u[o],!this.component[o]&&(a=t.type,e.call(s,a)>=0)&&(n=this.add(null,t),t.type===r.RESTYPE.IAM?this.iams[t.resource.ServerCertificateMetadata.Arn]=n:t.type===r.RESTYPE.KP&&t.name==="DefaultKP"&&(this.DEFAULT_KP=jQuery.extend(!0,{},t),this.component[t.uid]=this.DEFAULT_KP)),null;return this.DEFAULT_KP||(i={KeyFingerprint:"",KeyName:"DefaultKP"},this.add("KP",i,"DefaultKP")),null},function(){var e,t;e=this.getResourceByType("VPC")[0],this.theVpc=t=this.add("VPC",{VpcId:this.vpcId,CidrBlock:e.attributes.cidrBlock,DhcpOptionsId:e.attributes.dhcpOptionsId,InstanceTenancy:e.attributes.instanceTenancy,EnableDnsHostnames:e.attributes.enableDnsHostnames,EnableDnsSupport:e.attributes.enableDnsSupport},l(e.attributes)||this.vpcId),this.addLayout(t,!0)},function(){var e,t,n,r,i,s,o;o=this.getResourceByType("SUBNET")||[];for(t=i=0,s=o.length;i<s;t=++i)n=o[t],n=n.attributes,e=this.addAz(n.availabilityZone),r=this.add("SUBNET",{AvailabilityZone:u(e,"resource.ZoneName"),CidrBlock:n.cidrBlock,SubnetId:n.id,VpcId:u(this.theVpc,"resource.VpcId")},l(n)||n.id),this.subnets[n.id]=r,this.addLayout(r,!0,e)},function(){var e,t,n,r,i,s;s=this.getResourceByType("IGW")||[];for(r=0,i=s.length;r<i;r++){e=s[r],e=e.attributes;if(!(e.attachmentSet&&e.attachmentSet.length>0))continue;n={AttachmentSet:[{VpcId:u(this.theVpc,"resource.VpcId")}],InternetGatewayId:e.id},t=this.add("IGW",n,"Internet-gateway"),this.addLayout(t,!0,this.theVpc),this.gateways[e.id]=t}},function(){var e,t,n,r,i,s,o,a;o=this.getResourceByType("VGW");for(i=0,s=o.length;i<s;i++){e=o[i],e=e.attributes;if((a=e.state)==="deleted"||a==="deleting")continue;e.attachments&&e.attachments.length>0&&(t=e.attachments[0]),r={Attachments:[{VpcId:u(this.theVpc,"resource.VpcId")}],Type:e.type,VpnGatewayId:""},r.VpnGatewayId=e.id,n=this.add("VGW",r,"VPN-gateway"),this.addLayout(n,!0,this.theVpc),this.gateways[e.id]=n}},function(){var e,t,n,r,i,s,o;s=this.getResourceByType("CGW");for(r=0,i=s.length;r<i;r++){e=s[r],e=e.attributes;if((o=e.state)==="deleted"||o==="deleting")continue;n={BgpAsn:"bgpAsn"in e?e.bgpAsn:"",CustomerGatewayId:e.id,IpAddress:e.ipAddress,Type:e.type},t=this.add("CGW",n,l(e)),delete this.component[t.uid],this.gateways[e.id]=t}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v;h=this.getResourceByType("VPN");for(o=0,f=h.length;o<f;o++){e=h[o],e=e.attributes;if((p=e.state)==="deleted"||p==="deleting")continue;r=this.gateways[e.vpnGatewayId],t=this.gateways[e.customerGatewayId];if(!t||!r)continue;s={CustomerGatewayId:u(t,"resource.CustomerGatewayId"),Options:{StaticRoutesOnly:!1},Routes:[],Type:e.type,VpnConnectionId:e.id,VpnGatewayId:u(r,"resource.VpnGatewayId")},e.options&&e.options.staticRoutesOnly&&(s.Options.StaticRoutesOnly=e.options.staticRoutesOnly,t.resource.BgpAsn="");if(e.routes){d=e.routes;for(a=0,c=d.length;a<c;a++){n=d[a];if((v=n.state)==="deleting"||v==="deleted")continue;s.Routes.push({DestinationCidrBlock:n.destinationCidrBlock})}}i=this.add("VPN",s,l(e)),this.component[t.uid]=t,this.addLayout(t,!1)}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v,m,g,y,b,w,E,S,x,T,N,C,k;h=this,a={},r=function(e,t){var n;h=this,String(e.ipProtocol)==="-1"&&(e.fromPort="0",e.toPort="65535");if(e.groups&&e.groups.length>0)return _.each(e.groups,function(n){var r,i,s;if(n.groupId)return r="",s=n.groupId,i=a[s],i?r=u(i,"resource.GroupId"):r=n.groupId,t.push({FromPort:String(e.fromPort?e.fromPort:""),IpProtocol:String(e.ipProtocol),IpRanges:r,ToPort:String(e.toPort?e.toPort:"")})});if(e.ipRanges&&e.ipRanges.length>0)return n=e.ipRanges,_.each(n,function(n){return t.push({FromPort:String(e.fromPort?e.fromPort:""),IpProtocol:String(e.ipProtocol),IpRanges:n.cidrIp,ToPort:String(e.toPort?e.toPort:"")})})},T=this.getResourceByType("SG");for(m=0,w=T.length;m<w;m++)e=T[m],i=e.attributes.groupId,o=this.getOriginalComp(i,"SG"),o&&(a[i]=o);v=null,p=null,N=this.getResourceByType("SG");for(g=0,E=N.length;g<E;g++){e=N[g],e=e.attributes,f={Default:!1,GroupDescription:"",GroupId:"",GroupName:"",IpPermissions:[],IpPermissionsEgress:[],VpcId:""},f=this._mapProperty(e,f),s=this.getOriginalComp(e.id,"SG"),s&&(f.GroupName=s.resource.GroupName),d=this.getOriginalComp(e.vpcId,"VPC"),d&&(f.VpcId=u(d.uid,"resource.VpcId")),f.GroupDescription=e.groupDescription;if(e.ipPermissions){C=e.ipPermissions||[];for(y=0,S=C.length;y<S;y++)c=C[y],r.call(this,c,f.IpPermissions)}if(e.ipPermissionsEgress){k=e.ipPermissionsEgress||[];for(b=0,x=k.length;b<x;b++)c=k[b],r.call(this,c,f.IpPermissionsEgress)}o=this.add("SG",f,l(e)||this._removeAppId(e.groupName)),e.groupName==="default"?v=e:e.groupName.indexOf("-DefaultSG-app-")!==-1&&(p=e),this.sgs[e.id]=o}p&&v&&(n=this.sgs[v.id],delete this.sgs[v.id],delete this.component[n.uid],v=null),t=p||v,t&&(t=this.sgs[t.id]),t&&(t.name="DefaultSG",t.resource.Default=!0),_.each(h.sgs,function(e){return _.each(e.resource.IpPermissions,function(e){var t,n;if(e.IpRanges&&e.IpRanges.indexOf("sg-")===0){n=h.sgs[e.IpRanges];if(n)return t=u(n,"resource.GroupId"),e.IpRanges=t}}),_.each(e.resource.IpPermissionsEgress,function(e){var t,n;if(e.IpRanges&&e.IpRanges.indexOf("sg-")===0){n=h.sgs[e.IpRanges];if(n)return t=u(n,"resource.GroupId"),e.IpRanges=t}})})},function(){var e,t,n,r,i,s,o,a;a=this.getResourceByType("VOL");for(s=0,o=a.length;s<o;s++){e=a[s],e=e.attributes;if(!e.attachmentSet)continue;t=this.azs[e.availabilityZone],i={VolumeId:e.id,Size:Number(e.size),SnapshotId:e.snapshotId?e.snapshotId:"",Iops:e.iops?e.iops:"",VolumeType:e.volumeType,AvailabilityZone:u(t,"resource.ZoneName")},e.volumeType==="gp2"&&(i.Iops=""),e.attachmentSet&&(n=this.instances[e.attachmentSet[0].instanceId],n&&(i.AttachmentSet.Device=e.attachmentSet[0].device,i.AttachmentSet.InstanceId=u(n,"resource.InstanceId"))),r=this.add("VOL",i,e.attachmentSet[0].device),delete this.component[r.uid],this.volumes[e.id]=r}},function(){var t,n,r,i,s,o,a,f,c,h,p,d,v,m,g,y,b,w;o=this,g=this.getResourceByType("ASG");for(p=0,v=g.length;p<v;p++)t=g[p],t=t.attributes,_.each(t.Instances,function(e,t){return o.ins_in_asg.push(e.InstanceId)});y=this.getResourceByType("INSTANCE")||[];for(d=0,m=y.length;d<m;d++){n=y[d],n=n.attributes;if(n.tagSet&&n.tagSet["aws:elasticmapreduce:instance-group-role"]&&n.tagSet["aws:elasticmapreduce:job-flow-id"]){void 0;continue}if((b=n.instanceState.name)==="shutting-down"||b==="terminated")continue;if(w=n.id,e.call(this.ins_in_asg,w)>=0)continue;r=this.addAz(n.placement.availabilityZone),c=this.subnets[n.subnetId];if(!c)continue;s={BlockDeviceMapping:[],DisableApiTermination:!1,EbsOptimized:"",ImageId:"",InstanceId:"",InstanceType:"",KeyName:"",Monitoring:"",NetworkInterface:[],Placement:{Tenancy:"",AvailabilityZone:""},SecurityGroup:[],SecurityGroupId:[],ShutdownBehavior:"",SubnetId:"",UserData:{Base64Encoded:!1,Data:""},VpcId:""},s=this._mapProperty(n,s),s.SubnetId=u(c,"resource.SubnetId"),s.VpcId=u(this.theVpc,"resource.VpcId"),s.Placement.AvailabilityZone=u(r,"resource.ZoneName"),s.Placement.Tenancy=n.placement.tenancy,n.monitoring&&n.monitoring&&(s.Monitoring=n.monitoring.state),n.placement.tenancy==="default"&&(s.Placement.Tenancy=""),n.shutdownBehavior||(s.ShutdownBehavior="terminate"),s.InstanceId=n.id,s.EbsOptimized=n.ebsOptimized,a=this.getOriginalComp(n.id,"INSTANCE"),h=[],n.rootDeviceType==="ebs"&&(a&&(s.BlockDeviceMapping=a.resource.BlockDeviceMapping||[],s.BlockDeviceMapping=_.filter(s.BlockDeviceMapping,function(e){return _.isString(e)?!1:!0})),f=[],_.each(n.blockDeviceMapping,function(e){var t,r;if(n.rootDeviceName.indexOf(e.deviceName)!==-1){r=o.volumes[e.ebs.volumeId];if(r)return t={DeviceName:e.deviceName,Ebs:{SnapshotId:r.resource.SnapshotId,VolumeSize:r.resource.Size,VolumeType:r.resource.VolumeType}},r.resource.VolumeType==="io1"&&(t.Ebs.Iops=r.resource.Iops),f.push(t)}}),s.BlockDeviceMapping.length!==f.length&&(s.BlockDeviceMapping=f)),_.each(n.blockDeviceMapping||[],function(e){var t;if(n.rootDeviceType==="instance-store"||n.rootDeviceName.indexOf(e.deviceName)===-1){t=o.volumes[e.ebs.volumeId];if(t)return o.component[t.uid]=t,h.push(t.uid)}}),i=this.add("INSTANCE",s,l(n)),_.each(h,function(e,t){var n;n=o.component[e];if(n)return n.resource.AttachmentSet||(n.resource.AttachmentSet={}),n.resource.AttachmentSet.InstanceId=u(i,"resource.InstanceId")}),this.addLayout(i,!1,c),this.instances[n.id]=i}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v,m,g,y,b,w,E;m=this.getResourceByType("ENI")||[];for(f=0,p=m.length;f<p;f++){e=m[f],e=e.attributes,t=this.addAz(e.availabilityZone),a=this.subnets[e.subnetId];if(!a)continue;r={AssociatePublicIpAddress:!1,Attachment:{AttachmentId:"",DeviceIndex:"1",InstanceId:""},AvailabilityZone:"",Description:"",GroupSet:[],NetworkInterfaceId:"",PrivateIpAddressSet:[],SourceDestCheck:!0,SubnetId:"",VpcId:""};if(e.attachment&&e.attachment.instanceOwnerId&&((g=e.attachment.instanceOwnerId)==="amazon-elb"||g==="amazon-rds"))continue;r=this._mapProperty(e,r),e.association&&e.association.publicIp&&(r.AssociatePublicIpAddress=!0),r.NetworkInterfaceId=e.id,r.AvailabilityZone=u(t,"resource.ZoneName"),r.SubnetId=u(a,"resource.SubnetId"),r.VpcId=u(this.theVpc,"resource.VpcId"),e.attachment&&((y=e.attachment.deviceIndex)!=="0"&&y!==0&&(r.Attachment.AttachmentId=e.attachment.attachmentId),s=this.instances[e.attachment.instanceId],s&&(r.Attachment.InstanceId=u(s,"resource.InstanceId"),r.Attachment.DeviceIndex=String(e.attachment.deviceIndex===0?"0":e.attachment.deviceIndex))),b=e.privateIpAddressesSet;for(c=0,d=b.length;c<d;c++)o=b[c],r.PrivateIpAddressSet.push({PrivateIpAddress:o.privateIpAddress,AutoAssign:!1,Primary:o.primary});w=e.groupSet;for(h=0,v=w.length;h<v;h++)i=w[h],r.GroupSet.push({GroupId:u(this.sgs[i.groupId],"resource.GroupId"),GroupName:u(this.sgs[i.groupId],"resource.GroupName")});n=this.add("ENI",r,l(e)),this.enis[e.id]=n,(!e.attachment||(E=e.attachment.deviceIndex)!=="0"&&E!==0)&&this.addLayout(n,!1,a)}},function(){var e,t,n,r,i,s,o,a,f,l,c,h;c=this.getResourceByType("EIP");for(o=0,f=c.length;o<f;o++){e=c[o],e=e.attributes,r=this.enis[e.networkInterfaceId];if(!r)continue;n={AllocationId:e.id,Domain:e.domain,InstanceId:"",NetworkInterfaceId:u(r,"resource.NetworkInterfaceId"),PrivateIpAddress:"",PublicIp:e.publicIp},i=0,h=r.resource.PrivateIpAddressSet;for(a=0,l=h.length;a<l;a++)s=h[a],s.PrivateIpAddress===e.privateIpAddress&&(n.PrivateIpAddress=u(r,"resource.PrivateIpAddressSet."+i+".PrivateIpAddress")),i++;t=this.add("EIP",n)}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v,m,g,y,b,w,E,S,x,T;E=this.getResourceByType("RT")||[];for(p=0,g=E.length;p<g;p++){t=E[p],t=t.attributes,f={AssociationSet:[],PropagatingVgwSet:[],RouteSet:[],RouteTableId:t.id,VpcId:u(this.theVpc,"resource.VpcId")},S=t.associationSet;for(d=0,y=S.length;d<y;d++)i=S[d],e={Main:i.main===!1?!1:"true",RouteTableAssociationId:"",SubnetId:""},e.Main||(e.RouteTableAssociationId=i.routeTableAssociationId,c=this.subnets[i.subnetId],i.subnetId&&c&&(e.SubnetId=u(c,"resource.SubnetId"))),f.AssociationSet.push(e);h={},x=t.routeSet;for(v=0,b=x.length;v<b;v++){i=x[v];if(i.state!=="active")continue;if(i.origin&&i.origin==="EnableVgwRoutePropagation")continue;s=this.instances[i.instanceId],n=this.enis[i.networkInterfaceId],r=this.gateways[i.gatewayId],o={DestinationCidrBlock:i.destinationCidrBlock,GatewayId:"",InstanceId:"",NetworkInterfaceId:i.networkInterfaceId&&n?u(n,"resource.NetworkInterfaceId"):"",Origin:i.gatewayId==="local"?i.origin:""},i.gatewayId&&(h[i.gatewayId]=!0,i.gatewayId!=="local"&&r?r.type==="AWS.VPC.VPNGateway"?o.GatewayId=u(r,"resource.VpnGatewayId"):r.type==="AWS.VPC.InternetGateway"&&(o.GatewayId=u(r,"resource.InternetGatewayId")):o.GatewayId=i.gatewayId),f.RouteSet.push(o)}T=t.propagatingVgwSet;for(m=0,w=T.length;m<w;m++)i=T[m],r=this.gateways[i.gatewayId],r&&h[i.gatewayId]&&f.PropagatingVgwSet.push(u(r,"resource.VpnGatewayId"));a=this.add("RT",f,l(t)),this.addLayout(a,!0,this.theVpc)}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v,m,g,y;m=this.getResourceByType("ACL")||[];for(f=0,p=m.length;f<p;f++){i=m[f],i=i.attributes,r={AssociationSet:[],Default:!1,EntrySet:[],NetworkAclId:"",VpcId:""},r=this._mapProperty(i,r),r.VpcId=u(this.theVpc,"resource.VpcId"),r.NetworkAclId=i.id,i["default"]?(r.Default=i["default"],n="DefaultACL"):n=l(i),g=i.entries;for(c=0,d=g.length;c<d;c++)e=g[c],s=e.egress,_.isString(s)&&(s==="true"?s=!0:s=!1),r.EntrySet.push({RuleAction:e.ruleAction,Protocol:Number(e.protocol),CidrBlock:e.cidrBlock,Egress:e.egress,IcmpTypeCode:{Type:e.icmpTypeCode?String(e.icmpTypeCode.type):"",Code:e.icmpTypeCode?String(e.icmpTypeCode.code):""},PortRange:{To:e.portRange?String(e.portRange.to):"",From:e.portRange?String(e.portRange.from):""},RuleNumber:e.ruleNumber});y=i.associationSet;for(h=0,v=y.length;h<v;h++){e=y[h],a=this.subnets[e.subnetId];if(!a)continue;r.AssociationSet.push({NetworkAclAssociationId:e.networkAclAssociationId,SubnetId:u(a,"resource.SubnetId")})}o=this.getOriginalComp(i.id,"ACL"),o&&o.resource.AssociationSet.sort().toString()===r.AssociationSet.sort().toString()&&(r.AssociationSet=jQuery.extend(!0,[],o.resource.AssociationSet)),t=this.add("ACL",r,n)}},function(){var t,n,r,i,s,o,a,f,l,c,h,p,d,v,m,g,y,b,w,E,S,x,T,N,C,k,L;f=this,T=this.getResourceByType("ELB")||[];for(d=0,y=T.length;d<y;d++){t=T[d],t=t.attributes,i={HealthCheck:{Timeout:"",Target:"",HealthyThreshold:"",UnhealthyThreshold:"",Interval:""},Policies:{AppCookieStickinessPolicies:[{CookieName:"",PolicyName:""}],OtherPolicies:[],LBCookieStickinessPolicies:[{CookieExpirationPeriod:"",PolicyName:""}]},BackendServerDescriptions:[{InstantPort:"",PoliciyNames:""}],SecurityGroups:[],ListenerDescriptions:[],DNSName:"",Scheme:"",Instances:[],Subnets:[],VpcId:"",LoadBalancerName:"",AvailabilityZones:[],CrossZoneLoadBalancing:"",ConnectionDraining:{Enabled:!1,Timeout:null},ConnectionSettings:{IdleTimeout:60}},i=this._mapProperty(t,i),l=this.getOriginalComp(t.Name,"ELB"),i.ConnectionDraining.Enabled=t.ConnectionDraining.Enabled,i.ConnectionSettings.IdleTimeout=Number(t.ConnectionSettings.IdleTimeout),l?i.ConnectionDraining.Timeout=l.resource.ConnectionDraining.Timeout:t.ConnectionDraining.Enabled&&(i.ConnectionDraining.Timeout=Number(t.ConnectionDraining.Timeout));if(t.SecurityGroups){N=t.SecurityGroups;for(v=0,b=N.length;v<b;v++)c=N[v],i.SecurityGroups.push(u(this.sgs[c],"resource.GroupId"))}i.VpcId=u(this.theVpc,"resource.VpcId");if(t.Subnets){C=t.Subnets;for(m=0,w=C.length;m<w;m++)p=C[m],i.Subnets.push(u(this.subnets[p],"resource.SubnetId"))}i.DNSName=t.Dnsname,i.CrossZoneLoadBalancing=t.CrossZoneLoadBalancing.Enabled;if(t.ListenerDescriptions){k=t.ListenerDescriptions;for(g=0,E=k.length;g<E;g++)a=k[g],h="",a.Listener.SslcertificateId?(s=this.addIAM(a.Listener.SslcertificateId),s&&(h=u(s,"resource.ServerCertificateMetadata.Arn"))):a.Listener.SslcertificateId="",n={PolicyNames:"",Listener:{LoadBalancerPort:a.Listener.LoadBalancerPort,InstanceProtocol:a.Listener.InstanceProtocol,Protocol:a.Listener.Protocol,SSLCertificateId:h||a.Listener.SslcertificateId,InstancePort:a.Listener.InstancePort}},i.ListenerDescriptions.push(n)}i.HealthCheck=t.HealthCheck;if(t.Instances){L=t.Instances;for(x=0,S=L.length;x<S;x++)o=L[x],e.call(f.ins_in_asg,o)>=0||this.instances[o]&&i.Instances.push({InstanceId:u(this.instances[o],"resource.InstanceId")})}r=this.add("ELB",i,t.Name),this.addLayout(r,!1,this.theVpc),this.elbs[t.Name]=r}},function(){var e,t,n,r,i,s,o,a,f,l,c;s=this,c=this.getResourceByType("LC");for(f=0,l=c.length;f<l;f++){e=c[f],e=e.attributes,i={AssociatePublicIpAddress:!1,BlockDeviceMapping:[],EbsOptimized:!1,ImageId:"",InstanceMonitoring:!1,InstanceType:"",KeyName:"",LaunchConfigurationARN:"",LaunchConfigurationName:"",SecurityGroups:[],UserData:""},i=this._mapProperty(e,i),i.LaunchConfigurationARN=e.id,i.LaunchConfigurationName=e.Name,i.InstanceMonitoring=e.InstanceMonitoring.Enabled,e.UserData&&atob&&(i.UserData=atob(e.UserData)),a=[],_.each(e.SecurityGroups,function(e,t){var n;n=s.sgs[e];if(n)return a.push(u(n,"resource.GroupId"))});if(a.length===0)continue;i.SecurityGroups=a,t=i.BlockDeviceMapping,_.each(e.BlockDeviceMapping||[],function(e,n){var r;return e.Ebs===null&&e.VirtualName?r={DeviceName:e.DeviceName,Ebs:null,NoDevice:e.NoDevice,VirtualName:e.VirtualName}:(r={DeviceName:e.DeviceName,Ebs:{VolumeSize:e.Ebs?Number(e.Ebs.VolumeSize):0,VolumeType:e.Ebs?e.Ebs.VolumeType:""}},e.Ebs&&(e.Ebs.SnapshotId&&(r.Ebs.SnapshotId=e.Ebs.SnapshotId),r.Ebs.VolumeType==="io1"&&(r.Ebs.Iops=e.Ebs.Iops)),t.push(r))}),n=this.getOriginalComp(e.KeyName,"KP"),n?(o=this.getOriginalComp(e.id,"LC"),o?i.KeyName=o.resource.KeyName:i.KeyName=u(n,"resource.KeyName")):e.KeyName&&(i.KeyName=e.KeyName),r=this.add("LC",i,e.Name),this.addLayout(r),delete this.component[e.id],this.lcs[e.Name]=r}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v;o=this,v=this.getResourceByType("ASG");for(p=0,d=v.length;p<d;p++){r=v[p],r=r.attributes;if(!this.lcs[r.LaunchConfigurationName])continue;n={AutoScalingGroupARN:"",AutoScalingGroupName:"",AvailabilityZones:[],DefaultCooldown:"0",DesiredCapacity:"0",HealthCheckGracePeriod:"0",HealthCheckType:"",LaunchConfigurationName:"",LoadBalancerNames:[],MaxSize:"0",MinSize:"0",TerminationPolicies:[],VPCZoneIdentifier:""},n=this._mapProperty(r,n),c=this.getOriginalComp(r.id,"ASG"),n.AutoScalingGroupARN=r.id,n.AutoScalingGroupName=r.Name,n.TerminationPolicies=r.TerminationPolicies,n.LaunchConfigurationName=u(this.lcs[r.LaunchConfigurationName],"resource.LaunchConfigurationName"),h=[],_.each(r.Subnets,function(e,t){var n;n=o.subnets[e];if(n)return h.push(u(n,"resource.SubnetId"))});if(h.length===0)continue;n.VPCZoneIdentifier=h.join(" , "),s=[],_.each(r.LoadBalancerNames,function(e,t){var n;return n=o.elbs[e],s.push(u(n,"resource.LoadBalancerName"))}),n.LoadBalancerNames=s,i=[],_.each(r.AvailabilityZones,function(e,t){var n;return n=o.addAz(e),i.push(u(n,"resource.ZoneName"))}),n.AvailabilityZones=i,t=this.add("ASG",n,l(r)||r.Name),a="",f=this.originalJson.layout[t.uid],e=!1,_.each(r.Subnets,function(n,r){var i;return i=o.subnets[n],!e&&(f&&f.groupUId===i.uid||!f)?(o.addLayout(t,!0,i),e=!0):o.addExpandedAsg(t,i)}),this.asgs[r.Name]=t}},function(){var e,t,n,i,s,o,a,f;f=this.getResourceByType("NC");for(o=0,a=f.length;o<a;o++){t=f[o],t=t.attributes,i={AutoScalingGroupName:t.AutoScalingGroupName,NotificationType:t.NotificationType,TopicARN:t.TopicARN},e=this.asgs[i.AutoScalingGroupName];if(!e)continue;i.AutoScalingGroupName=u(e,"resource.AutoScalingGroupName"),s=_.first(_.filter(this.originalJson.component,function(e){if(e.type===r.RESTYPE.TOPIC)return e.resource.TopicArn===i.TopicARN})),s?i.TopicARN=u(s,"resource.TopicArn"):(s=this.addTopic(i.TopicARN),s&&(i.TopicARN=u(s,"resource.TopicArn"))),n=this.add("NC",i,"SnsNotification")}},function(){var e,t,n,r,i,s,o;o=this.getResourceByType("SP");for(i=0,s=o.length;i<s;i++){t=o[i],t=t.attributes,r={AdjustmentType:"",AutoScalingGroupName:"",Cooldown:"0",MinAdjustmentStep:"",PolicyARN:"",PolicyName:"",ScalingAdjustment:""},r=this._mapProperty(t,r),t.Cooldown===""&&(r.Cooldown="0"),e=this.asgs[t.AutoScalingGroupName],r.ScalingAdjustment&&(r.ScalingAdjustment=String(r.ScalingAdjustment));if(!e)continue;r.AutoScalingGroupName=u(e,"resource.AutoScalingGroupName"),r.PolicyARN=t.id,r.PolicyName=t.Name,n=this.add("SP",r,t.Name),this.sps[t.id]=n}},function(){var e,t,n,r,i,s,o,a,f,l,c,h,p,d;o=this,d=this.getResourceByType("CW");for(h=0,p=d.length;h<p;h++){t=d[h],t=t.attributes,r={AlarmActions:[],AlarmArn:"",AlarmName:"",ComparisonOperator:"",Dimensions:[],EvaluationPeriods:"",InsufficientDataActions:[],MetricName:"",Namespace:"",OKAction:[],Period:0,Statistic:"",Threshold:"",Unit:""},r=this._mapProperty(t,r),i=[],_.each(t.Dimensions,function(e,t){var n,r;if(e.Name==="AutoScalingGroupName"){n=o.asgs[e.Value];if(n)return r={name:e.Name,value:u(n,"resource.AutoScalingGroupName")},i.push(r)}});if(i.length===0)continue;r.Dimensions=i,f=/arn:aws:autoscaling:.*:scalingPolicy:/g,l=/arn:aws:sns:.*:.*/g,c=[],s=!1,_.each(t.AlarmActions,function(e,t){var n,r;if(e.match(l)){r=o.addTopic(e);if(r)return c.push(e)}else if(e.match(f)){n=o.sps[e];if(n)return s=!0,c.push(e)}});if(!s)continue;e=[],_.each(c,function(t,n){var r,i;if(t.match(l)){i=o.addTopic(t);if(i)return e.push(u(i,"resource.TopicArn"))}else if(t.match(f)){r=o.sps[t];if(r)return e.push(u(r,"resource.PolicyARN"))}}),r.AlarmActions=e,a=[],_.each(t.Okactions,function(e,t){var n;if(e.match(f)){n=o.sps[e];if(n)return a.push(u(n,"resource.PolicyARN"))}}),r.OKAction=a,r.Threshold=String(t.Threshold),r.EvaluationPeriods=String(t.EvaluationPeriods),t.ComparisonOperator&&(r.ComparisonOperator=this.COMPARISONOPERATOR[t.ComparisonOperator]),r.AlarmArn=t.id,r.AlarmName=t.Name,n=this.add("CW",r,t.Name)}},function(){var e,t,n,r,i,s,o,a,f,l,c,h,p,d,v,m,g,y,b,w,E,S,x;w=this.getResourceByType("DBOG");for(h=0,m=w.length;h<m;h++){e=w[h],e=e.attributes;if(e.OptionGroupName.indexOf("default:")===0){void 0;continue}r={CreatedBy:"",EngineName:"",MajorEngineVersion:"",OptionGroupDescription:"",OptionGroupName:"",Options:[],VpcId:""},r=this._mapProperty(e,r),r.OptionGroupName=e.id,r.VpcId=u(this.theVpc,"resource.VpcId"),E=e.Options||[];for(p=0,g=E.length;p<g;p++){i=E[p],s=this._mapProperty(i,{OptionName:"",OptionSettings:[],Port:"",VpcSecurityGroupMemberships:[]}),s.Port=s.Port?s.Port.toString():"",S=i.OptionSettings;for(d=0,y=S.length;d<y;d++)a=S[d],f=this._mapProperty(a,{Name:"",Value:""}),s.OptionSettings.push(f);x=i.VpcSecurityGroupMemberships;for(v=0,b=x.length;v<b;v++)l=x[v],c=this.sgs[l.VpcSecurityGroupId],c?s.VpcSecurityGroupMemberships.push(u(c,"resource.GroupId")):void 0;r.Options.push(s)}o=this.getOriginalComp(e.id,"DBOG"),o?(t=o.name,r.CreatedBy=o.resource.CreatedBy):(t=e.OptionGroupName,r.CreatedBy="user",void 0),n=this.add("DBOG",r,t),this.ogs[e.id]=n}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d;p=this.getResourceByType("DBSBG");for(a=0,c=p.length;a<c;a++){e=p[a],e=e.attributes,i={CreatedBy:"",DBSubnetGroupName:"",SubnetIds:[],DBSubnetGroupDescription:""},i=this._mapProperty(e,i),i.DBSubnetGroupName=e.id,d=e.Subnets;for(f=0,h=d.length;f<h;f++)s=d[f],o=this.subnets[s.SubnetIdentifier],i.SubnetIds.push(u(o,"resource.SubnetId"));n=this.getOriginalComp(e.id,"DBSBG"),n?(t=n.name,i.CreatedBy=n.resource.CreatedBy,i.SubnetIds.sort().toString()===n.resource.SubnetIds.sort().toString()&&(i.SubnetIds=jQuery.extend(!0,[],n.resource.SubnetIds))):(t=e.DBSubnetGroupName,i.CreatedBy="user"),r=this.add("DBSBG",i,l(e)||t),this.addLayout(r,!0,this.theVpc),this.sbgs[e.id]=r}},function(){var e,t,n,r,i,s,o,a,f,c,h,p,d,v,m,g,y,b,w,E;i=[],w=this.getResourceByType("DBINSTANCE");for(d=0,g=w.length;d<g;d++)e=w[d],e=e.attributes,e.ReadReplicaSourceDBInstanceIdentifier?i.push(e):i.unshift(e);for(v=0,y=i.length;v<y;v++){e=i[v],p=this.sbgs[e.sbgId];if(!p){void 0;continue}a=this.sbgs[e.DBSubnetGroup.DBSubnetGroupName];if(!a){void 0;continue}r={CreatedBy:"",DBInstanceIdentifier:"",DBSnapshotIdentifier:"",AllocatedStorage:0,AutoMinorVersionUpgrade:!1,AvailabilityZone:"",MultiAZ:!1,Iops:"",BackupRetentionPeriod:0,CharacterSetName:"",DBInstanceClass:"",DBName:"",Endpoint:{Port:0},Engine:"",EngineVersion:"",LicenseModel:"",MasterUsername:"",MasterUserPassword:"",OptionGroupMembership:{OptionGroupName:""},DBParameterGroups:{DBParameterGroupName:""},PendingModifiedValues:"",PreferredBackupWindow:"",PreferredMaintenanceWindow:"",PubliclyAccessible:!1,DBSubnetGroup:{DBSubnetGroupName:""},VpcSecurityGroupIds:[]},r=this._mapProperty(e,r),e.PendingModifiedValues&&(e.PendingModifiedValues.AllocatedStorage&&(r.AllocatedStorage=Number(e.PendingModifiedValues.AllocatedStorage)),e.PendingModifiedValues.BackupRetentionPeriod&&(r.BackupRetentionPeriod=Number(e.PendingModifiedValues.BackupRetentionPeriod)),e.PendingModifiedValues.DBInstanceClass&&(r.DBInstanceClass=e.PendingModifiedValues.DBInstanceClass),e.PendingModifiedValues.Iops&&(r.Iops=Number(e.PendingModifiedValues.Iops)),e.PendingModifiedValues.MultiAZ&&(r.MultiAZ=e.PendingModifiedValues.MultiAZ),e.PendingModifiedValues.MasterUserPassword&&(r.MasterUserPassword=e.PendingModifiedValues.MasterUserPassword)),r.MultiAZ&&(r.AvailabilityZone=""),e.ReadReplicaSourceDBInstanceIdentifier&&(h=this.dbinstances[e.ReadReplicaSourceDBInstanceIdentifier],h?r.ReadReplicaSourceDBInstanceIdentifier=u(h,"resource.DBInstanceIdentifier"):void 0),e.Endpoint&&(r.Endpoint.Port=e.Endpoint.Port),e.OptionGroupMemberships[0]&&(s=this.ogs[e.OptionGroupMemberships[0].OptionGroupName],s?r.OptionGroupMembership.OptionGroupName=u(s,"resource.OptionGroupName"):(r.OptionGroupMembership.OptionGroupName=e.OptionGroupMemberships[0].OptionGroupName,e.OptionGroupMemberships[0].OptionGroupName.indexOf("default:")!==0&&void 0)),e.DBParameterGroups[0]&&(r.DBParameterGroups.DBParameterGroupName=e.DBParameterGroups[0].DBParameterGroupName),r.DBSubnetGroup.DBSubnetGroupName=u(a,"resource.DBSubnetGroupName"),E=e.VpcSecurityGroups;for(m=0,b=E.length;m<b;m++)f=E[m],c=this.sgs[f.VpcSecurityGroupId],c?r.VpcSecurityGroupIds.push(u(c,"resource.GroupId")):void 0;o=this.getOriginalComp(e.id,"DBINSTANCE"),o?(t=o.name,r.CreatedBy=o.resource.CreatedBy,e.Endpoint||(r.Endpoint.Port=o.resource.Endpoint.Port),o.resource.PreferredBackupWindow||(r.PreferredBackupWindow=o.resource.PreferredBackupWindow),o.resource.PreferredMaintenanceWindow||(r.PreferredMaintenanceWindow=o.resource.PreferredMaintenanceWindow),r.MasterUserPassword=o.resource.MasterUserPassword,r.DBSnapshotIdentifier=o.resource.DBSnapshotIdentifier):(t=e.Name||e.DBInstanceIdentifier,r.CreatedBy="user"),n=this.add("DBINSTANCE",r,l(e)||t),this.addLayout(n,!1,p),this.dbinstances[e.id]=n}}],p=function(e){var t,n,i,o,u,a,f,l,c,h,p;o=new s,h=e.originAppJSON.component,f=e.component,u=function(e){var t,n,i,s,o,a,f,l;f=e.type;if(f===r.RESTYPE.INSTANCE)return e.serverGroupUid;if(f===r.RESTYPE.ENI){o=e.resource.Attachment.InstanceId;if(o){a=MC.extractID(o),s=h[a];if(s)return s.serverGroupUid}else{l=e.serverGroupUid;if(l!==e.uid){t=h[l];if(t)return u(t)}}}if(f===r.RESTYPE.VOL){o=e.resource.AttachmentSet.InstanceId;if(o){a=MC.extractID(o),s=h[a];if(s)return s.serverGroupUid}}if(f===r.RESTYPE.EIP){n=e.resource.NetworkInterfaceId;if(n){i=MC.extractID(n),t=h[i];if(t)return u(t)}}return""},p={},_.each(h,function(e){if(e.number&&e.number>1)return p[e.uid]=e}),l={},_.each(f,function(e){return p[e.uid]&&(l[e.uid]=e),null}),i=o.compare(p,l),i&&_.each(i,function(e,t){var n,r;n=l[t];if(n){r=u(n);if(r)return _.each(l,function(e){if(u(e)===r){e.serverGroupName&&(e.serverGroupName=e.name),e.number&&(e.number=1),e.index&&(e.index=0);if(e.serverGroupUid)return e.serverGroupUid=e.uid}})}}),_.each(e.elbs,function(e){var t,n,r,i,s;r=_.map(e.resource.Instances,function(e){return MC.extractID(e.InstanceId)}),i=h[e.uid];if(i){s=_.map(i.resource.Instances,function(e){return MC.extractID(e.InstanceId)}),t=o.compare(r,s);if(t)return n=[],_.each(t,function(e){return e.__old__&&n.push(e.__old__),e.__new__&&n.push(e.__new__),null}),_.each(n,function(e){var t,n;t=l[e];if(t)return n=t.serverGroupUid,_.each(l,function(e,t){var r;r=u(e);if(r===n){e.serverGroupName&&(e.serverGroupName=e.name),e.number&&(e.number=1),e.index&&(e.index=0);if(e.serverGroupUid)return e.serverGroupUid=e.uid}})})}}),a={},c={},_.each(f,function(e){var t;if((t=e.type)===r.RESTYPE.ENI||t===r.RESTYPE.EIP||t===r.RESTYPE.INSTANCE||t===r.RESTYPE.VOL)if(!h[e.uid])return a[e.uid]=e}),_.each(h,function(e){var t;if((t=e.type)===r.RESTYPE.ENI||t===r.RESTYPE.EIP||t===r.RESTYPE.INSTANCE||t===r.RESTYPE.VOL)f[e.uid]||(c[e.uid]=e);return null}),t=o.compare(a,c),n=[];if(t)return _.each(t,function(e,t){var n,r;return n=f[t]||h[t],r=u(n),_.each(f,function(e,t){var n;n=u(e);if(n===r){e.serverGroupName&&(e.serverGroupName=e.name),e.number&&(e.number=1),e.index&&(e.index=0);if(e.serverGroupUid)return e.serverGroupUid=e.uid}})})},h=function(e,t,n){var r,i,s,o,u;void 0,r=new a(e,t,n);for(o=0,u=f.length;o<u;o++)s=f[o],s.call(r);if(r.originAppJSON)try{p(r)}catch(l){i=l,void 0}return r},d=function(e,n){var i,s,o,u,a,f,l,c,h,p,d,v,m,g;i=r.RESTYPE,a={filter:{"vpc-id":n}},s={"AWS.EC2.SecurityGroup":a,"AWS.VPC.NetworkAcl":a,"AWS.VPC.NetworkInterface":a},c={},m=t(i.SUBNET,e).where({vpcId:n});for(h=0,d=m.length;h<d;h++)l=m[h],c[l.id]=!0;u=[],f=[],g=t(i.ASG,e).models;for(p=0,v=g.length;p<v;p++)o=g[p],c[o.get("VPCZoneIdentifier")]&&(u.push(o.get("AutoScalingGroupName")),f.push(o.get("LaunchConfigurationName")));return u.length&&(s[i.LC]={id:_.uniq(f)},s[i.NC]={id:u},s[i.SP]={filter:{AutoScalingGroupName:u}}),s},t.getAllResourcesForVpc=h})}).call(this);
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define(["CloudResources", "cloudres/CrCollection", "constant", "ApiRequest", "DiffTree"], function(CloudResources, CrCollection, constant, ApiRequest, DiffTree) {
+    var AWS_ID, CREATE_REF, ConverterData, Converters, TAG_NAME, UID, convertResToJson, processServerGroup, __createRequestParam;
+    CREATE_REF = function(compOrUid, attr) {
+      if (!compOrUid) {
+        return '';
+      }
+      if (attr) {
+        return "@{" + (compOrUid.uid || compOrUid) + "." + attr + "}";
+      } else {
+        return "@{" + (compOrUid.uid || compOrUid) + ".r.p}";
+      }
+    };
+    UID = MC.guid;
+    AWS_ID = function(dict, type) {
+      var key;
+      key = constant.AWS_RESOURCE_KEY[type];
+      return dict[key] || dict.resource && dict.resource[key];
+    };
+    TAG_NAME = function(res) {
+      var name;
+      name = null;
+      if (res.tagSet) {
+        name = res.tagSet.name || res.tagSet.Name || res.tagSet["aws:cloudformation:logical-id"];
+      }
+      return name;
+    };
+    ConverterData = (function() {
+      ConverterData.prototype.CrPartials = function(type) {
+        return CloudResources(constant.RESTYPE[type], this.region);
+      };
+
+      ConverterData.prototype.getResourceByType = function(type) {
+        return CloudResources(constant.RESTYPE[type], this.region).filter((function(_this) {
+          return function(model) {
+            return model.RES_TAG === _this.vpcId || model.get("vpcId") === _this.vpcId;
+          };
+        })(this));
+      };
+
+      function ConverterData(region, vpcId, originalJson) {
+        this.region = region;
+        this.vpcId = vpcId;
+        this.azs = {};
+        this.subnets = {};
+        this.instances = {};
+        this.enis = {};
+        this.gateways = {};
+        this.volumes = {};
+        this.sgs = {};
+        this.iams = {};
+        this.elbs = {};
+        this.lcs = {};
+        this.asgs = {};
+        this.topics = {};
+        this.sps = {};
+        this.sbgs = {};
+        this.dbinstances = {};
+        this.ogs = {};
+        this.ins_in_asg = [];
+        this.component = {};
+        this.layout = {};
+        this.originalJson = jQuery.extend(true, {
+          component: [],
+          layout: []
+        }, originalJson);
+        this.originAppJSON = originalJson;
+        this.DEFAULT_KP = null;
+        this.COMPARISONOPERATOR = {
+          "GreaterThanOrEqualToThreshold": ">=",
+          "GreaterThanThreshold": ">",
+          "LessThanThreshold": "<",
+          "LessThanOrEqualToThreshold": "<="
+        };
+      }
+
+      ConverterData.prototype.add = function(shortType, resource, name) {
+        var comp, originComp, type;
+        type = constant.RESTYPE[shortType];
+        if (resource && resource.uid) {
+          this.component[resource.uid] = resource;
+          return resource;
+        }
+        originComp = this.getOriginalComp(resource, type);
+        if (originComp) {
+          _.extend(originComp.resource, resource);
+          this.component[originComp.uid] = originComp;
+          return this.component[originComp.uid];
+        }
+        comp = {
+          uid: UID(),
+          name: name || AWS_ID(resource, type) || shortType,
+          type: type,
+          resource: resource
+        };
+        this.component[comp.uid] = comp;
+        return comp;
+      };
+
+      ConverterData.prototype.addLayout = function(component, isGroupLayout, parentComp) {
+        var l;
+        l = this.originalJson.layout[component.uid];
+        if (!l) {
+          l = {
+            uid: component.uid,
+            coordinate: [0, 0]
+          };
+          if (isGroupLayout) {
+            l.size = [0, 0];
+          }
+          if (parentComp) {
+            l.groupUId = parentComp.uid;
+          }
+        }
+        this.layout[l.uid] = l;
+      };
+
+      ConverterData.prototype.addExpandedAsg = function(originalAsg, parentComp) {
+        var key, l, node, _ref;
+        _ref = this.originalJson.layout;
+        for (key in _ref) {
+          node = _ref[key];
+          if (node.type === "ExpandedAsg" && node.originalId === originalAsg.uid && node.groupUId === parentComp.uid) {
+            l = this.originalJson.layout[node.uid];
+            break;
+          }
+        }
+        if (!l) {
+          l = {
+            uid: UID(),
+            coordinate: [0, 0],
+            originalId: originalAsg.uid,
+            type: "ExpandedAsg",
+            groupUId: parentComp.uid
+          };
+        }
+        this.layout[l.uid] = l;
+      };
+
+      ConverterData.prototype.addAz = function(azName) {
+        var az, azRes;
+        az = this.azs[azName];
+        if (az) {
+          return az;
+        }
+        azRes = this.getOriginalComp(azName, 'AZ');
+        if (!azRes) {
+          azRes = {
+            "RegionName": this.region,
+            "ZoneName": azName
+          };
+        }
+        az = this.add("AZ", azRes, azName);
+        this.addLayout(az, true, this.theVpc);
+        this.azs[azName] = az;
+        return az;
+      };
+
+      ConverterData.prototype.addIAM = function(arn) {
+        var iamComp, iamRes, name, reg_iam, tmpAry;
+        iamComp = this.iams[arn];
+        if (iamComp) {
+          return iamComp;
+        }
+        reg_iam = /arn:aws:iam::.*:server-certificate\/.*/g;
+        if (!arn.match(reg_iam)) {
+          console.error("[addIam] not a valid iam arn");
+          return null;
+        }
+        tmpAry = arn.split(":");
+        name = tmpAry[tmpAry.length - 1].replace("server-certificate/", "");
+        iamRes = {
+          "CertificateBody": "",
+          "CertificateChain": "",
+          "PrivateKey": "",
+          "ServerCertificateMetadata": {
+            "Arn": arn,
+            "ServerCertificateId": "",
+            "ServerCertificateName": name
+          }
+        };
+        iamComp = this.add("IAM", iamRes, name);
+        this.iams[arn] = iamComp;
+        return iamComp;
+      };
+
+      ConverterData.prototype.addTopic = function(arn) {
+        var tmpAry, topicComp, topicName, topicRes;
+        topicComp = this.topics[arn];
+        if (topicComp) {
+          return topicComp;
+        }
+        topicRes = {
+          "TopicArn": arn
+        };
+        tmpAry = arn.split(":");
+        if (tmpAry.length > 0) {
+          topicName = tmpAry[tmpAry.length - 1];
+        }
+        topicComp = this.add("TOPIC", topicRes, topicName);
+        this.topics[arn] = topicComp;
+        return topicComp;
+      };
+
+      ConverterData.prototype.getOriginalComp = function(jsonOrKey, type) {
+        var comp, id, key, uid, _ref, _ref1;
+        if (type === constant.RESTYPE["NC"]) {
+          _ref = this.originalJson.component;
+          for (uid in _ref) {
+            comp = _ref[uid];
+            if (comp.type !== type) {
+              continue;
+            }
+            if (comp.resource.AutoScalingGroupName === jsonOrKey.AutoScalingGroupName && comp.resource.TopicARN === jsonOrKey.TopicARN) {
+              return comp;
+            }
+          }
+        } else {
+          type = constant.RESTYPE[type] || type;
+          key = constant.AWS_RESOURCE_KEY[type];
+          id = _.isObject(jsonOrKey) ? jsonOrKey[key] : jsonOrKey;
+          if (!id) {
+            return null;
+          }
+          _ref1 = this.originalJson.component;
+          for (uid in _ref1) {
+            comp = _ref1[uid];
+            if (comp.type !== type) {
+              continue;
+            }
+            if ((comp[key] || comp.resource[key]) === id) {
+              return comp;
+            }
+          }
+        }
+        return null;
+      };
+
+      ConverterData.prototype._mapProperty = function(aws_json, resource) {
+        var k, v, _ref;
+        for (k in aws_json) {
+          v = aws_json[k];
+          if (((_ref = typeof v) === "string" || _ref === "number" || _ref === "boolean") && resource[k[0].toUpperCase() + k.slice(1)] !== void 0) {
+            resource[k[0].toUpperCase() + k.slice(1)] = v;
+          }
+        }
+        return resource;
+      };
+
+      ConverterData.prototype._genCompMap = function(originalJson) {
+        var comp, compMap, key, uid, _ref;
+        compMap = {};
+        _ref = originalJson.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          key = constant.AWS_RESOURCE_KEY[comp.type];
+          if (!comp.resource) {
+            continue;
+          }
+          if (!key) {
+            continue;
+          }
+          if (!comp.resource[key]) {
+            console.error("not found id " + key + " for resource", comp);
+          }
+          compMap[comp.resource[key]] = {
+            "uid": uid,
+            "name": comp.name
+          };
+        }
+        return compMap;
+      };
+
+      ConverterData.prototype._removeAppId = function(name) {
+        var reg_app, rlt;
+        reg_app = /app-[a-z0-9]{8}$/g;
+        rlt = name.match(reg_app);
+        if (rlt && rlt.length === 1) {
+          name = name.replace(rlt[0], "");
+        }
+        return name;
+      };
+
+      return ConverterData;
+
+    })();
+    Converters = [
+      function() {
+        var com, compJson, kpRes, retainList, uid, _ref, _ref1;
+        retainList = ['AWS.EC2.Tag', 'AWS.AutoScaling.Tag', constant.RESTYPE.KP, constant.RESTYPE.TOPIC, constant.RESTYPE.SUBSCRIPTION, constant.RESTYPE.IAM, constant.RESTYPE.DHCP];
+        _ref = this.originalJson.component;
+        for (uid in _ref) {
+          com = _ref[uid];
+          if (!this.component[uid] && (_ref1 = com.type, __indexOf.call(retainList, _ref1) >= 0)) {
+            compJson = this.add(null, com);
+            if (com.type === constant.RESTYPE.IAM) {
+              this.iams[com.resource.ServerCertificateMetadata.Arn] = compJson;
+            } else if (com.type === constant.RESTYPE.KP) {
+              if (com.name === "DefaultKP") {
+                this.DEFAULT_KP = jQuery.extend(true, {}, com);
+                this.component[com.uid] = this.DEFAULT_KP;
+              }
+            }
+          }
+          null;
+        }
+        if (!this.DEFAULT_KP) {
+          kpRes = {
+            "KeyFingerprint": "",
+            "KeyName": "DefaultKP"
+          };
+          this.add("KP", kpRes, "DefaultKP");
+        }
+        return null;
+      }, function() {
+        var vpc, vpcComp;
+        vpc = this.getResourceByType("VPC")[0];
+        this.theVpc = vpcComp = this.add("VPC", {
+          VpcId: this.vpcId,
+          CidrBlock: vpc.attributes.cidrBlock,
+          DhcpOptionsId: vpc.attributes.dhcpOptionsId,
+          InstanceTenancy: vpc.attributes.instanceTenancy,
+          EnableDnsHostnames: vpc.attributes.enableDnsHostnames,
+          EnableDnsSupport: vpc.attributes.enableDnsSupport
+        }, TAG_NAME(vpc.attributes) || this.vpcId);
+        this.addLayout(vpcComp, true);
+      }, function() {
+        var azComp, idx, sb, sbComp, _i, _len, _ref;
+        _ref = this.getResourceByType("SUBNET") || [];
+        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+          sb = _ref[idx];
+          sb = sb.attributes;
+          azComp = this.addAz(sb.availabilityZone);
+          sbComp = this.add("SUBNET", {
+            AvailabilityZone: CREATE_REF(azComp, "resource.ZoneName"),
+            CidrBlock: sb.cidrBlock,
+            SubnetId: sb.id,
+            VpcId: CREATE_REF(this.theVpc, "resource.VpcId")
+          }, TAG_NAME(sb) || sb.id);
+          this.subnets[sb.id] = sbComp;
+          this.addLayout(sbComp, true, azComp);
+        }
+      }, function() {
+        var aws_igw, igwComp, igwRes, _i, _len, _ref;
+        _ref = this.getResourceByType("IGW") || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_igw = _ref[_i];
+          aws_igw = aws_igw.attributes;
+          if (!(aws_igw.attachmentSet && aws_igw.attachmentSet.length > 0)) {
+            continue;
+          }
+          igwRes = {
+            "AttachmentSet": [
+              {
+                "VpcId": CREATE_REF(this.theVpc, "resource.VpcId")
+              }
+            ],
+            "InternetGatewayId": aws_igw.id
+          };
+          igwComp = this.add("IGW", igwRes, "Internet-gateway");
+          this.addLayout(igwComp, true, this.theVpc);
+          this.gateways[aws_igw.id] = igwComp;
+        }
+      }, function() {
+        var aws_vgw, vgwAttach, vgwComp, vgwRes, _i, _len, _ref, _ref1;
+        _ref = this.getResourceByType("VGW");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_vgw = _ref[_i];
+          aws_vgw = aws_vgw.attributes;
+          if ((_ref1 = aws_vgw.state) === "deleted" || _ref1 === "deleting") {
+            continue;
+          }
+          if (aws_vgw.attachments && aws_vgw.attachments.length > 0) {
+            vgwAttach = aws_vgw.attachments[0];
+          }
+          vgwRes = {
+            "Attachments": [
+              {
+                "VpcId": CREATE_REF(this.theVpc, "resource.VpcId")
+              }
+            ],
+            "Type": aws_vgw.type,
+            "VpnGatewayId": ""
+          };
+          vgwRes.VpnGatewayId = aws_vgw.id;
+          vgwComp = this.add("VGW", vgwRes, "VPN-gateway");
+          this.addLayout(vgwComp, true, this.theVpc);
+          this.gateways[aws_vgw.id] = vgwComp;
+        }
+      }, function() {
+        var aws_cgw, cgwComp, cgwRes, _i, _len, _ref, _ref1;
+        _ref = this.getResourceByType("CGW");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_cgw = _ref[_i];
+          aws_cgw = aws_cgw.attributes;
+          if ((_ref1 = aws_cgw.state) === "deleted" || _ref1 === "deleting") {
+            continue;
+          }
+          cgwRes = {
+            "BgpAsn": 'bgpAsn' in aws_cgw ? aws_cgw.bgpAsn : "",
+            "CustomerGatewayId": aws_cgw.id,
+            "IpAddress": aws_cgw.ipAddress,
+            "Type": aws_cgw.type
+          };
+          cgwComp = this.add("CGW", cgwRes, TAG_NAME(aws_cgw));
+          delete this.component[cgwComp.uid];
+          this.gateways[aws_cgw.id] = cgwComp;
+        }
+      }, function() {
+        var aws_vpn, cgwComp, route, vgwComp, vpnComp, vpnRes, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        _ref = this.getResourceByType("VPN");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_vpn = _ref[_i];
+          aws_vpn = aws_vpn.attributes;
+          if ((_ref1 = aws_vpn.state) === "deleted" || _ref1 === "deleting") {
+            continue;
+          }
+          vgwComp = this.gateways[aws_vpn.vpnGatewayId];
+          cgwComp = this.gateways[aws_vpn.customerGatewayId];
+          if (!(cgwComp && vgwComp)) {
+            continue;
+          }
+          vpnRes = {
+            "CustomerGatewayId": CREATE_REF(cgwComp, "resource.CustomerGatewayId"),
+            "Options": {
+              "StaticRoutesOnly": false
+            },
+            "Routes": [],
+            "Type": aws_vpn.type,
+            "VpnConnectionId": aws_vpn.id,
+            "VpnGatewayId": CREATE_REF(vgwComp, "resource.VpnGatewayId")
+          };
+          if (aws_vpn.options && aws_vpn.options.staticRoutesOnly) {
+            vpnRes.Options.StaticRoutesOnly = aws_vpn.options.staticRoutesOnly;
+            cgwComp.resource.BgpAsn = "";
+          }
+          if (aws_vpn.routes) {
+            _ref2 = aws_vpn.routes;
+            for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+              route = _ref2[_j];
+              if ((_ref3 = route.state) === "deleting" || _ref3 === "deleted") {
+                continue;
+              }
+              vpnRes.Routes.push({
+                "DestinationCidrBlock": route.destinationCidrBlock
+              });
+            }
+          }
+          vpnComp = this.add("VPN", vpnRes, TAG_NAME(aws_vpn));
+          this.component[cgwComp.uid] = cgwComp;
+          this.addLayout(cgwComp, false);
+        }
+      }, function() {
+        var aws_sg, defaultSg, defaultSgComp, genRules, groupId, originSGComp, sgComp, sgRefMap, sgRes, sg_rule, that, visualopsDefaultSg, vpcComp, vpcDefaultSg, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        that = this;
+        sgRefMap = {};
+        genRules = function(sg_rule, new_ruls) {
+          var ipranges;
+          that = this;
+          if (String(sg_rule.ipProtocol) === '-1') {
+            sg_rule.fromPort = '0';
+            sg_rule.toPort = '65535';
+          }
+          if (sg_rule.groups && sg_rule.groups.length > 0) {
+            return _.each(sg_rule.groups, function(group) {
+              var iprange, sgComp, sgId;
+              if (group.groupId) {
+                iprange = '';
+                sgId = group.groupId;
+                sgComp = sgRefMap[sgId];
+                if (sgComp) {
+                  iprange = CREATE_REF(sgComp, 'resource.GroupId');
+                } else {
+                  iprange = group.groupId;
+                }
+                return new_ruls.push({
+                  "FromPort": String(sg_rule.fromPort ? sg_rule.fromPort : ""),
+                  "IpProtocol": String(sg_rule.ipProtocol),
+                  "IpRanges": iprange,
+                  "ToPort": String(sg_rule.toPort ? sg_rule.toPort : "")
+                });
+              }
+            });
+          } else if (sg_rule.ipRanges && sg_rule.ipRanges.length > 0) {
+            ipranges = sg_rule.ipRanges;
+            return _.each(ipranges, function(iprange) {
+              return new_ruls.push({
+                "FromPort": String(sg_rule.fromPort ? sg_rule.fromPort : ""),
+                "IpProtocol": String(sg_rule.ipProtocol),
+                "IpRanges": iprange.cidrIp,
+                "ToPort": String(sg_rule.toPort ? sg_rule.toPort : "")
+              });
+            });
+          }
+        };
+        _ref = this.getResourceByType("SG");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_sg = _ref[_i];
+          groupId = aws_sg.attributes.groupId;
+          sgComp = this.getOriginalComp(groupId, 'SG');
+          if (sgComp) {
+            sgRefMap[groupId] = sgComp;
+          }
+        }
+        vpcDefaultSg = null;
+        visualopsDefaultSg = null;
+        _ref1 = this.getResourceByType("SG");
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          aws_sg = _ref1[_j];
+          aws_sg = aws_sg.attributes;
+          sgRes = {
+            "Default": false,
+            "GroupDescription": "",
+            "GroupId": "",
+            "GroupName": "",
+            "IpPermissions": [],
+            "IpPermissionsEgress": [],
+            "VpcId": ""
+          };
+          sgRes = this._mapProperty(aws_sg, sgRes);
+          originSGComp = this.getOriginalComp(aws_sg.id, 'SG');
+          if (originSGComp) {
+            sgRes.GroupName = originSGComp.resource.GroupName;
+          }
+          vpcComp = this.getOriginalComp(aws_sg.vpcId, 'VPC');
+          if (vpcComp) {
+            sgRes.VpcId = CREATE_REF(vpcComp.uid, 'resource.VpcId');
+          }
+          sgRes.GroupDescription = aws_sg.groupDescription;
+          if (aws_sg.ipPermissions) {
+            _ref2 = aws_sg.ipPermissions || [];
+            for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+              sg_rule = _ref2[_k];
+              genRules.call(this, sg_rule, sgRes.IpPermissions);
+            }
+          }
+          if (aws_sg.ipPermissionsEgress) {
+            _ref3 = aws_sg.ipPermissionsEgress || [];
+            for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+              sg_rule = _ref3[_l];
+              genRules.call(this, sg_rule, sgRes.IpPermissionsEgress);
+            }
+          }
+          sgComp = this.add("SG", sgRes, TAG_NAME(aws_sg) || this._removeAppId(aws_sg.groupName));
+          if (aws_sg.groupName === "default") {
+            vpcDefaultSg = aws_sg;
+          } else if (aws_sg.groupName.indexOf("-DefaultSG-app-") !== -1) {
+            visualopsDefaultSg = aws_sg;
+          }
+          this.sgs[aws_sg.id] = sgComp;
+        }
+        if (visualopsDefaultSg && vpcDefaultSg) {
+          defaultSgComp = this.sgs[vpcDefaultSg.id];
+          delete this.sgs[vpcDefaultSg.id];
+          delete this.component[defaultSgComp.uid];
+          vpcDefaultSg = null;
+        }
+        defaultSg = visualopsDefaultSg || vpcDefaultSg;
+        if (defaultSg) {
+          defaultSg = this.sgs[defaultSg.id];
+        }
+        if (defaultSg) {
+          defaultSg.name = "DefaultSG";
+          defaultSg.resource.Default = true;
+        }
+        _.each(that.sgs, function(sgComp) {
+          _.each(sgComp.resource.IpPermissions, function(rule) {
+            var ref, refComp;
+            if (rule.IpRanges && rule.IpRanges.indexOf('sg-') === 0) {
+              refComp = that.sgs[rule.IpRanges];
+              if (refComp) {
+                ref = CREATE_REF(refComp, 'resource.GroupId');
+                return rule.IpRanges = ref;
+              }
+            }
+          });
+          return _.each(sgComp.resource.IpPermissionsEgress, function(rule) {
+            var ref, refComp;
+            if (rule.IpRanges && rule.IpRanges.indexOf('sg-') === 0) {
+              refComp = that.sgs[rule.IpRanges];
+              if (refComp) {
+                ref = CREATE_REF(refComp, 'resource.GroupId');
+                return rule.IpRanges = ref;
+              }
+            }
+          });
+        });
+      }, function() {
+        var aws_vol, az, instance, volComp, volRes, _i, _len, _ref;
+        _ref = this.getResourceByType("VOL");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_vol = _ref[_i];
+          aws_vol = aws_vol.attributes;
+          if (!aws_vol.attachmentSet) {
+            continue;
+          }
+          az = this.azs[aws_vol.availabilityZone];
+          volRes = {
+            "VolumeId": aws_vol.id,
+            "Size": Number(aws_vol.size),
+            "SnapshotId": aws_vol.snapshotId ? aws_vol.snapshotId : "",
+            "Iops": aws_vol.iops ? aws_vol.iops : "",
+            "VolumeType": aws_vol.volumeType,
+            "AvailabilityZone": CREATE_REF(az, "resource.ZoneName")
+          };
+          if (aws_vol.volumeType === 'gp2') {
+            volRes.Iops = "";
+          }
+          if (aws_vol.attachmentSet) {
+            instance = this.instances[aws_vol.attachmentSet[0].instanceId];
+            if (instance) {
+              volRes.AttachmentSet.Device = aws_vol.attachmentSet[0].device;
+              volRes.AttachmentSet.InstanceId = CREATE_REF(instance, "resource.InstanceId");
+            }
+          }
+          volComp = this.add("VOL", volRes, aws_vol.attachmentSet[0].device);
+          delete this.component[volComp.uid];
+          this.volumes[aws_vol.id] = volComp;
+        }
+      }, function() {
+        var aws_asg, aws_ins, azComp, insComp, insRes, me, originComp, rootDeviceAry, subnetComp, vol_in_instance, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        me = this;
+        _ref = this.getResourceByType("ASG");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_asg = _ref[_i];
+          aws_asg = aws_asg.attributes;
+          _.each(aws_asg.Instances, function(e, key) {
+            return me.ins_in_asg.push(e.InstanceId);
+          });
+        }
+        _ref1 = this.getResourceByType("INSTANCE") || [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          aws_ins = _ref1[_j];
+          aws_ins = aws_ins.attributes;
+          if (aws_ins.tagSet) {
+            if (aws_ins.tagSet['aws:elasticmapreduce:instance-group-role'] && aws_ins.tagSet['aws:elasticmapreduce:job-flow-id']) {
+              console.warn("ignore EMR instances");
+              continue;
+            }
+          }
+          if ((_ref2 = aws_ins.instanceState.name) === "shutting-down" || _ref2 === "terminated") {
+            continue;
+          }
+          if (_ref3 = aws_ins.id, __indexOf.call(this.ins_in_asg, _ref3) >= 0) {
+            continue;
+          }
+          azComp = this.addAz(aws_ins.placement.availabilityZone);
+          subnetComp = this.subnets[aws_ins.subnetId];
+          if (!subnetComp) {
+            continue;
+          }
+          insRes = {
+            "BlockDeviceMapping": [],
+            "DisableApiTermination": false,
+            "EbsOptimized": "",
+            "ImageId": "",
+            "InstanceId": "",
+            "InstanceType": "",
+            "KeyName": "",
+            "Monitoring": "",
+            "NetworkInterface": [],
+            "Placement": {
+              "Tenancy": "",
+              "AvailabilityZone": ""
+            },
+            "SecurityGroup": [],
+            "SecurityGroupId": [],
+            "ShutdownBehavior": "",
+            "SubnetId": "",
+            "UserData": {
+              "Base64Encoded": false,
+              "Data": ""
+            },
+            "VpcId": ""
+          };
+          insRes = this._mapProperty(aws_ins, insRes);
+          insRes.SubnetId = CREATE_REF(subnetComp, 'resource.SubnetId');
+          insRes.VpcId = CREATE_REF(this.theVpc, 'resource.VpcId');
+          insRes.Placement.AvailabilityZone = CREATE_REF(azComp, 'resource.ZoneName');
+          insRes.Placement.Tenancy = aws_ins.placement.tenancy;
+          if (aws_ins.monitoring && aws_ins.monitoring) {
+            insRes.Monitoring = aws_ins.monitoring.state;
+          }
+          if (aws_ins.placement.tenancy === 'default') {
+            insRes.Placement.Tenancy = '';
+          }
+          if (!aws_ins.shutdownBehavior) {
+            insRes.ShutdownBehavior = 'terminate';
+          }
+          insRes.InstanceId = aws_ins.id;
+          insRes.EbsOptimized = aws_ins.ebsOptimized;
+          originComp = this.getOriginalComp(aws_ins.id, 'INSTANCE');
+          vol_in_instance = [];
+          if (aws_ins.rootDeviceType === 'ebs') {
+            if (originComp) {
+              insRes.BlockDeviceMapping = originComp.resource.BlockDeviceMapping || [];
+              insRes.BlockDeviceMapping = _.filter(insRes.BlockDeviceMapping, function(bdm) {
+                if (_.isString(bdm)) {
+                  return false;
+                }
+                return true;
+              });
+            }
+            rootDeviceAry = [];
+            _.each(aws_ins.blockDeviceMapping, function(bdm) {
+              var rootDevice, volume;
+              if (aws_ins.rootDeviceName.indexOf(bdm.deviceName) !== -1) {
+                volume = me.volumes[bdm.ebs.volumeId];
+                if (volume) {
+                  rootDevice = {
+                    DeviceName: bdm.deviceName,
+                    Ebs: {
+                      SnapshotId: volume.resource.SnapshotId,
+                      VolumeSize: volume.resource.Size,
+                      VolumeType: volume.resource.VolumeType
+                    }
+                  };
+                  if (volume.resource.VolumeType === 'io1') {
+                    rootDevice.Ebs.Iops = volume.resource.Iops;
+                  }
+                  return rootDeviceAry.push(rootDevice);
+                }
+              }
+            });
+            if (insRes.BlockDeviceMapping.length !== rootDeviceAry.length) {
+              insRes.BlockDeviceMapping = rootDeviceAry;
+            }
+          }
+          _.each(aws_ins.blockDeviceMapping || [], function(bdm) {
+            var volComp;
+            if (aws_ins.rootDeviceType === 'instance-store' || aws_ins.rootDeviceName.indexOf(bdm.deviceName) === -1) {
+              volComp = me.volumes[bdm.ebs.volumeId];
+              if (volComp) {
+                me.component[volComp.uid] = volComp;
+                return vol_in_instance.push(volComp.uid);
+              }
+            }
+          });
+          insComp = this.add("INSTANCE", insRes, TAG_NAME(aws_ins));
+          _.each(vol_in_instance, function(e, key) {
+            var volComp;
+            volComp = me.component[e];
+            if (volComp) {
+              if (!volComp.resource.AttachmentSet) {
+                volComp.resource.AttachmentSet = {};
+              }
+              return volComp.resource.AttachmentSet.InstanceId = CREATE_REF(insComp, "resource.InstanceId");
+            }
+          });
+          this.addLayout(insComp, false, subnetComp);
+          this.instances[aws_ins.id] = insComp;
+        }
+      }, function() {
+        var aws_eni, azComp, eniComp, eniRes, group, insComp, ip, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+        _ref = this.getResourceByType("ENI") || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_eni = _ref[_i];
+          aws_eni = aws_eni.attributes;
+          azComp = this.addAz(aws_eni.availabilityZone);
+          subnetComp = this.subnets[aws_eni.subnetId];
+          if (!subnetComp) {
+            continue;
+          }
+          eniRes = {
+            "AssociatePublicIpAddress": false,
+            "Attachment": {
+              "AttachmentId": "",
+              "DeviceIndex": "1",
+              "InstanceId": ""
+            },
+            "AvailabilityZone": "",
+            "Description": "",
+            "GroupSet": [],
+            "NetworkInterfaceId": "",
+            "PrivateIpAddressSet": [],
+            "SourceDestCheck": true,
+            "SubnetId": "",
+            "VpcId": ""
+          };
+          if (aws_eni.attachment && aws_eni.attachment.instanceOwnerId && ((_ref1 = aws_eni.attachment.instanceOwnerId) === "amazon-elb" || _ref1 === "amazon-rds")) {
+            continue;
+          }
+          eniRes = this._mapProperty(aws_eni, eniRes);
+          if (aws_eni.association && aws_eni.association.publicIp) {
+            eniRes.AssociatePublicIpAddress = true;
+          }
+          eniRes.NetworkInterfaceId = aws_eni.id;
+          eniRes.AvailabilityZone = CREATE_REF(azComp, 'resource.ZoneName');
+          eniRes.SubnetId = CREATE_REF(subnetComp, 'resource.SubnetId');
+          eniRes.VpcId = CREATE_REF(this.theVpc, 'resource.VpcId');
+          if (aws_eni.attachment) {
+            if (!((_ref2 = aws_eni.attachment.deviceIndex) === "0" || _ref2 === 0)) {
+              eniRes.Attachment.AttachmentId = aws_eni.attachment.attachmentId;
+            }
+            insComp = this.instances[aws_eni.attachment.instanceId];
+            if (insComp) {
+              eniRes.Attachment.InstanceId = CREATE_REF(insComp, 'resource.InstanceId');
+              eniRes.Attachment.DeviceIndex = String(aws_eni.attachment.deviceIndex === 0 ? '0' : aws_eni.attachment.deviceIndex);
+            }
+          }
+          _ref3 = aws_eni.privateIpAddressesSet;
+          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+            ip = _ref3[_j];
+            eniRes.PrivateIpAddressSet.push({
+              "PrivateIpAddress": ip.privateIpAddress,
+              "AutoAssign": false,
+              "Primary": ip.primary
+            });
+          }
+          _ref4 = aws_eni.groupSet;
+          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+            group = _ref4[_k];
+            eniRes.GroupSet.push({
+              "GroupId": CREATE_REF(this.sgs[group.groupId], 'resource.GroupId'),
+              "GroupName": CREATE_REF(this.sgs[group.groupId], 'resource.GroupName')
+            });
+          }
+          eniComp = this.add("ENI", eniRes, TAG_NAME(aws_eni));
+          this.enis[aws_eni.id] = eniComp;
+          if (!aws_eni.attachment || !((_ref5 = aws_eni.attachment.deviceIndex) === "0" || _ref5 === 0)) {
+            this.addLayout(eniComp, false, subnetComp);
+          }
+        }
+      }, function() {
+        var aws_eip, eipComp, eipRes, eni, idx, ip, _i, _j, _len, _len1, _ref, _ref1;
+        _ref = this.getResourceByType("EIP");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_eip = _ref[_i];
+          aws_eip = aws_eip.attributes;
+          eni = this.enis[aws_eip.networkInterfaceId];
+          if (!eni) {
+            continue;
+          }
+          eipRes = {
+            "AllocationId": aws_eip.id,
+            "Domain": aws_eip.domain,
+            "InstanceId": "",
+            "NetworkInterfaceId": CREATE_REF(eni, "resource.NetworkInterfaceId"),
+            "PrivateIpAddress": "",
+            "PublicIp": aws_eip.publicIp
+          };
+          idx = 0;
+          _ref1 = eni.resource.PrivateIpAddressSet;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            ip = _ref1[_j];
+            if (ip.PrivateIpAddress === aws_eip.privateIpAddress) {
+              eipRes.PrivateIpAddress = CREATE_REF(eni, "resource.PrivateIpAddressSet." + idx + ".PrivateIpAddress");
+            }
+            idx++;
+          }
+          eipComp = this.add("EIP", eipRes);
+        }
+      }, function() {
+        var asso, aws_rtb, eniComp, gwComp, i, insComp, route, rtbComp, rtbRes, subnetComp, xgw_in_route, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        _ref = this.getResourceByType("RT") || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_rtb = _ref[_i];
+          aws_rtb = aws_rtb.attributes;
+          rtbRes = {
+            "AssociationSet": [],
+            "PropagatingVgwSet": [],
+            "RouteSet": [],
+            "RouteTableId": aws_rtb.id,
+            "VpcId": CREATE_REF(this.theVpc, 'resource.VpcId')
+          };
+          _ref1 = aws_rtb.associationSet;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            i = _ref1[_j];
+            asso = {
+              Main: i.main === false ? false : "true",
+              RouteTableAssociationId: "",
+              SubnetId: ""
+            };
+            if (!asso.Main) {
+              asso.RouteTableAssociationId = i.routeTableAssociationId;
+              subnetComp = this.subnets[i.subnetId];
+              if (i.subnetId && subnetComp) {
+                asso.SubnetId = CREATE_REF(subnetComp, 'resource.SubnetId');
+              }
+            }
+            rtbRes.AssociationSet.push(asso);
+          }
+          xgw_in_route = {};
+          _ref2 = aws_rtb.routeSet;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            i = _ref2[_k];
+            if (i.state !== "active") {
+              continue;
+            }
+            if (i.origin && i.origin === "EnableVgwRoutePropagation") {
+              continue;
+            }
+            insComp = this.instances[i.instanceId];
+            eniComp = this.enis[i.networkInterfaceId];
+            gwComp = this.gateways[i.gatewayId];
+            route = {
+              "DestinationCidrBlock": i.destinationCidrBlock,
+              "GatewayId": "",
+              "InstanceId": "",
+              "NetworkInterfaceId": i.networkInterfaceId && eniComp ? CREATE_REF(eniComp, 'resource.NetworkInterfaceId') : "",
+              "Origin": i.gatewayId === "local" ? i.origin : ""
+            };
+            if (i.gatewayId) {
+              xgw_in_route[i.gatewayId] = true;
+              if (i.gatewayId !== "local" && gwComp) {
+                if (gwComp.type === "AWS.VPC.VPNGateway") {
+                  route.GatewayId = CREATE_REF(gwComp, 'resource.VpnGatewayId');
+                } else if (gwComp.type === "AWS.VPC.InternetGateway") {
+                  route.GatewayId = CREATE_REF(gwComp, 'resource.InternetGatewayId');
+                }
+              } else {
+                route.GatewayId = i.gatewayId;
+              }
+            }
+            rtbRes.RouteSet.push(route);
+          }
+          _ref3 = aws_rtb.propagatingVgwSet;
+          for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+            i = _ref3[_l];
+            gwComp = this.gateways[i.gatewayId];
+            if (gwComp && xgw_in_route[i.gatewayId]) {
+              rtbRes.PropagatingVgwSet.push(CREATE_REF(gwComp, 'resource.VpnGatewayId'));
+            }
+          }
+          rtbComp = this.add("RT", rtbRes, TAG_NAME(aws_rtb));
+          this.addLayout(rtbComp, true, this.theVpc);
+        }
+      }, function() {
+        var acl, aclComp, aclName, aclRes, aws_acl, egress, originComp, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        _ref = this.getResourceByType("ACL") || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_acl = _ref[_i];
+          aws_acl = aws_acl.attributes;
+          aclRes = {
+            "AssociationSet": [],
+            "Default": false,
+            "EntrySet": [],
+            "NetworkAclId": "",
+            "VpcId": ""
+          };
+          aclRes = this._mapProperty(aws_acl, aclRes);
+          aclRes.VpcId = CREATE_REF(this.theVpc, 'resource.VpcId');
+          aclRes.NetworkAclId = aws_acl.id;
+          if (aws_acl["default"]) {
+            aclRes.Default = aws_acl["default"];
+            aclName = "DefaultACL";
+          } else {
+            aclName = TAG_NAME(aws_acl);
+          }
+          _ref1 = aws_acl.entries;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            acl = _ref1[_j];
+            egress = acl.egress;
+            if (_.isString(egress)) {
+              if (egress === 'true') {
+                egress = true;
+              } else {
+                egress = false;
+              }
+            }
+            aclRes.EntrySet.push({
+              "RuleAction": acl.ruleAction,
+              "Protocol": Number(acl.protocol),
+              "CidrBlock": acl.cidrBlock,
+              "Egress": acl.egress,
+              "IcmpTypeCode": {
+                "Type": acl.icmpTypeCode ? String(acl.icmpTypeCode.type) : "",
+                "Code": acl.icmpTypeCode ? String(acl.icmpTypeCode.code) : ""
+              },
+              "PortRange": {
+                "To": acl.portRange ? String(acl.portRange.to) : "",
+                "From": acl.portRange ? String(acl.portRange.from) : ""
+              },
+              "RuleNumber": acl.ruleNumber
+            });
+          }
+          _ref2 = aws_acl.associationSet;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            acl = _ref2[_k];
+            subnetComp = this.subnets[acl.subnetId];
+            if (!subnetComp) {
+              continue;
+            }
+            aclRes.AssociationSet.push({
+              "NetworkAclAssociationId": acl.networkAclAssociationId,
+              "SubnetId": CREATE_REF(subnetComp, 'resource.SubnetId')
+            });
+          }
+          originComp = this.getOriginalComp(aws_acl.id, "ACL");
+          if (originComp && originComp.resource.AssociationSet.sort().toString() === aclRes.AssociationSet.sort().toString()) {
+            aclRes.AssociationSet = jQuery.extend(true, [], originComp.resource.AssociationSet);
+          }
+          aclComp = this.add("ACL", aclRes, aclName);
+        }
+      }, function() {
+        var aws_elb, data, elbComp, elbRes, iamComp, instanceId, listener, me, originComp, sgId, sslCertRef, subnetId, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+        me = this;
+        _ref = this.getResourceByType("ELB") || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_elb = _ref[_i];
+          aws_elb = aws_elb.attributes;
+          elbRes = {
+            "HealthCheck": {
+              "Timeout": "",
+              "Target": "",
+              "HealthyThreshold": "",
+              "UnhealthyThreshold": "",
+              "Interval": ""
+            },
+            "Policies": {
+              "AppCookieStickinessPolicies": [
+                {
+                  CookieName: '',
+                  PolicyName: ''
+                }
+              ],
+              "OtherPolicies": [],
+              "LBCookieStickinessPolicies": [
+                {
+                  CookieExpirationPeriod: '',
+                  PolicyName: ''
+                }
+              ]
+            },
+            "BackendServerDescriptions": [
+              {
+                InstantPort: "",
+                PoliciyNames: ""
+              }
+            ],
+            "SecurityGroups": [],
+            "ListenerDescriptions": [],
+            "DNSName": "",
+            "Scheme": "",
+            "Instances": [],
+            "Subnets": [],
+            "VpcId": "",
+            "LoadBalancerName": "",
+            "AvailabilityZones": [],
+            "CrossZoneLoadBalancing": "",
+            "ConnectionDraining": {
+              "Enabled": false,
+              "Timeout": null
+            },
+            "ConnectionSettings": {
+              "IdleTimeout": 60
+            }
+          };
+          elbRes = this._mapProperty(aws_elb, elbRes);
+          originComp = this.getOriginalComp(aws_elb.Name, 'ELB');
+          elbRes.ConnectionDraining.Enabled = aws_elb.ConnectionDraining.Enabled;
+          elbRes.ConnectionSettings.IdleTimeout = Number(aws_elb.ConnectionSettings.IdleTimeout);
+          if (originComp) {
+            elbRes.ConnectionDraining.Timeout = originComp.resource.ConnectionDraining.Timeout;
+          } else {
+            if (aws_elb.ConnectionDraining.Enabled) {
+              elbRes.ConnectionDraining.Timeout = Number(aws_elb.ConnectionDraining.Timeout);
+            }
+          }
+          if (aws_elb.SecurityGroups) {
+            _ref1 = aws_elb.SecurityGroups;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              sgId = _ref1[_j];
+              elbRes.SecurityGroups.push(CREATE_REF(this.sgs[sgId], 'resource.GroupId'));
+            }
+          }
+          elbRes.VpcId = CREATE_REF(this.theVpc, 'resource.VpcId');
+          if (aws_elb.Subnets) {
+            _ref2 = aws_elb.Subnets;
+            for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+              subnetId = _ref2[_k];
+              elbRes.Subnets.push(CREATE_REF(this.subnets[subnetId], 'resource.SubnetId'));
+            }
+          }
+          elbRes.DNSName = aws_elb.Dnsname;
+          elbRes.CrossZoneLoadBalancing = aws_elb.CrossZoneLoadBalancing.Enabled;
+          if (aws_elb.ListenerDescriptions) {
+            _ref3 = aws_elb.ListenerDescriptions;
+            for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+              listener = _ref3[_l];
+              sslCertRef = '';
+              if (listener.Listener.SslcertificateId) {
+                iamComp = this.addIAM(listener.Listener.SslcertificateId);
+                if (iamComp) {
+                  sslCertRef = CREATE_REF(iamComp, 'resource.ServerCertificateMetadata.Arn');
+                }
+              } else {
+                listener.Listener.SslcertificateId = "";
+              }
+              data = {
+                "PolicyNames": '',
+                "Listener": {
+                  "LoadBalancerPort": listener.Listener.LoadBalancerPort,
+                  "InstanceProtocol": listener.Listener.InstanceProtocol,
+                  "Protocol": listener.Listener.Protocol,
+                  "SSLCertificateId": sslCertRef || listener.Listener.SslcertificateId,
+                  "InstancePort": listener.Listener.InstancePort
+                }
+              };
+              elbRes.ListenerDescriptions.push(data);
+            }
+          }
+          elbRes.HealthCheck = aws_elb.HealthCheck;
+          if (aws_elb.Instances) {
+            _ref4 = aws_elb.Instances;
+            for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+              instanceId = _ref4[_m];
+              if (!(__indexOf.call(me.ins_in_asg, instanceId) >= 0)) {
+                if (this.instances[instanceId]) {
+                  elbRes.Instances.push({
+                    InstanceId: CREATE_REF(this.instances[instanceId], 'resource.InstanceId')
+                  });
+                }
+              }
+            }
+          }
+          elbComp = this.add("ELB", elbRes, aws_elb.Name);
+          this.addLayout(elbComp, false, this.theVpc);
+          this.elbs[aws_elb.Name] = elbComp;
+        }
+      }, function() {
+        var aws_lc, bdm, keyPairComp, lcComp, lcRes, me, originComp, sg, _i, _len, _ref;
+        me = this;
+        _ref = this.getResourceByType('LC');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_lc = _ref[_i];
+          aws_lc = aws_lc.attributes;
+          lcRes = {
+            "AssociatePublicIpAddress": false,
+            "BlockDeviceMapping": [],
+            "EbsOptimized": false,
+            "ImageId": "",
+            "InstanceMonitoring": false,
+            "InstanceType": "",
+            "KeyName": "",
+            "LaunchConfigurationARN": "",
+            "LaunchConfigurationName": "",
+            "SecurityGroups": [],
+            "UserData": ""
+          };
+          lcRes = this._mapProperty(aws_lc, lcRes);
+          lcRes.LaunchConfigurationARN = aws_lc.id;
+          lcRes.LaunchConfigurationName = aws_lc.Name;
+          lcRes.InstanceMonitoring = aws_lc.InstanceMonitoring.Enabled;
+          if (aws_lc.UserData && atob) {
+            lcRes.UserData = atob(aws_lc.UserData);
+          }
+          sg = [];
+          _.each(aws_lc.SecurityGroups, function(e, key) {
+            var sgComp;
+            sgComp = me.sgs[e];
+            if (sgComp) {
+              return sg.push(CREATE_REF(sgComp, "resource.GroupId"));
+            }
+          });
+          if (sg.length === 0) {
+            continue;
+          }
+          lcRes.SecurityGroups = sg;
+          bdm = lcRes.BlockDeviceMapping;
+          _.each(aws_lc.BlockDeviceMapping || [], function(e, key) {
+            var data;
+            if (e.Ebs === null && e.VirtualName) {
+              return data = {
+                "DeviceName": e.DeviceName,
+                "Ebs": null,
+                "NoDevice": e.NoDevice,
+                "VirtualName": e.VirtualName
+              };
+            } else {
+              data = {
+                "DeviceName": e.DeviceName,
+                "Ebs": {
+                  "VolumeSize": e.Ebs ? Number(e.Ebs.VolumeSize) : 0,
+                  "VolumeType": e.Ebs ? e.Ebs.VolumeType : ""
+                }
+              };
+              if (e.Ebs) {
+                if (e.Ebs.SnapshotId) {
+                  data.Ebs.SnapshotId = e.Ebs.SnapshotId;
+                }
+                if (data.Ebs.VolumeType === "io1") {
+                  data.Ebs.Iops = e.Ebs.Iops;
+                }
+              }
+              return bdm.push(data);
+            }
+          });
+          keyPairComp = this.getOriginalComp(aws_lc.KeyName, 'KP');
+          if (!keyPairComp) {
+            if (aws_lc.KeyName) {
+              lcRes.KeyName = aws_lc.KeyName;
+            }
+          } else {
+            originComp = this.getOriginalComp(aws_lc.id, 'LC');
+            if (originComp) {
+              lcRes.KeyName = originComp.resource.KeyName;
+            } else {
+              lcRes.KeyName = CREATE_REF(keyPairComp, "resource.KeyName");
+            }
+          }
+          lcComp = this.add("LC", lcRes, aws_lc.Name);
+          this.addLayout(lcComp);
+          delete this.component[aws_lc.id];
+          this.lcs[aws_lc.Name] = lcComp;
+        }
+      }, function() {
+        var addOriginal, asgComp, asgRes, aws_asg, az, elb, me, origSubnetComp, origSubnetLayout, originASGComp, vpcZoneIdentifier, _i, _len, _ref;
+        me = this;
+        _ref = this.getResourceByType("ASG");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_asg = _ref[_i];
+          aws_asg = aws_asg.attributes;
+          if (!this.lcs[aws_asg.LaunchConfigurationName]) {
+            continue;
+          }
+          asgRes = {
+            "AutoScalingGroupARN": "",
+            "AutoScalingGroupName": "",
+            "AvailabilityZones": [],
+            "DefaultCooldown": "0",
+            "DesiredCapacity": "0",
+            "HealthCheckGracePeriod": "0",
+            "HealthCheckType": "",
+            "LaunchConfigurationName": "",
+            "LoadBalancerNames": [],
+            "MaxSize": "0",
+            "MinSize": "0",
+            "TerminationPolicies": [],
+            "VPCZoneIdentifier": ""
+          };
+          asgRes = this._mapProperty(aws_asg, asgRes);
+          originASGComp = this.getOriginalComp(aws_asg.id, 'ASG');
+          asgRes.AutoScalingGroupARN = aws_asg.id;
+          asgRes.AutoScalingGroupName = aws_asg.Name;
+          asgRes.TerminationPolicies = aws_asg.TerminationPolicies;
+          asgRes.LaunchConfigurationName = CREATE_REF(this.lcs[aws_asg.LaunchConfigurationName], "resource.LaunchConfigurationName");
+          vpcZoneIdentifier = [];
+          _.each(aws_asg.Subnets, function(e, key) {
+            var subnetComp;
+            subnetComp = me.subnets[e];
+            if (subnetComp) {
+              return vpcZoneIdentifier.push(CREATE_REF(subnetComp, "resource.SubnetId"));
+            }
+          });
+          if (vpcZoneIdentifier.length === 0) {
+            continue;
+          }
+          asgRes.VPCZoneIdentifier = vpcZoneIdentifier.join(" , ");
+          elb = [];
+          _.each(aws_asg.LoadBalancerNames, function(e, key) {
+            var elbComp;
+            elbComp = me.elbs[e];
+            return elb.push(CREATE_REF(elbComp, "resource.LoadBalancerName"));
+          });
+          asgRes.LoadBalancerNames = elb;
+          az = [];
+          _.each(aws_asg.AvailabilityZones, function(e, key) {
+            var azComp;
+            azComp = me.addAz(e);
+            return az.push(CREATE_REF(azComp, "resource.ZoneName"));
+          });
+          asgRes.AvailabilityZones = az;
+          asgComp = this.add("ASG", asgRes, TAG_NAME(aws_asg) || aws_asg.Name);
+          origSubnetComp = "";
+          origSubnetLayout = this.originalJson.layout[asgComp.uid];
+          addOriginal = false;
+          _.each(aws_asg.Subnets, function(e, key) {
+            var subnetComp;
+            subnetComp = me.subnets[e];
+            if ((!addOriginal) && ((origSubnetLayout && origSubnetLayout.groupUId === subnetComp.uid) || (!origSubnetLayout))) {
+              me.addLayout(asgComp, true, subnetComp);
+              return addOriginal = true;
+            } else {
+              return me.addExpandedAsg(asgComp, subnetComp);
+            }
+          });
+          this.asgs[aws_asg.Name] = asgComp;
+        }
+      }, function() {
+        var asgComp, aws_nc, ncComp, ncRes, topicComp, _i, _len, _ref;
+        _ref = this.getResourceByType("NC");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_nc = _ref[_i];
+          aws_nc = aws_nc.attributes;
+          ncRes = {
+            "AutoScalingGroupName": aws_nc.AutoScalingGroupName,
+            "NotificationType": aws_nc.NotificationType,
+            "TopicARN": aws_nc.TopicARN
+          };
+          asgComp = this.asgs[ncRes.AutoScalingGroupName];
+          if (asgComp) {
+            ncRes.AutoScalingGroupName = CREATE_REF(asgComp, 'resource.AutoScalingGroupName');
+          } else {
+            continue;
+          }
+          topicComp = _.first(_.filter(this.originalJson.component, function(com) {
+            if (com.type === constant.RESTYPE.TOPIC) {
+              return com.resource.TopicArn === ncRes.TopicARN;
+            }
+          }));
+          if (topicComp) {
+            ncRes.TopicARN = CREATE_REF(topicComp, 'resource.TopicArn');
+          } else {
+            topicComp = this.addTopic(ncRes.TopicARN);
+            if (topicComp) {
+              ncRes.TopicARN = CREATE_REF(topicComp, 'resource.TopicArn');
+            }
+          }
+          ncComp = this.add("NC", ncRes, "SnsNotification");
+        }
+      }, function() {
+        var asgComp, aws_sp, spComp, spRes, _i, _len, _ref;
+        _ref = this.getResourceByType("SP");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_sp = _ref[_i];
+          aws_sp = aws_sp.attributes;
+          spRes = {
+            "AdjustmentType": "",
+            "AutoScalingGroupName": "",
+            "Cooldown": "0",
+            "MinAdjustmentStep": "",
+            "PolicyARN": "",
+            "PolicyName": "",
+            "ScalingAdjustment": ""
+          };
+          spRes = this._mapProperty(aws_sp, spRes);
+          if (aws_sp.Cooldown === "") {
+            spRes.Cooldown = "0";
+          }
+          asgComp = this.asgs[aws_sp.AutoScalingGroupName];
+          if (spRes.ScalingAdjustment) {
+            spRes.ScalingAdjustment = String(spRes.ScalingAdjustment);
+          }
+          if (asgComp) {
+            spRes.AutoScalingGroupName = CREATE_REF(asgComp, 'resource.AutoScalingGroupName');
+          } else {
+            continue;
+          }
+          spRes.PolicyARN = aws_sp.id;
+          spRes.PolicyName = aws_sp.Name;
+          spComp = this.add("SP", spRes, aws_sp.Name);
+          this.sps[aws_sp.id] = spComp;
+        }
+      }, function() {
+        var alarmActionAry, aws_cw, cwComp, cwRes, dimension, hasSP, me, okActionAry, reg_sp, reg_topic, validAlarmAction, _i, _len, _ref;
+        me = this;
+        _ref = this.getResourceByType("CW");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_cw = _ref[_i];
+          aws_cw = aws_cw.attributes;
+          cwRes = {
+            "AlarmActions": [],
+            "AlarmArn": "",
+            "AlarmName": "",
+            "ComparisonOperator": "",
+            "Dimensions": [],
+            "EvaluationPeriods": "",
+            "InsufficientDataActions": [],
+            "MetricName": "",
+            "Namespace": "",
+            "OKAction": [],
+            "Period": 0,
+            "Statistic": "",
+            "Threshold": "",
+            "Unit": ""
+          };
+          cwRes = this._mapProperty(aws_cw, cwRes);
+          dimension = [];
+          _.each(aws_cw.Dimensions, function(e, key) {
+            var asgComp, data;
+            if (e.Name === "AutoScalingGroupName") {
+              asgComp = me.asgs[e.Value];
+              if (asgComp) {
+                data = {
+                  "name": e.Name,
+                  "value": CREATE_REF(asgComp, "resource.AutoScalingGroupName")
+                };
+                return dimension.push(data);
+              }
+            }
+          });
+          if (dimension.length === 0) {
+            continue;
+          }
+          cwRes.Dimensions = dimension;
+          reg_sp = /arn:aws:autoscaling:.*:scalingPolicy:/g;
+          reg_topic = /arn:aws:sns:.*:.*/g;
+          validAlarmAction = [];
+          hasSP = false;
+          _.each(aws_cw.AlarmActions, function(e, key) {
+            var spComp, topicComp;
+            if (e.match(reg_topic)) {
+              topicComp = me.addTopic(e);
+              if (topicComp) {
+                return validAlarmAction.push(e);
+              }
+            } else if (e.match(reg_sp)) {
+              spComp = me.sps[e];
+              if (spComp) {
+                hasSP = true;
+                return validAlarmAction.push(e);
+              }
+            }
+          });
+          if (!hasSP) {
+            continue;
+          }
+          alarmActionAry = [];
+          _.each(validAlarmAction, function(e, key) {
+            var spComp, topicComp;
+            if (e.match(reg_topic)) {
+              topicComp = me.addTopic(e);
+              if (topicComp) {
+                return alarmActionAry.push(CREATE_REF(topicComp, "resource.TopicArn"));
+              }
+            } else if (e.match(reg_sp)) {
+              spComp = me.sps[e];
+              if (spComp) {
+                return alarmActionAry.push(CREATE_REF(spComp, "resource.PolicyARN"));
+              }
+            }
+          });
+          cwRes.AlarmActions = alarmActionAry;
+          okActionAry = [];
+          _.each(aws_cw.Okactions, function(e, key) {
+            var spComp;
+            if (e.match(reg_sp)) {
+              spComp = me.sps[e];
+              if (spComp) {
+                return okActionAry.push(CREATE_REF(spComp, "resource.PolicyARN"));
+              }
+            }
+          });
+          cwRes.OKAction = okActionAry;
+          cwRes.Threshold = String(aws_cw.Threshold);
+          cwRes.EvaluationPeriods = String(aws_cw.EvaluationPeriods);
+          if (aws_cw.ComparisonOperator) {
+            cwRes.ComparisonOperator = this.COMPARISONOPERATOR[aws_cw.ComparisonOperator];
+          }
+          cwRes.AlarmArn = aws_cw.id;
+          cwRes.AlarmName = aws_cw.Name;
+          cwComp = this.add("CW", cwRes, aws_cw.Name);
+        }
+      }, function() {
+        var aws_og, compName, ogComp, ogRes, op, op_item, originComp, set, set_item, sg, sgComp, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+        _ref = this.getResourceByType("DBOG");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_og = _ref[_i];
+          aws_og = aws_og.attributes;
+          if (aws_og.OptionGroupName.indexOf("default:") === 0) {
+            console.warn("skip default OptionGroup " + aws_og.OptionGroupName);
+            continue;
+          }
+          ogRes = {
+            "CreatedBy": "",
+            "EngineName": "",
+            "MajorEngineVersion": "",
+            "OptionGroupDescription": "",
+            "OptionGroupName": "",
+            "Options": [],
+            "VpcId": ""
+          };
+          ogRes = this._mapProperty(aws_og, ogRes);
+          ogRes.OptionGroupName = aws_og.id;
+          ogRes.VpcId = CREATE_REF(this.theVpc, "resource.VpcId");
+          _ref1 = aws_og.Options || [];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            op = _ref1[_j];
+            op_item = this._mapProperty(op, {
+              "OptionName": "",
+              "OptionSettings": [],
+              "Port": "",
+              "VpcSecurityGroupMemberships": []
+            });
+            op_item.Port = op_item.Port ? op_item.Port.toString() : "";
+            _ref2 = op.OptionSettings;
+            for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+              set = _ref2[_k];
+              set_item = this._mapProperty(set, {
+                "Name": "",
+                "Value": ""
+              });
+              op_item.OptionSettings.push(set_item);
+            }
+            _ref3 = op.VpcSecurityGroupMemberships;
+            for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+              sg = _ref3[_l];
+              sgComp = this.sgs[sg.VpcSecurityGroupId];
+              if (sgComp) {
+                op_item.VpcSecurityGroupMemberships.push(CREATE_REF(sgComp, "resource.GroupId"));
+              } else {
+                console.error("can not find SG " + sg.VpcSecurityGroupId + " for OptionGroup");
+              }
+            }
+            ogRes.Options.push(op_item);
+          }
+          originComp = this.getOriginalComp(aws_og.id, 'DBOG');
+          if (originComp) {
+            compName = originComp.name;
+            ogRes.CreatedBy = originComp.resource.CreatedBy;
+          } else {
+            compName = aws_og.OptionGroupName;
+            ogRes.CreatedBy = 'user';
+            console.error("[temp]can not find original component");
+          }
+          ogComp = this.add("DBOG", ogRes, compName);
+          this.ogs[aws_og.id] = ogComp;
+        }
+      }, function() {
+        var aws_sbg, compName, originComp, sbgComp, sbgRes, subnet, subnetComp, _i, _j, _len, _len1, _ref, _ref1;
+        _ref = this.getResourceByType("DBSBG");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_sbg = _ref[_i];
+          aws_sbg = aws_sbg.attributes;
+          sbgRes = {
+            "CreatedBy": "",
+            "DBSubnetGroupName": "",
+            "SubnetIds": [],
+            "DBSubnetGroupDescription": ""
+          };
+          sbgRes = this._mapProperty(aws_sbg, sbgRes);
+          sbgRes.DBSubnetGroupName = aws_sbg.id;
+          _ref1 = aws_sbg.Subnets;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            subnet = _ref1[_j];
+            subnetComp = this.subnets[subnet.SubnetIdentifier];
+            sbgRes.SubnetIds.push(CREATE_REF(subnetComp, "resource.SubnetId"));
+          }
+          originComp = this.getOriginalComp(aws_sbg.id, 'DBSBG');
+          if (originComp) {
+            compName = originComp.name;
+            sbgRes.CreatedBy = originComp.resource.CreatedBy;
+            if (sbgRes.SubnetIds.sort().toString() === originComp.resource.SubnetIds.sort().toString()) {
+              sbgRes.SubnetIds = jQuery.extend(true, [], originComp.resource.SubnetIds);
+            }
+          } else {
+            compName = aws_sbg.DBSubnetGroupName;
+            sbgRes.CreatedBy = 'user';
+          }
+          sbgComp = this.add("DBSBG", sbgRes, TAG_NAME(aws_sbg) || compName);
+          this.addLayout(sbgComp, true, this.theVpc);
+          this.sbgs[aws_sbg.id] = sbgComp;
+        }
+      }, function() {
+        var aws_dbins, compName, dbInsComp, dbInsRes, dbinsAry, ogComp, originComp, sbgComp, sg, sgComp, srcDbInsComp, subnetComp, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        dbinsAry = [];
+        _ref = this.getResourceByType("DBINSTANCE");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          aws_dbins = _ref[_i];
+          aws_dbins = aws_dbins.attributes;
+          if (aws_dbins.ReadReplicaSourceDBInstanceIdentifier) {
+            dbinsAry.push(aws_dbins);
+          } else {
+            dbinsAry.unshift(aws_dbins);
+          }
+        }
+        for (_j = 0, _len1 = dbinsAry.length; _j < _len1; _j++) {
+          aws_dbins = dbinsAry[_j];
+          subnetComp = this.sbgs[aws_dbins.sbgId];
+          if (!subnetComp) {
+            console.warn("can not found subnet of DBInstance");
+            continue;
+          }
+          sbgComp = this.sbgs[aws_dbins.DBSubnetGroup.DBSubnetGroupName];
+          if (!sbgComp) {
+            console.warn("can not found DBSubnetGroup of DBInstance");
+            continue;
+          }
+          dbInsRes = {
+            "CreatedBy": "",
+            "DBInstanceIdentifier": "",
+            "DBSnapshotIdentifier": "",
+            "AllocatedStorage": 0,
+            "AutoMinorVersionUpgrade": false,
+            "AvailabilityZone": "",
+            "MultiAZ": false,
+            "Iops": "",
+            "BackupRetentionPeriod": 0,
+            "CharacterSetName": "",
+            "DBInstanceClass": "",
+            "DBName": "",
+            "Endpoint": {
+              "Port": 0
+            },
+            "Engine": "",
+            "EngineVersion": "",
+            "LicenseModel": "",
+            "MasterUsername": "",
+            "MasterUserPassword": "",
+            "OptionGroupMembership": {
+              "OptionGroupName": ""
+            },
+            "DBParameterGroups": {
+              "DBParameterGroupName": ""
+            },
+            "PendingModifiedValues": "",
+            "PreferredBackupWindow": "",
+            "PreferredMaintenanceWindow": "",
+            "PubliclyAccessible": false,
+            "DBSubnetGroup": {
+              "DBSubnetGroupName": ""
+            },
+            "VpcSecurityGroupIds": []
+          };
+          dbInsRes = this._mapProperty(aws_dbins, dbInsRes);
+          if (aws_dbins.PendingModifiedValues) {
+            if (aws_dbins.PendingModifiedValues.AllocatedStorage) {
+              dbInsRes.AllocatedStorage = Number(aws_dbins.PendingModifiedValues.AllocatedStorage);
+            }
+            if (aws_dbins.PendingModifiedValues.BackupRetentionPeriod) {
+              dbInsRes.BackupRetentionPeriod = Number(aws_dbins.PendingModifiedValues.BackupRetentionPeriod);
+            }
+            if (aws_dbins.PendingModifiedValues.DBInstanceClass) {
+              dbInsRes.DBInstanceClass = aws_dbins.PendingModifiedValues.DBInstanceClass;
+            }
+            if (aws_dbins.PendingModifiedValues.Iops) {
+              dbInsRes.Iops = Number(aws_dbins.PendingModifiedValues.Iops);
+            }
+            if (aws_dbins.PendingModifiedValues.MultiAZ) {
+              dbInsRes.MultiAZ = aws_dbins.PendingModifiedValues.MultiAZ;
+            }
+            if (aws_dbins.PendingModifiedValues.MasterUserPassword) {
+              dbInsRes.MasterUserPassword = aws_dbins.PendingModifiedValues.MasterUserPassword;
+            }
+          }
+          if (dbInsRes.MultiAZ) {
+            dbInsRes.AvailabilityZone = "";
+          }
+          if (aws_dbins.ReadReplicaSourceDBInstanceIdentifier) {
+            srcDbInsComp = this.dbinstances[aws_dbins.ReadReplicaSourceDBInstanceIdentifier];
+            if (srcDbInsComp) {
+              dbInsRes.ReadReplicaSourceDBInstanceIdentifier = CREATE_REF(srcDbInsComp, "resource.DBInstanceIdentifier");
+            } else {
+              console.error("can not find Source DBInstance for ReadReplica " + aws_dbins.ReadReplicaSourceDBInstanceIdentifier);
+            }
+          }
+          if (aws_dbins.Endpoint) {
+            dbInsRes.Endpoint.Port = aws_dbins.Endpoint.Port;
+          }
+          if (aws_dbins.OptionGroupMemberships[0]) {
+            ogComp = this.ogs[aws_dbins.OptionGroupMemberships[0].OptionGroupName];
+            if (ogComp) {
+              dbInsRes.OptionGroupMembership.OptionGroupName = CREATE_REF(ogComp, "resource.OptionGroupName");
+            } else {
+              dbInsRes.OptionGroupMembership.OptionGroupName = aws_dbins.OptionGroupMemberships[0].OptionGroupName;
+              if (aws_dbins.OptionGroupMemberships[0].OptionGroupName.indexOf("default:") !== 0) {
+                console.warn("can not find OptionGroup " + aws_dbins.OptionGroupMemberships[0].OptionGroupName + " for DBInstance");
+              }
+            }
+          }
+          if (aws_dbins.DBParameterGroups[0]) {
+            dbInsRes.DBParameterGroups.DBParameterGroupName = aws_dbins.DBParameterGroups[0].DBParameterGroupName;
+          }
+          dbInsRes.DBSubnetGroup.DBSubnetGroupName = CREATE_REF(sbgComp, "resource.DBSubnetGroupName");
+          _ref1 = aws_dbins.VpcSecurityGroups;
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            sg = _ref1[_k];
+            sgComp = this.sgs[sg.VpcSecurityGroupId];
+            if (sgComp) {
+              dbInsRes.VpcSecurityGroupIds.push(CREATE_REF(sgComp, "resource.GroupId"));
+            } else {
+              console.warn("can not found component for SG " + sg.VpcSecurityGroupId);
+            }
+          }
+          originComp = this.getOriginalComp(aws_dbins.id, 'DBINSTANCE');
+          if (originComp) {
+            compName = originComp.name;
+            dbInsRes.CreatedBy = originComp.resource.CreatedBy;
+            if (!aws_dbins.Endpoint) {
+              dbInsRes.Endpoint.Port = originComp.resource.Endpoint.Port;
+            }
+            if (!originComp.resource.PreferredBackupWindow) {
+              dbInsRes.PreferredBackupWindow = originComp.resource.PreferredBackupWindow;
+            }
+            if (!originComp.resource.PreferredMaintenanceWindow) {
+              dbInsRes.PreferredMaintenanceWindow = originComp.resource.PreferredMaintenanceWindow;
+            }
+            dbInsRes.MasterUserPassword = originComp.resource.MasterUserPassword;
+            dbInsRes.DBSnapshotIdentifier = originComp.resource.DBSnapshotIdentifier;
+          } else {
+            compName = aws_dbins.Name || aws_dbins.DBInstanceIdentifier;
+            dbInsRes.CreatedBy = 'user';
+          }
+          dbInsComp = this.add("DBINSTANCE", dbInsRes, TAG_NAME(aws_dbins) || compName);
+          this.addLayout(dbInsComp, false, subnetComp);
+          this.dbinstances[aws_dbins.id] = dbInsComp;
+        }
+      }
+    ];
+    processServerGroup = function(cd) {
+      var addRemoveDiffRet, diffInstanceAry, diffRet, diffTree, getRelatedInstanceGroupUID, newAddRemoveComps, newComps, newServerGroupComps, oldAddRemoveComps, originComps, originServerGroupComps;
+      diffTree = new DiffTree();
+      originComps = cd.originAppJSON.component;
+      newComps = cd.component;
+      getRelatedInstanceGroupUID = function(comp) {
+        var eniComp, eniRef, eniUID, instanceComp, instanceRef, instanceUID, resType, serverGroupUid;
+        resType = comp.type;
+        if (resType === constant.RESTYPE.INSTANCE) {
+          return comp.serverGroupUid;
+        }
+        if (resType === constant.RESTYPE.ENI) {
+          instanceRef = comp.resource.Attachment.InstanceId;
+          if (instanceRef) {
+            instanceUID = MC.extractID(instanceRef);
+            instanceComp = originComps[instanceUID];
+            if (instanceComp) {
+              return instanceComp.serverGroupUid;
+            }
+          } else {
+            serverGroupUid = comp.serverGroupUid;
+            if (serverGroupUid !== comp.uid) {
+              eniComp = originComps[serverGroupUid];
+              if (eniComp) {
+                return getRelatedInstanceGroupUID(eniComp);
+              }
+            }
+          }
+        }
+        if (resType === constant.RESTYPE.VOL) {
+          instanceRef = comp.resource.AttachmentSet.InstanceId;
+          if (instanceRef) {
+            instanceUID = MC.extractID(instanceRef);
+            instanceComp = originComps[instanceUID];
+            if (instanceComp) {
+              return instanceComp.serverGroupUid;
+            }
+          }
+        }
+        if (resType === constant.RESTYPE.EIP) {
+          eniRef = comp.resource.NetworkInterfaceId;
+          if (eniRef) {
+            eniUID = MC.extractID(eniRef);
+            eniComp = originComps[eniUID];
+            if (eniComp) {
+              return getRelatedInstanceGroupUID(eniComp);
+            }
+          }
+        }
+        return '';
+      };
+      originServerGroupComps = {};
+      _.each(originComps, function(comp) {
+        if (comp.number && comp.number > 1) {
+          return originServerGroupComps[comp.uid] = comp;
+        }
+      });
+      newServerGroupComps = {};
+      _.each(newComps, function(comp) {
+        if (originServerGroupComps[comp.uid]) {
+          newServerGroupComps[comp.uid] = comp;
+        }
+        return null;
+      });
+      diffRet = diffTree.compare(originServerGroupComps, newServerGroupComps);
+      if (diffRet) {
+        _.each(diffRet, function(comp, uid) {
+          var newCompObj, serverGroupUID;
+          newCompObj = newServerGroupComps[uid];
+          if (newCompObj) {
+            serverGroupUID = getRelatedInstanceGroupUID(newCompObj);
+            if (serverGroupUID) {
+              return _.each(newServerGroupComps, function(newComp) {
+                if (getRelatedInstanceGroupUID(newComp) === serverGroupUID) {
+                  if (newComp.serverGroupName) {
+                    newComp.serverGroupName = newComp.name;
+                  }
+                  if (newComp.number) {
+                    newComp.number = 1;
+                  }
+                  if (newComp.index) {
+                    newComp.index = 0;
+                  }
+                  if (newComp.serverGroupUid) {
+                    return newComp.serverGroupUid = newComp.uid;
+                  }
+                }
+              });
+            }
+          }
+        });
+      }
+      _.each(cd.elbs, function(insComp) {
+        var diffElbInstance, diffInstanceAry, instanceAry, originComp, originInstanceAry;
+        instanceAry = _.map(insComp.resource.Instances, function(refObj) {
+          return MC.extractID(refObj.InstanceId);
+        });
+        originComp = originComps[insComp.uid];
+        if (originComp) {
+          originInstanceAry = _.map(originComp.resource.Instances, function(refObj) {
+            return MC.extractID(refObj.InstanceId);
+          });
+          diffElbInstance = diffTree.compare(instanceAry, originInstanceAry);
+          if (diffElbInstance) {
+            diffInstanceAry = [];
+            _.each(diffElbInstance, function(comp) {
+              if (comp.__old__) {
+                diffInstanceAry.push(comp.__old__);
+              }
+              if (comp.__new__) {
+                diffInstanceAry.push(comp.__new__);
+              }
+              return null;
+            });
+            return _.each(diffInstanceAry, function(instanceUID) {
+              var serverGroupInstanceComp, serverGroupUID;
+              serverGroupInstanceComp = newServerGroupComps[instanceUID];
+              if (serverGroupInstanceComp) {
+                serverGroupUID = serverGroupInstanceComp.serverGroupUid;
+                return _.each(newServerGroupComps, function(comp, uid) {
+                  var _serverGroupUID;
+                  _serverGroupUID = getRelatedInstanceGroupUID(comp);
+                  if (_serverGroupUID === serverGroupUID) {
+                    if (comp.serverGroupName) {
+                      comp.serverGroupName = comp.name;
+                    }
+                    if (comp.number) {
+                      comp.number = 1;
+                    }
+                    if (comp.index) {
+                      comp.index = 0;
+                    }
+                    if (comp.serverGroupUid) {
+                      return comp.serverGroupUid = comp.uid;
+                    }
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+      newAddRemoveComps = {};
+      oldAddRemoveComps = {};
+      _.each(newComps, function(insComp) {
+        var _ref;
+        if ((_ref = insComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL) {
+          if (!originComps[insComp.uid]) {
+            return newAddRemoveComps[insComp.uid] = insComp;
+          }
+        }
+      });
+      _.each(originComps, function(insComp) {
+        var _ref;
+        if ((_ref = insComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL) {
+          if (!newComps[insComp.uid]) {
+            oldAddRemoveComps[insComp.uid] = insComp;
+          }
+        }
+        return null;
+      });
+      addRemoveDiffRet = diffTree.compare(newAddRemoveComps, oldAddRemoveComps);
+      diffInstanceAry = [];
+      if (addRemoveDiffRet) {
+        return _.each(addRemoveDiffRet, function(comp, uid) {
+          var serverGroupInstanceComp, serverGroupUID;
+          serverGroupInstanceComp = newComps[uid] || originComps[uid];
+          serverGroupUID = getRelatedInstanceGroupUID(serverGroupInstanceComp);
+          return _.each(newComps, function(comp, uid) {
+            var _serverGroupUID;
+            _serverGroupUID = getRelatedInstanceGroupUID(comp);
+            if (_serverGroupUID === serverGroupUID) {
+              if (comp.serverGroupName) {
+                comp.serverGroupName = comp.name;
+              }
+              if (comp.number) {
+                comp.number = 1;
+              }
+              if (comp.index) {
+                comp.index = 0;
+              }
+              if (comp.serverGroupUid) {
+                return comp.serverGroupUid = comp.uid;
+              }
+            }
+          });
+        });
+      }
+    };
+    convertResToJson = function(region, vpcId, originalJson) {
+      var cd, err, func, _i, _len;
+      console.log(["VOL", "INSTANCE", "SG", "ELB", "ACL", "CGW", "ENI", "IGW", "RT", "SUBNET", "VPC", "VPN", "VGW", "ASG", "LC", "NC", "SP", "IAM", "RETAIN"].map(function(t) {
+        return CloudResources(constant.RESTYPE[t], region);
+      }));
+      cd = new ConverterData(region, vpcId, originalJson);
+      for (_i = 0, _len = Converters.length; _i < _len; _i++) {
+        func = Converters[_i];
+        func.call(cd);
+      }
+      if (cd.originAppJSON) {
+        try {
+          processServerGroup(cd);
+        } catch (_error) {
+          err = _error;
+          console.info('Server Group process exception when convert app json');
+        }
+      }
+      return cd;
+    };
+    __createRequestParam = function(region, vpcId) {
+      var RESTYPE, additionalRequestParam, asg, asgNamesInVpc, filter, lcNamesInVpc, sb, subnetIdsInVpc, _i, _j, _len, _len1, _ref, _ref1;
+      RESTYPE = constant.RESTYPE;
+      filter = {
+        filter: {
+          'vpc-id': vpcId
+        }
+      };
+      additionalRequestParam = {
+        'AWS.EC2.SecurityGroup': filter,
+        'AWS.VPC.NetworkAcl': filter,
+        'AWS.VPC.NetworkInterface': filter
+      };
+      subnetIdsInVpc = {};
+      _ref = CloudResources(RESTYPE.SUBNET, region).where({
+        vpcId: vpcId
+      });
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        sb = _ref[_i];
+        subnetIdsInVpc[sb.id] = true;
+      }
+      asgNamesInVpc = [];
+      lcNamesInVpc = [];
+      _ref1 = CloudResources(RESTYPE.ASG, region).models;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        asg = _ref1[_j];
+        if (subnetIdsInVpc[asg.get("VPCZoneIdentifier")]) {
+          asgNamesInVpc.push(asg.get("AutoScalingGroupName"));
+          lcNamesInVpc.push(asg.get("LaunchConfigurationName"));
+        }
+      }
+      if (asgNamesInVpc.length) {
+        additionalRequestParam[RESTYPE.LC] = {
+          id: _.uniq(lcNamesInVpc)
+        };
+        additionalRequestParam[RESTYPE.NC] = {
+          id: asgNamesInVpc
+        };
+        additionalRequestParam[RESTYPE.SP] = {
+          filter: {
+            AutoScalingGroupName: asgNamesInVpc
+          }
+        };
+      }
+      return additionalRequestParam;
+    };
+    CloudResources.getAllResourcesForVpc = convertResToJson;
+  });
+
+}).call(this);

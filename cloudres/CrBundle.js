@@ -1,1 +1,4059 @@
-(function(){define("cloudres/CrModel",["ApiRequest","backbone"],function(e){return Backbone.Model.extend({constructor:function(e,t){Backbone.Model.call(this,e,t),t&&t.RES_TAG&&(this.RES_TAG=t.RES_TAG)},save:function(){var e;if(this.get("id")){void 0;return}return this.__savePromise||(e=this,this.__savePromise=this.doCreate().then(function(){return e.__collection.add(e),e.tagResource(),delete e.__collection,delete e.__savePromise,e},function(t){throw delete e.__savePromise,t})),this.__savePromise},update:function(e){if(!this.get("id")){void 0;return}if(!this.doUpdate){void 0;return}return this.doUpdate(e)},destroy:function(){var e;return e=this,this.doDestroy().then(function(){return e.getCollection().remove(e),e},function(t){if(t.awsError===400&&t.awsErrorCode.indexOf(".NotFound")!==-1)return e.getCollection().remove(e),e;throw t})},getCollection:function(){return this.__collection||this.collection},tagResource:function(){var t;if(this.taggable===!1)return;return t=this,e("ec2_CreateTags",{region_name:this.getCollection().region(),resource_ids:[this.get("id")],tags:[{Name:"Created by",Value:App.user.get("username")}]}).then(function(){void 0})}},{})})}).call(this),function(){var e=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("cloudres/CrCollection",["ApiRequest","./CrModel","constant","backbone"],function(t,n,r){var i,s,o,u,a,f,l,c;return i={},o=[],s={},f={INSTANCE:{networkInterfaces:"networkInterfaceSet",state:"instanceState",securityGroups:"groupSet",blockDeviceMappings:"blockDeviceMapping",publicDnsName:"dnsName"},VOL:{attachments:"attachmentSet"},RT:{associations:"associationSet",routes:"routeSet",propagatingVgws:"propagatingVgwSet"},SG:{description:"groupDescription"},VGW:{vpcAttachments:"attachments"},IGW:{attachments:"attachmentSet"},LC:{blockDeviceMappings:"BlockDeviceMapping"},DBSBG:{dbsubnetGroupDescription:"DBSubnetGroupDescription",dbsubnetGroupName:"DBSubnetGroupName"},DBINSTANCE:{dbinstanceClass:"DBInstanceClass",dbinstanceIdentifier:"DBInstanceIdentifier",dbinstanceStatus:"DBInstanceStatus",dbname:"DBName",dbparameterGroups:"DBParameterGroups",dbsecurityGroups:"DBSecurityGroups",dbsubnetGroup:"DBSubnetGroup"},ALL:{associations:"associationSet",privateIpAddresses:"privateIpAddressesSet",groups:"groupSet"}},a=function(e){var t,n;return t=jQuery.extend(!0,{},f.ALL),n=r.WRAP(f),_.extend(t,n[e])},l=function(e,t,n){return e[n]=e[t],delete e[t]},u=function(t){var n,r,i,s,o;n=["member","item"],o=[];for(r in t)s=t[r],i=r.substring(0,1).toUpperCase()+r.substring(1),e.call(n,r)<0&&i!==r?o.push(l(t,r,i)):o.push(void 0);return o},c=function(t,n){var r,i,s,o;i=a(n),o=[];for(r in t)s=t[r],e.call(_.keys(i),r)>=0?o.push(l(t,r,i[r])):o.push(void 0);return o},Backbone.Collection.extend({category:"",model:n,constructor:function(){return this.on("add remove",_.debounce(function(){return this.trigger("update")}),this),Backbone.Collection.apply(this,arguments)},isReady:function(){return this.__fetchPromise&&this.__ready},isLastFetchFailed:function(){return!!this.lastFetchError()},lastFetchError:function(){return this.__lastFetchError},fetch:function(){var e,n;return!this.isLastFetchFailed()&&this.__fetchPromise?this.__fetchPromise:(this.lastFetch=+(new Date),this.__ready=!1,this.__lastFetchError=null,e=this,this.__fetchPromise=(n=this.doFetch())!=null?typeof n.then=="function"?n.then(function(n){var r,i,s,u;if(!e.__selfParseData){try{e.trAwsXml&&(n=e.trAwsXml(n)),e.parseFetchData&&n&&(n=e.parseFetchData(n)),n||(n=o)}catch(a){throw i=a,McError(t.Errors.InvalidAwsReturn,"Failed to parse aws data.",[n,i])}if(e.modelIdAttribute)for(s=0,u=n.length;s<u;s++)r=n[s],r.id=r[e.modelIdAttribute],delete r[e.modelIdAttribute]}return e.__ready=!0,n.length===0&&e.models.length===0?e.trigger("update"):e.set(n),e},function(t){throw e.lastFetch=0,e.__lastFetchError=t,e.__ready=!0,e.trigger("update"),t}):void 0:void 0,this.__fetchPromise)},fetchForce:function(){return this.__fetchPromise=null,this.reset(),this.trigger("update"),this.fetch()},fetchIfExpired:function(){var e;e=this.lastFetch||0;if(+(new Date)-e<18e5){void 0;return}return this.__fetchPromise=null,this.fetch()},resolveTagSet:function(e){var t,n,r,i,s,o,u;if(!e)return{};if(e["Created by"]&&e.app&&e["app-id"]&&e.name&&e.Name)r=jQuery.extend(!0,{},e),r.isOwner=App.user.get("username")===e["Created by"];else if(e.visualops&&e.Name){r={},i=e.visualops;if(i.indexOf("app-name=")===0&&i.indexOf("app-id=")>0&&i.indexOf("created-by=")>0){u=i.split(" ");for(s=0,o=u.length;s<o;s++){n=u[s],t=n.split("=");switch(t[0]){case"app-name":r.app=t[1];break;case"app-id":r["app-id"]=t[1];break;case"created-by":r["Created by"]=t[1]}null}}r.name=e.Name,r["Created by"]&&r.app&&r["app-id"]&&r.name&&(r.Name=r.app+"-"+r.name,r.isOwner=App.user.get("username")===r["Created by"])}return r},__parseExternalData:function(e,t,n,r){var i,s,o,u,a,f,l,c,h,p;try{this.parseExternalData?e=this.parseExternalData(e,n,r):this.parseFetchData&&(e=this.parseFetchData(e))}catch(d){return s=d,null}if(!e||!e.length){this.trigger("update");return}u=[];for(f=0,c=e.length;f<c;f++){i=e[f],i.category=n;if(i.tags||i.Tags)i.tagSet=i.tags||i.Tags,delete i.tags,delete i.Tags;if(_.isArray(i.tagSet)){a={},p=i.tagSet;for(l=0,h=p.length;l<h;l++)o=p[l],o.key?a[o.key]=o.value:o.Key&&(a[o.Key]=o.Value);i.tagSet=a}i.tagSet&&(i.visopsTag=this.resolveTagSet(i.tagSet)),this.modelIdAttribute&&(i.id=i[this.modelIdAttribute],delete i[this.modelIdAttribute]),u.push(i.id)}this.remove(u,{silent:!0}),this.add(e,t)},parseFetchData:function(e){return e},destroy:function(){return this.trigger("destroy",this.id)},create:function(e){var t;return t=new this.model(e),t.__collection=this,t},region:function(){return this.category},where:function(e,t){var n,r,i;e.category&&e.category===this.category&&delete e.category;for(r in e)if(e.hasOwnProperty(r)){n=!0;break}return n?i=Backbone.Collection.prototype.where.call(this,e)||[]:i=this.models.slice(0),t?i[0]:i},convertNumTimeToString:function(e){var t,n,r;for(t in e){r=e[t];if(!e.hasOwnProperty(t))continue;_.isObject(e[t])||_.isArray(e[t])?this.convertNumTimeToString(r):_.isNumber(e[t])&&(e[t]=String(e[t]),t&&t.toLowerCase().indexOf("time")!==-1&&e[t].length>12&&(n=new Date(Number(e[t])),n&&(e[t]=n.toISOString())))}return e},unifyApi:function(e,t){var n,r,i;n=!1;if(!_.isObject(e))return e;for(r in e){i=e[r];if(!e.hasOwnProperty(r))continue;_.isArray(e)||(c(e,t),n=!0),n||this.unifyApi(i,t)}return e},camelToPascal:function(t){var n,r,i,s;r=["member","item"];if(!_.isObject(t))return t;for(n in t){s=t[n];if(!t.hasOwnProperty(n))continue;i=n.substring(0,1).toUpperCase()+n.substring(1),!_.isArray(t)&&i!==n&&e.call(r,n)<0&&(t[i]=s,delete t[n]),this.camelToPascal(s)}return t},camelToUnderscore:function(t){var n,r,i,s,o;r=[],i=this;if(!_.isObject(t))return t;if(_.isArray(t))return _.map(t,function(e){return i.camelToUnderscore(e)});for(n in t){o=t[n];if(!t.hasOwnProperty(n))continue;!_.isArray(t)&&e.call(r,n)<0&&e.call(n,"::")<0&&(s=_.map(n,function(e,t){var n;return t===0?e:65<=(n=e.charCodeAt())&&n<=90?"_"+e.toLowerCase():e}).join(""),s!==n&&(t[s]=o,delete t[n])),i.camelToUnderscore(o)}return t}},{category:function(e){return e},getClassByType:function(e){return i[e]},getClassByAwsResponseType:function(e){return s[e]},extend:function(e,t){var r,o;return void 0,e.AwsResponseType&&(r=e.AwsResponseType,delete e.AwsResponseType),t=t||{},t.type=e.type,o=n.extend.call(this,e,t),i[e.type]=o,r&&(s[r]=o),o}})})}.call(this),function(){define("CloudResources",["cloudres/CrCollection"],function(e){var t,n,r;return t={},r=function(e){return void 0,delete t[e]},n=function(n,i){var s,o,u;return s=e.getClassByType(n),s?(i=s.category(i),u=n+"_"+i,o=t[u],o||(o=new s,o.id=u,o.category=i,t[u]=o,o.on("destroy",r)),o):null},n.invalidate=function(){return Q.all(_.values(t).map(function(e){return e.fetchForce()}))},n.clearWhere=function(n,r){var i,s,o,u,a;_.isFunction(n)?o="filter":o="where";for(u in t)s=t[u],i=e.getClassByType(s.type),a=i.category(r),s.category===a&&s.remove(s[o](n))},n})}.call(this),function(){define("cloudres/CrOpsResource",["ApiRequest","./CrCollection","constant","CloudResources"],function(e,t,n,r){return t.extend({type:"OpsResource",init:function(e,t){return this.__region=e,this.__provider=t,this},fetchForceDedup:function(){var e;return this.__forceDedup=!1,e=this.fetchForce(),this.__forceDedup=!0,e},fetchForce:function(){var e;return this.__forceDedup?(this.__forceDedup=!1,e=Q.defer(),e.resolve(),e.promise):(this.generatedJson=null,t.prototype.fetchForce.call(this))},doFetch:function(){var t;return t=this,r.clearWhere(function(e){return e.RES_TAG===t.category},this.__region),void 0,e("resource_get_resource",{region_name:this.__region,provider:this.__provider,res_id:this.category})},parseFetchData:function(e){var t,n,i,s,o;t=e.app_json,delete e.app_json,s={RES_TAG:this.category};for(o in e){i=e[o],n=r(o,this.__region);if(!n){void 0;continue}n.__parseExternalData(i,s,this.__region,e)}this.generatedJson=this.fixGeneratedJson(t)},fixGeneratedJson:function(e){return e}})})}.call(this),function(){define("cloudres/aws/CrModelDhcp",["../CrModel","ApiRequest"],function(e,t){return e.extend({defaults:function(){return{"domain-name":[],"domain-name-servers":[],"ntp-servers":[],"netbios-name-servers":[],"netbios-node-type":[]}},constructor:function(t,n){return t=this.tryParseDhcpAttr(t),e.call(this,t,n)},tryParseDhcpAttr:function(e){var t,n,r,i,s;if(e.dhcpConfigurationSet)try{s=e.dhcpConfigurationSet.item;for(r=0,i=s.length;r<i;r++)n=s[r],e[n.key]=n.valueSet;delete e.dhcpConfigurationSet}catch(o){t=o}return e},toAwsAttr:function(){var e,t,n,r;e=[],r=this.attributes;for(t in r)n=r[t],t!=="id"&&t!=="tagSet"&&n.length>0&&e.push({Name:t,Value:n});return e},doCreate:function(){var e;return e=this,t("dhcp_CreateDhcpOptions",{region_name:this.getCollection().region(),dhcp_configs:this.toAwsAttr()}).then(function(n){var r,i;try{i=n.CreateDhcpOptionsResponse.dhcpOptions.dhcpOptionsId}catch(s){throw r=s,McError(t.Errors.InvalidAwsReturn,"Dhcp created but aws returns invalid ata.")}return e.set("id",i),void 0,e})},doDestroy:function(){return t("dhcp_DeleteDhcpOptions",{region_name:this.getCollection().region(),dhcp_id:this.get("id")})}})})}.call(this),function(){define("cloudres/aws/CrModelKeypair",["../CrModel","ApiRequest"],function(e,t){return e.extend({defaults:{keyName:"",keyData:"",keyMaterial:"",keyFingerprint:""},idAttribute:"keyName",taggable:!1,doCreate:function(){var e,n;return n=this,this.get("keyData")?e=t("kp_ImportKeyPair",{region_name:this.getCollection().region(),key_name:this.get("keyName"),key_data:this.get("keyData")}):e=t("kp_CreateKeyPair",{region_name:this.getCollection().region(),key_name:this.get("keyName")}),e.then(function(e){var r,i;try{e=e.CreateKeyPairResponse||e.ImportKeyPairResponse,n.set(e),i=e.keyName}catch(s){throw r=s,McError(t.Errors.InvalidAwsReturn,"Keypair created but aws returns invalid data.")}return n.set("keyName",i),void 0,n})},doDestroy:function(){return t("kp_DeleteKeyPair",{region_name:this.getCollection().region(),key_name:this.get("id")})}})})}.call(this),function(){define("cloudres/aws/CrModelSslcert",["../CrModel","ApiRequest"],function(e,t){return e.extend({taggable:!1,defaults:{Path:"",Name:"",PrivateKey:"",CertificateChain:"",CertificateBody:""},doUpdate:function(e){var n;return n=this,t("iam_UpdateServerCertificate",{servercer_name:this.get("Name"),new_servercer_name:e.Name,new_path:e.Path}).then(function(t){var r,i;return i=n.get("Arn"),r=""+i.split("/")[0]+"/"+e.Name,n.set("Arn",r),n.set(e),n})},doCreate:function(){var e;return e=this,t("iam_UploadServerCertificate",{servercer_name:this.get("Name"),cert_body:this.get("CertificateBody"),private_key:this.get("PrivateKey"),cert_chain:this.get("CertificateChain"),path:this.get("Path")}).then(function(n){var r;e.attributes.CertificateChain="",e.attributes.PrivateKey="";try{n=n.UploadServerCertificateResponse.UploadServerCertificateResult.ServerCertificateMetadata,n.Arn=n.Arn,n.Expiration=n.Expiration,n.Path=n.Path,n.id=n.ServerCertificateId,n.Name=n.ServerCertificateName,n.UploadDate=n.UploadDate}catch(i){throw r=i,McError(t.Errors.InvalidAwsReturn,"Ssl cert created but aws returns invalid data.")}return e.set(n),void 0,e})},doDestroy:function(){return t("iam_DeleteServerCertificate",{servercer_name:this.get("Name")})}})})}.call(this),function(){define("cloudres/aws/CrModelTopic",["../CrModel","ApiRequest"],function(e,t){return e.extend({taggable:!1,defaults:{Name:"",DisplayName:""},doCreate:function(){var e;return e=this,t("sns_CreateTopic",{region_name:this.getCollection().region(),topic_name:this.get("Name")}).then(function(n){var r,i;try{i=n.CreateTopicResponse.CreateTopicResult.TopicArn}catch(s){throw r=s,McError(t.Errors.InvalidAwsReturn,"Topic created but aws returns invalid ata.")}return e.set("id",i),void 0,e.get("DisplayName")&&setTimeout(function(){return t("sns_SetTopicAttributes",{region_name:e.getCollection().region(),topic_arn:i,attr_name:"DisplayName",attr_value:e.get("DisplayName")})},1e3),e})},doUpdate:function(e){var n;return n=this,t("sns_SetTopicAttributes",{region_name:this.getCollection().region(),topic_arn:this.get("id"),attr_name:"DisplayName",attr_value:e}).then(function(){return n.set("DisplayName",e),n})},doDestroy:function(){return t("sns_DeleteTopic",{region_name:this.getCollection().region(),topic_arn:this.get("id")})}})})}.call(this),function(){define("cloudres/aws/CrModelSubscription",["../CrModel","ApiRequest"],function(e,t){var n;return n=e.extend({taggable:!1,defaults:{Endpoint:"",Protocol:"",TopicName:"",TopicArn:"",SubscriptionArn:""},initialize:function(e){e.TopicArn&&(this.attributes.TopicName=e.TopicArn.split(":").pop())},isRemovable:function(){return this.attributes.SubscriptionArn!=="PendingConfirmation"&&this.attributes.SubscriptionArn!=="Deleted"},set:function(e,t,n){e==="TopicArn"?this.attributes.TopicName=t.split(":").pop():e.TopicArn&&(this.attributes.TopicName=e.TopicArn.split(":").pop()),Backbone.Model.prototype.set.apply(this,arguments)},doCreate:function(){var e;return e=this,t("sns_Subscribe",{region_name:this.getCollection().region(),topic_arn:this.get("TopicArn"),protocol:this.get("Protocol"),endpoint:this.get("Endpoint")}).then(function(r){var i,s;try{r=r.SubscribeResponse.SubscribeResult,i=r.SubscriptionArn}catch(o){throw s=o,McError(t.Errors.InvalidAwsReturn,"Subscription created but aws returns invalid ata.")}return i==="pending confirmation"&&(i="PendingConfirmation"),e.set({id:n.getIdFromData(e.attributes),SubscriptionArn:i}),void 0,e})},doDestroy:function(){var e;return this.isRemovable()?t("sns_Unsubscribe",{region_name:this.getCollection().region(),sub_arn:this.get("SubscriptionArn")}):(e=Q.defer(),e.resolve(McError(t.Errors.InvalidMethodCall,"Cannot unsubscribe pending subscription.",self)),e.promise)}},{getIdFromData:function(e){return(""+e.TopicArn+":"+e.Protocol+":"+e.Endpoint).replace("arn:aws:sns:","")}}),n})}.call(this),function(){define("cloudres/aws/CrModelSnapshot",["../CrModel","CloudResources","ApiRequest"],function(e,t,n){return e.extend({defaults:{volumeId:"",status:"pending",startTime:"",progress:0,ownerId:"",volumeSize:1,description:"",name:""},isComplete:function(){return this.attributes.status==="completed"},isPending:function(){return this.attributes.status==="pending"},doCreate:function(){var e;return e=this,n("ebs_CreateSnapshot",{region_name:this.getCollection().region(),volume_id:this.get("volumeId"),description:this.get("description")}).then(function(t){var r;try{t=t.CreateSnapshotResponse,t.id=t.snapshotId,t.progress=t.progress||0,delete t.snapshotId,delete t["@attributes"]}catch(i){throw r=i,McError(n.Errors.InvalidAwsReturn,"Snapshot created but aws returns invalid ata.")}return e.set(t),e.getCollection().startPollingStatus(),void 0,e})},set:function(e,t){e.progress&&(e.progress=parseInt(e.progress,10)||0),e.volumeSize&&(e.volumeSize=parseInt(e.volumeSize,10)||1),Backbone.Model.prototype.set.apply(this,arguments)},copyTo:function(e,r,i){var s;return s=this,n("ebs_CopySnapshot",{region_name:this.getCollection().region(),snapshot_id:this.get("id"),dst_region_name:e,description:i}).then(function(o){var u,a,f,l,c;a=(c=o.CopySnapshotResponse)!=null?c.snapshotId:void 0;if(!a)throw McError(n.Errors.InvalidAwsReturn,"Snapshot copied but aws returns invalid data.");return l=t(s.collection.type,e),u=s.toJSON(),u.name=r,u.description=i,u.region=e,u.id=a,f=l.create(u),l.add(f),f.tagResource(),f})},doDestroy:function(){return n("ebs_DeleteSnapshot",{region_name:this.getCollection().region(),snapshot_id:this.get("id")})},tagResource:function(){var e;return e=this,n("ec2_CreateTags",{region_name:this.getCollection().region(),resource_ids:[this.get("id")],tags:[{Name:"Created by",Value:App.user.get("username")},{Name:"Name",Value:this.get("name")}]}).then(function(){void 0})}})})}.call(this),function(){define("cloudres/aws/CrClnSharedRes",["../CrCollection","CloudResources","ApiRequest","constant","./CrModelDhcp","./CrModelKeypair","./CrModelSslcert","./CrModelTopic","./CrModelSubscription","./CrModelSnapshot"],function(e,t,n,r,i,s,o,u,a,f){return e.extend({type:r.RESTYPE.DHCP,model:i,doFetch:function(){return n("dhcp_DescribeDhcpOptions",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.DescribeDhcpOptionsResponse.dhcpOptionsSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.dhcpOptionsId;return e}}),e.extend({type:r.RESTYPE.KP,model:s,doFetch:function(){return n("kp_DescribeKeyPairs",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.DescribeKeyPairsResponse.keySet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.keyName;return e}}),e.extend({type:r.RESTYPE.IAM,model:o,doFetch:function(){return n("iam_ListServerCertificates")},trAwsXml:function(e){var t;return(t=e.ListServerCertificatesResponse.ListServerCertificatesResult.ServerCertificateMetadataList)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.ServerCertificateId,t.Name=t.ServerCertificateName,delete t.ServerCertificateName,delete t.ServerCertificateId;return e}},{category:function(){return""}}),e.extend({type:r.RESTYPE.TOPIC,model:u,constructor:function(){return this.on("remove",this.__clearSubscription),e.apply(this,arguments)},doFetch:function(){return n("sns_ListTopics",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.ListTopicsResponse.ListTopicsResult.Topics)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.TopicArn,t.Name=t.TopicArn.split(":").pop(),delete t.TopicArn;return e},__clearSubscription:function(e,n,i){var s,o,u,a,f,l;o=t(r.RESTYPE.SUBSCRIPTION,this.region()),s=[],l=o.models;for(a=0,f=l.length;a<f;a++)u=l[a],u.get("TopicArn")===e.id&&s.push(u);s.length&&o.remove(s)},filterEmptySubs:function(){var e,n,i,s,o,u;n=t(r.RESTYPE.SUBSCRIPTION,this.category),i={},u=n.models;for(s=0,o=u.length;s<o;s++)e=u[s],i[e.get("TopicArn")]=!0;return this.filter(function(e){return!i[e.get("id")]})}}),e.extend({type:r.RESTYPE.SUBSCRIPTION,model:a,doFetch:function(){return n("sns_ListSubscriptions",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.ListSubscriptionsResponse.ListSubscriptionsResult.Subscriptions)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=a.getIdFromData(t);return e}}),e.extend({type:r.RESTYPE.SNAP,model:f,initialize:function(){this.__pollingStatus=_.bind(this.__pollingStatus,this)},doFetch:function(){return n("ebs_DescribeSnapshots",{region_name:this.region(),owners:["self"]})},trAwsXml:function(e){var t;return(t=e.DescribeSnapshotsResponse.snapshotSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.snapshotId,t.tagSet&&(t.name=t.tagSet.Name||t.tagSet.name||"",delete t.tagSet),delete t.snapshotId,t.status==="pending"&&this.startPollingStatus();return e},startPollingStatus:function(){if(this.__polling)return;this.__polling=setTimeout(this.__pollingStatus,2e3)},stopPollingStatus:function(){clearTimeout(this.__polling),this.__polling=null},__pollingStatus:function(){var e;return e=this,n("ebs_DescribeSnapshots",{region_name:this.region(),owners:["self"],filters:[{Name:"status",Value:["pending"]}]}).then(function(t){e.__polling=null,e.__parsePolling(t)},function(){return e.__polling=null,e.startPollingStatus()})},__parsePolling:function(e){var t,n,r,i,s,o;e=e.DescribeSnapshotsResponse.snapshotSet,t={progress:100,status:"completed"},r={};if(e!==null&&e.item){this.startPollingStatus(),o=e.item;for(i=0,s=o.length;i<s;i++)n=o[i],r[n.snapshotId]={progress:n.progress}}this.where({status:"pending"}).forEach(function(e){return e.set(r[e.get("id")]||t)})}})})}.call(this),function(){define("cloudres/aws/CrCommonCollection",["ApiRequest","../CrCollection","../CrModel","constant"],function(e,t,n,r){var i,s;return s=[],i=t.extend({model:n,type:"CrCommonCollection",__selfParseData:!0,groupByCategory:function(e,t){var n,i,s,o,u,a,f,l,c,h,p,d,v,m;e=e||{includeEmptyRegion:!0,calcSum:!0,toJSON:!1},a={},v=this.models;for(c=0,p=v.length;c<p;c++){s=v[c];if(t&&t(s)===!1)continue;u=s.attributes.category,i=a[u]||(a[u]=[]),i.push(e.toJSON?s.toJSON():s)}l=0,f=[],m=r.REGION_KEYS;for(h=0,d=m.length;h<d;h++){n=m[h],o=a[n];if(o)l+=o.length;else if(!e.includeEmptyRegion)continue;f.push({region:n,regionName:r.REGION_SHORT_LABEL[n],regionArea:r.REGION_LABEL[n],data:o||[]})}return e.calcSum&&(f.totalCount=l),f},doFetch:function(){var t,n;return t={},t[this.type]={},n=this,e("aws_resource",{region_name:null,resources:t,addition:"all",retry_times:1}).then(function(e){var t,r,i,o,u,a,f,l,c;u=[];for(o in e){r=e[o];if(!r[0])continue;try{a=$.xml2json($.parseXML(r[0])),n.trAwsXml&&(a=n.trAwsXml(a)),n.parseFetchData&&a&&(a=n.parseFetchData(a,o)),c=a||s;for(f=0,l=c.length;f<l;f++)t=c[f],t.visopsTag=n.resolveTagSet(t.tagSet),n.modelIdAttribute&&(t.id=t[n.modelIdAttribute],delete t[n.modelIdAttribute]),t.category=o,u.push(new n.model(t))}catch(h){i=h;continue}}return u})}},{category:function(){return""}}),i})}.call(this),function(){define("cloudres/aws/CrModelElb",["../CrModel","ApiRequest"],function(e,t){return e.extend({initialize:function(){var e;e=this,t("elb_DescribeInstanceHealth",{region_name:this.get("category"),elb_name:this.get("Name")}).then(function(t){return e.onInsHealthData(t)})},onInsHealthData:function(e){var t;e=e.DescribeInstanceHealthResponse;if(!e)return;e=e.DescribeInstanceHealthResult;if(!e)return;e=(t=e.InstanceStates)!=null?t.member:void 0;if(!e)return;this.set("InstanceStates",e)}})})}.call(this),function(){define("cloudres/aws/CrClnCommonRes",["./CrCommonCollection","../CrCollection","../CrModel","./CrModelElb","ApiRequest","constant","CloudResources"],function(e,t,n,r,i,s,o){return e.extend({type:s.RESTYPE.ELB,model:r,trAwsXml:function(e){var t;return(t=e.DescribeLoadBalancersResponse.DescribeLoadBalancersResult.LoadBalancerDescriptions)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r,i,s,o,u,a,f,l,c,h,p,d,v,m;for(u=0,f=e.length;u<f;u++){t=e[u];for(s in t)o=t[s],n=s.substring(0,1).toUpperCase()+s.substring(1),delete t[s],t[n]=o;t.id=t.LoadBalancerName,t.AvailabilityZones=((c=t.AvailabilityZones)!=null?c.member:void 0)||[],t.Instances=((h=t.Instances)!=null?h.member:void 0)||[],t.SecurityGroups=((p=t.SecurityGroups)!=null?p.member:void 0)||[],t.Subnets=((d=t.Subnets)!=null?d.member:void 0)||[],t.ListenerDescriptions=((v=t.ListenerDescriptions)!=null?v.member:void 0)||[],m=t.Instances;for(i=a=0,l=m.length;a<l;i=++a)r=m[i],t.Instances[i]=r.InstanceId;t.vpcId=t.VPCId,t.id=t.DNSName,t.Name=t.LoadBalancerName,delete t.VPCId}return e},parseExternalData:function(e){return this.camelToPascal(e),this.unifyApi(e,this.type),this.convertNumTimeToString(e),_.each(e,function(e){return e.Instances=_.map(e.Instances,function(e){return e.InstanceId}),e.ListenerDescriptions=_.map(e.ListenerDescriptions,function(e){return e.PolicyNames={member:e.PolicyNames},e}),e.vpcId=e.Vpcid,delete e.Vpcid,e.id=e.Dnsname,e.Name=e.LoadBalancerName}),e}}),e.extend({type:s.RESTYPE.VPN,trAwsXml:function(e){var t;return(t=e.DescribeVpnConnectionsResponse.vpnConnectionSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r,i,s;i=e||[];for(n=0,r=i.length;n<r;n++)t=i[n],t.vgwTelemetry=((s=t.vgwTelemetry)!=null?s.item:void 0)||[],t.id=t.vpnConnectionId;return e},parseExternalData:function(e){var t,n,r,i;this.unifyApi(e,this.type),i=e||[];for(n=0,r=i.length;n<r;n++)t=i[n],t.id=t.vpnConnectionId;return e}}),e.extend({type:s.RESTYPE.EIP,trAwsXml:function(e){var t;return(t=e.DescribeAddressesResponse.addressesSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.allocationId;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.allocationId;return e}}),e.extend({type:s.RESTYPE.VPC,trAwsXml:function(e){var t;return(t=e.DescribeVpcsResponse.vpcSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.vpcId;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.vpcId;return e}}),e.extend({type:s.RESTYPE.ASG,modelIdAttribute:"AutoScalingGroupARN",trAwsXml:function(e){var t;return(t=e.DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r,i,s,o,u;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.AutoScalingGroupARN,t.Name=t.AutoScalingGroupName,t.AvailabilityZones=((i=t.AvailabilityZones)!=null?i.member:void 0)||[],t.Instances=((s=t.Instances)!=null?s.member:void 0)||[],t.LoadBalancerNames=((o=t.LoadBalancerNames)!=null?o.member:void 0)||[],t.TerminationPolicies=((u=t.TerminationPolicies)!=null?u.member:void 0)||[],t.Subnets=(t.VPCZoneIdentifier||t.VpczoneIdentifier||"").split(",");return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type),this.camelToPascal(e);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.AutoScalingGroupARN,t.Name=t.AutoScalingGroupName,t.DefaultCooldown=String(t.DefaultCooldown),t.DesiredCapacity=String(t.DesiredCapacity),t.HealthCheckGracePeriod=String(t.HealthCheckGracePeriod),t.MaxSize=String(t.MaxSize),t.MinSize=String(t.MinSize),t.Subnets=(t.VPCZoneIdentifier||t.VpczoneIdentifier).split(",");return e}}),e.extend({type:s.RESTYPE.CW,trAwsXml:function(e){var t;return(t=e.DescribeAlarmsResponse.DescribeAlarmsResult.MetricAlarms)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r,i,s;for(n=0,r=e.length;n<r;n++)t=e[n],t.Dimensions=((i=t.Dimensions)!=null?i.member:void 0)||[],t.AlarmActions=((s=t.AlarmActions)!=null?s.member:void 0)||[],t.id=t.AlarmArn,t.Name=t.AlarmName;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type),this.camelToPascal(e);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.AlarmArn,t.Name=t.AlarmName;return e}}),e.extend({type:s.RESTYPE.CGW,trAwsXml:function(e){var t;return(t=e.DescribeCustomerGatewaysResponse.customerGatewaySet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.customerGatewayId;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.customerGatewayId;return e}}),e.extend({type:s.RESTYPE.VGW,trAwsXml:function(e){var t;return(t=e.DescribeVpnGatewaysResponse.vpnGatewaySet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.vpnGatewayId,t.attachments&&t.attachments.length>0&&(t.vpcId=t.attachments[0].vpcId,t.attachmentState=t.attachments[0].state);return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.vpnGatewayId,t.attachments&&t.attachments.length>0&&(t.vpcId=t.attachments[0].vpcId,t.attachmentState=t.attachments[0].state);return e}}),e.extend({type:s.RESTYPE.IGW,trAwsXml:function(e){var t;return(t=e.DescribeInternetGatewaysResponse.internetGatewaySet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r,i;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.internetGatewayId,t.attachmentSet=((i=t.attachmentSet)!=null?i.item:void 0)||t.attachments||[],t.attachmentSet&&t.attachmentSet.length>0&&(t.vpcId=t.attachmentSet[0].vpcId,t.state=t.attachmentSet[0].state);return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.internetGatewayId,t.attachmentSet&&t.attachmentSet.length>0&&(t.vpcId=t.attachmentSet[0].vpcId,t.state=t.attachmentSet[0].state);return e}}),e.extend({type:s.RESTYPE.RT,trAwsXml:function(e){var t;return(t=e.DescribeRouteTablesResponse.routeTableSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r,i,s,o,u,a,f,l,c,h,p,d,v,m,g,y;for(a=0,c=e.length;a<c;a++){u=e[a],u.routeSet=((d=u.routeSet)!=null?d.item:void 0)||[],u.associationSet=((v=u.associationSet)!=null?v.item:void 0)||[],u.propagatingVgwSet=((m=u.propagatingVgwSet)!=null?m.item:void 0)||[],n=-1,g=u.routeSet;for(r=f=0,h=g.length;f<h;r=++f)o=g[r],o.gatewayId==="local"&&(n=r);n>0&&(i=u.routeSet.splice(n,1),u.routeSet.splice(0,0,i[0])),n=-1,y=u.associationSet;for(r=l=0,p=y.length;l<p;r=++l)t=y[r],t.main&&n===-1&&(n=r);n>0&&(s=u.associationSet.splice(n,1),u.associationSet.splice(0,0,s[0])),u.id=u.routeTableId}return e},parseExternalData:function(e){var t,n,r,i,s,o,u,a,f,l,c,h,p,d,v;this.unifyApi(e,this.type);for(a=0,c=e.length;a<c;a++){u=e[a],n=-1,d=u.routeSet;for(r=f=0,h=d.length;f<h;r=++f)o=d[r],o.gatewayId==="local"&&n===-1&&(n=r);n>0&&(i=u.routeSet.splice(n,1),u.routeSet.splice(0,0,i[0])),n=-1,v=u.associationSet;for(r=l=0,p=v.length;l<p;r=++l)t=v[r],t.main&&n===-1&&(n=r);n>0&&(s=u.associationSet.splice(n,1),u.associationSet.splice(0,0,s[0])),u.id=u.routeTableId}return e}}),e.extend({initialize:function(){this.listenTo(this,"add",function(e){return o(s.RESTYPE.AMI,e.attributes.category).fetchAmi(e.attributes.imageId)})},type:s.RESTYPE.INSTANCE,trAwsXml:function(e){var t,n,r,i,s,o,u,a,f,l,c;r=[],f=((a=e.DescribeInstancesResponse.reservationSet)!=null?a.item:void 0)||[];for(i=0,o=f.length;i<o;i++){t=f[i],c=((l=t.instancesSet)!=null?l.item:void 0)||[];for(s=0,u=c.length;s<u;s++)n=c[s],r.push(n)}return r},parseFetchData:function(e,t){var n,r,i,s,o,u,a;for(r=0,i=e.length;r<i;r++){n=e[r];if(n.tagSet)if(n.tagSet["aws:elasticmapreduce:instance-group-role"]||n.tagSet["aws:elasticmapreduce:job-flow-id"]){void 0;continue}n.id=n.instanceId;if(!(!n.instanceState||(s=n.instanceState.name)!=="terminated"&&s!=="shutting-down"))continue;n.blockDeviceMapping=((o=n.blockDeviceMapping)!=null?o.item:void 0)||[],n.networkInterfaceSet=((u=n.networkInterfaceSet)!=null?u.item:void 0)||[],n.groupSet=((a=n.groupSet)!=null?a.item:void 0)||[],n.blockDeviceMapping&&n.blockDeviceMapping.length>1&&(n.blockDeviceMapping=n.blockDeviceMapping.sort(MC.createCompareFn("deviceName")))}return e},parseExternalData:function(e,t){var n,r,i,s,o,u,a,f,l,c,h,p;this.convertNumTimeToString(e),this.unifyApi(e,this.type);for(s=0,a=e.length;s<a;s++){r=e[s];if(r.tags){c=r.tags;for(o=0,f=c.length;o<f;o++){i=c[o];if(i.key==="aws:elasticmapreduce:instance-group-role"||i.key==="aws:elasticmapreduce:job-flow-id"){void 0;continue}}}r.id=r.instanceId;if(!(!r.instanceState||(h=r.instanceState.name)!=="terminated"&&h!=="shutting-down"))continue;p=r.networkInterfaceSet;for(u=0,l=p.length;u<l;u++)n=p[u],n.privateIpAddresses&&(n.privateIpAddressesSet={item:n.privateIpAddresses},delete n.privateIpAddresses),n.groups&&(n.groupSet={item:n.groups},delete n.groups);r.blockDeviceMapping&&r.blockDeviceMapping.length>1&&(r.blockDeviceMapping=r.blockDeviceMapping.sort(MC.createCompareFn("deviceName")))}return e}}),e.extend({type:s.RESTYPE.VOL,trAwsXml:function(e){var t;return(t=e.DescribeVolumesResponse.volumeSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r,i;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.volumeId,t.attachmentSet=((i=t.attachmentSet)!=null?i.item:void 0)||[],_.each(t.attachmentSet,function(e,n){var r,i;return i=t.status,r=e.status,_.extend(t,e),t.status=i,t.attachmentStatus=r});return e},parseExternalData:function(e){var t,n,r;this.convertNumTimeToString(e),this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.volumeId,_.each(t.attachmentSet,function(e,n){var r,i;return i=t.state,r=e.state,_.extend(t,e),t.status=i,t.attachmentStatus=r});return e}}),e.extend({type:s.RESTYPE.LC,AwsResponseType:"DescribeLaunchConfigurationsResponse",trAwsXml:function(e){var t;return(t=e.DescribeLaunchConfigurationsResponse.DescribeLaunchConfigurationsResult.LaunchConfigurations)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r,i,s;for(n=0,r=e.length;n<r;n++)t=e[n],t.BlockDeviceMapping=((i=t.BlockDeviceMappings)!=null?i.member:void 0)||[],t.SecurityGroups=((s=t.SecurityGroups)!=null?s.member:void 0)||[],t.BlockDeviceMapping&&t.BlockDeviceMapping.length>1&&(t.BlockDeviceMapping=t.BlockDeviceMapping.sort(MC.createCompareFn("DeviceName"))),t.id=t.LaunchConfigurationARN,t.Name=t.LaunchConfigurationName;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type),this.camelToPascal(e);for(n=0,r=e.length;n<r;n++)t=e[n],t.BlockDeviceMapping&&t.BlockDeviceMapping.length>1&&(t.BlockDeviceMapping=t.BlockDeviceMapping.sort(MC.createCompareFn("DeviceName"))),t.id=t.LaunchConfigurationARN,t.Name=t.LaunchConfigurationName;return e}}),e.extend({type:s.RESTYPE.SP,AwsResponseType:"DescribePoliciesResponse",trAwsXml:function(e){var t;return(t=e.DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.PolicyARN,t.Name=t.PolicyName;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type),this.camelToPascal(e);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.PolicyARN,t.Name=t.PolicyName,t.Cooldown=t.Cooldown?t.Cooldown.toString():"";return e}}),e.extend({type:s.RESTYPE.AZ,AwsResponseType:"DescribeAvailabilityZonesResponse",trAwsXml:function(e){var t;return(t=e.DescribeAvailabilityZonesResponse.availabilityZoneInfo)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.zoneName;return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.zoneName;return e}}),e.extend({type:s.RESTYPE.NC,AwsResponseType:"DescribeNotificationConfigurationsResponse",trAwsXml:function(e){var t;return(t=e.DescribeNotificationConfigurationsResponse.DescribeNotificationConfigurationsResult.NotificationConfigurations)!=null?t.member:void 0},parseFetchData:function(e){var t,n,r,i,s,o,u;s=[],i={};for(o=0,u=e.length;o<u;o++)r=e[o],n=i[t]||(i[t]={}),t=n.AutoScalingGroupName+"-"+n.TopicARN,n?n.NotificationType.push(r.NotificationType):(n=i[t]={id:t,AutoScalingGroupName:r.AutoScalingGroupName,TopicARN:r.TopicARN,NotificationType:[r.NotificationType]},s.push(n));return s},parseExternalData:function(e){var t,n,r,i,s,o;this.unifyApi(e,this.type),this.camelToPascal(e),i=[];for(s=0,o=e.length;s<o;s++)r=e[s],t=r[0],n={AutoScalingGroupName:t.AutoScalingGroupName,TopicARN:t.TopicARN,NotificationType:_.pluck(r,"NotificationType")},n.id=n.AutoScalingGroupName+"-"+n.TopicARN,i.push(n);return i}}),e.extend({type:s.RESTYPE.ACL,AwsResponseType:"DescribeNetworkAclsResponse",trAwsXml:function(e){var t;return(t=e.DescribeNetworkAclsResponse.networkAclSet)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r,i,s;for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.networkAclId,t.entrySet=((i=t.entrySet)!=null?i.item:void 0)||[],t.associationSet=((s=t.associationSet)!=null?s.item:void 0)||[],t.associationSet.length>0&&(t.subnetId=t.associationSet[0].subnetId);return e},parseExternalData:function(e){var t,n,r;this.unifyApi(e,this.type);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.networkAclId,t.associationSet.length>0&&(t.subnetId=t.associationSet[0].subnetId);return e}}),t.extend({type:s.RESTYPE.ENI,AwsResponseType:"DescribeNetworkInterfacesResponse",doFetch:function(){return i("eni_DescribeNetworkInterfaces",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.DescribeNetworkInterfacesResponse.networkInterfaceSet)!=null?t.item:void 0},parseFetchData:function(e){return _.each(e,function(t,n){return t.id=t.networkInterfaceId,_.each(t,function(t,r){var i,s;r==="groupSet"&&(e[n].groupSet=((i=e[n].groupSet)!=null?i.item:void 0)||[]);if(r==="privateIpAddressesSet")return e[n].privateIpAddressesSet=((s=e[n].privateIpAddressesSet)!=null?s.item:void 0)||[]})}),e},parseExternalData:function(e){return this.convertNumTimeToString(e),this.unifyApi(e,this.type),_.each(e,function(e,t){return e.id=e.networkInterfaceId}),e}}),t.extend({type:s.RESTYPE.SUBNET,doFetch:function(){return i("subnet_DescribeSubnets",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.DescribeSubnetsResponse.subnetSet)!=null?t.item:void 0},parseFetchData:function(e){return _.each(e,function(e,t){return e.id=e.subnetId}),e},parseExternalData:function(e){return this.unifyApi(e,this.type),_.each(e,function(e,t){return e.id=e.subnetId}),e}}),t.extend({type:s.RESTYPE.SG,AwsResponseType:"DescribeSecurityGroupsResponse",doFetch:function(){return i("sg_DescribeSecurityGroups",{region_name:this.region()})},trAwsXml:function(e){var t;return(t=e.DescribeSecurityGroupsResponse.securityGroupInfo)!=null?t.item:void 0},parseFetchData:function(e){var t,n,r,i,s;for(n=0,r=e.length;n<r;n++)t=e[n],t.ipPermissions=((i=t.ipPermissions)!=null?i.item:void 0)||[],_.each(t.ipPermissions,function(e,n){return _.each(e,function(e,r){if(r==="groups"||r==="ipRanges")return t.ipPermissions[n][r]=(e!=null?e.item:void 0)||[]})}),t.ipPermissionsEgress=((s=t.ipPermissionsEgress)!=null?s.item:void 0)||[],_.each(t.ipPermissionsEgress,function(e,n){return _.each(e,function(e,r){if(r==="groups"||r==="ipRanges")return t.ipPermissionsEgress[n][r]=(e!=null?e.item:void 0)||[]})}),t.id=t.groupId,t.Name=t.groupName;return e},parseExternalData:function(e){var t,n,r,i;this.unifyApi(e,this.type),this.convertNumTimeToString(e);for(r=0,i=e.length;r<i;r++)t=e[r],t.groupName=t.groupName.trim(),t.id=t.groupId,t.Name=t.groupName,t.ipPermissions=t.ipPermissions||[],t.ipPermissionsEgress=t.ipPermissionsEgress||[],n=t.ipPermissions.concat(t.ipPermissionsEgress),_.each(n,function(e,t){e.ipRanges&&e.ipRanges.length&&(e.ipRanges=_.map(e.ipRanges,function(e){return{cidrIp:e}})),e.groups=[];if(e.userIdGroupPairs)return e.groups=e.userIdGroupPairs,delete e.userIdGroupPairs});return e}})})}.call(this),function(){define("cloudres/aws/CrClnAmi",["ApiRequest","../CrCollection","constant","CloudResources"],function(e,t,n,r){var i,s,o,u,a,f,l,c,h;return o=["centos","redhat","rhel","ubuntu","debian","fedora","gentoo","opensuse","suse","amazon","amzn"],a=/sql.*?web.*?/i,u=/sql.*?standard.*?/i,i=/\[(.+?)\]/,s=/\s["|'](.+?)["|']/,h=function(e){var t,n,r,i,s,u,a,f,l;if(e.osType)return e.osType;if(e.platform==="windows")return"windows";r=(e.name||"").toLowerCase(),t=(e.description||"").toLowerCase(),n=(e.imageLocation||"").toLowerCase();for(f=0,l=o.length;f<l;f++){a=o[f];if(r.indexOf(a)>=0){i=a;break}t.indexOf(a)>=0&&(s=a),n.indexOf(a)>=0&&(u=a)}return i=i||s||u||"linux-other",i==="rhel"?"redhat":i==="amzn"?"amazon":i},c=function(e){var t;return e.osType?(t=e.osType,t==="windows"||t==="win"?a.exec(e.name||"")||a.exec(e.description||"")||a.exec(e.imageLocation||"")?"mswinSQLWeb":u.exec(e.name||"")||u.exec(e.description||"")||u.exec(e.imageLocation||"")?"mswinSQL":"mswin":n.OS_TYPE_MAPPING[t]||"linux"):"linux"},l=function(e){var t,n,r,i,s,o,u,a,f,l;i=[];for(s=0,u=e.length;s<u;s++){t=e[s],t.id=t.imageId,delete t.imageId,n={},l=((f=t.blockDeviceMapping)!=null?f.item:void 0)||[];for(o=0,a=l.length;o<a;o++)r=l[o],n[r.deviceName]=r.ebs||{};t.osType=h(t),t.osFamily=c(t),t.blockDeviceMapping=n,i.push(t.id)}return i},t.extend({type:n.RESTYPE.AMI,__selfParseData:!0,initialize:function(){var e,t,n,r,i;t=localStorage.getItem("invalidAmi/"+this.region()),this.__markedIds={};if(t){i=t.split(",");for(n=0,r=i.length;n<r;n++)e=i[n],this.__markedIds[e]=!0}},doFetch:function(){var e;return localStorage.setItem("invalidAmi/"+this.region(),""),this.__markedIds={},e=Q.defer(),e.resolve([]),this.trigger("update"),e.promise},markId:function(e,t){this.__markedIds[e]=t},isIdMarked:function(e){return this.__markedIds.hasOwnProperty(e)},isInvalidAmiId:function(e){return this.__markedIds[e]},getOSFamily:function(e){return c(this.get(e))},saveInvalidAmiId:function(){var e,t,n,r;t=[],r=this.__markedIds;for(e in r)n=r[e],n&&t.push(e);return localStorage.setItem("invalidAmi/"+this.region(),t.join(","))},fetchAmi:function(e){var t;if(!e)return;void 0;if(this.__toFetch){this.__toFetch.push(e);return}this.__toFetch=[e],t=this,setTimeout(function(){var e;return e=t.__toFetch,t.__toFetch=null,t.fetchAmis(e)},0)},fetchAmis:function(t){var n,r,o,u,a,f;if(!t)return;_.isString(t)&&(void 0,t=[t]),u=[];for(a=0,f=t.length;a<f;a++){n=t[a];if(this.get(n))continue;if(this.isIdMarked(n)){this.__markedIds[n]?void 0:void 0;continue}this.markId(n,!1),u.push(n)}return u.length===0?(r=Q.defer(),r.resolve(),r.promise):(o=this,e("ami_DescribeImages",{region_name:this.region(),ami_ids:u}).then(function(e){var t;return e=(t=e.DescribeImagesResponse.imagesSet)!=null?t.item:void 0,e?(l(e),o.add(e,{add:!0,merge:!0,remove:!1})):o.trigger("update"),o.saveInvalidAmiId()},function(t){var n,r,a;t.awsErrorCode==="InvalidAMIID.NotFound"?n=i.exec(t.awsResult):t.awsErrorCode==="InvalidAMIID.Malformed"&&(n=s.exec(t.awsResult));if(!n)throw McError(e.Errors.InvalidAwsReturn,"Can't describe AMIs and AWS returns invalid data. Please contact us when you encouter this issue.",u);return n=n[1],void 0,u.splice(u.indexOf(n),1),o.markId(n,!0),a=this.__markedIds,this.__markedIds={},r=o.fetchAmis(u),this.__markedIds=a,r}))}}),f=t.extend({type:"SpecificAmiCollection",initialize:function(){this.__models=[]},getModels:function(){var e,t,i,s,o,u;i=[],e=r(n.RESTYPE.AMI,this.region()),u=this.__models;for(s=0,o=u.length;s<o;s++)t=u[s],i.push(e.get(t));return i},fetchForce:function(){return this.__models=[],t.prototype.fetchForce.call(this)}}),f.extend({type:"QuickStartAmi",doFetch:function(){return e("aws_quickstart",{region_name:this.region()})},parseFetchData:function(e){var t,i,s,o,u;o=[],i=[];for(s in e){t=e[s];if(t.architecture==="i386"||t.name.indexOf("by VisualOps")===-1&&(u=t.osType)!=="windows"&&u!=="suse")continue;t.id=s,o.push(t),i.push(s)}r(n.RESTYPE.AMI,this.region()).add(o),this.__models=i}}),f.extend({type:"MyAmi",doFetch:function(){var t,n,r;return n={region_name:this.region(),executable_by:["self"],filters:[{Name:"is-public",Value:!1}]},r={region_name:this.region(),owners:["self"]},t=this,Q.allSettled([e("ami_DescribeImages",n),e("ami_DescribeImages",r)]).spread(function(e,n){var r,i;return e=((r=e.value.DescribeImagesResponse.imagesSet)!=null?r.item:void 0)||[],n=((i=n.value.DescribeImagesResponse.imagesSet)!=null?i.item:void 0)||[],t.onFetch(e.concat(n))},function(e,n){var r,i,s,o;e.state==="fulfilled"&&(r=(s=e.value.DescribeImagesResponse.imagesSet)!=null?s.item:void 0),n.state==="fulfilled"&&(i=(o=n.value.DescribeImagesResponse.imagesSet)!=null?o.item:void 0),(r||i)&&t.onFetch([].concat(r||[],i||[]));if(r.state==="rejected")throw r;if(i.state==="rejected")throw i})},onFetch:function(e){this.__models=l(e),r(n.RESTYPE.AMI,this.region()).add(e)},parseFetchData:function(e){var t,i,s,o,u,a;o=[],i=[];for(u=0,a=e.length;u<a;u++){t=e[u];try{t.id=t.imageId,delete t.imageId,o.push(t),i.push(t.id)}catch(f){s=f}}r(n.RESTYPE.AMI,this.region()).add(o),this.__models=i}}),f.extend({type:"FavoriteAmi",doFetch:function(){return e("favorite_info",{region_name:this.region(),provider:"AWS",service:"EC2",resource:"AMI"})},parseFetchData:function(e){var t,i,s,o,u;s=[],i=[];for(o=0,u=e.length;o<u;o++)t=e[o],$.isEmptyObject(t.blockDeviceMapping)&&(t.blockDeviceMapping=null),s.push(t),i.push(t.id);r(n.RESTYPE.AMI,this.region()).add(s),this.__models=i},unfav:function(t){var n,r,i;return i=this,r=this.__models.indexOf(t),r===-1?(n=Q.defer(),n.resolve(),n.promise):e("favorite_remove",{resource_ids:[t]}).then(function(){return r=i.__models.indexOf(t),i.__models.splice(r,1),i.trigger("update"),i})},fav:function(t){var i,s;return _.isString(t)?(i=t,t=""):(t=$.extend({},t),i=t.id),s=this,e("favorite_add",{resource:{id:i,provider:"AWS",resource:"AMI",service:"EC2"}}).then(function(){return s.__models.push(i),t&&r(n.RESTYPE.AMI,s.region()).add(t,{add:!0,merge:!0,remove:!1}),s.trigger("update"),s})}})})}.call(this),function(){define("cloudres/aws/CrModelRdsSnapshot",["../CrModel","CloudResources","ApiRequest"],function(e,t,n){return e.extend({taggable:!1,isComplete:function(){return this.attributes.Status==="available"},isAutomated:function(){return this.attributes.SnapshotType==="automated"},doCreate:function(){var e;return e=this,n("rds_snap_CreateDBSnapshot",{region_name:this.getCollection().region(),source_id:this.get("DBInstanceIdentifier"),snapshot_id:this.get("DBSnapshotIdentifier")}).then(function(t){var r;try{t=t.CreateDBSnapshotResponse.CreateDBSnapshotResult.DBSnapshot,t.id=t.DBSnapshotIdentifier}catch(i){throw r=i,McError(n.Errors.InvalidAwsReturn,"Snapshot created but aws returns invalid data.")}return e.set(t),void 0,e})},set:function(e){e.PercentProgress&&(e.PercentProgress=parseInt(e.PercentProgress,10)||0),e.Status==="creating"&&this.startPollingStatus(),Backbone.Model.prototype.set.apply(this,arguments)},startPollingStatus:function(){var e;if(this.__polling)return;e=this.__pollingStatus.bind(this),this.__polling=setTimeout(e,2e3)},stopPollingStatus:function(){clearTimeout(this.__polling),this.__polling=null},__pollingStatus:function(){var e,t;return e=this,n("rds_snap_DescribeDBSnapshots",{region_name:((t=this.getCollection())!=null?t.region():void 0)||Design.instance().region(),snapshot_id:this.get("DBSnapshotIdentifier")}).then(function(t){e.__polling=null,e.__parsePolling(t)},function(t){if(t&&t.awsError){t.awsError===404&&e.remove();return}if(t&&t.error<0)return e.__polling=null,e.startPollingStatus()})},__parsePolling:function(e){e=e.DescribeDBSnapshotsResponse.DescribeDBSnapshotsResult.DBSnapshots.DBSnapshot,this.set({PercentProgress:e.PercentProgress,Status:e.Status})},copyTo:function(e,r,i){var s,o;return s=this,o="arn:aws:rds:"+this.collection.region()+":"+App.user.attributes.account.split("-").join("")+":snapshot:"+this.get("id"),n("rds_snap_CopyDBSnapshot",{region_name:e,source_id:o,target_id:r}).then(function(i){var o,u,a,f,l,c;void 0,a=(l=i.CopyDBSnapshotResponse)!=null?(c=l.CopyDBSnapshotResult)!=null?c.DBSnapshot:void 0:void 0;if(!a.DBSnapshotIdentifier)throw McError(n.Errors.InvalidAwsReturn,"Snapshot copied but aws returns invalid data.");return f=t(s.collection.type,e),o=a,o.id=a.DBSnapshotIdentifier,o.name=r,o.region=e,u=f.create(o),f.add(u),u.tagResource(),u})},doDestroy:function(){return n("rds_snap_DeleteDBSnapshot",{region_name:this.getCollection().region(),snapshot_id:this.get("id")})}})})}.call(this),function(){define("cloudres/aws/CrModelRdsInstance",["../CrModel","CloudResources","ApiRequest"],function(e,t,n){return e.extend({taggable:!1})})}.call(this),function(){define("cloudres/aws/CrModelRdsPGroup",["../CrModel","CloudResources","ApiRequest","constant"],function(e,t,n,r){return e.extend({taggable:!1,isDefault:function(){return(this.get("DBParameterGroupName")||"").indexOf("default.")===0},getParameters:function(){return t(r.RESTYPE.DBPARAM,this.id).init(this)},doCreate:function(){var e;return e=this,n("rds_pg_CreateDBParameterGroup",{region_name:this.getCollection().region(),param_group:this.get("DBParameterGroupName"),param_group_family:this.get("DBParameterGroupFamily"),description:this.get("Description")}).then(function(t){return e.set("id",e.get("DBParameterGroupName")),e})},doDestroy:function(){return n("rds_pg_DeleteDBParameterGroup",{region_name:this.collection.region(),param_group:this.id})},resetParams:function(){var e;return e=this,n("rds_pg_ResetDBParameterGroup",{region_name:this.collection.region(),param_group:this.id,reset_all:!0}).then(function(){return e.getParameters().fetchForce()})},modifyParams:function(e){var t,r,i,s,o,u,a,f;i=[];for(r in e)f=e[r],i.push({ParameterName:r,ParameterValue:f,ApplyMethod:this.getParameters().get(r).applyMethod()});u=[],o={region_name:this.collection.region(),param_group:this.id,parameters:[]},t=0;while(t<i.length)o.parameters=i.slice(t,t+20),u.push(n("rds_pg_ModifyDBParameterGroup",o)),t+=20;return a=this,s=a.getParameters(),Q.all(u).then(function(){var t,n;for(t in e)n=e[t],s.get(t).set("ParameterValue",n)})}})})}.call(this),function(){define("cloudres/aws/CrClnRds",["ApiRequest","../CrCollection","constant","CloudResources","./CrModelRdsSnapshot","./CrModelRdsInstance","./CrModelRdsPGroup"],function(e,t,n,r,i,s,o){return t.extend({type:n.RESTYPE.DBENGINE,__selfParseData:!0,initialize:function(){this.optionGroupData={},this.engineDict={},this.defaultInfo={}},getOptionGroupsByEngine:function(e,t){var n;return e?t?n=this.optionGroupData[e][t]:void 0:void 0,n||""},getDefaultByNameVersion:function(e,t,n){var r;return e?t?n?r=this.engineDict[e][t][n]:void 0:void 0:void 0,r||""},getDefaultByFamily:function(e,t){var n;return e?t?n=this.defaultInfo[e][t]:void 0:void 0,n||""},doFetch:function(){var t,n;return n=this,t=this.region(),e("rds_DescribeDBEngineVersions",{region_name:t}).then(function(r){var i,s,o,u,a,f,l;n.optionGroupData[t]={},n.engineDict[t]={},n.defaultInfo[t]={};try{r=r.DescribeDBEngineVersionsResponse.DescribeDBEngineVersionsResult.DBEngineVersions.DBEngineVersion}catch(c){o=c,void 0}r=r||[],_.isArray(r)||(r=[r]),u={};for(f=0,l=r.length;f<l;f++)i=r[f],i.id=i.Engine+" "+i.EngineVersion,u[i.Engine]=!0,n.engineDict[t][i.Engine]||(n.engineDict[t][i.Engine]={}),s={family:i.DBParameterGroupFamily,defaultPGName:"default."+i.DBParameterGroupFamily,defaultOGName:"default:"+i.Engine+"-"+i.EngineVersion.split(".").slice(0,2).join("-"),canCustomOG:!1},n.engineDict[t][i.Engine][i.EngineVersion]=s,n.defaultInfo[t][i.DBParameterGroupFamily]||(n.defaultInfo[t][i.DBParameterGroupFamily]=s);return a=_.keys(u).map(function(r){return e("rds_og_DescribeOptionGroupOptions",{region_name:t,engine_name:r}).then(function(e){try{n.__parseOptions(n.category,e)}catch(t){o=t,void 0}})}),Q.all(a).then(function(){return r})})},__parseOptions:function(e,t){var n,r,i,s,o,u;s=this,t=t.DescribeOptionGroupOptionsResponse.DescribeOptionGroupOptionsResult.OptionGroupOptions;if(!t)return;t=t.OptionGroupOption||[],_.isArray(t)||(t=[t]);if(!t.length)return;i={};for(o=0,u=t.length;o<u;o++)n=t[o],r=n.EngineName,i[n.MajorEngineVersion]||(i[n.MajorEngineVersion]=[]),n.OptionGroupOptionSettings&&n.OptionGroupOptionSettings.OptionGroupOptionSetting&&(n.OptionGroupOptionSettings=n.OptionGroupOptionSettings.OptionGroupOptionSetting),i[n.MajorEngineVersion].push(n),_.each(s.engineDict[e][n.EngineName],function(e,t){if(t.indexOf(n.MajorEngineVersion)===0)return e.canCustomOG=!0});this.optionGroupData[e][r]=i}}),t.extend({type:n.RESTYPE.DBSBG,doFetch:function(){return e("rds_subgrp_DescribeDBSubnetGroups",{region_name:this.region()})},parseFetchData:function(e){var t,n,r,i,s;e=((i=e.DescribeDBSubnetGroupsResponse.DescribeDBSubnetGroupsResult.DBSubnetGroups)!=null?i.DBSubnetGroup:void 0)||[],_.isArray(e)||(e=[e]);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.DBSubnetGroupName,t.Subnets=(s=t.Subnets)!=null?s.Subnet:void 0;return e},parseExternalData:function(e){return this.unifyApi(e,this.type),this.camelToPascal(e),_.each(e,function(e){return e.id=e.DBSubnetGroupName}),e}}),t.extend({type:n.RESTYPE.DBOG,doFetch:function(){return e("rds_og_DescribeOptionGroups",{region_name:this.region()})},parseFetchData:function(e){var t,n,r,i;e=((i=e.DescribeOptionGroupsResponse.DescribeOptionGroupsResult.OptionGroupsList)!=null?i.OptionGroup:void 0)||[],_.isArray(e)||(e=[e]);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.OptionGroupName;return e},parseExternalData:function(e){return this.unifyApi(e,this.type),this.camelToPascal(e),_.each(e,function(e){return e.id=e.OptionGroupName}),e}}),t.extend({type:n.RESTYPE.DBINSTANCE,model:s,doFetch:function(){return e("rds_ins_DescribeDBInstances",{region_name:this.region()})},parseFetchData:function(e){var t,n,r,i,s,o,u;e=((i=e.DescribeDBInstancesResponse.DescribeDBInstancesResult.DBInstances)!=null?i.DBInstance:void 0)||[],_.isArray(e)||(e=[e]);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.DBInstanceIdentifier,t.Name=t.DBName,t.sbgId=(s=t.DBSubnetGroup)!=null?s.DBSubnetGroupName:void 0,t.DBParameterGroups=((o=t.DBParameterGroups)!=null?o.DBParameterGroup:void 0)||[],t.DBSecurityGroups=((u=t.DBSecurityGroups)!=null?u.DBSecurityGroup:void 0)||[],t.LatestRestorableTime&&(t.LatestRestorableTime=(new Date(t.LatestRestorableTime)).getTime()),t.InstanceCreateTime&&(t.InstanceCreateTime=(new Date(t.InstanceCreateTime)).getTime());return e},parseExternalData:function(e){return this.unifyApi(e,this.type),this.camelToPascal(e),_.each(e,function(e){var t,n,r,i;e.DBSubnetGroup&&(e.DBSubnetGroup.DBSubnetGroupDescription=e.DBSubnetGroup.DbsubnetGroupDescription,e.DBSubnetGroup.DBSubnetGroupName=e.DBSubnetGroup.DbsubnetGroupName,delete e.DBSubnetGroup.DbsubnetGroupDescription,delete e.DBSubnetGroup.DbsubnetGroupName),i=e.DBParameterGroups;for(n=0,r=i.length;n<r;n++)t=i[n],t.DBParameterGroupName=t.DbparameterGroupName,delete t.DbparameterGroupName;return e.PendingModifiedValues&&(e.PendingModifiedValues.DBInstanceClass=e.PendingModifiedValues.DbinstanceClass,e.PendingModifiedValues.DBInstanceIdentifier=e.PendingModifiedValues.DbinstanceIdentifier,delete e.PendingModifiedValues.DbinstanceClass,delete e.PendingModifiedValues.DbinstanceIdentifier),e.id=e.DBInstanceIdentifier,e.Name=e.DBName,e.sbgId=e.DBSubnetGroup.DBSubnetGroupName}),e}}),t.extend({type:n.RESTYPE.DBSNAP,model:i,doFetch:function(){return e("rds_snap_DescribeDBSnapshots",{region_name:this.region()})},parseFetchData:function(e){var t,n,r,i;e=((i=e.DescribeDBSnapshotsResponse.DescribeDBSnapshotsResult.DBSnapshots)!=null?i.DBSnapshot:void 0)||[],_.isArray(e)||(e=[e]);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.DBSnapshotIdentifier;return e}}),t.extend({type:n.RESTYPE.DBPG,model:o,doFetch:function(){return e("rds_pg_DescribeDBParameterGroups",{region_name:this.region()})},parseFetchData:function(e){var t,n,r,i;e=((i=e.DescribeDBParameterGroupsResponse.DescribeDBParameterGroupsResult.DBParameterGroups)!=null?i.DBParameterGroup:void 0)||[],_.isArray(e)||(e=[e]);for(n=0,r=e.length;n<r;n++)t=e[n],t.id=t.DBParameterGroupName;return e}})})}.call(this),function(){var e=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("cloudres/aws/CrModelRdsParameter",["../CrModel","CloudResources","ApiRequest"],function(t,n,r){return t.extend({taggable:!1,isValidValue:function(t){var n,r,i,s,o,u,a;if(!this.attributes.AllowedValues)return!0;s=Number(t);if(e.call(this.attributes.AllowedValues.split(","),t)>=0)return!0;a=this.attributes.AllowedValues.split(",");for(o=0,u=a.length;o<u;o++){n=a[o];if(n.indexOf("-")>=0){if(!!isNaN(parseFloat(t))||!isFinite(t))return!1;if(n.split("-").length>=2){n.indexOf("-")===0?i=n.indexOf("-",1):i=n.indexOf("-",0),n=n.substr(0,i)+"#"+n.substr(i+1),r=n.split("#");if(s>=Number(r[0])&&s<=Number(r[1]))return!0}}}return!1},isFunctionValue:function(e){var t;return t=/^((GREATEST|LEAST|SUM)\s*\(\s*)*((({(DBInstanceClassMemory|AllocatedStorage|EndPointPort))+((\/|\*|\+|\-)*(\d+|(DBInstanceClassMemory|AllocatedStorage|EndPointPort)))*}|\d+)\s*,?\s*\)*)*$/,t.test(e)},isNumber:function(e){var t;return t=/^\d+$/,t.test(e)},applyMethod:function(){return this.get("ApplyType")==="dynamic"?"immediate":"pending-reboot"}})})}.call(this),function(){define("cloudres/aws/CrClnRdsParam",["ApiRequest","../CrCollection","constant","CloudResources","./CrModelRdsParameter"],function(e,t,n,r,i){return t.extend({type:n.RESTYPE.DBPARAM,model:i,__selfParseData:!0,init:function(e){return this.groupModel?this:(this.groupModel=e,this.listenTo(e,"remove",this.reset),this)},region:function(){var e;return(e=this.groupModel.collection)!=null?e.region():void 0},doFetch:function(t){var n;return n=this,e("rds_pg_DescribeDBParameters",{region_name:this.region(),param_group:this.category,marker:t}).then(function(e){var r,i,s,o,u;try{t=e.DescribeDBParametersResponse.DescribeDBParametersResult.Marker,e=((u=e.DescribeDBParametersResponse.DescribeDBParametersResult.Parameters)!=null?u.Parameter:void 0)||[]}catch(a){i=a,void 0}_.isArray(e)||(e=[e]);for(s=0,o=e.length;s<o;s++)r=e[s],r.id=r.ParameterName;return t?(n.__bucket?n.__bucket=n.__bucket.concat(e):n.__bucket=e,n.doFetch(t)):(n.__bucket&&(e=n.__bucket.concat(e),n.__bucket=null),e)})}})})}.call(this),function(){define("cloudres/openstack/CrModelKeypair",["../CrModel","ApiRequestOs"],function(e,t){return e.extend({defaults:{name:"",public_key:"",fingerprint:""},idAttribute:"name",taggable:!1,doCreate:function(){var e,n;return n=this,e=t("os_keypair_Create",{region:this.getCollection().region(),keypair_name:this.get("name"),public_key:this.get("public_key")}),e.then(function(e){var r,i;void 0;try{e=e.keypair,n.set(e),i=e.name}catch(s){throw r=s,McError(t.Errors.InvalidAwsReturn,"Keypair created but aws returns invalid data.")}return n.set("name",i),void 0,n})},doDestroy:function(){return t("os_keypair_Delete",{region:this.getCollection().region(),keypair_name:this.get("name")})}})})}.call(this),function(){define("cloudres/openstack/CrModelSnapshot",["../CrModel","ApiRequestOs"],function(e,t){return e.extend({defaults:{status:"",description:"",created_at:"",name:"",volume_id:"",size:"",id:"",metadata:""},taggable:!1,doCreate:function(){var e,n;return n=this,e=t("os_snapshot_Create",{region:this.getCollection().region(),display_name:this.get("name"),volume_id:this.get("volume_id"),display_description:this.get("description"),is_force:!0}),e.then(function(e){var r,i;try{e=e.snapshot,n.set(e),i=e.name}catch(s){throw r=s,McError(t.Errors.InvalidAwsReturn,"Keypair created but aws returns invalid data.")}return n.set("name",i),void 0,n})},doDestroy:function(){return t("os_snapshot_Delete",{region:this.getCollection().region(),snapshot_id:this.get("id")})}})})}.call(this),function(){define("cloudres/openstack/CrClnSharedRes",["../CrCollection","CloudResources","ApiRequestOs","constant","./CrModelKeypair","./CrModelSnapshot"],function(e,t,n,r,i,s){return e.extend({type:r.RESTYPE.OSKP,model:i,doFetch:function(){return n("os_keypair_List",{region:this.region()})},parseFetchData:function(e){var t,n,r,i,s,o;t=(e!=null?e.keypairs:void 0)||[],r=[],o=t||[];for(i=0,s=o.length;i<s;i++)n=o[i],n=n.keypair,n&&(n.id=n.name,r.push(n)),null;return r}}),e.extend({type:r.RESTYPE.OSSNAP,model:s,doFetch:function(){return n("os_snapshot_List",{region:this.region()})},parseFetchData:function(e){return(e!=null?e.snapshots:void 0)||[]}})})}.call(this),function(){define("cloudres/openstack/CrClnImage",["ApiRequestOs","../CrCollection","constant","CloudResources"],function(e,t,n,r){return t.extend({type:n.RESTYPE.OSIMAGE,doFetch:function(){return e("os_image_List",{region:this.region()})},parseFetchData:function(e){var t,n,r,i,s,o;t=(e!=null?e.images:void 0)||[];for(r=0,i=t.length;r<i;r++)n=t[r],!n.architecture||!n.os_distro||(s=n.architecture)!=="i686"&&s!=="x86_64"||(o=n.os_distro)!=="centos"&&o!=="debian"&&o!=="fedora"&&o!=="gentoo"&&o!=="opensuse"&&o!=="redhat"&&o!=="suse"&&o!=="ubuntu"&&o!=="windows"&&o!=="cirros"?n.os_type="unknown":n.os_type=n.os_distro;return t}}),t.extend({type:n.RESTYPE.OSFLAVOR,doFetch:function(){var e;return e=Q.defer(),e.resolve(),e.promise},parseFetchData:function(e){return _.values(e)}})})}.call(this),function(){define("cloudres/openstack/CrClnNetwork",["ApiRequestOs","../CrCollection","constant","CloudResources"],function(e,t,n,r){return t.extend({type:n.RESTYPE.OSNETWORK,getExtNetworks:function(){return this.where({external:!0})},doFetch:function(){return e("os_network_List",{region:this.region()})},parseFetchData:function(e){var t,n,r,i;i=e.networks;for(n=0,r=i.length;n<r;n++)t=i[n],t.physical_network=t["provider:physical_network"],t.external=t["router:external"],delete t["provider:physical_network"],delete t["router:external"];return e.networks},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}})})}.call(this),function(){define("cloudres/openstack/CrClnCommonRes",["../CrCollection","../CrModel","ApiRequestOs","constant","CloudResources"],function(e,t,n,r,i){return e.extend({type:r.RESTYPE.OSFIP,doFetch:function(){return n("os_floatingip_List",{region:this.region()})},parseFetchData:function(e){return e.floatingips},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSPOOL,doFetch:function(){return n("os_pool_List",{region:this.region()})},parseFetchData:function(e){return e.pools},parseExternalData:function(e,t,n){var r,i,s,o,u,a,f,l,c,h,p,d,v;i={},d=n["OS::Neutron::Member"]||[];for(a=0,c=d.length;a<c;a++)r=d[a],i[r.id]=r;u=$.extend(!0,[],e);for(f=0,h=u.length;f<h;f++){o=u[f],s=[],v=o.members||[];for(l=0,p=v.length;l<p;l++)r=v[l],r=i[r],r&&s.push(r);o.members=s}return this.camelToUnderscore(u)}}),e.extend({type:r.RESTYPE.OSLISTENER,doFetch:function(){return n("os_vip_List",{region:this.region()})},parseFetchData:function(e){return e.vips},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSHM,doFetch:function(){return n("os_healthmonitor_List",{region:this.region()})},parseFetchData:function(e){return e.health_monitors},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSRT,doFetch:function(){return n("os_router_List",{region:this.region()})},parseFetchData:function(e){return e.routers},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSSERVER,doFetch:function(){var e;return e=this.region(),n("os_server_List",{region:e}).then(function(t){var r;r=_.pluck(t.servers,"id");if(!r.length)return;return n("os_server_Info",{region:e,ids:r})})},parseFetchData:function(e){var t,n,r;e=_.values(e);for(n=0,r=e.length;n<r;n++)t=e[n],t.diskConfig=t["OS-DCF:diskConfig"],t.availability_zone=t["OS-EXT-AZ:availability_zone"],t.power_state=t["OS-EXT-STS:power_state"],t.task_state=t["OS-EXT-STS:task_state"],t.vm_state=t["OS-EXT-STS:vm_state"],t.launched_at=t["OS-SRV-USG:launched_at"],t.terminated_at=t["OS-SRV-USG:terminated_at"],t.volumes_attached=t["os-extended-volumes:volumes_attached"],delete t["OS-DCF:diskConfig"],delete t["OS-EXT-AZ:availability_zone"],delete t["OS-EXT-STS:power_state"],delete t["OS-EXT-STS:task_state"],delete t["OS-EXT-STS:vm_state"],delete t["OS-SRV-USG:launched_at"],delete t["OS-SRV-USG:terminated_at"],delete t["os-extended-volumes:volumes_attached"];return e},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSVOL,doFetch:function(){var e;return e=this.region(),n("os_volume_List",{region:e}).then(function(t){var r;r=_.pluck(t.volumes,"id");if(!r.length)return;return n("os_volume_Info",{region:e,ids:r})})},parseFetchData:function(e){return _.values(e)},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSSUBNET,doFetch:function(){return n("os_subnet_List",{region:this.region()})},parseFetchData:function(e){return e.subnets},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSSG,doFetch:function(){return n("os_securitygroup_List",{region:this.region()})},parseFetchData:function(e){return e.security_groups},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSPORT,doFetch:function(){return n("os_port_List",{region:this.region()})},parseFetchData:function(e){var t,n,r,i;i=e.ports;for(n=0,r=i.length;n<r;n++)t=i[n],t.vif_details=t["binding:vif_details"],t.vif_type=t["binding:vif_type"],t.profile=t["binding:profile"],t.vnic_type=t["binding:vnic_type"],t.host_id=t["binding:host_id"],delete t["binding:vif_details"],delete t["binding:vif_type"],delete t["binding:profile"],delete t["binding:vnic_type"],delete t["binding:host_id"];return e.ports},parseExternalData:function(e){var t;return t=$.extend(!0,[],e),this.camelToUnderscore(t)}}),e.extend({type:r.RESTYPE.OSNQ,doFetch:function(){return n("os_neutron_quota_List",{region:this.region()})},parseFetchData:function(e){if(e!=null?e.quota:void 0)e.quota.id="neutron_quota";return[e!=null?e.quota:void 0]}}),e.extend({type:r.RESTYPE.OSCQ,doFetch:function(){return n("os_cinder_quota_List",{region:this.region()})},parseFetchData:function(e){if(e!=null?e.quota_set:void 0)e.quota_set.id="cinder_quota";return[e!=null?e.quota_set:void 0]}})})}.call(this),function(){define("cloudres/CrBundle",["CloudResources","./CrOpsResource","./aws/CrClnSharedRes","./aws/CrClnCommonRes","./aws/CrClnAmi","./aws/CrClnRds","./aws/CrClnRdsParam","./openstack/CrClnSharedRes","./openstack/CrClnImage","./openstack/CrClnNetwork","./openstack/CrClnCommonRes"],function(e){return e})}.call(this);
+(function() {
+  define('cloudres/CrModel',["ApiRequest", "backbone"], function(ApiRequest) {
+    return Backbone.Model.extend({
+      constructor: function(attr, options) {
+        Backbone.Model.call(this, attr, options);
+        if (options && options.RES_TAG) {
+          this.RES_TAG = options.RES_TAG;
+        }
+      },
+      save: function() {
+        var self;
+        if (this.get("id")) {
+          console.error("The resource is already created. You cannot re-create it again.");
+          return;
+        }
+        if (!this.__savePromise) {
+          self = this;
+          this.__savePromise = this.doCreate().then(function() {
+            self.__collection.add(self);
+            self.tagResource();
+            delete self.__collection;
+            delete self.__savePromise;
+            return self;
+          }, function(error) {
+            delete self.__savePromise;
+            throw error;
+          });
+        }
+        return this.__savePromise;
+      },
+      update: function(newAttr) {
+        if (!this.get("id")) {
+          console.error("The resource is not yet created, so you can't update the resource.", this);
+          return;
+        }
+        if (!this.doUpdate) {
+          console.error("This kind of resource does not support update,", this.getCollection().type);
+          return;
+        }
+        return this.doUpdate(newAttr);
+      },
+      destroy: function() {
+        var self;
+        self = this;
+        return this.doDestroy().then(function() {
+          self.getCollection().remove(self);
+          return self;
+        }, function(err) {
+          if (err.awsError === 400 && err.awsErrorCode.indexOf(".NotFound") !== -1) {
+            self.getCollection().remove(self);
+            return self;
+          }
+          throw err;
+        });
+      },
+
+      /*
+      dosave    : ()->
+      doUpdate  : ( newAttr )->
+      doDestroy : ()->
+       */
+      getCollection: function() {
+        return this.__collection || this.collection;
+      },
+      tagResource: function() {
+        var self;
+        if (this.taggable === false) {
+          return;
+        }
+        self = this;
+        return ApiRequest("ec2_CreateTags", {
+          region_name: this.getCollection().region(),
+          resource_ids: [this.get("id")],
+          tags: [
+            {
+              Name: "Created by",
+              Value: App.user.get("username")
+            }
+          ]
+        }).then(function() {
+          console.log("Success to tag resource", self.get("id"));
+        });
+      }
+    }, {
+
+      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
+    });
+  });
+
+}).call(this);
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('cloudres/CrCollection',["ApiRequest", "./CrModel", "constant", "backbone"], function(ApiRequest, CrModel, constant) {
+    var SubCollections, SubColsByAwsResType, emptyArr, __camelToPascal, __needUnify, __needUnifyList, __replaceKey, __replaceKeyInList;
+    SubCollections = {};
+    emptyArr = [];
+    SubColsByAwsResType = {};
+    __needUnifyList = {
+      INSTANCE: {
+        networkInterfaces: 'networkInterfaceSet',
+        state: 'instanceState',
+        securityGroups: 'groupSet',
+        blockDeviceMappings: 'blockDeviceMapping',
+        publicDnsName: 'dnsName'
+      },
+      VOL: {
+        attachments: 'attachmentSet'
+      },
+      RT: {
+        associations: 'associationSet',
+        routes: 'routeSet',
+        propagatingVgws: 'propagatingVgwSet'
+      },
+      SG: {
+        description: 'groupDescription'
+      },
+      VGW: {
+        vpcAttachments: "attachments"
+      },
+      IGW: {
+        attachments: "attachmentSet"
+      },
+      LC: {
+        blockDeviceMappings: "BlockDeviceMapping"
+      },
+      DBSBG: {
+        dbsubnetGroupDescription: "DBSubnetGroupDescription",
+        dbsubnetGroupName: "DBSubnetGroupName"
+      },
+      DBINSTANCE: {
+        dbinstanceClass: "DBInstanceClass",
+        dbinstanceIdentifier: "DBInstanceIdentifier",
+        dbinstanceStatus: "DBInstanceStatus",
+        dbname: "DBName",
+        dbparameterGroups: "DBParameterGroups",
+        dbsecurityGroups: "DBSecurityGroups",
+        dbsubnetGroup: "DBSubnetGroup"
+      },
+      ALL: {
+        associations: 'associationSet',
+        privateIpAddresses: 'privateIpAddressesSet',
+        groups: 'groupSet'
+      }
+    };
+    __needUnify = function(type) {
+      var all, longTypeList;
+      all = jQuery.extend(true, {}, __needUnifyList.ALL);
+      longTypeList = constant.WRAP(__needUnifyList);
+      return _.extend(all, longTypeList[type]);
+    };
+    __replaceKey = function(obj, oldKey, newKey) {
+      obj[newKey] = obj[oldKey];
+      return delete obj[oldKey];
+    };
+    __camelToPascal = function(obj) {
+      var exceptionList, k, newKey, v, _results;
+      exceptionList = ['member', 'item'];
+      _results = [];
+      for (k in obj) {
+        v = obj[k];
+        newKey = k.substring(0, 1).toUpperCase() + k.substring(1);
+        if (__indexOf.call(exceptionList, k) < 0 && newKey !== k) {
+          _results.push(__replaceKey(obj, k, newKey));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+    __replaceKeyInList = function(obj, type) {
+      var k, needReplaceList, v, _results;
+      needReplaceList = __needUnify(type);
+      _results = [];
+      for (k in obj) {
+        v = obj[k];
+        if (__indexOf.call(_.keys(needReplaceList), k) >= 0) {
+          _results.push(__replaceKey(obj, k, needReplaceList[k]));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+    return Backbone.Collection.extend({
+      category: "",
+      model: CrModel,
+      constructor: function() {
+        this.on("add remove", _.debounce(function() {
+          return this.trigger("update");
+        }), this);
+        return Backbone.Collection.apply(this, arguments);
+      },
+      isReady: function() {
+        return this.__fetchPromise && this.__ready;
+      },
+      isLastFetchFailed: function() {
+        return !!this.lastFetchError();
+      },
+      lastFetchError: function() {
+        return this.__lastFetchError;
+      },
+      fetch: function() {
+        var self, _ref;
+        if (!this.isLastFetchFailed() && this.__fetchPromise) {
+          return this.__fetchPromise;
+        }
+        this.lastFetch = +new Date();
+        this.__ready = false;
+        this.__lastFetchError = null;
+        self = this;
+        this.__fetchPromise = (_ref = this.doFetch()) != null ? typeof _ref.then === "function" ? _ref.then(function(data) {
+          var d, e, _i, _len;
+          if (!self.__selfParseData) {
+            try {
+              if (self.trAwsXml) {
+                data = self.trAwsXml(data);
+              }
+              if (self.parseFetchData && data) {
+                data = self.parseFetchData(data);
+              }
+              if (!data) {
+                data = emptyArr;
+              }
+            } catch (_error) {
+              e = _error;
+              throw McError(ApiRequest.Errors.InvalidAwsReturn, "Failed to parse aws data.", [data, e]);
+            }
+            if (self.modelIdAttribute) {
+              for (_i = 0, _len = data.length; _i < _len; _i++) {
+                d = data[_i];
+                d.id = d[self.modelIdAttribute];
+                delete d[self.modelIdAttribute];
+              }
+            }
+          }
+          self.__ready = true;
+          if (data.length === 0 && self.models.length === 0) {
+            self.trigger("update");
+          } else {
+            self.set(data);
+          }
+          return self;
+        }, function(error) {
+          self.lastFetch = 0;
+          self.__lastFetchError = error;
+          self.__ready = true;
+          self.trigger("update");
+          throw error;
+        }) : void 0 : void 0;
+        return this.__fetchPromise;
+      },
+      fetchForce: function() {
+        this.__fetchPromise = null;
+        this.reset();
+        this.trigger("update");
+        return this.fetch();
+      },
+      fetchIfExpired: function() {
+        var lastFetch;
+        lastFetch = this.lastFetch || 0;
+        if ((+new Date()) - lastFetch < 1800000) {
+          console.info("The collection is not expired,", this);
+          return;
+        }
+        this.__fetchPromise = null;
+        return this.fetch();
+      },
+      resolveTagSet: function(tagSet) {
+        var data, item, visopsTag, visualops, _i, _len, _ref;
+        if (!tagSet) {
+          return {};
+        }
+        if (tagSet['Created by'] && tagSet['app'] && tagSet['app-id'] && tagSet['name'] && tagSet['Name']) {
+          visopsTag = jQuery.extend(true, {}, tagSet);
+          visopsTag['isOwner'] = App.user.get('username') === tagSet['Created by'];
+        } else if (tagSet['visualops'] && tagSet['Name']) {
+          visopsTag = {};
+          visualops = tagSet['visualops'];
+          if (visualops.indexOf('app-name=') === 0 && visualops.indexOf('app-id=') > 0 && visualops.indexOf('created-by=') > 0) {
+            _ref = visualops.split(' ');
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              item = _ref[_i];
+              data = item.split('=');
+              switch (data[0]) {
+                case 'app-name':
+                  visopsTag['app'] = data[1];
+                  break;
+                case 'app-id':
+                  visopsTag['app-id'] = data[1];
+                  break;
+                case 'created-by':
+                  visopsTag['Created by'] = data[1];
+              }
+              null;
+            }
+          }
+          visopsTag['name'] = tagSet['Name'];
+          if (visopsTag['Created by'] && visopsTag['app'] && visopsTag['app-id'] && visopsTag['name']) {
+            visopsTag['Name'] = visopsTag['app'] + '-' + visopsTag['name'];
+            visopsTag['isOwner'] = App.user.get('username') === visopsTag['Created by'];
+          }
+        }
+        return visopsTag;
+      },
+      __parseExternalData: function(awsData, extraAttr, category, dataCollection) {
+        var d, e, i, toAddIds, ts, _i, _j, _len, _len1, _ref;
+        try {
+          if (this.parseExternalData) {
+            awsData = this.parseExternalData(awsData, category, dataCollection);
+          } else if (this.parseFetchData) {
+            awsData = this.parseFetchData(awsData);
+          }
+        } catch (_error) {
+          e = _error;
+          return null;
+        }
+        if (!awsData || !awsData.length) {
+          this.trigger("update");
+          return;
+        }
+        toAddIds = [];
+        for (_i = 0, _len = awsData.length; _i < _len; _i++) {
+          d = awsData[_i];
+          d.category = category;
+          if (d.tags || d.Tags) {
+            d.tagSet = d.tags || d.Tags;
+            delete d.tags;
+            delete d.Tags;
+          }
+          if (_.isArray(d.tagSet)) {
+            ts = {};
+            _ref = d.tagSet;
+            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+              i = _ref[_j];
+              if (i.key) {
+                ts[i.key] = i.value;
+              } else if (i.Key) {
+                ts[i.Key] = i.Value;
+              }
+            }
+            d.tagSet = ts;
+          }
+          if (d.tagSet) {
+            d.visopsTag = this.resolveTagSet(d.tagSet);
+          }
+          if (this.modelIdAttribute) {
+            d.id = d[this.modelIdAttribute];
+            delete d[this.modelIdAttribute];
+          }
+          toAddIds.push(d.id);
+        }
+        this.remove(toAddIds, {
+          silent: true
+        });
+        this.add(awsData, extraAttr);
+      },
+      parseFetchData: function(res) {
+        return res;
+      },
+      destroy: function() {
+        return this.trigger("destroy", this.id);
+      },
+      create: function(attributes) {
+        var m;
+        m = new this.model(attributes);
+        m.__collection = this;
+        return m;
+      },
+      region: function() {
+        return this.category;
+      },
+
+      /* env:dev                                                                                                                                                                                                                                                                                                            env:dev:end */
+      where: function(option, first) {
+        var hasOtherAttr, key, res;
+        if (option.category && option.category === this.category) {
+          delete option.category;
+        }
+        for (key in option) {
+          if (option.hasOwnProperty(key)) {
+            hasOtherAttr = true;
+            break;
+          }
+        }
+        if (hasOtherAttr) {
+          res = Backbone.Collection.prototype.where.call(this, option) || [];
+        } else {
+          res = this.models.slice(0);
+        }
+        if (first) {
+          return res[0];
+        } else {
+          return res;
+        }
+      },
+      convertNumTimeToString: function(obj) {
+        var camelKey, date, value;
+        for (camelKey in obj) {
+          value = obj[camelKey];
+          if (!(obj.hasOwnProperty(camelKey))) {
+            continue;
+          }
+          if (_.isObject(obj[camelKey]) || _.isArray(obj[camelKey])) {
+            this.convertNumTimeToString(value);
+          } else if (_.isNumber(obj[camelKey])) {
+            obj[camelKey] = String(obj[camelKey]);
+            if (camelKey && camelKey.toLowerCase().indexOf('time') !== -1 && obj[camelKey].length > 12) {
+              date = new Date(Number(obj[camelKey]));
+              if (date) {
+                obj[camelKey] = date.toISOString();
+              }
+            }
+          }
+        }
+        return obj;
+      },
+      unifyApi: function(obj, type) {
+        var hit, key, value;
+        hit = false;
+        if (!_.isObject(obj)) {
+          return obj;
+        }
+        for (key in obj) {
+          value = obj[key];
+          if (!(obj.hasOwnProperty(key))) {
+            continue;
+          }
+          if (!_.isArray(obj)) {
+            __replaceKeyInList(obj, type);
+            hit = true;
+          }
+          if (!hit) {
+            this.unifyApi(value, type);
+          }
+        }
+        return obj;
+      },
+      camelToPascal: function(obj) {
+        var camelKey, exceptionList, pascalKey, value;
+        exceptionList = ['member', 'item'];
+        if (!_.isObject(obj)) {
+          return obj;
+        }
+        for (camelKey in obj) {
+          value = obj[camelKey];
+          if (!(obj.hasOwnProperty(camelKey))) {
+            continue;
+          }
+          pascalKey = camelKey.substring(0, 1).toUpperCase() + camelKey.substring(1);
+          if (!_.isArray(obj) && pascalKey !== camelKey && __indexOf.call(exceptionList, camelKey) < 0) {
+            obj[pascalKey] = value;
+            delete obj[camelKey];
+          }
+          this.camelToPascal(value);
+        }
+        return obj;
+      },
+      camelToUnderscore: function(obj) {
+        var camelKey, exceptionList, self, underscoreKey, value;
+        exceptionList = [];
+        self = this;
+        if (!_.isObject(obj)) {
+          return obj;
+        }
+        if (_.isArray(obj)) {
+          return _.map(obj, function(arr) {
+            return self.camelToUnderscore(arr);
+          });
+        }
+        for (camelKey in obj) {
+          value = obj[camelKey];
+          if (!(obj.hasOwnProperty(camelKey))) {
+            continue;
+          }
+          if (!_.isArray(obj) && __indexOf.call(exceptionList, camelKey) < 0 && __indexOf.call(camelKey, '::') < 0) {
+            underscoreKey = _.map(camelKey, function(char, index) {
+              var _ref;
+              if (index === 0) {
+                return char;
+              }
+              if ((65 <= (_ref = char.charCodeAt()) && _ref <= 90)) {
+                return "_" + (char.toLowerCase());
+              }
+              return char;
+            }).join('');
+            if (underscoreKey !== camelKey) {
+              obj[underscoreKey] = value;
+              delete obj[camelKey];
+            }
+          }
+          self.camelToUnderscore(value);
+        }
+        return obj;
+      }
+    }, {
+      category: function(category) {
+        return category;
+      },
+      getClassByType: function(id) {
+        return SubCollections[id];
+      },
+      getClassByAwsResponseType: function(typeString) {
+        return SubColsByAwsResType[typeString];
+      },
+      extend: function(protoProps, staticProps) {
+        var AwsResponseType, subClass;
+        console.assert(protoProps.type, "Subclass of CloudResourceCollection does not specifying a type");
+        if (protoProps.AwsResponseType) {
+          AwsResponseType = protoProps.AwsResponseType;
+          delete protoProps.AwsResponseType;
+        }
+        staticProps = staticProps || {};
+        staticProps.type = protoProps.type;
+        subClass = CrModel.extend.call(this, protoProps, staticProps);
+        SubCollections[protoProps.type] = subClass;
+        if (AwsResponseType) {
+          SubColsByAwsResType[AwsResponseType] = subClass;
+        }
+        return subClass;
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('CloudResources',["cloudres/CrCollection"], function(CrCollection) {
+
+    /*
+      resourceType : a string used to identified a class of resource
+      category     : a string used to group a set of resources. It might be a region id, or app id.
+     */
+    var CachedCollections, CloudResources, onCollectionDestroy;
+    CachedCollections = {};
+    onCollectionDestroy = function(id) {
+      console.info("CloudResource collection is destroyed:", CachedCollections[id]);
+      return delete CachedCollections[id];
+    };
+    CloudResources = function(resourceType, category) {
+      var Collection, c, cid;
+      Collection = CrCollection.getClassByType(resourceType);
+      if (!Collection) {
+        return null;
+      }
+      category = Collection.category(category);
+      cid = resourceType + "_" + category;
+      c = CachedCollections[cid];
+      if (!c) {
+        c = new Collection();
+        c.id = cid;
+        c.category = category;
+        CachedCollections[cid] = c;
+        c.on("destroy", onCollectionDestroy);
+      }
+      return c;
+    };
+    CloudResources.invalidate = function() {
+      return Q.all(_.values(CachedCollections).map(function(cln) {
+        return cln.fetchForce();
+      }));
+    };
+    CloudResources.clearWhere = function(detect, category) {
+      var Collection, cln, find, id, realCate;
+      if (_.isFunction(detect)) {
+        find = "filter";
+      } else {
+        find = "where";
+      }
+      for (id in CachedCollections) {
+        cln = CachedCollections[id];
+        Collection = CrCollection.getClassByType(cln.type);
+        realCate = Collection.category(category);
+        if (cln.category === realCate) {
+          cln.remove(cln[find](detect));
+        }
+      }
+    };
+    return CloudResources;
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/CrOpsResource',["ApiRequest", "./CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+
+    /* This Connection is used to fetch all the resource of an vpc */
+    return CrCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: "OpsResource",
+      init: function(region, provider) {
+        this.__region = region;
+        this.__provider = provider;
+        return this;
+      },
+      fetchForceDedup: function() {
+        var p;
+        this.__forceDedup = false;
+        p = this.fetchForce();
+        this.__forceDedup = true;
+        return p;
+      },
+      fetchForce: function() {
+        var d;
+        if (this.__forceDedup) {
+          this.__forceDedup = false;
+          d = Q.defer();
+          d.resolve();
+          return d.promise;
+        }
+        this.generatedJson = null;
+        return CrCollection.prototype.fetchForce.call(this);
+      },
+      doFetch: function() {
+        var self;
+        self = this;
+        CloudResources.clearWhere((function(m) {
+          return m.RES_TAG === self.category;
+        }), this.__region);
+
+        /* env:dev                                                                                                                                                                                                                                                      env:dev:end */
+        console.assert(this.__region && this.__provider, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
+        return ApiRequest("resource_get_resource", {
+          region_name: this.__region,
+          provider: this.__provider,
+          res_id: this.category
+        });
+      },
+      parseFetchData: function(data) {
+
+        /* env:dev                                                                                                                                                                   env:dev:end */
+        var app_json, cln, d, extraAttr, type;
+        app_json = data.app_json;
+        delete data.app_json;
+        extraAttr = {
+          RES_TAG: this.category
+        };
+        for (type in data) {
+          d = data[type];
+          cln = CloudResources(type, this.__region);
+          if (!cln) {
+            console.warn("Cannot find cloud resource collection for type:", type);
+            continue;
+          }
+          cln.__parseExternalData(d, extraAttr, this.__region, data);
+        }
+        this.generatedJson = this.fixGeneratedJson(app_json);
+      },
+      fixGeneratedJson: function(json) {
+        return json;
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelDhcp',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                           env:dev:end */
+      defaults: function() {
+        return {
+          "domain-name": [],
+          "domain-name-servers": [],
+          "ntp-servers": [],
+          "netbios-name-servers": [],
+          "netbios-node-type": []
+        };
+      },
+      constructor: function(attr, options) {
+        attr = this.tryParseDhcpAttr(attr);
+        return CrModel.call(this, attr, options);
+      },
+      tryParseDhcpAttr: function(attr) {
+        var e, item, _i, _len, _ref;
+        if (attr.dhcpConfigurationSet) {
+          try {
+            _ref = attr.dhcpConfigurationSet.item;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              item = _ref[_i];
+              attr[item.key] = item.valueSet;
+            }
+            delete attr.dhcpConfigurationSet;
+          } catch (_error) {
+            e = _error;
+          }
+        }
+        return attr;
+      },
+      toAwsAttr: function() {
+        var awsAttr, key, value, _ref;
+        awsAttr = [];
+        _ref = this.attributes;
+        for (key in _ref) {
+          value = _ref[key];
+          if (key !== "id" && key !== "tagSet" && (value.length > 0)) {
+            awsAttr.push({
+              Name: key,
+              Value: value
+            });
+          }
+        }
+        return awsAttr;
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("dhcp_CreateDhcpOptions", {
+          region_name: this.getCollection().region(),
+          dhcp_configs: this.toAwsAttr()
+        }).then(function(res) {
+          var e, id;
+          try {
+            id = res.CreateDhcpOptionsResponse.dhcpOptions.dhcpOptionsId;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Dhcp created but aws returns invalid ata.");
+          }
+          self.set("id", id);
+          console.log("Created dhcp resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("dhcp_DeleteDhcpOptions", {
+          region_name: this.getCollection().region(),
+          dhcp_id: this.get("id")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelKeypair',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                              env:dev:end */
+      defaults: {
+        keyName: "",
+        keyData: "",
+        keyMaterial: "",
+        keyFingerprint: ""
+      },
+      idAttribute: "keyName",
+      taggable: false,
+      doCreate: function() {
+        var promise, self;
+        self = this;
+        if (this.get("keyData")) {
+          promise = ApiRequest("kp_ImportKeyPair", {
+            region_name: this.getCollection().region(),
+            key_name: this.get("keyName"),
+            key_data: this.get("keyData")
+          });
+        } else {
+          promise = ApiRequest("kp_CreateKeyPair", {
+            region_name: this.getCollection().region(),
+            key_name: this.get("keyName")
+          });
+        }
+        return promise.then(function(res) {
+          var e, keyName;
+          try {
+            res = res.CreateKeyPairResponse || res.ImportKeyPairResponse;
+            self.set(res);
+            keyName = res.keyName;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
+          }
+          self.set('keyName', keyName);
+          console.log("Created keypair resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("kp_DeleteKeyPair", {
+          region_name: this.getCollection().region(),
+          key_name: this.get("id")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelSslcert',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                              env:dev:end */
+      taggable: false,
+      defaults: {
+        Path: "",
+        Name: "",
+        PrivateKey: "",
+        CertificateChain: "",
+        CertificateBody: ""
+      },
+      doUpdate: function(newAttr) {
+        var self;
+        self = this;
+        return ApiRequest("iam_UpdateServerCertificate", {
+          servercer_name: this.get("Name"),
+          new_servercer_name: newAttr.Name,
+          new_path: newAttr.Path
+        }).then(function(res) {
+          var newArn, oldArn;
+          oldArn = self.get('Arn');
+          newArn = "" + (oldArn.split('/')[0]) + "/" + newAttr.Name;
+          self.set('Arn', newArn);
+          self.set(newAttr);
+          return self;
+        });
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("iam_UploadServerCertificate", {
+          servercer_name: this.get("Name"),
+          cert_body: this.get("CertificateBody"),
+          private_key: this.get("PrivateKey"),
+          cert_chain: this.get("CertificateChain"),
+          path: this.get("Path")
+        }).then(function(res) {
+          var e;
+          self.attributes.CertificateChain = "";
+          self.attributes.PrivateKey = "";
+          try {
+            res = res.UploadServerCertificateResponse.UploadServerCertificateResult.ServerCertificateMetadata;
+            res.Arn = res.Arn;
+            res.Expiration = res.Expiration;
+            res.Path = res.Path;
+            res.id = res.ServerCertificateId;
+            res.Name = res.ServerCertificateName;
+            res.UploadDate = res.UploadDate;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Ssl cert created but aws returns invalid data.");
+          }
+          self.set(res);
+          console.log("Created SslCert resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("iam_DeleteServerCertificate", {
+          servercer_name: this.get("Name")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelTopic',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                            env:dev:end */
+      taggable: false,
+      defaults: {
+        Name: "",
+        DisplayName: ""
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("sns_CreateTopic", {
+          region_name: this.getCollection().region(),
+          topic_name: this.get("Name")
+        }).then(function(res) {
+          var e, id;
+          try {
+            id = res.CreateTopicResponse.CreateTopicResult.TopicArn;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Topic created but aws returns invalid ata.");
+          }
+          self.set("id", id);
+          console.log("Created topic resource", self);
+          if (self.get("DisplayName")) {
+            setTimeout(function() {
+              return ApiRequest("sns_SetTopicAttributes", {
+                region_name: self.getCollection().region(),
+                topic_arn: id,
+                attr_name: "DisplayName",
+                attr_value: self.get("DisplayName")
+              });
+            }, 1000);
+          }
+          return self;
+        });
+      },
+      doUpdate: function(displayName) {
+        var self;
+        self = this;
+        return ApiRequest("sns_SetTopicAttributes", {
+          region_name: this.getCollection().region(),
+          topic_arn: this.get("id"),
+          attr_name: "DisplayName",
+          attr_value: displayName
+        }).then(function() {
+          self.set("DisplayName", displayName);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("sns_DeleteTopic", {
+          region_name: this.getCollection().region(),
+          topic_arn: this.get("id")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelSubscription',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    var CrSubscriptionModel;
+    CrSubscriptionModel = CrModel.extend({
+
+      /* env:dev                                                   env:dev:end */
+      taggable: false,
+      defaults: {
+        Endpoint: "",
+        Protocol: "",
+        TopicName: "",
+        TopicArn: "",
+        SubscriptionArn: ""
+      },
+      initialize: function(attributes) {
+        if (attributes.TopicArn) {
+          this.attributes.TopicName = attributes.TopicArn.split(":").pop();
+        }
+      },
+      isRemovable: function() {
+        return this.attributes.SubscriptionArn !== "PendingConfirmation" && this.attributes.SubscriptionArn !== "Deleted";
+      },
+      set: function(key, value, options) {
+        if (key === "TopicArn") {
+          this.attributes.TopicName = value.split(":").pop();
+        } else if (key.TopicArn) {
+          this.attributes.TopicName = key.TopicArn.split(":").pop();
+        }
+        Backbone.Model.prototype.set.apply(this, arguments);
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("sns_Subscribe", {
+          region_name: this.getCollection().region(),
+          topic_arn: this.get("TopicArn"),
+          protocol: this.get("Protocol"),
+          endpoint: this.get("Endpoint")
+        }).then(function(res) {
+          var arn, e;
+          try {
+            res = res.SubscribeResponse.SubscribeResult;
+            arn = res.SubscriptionArn;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Subscription created but aws returns invalid ata.");
+          }
+          if (arn === "pending confirmation") {
+            arn = "PendingConfirmation";
+          }
+          self.set({
+            id: CrSubscriptionModel.getIdFromData(self.attributes),
+            SubscriptionArn: arn
+          });
+          console.log("Created subscription resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        var defer;
+        if (this.isRemovable()) {
+          return ApiRequest("sns_Unsubscribe", {
+            region_name: this.getCollection().region(),
+            sub_arn: this.get("SubscriptionArn")
+          });
+        }
+        defer = Q.defer();
+        defer.resolve(McError(ApiRequest.Errors.InvalidMethodCall, "Cannot unsubscribe pending subscription.", self));
+        return defer.promise;
+      }
+    }, {
+      getIdFromData: function(res) {
+        return ("" + res.TopicArn + ":" + res.Protocol + ":" + res.Endpoint).replace("arn:aws:sns:", "");
+      }
+    });
+    return CrSubscriptionModel;
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelSnapshot',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                               env:dev:end */
+      defaults: {
+        volumeId: "",
+        status: "pending",
+        startTime: "",
+        progress: 0,
+        ownerId: "",
+        volumeSize: 1,
+        description: "",
+        name: ""
+      },
+      isComplete: function() {
+        return this.attributes.status === "completed";
+      },
+      isPending: function() {
+        return this.attributes.status === "pending";
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("ebs_CreateSnapshot", {
+          region_name: this.getCollection().region(),
+          volume_id: this.get("volumeId"),
+          description: this.get("description")
+        }).then(function(res) {
+          var e;
+          try {
+            res = res.CreateSnapshotResponse;
+            res.id = res.snapshotId;
+            res.progress = res.progress || 0;
+            delete res.snapshotId;
+            delete res["@attributes"];
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot created but aws returns invalid ata.");
+          }
+          self.set(res);
+          self.getCollection().startPollingStatus();
+          console.log("Created Snapshot resource", self);
+          return self;
+        });
+      },
+      set: function(key, value) {
+        if (key.progress) {
+          key.progress = parseInt(key.progress, 10) || 0;
+        }
+        if (key.volumeSize) {
+          key.volumeSize = parseInt(key.volumeSize, 10) || 1;
+        }
+        Backbone.Model.prototype.set.apply(this, arguments);
+      },
+      copyTo: function(destRegion, newName, description) {
+        var self;
+        self = this;
+        return ApiRequest("ebs_CopySnapshot", {
+          region_name: this.getCollection().region(),
+          snapshot_id: this.get("id"),
+          dst_region_name: destRegion,
+          description: description
+        }).then(function(data) {
+          var clones, id, model, thatCln, _ref;
+          id = (_ref = data.CopySnapshotResponse) != null ? _ref.snapshotId : void 0;
+          if (!id) {
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot copied but aws returns invalid data.");
+          }
+          thatCln = CloudResources(self.collection.type, destRegion);
+          clones = self.toJSON();
+          clones.name = newName;
+          clones.description = description;
+          clones.region = destRegion;
+          clones.id = id;
+          model = thatCln.create(clones);
+          thatCln.add(model);
+          model.tagResource();
+          return model;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("ebs_DeleteSnapshot", {
+          region_name: this.getCollection().region(),
+          snapshot_id: this.get("id")
+        });
+      },
+      tagResource: function() {
+        var self;
+        self = this;
+        return ApiRequest("ec2_CreateTags", {
+          region_name: this.getCollection().region(),
+          resource_ids: [this.get("id")],
+          tags: [
+            {
+              Name: "Created by",
+              Value: App.user.get("username")
+            }, {
+              Name: "Name",
+              Value: this.get("name")
+            }
+          ]
+        }).then(function() {
+          console.log("Success to tag resource", self.get("id"));
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "ApiRequest", "constant", "./CrModelDhcp", "./CrModelKeypair", "./CrModelSslcert", "./CrModelTopic", "./CrModelSubscription", "./CrModelSnapshot"], function(CrCollection, CloudResources, ApiRequest, constant, CrDhcpModel, CrKeypairModel, CrSslcertModel, CrTopicModel, CrSubscriptionModel, CrSnapshotModel) {
+
+    /* Dhcp */
+    CrCollection.extend({
+
+      /* env:dev                                                env:dev:end */
+      type: constant.RESTYPE.DHCP,
+      model: CrDhcpModel,
+      doFetch: function() {
+        return ApiRequest("dhcp_DescribeDhcpOptions", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(res) {
+        var _ref;
+        return (_ref = res.DescribeDhcpOptionsResponse.dhcpOptionsSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(res) {
+        var i, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          i.id = i.dhcpOptionsId;
+        }
+        return res;
+      }
+    });
+
+    /* Keypair */
+    CrCollection.extend({
+
+      /* env:dev                                                   env:dev:end */
+      type: constant.RESTYPE.KP,
+      model: CrKeypairModel,
+      doFetch: function() {
+        return ApiRequest("kp_DescribeKeyPairs", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(res) {
+        var _ref;
+        return (_ref = res.DescribeKeyPairsResponse.keySet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(res) {
+        var i, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          i.id = i.keyName;
+        }
+        return res;
+      }
+    });
+
+    /* Ssl cert */
+    CrCollection.extend({
+
+      /* env:dev                                                   env:dev:end */
+      type: constant.RESTYPE.IAM,
+      model: CrSslcertModel,
+      doFetch: function() {
+        return ApiRequest("iam_ListServerCertificates");
+      },
+      trAwsXml: function(res) {
+        var _ref;
+        return (_ref = res.ListServerCertificatesResponse.ListServerCertificatesResult.ServerCertificateMetadataList) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(res) {
+        var i, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          i.id = i.ServerCertificateId;
+          i.Name = i.ServerCertificateName;
+          delete i.ServerCertificateName;
+          delete i.ServerCertificateId;
+        }
+        return res;
+      }
+    }, {
+      category: function() {
+        return "";
+      }
+    });
+
+    /* Sns Topic */
+    CrCollection.extend({
+
+      /* env:dev                                                 env:dev:end */
+      type: constant.RESTYPE.TOPIC,
+      model: CrTopicModel,
+      constructor: function() {
+        this.on("remove", this.__clearSubscription);
+        return CrCollection.apply(this, arguments);
+      },
+      doFetch: function() {
+        return ApiRequest("sns_ListTopics", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(res) {
+        var _ref;
+        return (_ref = res.ListTopicsResponse.ListTopicsResult.Topics) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(res) {
+        var i, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          i.id = i.TopicArn;
+          i.Name = i.TopicArn.split(":").pop();
+          delete i.TopicArn;
+        }
+        return res;
+      },
+      __clearSubscription: function(removedModel, collection, options) {
+        var removes, snss, sub, _i, _len, _ref;
+        snss = CloudResources(constant.RESTYPE.SUBSCRIPTION, this.region());
+        removes = [];
+        _ref = snss.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          sub = _ref[_i];
+          if (sub.get("TopicArn") === removedModel.id) {
+            removes.push(sub);
+          }
+        }
+        if (removes.length) {
+          snss.remove(removes);
+        }
+      },
+      filterEmptySubs: function() {
+        var i, snss, topicMap, _i, _len, _ref;
+        snss = CloudResources(constant.RESTYPE.SUBSCRIPTION, this.category);
+        topicMap = {};
+        _ref = snss.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          topicMap[i.get("TopicArn")] = true;
+        }
+        return this.filter(function(t) {
+          return !topicMap[t.get("id")];
+        });
+      }
+    });
+
+    /* Sns Subscription */
+    CrCollection.extend({
+
+      /* env:dev                                                        env:dev:end */
+      type: constant.RESTYPE.SUBSCRIPTION,
+      model: CrSubscriptionModel,
+      doFetch: function() {
+        return ApiRequest("sns_ListSubscriptions", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(res) {
+        var _ref;
+        return (_ref = res.ListSubscriptionsResponse.ListSubscriptionsResult.Subscriptions) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(res) {
+        var i, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          i.id = CrSubscriptionModel.getIdFromData(i);
+        }
+        return res;
+      }
+    });
+
+    /* Snapshot */
+    return CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.SNAP,
+      model: CrSnapshotModel,
+      initialize: function() {
+        this.__pollingStatus = _.bind(this.__pollingStatus, this);
+      },
+      doFetch: function() {
+        return ApiRequest("ebs_DescribeSnapshots", {
+          region_name: this.region(),
+          owners: ["self"]
+        });
+      },
+      trAwsXml: function(res) {
+        var _ref;
+        return (_ref = res.DescribeSnapshotsResponse.snapshotSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(res) {
+        var i, _i, _len;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          i.id = i.snapshotId;
+          if (i.tagSet) {
+            i.name = i.tagSet.Name || i.tagSet.name || "";
+            delete i.tagSet;
+          }
+          delete i.snapshotId;
+          if (i.status === "pending") {
+            this.startPollingStatus();
+          }
+        }
+        return res;
+      },
+      startPollingStatus: function() {
+        if (this.__polling) {
+          return;
+        }
+        this.__polling = setTimeout(this.__pollingStatus, 2000);
+      },
+      stopPollingStatus: function() {
+        clearTimeout(this.__polling);
+        this.__polling = null;
+      },
+      __pollingStatus: function() {
+        var self;
+        self = this;
+        return ApiRequest("ebs_DescribeSnapshots", {
+          region_name: this.region(),
+          owners: ["self"],
+          filters: [
+            {
+              "Name": "status",
+              "Value": ["pending"]
+            }
+          ]
+        }).then(function(res) {
+          self.__polling = null;
+          self.__parsePolling(res);
+        }, function() {
+          self.__polling = null;
+          return self.startPollingStatus();
+        });
+      },
+      __parsePolling: function(res) {
+        var completeStatus, i, statusMap, _i, _len, _ref;
+        res = res.DescribeSnapshotsResponse.snapshotSet;
+        completeStatus = {
+          progress: 100,
+          status: "completed"
+        };
+        statusMap = {};
+        if (res !== null && res.item) {
+          this.startPollingStatus();
+          _ref = res.item;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            i = _ref[_i];
+            statusMap[i.snapshotId] = {
+              progress: i.progress
+            };
+          }
+        }
+        this.where({
+          status: "pending"
+        }).forEach(function(model) {
+          return model.set(statusMap[model.get("id")] || completeStatus);
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrCommonCollection',["ApiRequest", "../CrCollection", "../CrModel", "constant"], function(ApiRequest, CrCollection, CrModel, constant) {
+    var CrCommonCollection, EmptyArr;
+    EmptyArr = [];
+    CrCommonCollection = CrCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      model: CrModel,
+      type: "CrCommonCollection",
+      __selfParseData: true,
+      groupByCategory: function(opts, filter) {
+        var R, list, m, models, r, regionMap, regions, totalCount, _i, _j, _len, _len1, _ref, _ref1;
+        opts = opts || {
+          includeEmptyRegion: true,
+          calcSum: true,
+          toJSON: false
+        };
+        regionMap = {};
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (filter && filter(m) === false) {
+            continue;
+          }
+          r = m.attributes.category;
+          list = regionMap[r] || (regionMap[r] = []);
+          list.push(opts.toJSON ? m.toJSON() : m);
+        }
+        totalCount = 0;
+        regions = [];
+        _ref1 = constant.REGION_KEYS;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          R = _ref1[_j];
+          models = regionMap[R];
+          if (models) {
+            totalCount += models.length;
+          } else if (!opts.includeEmptyRegion) {
+            continue;
+          }
+          regions.push({
+            region: R,
+            regionName: constant.REGION_SHORT_LABEL[R],
+            regionArea: constant.REGION_LABEL[R],
+            data: models || []
+          });
+        }
+        if (opts.calcSum) {
+          regions.totalCount = totalCount;
+        }
+        return regions;
+      },
+      doFetch: function() {
+        var param, self;
+        param = {};
+        param[this.type] = {};
+        self = this;
+        return ApiRequest("aws_resource", {
+          region_name: null,
+          resources: param,
+          addition: "all",
+          retry_times: 1
+        }).then(function(data) {
+          var d, dataXml, e, regionId, transformed, xml, _i, _len, _ref;
+          transformed = [];
+          for (regionId in data) {
+            dataXml = data[regionId];
+            if (!dataXml[0]) {
+              continue;
+            }
+            try {
+              xml = $.xml2json($.parseXML(dataXml[0]));
+              if (self.trAwsXml) {
+                xml = self.trAwsXml(xml);
+              }
+              if (self.parseFetchData && xml) {
+                xml = self.parseFetchData(xml, regionId);
+              }
+              _ref = xml || EmptyArr;
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                d = _ref[_i];
+                d.visopsTag = self.resolveTagSet(d.tagSet);
+                if (self.modelIdAttribute) {
+                  d.id = d[self.modelIdAttribute];
+                  delete d[self.modelIdAttribute];
+                }
+                d.category = regionId;
+                transformed.push(new self.model(d));
+              }
+            } catch (_error) {
+              e = _error;
+              continue;
+            }
+          }
+          return transformed;
+        });
+      }
+    }, {
+      category: function() {
+        return "";
+      }
+    });
+    return CrCommonCollection;
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelElb',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                          env:dev:end */
+      initialize: function() {
+        var self;
+        self = this;
+        ApiRequest("elb_DescribeInstanceHealth", {
+          region_name: this.get("category"),
+          elb_name: this.get("Name")
+        }).then(function(data) {
+          return self.onInsHealthData(data);
+        });
+      },
+      onInsHealthData: function(data) {
+        var _ref;
+        data = data.DescribeInstanceHealthResponse;
+        if (!data) {
+          return;
+        }
+        data = data.DescribeInstanceHealthResult;
+        if (!data) {
+          return;
+        }
+        data = (_ref = data.InstanceStates) != null ? _ref.member : void 0;
+        if (!data) {
+          return;
+        }
+        this.set("InstanceStates", data);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
+
+    /* Elb */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.ELB,
+      model: CrElbModel,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeLoadBalancersResponse.DescribeLoadBalancersResult.LoadBalancerDescriptions) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(elbs) {
+        var elb, fixKey, i, idx, key, value, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+        for (_i = 0, _len = elbs.length; _i < _len; _i++) {
+          elb = elbs[_i];
+          for (key in elb) {
+            value = elb[key];
+            fixKey = key.substring(0, 1).toUpperCase() + key.substring(1);
+            delete elb[key];
+            elb[fixKey] = value;
+          }
+          elb.id = elb.LoadBalancerName;
+          elb.AvailabilityZones = ((_ref = elb.AvailabilityZones) != null ? _ref.member : void 0) || [];
+          elb.Instances = ((_ref1 = elb.Instances) != null ? _ref1.member : void 0) || [];
+          elb.SecurityGroups = ((_ref2 = elb.SecurityGroups) != null ? _ref2.member : void 0) || [];
+          elb.Subnets = ((_ref3 = elb.Subnets) != null ? _ref3.member : void 0) || [];
+          elb.ListenerDescriptions = ((_ref4 = elb.ListenerDescriptions) != null ? _ref4.member : void 0) || [];
+          _ref5 = elb.Instances;
+          for (idx = _j = 0, _len1 = _ref5.length; _j < _len1; idx = ++_j) {
+            i = _ref5[idx];
+            elb.Instances[idx] = i.InstanceId;
+          }
+          elb.vpcId = elb.VPCId;
+          elb.id = elb.DNSName;
+          elb.Name = elb.LoadBalancerName;
+          delete elb.VPCId;
+        }
+        return elbs;
+      },
+      parseExternalData: function(data) {
+        this.camelToPascal(data);
+        this.unifyApi(data, this.type);
+        this.convertNumTimeToString(data);
+        _.each(data, function(dataItem) {
+          dataItem.Instances = _.map(dataItem.Instances, function(obj) {
+            return obj.InstanceId;
+          });
+          dataItem.ListenerDescriptions = _.map(dataItem.ListenerDescriptions, function(obj) {
+            obj.PolicyNames = {
+              member: obj.PolicyNames
+            };
+            return obj;
+          });
+          dataItem.vpcId = dataItem.Vpcid;
+          delete dataItem.Vpcid;
+          dataItem.id = dataItem.Dnsname;
+          return dataItem.Name = dataItem.LoadBalancerName;
+        });
+        return data;
+      }
+    });
+
+    /* VPN */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.VPN,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeVpnConnectionsResponse.vpnConnectionSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(vpns) {
+        var vpn, _i, _len, _ref, _ref1;
+        _ref = vpns || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          vpn = _ref[_i];
+          vpn.vgwTelemetry = ((_ref1 = vpn.vgwTelemetry) != null ? _ref1.item : void 0) || [];
+          vpn.id = vpn.vpnConnectionId;
+        }
+        return vpns;
+      },
+      parseExternalData: function(data) {
+        var vpn, _i, _len, _ref;
+        this.unifyApi(data, this.type);
+        _ref = data || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          vpn = _ref[_i];
+          vpn.id = vpn.vpnConnectionId;
+        }
+        return data;
+      }
+    });
+
+    /* EIP */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.EIP,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeAddressesResponse.addressesSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(eips) {
+        var eip, _i, _len;
+        for (_i = 0, _len = eips.length; _i < _len; _i++) {
+          eip = eips[_i];
+          eip.id = eip.allocationId;
+        }
+        return eips;
+      },
+      parseExternalData: function(data) {
+        var eip, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          eip = data[_i];
+          eip.id = eip.allocationId;
+        }
+        return data;
+      }
+    });
+
+    /* VPC */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.VPC,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeVpcsResponse.vpcSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(vpcs) {
+        var vpc, _i, _len;
+        for (_i = 0, _len = vpcs.length; _i < _len; _i++) {
+          vpc = vpcs[_i];
+          vpc.id = vpc.vpcId;
+        }
+        return vpcs;
+      },
+      parseExternalData: function(data) {
+        var vpc, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          vpc = data[_i];
+          vpc.id = vpc.vpcId;
+        }
+        return data;
+      }
+    });
+
+    /* ASG */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.ASG,
+      modelIdAttribute: "AutoScalingGroupARN",
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeAutoScalingGroupsResponse.DescribeAutoScalingGroupsResult.AutoScalingGroups) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(asgs) {
+        var asg, _i, _len, _ref, _ref1, _ref2, _ref3;
+        for (_i = 0, _len = asgs.length; _i < _len; _i++) {
+          asg = asgs[_i];
+          asg.id = asg.AutoScalingGroupARN;
+          asg.Name = asg.AutoScalingGroupName;
+          asg.AvailabilityZones = ((_ref = asg.AvailabilityZones) != null ? _ref.member : void 0) || [];
+          asg.Instances = ((_ref1 = asg.Instances) != null ? _ref1.member : void 0) || [];
+          asg.LoadBalancerNames = ((_ref2 = asg.LoadBalancerNames) != null ? _ref2.member : void 0) || [];
+          asg.TerminationPolicies = ((_ref3 = asg.TerminationPolicies) != null ? _ref3.member : void 0) || [];
+          asg.Subnets = (asg.VPCZoneIdentifier || asg.VpczoneIdentifier || "").split(",");
+        }
+        return asgs;
+      },
+      parseExternalData: function(data) {
+        var asg, _i, _len;
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          asg = data[_i];
+          asg.id = asg.AutoScalingGroupARN;
+          asg.Name = asg.AutoScalingGroupName;
+          asg.DefaultCooldown = String(asg.DefaultCooldown);
+          asg.DesiredCapacity = String(asg.DesiredCapacity);
+          asg.HealthCheckGracePeriod = String(asg.HealthCheckGracePeriod);
+          asg.MaxSize = String(asg.MaxSize);
+          asg.MinSize = String(asg.MinSize);
+          asg.Subnets = (asg.VPCZoneIdentifier || asg.VpczoneIdentifier).split(",");
+        }
+        return data;
+      }
+    });
+
+    /* CloudWatch */
+    CrCommonCollection.extend({
+
+      /* env:dev                                                      env:dev:end */
+      type: constant.RESTYPE.CW,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeAlarmsResponse.DescribeAlarmsResult.MetricAlarms) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(cws) {
+        var cw, _i, _len, _ref, _ref1;
+        for (_i = 0, _len = cws.length; _i < _len; _i++) {
+          cw = cws[_i];
+          cw.Dimensions = ((_ref = cw.Dimensions) != null ? _ref.member : void 0) || [];
+          cw.AlarmActions = ((_ref1 = cw.AlarmActions) != null ? _ref1.member : void 0) || [];
+          cw.id = cw.AlarmArn;
+          cw.Name = cw.AlarmName;
+        }
+        return cws;
+      },
+      parseExternalData: function(data) {
+        var cw, _i, _len;
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          cw = data[_i];
+          cw.id = cw.AlarmArn;
+          cw.Name = cw.AlarmName;
+        }
+        return data;
+      }
+    });
+
+    /* CGW */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.CGW,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeCustomerGatewaysResponse.customerGatewaySet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(cgws) {
+        var cgw, _i, _len;
+        for (_i = 0, _len = cgws.length; _i < _len; _i++) {
+          cgw = cgws[_i];
+          cgw.id = cgw.customerGatewayId;
+        }
+        return cgws;
+      },
+      parseExternalData: function(data) {
+        var cgw, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          cgw = data[_i];
+          cgw.id = cgw.customerGatewayId;
+        }
+        return data;
+      }
+    });
+
+    /* VGW */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.VGW,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeVpnGatewaysResponse.vpnGatewaySet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(vgws) {
+        var vgw, _i, _len;
+        for (_i = 0, _len = vgws.length; _i < _len; _i++) {
+          vgw = vgws[_i];
+          vgw.id = vgw.vpnGatewayId;
+          if (vgw.attachments && vgw.attachments.length > 0) {
+            vgw.vpcId = vgw.attachments[0].vpcId;
+            vgw.attachmentState = vgw.attachments[0].state;
+          }
+        }
+        return vgws;
+      },
+      parseExternalData: function(data) {
+        var vgw, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          vgw = data[_i];
+          vgw.id = vgw.vpnGatewayId;
+          if (vgw.attachments && vgw.attachments.length > 0) {
+            vgw.vpcId = vgw.attachments[0].vpcId;
+            vgw.attachmentState = vgw.attachments[0].state;
+          }
+        }
+        return data;
+      }
+    });
+
+    /* IGW */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.IGW,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeInternetGatewaysResponse.internetGatewaySet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(igws) {
+        var igw, _i, _len, _ref;
+        for (_i = 0, _len = igws.length; _i < _len; _i++) {
+          igw = igws[_i];
+          igw.id = igw.internetGatewayId;
+          igw.attachmentSet = ((_ref = igw.attachmentSet) != null ? _ref.item : void 0) || igw.attachments || [];
+          if (igw.attachmentSet && igw.attachmentSet.length > 0) {
+            igw.vpcId = igw.attachmentSet[0].vpcId;
+            igw.state = igw.attachmentSet[0].state;
+          }
+        }
+        return igws;
+      },
+      parseExternalData: function(data) {
+        var igw, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          igw = data[_i];
+          igw.id = igw.internetGatewayId;
+          if (igw.attachmentSet && igw.attachmentSet.length > 0) {
+            igw.vpcId = igw.attachmentSet[0].vpcId;
+            igw.state = igw.attachmentSet[0].state;
+          }
+        }
+        return data;
+      }
+    });
+
+    /* RTB */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.RT,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeRouteTablesResponse.routeTableSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(rtbs) {
+        var assoc, found, idx, local_rt, main_rt, rt, rtb, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+        for (_i = 0, _len = rtbs.length; _i < _len; _i++) {
+          rtb = rtbs[_i];
+          rtb.routeSet = ((_ref = rtb.routeSet) != null ? _ref.item : void 0) || [];
+          rtb.associationSet = ((_ref1 = rtb.associationSet) != null ? _ref1.item : void 0) || [];
+          rtb.propagatingVgwSet = ((_ref2 = rtb.propagatingVgwSet) != null ? _ref2.item : void 0) || [];
+          found = -1;
+          _ref3 = rtb.routeSet;
+          for (idx = _j = 0, _len1 = _ref3.length; _j < _len1; idx = ++_j) {
+            rt = _ref3[idx];
+            if (rt.gatewayId === 'local') {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            local_rt = rtb.routeSet.splice(found, 1);
+            rtb.routeSet.splice(0, 0, local_rt[0]);
+          }
+          found = -1;
+          _ref4 = rtb.associationSet;
+          for (idx = _k = 0, _len2 = _ref4.length; _k < _len2; idx = ++_k) {
+            assoc = _ref4[idx];
+            if (assoc.main && found === -1) {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            main_rt = rtb.associationSet.splice(found, 1);
+            rtb.associationSet.splice(0, 0, main_rt[0]);
+          }
+          rtb.id = rtb.routeTableId;
+        }
+        return rtbs;
+      },
+      parseExternalData: function(data) {
+        var assoc, found, idx, local_rt, main_rt, rt, rtb, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          rtb = data[_i];
+          found = -1;
+          _ref = rtb.routeSet;
+          for (idx = _j = 0, _len1 = _ref.length; _j < _len1; idx = ++_j) {
+            rt = _ref[idx];
+            if (rt.gatewayId === 'local' && found === -1) {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            local_rt = rtb.routeSet.splice(found, 1);
+            rtb.routeSet.splice(0, 0, local_rt[0]);
+          }
+          found = -1;
+          _ref1 = rtb.associationSet;
+          for (idx = _k = 0, _len2 = _ref1.length; _k < _len2; idx = ++_k) {
+            assoc = _ref1[idx];
+            if (assoc.main && found === -1) {
+              found = idx;
+            }
+          }
+          if (found > 0) {
+            main_rt = rtb.associationSet.splice(found, 1);
+            rtb.associationSet.splice(0, 0, main_rt[0]);
+          }
+          rtb.id = rtb.routeTableId;
+        }
+        return data;
+      }
+    });
+
+    /* INSTANCE */
+    CrCommonCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      initialize: function() {
+        this.listenTo(this, "add", function(m) {
+          return CloudResources(constant.RESTYPE.AMI, m.attributes.category).fetchAmi(m.attributes.imageId);
+        });
+      },
+      type: constant.RESTYPE.INSTANCE,
+      trAwsXml: function(data) {
+        var i, ins, instances, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        instances = [];
+        _ref1 = ((_ref = data.DescribeInstancesResponse.reservationSet) != null ? _ref.item : void 0) || [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          i = _ref1[_i];
+          _ref3 = ((_ref2 = i.instancesSet) != null ? _ref2.item : void 0) || [];
+          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+            ins = _ref3[_j];
+            instances.push(ins);
+          }
+        }
+        return instances;
+      },
+      parseFetchData: function(data, region) {
+        var ins, _i, _len, _ref, _ref1, _ref2, _ref3;
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          ins = data[_i];
+          if (ins.tagSet) {
+            if (ins.tagSet['aws:elasticmapreduce:instance-group-role'] || ins.tagSet['aws:elasticmapreduce:job-flow-id']) {
+              console.warn("ignore EMR instances");
+              continue;
+            }
+          }
+          ins.id = ins.instanceId;
+          if (ins.instanceState && ((_ref = ins.instanceState.name) === "terminated" || _ref === "shutting-down")) {
+            continue;
+          }
+          ins.blockDeviceMapping = ((_ref1 = ins.blockDeviceMapping) != null ? _ref1.item : void 0) || [];
+          ins.networkInterfaceSet = ((_ref2 = ins.networkInterfaceSet) != null ? _ref2.item : void 0) || [];
+          ins.groupSet = ((_ref3 = ins.groupSet) != null ? _ref3.item : void 0) || [];
+          if (ins.blockDeviceMapping && ins.blockDeviceMapping.length > 1) {
+            ins.blockDeviceMapping = ins.blockDeviceMapping.sort(MC.createCompareFn("deviceName"));
+          }
+        }
+        return data;
+      },
+      parseExternalData: function(data, region) {
+        var eni, ins, tag, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+        this.convertNumTimeToString(data);
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          ins = data[_i];
+          if (ins.tags) {
+            _ref = ins.tags;
+            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+              tag = _ref[_j];
+              if (tag.key === 'aws:elasticmapreduce:instance-group-role' || tag.key === 'aws:elasticmapreduce:job-flow-id') {
+                console.warn("ignore EMR instances");
+                continue;
+              }
+            }
+          }
+          ins.id = ins.instanceId;
+          if (ins.instanceState && ((_ref1 = ins.instanceState.name) === "terminated" || _ref1 === "shutting-down")) {
+            continue;
+          }
+          _ref2 = ins.networkInterfaceSet;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            eni = _ref2[_k];
+            if (eni.privateIpAddresses) {
+              eni.privateIpAddressesSet = {
+                item: eni.privateIpAddresses
+              };
+              delete eni.privateIpAddresses;
+            }
+            if (eni.groups) {
+              eni.groupSet = {
+                item: eni.groups
+              };
+              delete eni.groups;
+            }
+          }
+          if (ins.blockDeviceMapping && ins.blockDeviceMapping.length > 1) {
+            ins.blockDeviceMapping = ins.blockDeviceMapping.sort(MC.createCompareFn("deviceName"));
+          }
+        }
+        return data;
+      }
+    });
+
+    /* VOLUME */
+    CrCommonCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: constant.RESTYPE.VOL,
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeVolumesResponse.volumeSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(volumes) {
+        var vol, _i, _len, _ref;
+        for (_i = 0, _len = volumes.length; _i < _len; _i++) {
+          vol = volumes[_i];
+          vol.id = vol.volumeId;
+          vol.attachmentSet = ((_ref = vol.attachmentSet) != null ? _ref.item : void 0) || [];
+          _.each(vol.attachmentSet, function(e, key) {
+            var attachmentStatus, status;
+            status = vol.status;
+            attachmentStatus = e.status;
+            _.extend(vol, e);
+            vol.status = status;
+            return vol.attachmentStatus = attachmentStatus;
+          });
+        }
+        return volumes;
+      },
+      parseExternalData: function(data) {
+        var vol, _i, _len;
+        this.convertNumTimeToString(data);
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          vol = data[_i];
+          vol.id = vol.volumeId;
+          _.each(vol.attachmentSet, function(e, key) {
+            var attachmentStatus, status;
+            status = vol.state;
+            attachmentStatus = e.state;
+            _.extend(vol, e);
+            vol.status = status;
+            return vol.attachmentStatus = attachmentStatus;
+          });
+        }
+        return data;
+      }
+    });
+
+    /* LC */
+    CrCommonCollection.extend({
+
+      /* env:dev                                              env:dev:end */
+      type: constant.RESTYPE.LC,
+      AwsResponseType: "DescribeLaunchConfigurationsResponse",
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeLaunchConfigurationsResponse.DescribeLaunchConfigurationsResult.LaunchConfigurations) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(data) {
+        var lc, _i, _len, _ref, _ref1;
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          lc = data[_i];
+          lc.BlockDeviceMapping = ((_ref = lc.BlockDeviceMappings) != null ? _ref.member : void 0) || [];
+          lc.SecurityGroups = ((_ref1 = lc.SecurityGroups) != null ? _ref1.member : void 0) || [];
+          if (lc.BlockDeviceMapping && lc.BlockDeviceMapping.length > 1) {
+            lc.BlockDeviceMapping = lc.BlockDeviceMapping.sort(MC.createCompareFn("DeviceName"));
+          }
+          lc.id = lc.LaunchConfigurationARN;
+          lc.Name = lc.LaunchConfigurationName;
+        }
+        return data;
+      },
+      parseExternalData: function(data) {
+        var lc, _i, _len;
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          lc = data[_i];
+          if (lc.BlockDeviceMapping && lc.BlockDeviceMapping.length > 1) {
+            lc.BlockDeviceMapping = lc.BlockDeviceMapping.sort(MC.createCompareFn("DeviceName"));
+          }
+          lc.id = lc.LaunchConfigurationARN;
+          lc.Name = lc.LaunchConfigurationName;
+        }
+        return data;
+      }
+    });
+
+    /* ScalingPolicy */
+    CrCommonCollection.extend({
+
+      /* env:dev                                                         env:dev:end */
+      type: constant.RESTYPE.SP,
+      AwsResponseType: "DescribePoliciesResponse",
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribePoliciesResponse.DescribePoliciesResult.ScalingPolicies) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(sps) {
+        var sp, _i, _len;
+        for (_i = 0, _len = sps.length; _i < _len; _i++) {
+          sp = sps[_i];
+          sp.id = sp.PolicyARN;
+          sp.Name = sp.PolicyName;
+        }
+        return sps;
+      },
+      parseExternalData: function(data) {
+        var sp, _i, _len;
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          sp = data[_i];
+          sp.id = sp.PolicyARN;
+          sp.Name = sp.PolicyName;
+          sp.Cooldown = sp.Cooldown ? sp.Cooldown.toString() : "";
+        }
+        return data;
+      }
+    });
+
+    /* AvailabilityZone */
+    CrCommonCollection.extend({
+
+      /* env:dev                                              env:dev:end */
+      type: constant.RESTYPE.AZ,
+      AwsResponseType: "DescribeAvailabilityZonesResponse",
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeAvailabilityZonesResponse.availabilityZoneInfo) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(azs) {
+        var az, _i, _len;
+        for (_i = 0, _len = azs.length; _i < _len; _i++) {
+          az = azs[_i];
+          az.id = az.zoneName;
+        }
+        return azs;
+      },
+      parseExternalData: function(data) {
+        var az, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          az = data[_i];
+          az.id = az.zoneName;
+        }
+        return data;
+      }
+    });
+
+    /* NotificationConfiguartion */
+    CrCommonCollection.extend({
+
+      /* env:dev                                                        env:dev:end */
+      type: constant.RESTYPE.NC,
+      AwsResponseType: "DescribeNotificationConfigurationsResponse",
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeNotificationConfigurationsResponse.DescribeNotificationConfigurationsResult.NotificationConfigurations) != null ? _ref.member : void 0;
+      },
+      parseFetchData: function(ncs) {
+        var id, item, nc, ncMap, newNcList, _i, _len;
+        newNcList = [];
+        ncMap = {};
+        for (_i = 0, _len = ncs.length; _i < _len; _i++) {
+          nc = ncs[_i];
+          item = ncMap[id] || (ncMap[id] = {});
+          id = item.AutoScalingGroupName + "-" + item.TopicARN;
+          if (!item) {
+            item = ncMap[id] = {
+              id: id,
+              AutoScalingGroupName: nc.AutoScalingGroupName,
+              TopicARN: nc.TopicARN,
+              NotificationType: [nc.NotificationType]
+            };
+            newNcList.push(item);
+          } else {
+            item.NotificationType.push(nc.NotificationType);
+          }
+        }
+        return newNcList;
+      },
+      parseExternalData: function(data) {
+        var first, item, nc, newNcList, _i, _len;
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        newNcList = [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          nc = data[_i];
+          first = nc[0];
+          item = {
+            AutoScalingGroupName: first.AutoScalingGroupName,
+            TopicARN: first.TopicARN,
+            NotificationType: _.pluck(nc, 'NotificationType')
+          };
+          item.id = item.AutoScalingGroupName + "-" + item.TopicARN;
+          newNcList.push(item);
+        }
+        return newNcList;
+      }
+    });
+
+    /* ACL */
+    CrCommonCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.ACL,
+      AwsResponseType: "DescribeNetworkAclsResponse",
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeNetworkAclsResponse.networkAclSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(acls) {
+        var acl, _i, _len, _ref, _ref1;
+        for (_i = 0, _len = acls.length; _i < _len; _i++) {
+          acl = acls[_i];
+          acl.id = acl.networkAclId;
+          acl.entrySet = ((_ref = acl.entrySet) != null ? _ref.item : void 0) || [];
+          acl.associationSet = ((_ref1 = acl.associationSet) != null ? _ref1.item : void 0) || [];
+          if (acl.associationSet.length > 0) {
+            acl.subnetId = acl.associationSet[0].subnetId;
+          }
+        }
+        return acls;
+      },
+      parseExternalData: function(data) {
+        var acl, _i, _len;
+        this.unifyApi(data, this.type);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          acl = data[_i];
+          acl.id = acl.networkAclId;
+          if (acl.associationSet.length > 0) {
+            acl.subnetId = acl.associationSet[0].subnetId;
+          }
+        }
+        return data;
+      }
+    });
+
+    /* ENI */
+    CrCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.ENI,
+      AwsResponseType: "DescribeNetworkInterfacesResponse",
+      doFetch: function() {
+        return ApiRequest("eni_DescribeNetworkInterfaces", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeNetworkInterfacesResponse.networkInterfaceSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(enis) {
+        _.each(enis, function(eni, index) {
+          eni.id = eni.networkInterfaceId;
+          return _.each(eni, function(e, key) {
+            var _ref, _ref1;
+            if (key === "groupSet") {
+              enis[index].groupSet = ((_ref = enis[index].groupSet) != null ? _ref.item : void 0) || [];
+            }
+            if (key === "privateIpAddressesSet") {
+              return enis[index].privateIpAddressesSet = ((_ref1 = enis[index].privateIpAddressesSet) != null ? _ref1.item : void 0) || [];
+            }
+          });
+        });
+        return enis;
+      },
+      parseExternalData: function(data) {
+        this.convertNumTimeToString(data);
+        this.unifyApi(data, this.type);
+        _.each(data, function(eni, index) {
+          return eni.id = eni.networkInterfaceId;
+        });
+        return data;
+      }
+    });
+
+    /* SUBNET */
+    CrCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: constant.RESTYPE.SUBNET,
+      doFetch: function() {
+        return ApiRequest("subnet_DescribeSubnets", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeSubnetsResponse.subnetSet) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(subnets) {
+        _.each(subnets, function(subnet, index) {
+          return subnet.id = subnet.subnetId;
+        });
+        return subnets;
+      },
+      parseExternalData: function(data) {
+        this.unifyApi(data, this.type);
+        _.each(data, function(subnet, index) {
+          return subnet.id = subnet.subnetId;
+        });
+        return data;
+      }
+    });
+
+    /* SG */
+    return CrCollection.extend({
+
+      /* env:dev                                              env:dev:end */
+      type: constant.RESTYPE.SG,
+      AwsResponseType: "DescribeSecurityGroupsResponse",
+      doFetch: function() {
+        return ApiRequest("sg_DescribeSecurityGroups", {
+          region_name: this.region()
+        });
+      },
+      trAwsXml: function(data) {
+        var _ref;
+        return (_ref = data.DescribeSecurityGroupsResponse.securityGroupInfo) != null ? _ref.item : void 0;
+      },
+      parseFetchData: function(sgs) {
+        var sg, _i, _len, _ref, _ref1;
+        for (_i = 0, _len = sgs.length; _i < _len; _i++) {
+          sg = sgs[_i];
+          sg.ipPermissions = ((_ref = sg.ipPermissions) != null ? _ref.item : void 0) || [];
+          _.each(sg.ipPermissions, function(rule, idx) {
+            return _.each(rule, function(e, key) {
+              if (key === "groups" || key === "ipRanges") {
+                return sg.ipPermissions[idx][key] = (e != null ? e.item : void 0) || [];
+              }
+            });
+          });
+          sg.ipPermissionsEgress = ((_ref1 = sg.ipPermissionsEgress) != null ? _ref1.item : void 0) || [];
+          _.each(sg.ipPermissionsEgress, function(rule, idx) {
+            return _.each(rule, function(e, key) {
+              if (key === "groups" || key === "ipRanges") {
+                return sg.ipPermissionsEgress[idx][key] = (e != null ? e.item : void 0) || [];
+              }
+            });
+          });
+          sg.id = sg.groupId;
+          sg.Name = sg.groupName;
+        }
+        return sgs;
+      },
+      parseExternalData: function(data) {
+        var sg, sgRuls, _i, _len;
+        this.unifyApi(data, this.type);
+        this.convertNumTimeToString(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          sg = data[_i];
+          sg.groupName = sg.groupName.trim();
+          sg.id = sg.groupId;
+          sg.Name = sg.groupName;
+          sg.ipPermissions = sg.ipPermissions || [];
+          sg.ipPermissionsEgress = sg.ipPermissionsEgress || [];
+          sgRuls = sg.ipPermissions.concat(sg.ipPermissionsEgress);
+          _.each(sgRuls, function(rule, idx) {
+            if (rule.ipRanges && rule.ipRanges.length) {
+              rule.ipRanges = _.map(rule.ipRanges, function(cidr) {
+                return {
+                  cidrIp: cidr
+                };
+              });
+            }
+            rule.groups = [];
+            if (rule.userIdGroupPairs) {
+              rule.groups = rule.userIdGroupPairs;
+              return delete rule.userIdGroupPairs;
+            }
+          });
+        }
+        return data;
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+    var INVALID_AMI_ID, MALFORM_AMI_ID, OS_TYPE_LIST, SQL_STANDARD_PATTERN, SQL_WEB_PATTERN, SpecificAmiCollection, fixDescribeImages, getOSFamily, getOSType;
+    OS_TYPE_LIST = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'amazon', 'amzn'];
+    SQL_WEB_PATTERN = /sql.*?web.*?/i;
+    SQL_STANDARD_PATTERN = /sql.*?standard.*?/i;
+    INVALID_AMI_ID = /\[(.+?)\]/;
+    MALFORM_AMI_ID = /\s["|'](.+?)["|']/;
+
+    /* Helpers */
+    getOSType = function(ami) {
+      var desc, imgloc, name, osType, osTypeGuess1, osTypeGuess2, word, _i, _len;
+      if (ami.osType) {
+        return ami.osType;
+      }
+      if (ami.platform === "windows") {
+        return "windows";
+      }
+      name = (ami.name || "").toLowerCase();
+      desc = (ami.description || "").toLowerCase();
+      imgloc = (ami.imageLocation || "").toLowerCase();
+      for (_i = 0, _len = OS_TYPE_LIST.length; _i < _len; _i++) {
+        word = OS_TYPE_LIST[_i];
+        if (name.indexOf(word) >= 0) {
+          osType = word;
+          break;
+        }
+        if (desc.indexOf(word) >= 0) {
+          osTypeGuess1 = word;
+        }
+        if (imgloc.indexOf(word) >= 0) {
+          osTypeGuess2 = word;
+        }
+      }
+      osType = osType || osTypeGuess1 || osTypeGuess2 || "linux-other";
+      if (osType === "rhel") {
+        return "redhat";
+      }
+      if (osType === "amzn") {
+        return "amazon";
+      }
+      return osType;
+    };
+    getOSFamily = function(ami) {
+      var osType;
+      if (!ami.osType) {
+        return "linux";
+      }
+      osType = ami.osType;
+      if (osType === "windows" || osType === "win") {
+        if (SQL_WEB_PATTERN.exec(ami.name || "") || SQL_WEB_PATTERN.exec(ami.description || "") || SQL_WEB_PATTERN.exec(ami.imageLocation || "")) {
+          return "mswinSQLWeb";
+        }
+        if (SQL_STANDARD_PATTERN.exec(ami.name || "") || SQL_STANDARD_PATTERN.exec(ami.description || "") || SQL_STANDARD_PATTERN.exec(ami.imageLocation || "")) {
+          return "mswinSQL";
+        }
+        return "mswin";
+      }
+      return constant.OS_TYPE_MAPPING[osType] || "linux";
+    };
+    fixDescribeImages = function(amiArray) {
+      var ami, bdm, item, ms, _i, _j, _len, _len1, _ref, _ref1;
+      ms = [];
+      for (_i = 0, _len = amiArray.length; _i < _len; _i++) {
+        ami = amiArray[_i];
+        ami.id = ami.imageId;
+        delete ami.imageId;
+        bdm = {};
+        _ref1 = ((_ref = ami.blockDeviceMapping) != null ? _ref.item : void 0) || [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          item = _ref1[_j];
+          bdm[item.deviceName] = item.ebs || {};
+        }
+        ami.osType = getOSType(ami);
+        ami.osFamily = getOSFamily(ami);
+        ami.blockDeviceMapping = bdm;
+        ms.push(ami.id);
+      }
+      return ms;
+    };
+
+    /* This Collection is used to fetch generic ami */
+    CrCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: constant.RESTYPE.AMI,
+      __selfParseData: true,
+      initialize: function() {
+        var id, invalidAmi, _i, _len, _ref;
+        invalidAmi = localStorage.getItem("invalidAmi/" + this.region());
+        this.__markedIds = {};
+        if (invalidAmi) {
+          _ref = invalidAmi.split(",");
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            id = _ref[_i];
+            this.__markedIds[id] = true;
+          }
+        }
+      },
+      doFetch: function() {
+        var d;
+        localStorage.setItem("invalidAmi/" + this.region(), "");
+        this.__markedIds = {};
+        d = Q.defer();
+        d.resolve([]);
+        this.trigger("update");
+        return d.promise;
+      },
+      markId: function(amiId, invalid) {
+        this.__markedIds[amiId] = invalid;
+      },
+      isIdMarked: function(amiId) {
+        return this.__markedIds.hasOwnProperty(amiId);
+      },
+      isInvalidAmiId: function(amiId) {
+        return this.__markedIds[amiId];
+      },
+      getOSFamily: function(amiId) {
+        return getOSFamily(this.get(amiId));
+      },
+      saveInvalidAmiId: function() {
+        var amiId, amis, value, _ref;
+        amis = [];
+        _ref = this.__markedIds;
+        for (amiId in _ref) {
+          value = _ref[amiId];
+          if (value) {
+            amis.push(amiId);
+          }
+        }
+        return localStorage.setItem("invalidAmi/" + this.region(), amis.join(","));
+      },
+      fetchAmi: function(ami) {
+        var self;
+        if (!ami) {
+          return;
+        }
+        console.assert(!_.isArray(ami), "CrClnAmi.fetchAmi() do not accept array param.");
+        if (this.__toFetch) {
+          this.__toFetch.push(ami);
+          return;
+        }
+        this.__toFetch = [ami];
+        self = this;
+        setTimeout(function() {
+          var f;
+          f = self.__toFetch;
+          self.__toFetch = null;
+          return self.fetchAmis(f);
+        }, 0);
+      },
+      fetchAmis: function(amis) {
+        var amiId, d, self, toFetch, _i, _len;
+        if (!amis) {
+          return;
+        }
+        if (_.isString(amis)) {
+          console.warn("Are you sure you want to call CrClnAmi.fetchAmis() with only one ami?");
+          amis = [amis];
+        }
+        toFetch = [];
+        for (_i = 0, _len = amis.length; _i < _len; _i++) {
+          amiId = amis[_i];
+          if (this.get(amiId)) {
+            continue;
+          }
+          if (this.isIdMarked(amiId)) {
+            if (this.__markedIds[amiId]) {
+              console.info("Ami '" + amiId + "' is invalid. Ignore fetching info.");
+            } else {
+              console.log("Ami `" + amiId + "` is duplicated. Ignore fetching info.");
+            }
+            continue;
+          }
+          this.markId(amiId, false);
+          toFetch.push(amiId);
+        }
+        if (toFetch.length === 0) {
+          d = Q.defer();
+          d.resolve();
+          return d.promise;
+        }
+        self = this;
+        return ApiRequest("ami_DescribeImages", {
+          region_name: this.region(),
+          ami_ids: toFetch
+        }).then(function(res) {
+          var _ref;
+          res = (_ref = res.DescribeImagesResponse.imagesSet) != null ? _ref.item : void 0;
+          if (res) {
+            fixDescribeImages(res);
+            self.add(res, {
+              add: true,
+              merge: true,
+              remove: false
+            });
+          } else {
+            self.trigger("update");
+          }
+          return self.saveInvalidAmiId();
+        }, function(err) {
+          var invalidId, p, __markedIds;
+          if (err.awsErrorCode === "InvalidAMIID.NotFound") {
+            invalidId = INVALID_AMI_ID.exec(err.awsResult);
+          } else if (err.awsErrorCode === "InvalidAMIID.Malformed") {
+            invalidId = MALFORM_AMI_ID.exec(err.awsResult);
+          }
+          if (!invalidId) {
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Can't describe AMIs and AWS returns invalid data. Please contact us when you encouter this issue.", toFetch);
+          }
+          invalidId = invalidId[1];
+          console.info("The requested Ami '" + invalidId + "' is invalid, retrying to fetch");
+          toFetch.splice(toFetch.indexOf(invalidId), 1);
+          self.markId(invalidId, true);
+          __markedIds = this.__markedIds;
+          this.__markedIds = {};
+          p = self.fetchAmis(toFetch);
+          this.__markedIds = __markedIds;
+          return p;
+        });
+      }
+    });
+    SpecificAmiCollection = CrCollection.extend({
+
+      /* env:dev                                                       env:dev:end */
+      type: "SpecificAmiCollection",
+      initialize: function() {
+        this.__models = [];
+      },
+      getModels: function() {
+        var col, id, ms, _i, _len, _ref;
+        ms = [];
+        col = CloudResources(constant.RESTYPE.AMI, this.region());
+        _ref = this.__models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          id = _ref[_i];
+          ms.push(col.get(id));
+        }
+        return ms;
+      },
+      fetchForce: function() {
+        this.__models = [];
+        return CrCollection.prototype.fetchForce.call(this);
+      }
+    });
+
+    /* This Collection is used to fetch quickstart ami */
+    SpecificAmiCollection.extend({
+
+      /* env:dev                                                         env:dev:end */
+      type: "QuickStartAmi",
+      doFetch: function() {
+        return ApiRequest("aws_quickstart", {
+          region_name: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var ami, amiIds, id, savedAmis, _ref;
+        savedAmis = [];
+        amiIds = [];
+        for (id in data) {
+          ami = data[id];
+          if (ami.architecture === 'i386' || (ami.name.indexOf('by VisualOps') === -1 && ((_ref = ami.osType) !== 'windows' && _ref !== 'suse'))) {
+            continue;
+          }
+          ami.id = id;
+          savedAmis.push(ami);
+          amiIds.push(id);
+        }
+        CloudResources(constant.RESTYPE.AMI, this.region()).add(savedAmis);
+        this.__models = amiIds;
+      }
+    });
+
+    /* This Collection is used to fetch my ami */
+    SpecificAmiCollection.extend({
+
+      /* env:dev                                                 env:dev:end */
+      type: "MyAmi",
+      doFetch: function() {
+        var self, selfParam1, selfParam2;
+        selfParam1 = {
+          region_name: this.region(),
+          executable_by: ["self"],
+          filters: [
+            {
+              Name: "is-public",
+              Value: false
+            }
+          ]
+        };
+        selfParam2 = {
+          region_name: this.region(),
+          owners: ["self"]
+        };
+        self = this;
+        return Q.allSettled([ApiRequest("ami_DescribeImages", selfParam1), ApiRequest("ami_DescribeImages", selfParam2)]).spread(function(d1, d2) {
+          var _ref, _ref1;
+          d1 = ((_ref = d1.value.DescribeImagesResponse.imagesSet) != null ? _ref.item : void 0) || [];
+          d2 = ((_ref1 = d2.value.DescribeImagesResponse.imagesSet) != null ? _ref1.item : void 0) || [];
+          return self.onFetch(d1.concat(d2));
+        }, function(r1, r2) {
+          var d1, d2, _ref, _ref1;
+          if (r1.state === "fulfilled") {
+            d1 = (_ref = r1.value.DescribeImagesResponse.imagesSet) != null ? _ref.item : void 0;
+          }
+          if (r2.state === "fulfilled") {
+            d2 = (_ref1 = r2.value.DescribeImagesResponse.imagesSet) != null ? _ref1.item : void 0;
+          }
+          if (d1 || d2) {
+            self.onFetch([].concat(d1 || [], d2 || []));
+          }
+          if (d1.state === "rejected") {
+            throw d1;
+          }
+          if (d2.state === "rejected") {
+            throw d2;
+          }
+        });
+      },
+      onFetch: function(amiArray) {
+        this.__models = fixDescribeImages(amiArray);
+        CloudResources(constant.RESTYPE.AMI, this.region()).add(amiArray);
+      },
+      parseFetchData: function(data) {
+        var ami, amiIds, e, savedAmis, _i, _len;
+        savedAmis = [];
+        amiIds = [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          ami = data[_i];
+          try {
+            ami.id = ami.imageId;
+            delete ami.imageId;
+            savedAmis.push(ami);
+            amiIds.push(ami.id);
+          } catch (_error) {
+            e = _error;
+          }
+        }
+        CloudResources(constant.RESTYPE.AMI, this.region()).add(savedAmis);
+        this.__models = amiIds;
+      }
+    });
+
+    /* This Collection is used to fetch favorite ami */
+    return SpecificAmiCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: "FavoriteAmi",
+      doFetch: function() {
+        return ApiRequest("favorite_info", {
+          region_name: this.region(),
+          provider: "AWS",
+          service: "EC2",
+          resource: "AMI"
+        });
+      },
+      parseFetchData: function(data) {
+        var ami, favAmiId, savedAmis, _i, _len;
+        savedAmis = [];
+        favAmiId = [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          ami = data[_i];
+          if ($.isEmptyObject(ami.blockDeviceMapping)) {
+            ami.blockDeviceMapping = null;
+          }
+          savedAmis.push(ami);
+          favAmiId.push(ami.id);
+        }
+        CloudResources(constant.RESTYPE.AMI, this.region()).add(savedAmis);
+        this.__models = favAmiId;
+      },
+      unfav: function(id) {
+        var d, idx, self;
+        self = this;
+        idx = this.__models.indexOf(id);
+        if (idx === -1) {
+          d = Q.defer();
+          d.resolve();
+          return d.promise;
+        }
+        return ApiRequest("favorite_remove", {
+          resource_ids: [id]
+        }).then(function() {
+          idx = self.__models.indexOf(id);
+          self.__models.splice(idx, 1);
+          self.trigger("update");
+          return self;
+        });
+      },
+      fav: function(ami) {
+        var imageId, self;
+        if (_.isString(ami)) {
+          imageId = ami;
+          ami = "";
+        } else {
+          ami = $.extend({}, ami);
+          imageId = ami.id;
+        }
+        self = this;
+        return ApiRequest("favorite_add", {
+          resource: {
+            id: imageId,
+            provider: 'AWS',
+            'resource': 'AMI',
+            service: 'EC2'
+          }
+        }).then(function() {
+          self.__models.push(imageId);
+          if (ami) {
+            CloudResources(constant.RESTYPE.AMI, self.region()).add(ami, {
+              add: true,
+              merge: true,
+              remove: false
+            });
+          }
+          self.trigger("update");
+          return self;
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelRdsSnapshot',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                                  env:dev:end */
+      taggable: false,
+      isComplete: function() {
+        return this.attributes.Status === "available";
+      },
+      isAutomated: function() {
+        return this.attributes.SnapshotType === "automated";
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("rds_snap_CreateDBSnapshot", {
+          region_name: this.getCollection().region(),
+          source_id: this.get("DBInstanceIdentifier"),
+          snapshot_id: this.get("DBSnapshotIdentifier")
+        }).then(function(res) {
+          var e;
+          try {
+            res = res.CreateDBSnapshotResponse.CreateDBSnapshotResult.DBSnapshot;
+            res.id = res.DBSnapshotIdentifier;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot created but aws returns invalid data.");
+          }
+          self.set(res);
+          console.log("Created DbSnapshot resource", self);
+          return self;
+        });
+      },
+      set: function(key) {
+        if (key.PercentProgress) {
+          key.PercentProgress = parseInt(key.PercentProgress, 10) || 0;
+        }
+        if (key.Status === "creating") {
+          this.startPollingStatus();
+        }
+        Backbone.Model.prototype.set.apply(this, arguments);
+      },
+      startPollingStatus: function() {
+        var ___pollingStatus;
+        if (this.__polling) {
+          return;
+        }
+        ___pollingStatus = this.__pollingStatus.bind(this);
+        this.__polling = setTimeout(___pollingStatus, 2000);
+      },
+      stopPollingStatus: function() {
+        clearTimeout(this.__polling);
+        this.__polling = null;
+      },
+      __pollingStatus: function() {
+        var self, _ref;
+        self = this;
+        return ApiRequest("rds_snap_DescribeDBSnapshots", {
+          region_name: ((_ref = this.getCollection()) != null ? _ref.region() : void 0) || Design.instance().region(),
+          snapshot_id: this.get("DBSnapshotIdentifier")
+        }).then(function(res) {
+          self.__polling = null;
+          self.__parsePolling(res);
+        }, function(err) {
+          if (err && err.awsError) {
+            if (err.awsError === 404) {
+              self.remove();
+            }
+            return;
+          }
+          if (err && err.error < 0) {
+            self.__polling = null;
+            return self.startPollingStatus();
+          }
+        });
+      },
+      __parsePolling: function(res) {
+        res = res.DescribeDBSnapshotsResponse.DescribeDBSnapshotsResult.DBSnapshots.DBSnapshot;
+        this.set({
+          PercentProgress: res.PercentProgress,
+          Status: res.Status
+        });
+      },
+      copyTo: function(destRegion, newName, description) {
+        var self, source_id;
+        self = this;
+        source_id = "arn:aws:rds:" + (this.collection.region()) + ":" + (App.user.attributes.account.split('-').join("")) + ":snapshot:" + (this.get('id'));
+        return ApiRequest("rds_snap_CopyDBSnapshot", {
+          region_name: destRegion,
+          source_id: source_id,
+          target_id: newName
+        }).then(function(data) {
+          var clones, model, newSnapshot, thatCln, _ref, _ref1;
+          console.log(data);
+          newSnapshot = (_ref = data.CopyDBSnapshotResponse) != null ? (_ref1 = _ref.CopyDBSnapshotResult) != null ? _ref1.DBSnapshot : void 0 : void 0;
+          if (!newSnapshot.DBSnapshotIdentifier) {
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot copied but aws returns invalid data.");
+          }
+          thatCln = CloudResources(self.collection.type, destRegion);
+          clones = newSnapshot;
+          clones.id = newSnapshot.DBSnapshotIdentifier;
+          clones.name = newName;
+          clones.region = destRegion;
+          model = thatCln.create(clones);
+          thatCln.add(model);
+          model.tagResource();
+          return model;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("rds_snap_DeleteDBSnapshot", {
+          region_name: this.getCollection().region(),
+          snapshot_id: this.get("id")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelRdsInstance',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                                    env:dev:end */
+      taggable: false
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrModelRdsPGroup',["../CrModel", "CloudResources", "ApiRequest", "constant"], function(CrModel, CloudResources, ApiRequest, constant) {
+    return CrModel.extend({
+
+      /* env:dev                                                   env:dev:end */
+      taggable: false,
+      isDefault: function() {
+        return (this.get("DBParameterGroupName") || "").indexOf("default.") === 0;
+      },
+      getParameters: function() {
+        return CloudResources(constant.RESTYPE.DBPARAM, this.id).init(this);
+      },
+      doCreate: function() {
+        var self;
+        self = this;
+        return ApiRequest("rds_pg_CreateDBParameterGroup", {
+          region_name: this.getCollection().region(),
+          param_group: this.get("DBParameterGroupName"),
+          param_group_family: this.get("DBParameterGroupFamily"),
+          description: this.get("Description")
+        }).then(function(res) {
+          self.set("id", self.get("DBParameterGroupName"));
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("rds_pg_DeleteDBParameterGroup", {
+          region_name: this.collection.region(),
+          param_group: this.id
+        });
+      },
+      resetParams: function() {
+        var self;
+        self = this;
+        return ApiRequest("rds_pg_ResetDBParameterGroup", {
+          region_name: this.collection.region(),
+          param_group: this.id,
+          reset_all: true
+        }).then(function() {
+          return self.getParameters().fetchForce();
+        });
+      },
+      modifyParams: function(paramNewValueMap) {
+
+        /*
+        paramNewValueMap = {
+          "allow-suspicious-udfs" : 0
+          "log_output" : "TABLE"
+        }
+         */
+        var i, name, pArray, parameters, params, requests, self, value;
+        pArray = [];
+        for (name in paramNewValueMap) {
+          value = paramNewValueMap[name];
+          pArray.push({
+            ParameterName: name,
+            ParameterValue: value,
+            ApplyMethod: this.getParameters().get(name).applyMethod()
+          });
+        }
+        requests = [];
+        params = {
+          region_name: this.collection.region(),
+          param_group: this.id,
+          parameters: []
+        };
+        i = 0;
+        while (i < pArray.length) {
+          params.parameters = pArray.slice(i, i + 20);
+          requests.push(ApiRequest("rds_pg_ModifyDBParameterGroup", params));
+          i += 20;
+        }
+        self = this;
+        parameters = self.getParameters();
+        return Q.all(requests).then(function() {
+          var n, v;
+          for (n in paramNewValueMap) {
+            v = paramNewValueMap[n];
+            parameters.get(n).set("ParameterValue", v);
+          }
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrClnRds',["ApiRequest", "../CrCollection", "constant", "CloudResources", "./CrModelRdsSnapshot", "./CrModelRdsInstance", "./CrModelRdsPGroup"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsSnapshotModel, CrRdsDbInstanceModel, CrRdsPGroupModel) {
+
+    /* Engine */
+    CrCollection.extend({
+
+      /* env:dev                                                           env:dev:end */
+      type: constant.RESTYPE.DBENGINE,
+      __selfParseData: true,
+      initialize: function() {
+        this.optionGroupData = {};
+        this.engineDict = {};
+        this.defaultInfo = {};
+      },
+      getOptionGroupsByEngine: function(regionName, engineName) {
+        var ogAry;
+        if (!regionName) {
+          console.error("please provide regionName");
+        } else if (!engineName) {
+          console.error("please provide engineName");
+        } else {
+          ogAry = this.optionGroupData[regionName][engineName];
+        }
+        return ogAry || "";
+      },
+      getDefaultByNameVersion: function(regionName, engineName, engineVersion) {
+        var defaultData;
+        if (!regionName) {
+          console.error("please provide regionName");
+        } else if (!engineName) {
+          console.error("please provide engineName");
+        } else if (!engineVersion) {
+          console.error("please provide engineVersion");
+        } else {
+          defaultData = this.engineDict[regionName][engineName][engineVersion];
+        }
+        return defaultData || "";
+      },
+      getDefaultByFamily: function(regionName, family) {
+        var defaultData;
+        if (!regionName) {
+          console.error("please provide regionName");
+        } else if (!family) {
+          console.error("please provide family");
+        } else {
+          defaultData = this.defaultInfo[regionName][family];
+        }
+        return defaultData || "";
+      },
+      doFetch: function() {
+        var regionName, self;
+        self = this;
+        regionName = this.region();
+        return ApiRequest("rds_DescribeDBEngineVersions", {
+          region_name: regionName
+        }).then(function(data) {
+          var d, dict, e, engines, jobs, _i, _len;
+          self.optionGroupData[regionName] = {};
+          self.engineDict[regionName] = {};
+          self.defaultInfo[regionName] = {};
+          try {
+            data = data.DescribeDBEngineVersionsResponse.DescribeDBEngineVersionsResult.DBEngineVersions.DBEngineVersion;
+          } catch (_error) {
+            e = _error;
+            console.error(e);
+          }
+          data = data || [];
+          if (!_.isArray(data)) {
+            data = [data];
+          }
+          engines = {};
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            d = data[_i];
+            d.id = d.Engine + " " + d.EngineVersion;
+            engines[d.Engine] = true;
+            if (!self.engineDict[regionName][d.Engine]) {
+              self.engineDict[regionName][d.Engine] = {};
+            }
+            dict = {
+              family: d.DBParameterGroupFamily,
+              defaultPGName: 'default.' + d.DBParameterGroupFamily,
+              defaultOGName: 'default:' + d.Engine + '-' + d.EngineVersion.split('.').slice(0, 2).join('-'),
+              canCustomOG: false
+            };
+            self.engineDict[regionName][d.Engine][d.EngineVersion] = dict;
+            if (!self.defaultInfo[regionName][d.DBParameterGroupFamily]) {
+              self.defaultInfo[regionName][d.DBParameterGroupFamily] = dict;
+            }
+          }
+          jobs = _.keys(engines).map(function(engineName) {
+            return ApiRequest("rds_og_DescribeOptionGroupOptions", {
+              region_name: regionName,
+              engine_name: engineName
+            }).then(function(data) {
+              try {
+                self.__parseOptions(self.category, data);
+              } catch (_error) {
+                e = _error;
+                console.error(e);
+              }
+            });
+          });
+          return Q.all(jobs).then(function() {
+            return data;
+          });
+        });
+      },
+      __parseOptions: function(regionName, data) {
+        var d, engineName, optionData, self, _i, _len;
+        self = this;
+        data = data.DescribeOptionGroupOptionsResponse.DescribeOptionGroupOptionsResult.OptionGroupOptions;
+        if (!data) {
+          return;
+        }
+        data = data.OptionGroupOption || [];
+        if (!_.isArray(data)) {
+          data = [data];
+        }
+        if (!data.length) {
+          return;
+        }
+        optionData = {};
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          d = data[_i];
+          engineName = d.EngineName;
+          if (!optionData[d.MajorEngineVersion]) {
+            optionData[d.MajorEngineVersion] = [];
+          }
+          if (d.OptionGroupOptionSettings && d.OptionGroupOptionSettings.OptionGroupOptionSetting) {
+            d.OptionGroupOptionSettings = d.OptionGroupOptionSettings.OptionGroupOptionSetting;
+          }
+          optionData[d.MajorEngineVersion].push(d);
+          _.each(self.engineDict[regionName][d.EngineName], function(item, key) {
+            if (key.indexOf(d.MajorEngineVersion) === 0) {
+              return item.canCustomOG = true;
+            }
+          });
+        }
+        this.optionGroupData[regionName][engineName] = optionData;
+      }
+    });
+
+    /* DBSubnetGroup */
+    CrCollection.extend({
+
+      /* env:dev                                                         env:dev:end */
+      type: constant.RESTYPE.DBSBG,
+      doFetch: function() {
+        return ApiRequest("rds_subgrp_DescribeDBSubnetGroups", {
+          region_name: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var i, _i, _len, _ref, _ref1;
+        data = ((_ref = data.DescribeDBSubnetGroupsResponse.DescribeDBSubnetGroupsResult.DBSubnetGroups) != null ? _ref.DBSubnetGroup : void 0) || [];
+        if (!_.isArray(data)) {
+          data = [data];
+        }
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          i = data[_i];
+          i.id = i.DBSubnetGroupName;
+          i.Subnets = (_ref1 = i.Subnets) != null ? _ref1.Subnet : void 0;
+        }
+        return data;
+      },
+      parseExternalData: function(data) {
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        _.each(data, function(dataItem) {
+          return dataItem.id = dataItem.DBSubnetGroupName;
+        });
+        return data;
+      }
+    });
+
+    /* DBOptionGroup */
+    CrCollection.extend({
+
+      /* env:dev                                                         env:dev:end */
+      type: constant.RESTYPE.DBOG,
+      doFetch: function() {
+        return ApiRequest("rds_og_DescribeOptionGroups", {
+          region_name: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var i, _i, _len, _ref;
+        data = ((_ref = data.DescribeOptionGroupsResponse.DescribeOptionGroupsResult.OptionGroupsList) != null ? _ref.OptionGroup : void 0) || [];
+        if (!_.isArray(data)) {
+          data = [data];
+        }
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          i = data[_i];
+          i.id = i.OptionGroupName;
+        }
+        return data;
+      },
+      parseExternalData: function(data) {
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        _.each(data, function(dataItem) {
+          return dataItem.id = dataItem.OptionGroupName;
+        });
+        return data;
+      }
+    });
+
+    /* DBInstance */
+    CrCollection.extend({
+
+      /* env:dev                                                      env:dev:end */
+      type: constant.RESTYPE.DBINSTANCE,
+      model: CrRdsDbInstanceModel,
+      doFetch: function() {
+        return ApiRequest("rds_ins_DescribeDBInstances", {
+          region_name: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var i, _i, _len, _ref, _ref1, _ref2, _ref3;
+        data = ((_ref = data.DescribeDBInstancesResponse.DescribeDBInstancesResult.DBInstances) != null ? _ref.DBInstance : void 0) || [];
+        if (!_.isArray(data)) {
+          data = [data];
+        }
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          i = data[_i];
+          i.id = i.DBInstanceIdentifier;
+          i.Name = i.DBName;
+          i.sbgId = (_ref1 = i.DBSubnetGroup) != null ? _ref1.DBSubnetGroupName : void 0;
+          i.DBParameterGroups = ((_ref2 = i.DBParameterGroups) != null ? _ref2.DBParameterGroup : void 0) || [];
+          i.DBSecurityGroups = ((_ref3 = i.DBSecurityGroups) != null ? _ref3.DBSecurityGroup : void 0) || [];
+          if (i.LatestRestorableTime) {
+            i.LatestRestorableTime = (new Date(i.LatestRestorableTime)).getTime();
+          }
+          if (i.InstanceCreateTime) {
+            i.InstanceCreateTime = (new Date(i.InstanceCreateTime)).getTime();
+          }
+        }
+        return data;
+      },
+      parseExternalData: function(data) {
+        this.unifyApi(data, this.type);
+        this.camelToPascal(data);
+        _.each(data, function(dataItem) {
+          var pg, _i, _len, _ref;
+          if (dataItem.DBSubnetGroup) {
+            dataItem.DBSubnetGroup.DBSubnetGroupDescription = dataItem.DBSubnetGroup.DbsubnetGroupDescription;
+            dataItem.DBSubnetGroup.DBSubnetGroupName = dataItem.DBSubnetGroup.DbsubnetGroupName;
+            delete dataItem.DBSubnetGroup.DbsubnetGroupDescription;
+            delete dataItem.DBSubnetGroup.DbsubnetGroupName;
+          }
+          _ref = dataItem.DBParameterGroups;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            pg = _ref[_i];
+            pg.DBParameterGroupName = pg.DbparameterGroupName;
+            delete pg.DbparameterGroupName;
+          }
+          if (dataItem.PendingModifiedValues) {
+            dataItem.PendingModifiedValues.DBInstanceClass = dataItem.PendingModifiedValues.DbinstanceClass;
+            dataItem.PendingModifiedValues.DBInstanceIdentifier = dataItem.PendingModifiedValues.DbinstanceIdentifier;
+            delete dataItem.PendingModifiedValues.DbinstanceClass;
+            delete dataItem.PendingModifiedValues.DbinstanceIdentifier;
+          }
+          dataItem.id = dataItem.DBInstanceIdentifier;
+          dataItem.Name = dataItem.DBName;
+          return dataItem.sbgId = dataItem.DBSubnetGroup.DBSubnetGroupName;
+        });
+        return data;
+      }
+    });
+
+    /* Snapshot */
+    CrCollection.extend({
+
+      /* env:dev                                                       env:dev:end */
+      type: constant.RESTYPE.DBSNAP,
+      model: CrRdsSnapshotModel,
+      doFetch: function() {
+        return ApiRequest("rds_snap_DescribeDBSnapshots", {
+          region_name: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var i, _i, _len, _ref;
+        data = ((_ref = data.DescribeDBSnapshotsResponse.DescribeDBSnapshotsResult.DBSnapshots) != null ? _ref.DBSnapshot : void 0) || [];
+        if (!_.isArray(data)) {
+          data = [data];
+        }
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          i = data[_i];
+          i.id = i.DBSnapshotIdentifier;
+        }
+        return data;
+      }
+    });
+
+    /* Parameter Group */
+    return CrCollection.extend({
+
+      /* env:dev                                                     env:dev:end */
+      type: constant.RESTYPE.DBPG,
+      model: CrRdsPGroupModel,
+      doFetch: function() {
+        return ApiRequest("rds_pg_DescribeDBParameterGroups", {
+          region_name: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var i, _i, _len, _ref;
+        data = ((_ref = data.DescribeDBParameterGroupsResponse.DescribeDBParameterGroupsResult.DBParameterGroups) != null ? _ref.DBParameterGroup : void 0) || [];
+        if (!_.isArray(data)) {
+          data = [data];
+        }
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          i = data[_i];
+          i.id = i.DBParameterGroupName;
+        }
+        return data;
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('cloudres/aws/CrModelRdsParameter',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                              env:dev:end */
+      taggable: false,
+      isValidValue: function(value) {
+        var allowed, range, second_minus, valueNum, _i, _len, _ref;
+        if (!this.attributes.AllowedValues) {
+          return true;
+        }
+        valueNum = Number(value);
+        if (__indexOf.call(this.attributes.AllowedValues.split(","), value) >= 0) {
+          return true;
+        }
+        _ref = this.attributes.AllowedValues.split(",");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          allowed = _ref[_i];
+          if (allowed.indexOf("-") >= 0) {
+            if (!(!isNaN(parseFloat(value)) && isFinite(value))) {
+              return false;
+            }
+            if (allowed.split("-").length >= 2) {
+              if (allowed.indexOf("-") === 0) {
+                second_minus = allowed.indexOf("-", 1);
+              } else {
+                second_minus = allowed.indexOf("-", 0);
+              }
+              allowed = allowed.substr(0, second_minus) + "#" + allowed.substr(second_minus + 1);
+              range = allowed.split("#");
+              if (valueNum >= Number(range[0]) && valueNum <= Number(range[1])) {
+                return true;
+              }
+            }
+          }
+        }
+        return false;
+      },
+      isFunctionValue: function(value) {
+        var reg;
+        reg = /^((GREATEST|LEAST|SUM)\s*\(\s*)*((({(DBInstanceClassMemory|AllocatedStorage|EndPointPort))+((\/|\*|\+|\-)*(\d+|(DBInstanceClassMemory|AllocatedStorage|EndPointPort)))*}|\d+)\s*,?\s*\)*)*$/;
+        return reg.test(value);
+      },
+      isNumber: function(value) {
+        var reg;
+        reg = /^\d+$/;
+        return reg.test(value);
+      },
+      applyMethod: function() {
+        if (this.get("ApplyType") === "dynamic") {
+          return "immediate";
+        } else {
+          return "pending-reboot";
+        }
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/aws/CrClnRdsParam',["ApiRequest", "../CrCollection", "constant", "CloudResources", "./CrModelRdsParameter"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsParamModel) {
+
+    /*
+      This kind of collection can only be obtained by CrModelRdsPGroup.getParameters()
+     */
+
+    /* Parameter */
+    return CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.DBPARAM,
+      model: CrRdsParamModel,
+      __selfParseData: true,
+      init: function(paramGroupModel) {
+        if (this.groupModel) {
+          return this;
+        }
+        this.groupModel = paramGroupModel;
+        this.listenTo(paramGroupModel, "remove", this.reset);
+        return this;
+      },
+      region: function() {
+        var _ref;
+        return (_ref = this.groupModel.collection) != null ? _ref.region() : void 0;
+      },
+      doFetch: function(marker) {
+        var self;
+        self = this;
+        return ApiRequest("rds_pg_DescribeDBParameters", {
+          region_name: this.region(),
+          param_group: this.category,
+          marker: marker
+        }).then(function(data) {
+          var d, e, _i, _len, _ref;
+          try {
+            marker = data.DescribeDBParametersResponse.DescribeDBParametersResult.Marker;
+            data = ((_ref = data.DescribeDBParametersResponse.DescribeDBParametersResult.Parameters) != null ? _ref.Parameter : void 0) || [];
+          } catch (_error) {
+            e = _error;
+            console.log(e);
+          }
+          if (!_.isArray(data)) {
+            data = [data];
+          }
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            d = data[_i];
+            d.id = d.ParameterName;
+          }
+          if (marker) {
+            if (!self.__bucket) {
+              self.__bucket = data;
+            } else {
+              self.__bucket = self.__bucket.concat(data);
+            }
+            return self.doFetch(marker);
+          }
+          if (self.__bucket) {
+            data = self.__bucket.concat(data);
+            self.__bucket = null;
+          }
+          return data;
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrModelKeypair',["../CrModel", "ApiRequestOs"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                                env:dev:end */
+      defaults: {
+        name: "",
+        public_key: "",
+        fingerprint: ""
+      },
+      idAttribute: "name",
+      taggable: false,
+      doCreate: function() {
+        var promise, self;
+        self = this;
+        promise = ApiRequest("os_keypair_Create", {
+          region: this.getCollection().region(),
+          keypair_name: this.get("name"),
+          public_key: this.get("public_key")
+        });
+        return promise.then(function(res) {
+          var e, keyName;
+          console.log(res);
+          try {
+            res = res.keypair;
+            self.set(res);
+            keyName = res.name;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
+          }
+          self.set('name', keyName);
+          console.log("Created keypair resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("os_keypair_Delete", {
+          region: this.getCollection().region(),
+          keypair_name: this.get("name")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrModelSnapshot',["../CrModel", "ApiRequestOs"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                                 env:dev:end */
+      defaults: {
+        status: "",
+        description: "",
+        created_at: "",
+        name: "",
+        volume_id: "",
+        size: "",
+        id: "",
+        metadata: ""
+      },
+      taggable: false,
+      doCreate: function() {
+        var promise, self;
+        self = this;
+        promise = ApiRequest("os_snapshot_Create", {
+          region: this.getCollection().region(),
+          display_name: this.get("name"),
+          volume_id: this.get('volume_id'),
+          display_description: this.get("description"),
+          is_force: true
+        });
+        return promise.then(function(res) {
+          var e, name;
+          try {
+            res = res.snapshot;
+            self.set(res);
+            name = res.name;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
+          }
+          self.set('name', name);
+          console.log("Created keypair resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("os_snapshot_Delete", {
+          region: this.getCollection().region(),
+          snapshot_id: this.get("id")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnSharedRes',["../CrCollection", "CloudResources", "ApiRequestOs", "constant", "./CrModelKeypair", "./CrModelSnapshot"], function(CrCollection, CloudResources, ApiRequest, constant, CrModelKeypair, CrModelSnapshot) {
+
+    /* Keypair */
+    CrCollection.extend({
+
+      /* env:dev                                                     env:dev:end */
+      type: constant.RESTYPE.OSKP,
+      model: CrModelKeypair,
+      doFetch: function() {
+        return ApiRequest("os_keypair_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(res) {
+        var data, i, rlt, _i, _len, _ref;
+        data = (res != null ? res.keypairs : void 0) || [];
+        rlt = [];
+        _ref = data || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          i = i.keypair;
+          if (i) {
+            i.id = i.name;
+            rlt.push(i);
+          }
+          null;
+        }
+        return rlt;
+      }
+    });
+
+    /* Snapshot */
+    return CrCollection.extend({
+
+      /* env:dev                                                      env:dev:end */
+      type: constant.RESTYPE.OSSNAP,
+      model: CrModelSnapshot,
+      doFetch: function() {
+        return ApiRequest("os_snapshot_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(res) {
+        return (res != null ? res.snapshots : void 0) || [];
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnImage',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+    CrCollection.extend({
+
+      /* env:dev                                                   env:dev:end */
+      type: constant.RESTYPE.OSIMAGE,
+      doFetch: function() {
+        return ApiRequest("os_image_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(res) {
+        var data, item, _i, _len, _ref, _ref1;
+        data = (res != null ? res.images : void 0) || [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          item = data[_i];
+          if (item.architecture && item.os_distro && ((_ref = item.architecture) === "i686" || _ref === "x86_64") && ((_ref1 = item.os_distro) === "centos" || _ref1 === "debian" || _ref1 === "fedora" || _ref1 === "gentoo" || _ref1 === "opensuse" || _ref1 === "redhat" || _ref1 === "suse" || _ref1 === "ubuntu" || _ref1 === "windows" || _ref1 === "cirros")) {
+            item.os_type = item.os_distro;
+          } else {
+            item.os_type = "unknown";
+          }
+        }
+        return data;
+      }
+    });
+    return CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSFLAVOR,
+      doFetch: function() {
+        var tempDefer;
+        tempDefer = Q.defer();
+        tempDefer.resolve();
+        return tempDefer.promise;
+      },
+      parseFetchData: function(res) {
+        return _.values(res);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnNetwork',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+    return CrCollection.extend({
+
+      /* env:dev                                                     env:dev:end */
+      type: constant.RESTYPE.OSNETWORK,
+      getExtNetworks: function() {
+        return this.where({
+          "external": true
+        });
+      },
+      doFetch: function() {
+        return ApiRequest("os_network_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var network, _i, _len, _ref;
+        _ref = data.networks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          network = _ref[_i];
+          network['physical_network'] = network['provider:physical_network'];
+          network['external'] = network['router:external'];
+          delete network['provider:physical_network'];
+          delete network['router:external'];
+        }
+        return data.networks;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnCommonRes',["../CrCollection", "../CrModel", "ApiRequestOs", "constant", "CloudResources"], function(CrCollection, CrModel, ApiRequest, constant, CloudResources) {
+
+    /* FIP */
+    CrCollection.extend({
+
+      /* env:dev                                                 env:dev:end */
+      type: constant.RESTYPE.OSFIP,
+      doFetch: function() {
+        return ApiRequest("os_floatingip_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.floatingips;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Pool */
+    CrCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: constant.RESTYPE.OSPOOL,
+      doFetch: function() {
+        return ApiRequest("os_pool_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.pools;
+      },
+      parseExternalData: function(data, category, dataCollection) {
+        var m, members, newmembers, r, res, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        members = {};
+        _ref = dataCollection["OS::Neutron::Member"] || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          members[m.id] = m;
+        }
+        res = $.extend(true, [], data);
+        for (_j = 0, _len1 = res.length; _j < _len1; _j++) {
+          r = res[_j];
+          newmembers = [];
+          _ref1 = r.members || [];
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            m = _ref1[_k];
+            m = members[m];
+            if (m) {
+              newmembers.push(m);
+            }
+          }
+          r.members = newmembers;
+        }
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Listener(VIP) */
+    CrCollection.extend({
+
+      /* env:dev                                                      env:dev:end */
+      type: constant.RESTYPE.OSLISTENER,
+      doFetch: function() {
+        return ApiRequest("os_vip_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.vips;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* HealthMonitor */
+    CrCollection.extend({
+
+      /* env:dev                                                           env:dev:end */
+      type: constant.RESTYPE.OSHM,
+      doFetch: function() {
+        return ApiRequest("os_healthmonitor_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.health_monitors;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Router */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSRT,
+      doFetch: function() {
+        return ApiRequest("os_router_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.routers;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Server */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSSERVER,
+      doFetch: function() {
+        var region;
+        region = this.region();
+        return ApiRequest("os_server_List", {
+          region: region
+        }).then(function(res) {
+          var servers;
+          servers = _.pluck(res.servers, "id");
+          if (!servers.length) {
+            return;
+          }
+          return ApiRequest("os_server_Info", {
+            region: region,
+            ids: servers
+          });
+        });
+      },
+      parseFetchData: function(data) {
+        var server, _i, _len;
+        data = _.values(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          server = data[_i];
+          server['diskConfig'] = server['OS-DCF:diskConfig'];
+          server['availability_zone'] = server['OS-EXT-AZ:availability_zone'];
+          server['power_state'] = server['OS-EXT-STS:power_state'];
+          server['task_state'] = server['OS-EXT-STS:task_state'];
+          server['vm_state'] = server['OS-EXT-STS:vm_state'];
+          server['launched_at'] = server['OS-SRV-USG:launched_at'];
+          server['terminated_at'] = server['OS-SRV-USG:terminated_at'];
+          server['volumes_attached'] = server['os-extended-volumes:volumes_attached'];
+          delete server['OS-DCF:diskConfig'];
+          delete server['OS-EXT-AZ:availability_zone'];
+          delete server['OS-EXT-STS:power_state'];
+          delete server['OS-EXT-STS:task_state'];
+          delete server['OS-EXT-STS:vm_state'];
+          delete server['OS-SRV-USG:launched_at'];
+          delete server['OS-SRV-USG:terminated_at'];
+          delete server['os-extended-volumes:volumes_attached'];
+        }
+        return data;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Volume */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSVOL,
+      doFetch: function() {
+        var region;
+        region = this.region();
+        return ApiRequest("os_volume_List", {
+          region: region
+        }).then(function(res) {
+          var volumes;
+          volumes = _.pluck(res.volumes, "id");
+          if (!volumes.length) {
+            return;
+          }
+          return ApiRequest("os_volume_Info", {
+            region: region,
+            ids: volumes
+          });
+        });
+      },
+      parseFetchData: function(data) {
+        return _.values(data);
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Subnet */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSSUBNET,
+      doFetch: function() {
+        return ApiRequest("os_subnet_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.subnets;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* SG */
+    CrCollection.extend({
+
+      /* env:dev                                                env:dev:end */
+      type: constant.RESTYPE.OSSG,
+      doFetch: function() {
+        return ApiRequest("os_securitygroup_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.security_groups;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Port */
+    CrCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: constant.RESTYPE.OSPORT,
+      doFetch: function() {
+        return ApiRequest("os_port_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var port, _i, _len, _ref;
+        _ref = data.ports;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          port = _ref[_i];
+          port['vif_details'] = port['binding:vif_details'];
+          port['vif_type'] = port['binding:vif_type'];
+          port['profile'] = port['binding:profile'];
+          port['vnic_type'] = port['binding:vnic_type'];
+          port['host_id'] = port['binding:host_id'];
+          delete port['binding:vif_details'];
+          delete port['binding:vif_type'];
+          delete port['binding:profile'];
+          delete port['binding:vnic_type'];
+          delete port['binding:host_id'];
+        }
+        return data.ports;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Neutron Quota */
+    CrCollection.extend({
+
+      /* env:dev                                                        env:dev:end */
+      type: constant.RESTYPE.OSNQ,
+      doFetch: function() {
+        return ApiRequest("os_neutron_quota_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        if (data != null ? data.quota : void 0) {
+          data.quota.id = "neutron_quota";
+        }
+        return [data != null ? data.quota : void 0];
+      }
+    });
+
+    /* Cinder Quota */
+    return CrCollection.extend({
+
+      /* env:dev                                                       env:dev:end */
+      type: constant.RESTYPE.OSCQ,
+      doFetch: function() {
+        return ApiRequest("os_cinder_quota_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        if (data != null ? data.quota_set : void 0) {
+          data.quota_set.id = "cinder_quota";
+        }
+        return [data != null ? data.quota_set : void 0];
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/CrBundle',["CloudResources", "./CrOpsResource", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam", "./openstack/CrClnSharedRes", "./openstack/CrClnImage", "./openstack/CrClnNetwork", "./openstack/CrClnCommonRes"], function(CloudResources) {
+
+    /* env:dev                                                             env:dev:end */
+
+    /* env:debug */
+    require(["./cloudres/aws/CloudImportVpc"], function() {});
+
+    /* env:debug:end */
+    return CloudResources;
+  });
+
+}).call(this);
+
