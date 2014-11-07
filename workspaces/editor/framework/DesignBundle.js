@@ -534,7 +534,7 @@
       return names && names[name];
     };
     DesignImpl.prototype.getCost = function(stopped) {
-      var c, comp, cost, costList, currency, priceMap, totalFee, uid, _i, _len, _ref, _ref1;
+      var c, comp, cost, costList, currency, err, priceMap, totalFee, uid, _i, _len, _ref, _ref1;
       costList = [];
       totalFee = 0;
       priceMap = App.model.getPriceData(this.region());
@@ -547,7 +547,13 @@
             continue;
           }
           if (comp.getCost) {
-            cost = comp.getCost(priceMap, currency);
+            cost = null;
+            try {
+              cost = comp.getCost(priceMap, currency);
+            } catch (_error) {
+              err = _error;
+              console.log("Price not found");
+            }
             if (!cost) {
               continue;
             }
