@@ -1,1 +1,386 @@
-define("component/statestatus/template",["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="modal-header">\n	<h3>'+o(n.i18n.call(t,"FAILED_STATE",{hash:{},data:i}))+'</h3>\n	<i class="modal-close">×</i>\n</div>\n<div class="modal-body">\n	<div class="modal-state-statusbar">\n	</div>\n</div>',s},n.modal=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="state-status-content">\n\n	<div class="scroll-wrap scroll-wrap-validation" style="height:200px;">\n		<div class="scrollbar-veritical-wrap" style="display: block;"><div class="scrollbar-veritical-thumb"></div></div>\n		<div class="content_wrap scroll-content">\n			<div class="update-tip"></div>\n			<div class="status-item">\n				<p class="no-item">'+o(n.i18n.call(t,"NO_FAILED_ITEM_PERIOD",{hash:{},data:i}))+"</p>\n			</div>\n		</div>\n	</div>\n</div>",s},n.content=e.template(t),t=function(e,t,n,r,i){function l(e,t){var n="",r;return n+=a((r=e&&e.parent,typeof r===u?r.apply(e):r))+"'s ",n}function c(e,t){return"<s>has failed</s> is updated."}function h(e,t){return"has failed"}function p(e,t){return"State log will update after change is applied."}function d(e,t){return a(n.UTC.call(e,e&&e.time,{hash:{},data:t}))}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div class="state-status-item-icon">\n	<i class="status status-red"></i>\n</div>\n<div class="state-status-item-info">\n	<div class="state-status-item-desc truncate">\n		',o=n["if"].call(t,t&&t.parent,{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+=a((o=t&&t.name,typeof o===u?o.apply(t):o))+" 's state "+a((o=t&&t.stateId,typeof o===u?o.apply(t):o))+" ",o=n["if"].call(t,t&&t.updated,{hash:{},inverse:f.program(5,h,i),fn:f.program(3,c,i),data:i});if(o||o===0)s+=o;s+='\n	</div>\n	<div class="timestamp">\n		',o=n["if"].call(t,t&&t.updated,{hash:{},inverse:f.program(9,d,i),fn:f.program(7,p,i),data:i});if(o||o===0)s+=o;return s+="\n	</div>\n</div>",s},n.item=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<dl class="state-status-pending">\n	<dt>'+o(n.i18n.call(t,"ALL_STATES_ARE_PENDING_PERIOLD",{hash:{},data:i}))+"</dt>\n	<dd>"+o(n.i18n.call(t,"A_MESSAGE_WILL_SHOW_HERE",{hash:{},data:i}))+"</dd>\n</dl>",s},n.pending=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<ul class="state-status-list">\n</ul>'},n.container=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="state-status-update">\n	'+o(n.i18n.call(t,"XXX_STATES_HAS_UPDATED_STATUS",t,{hash:{},data:i}))+"\n</div>",s},n.update=e.template(t),n}),function(){var e=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/statestatus/view",["event","./template","backbone","jquery","handlebars"],function(t,n){var r,i;return r=Backbone.View.extend({tagName:"li",className:"state-status-item",initialize:function(){return this.listenTo(this.model,"change",this.render)},render:function(){return this.$el.html(n.item(this.model.toJSON())),this},events:{"click .state-status-item-detail":"openStateEditor"},openStateEditor:function(){return t.trigger(t.SHOW_STATE_EDITOR,this.model.get("uid")),null}}),i=Backbone.View.extend({events:{"click .modal-close":"closePopup","click .state-status-update":"renderNew"},initialize:function(){return this.items=this.model.get("items"),this.listenTo(this.model,"change:items",this.renderAllItem),this.listenTo(this.model,"change:stop",this.renderAllItem),this.listenTo(this.model,"change:new",this.renderUpdate),this.itemView=r,null},render:function(){return this.$statusModal=this.$el,this.$el.html(n.modal()),this.$(".modal-state-statusbar").html(n.content()),this.renderAllItem(),$(".status-bar-modal").html(this.el).show(),this},renderUpdate:function(e){var t;return t=e.get("new").length,t&&this.$(".update-tip").html(n.update(t)),scrollbar.scrollTo(this.$(".scroll-wrap"),{top:0})},renderNew:function(){return this.$(".update-tip div").hide(),this.renderAllItem(),this.model.flushNew()},renderAllItem:function(){var e;e=this.items;if(this.model.get("stop")){this.renderPending();return}if(e.length)return this.renderContainer(),e.each(this.renderItem,this)},renderItem:function(t,n){var r;return r=new this.itemView({model:t}),r.render(),r.$el.hide(),this.$(".state-status-list").append(r.el),e.call(this.model.get("new"),t)>=0?_.defer(function(){return r.$el.fadeIn(300)}):r.$el.show()},renderContainer:function(){return this.$(".status-item").html(n.container())},renderPending:function(){return this.$(".status-item").html(n.pending())},closePopup:function(){return $(".status-bar-modal").hide(),this.trigger("CLOSE_POPUP")}}),i})}.call(this),function(){define("component/statestatus/model",["constant","event","backbone","jquery","underscore","MC"],function(e,t){var n;return n=Backbone.Model.extend({initialize:function(){var e;return this.collection=new(this.__customCollection()),e=App.WS.collection.status.find().fetch(),this.collection.set(this.__dispose(e).models,{silent:!0}),this.set("items",this.collection),this.set("new",[]),this.set("stop",Design.instance().get("state")==="Stopped")},__collectNew:function(e){var t;return t=this.get("new"),this.set("new",this.get("new").concat(e)),this},flushNew:function(){return this.set("new",[])},__customCollection:function(){var e;return e=this,Backbone.Collection.extend({comparator:function(e){return-e.get("time")},initialize:function(){return this.on("add",e.__collectNew,e)}})},__genId:function(e,t){return""+e+"|"+t},__dispose:function(e){var t,n,r,i,s,o,u,a,f,l;t=new Backbone.Collection,void 0,_.isArray(e)||(e=[e]);for(o=0,a=e.length;o<a;o++){i=e[o];if(i.status){l=i.status;for(r=u=0,f=l.length;u<f;r=++u){s=l[r];if(i.app_id!==Design.instance().get("id"))continue;n={id:this.__genId(i.res_id,s.id),appId:i.app_id,resId:i.res_id,stateId:r+1,time:s.time,result:s.result},_.extend(n,this.__extendComponent(n.resId)),n.name||(n.name="unknown"),n.result==="failure"&&t.add(new Backbone.Model(n))}}}return t},__extendComponent:function(e){var t,n;return n={},t=MC.aws.aws.getCompByResIdForState(e),t.parent?(t.self?n.name=t.self.get("name"):(n.parent=t.parent.get("name"),n.name=e),n.uid=t.parent.id):t.self&&(n.name=t.self.get("name"),n.uid=t.self.id),n},listenStateStatusUpdate:function(e,t,n){var r;return r=this.__dispose(t),this.collection.add(r.models),null},listenStateEditorUpdate:function(e){var t,n,r,i,s,o;n=e.resId,i=e.stateIds;for(s=0,o=i.length;s<o;s++)r=i[s],t=this.__genId(n,r),this.collection.get(t)&&this.collection.get(t).set("updated",!0);return null},listenUpdateAppState:function(e){return e==="Stopped"?this.set("stop",!0):this.set("stop",!1)}}),n})}.call(this),function(){define("state_status",["jquery","event","./component/statestatus/view","./component/statestatus/model"],function(e,t,n,r){var i,s,o,u;return s=null,u=null,i=function(){return s=new r,u=new n({model:s}),u.on("CLOSE_POPUP",this.unLoadModule,this),t.onLongListen(t.UPDATE_STATE_STATUS_DATA,s.listenStateStatusUpdate,s),t.onLongListen(t.STATE_EDITOR_DATA_UPDATE,s.listenStateEditorUpdate,s),u.render()},o=function(){return u.remove(),s.destroy(),t.offListen(t.UPDATE_STATE_STATUS_DATA,s.listenStateStatusUpdate),t.offListen(t.STATE_EDITOR_DATA_UPDATE)},{loadModule:i,unLoadModule:o}})}.call(this),define("component/StateStatus",function(){});
+define('component/statestatus/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"modal-header\">\n	<h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "FAILED_STATE", {hash:{},data:data}))
+    + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-state-statusbar\">\n	</div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.modal=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"state-status-content\">\n\n	<div class=\"scroll-wrap scroll-wrap-validation\" style=\"height:200px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n			<div class=\"update-tip\"></div>\n			<div class=\"status-item\">\n				<p class=\"no-item\">"
+    + escapeExpression(helpers.i18n.call(depth0, "NO_FAILED_ITEM_PERIOD", {hash:{},data:data}))
+    + "</p>\n			</div>\n		</div>\n	</div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.content=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.parent)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "'s ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  
+  return "<s>has failed</s> is updated.";
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "has failed";
+  }
+
+function program7(depth0,data) {
+  
+  
+  return "State log will update after change is applied.";
+  }
+
+function program9(depth0,data) {
+  
+  
+  return escapeExpression(helpers.UTC.call(depth0, (depth0 && depth0.time), {hash:{},data:data}));
+  }
+
+  buffer += "<div class=\"state-status-item-icon\">\n	<i class=\"status status-red\"></i>\n</div>\n<div class=\"state-status-item-info\">\n	<div class=\"state-status-item-desc truncate\">\n		";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.parent), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " 's state "
+    + escapeExpression(((stack1 = (depth0 && depth0.stateId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</div>\n	<div class=\"timestamp\">\n		";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.item=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<dl class=\"state-status-pending\">\n	<dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "ALL_STATES_ARE_PENDING_PERIOLD", {hash:{},data:data}))
+    + "</dt>\n	<dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "A_MESSAGE_WILL_SHOW_HERE", {hash:{},data:data}))
+    + "</dd>\n</dl>";
+  return buffer;
+  };
+TEMPLATE.pending=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<ul class=\"state-status-list\">\n</ul>";
+  };
+TEMPLATE.container=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"state-status-update\">\n	"
+    + escapeExpression(helpers.i18n.call(depth0, "XXX_STATES_HAS_UPDATED_STATUS", depth0, {hash:{},data:data}))
+    + "\n</div>";
+  return buffer;
+  };
+TEMPLATE.update=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('component/statestatus/view',['event', './template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template) {
+    var CustomView, StateStatusView;
+    CustomView = Backbone.View.extend({
+      tagName: 'li',
+      className: 'state-status-item',
+      initialize: function() {
+        return this.listenTo(this.model, 'change', this.render);
+      },
+      render: function() {
+        this.$el.html(template.item(this.model.toJSON()));
+        return this;
+      },
+      events: {
+        'click .state-status-item-detail': 'openStateEditor'
+      },
+      openStateEditor: function() {
+        ide_event.trigger(ide_event.SHOW_STATE_EDITOR, this.model.get('uid'));
+        return null;
+      }
+    });
+    StateStatusView = Backbone.View.extend({
+      events: {
+        'click .modal-close': 'closePopup',
+        'click .state-status-update': 'renderNew'
+      },
+      initialize: function() {
+        this.items = this.model.get('items');
+        this.listenTo(this.model, 'change:items', this.renderAllItem);
+        this.listenTo(this.model, 'change:stop', this.renderAllItem);
+        this.listenTo(this.model, 'change:new', this.renderUpdate);
+        this.itemView = CustomView;
+        return null;
+      },
+      render: function() {
+        this.$statusModal = this.$el;
+        this.$el.html(template.modal());
+        this.$('.modal-state-statusbar').html(template.content());
+        this.renderAllItem();
+        $('.status-bar-modal').html(this.el).show();
+        return this;
+      },
+      renderUpdate: function(model) {
+        var newCount;
+        newCount = model.get('new').length;
+        if (newCount) {
+          this.$('.update-tip').html(template.update(newCount));
+        }
+        return scrollbar.scrollTo(this.$('.scroll-wrap'), {
+          'top': 0
+        });
+      },
+      renderNew: function() {
+        this.$('.update-tip div').hide();
+        this.renderAllItem();
+        return this.model.flushNew();
+      },
+      renderAllItem: function() {
+        var items;
+        items = this.items;
+        if (this.model.get('stop')) {
+          this.renderPending();
+          return;
+        }
+        if (items.length) {
+          this.renderContainer();
+          return items.each(this.renderItem, this);
+        }
+      },
+      renderItem: function(model, index) {
+        var view;
+        view = new this.itemView({
+          model: model
+        });
+        view.render();
+        view.$el.hide();
+        this.$('.state-status-list').append(view.el);
+        if (__indexOf.call(this.model.get('new'), model) >= 0) {
+          return _.defer(function() {
+            return view.$el.fadeIn(300);
+          });
+        } else {
+          return view.$el.show();
+        }
+      },
+      renderContainer: function() {
+        return this.$('.status-item').html(template.container());
+      },
+      renderPending: function() {
+        return this.$('.status-item').html(template.pending());
+      },
+      closePopup: function() {
+        $('.status-bar-modal').hide();
+        return this.trigger('CLOSE_POPUP');
+      }
+    });
+    return StateStatusView;
+  });
+
+}).call(this);
+
+(function() {
+  define('component/statestatus/model',['constant', 'event', 'backbone', 'jquery', 'underscore', 'MC'], function(constant, ide_event) {
+    var StateStatusModel;
+    StateStatusModel = Backbone.Model.extend({
+      initialize: function() {
+        var stateList;
+        this.collection = new (this.__customCollection())();
+        stateList = App.WS.collection.status.find().fetch();
+        this.collection.set(this.__dispose(stateList).models, {
+          silent: true
+        });
+        this.set('items', this.collection);
+        this.set('new', []);
+        return this.set('stop', Design.instance().get('state') === 'Stopped');
+      },
+      __collectNew: function(model) {
+        var origins;
+        origins = this.get('new');
+        this.set('new', this.get('new').concat(model));
+        return this;
+      },
+      flushNew: function() {
+        return this.set('new', []);
+      },
+      __customCollection: function() {
+        var parent;
+        parent = this;
+        return Backbone.Collection.extend({
+          comparator: function(model) {
+            return -model.get('time');
+          },
+          initialize: function() {
+            return this.on('add', parent.__collectNew, parent);
+          }
+        });
+      },
+      __genId: function(resId, stateId) {
+        return "" + resId + "|" + stateId;
+      },
+      __dispose: function(stateList) {
+        var collection, data, idx, state, status, _i, _j, _len, _len1, _ref;
+        collection = new Backbone.Collection();
+        console.log(stateList);
+        if (!_.isArray(stateList)) {
+          stateList = [stateList];
+        }
+        for (_i = 0, _len = stateList.length; _i < _len; _i++) {
+          state = stateList[_i];
+          if (state.status) {
+            _ref = state.status;
+            for (idx = _j = 0, _len1 = _ref.length; _j < _len1; idx = ++_j) {
+              status = _ref[idx];
+              if (state.app_id !== Design.instance().get('id')) {
+                continue;
+              }
+              data = {
+                id: this.__genId(state.res_id, status.id),
+                appId: state.app_id,
+                resId: state.res_id,
+                stateId: idx + 1,
+                time: status.time,
+                result: status.result
+              };
+              _.extend(data, this.__extendComponent(data.resId));
+              if (!data.name) {
+                data.name = 'unknown';
+              }
+              if (data.result === 'failure') {
+                collection.add(new Backbone.Model(data));
+              }
+            }
+          }
+        }
+        return collection;
+      },
+      __extendComponent: function(resId) {
+        var component, extend;
+        extend = {};
+        component = MC.aws.aws.getCompByResIdForState(resId);
+        if (component.parent) {
+          if (component.self) {
+            extend.name = component.self.get('name');
+          } else {
+            extend.parent = component.parent.get('name');
+            extend.name = resId;
+          }
+          extend.uid = component.parent.id;
+        } else if (component.self) {
+          extend.name = component.self.get('name');
+          extend.uid = component.self.id;
+        }
+        return extend;
+      },
+      listenStateStatusUpdate: function(type, newDoc, oldDoc) {
+        var collection;
+        collection = this.__dispose(newDoc);
+        this.collection.add(collection.models);
+        return null;
+      },
+      listenStateEditorUpdate: function(data) {
+        var id, resId, stateId, stateIds, _i, _len;
+        resId = data.resId;
+        stateIds = data.stateIds;
+        for (_i = 0, _len = stateIds.length; _i < _len; _i++) {
+          stateId = stateIds[_i];
+          id = this.__genId(resId, stateId);
+          if (this.collection.get(id)) {
+            this.collection.get(id).set('updated', true);
+          }
+        }
+        return null;
+      },
+      listenUpdateAppState: function(state) {
+        if (state === 'Stopped') {
+          return this.set('stop', true);
+        } else {
+          return this.set('stop', false);
+        }
+      }
+    });
+    return StateStatusModel;
+  });
+
+}).call(this);
+
+(function() {
+  define('state_status',['jquery', 'event', './component/statestatus/view', './component/statestatus/model'], function($, ide_event, View, Model) {
+    var loadModule, model, unLoadModule, view;
+    model = null;
+    view = null;
+    loadModule = function() {
+      model = new Model();
+      view = new View({
+        model: model
+      });
+      view.on('CLOSE_POPUP', this.unLoadModule, this);
+      ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA, model.listenStateStatusUpdate, model);
+      ide_event.onLongListen(ide_event.STATE_EDITOR_DATA_UPDATE, model.listenStateEditorUpdate, model);
+      return view.render();
+    };
+    unLoadModule = function() {
+      view.remove();
+      model.destroy();
+      ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA, model.listenStateStatusUpdate);
+      return ide_event.offListen(ide_event.STATE_EDITOR_DATA_UPDATE);
+    };
+    return {
+      loadModule: loadModule,
+      unLoadModule: unLoadModule
+    };
+  });
+
+}).call(this);
+
+
+define("component/StateStatus", function(){});

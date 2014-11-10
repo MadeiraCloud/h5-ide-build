@@ -1,1 +1,72 @@
-define(["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){var r="",i;r+='\n\n<div class="property-group-head truncate"><span class="sg-color sg-color-rule-header" style="background-color:'+a((i=e&&e.sgColor,typeof i===u?i.apply(e):i))+'"></span>'+a((i=e&&e.groupName,typeof i===u?i.apply(e):i))+'</div>\n<div class="property-group">\n  <ul class="sg-rule-list property-list" id="sg-info-list">\n    ',i=n.each.call(e,e&&e.rules,{hash:{},inverse:f.noop,fn:f.program(2,c,t),data:t});if(i||i===0)r+=i;return r+="\n  </ul>\n</div>\n",r}function c(e,t){var r="",i;r+='\n    <li>\n      <div class="rule-list-row">\n        <div class="rule-direction-icon icon-'+a((i=e&&e.direction,typeof i===u?i.apply(e):i))+' tooltip" data-tooltip="'+a((i=e&&e.direction,typeof i===u?i.apply(e):i))+'"></div>\n        ',i=n["if"].call(e,e&&e.sgColor,{hash:{},inverse:f.noop,fn:f.program(3,h,t),data:t});if(i||i===0)r+=i;r+='\n        <div class="rule-reference truncate tooltip" data-tooltip=\'',i=n.ifCond.call(e,e&&e.direction,"inbound",{hash:{},inverse:f.program(7,d,t),fn:f.program(5,p,t),data:t});if(i||i===0)r+=i;return r+="'>"+a((i=e&&e.ipRanges,typeof i===u?i.apply(e):i))+'</div>\n      </div>\n      <div class="rule-list-row">\n        <div><span class="rule-protocol tooltip" data-tooltip="'+a(n.i18n.call(e,"DASH_LBL_PROTOCOL",{hash:{},data:t}))+'">'+a((i=e&&e.ipProtocol,typeof i===u?i.apply(e):i))+'</span></div>\n        <div class="rule-port tooltip" data-tooltip="'+a(n.i18n.call(e,"PROP.SG_TIP_PORT_CODE",{hash:{},data:t}))+'">'+a((i=e&&e.dispPort,typeof i===u?i.apply(e):i))+"</div>\n      </div>\n    </li>\n    ",r}function h(e,t){var n="",r;return n+='<span class="sg-color" style="background-color:'+a((r=e&&e.sgColor,typeof r===u?r.apply(e):r))+'"></span>',n}function p(e,t){return"Source"}function d(e,t){return"Destination"}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<article class="property-info" style="margin-top:0;">\n   <section class="property-control-group">'+a(n.i18n.call(t,"PROP.SGRULE_SELECTED_CONNECTION_REFLECTS_FOLLOWING_SGR",{hash:{},data:i}))+"</section>\n</article>\n\n",o=n.each.call(t,t&&t.sg_group,{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;return s};return e.template(t)});
+define(['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n\n<div class=\"property-group-head truncate\"><span class=\"sg-color sg-color-rule-header\" style=\"background-color:"
+    + escapeExpression(((stack1 = (depth0 && depth0.sgColor)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></span>"
+    + escapeExpression(((stack1 = (depth0 && depth0.groupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n<div class=\"property-group\">\n  <ul class=\"sg-rule-list property-list\" id=\"sg-info-list\">\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.rules), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  </ul>\n</div>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li>\n      <div class=\"rule-list-row\">\n        <div class=\"rule-direction-icon icon-"
+    + escapeExpression(((stack1 = (depth0 && depth0.direction)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " tooltip\" data-tooltip=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.direction)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></div>\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sgColor), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <div class=\"rule-reference truncate tooltip\" data-tooltip='";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.direction), "inbound", {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "'>"
+    + escapeExpression(((stack1 = (depth0 && depth0.ipRanges)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n      </div>\n      <div class=\"rule-list-row\">\n        <div><span class=\"rule-protocol tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_PROTOCOL", {hash:{},data:data}))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.ipProtocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></div>\n        <div class=\"rule-port tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SG_TIP_PORT_CODE", {hash:{},data:data}))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.dispPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n      </div>\n    </li>\n    ";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<span class=\"sg-color\" style=\"background-color:"
+    + escapeExpression(((stack1 = (depth0 && depth0.sgColor)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></span>";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "Source";
+  }
+
+function program7(depth0,data) {
+  
+  
+  return "Destination";
+  }
+
+  buffer += "<article class=\"property-info\" style=\"margin-top:0;\">\n   <section class=\"property-control-group\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SGRULE_SELECTED_CONNECTION_REFLECTS_FOLLOWING_SGR", {hash:{},data:data}))
+    + "</section>\n</article>\n\n";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.sg_group), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });

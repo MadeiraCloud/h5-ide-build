@@ -1,1 +1,123 @@
-(function(){define(["Design"],function(e){return e.debug=function(){var t,n,r,i;n={line:{},node:{},group:{},otherResource:{},otherConnection:{}},i=e.instance().__componentMap;for(r in i)t=i[r],t.node_group?n.group[t.id]=t:t.node_line?t.isVisual()?n.line[t.id]=t:n.otherConnection[t.id]=t:t.isVisual()?n.node[t.id]=t:n.otherResource[t.id]=t;return n},e.debug.selectedComp=function(){return App.workspaces.getAwakeSpace().getSelectedComponent()},e.debug.selectedCompState=function(){var t,n;return t=(n=e.debug.selectedComp())!=null?n.serialize()[1]:void 0,t&&t.component&&t.component.state?'{\n	"component": {\n		"init" : {\n			"state": '+JSON.stringify(t.component.state)+"\n		}\n	}\n}\n":"no state for selected component"},e.debug.diff=function(t){return require(["component/jsonviewer/JsonViewer"],function(t){var n;return n=e.instance(),t.showDiffDialog(n.__opsModel.getJsonData(),n.serialize())}),null},e.debug.json=function(){var t;return t=e.instance().serialize(),void 0,JSON.stringify(t)},e.debug["export"]=function(){var t,n,r,i,s;return s="CanvasData.json",r=e.debug.json(),n=new Blob([r],{type:"text/json"}),i=document.createEvent("MouseEvents"),t=document.createElement("a"),t.download=s,t.href=window.URL.createObjectURL(n),t.dataset.downloadurl=["text/json",t.download,t.href].join(":"),i.initMouseEvent("click",!0,!1,window,0,0,0,0,0,!1,!1,!1,!1,0,null),t.dispatchEvent(i),null},e.debug.view=function(t){var n;return t&&t.preventDefault&&t.preventDefault(),n=e.instance().serialize(),require(["component/jsonviewer/JsonViewer"],function(e){return e.showViewDialog(n)}),null},e.debug.checkValidDesign=function(){return dd().eachComponent(function(e){return e.design()===D.instance()?void 0:void 0,null}),null},e.debug.autoLayout=function(){return App.workspaces.getAwakeSpace().view.canvas.autoLayout()},e.debug.getDataFromLocal=function(e){return JSON.parse(localStorage.getItem("get_resource/"+e))},e.debug.setDataToLocal=function(e){return localStorage.setItem("get_resource/"+e.app_json.id,JSON.stringify(e))},window.d=function(){return e.instance()},window.dd=e.debug,window.dget=function(t){return e.instance().get(t)},window.dset=function(t,n){return e.instance().set(t,n)},window.dds=function(){return e.debug.json()},window.man="d()          Return the current Design instance \n dd()         Print all components in current Design \n dget(a)      Design att getter \n dset(a,b)    Design att setter \n dds()        Print JSON \n copy(dds())  Copy JSON",null})}).call(this);
+(function() {
+  define(["Design"], function(Design) {
+    Design.debug = function() {
+      var a, checkedMap, id, _ref;
+      checkedMap = {
+        "line": {},
+        "node": {},
+        "group": {},
+        "otherResource": {},
+        "otherConnection": {}
+      };
+      _ref = Design.instance().__componentMap;
+      for (id in _ref) {
+        a = _ref[id];
+        if (a.node_group) {
+          checkedMap.group[a.id] = a;
+        } else if (a.node_line) {
+          if (a.isVisual()) {
+            checkedMap.line[a.id] = a;
+          } else {
+            checkedMap.otherConnection[a.id] = a;
+          }
+        } else {
+          if (a.isVisual()) {
+            checkedMap.node[a.id] = a;
+          } else {
+            checkedMap.otherResource[a.id] = a;
+          }
+        }
+      }
+      return checkedMap;
+    };
+    Design.debug.selectedComp = function() {
+      return App.workspaces.getAwakeSpace().getSelectedComponent();
+    };
+    Design.debug.selectedCompState = function() {
+      var comp, _ref;
+      comp = (_ref = Design.debug.selectedComp()) != null ? _ref.serialize()[1] : void 0;
+      if (comp && comp.component && comp.component.state) {
+        return '{\n\t"component": {\n\t\t"init" : {\n\t\t\t"state": ' + JSON.stringify(comp.component.state) + '\n\t\t}\n\t}\n}\n';
+      } else {
+        return "no state for selected component";
+      }
+    };
+    Design.debug.diff = function(e) {
+      require(["component/jsonviewer/JsonViewer"], function(JsonViewer) {
+        var d;
+        d = Design.instance();
+        return JsonViewer.showDiffDialog(d.__opsModel.getJsonData(), d.serialize());
+      });
+      return null;
+    };
+    Design.debug.json = function() {
+      var data;
+      data = Design.instance().serialize();
+      console.log(data);
+      return JSON.stringify(data);
+    };
+    Design.debug["export"] = function() {
+      var a, blob, data, e, filename;
+      filename = 'CanvasData.json';
+      data = Design.debug.json();
+      blob = new Blob([data], {
+        type: 'text/json'
+      });
+      e = document.createEvent('MouseEvents');
+      a = document.createElement('a');
+      a.download = filename;
+      a.href = window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      a.dispatchEvent(e);
+      return null;
+    };
+    Design.debug.view = function(e) {
+      var data;
+      if (e && e.preventDefault) {
+        e.preventDefault();
+      }
+      data = Design.instance().serialize();
+      require(["component/jsonviewer/JsonViewer"], function(JsonViewer) {
+        return JsonViewer.showViewDialog(data);
+      });
+      return null;
+    };
+    Design.debug.checkValidDesign = function() {
+      dd().eachComponent(function(comp) {
+        if (comp.design() === D.instance()) {
+          console.log("Valid design");
+        } else {
+          console.log("Invalid design");
+        }
+        return null;
+      });
+      return null;
+    };
+    Design.debug.autoLayout = function() {
+      return App.workspaces.getAwakeSpace().view.canvas.autoLayout();
+    };
+    Design.debug.getDataFromLocal = function(app_id) {
+      return JSON.parse(localStorage.getItem("get_resource/" + app_id));
+    };
+    Design.debug.setDataToLocal = function(data) {
+      return localStorage.setItem("get_resource/" + data.app_json.id, JSON.stringify(data));
+    };
+    window.d = function() {
+      return Design.instance();
+    };
+    window.dd = Design.debug;
+    window.dget = function(a) {
+      return Design.instance().get(a);
+    };
+    window.dset = function(a, b) {
+      return Design.instance().set(a, b);
+    };
+    window.dds = function() {
+      return Design.debug.json();
+    };
+    window.man = "d()          Return the current Design instance \n dd()         Print all components in current Design \n dget(a)      Design att getter \n dset(a,b)    Design att setter \n dds()        Print JSON \n copy(dds())  Copy JSON";
+    return null;
+  });
+
+}).call(this);

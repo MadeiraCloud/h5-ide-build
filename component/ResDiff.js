@@ -1,1 +1,1003 @@
-(function(){define("DiffTree",["constant"],function(e){var t;return t=function(e){var t,n,r,i,s;return e||(e={}),e.filterAttrMap||(e.filterAttrMap={"*.type":!0,"*.uid":!0,"*.name":!0,"*.index":!0,"*.number":!0,"*.serverGroupUid":!0,"*.serverGroupName":!0,"*.resource.UserData":!0,"*.resource.PrivateIpAddressSet.n.AutoAssign":!0,"*.resource.AssociatePublicIpAddress":!0,"*.resource.KeyName":!0,"*.resource.AssociationSet.n.RouteTableAssociationId":!0,"*.resource.AssociationSet.n.NetworkAclAssociationId":!0,"*.resource.BlockDeviceMapping":!0,"*.resource.VolumeSize":!0,"*.resource.GroupDescription":!0,"*.resource.ListenerDescriptions.n.Listener.SSLCertificateId":!0,"*.resource.Attachment.AttachmentId":!0,"DBINSTANCE.resource.AvailabilityZone":!0,"DBINSTANCE.resource.Endpoint.Address":!0,"DBINSTANCE.resource.ApplyImmediately":!0,"DBINSTANCE.resource.Endpoint":!0,"DBINSTANCE.resource.SourceDBInstanceIdentifierForPoint":!0,"DBINSTANCE.resource.UseLatestRestorableTime":!0,"ASG.resource.AutoScalingGroupARN":!0,"ASG.resource.PolicyARN":!0,"*.resource.adminPass":!0,"*.resource.key_name":!0,"*.resource.bootable":!0}),e.noDiffArrayAttrMap||(e.noDiffArrayAttrMap={"*.state":!0}),e.filterResMap={},n=function(e){return e&&typeof e=="object"&&e.constructor===Array},r=function(e){return n(e)?"array":e===null?"null":typeof e},t=function(e){return typeA==="object"||typeA==="array"?"":String(a)+" "},s=function(e,t){var n,r,s,o,u,a,f,l,c,h,p;c=function(){p=[];for(var t=0,n=e.length;0<=n?t<n:t>n;0<=n?t++:t--)p.push(t);return p}.apply(this),h=[];for(n=u=0,f=c.length;u<f;n=++u)o=c[n],h.push(function(){var u,a,f,l,c,h,p;c=function(){p=[];for(var e=0,n=t.length;0<=n?e<n:e>n;0<=n?e++:e--)p.push(e);return p}.apply(this),h=[];for(r=u=0,f=c.length;u<f;r=++u)o=c[r],i.call(this,e[n],t[r],"",null,[])?h.push(void 0):(s=t[n],t[n]=t[r],h.push(t[r]=s));return h}.call(this));return h},i=function(t,n,o,u,a){var f,l,c,h,p,d,v,m,g,y,b,w,E,S,x,T,N,C,k,L,A,O,M,D;o==="VPCZoneIdentifier"&&(f=t.split(","),v=n.split(","),f=_.map(f,function(e){return $.trim(e)}),v=_.map(v,function(e){return $.trim(e)}),t=f,n=v),d="";if(u){o&&(u=u.concat([o])),u.length===2&&t&&t.type&&(u[1]=t.type);if(u.length>2){p=u.slice(2),p=_.map(p,function(e){var t;return t=Number(e),t>=0?"n":e}),N=u[1],T=this.resTypeShortMap[N],d=p.join("."),c=T+"."+d,h="*."+d;if(e.filterAttrMap[c]||e.filterAttrMap[h])return}}if(!t&&!n)return;w=!1,C=r(t),k=r(n),l=C==="object"||C==="array"?"":String(t)+"",m=k==="object"||k==="array"?"":String(n)+"",l||(l=""),m||(m=""),g=A=O="",t===void 0?(g="added",O=m):n===void 0?(g="removed",A=l):C!==k||C!=="object"&&C!=="array"&&t!==n?(g="changed",A=l,O=m):A=l,a[o]={};if(C==="object"||C==="array"||k==="object"||k==="array"){C==="array"&&k==="array"&&(!h||h&&!e.noDiffArrayAttrMap[h])&&(y={},t.length<n.length?s.call(this,t,n):s.call(this,n,t)),x=[];for(L in t)x.push(L);for(L in n)x.push(L);x.sort(),S=!0;for(E=M=0,D=x.length;M<D;E=++M){L=x[E];if(x[E]===x[E-1])continue;b=i.call(this,t&&t[x[E]],n&&n[x[E]],x[E],u,a[o]),b&&(S=!1)}w=!S,S&&delete a[o]}else u&&(u.length=0),r(t)==="number"&&(t=String(t)),r(n)==="number"&&(n=String(n)),r(t)==="boolean"&&(t=String(t)),r(n)==="boolean"&&(n=String(n)),t!==n?(w=!0,a[o]={type:g,__old__:t,__new__:n}):delete a[o];return w},this.compare=function(e,t){var n;return n={},i.call(this,e,t,"result",[],n),n.result},null},t.prototype.resTypeShortMap=_.invert(e.RESTYPE),t})}).call(this),define("component/resdiff/resDiffTpl",["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<p>Resources of this App have been changed externally. This has been synced to your App. The diagram may be re-generated to reflect the change(s).</p>\n<h5>What have been changed:</h5>\n<div class="scroll-wrap scroll-wrap-res-diff" style="max-height: 350px;">\n	<div class="scrollbar-veritical-wrap" style="display: block;"><div class="scrollbar-veritical-thumb"></div></div>\n	<article class="content_wrap scroll-content"></article>\n</div>'},n.frame=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression;return s+='<div class="group '+a((o=t&&t.type,typeof o===u?o.apply(t):o))+'">\n	<div class="head">'+a((o=t&&t.title,typeof o===u?o.apply(t):o))+'<span class="count">('+a((o=t&&t.count,typeof o===u?o.apply(t):o))+')</span></div>\n	<div class="content"></div>\n</div>',s},n.resDiffGroup=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<ul class="tree"></ul>'},n.resDiffTree=e.template(t),t=function(e,t,n,r,i){function l(e,t){return"closed"}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this,a="function",f=this.escapeExpression;s+='<li class="item ',o=n["if"].call(t,t&&t.closed,{hash:{},inverse:u.noop,fn:u.program(1,l,i),data:i});if(o||o===0)s+=o;return s+='">\n	<div class="meta">\n		<span class="type">'+f((o=t&&t.key,typeof o===a?o.apply(t):o))+'</span>\n		<span class="name">'+f((o=t&&t.value,typeof o===a?o.apply(t):o))+"</span>\n	</div>\n</li>",s},n.resDiffTreeItem=e.template(t),t=function(e,t,n,r,i){function l(e,t){var n;return a((n=e&&e.type,typeof n===u?n.apply(e):n))}function c(e,t){var n="",r;return n+='<span class="name to"> -></span><span class="name '+a((r=e&&e.type1,typeof r===u?r.apply(e):r))+'">'+a((r=e&&e.value1,typeof r===u?r.apply(e):r))+"</span>",n}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div class="meta">\n	<span class="type">'+a((o=t&&t.key,typeof o===u?o.apply(t):o))+'</span>\n	<span class="name ',o=n["if"].call(t,t&&t.type,{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+='">'+a((o=t&&t.value,typeof o===u?o.apply(t):o))+"</span>\n	",o=n["if"].call(t,t&&t.value1,{hash:{},inverse:f.noop,fn:f.program(3,c,i),data:i});if(o||o===0)s+=o;return s+="\n</div>",s},n.resDiffTreeMeta=e.template(t),n}),function(){var e=[].indexOf||function(e){for(var t=0,n=this.length;t<n;t++)if(t in this&&this[t]===e)return t;return-1};define("component/resdiff/prepare",["constant"],function(t){var n,r,i;return r=function(n){return{getNodeMap:function(e){var t,r,i,s;return _.isString(e)&&(e=e.split(".")),i=n.oldAppJSON.component,t=n.newAppJSON.component,s=_.extend(i,{}),r=_.extend(t,{}),_.each(e,function(e){return s&&(_.isUndefined(s[e])?s=void 0:s=s[e]),r&&(_.isUndefined(r[e])?r=void 0:r=r[e]),null}),{oldAttr:s,newAttr:r}},genValue:function(e,t,n){var r;return r="",t=String(t),n=String(n),e==="changed"&&(t||(t="none"),n||(n="none")),t?(r=t,n&&t!==n&&(r+=" -> "+n)):r=n,r},getNodeData:function(e){return this.getNewest(this.getNodeMap(e))},getNewest:function(e){return e.newAttr||e.oldAttr},pluralToSingular:function(e){return e.slice(0,-1)},setToElement:function(e){return e.slice(0,-3)},replaceArrayIndex:function(n,r){var i,s,o,u,a,f,l,c;o=this.getNodeMap(n[0]),s=this.getNewest(o),c=s.type,f=n[n.length-2],i=r.originValue,l=["Dimensions","AlarmActions","Instances","Attachments","AvailabilityZones","LoadBalancerNames","TerminationPolicies","ListenerDescriptions","SecurityGroups","Subnets","Routes"];switch(f){case"BlockDeviceMapping":u=i.DeviceName,r.key="Device",u&&(_.isObject(u)?r.key=this.genValue(u.type,u.__old__,u.__new__):r.key=u);break;case"GroupSet":r.key="SecurityGroup";break;case"IpPermissions":case"IpPermissionsEgress":case"EntrySet":r.key="Rule";break;case"AssociationSet":case"AttachmentSet":case"PrivateIpAddressSet":r.key=this.setToElement(f);break;case"NotificationType":r.key="Type";break;case"VPCZoneIdentifier":r.key="Subnet";break;case"RouteSet":r.key="Route";break;case"SubnetIds":r.key="Subnet";break;case"OptionSettings":r.key="Option";break;case"Options":r.key="Option"}e.call(l,f)>=0&&(r.key=this.pluralToSingular(f)),n.length===1&&(r.key=t.RESNAME[r.key]||r.key);try{r.key==="MasterUserPassword"&&r.value&&r.value.type==="changed"&&(r.value.__new__=r.value.__new__.replace(/./g,"*"))}catch(h){a=h,null}return r}}},i=function(e,t){var n,r,i,s,o,u,a,f,l,c,h,p,d,v;return v=function(e,t){var n,r,i,s;if(_.isString(e)&&e.indexOf("@{")===0){i=/@\{.*\}/g,n=e.match(i);if(n&&n.length){r=e.slice(2,e.length-1),s=r.split(".")[0];if(!t)return r;if(s)return""+s+".name"}}return null},_.isObject(t.value)?(f=t.value,s=!0,t.key&&t.key.substr(t.key.lastIndexOf("Id"))==="Id"&&(s=!1),h=v(f.__old__,s),a=v(f.__new__,s),h&&(f.__old__=this.h.getNodeMap(h).oldAttr),a&&(f.__new__=this.h.getNodeMap(a).newAttr),t=this.h.replaceArrayIndex(e,t),t.value={type:f.type,old:f.__old__,"new":f.__new__}):(r=this.h.getNodeMap(e),l=r.oldAttr,o=r.newAttr,d=v(t.value),d&&(n=this.h.getNodeMap(d),p=n.oldAttr,f=n.newAttr,t.value=p||f),e.length===1&&(i=e[0],c=(l?l.name:void 0)||"",u=(o?o.name:void 0)||"",l?t.key=l.type:t.key=o.type,t.value=this.h.genValue(null,c,u)),t=this.h.replaceArrayIndex(e,t)),e.length===2&&(e[1]==="resource"&&(t.skip=!0),e[1]==="state"&&delete t.key),t},n=function(e){return _.extend(this,e),this.h=r(e),this},n.prototype.node=i,n})}.call(this),function(){define("ResDiff",["UI.modalplus","DiffTree","component/resdiff/resDiffTpl","component/resdiff/prepare","constant"],function(e,t,n,r,i){return Backbone.View.extend({className:"res_diff_tree",tagName:"section",initialize:function(e){return this.oldAppJSON=e.old,this.newAppJSON=e["new"],e.callback&&(this.callback=e.callback),this.prepare=new r({oldAppJSON:this.oldAppJSON,newAppJSON:this.newAppJSON}),this._genDiffInfo(this.oldAppJSON.component,this.newAppJSON.component)},events:{"click .item .type":"_toggleTab","click .head":"_toggleItem"},_toggleItem:function(e){var t;return t=$(e.currentTarget).closest(".group"),t.toggleClass("closed")},_toggleTab:function(e){var t;t=$(e.currentTarget).closest(".item");if(t.hasClass("end"))return;return t.toggleClass("closed")},render:function(){var t,r,i,s;return s=this,r="OK, got it",i={template:this.el,title:"App Changes",disableClose:!0,hideClose:!0,confirm:{text:r},width:"608px",compact:!1,preventClose:!0},this.modal=new e(i),this.modal.on("confirm",function(){var e,t;return e=s.modal.tpl.find(".modal-confirm"),s.callback?(e.addClass("disabled"),e.text("Saving..."),t=s.callback(!0),t.then(function(){return s.modal.close()},function(t){return e.text(r),e.removeClass("disabled"),notification("error",t.msg)})):s.modal.close()},this),this.modal.on("cancel",function(){return s.callback&&s.callback(!1),s.modal.close()},this),this.$el.html(n.frame()),t=this.$("article"),this._genResGroup(t),this.modal.resize()},_genDiffInfo:function(e,n){var r,i,s,o,u;s=this,s.addedComps={},s.removedComps={},s.modifiedComps={},u={},o={},i={"AWS.EC2.Tag":!0,"AWS.AutoScaling.Tag":!0},_.each(e,function(t,r){if(t&&!i[t.type])return n[r]?(u[r]=e[r],o[r]=n[r]):s.removedComps[r]=e[r],null}),_.each(_.keys(n),function(t){return e[t]||n[t]&&!i[n[t].type]&&(s.addedComps[t]=n[t]),null}),r=new t,s.modifiedComps=r.compare(u,o);if(!s.modifiedComps)return s.modifiedComps={}},_genResGroup:function(e){var t,r,i,s,o,u,a,f;o=this,s=[{title:"New Resource",diffComps:o.addedComps,closed:!0,type:"added",needDiff:!1},{title:"Removed Resource",diffComps:o.removedComps,closed:!0,type:"removed",needDiff:!1},{title:"Modified Resource",diffComps:o.modifiedComps,closed:!1,type:"modified",needDiff:!0}],f=[];for(u=0,a=s.length;u<a;u++)i=s[u],r=_.keys(i.diffComps).length,r?(t=$(n.resDiffGroup({type:i.type,title:i.title,count:r})).appendTo(e),f.push(this._genResTree(t.find(".content"),i.diffComps,i.closed,i.needDiff))):f.push(void 0);return f},_genResTree:function(e,t,r,i){var s,o;return s=this,o=function(e,t,i,u){var a,f,l,c,h,p,d,v,m,g,y,b;if(_.isObject(e)){if(_.isUndefined(e.__new__)&&_.isUndefined(e.__old__)){a=$(n.resDiffTree({})).appendTo(u),y=[];for(g in e)b=e[g],m=_.isObject(b)?"":b,h=i.concat([g]),c=this.prepare.node(h,{key:g,value:m,originValue:b}),c.key?(c.skip?(f=u,a.remove()):(f=$(n.resDiffTreeItem({key:c.key,value:c.value,closed:r})).appendTo(a),_.isObject(b)||f.addClass("end")),_.isArray(b)&&b.length===0?y.push(f.remove()):y.push(o.call(s,b,g,h,f))):y.push(void 0);return y}return l=e.type,c=this.prepare.node(i,{key:t,value:e}),c.key?(p=v=d="",_.isObject(c.value)?c.value.type==="added"?(e=c.value["new"],p="new"):c.value.type==="removed"?(e=c.value.old,p="old"):c.value.type==="changed"&&(e=c.value.old,v=c.value["new"],p="old",d="new"):e=c.value,u.html(n.resDiffTreeMeta({key:c.key,value:e,type:p,value1:v,type1:d,closed:r})),u.addClass("end"),u.addClass(l)):u.remove()}},o.call(s,t,null,[],e)},getRelatedInstanceGroupUID:function(e,t){var n,r,s,o,u,a,f,l;l=this,f=t.type;if(f===i.RESTYPE.INSTANCE)return t.serverGroupUid;f===i.RESTYPE.ENI&&(u=t.resource.Attachment.InstanceId);if(u){a=MC.extractID(u),o=e[a];if(o)return o.serverGroupUid}f===i.RESTYPE.VOL&&(u=t.resource.AttachmentSet.InstanceId);if(u){a=MC.extractID(u),o=e[a];if(o)return o.serverGroupUid}f===i.RESTYPE.EIP&&(r=t.resource.NetworkInterfaceId);if(r){s=MC.extractID(r),n=e[s];if(n)return l.getRelatedInstanceGroupUID(e,n)}return""},renderAppUpdateView:function(){return this._genResGroup(this.$el),this.$el},getDiffInfo:function(){var e,n,r,i,s,o,u,a,f,l;l=this,a=_.extend({},l.oldAppJSON),u=_.extend({},l.newAppJSON),r=!1;if(_.size(l.addedComps)||_.size(l.removedComps)||_.size(l.modifiedComps))r=!0;return n=new t,o=n.compare(a.layout,u.layout),i=!1,_.size(o)&&(i=!0),s=!1,f=!0,_.each(l.modifiedComps,function(e,t){return e.state&&(s=!0),_.size(e)===1&&e.state?delete l.modifiedComps[t]:f=!1,e&&e.state&&delete e.state,null}),f&&_.size(l.addedComps)===0&&_.size(l.removedComps)===0&&(r=!1),delete a.component,delete a.layout,delete u.component,delete u.layout,e=n.compare(a,u),_.size(e)>0&&(i=!0),{compChange:r,layoutChange:i,stateChange:s}},getChangeInfo:function(){var e,t,n,r,s;s=this,e=!1;if(_.size(s.addedComps)||_.size(s.removedComps)||_.size(s.modifiedComps))e=!0;return t=_.some(s.addedComps,function(e){return s.newAppJSON.layout[e.uid]}),n=s.newAppJSON.component,r=s.oldAppJSON.component,_.each(s.modifiedComps,function(e,n){var s,o;return s=r[n],s&&((o=s.type)===i.RESTYPE.ENI||o===i.RESTYPE.EIP||o===i.RESTYPE.INSTANCE||o===i.RESTYPE.VOL)&&s&&s.number>1&&(t=!0),null}),_.each(s.modifiedComps,function(e,n){var s;return r[n]&&r[n].type===i.RESTYPE.ELB&&e&&e.resource&&e.resource.Instances&&(s=[],_.map(e.resource.Instances,function(e){var t;t=e.InstanceId;if(t){t.__old__&&s.push(t.__old__);if(t.__new__)return s.push(t.__new__)}}),_.each(s,function(e){return n=MC.extractID(e),r[n]&&r[n].number>1&&(t=!0),null})),null}),_.each(s.modifiedComps,function(e,r){return n[r]&&n[r].type===i.RESTYPE.ASG&&(e&&e.resource&&e.resource.AvailabilityZones&&(t=!0),e&&e.resource&&e.resource.VPCZoneIdentifier&&(t=!0)),null}),_.each(s.removedComps,function(e){var n,o,u;if((u=e.type)===i.RESTYPE.ENI||u===i.RESTYPE.EIP||u===i.RESTYPE.INSTANCE||u===i.RESTYPE.VOL)o=s.getRelatedInstanceGroupUID(r,e),n=r[o],n&&n.number>1&&(t=!0);return null}),{hasResChange:e,needUpdateLayout:t}}})})}.call(this),define("component/ResDiff",function(){});
+(function() {
+  define('DiffTree',['constant'], function(constant) {
+    var DiffTree;
+    DiffTree = function(option) {
+      var getType, isArray, typeofReal, _compare, _diffAry;
+      if (!option) {
+        option = {};
+      }
+      if (!option.filterAttrMap) {
+        option.filterAttrMap = {
+          '*.type': true,
+          '*.uid': true,
+          '*.name': true,
+          '*.index': true,
+          '*.number': true,
+          '*.serverGroupUid': true,
+          '*.serverGroupName': true,
+          '*.resource.UserData': true,
+          '*.resource.PrivateIpAddressSet.n.AutoAssign': true,
+          '*.resource.AssociatePublicIpAddress': true,
+          '*.resource.KeyName': true,
+          '*.resource.AssociationSet.n.RouteTableAssociationId': true,
+          '*.resource.AssociationSet.n.NetworkAclAssociationId': true,
+          '*.resource.BlockDeviceMapping': true,
+          '*.resource.VolumeSize': true,
+          '*.resource.GroupDescription': true,
+          '*.resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
+          '*.resource.Attachment.AttachmentId': true,
+          'DBINSTANCE.resource.AvailabilityZone': true,
+          'DBINSTANCE.resource.Endpoint.Address': true,
+          'DBINSTANCE.resource.ApplyImmediately': true,
+          'DBINSTANCE.resource.Endpoint': true,
+          'DBINSTANCE.resource.SourceDBInstanceIdentifierForPoint': true,
+          'DBINSTANCE.resource.UseLatestRestorableTime': true,
+          'ASG.resource.AutoScalingGroupARN': true,
+          'ASG.resource.PolicyARN': true,
+          '*.resource.adminPass': true,
+          '*.resource.key_name': true,
+          '*.resource.bootable': true
+        };
+      }
+      if (!option.noDiffArrayAttrMap) {
+        option.noDiffArrayAttrMap = {
+          '*.state': true
+        };
+      }
+      option.filterResMap = {};
+      isArray = function(value) {
+        return value && typeof value === 'object' && value.constructor === Array;
+      };
+      typeofReal = function(value) {
+        if (isArray(value)) {
+          return 'array';
+        } else {
+          if (value === null) {
+            return 'null';
+          } else {
+            return typeof value;
+          }
+        }
+      };
+      getType = function(value) {
+        if (typeA === 'object' || typeA === 'array') {
+          return '';
+        } else {
+          return String(a) + ' ';
+        }
+      };
+      _diffAry = function(a, b) {
+        var i, j, tmp, v, _i, _j, _len, _ref, _ref1, _results, _results1;
+        _ref1 = (function() {
+          _results1 = [];
+          for (var _j = 0, _ref = a.length; 0 <= _ref ? _j < _ref : _j > _ref; 0 <= _ref ? _j++ : _j--){ _results1.push(_j); }
+          return _results1;
+        }).apply(this);
+        _results = [];
+        for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+          v = _ref1[i];
+          _results.push((function() {
+            var _k, _l, _len1, _ref2, _ref3, _results2, _results3;
+            _ref3 = (function() {
+              _results3 = [];
+              for (var _l = 0, _ref2 = b.length; 0 <= _ref2 ? _l < _ref2 : _l > _ref2; 0 <= _ref2 ? _l++ : _l--){ _results3.push(_l); }
+              return _results3;
+            }).apply(this);
+            _results2 = [];
+            for (j = _k = 0, _len1 = _ref3.length; _k < _len1; j = ++_k) {
+              v = _ref3[j];
+              if (!_compare.call(this, a[i], b[j], '', null, [])) {
+                tmp = b[i];
+                b[i] = b[j];
+                _results2.push(b[j] = tmp);
+              } else {
+                _results2.push(void 0);
+              }
+            }
+            return _results2;
+          }).call(this));
+        }
+        return _results;
+      };
+      _compare = function(a, b, key, path, resultJSON) {
+        var aAry, aString, attrPath1, attrPath2, attrPathAry, attrPathStr, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resShortType, resType, typeA, typeB, v, value1, value2, _i, _len;
+        if (key === 'VPCZoneIdentifier') {
+          aAry = a.split(',');
+          bAry = b.split(',');
+          aAry = _.map(aAry, function(ref) {
+            return $.trim(ref);
+          });
+          bAry = _.map(bAry, function(ref) {
+            return $.trim(ref);
+          });
+          a = aAry;
+          b = bAry;
+        }
+        attrPathStr = '';
+        if (path) {
+          if (key) {
+            path = path.concat([key]);
+          }
+          if (path.length === 2 && a && a.type) {
+            path[1] = a.type;
+          }
+          if (path.length > 2) {
+            attrPathAry = path.slice(2);
+            attrPathAry = _.map(attrPathAry, function(path) {
+              var num;
+              num = Number(path);
+              if (num >= 0) {
+                return 'n';
+              }
+              return path;
+            });
+            resType = path[1];
+            resShortType = this.resTypeShortMap[resType];
+            attrPathStr = attrPathAry.join('.');
+            attrPath1 = resShortType + '.' + attrPathStr;
+            attrPath2 = '*.' + attrPathStr;
+            if (option.filterAttrMap[attrPath1] || option.filterAttrMap[attrPath2]) {
+              return;
+            }
+          }
+        }
+        if (!a && !b) {
+          return;
+        }
+        haveDiff = false;
+        typeA = typeofReal(a);
+        typeB = typeofReal(b);
+        aString = typeA === 'object' || typeA === 'array' ? '' : String(a) + '';
+        bString = typeB === 'object' || typeB === 'array' ? '' : String(b) + '';
+        if (!aString) {
+          aString = '';
+        }
+        if (!bString) {
+          bString = '';
+        }
+        changeType = value1 = value2 = '';
+        if (a === void 0) {
+          changeType = 'added';
+          value2 = bString;
+        } else if (b === void 0) {
+          changeType = 'removed';
+          value1 = aString;
+        } else if (typeA !== typeB || (typeA !== 'object' && typeA !== 'array' && a !== b)) {
+          changeType = 'changed';
+          value1 = aString;
+          value2 = bString;
+        } else {
+          value1 = aString;
+        }
+        resultJSON[key] = {};
+        if (typeA === 'object' || typeA === 'array' || typeB === 'object' || typeB === 'array') {
+          if (typeA === 'array' && typeB === 'array') {
+            if (!attrPath2 || (attrPath2 && !option.noDiffArrayAttrMap[attrPath2])) {
+              diffAryResult = {};
+              if (a.length < b.length) {
+                _diffAry.call(this, a, b);
+              } else {
+                _diffAry.call(this, b, a);
+              }
+            }
+          }
+          keys = [];
+          for (v in a) {
+            keys.push(v);
+          }
+          for (v in b) {
+            keys.push(v);
+          }
+          keys.sort();
+          isEqual = true;
+          for (i = _i = 0, _len = keys.length; _i < _len; i = ++_i) {
+            v = keys[i];
+            if (keys[i] === keys[i - 1]) {
+              continue;
+            }
+            hasDiff = _compare.call(this, a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
+            if (hasDiff) {
+              isEqual = false;
+            }
+          }
+          haveDiff = !isEqual;
+          if (isEqual) {
+            delete resultJSON[key];
+          }
+        } else {
+          if (path) {
+            path.length = 0;
+          }
+          if (typeofReal(a) === 'number') {
+            a = String(a);
+          }
+          if (typeofReal(b) === 'number') {
+            b = String(b);
+          }
+          if (typeofReal(a) === 'boolean') {
+            a = String(a);
+          }
+          if (typeofReal(b) === 'boolean') {
+            b = String(b);
+          }
+          if (a !== b) {
+            haveDiff = true;
+            resultJSON[key] = {
+              type: changeType,
+              __old__: a,
+              __new__: b
+            };
+          } else {
+            delete resultJSON[key];
+          }
+        }
+        return haveDiff;
+      };
+      this.compare = function(json1, json2) {
+        var resultJSON;
+        resultJSON = {};
+        _compare.call(this, json1, json2, 'result', [], resultJSON);
+        return resultJSON.result;
+      };
+      return null;
+    };
+    DiffTree.prototype.resTypeShortMap = _.invert(constant.RESTYPE);
+    return DiffTree;
+  });
+
+}).call(this);
+
+define('component/resdiff/resDiffTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<p>Resources of this App have been changed externally. This has been synced to your App. The diagram may be re-generated to reflect the change(s).</p>\n<h5>What have been changed:</h5>\n<div class=\"scroll-wrap scroll-wrap-res-diff\" style=\"max-height: 350px;\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<article class=\"content_wrap scroll-content\"></article>\n</div>";
+  };
+TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"group "
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n	<div class=\"head\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "<span class=\"count\">("
+    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</span></div>\n	<div class=\"content\"></div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.resDiffGroup=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<ul class=\"tree\"></ul>";
+  };
+TEMPLATE.resDiffTree=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  
+  return "closed";
+  }
+
+  buffer += "<li class=\"item ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.closed), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n	<div class=\"meta\">\n		<span class=\"type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n		<span class=\"name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	</div>\n</li>";
+  return buffer;
+  };
+TEMPLATE.resDiffTreeItem=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<span class=\"name to\"> -></span><span class=\"name "
+    + escapeExpression(((stack1 = (depth0 && depth0.type1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"meta\">\n	<span class=\"type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	<span class=\"name ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.value1), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.resDiffTreeMeta=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  define('component/resdiff/prepare',['constant'], function(constant) {
+    var Prepare, helper, prepareNode;
+    helper = function(options) {
+      return {
+        getNodeMap: function(path) {
+          var newComp, newCompAttr, oldComp, oldCompAttr;
+          if (_.isString(path)) {
+            path = path.split('.');
+          }
+          oldComp = options.oldAppJSON.component;
+          newComp = options.newAppJSON.component;
+          oldCompAttr = _.extend(oldComp, {});
+          newCompAttr = _.extend(newComp, {});
+          _.each(path, function(attr) {
+            if (oldCompAttr) {
+              if (_.isUndefined(oldCompAttr[attr])) {
+                oldCompAttr = void 0;
+              } else {
+                oldCompAttr = oldCompAttr[attr];
+              }
+            }
+            if (newCompAttr) {
+              if (_.isUndefined(newCompAttr[attr])) {
+                newCompAttr = void 0;
+              } else {
+                newCompAttr = newCompAttr[attr];
+              }
+            }
+            return null;
+          });
+          return {
+            oldAttr: oldCompAttr,
+            newAttr: newCompAttr
+          };
+        },
+        genValue: function(type, oldValue, newValue) {
+          var result;
+          result = '';
+          oldValue = String(oldValue);
+          newValue = String(newValue);
+          if (type === 'changed') {
+            if (!oldValue) {
+              oldValue = 'none';
+            }
+            if (!newValue) {
+              newValue = 'none';
+            }
+          }
+          if (oldValue) {
+            result = oldValue;
+            if (newValue && oldValue !== newValue) {
+              result += ' -> ' + newValue;
+            }
+          } else {
+            result = newValue;
+          }
+          return result;
+        },
+        getNodeData: function(path) {
+          return this.getNewest(this.getNodeMap(path));
+        },
+        getNewest: function(attrMap) {
+          return attrMap.newAttr || attrMap.oldAttr;
+        },
+        pluralToSingular: function(str) {
+          return str.slice(0, -1);
+        },
+        setToElement: function(str) {
+          return str.slice(0, -3);
+        },
+        replaceArrayIndex: function(path, data) {
+          var childNode, component, componentMap, deviceObj, err, parentKey, pluralKeys, type;
+          componentMap = this.getNodeMap(path[0]);
+          component = this.getNewest(componentMap);
+          type = component.type;
+          parentKey = path[path.length - 2];
+          childNode = data.originValue;
+          pluralKeys = ['Dimensions', 'AlarmActions', 'Instances', 'Attachments', 'AvailabilityZones', 'LoadBalancerNames', 'TerminationPolicies', 'ListenerDescriptions', 'SecurityGroups', 'Subnets', 'Routes'];
+          switch (parentKey) {
+            case 'BlockDeviceMapping':
+              deviceObj = childNode.DeviceName;
+              data.key = 'Device';
+              if (deviceObj) {
+                if (_.isObject(deviceObj)) {
+                  data.key = this.genValue(deviceObj.type, deviceObj.__old__, deviceObj.__new__);
+                } else {
+                  data.key = deviceObj;
+                }
+              }
+              break;
+            case 'GroupSet':
+              data.key = 'SecurityGroup';
+              break;
+            case 'IpPermissions':
+            case 'IpPermissionsEgress':
+            case 'EntrySet':
+              data.key = 'Rule';
+              break;
+            case 'AssociationSet':
+            case 'AttachmentSet':
+            case 'PrivateIpAddressSet':
+              data.key = this.setToElement(parentKey);
+              break;
+            case 'NotificationType':
+              data.key = 'Type';
+              break;
+            case 'VPCZoneIdentifier':
+              data.key = 'Subnet';
+              break;
+            case 'RouteSet':
+              data.key = 'Route';
+              break;
+            case 'SubnetIds':
+              data.key = 'Subnet';
+              break;
+            case 'OptionSettings':
+              data.key = 'Option';
+              break;
+            case 'Options':
+              data.key = 'Option';
+          }
+          if (__indexOf.call(pluralKeys, parentKey) >= 0) {
+            data.key = this.pluralToSingular(parentKey);
+          }
+          if (path.length === 1) {
+            data.key = constant.RESNAME[data.key] || data.key;
+          }
+          try {
+            if (data.key === 'MasterUserPassword' && data.value) {
+              if (data.value.type === 'changed') {
+                data.value.__new__ = data.value.__new__.replace(/./g, '*');
+              }
+            }
+          } catch (_error) {
+            err = _error;
+            null;
+          }
+          return data;
+        }
+      };
+    };
+    prepareNode = function(path, data) {
+      var attrObj, compAttrObj, compUID, needName, newAttr, newCompName, newRef, newValue, oldAttr, oldCompName, oldRef, oldValue, valueRef, _getRef;
+      _getRef = function(value, needName) {
+        var refMatchAry, refName, refRegex, refUID;
+        if (_.isString(value) && value.indexOf('@{') === 0) {
+          refRegex = /@\{.*\}/g;
+          refMatchAry = value.match(refRegex);
+          if (refMatchAry && refMatchAry.length) {
+            refName = value.slice(2, value.length - 1);
+            refUID = refName.split('.')[0];
+            if (needName) {
+              if (refUID) {
+                return "" + refUID + ".name";
+              }
+            } else {
+              return refName;
+            }
+          }
+        }
+        return null;
+      };
+      if (_.isObject(data.value)) {
+        newValue = data.value;
+        needName = true;
+        if (data.key) {
+          if (data.key.substr(data.key.lastIndexOf('Id')) === 'Id') {
+            needName = false;
+          }
+        }
+        oldRef = _getRef(newValue.__old__, needName);
+        newRef = _getRef(newValue.__new__, needName);
+        if (oldRef) {
+          newValue.__old__ = this.h.getNodeMap(oldRef).oldAttr;
+        }
+        if (newRef) {
+          newValue.__new__ = this.h.getNodeMap(newRef).newAttr;
+        }
+        data = this.h.replaceArrayIndex(path, data);
+        data.value = {
+          type: newValue.type,
+          old: newValue.__old__,
+          "new": newValue.__new__
+        };
+      } else {
+        compAttrObj = this.h.getNodeMap(path);
+        oldAttr = compAttrObj.oldAttr;
+        newAttr = compAttrObj.newAttr;
+        valueRef = _getRef(data.value);
+        if (valueRef) {
+          attrObj = this.h.getNodeMap(valueRef);
+          oldValue = attrObj.oldAttr;
+          newValue = attrObj.newAttr;
+          data.value = oldValue || newValue;
+        }
+        if (path.length === 1) {
+          compUID = path[0];
+          oldCompName = (oldAttr ? oldAttr.name : void 0) || '';
+          newCompName = (newAttr ? newAttr.name : void 0) || '';
+          if (oldAttr) {
+            data.key = oldAttr.type;
+          } else {
+            data.key = newAttr.type;
+          }
+          data.value = this.h.genValue(null, oldCompName, newCompName);
+        }
+        data = this.h.replaceArrayIndex(path, data);
+      }
+      if (path.length === 2) {
+        if (path[1] === 'resource') {
+          data.skip = true;
+        }
+        if (path[1] === 'state') {
+          delete data.key;
+        }
+      }
+      return data;
+    };
+    Prepare = function(options) {
+      _.extend(this, options);
+      this.h = helper(options);
+      return this;
+    };
+    Prepare.prototype.node = prepareNode;
+    return Prepare;
+  });
+
+}).call(this);
+
+(function() {
+  define('ResDiff',['UI.modalplus', 'DiffTree', 'component/resdiff/resDiffTpl', 'component/resdiff/prepare', 'constant'], function(modalplus, DiffTree, template, Prepare, constant) {
+    return Backbone.View.extend({
+      className: 'res_diff_tree',
+      tagName: 'section',
+      initialize: function(option) {
+        this.oldAppJSON = option.old;
+        this.newAppJSON = option["new"];
+        if (option.callback) {
+          this.callback = option.callback;
+        }
+        this.prepare = new Prepare({
+          oldAppJSON: this.oldAppJSON,
+          newAppJSON: this.newAppJSON
+        });
+        return this._genDiffInfo(this.oldAppJSON.component, this.newAppJSON.component);
+      },
+      events: {
+        'click .item .type': '_toggleTab',
+        'click .head': '_toggleItem'
+      },
+      _toggleItem: function(e) {
+        var $target;
+        $target = $(e.currentTarget).closest('.group');
+        return $target.toggleClass('closed');
+      },
+      _toggleTab: function(e) {
+        var $target;
+        $target = $(e.currentTarget).closest('.item');
+        if ($target.hasClass('end')) {
+          return;
+        }
+        return $target.toggleClass('closed');
+      },
+      render: function() {
+        var $containerDom, okText, options, that;
+        that = this;
+        okText = 'OK, got it';
+        options = {
+          template: this.el,
+          title: 'App Changes',
+          disableClose: true,
+          hideClose: true,
+          confirm: {
+            text: okText
+          },
+          width: '608px',
+          compact: false,
+          preventClose: true
+        };
+        this.modal = new modalplus(options);
+        this.modal.on('confirm', function() {
+          var $confirmBtn, promise;
+          $confirmBtn = that.modal.tpl.find('.modal-confirm');
+          if (that.callback) {
+            $confirmBtn.addClass('disabled');
+            $confirmBtn.text('Saving...');
+            promise = that.callback(true);
+            return promise.then(function() {
+              return that.modal.close();
+            }, function(error) {
+              $confirmBtn.text(okText);
+              $confirmBtn.removeClass('disabled');
+              return notification('error', error.msg);
+            });
+          } else {
+            return that.modal.close();
+          }
+        }, this);
+        this.modal.on('cancel', function() {
+          if (that.callback) {
+            that.callback(false);
+          }
+          return that.modal.close();
+        }, this);
+        this.$el.html(template.frame());
+        $containerDom = this.$('article');
+        this._genResGroup($containerDom);
+        return this.modal.resize();
+      },
+      _genDiffInfo: function(oldComps, newComps) {
+        var diffTree, ignoreDiffMap, that, unionNewComps, unionOldComps;
+        that = this;
+        that.addedComps = {};
+        that.removedComps = {};
+        that.modifiedComps = {};
+        unionOldComps = {};
+        unionNewComps = {};
+        ignoreDiffMap = {
+          'AWS.EC2.Tag': true,
+          'AWS.AutoScaling.Tag': true
+        };
+        _.each(oldComps, function(comp, uid) {
+          if (comp && !ignoreDiffMap[comp.type]) {
+            if (newComps[uid]) {
+              unionOldComps[uid] = oldComps[uid];
+              unionNewComps[uid] = newComps[uid];
+            } else {
+              that.removedComps[uid] = oldComps[uid];
+            }
+            return null;
+          }
+        });
+        _.each(_.keys(newComps), function(uid) {
+          if (!oldComps[uid]) {
+            if (newComps[uid] && !ignoreDiffMap[newComps[uid].type]) {
+              that.addedComps[uid] = newComps[uid];
+            }
+          }
+          return null;
+        });
+        diffTree = new DiffTree();
+        that.modifiedComps = diffTree.compare(unionOldComps, unionNewComps);
+        if (!that.modifiedComps) {
+          return that.modifiedComps = {};
+        }
+      },
+      _genResGroup: function($containerDom) {
+        var $group, compCount, data, groupData, that, _i, _len, _results;
+        that = this;
+        groupData = [
+          {
+            title: 'New Resource',
+            diffComps: that.addedComps,
+            closed: true,
+            type: 'added',
+            needDiff: false
+          }, {
+            title: 'Removed Resource',
+            diffComps: that.removedComps,
+            closed: true,
+            type: 'removed',
+            needDiff: false
+          }, {
+            title: 'Modified Resource',
+            diffComps: that.modifiedComps,
+            closed: false,
+            type: 'modified',
+            needDiff: true
+          }
+        ];
+        _results = [];
+        for (_i = 0, _len = groupData.length; _i < _len; _i++) {
+          data = groupData[_i];
+          compCount = _.keys(data.diffComps).length;
+          if (compCount) {
+            $group = $(template.resDiffGroup({
+              type: data.type,
+              title: data.title,
+              count: compCount
+            })).appendTo($containerDom);
+            _results.push(this._genResTree($group.find('.content'), data.diffComps, data.closed, data.needDiff));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      },
+      _genResTree: function($container, diffComps, closed, needDiff) {
+        var that, _genTree;
+        that = this;
+        _genTree = function(value, key, path, $parent) {
+          var $diffTree, $treeItem, changeType, data, nextPath, type, type1, value1, __value, _key, _results, _value;
+          if (_.isObject(value)) {
+            if (_.isUndefined(value.__new__) && _.isUndefined(value.__old__)) {
+              $diffTree = $(template.resDiffTree({})).appendTo($parent);
+              _results = [];
+              for (_key in value) {
+                _value = value[_key];
+                __value = _.isObject(_value) ? '' : _value;
+                nextPath = path.concat([_key]);
+                data = this.prepare.node(nextPath, {
+                  key: _key,
+                  value: __value,
+                  originValue: _value
+                });
+                if (data.key) {
+                  if (data.skip) {
+                    $treeItem = $parent;
+                    $diffTree.remove();
+                  } else {
+                    $treeItem = $(template.resDiffTreeItem({
+                      key: data.key,
+                      value: data.value,
+                      closed: closed
+                    })).appendTo($diffTree);
+                    if (!_.isObject(_value)) {
+                      $treeItem.addClass('end');
+                    }
+                  }
+                  if (_.isArray(_value) && _value.length === 0) {
+                    _results.push($treeItem.remove());
+                  } else {
+                    _results.push(_genTree.call(that, _value, _key, nextPath, $treeItem));
+                  }
+                } else {
+                  _results.push(void 0);
+                }
+              }
+              return _results;
+            } else {
+              changeType = value.type;
+              data = this.prepare.node(path, {
+                key: key,
+                value: value
+              });
+              if (data.key) {
+                type = value1 = type1 = '';
+                if (_.isObject(data.value)) {
+                  if (data.value.type === 'added') {
+                    value = data.value["new"];
+                    type = 'new';
+                  } else if (data.value.type === 'removed') {
+                    value = data.value.old;
+                    type = 'old';
+                  } else if (data.value.type === 'changed') {
+                    value = data.value.old;
+                    value1 = data.value["new"];
+                    type = 'old';
+                    type1 = 'new';
+                  }
+                } else {
+                  value = data.value;
+                }
+                $parent.html(template.resDiffTreeMeta({
+                  key: data.key,
+                  value: value,
+                  type: type,
+                  value1: value1,
+                  type1: type1,
+                  closed: closed
+                }));
+                $parent.addClass('end');
+                return $parent.addClass(changeType);
+              } else {
+                return $parent.remove();
+              }
+            }
+          }
+        };
+        return _genTree.call(that, diffComps, null, [], $container);
+      },
+      getRelatedInstanceGroupUID: function(originComps, comp) {
+        var eniComp, eniRef, eniUID, instanceComp, instanceRef, instanceUID, resType, that;
+        that = this;
+        resType = comp.type;
+        if (resType === constant.RESTYPE.INSTANCE) {
+          return comp.serverGroupUid;
+        }
+        if (resType === constant.RESTYPE.ENI) {
+          instanceRef = comp.resource.Attachment.InstanceId;
+        }
+        if (instanceRef) {
+          instanceUID = MC.extractID(instanceRef);
+          instanceComp = originComps[instanceUID];
+          if (instanceComp) {
+            return instanceComp.serverGroupUid;
+          }
+        }
+        if (resType === constant.RESTYPE.VOL) {
+          instanceRef = comp.resource.AttachmentSet.InstanceId;
+        }
+        if (instanceRef) {
+          instanceUID = MC.extractID(instanceRef);
+          instanceComp = originComps[instanceUID];
+          if (instanceComp) {
+            return instanceComp.serverGroupUid;
+          }
+        }
+        if (resType === constant.RESTYPE.EIP) {
+          eniRef = comp.resource.NetworkInterfaceId;
+        }
+        if (eniRef) {
+          eniUID = MC.extractID(eniRef);
+          eniComp = originComps[eniUID];
+          if (eniComp) {
+            return that.getRelatedInstanceGroupUID(originComps, eniComp);
+          }
+        }
+        return '';
+      },
+      renderAppUpdateView: function() {
+        this._genResGroup(this.$el);
+        return this.$el;
+      },
+      getDiffInfo: function() {
+        var appModifiedComps, diffTree, hasCompChange, hasLayoutChange, hasStateChange, layoutModifiedComps, newAppJSON, oldAppJSON, onlyStateChange, that;
+        that = this;
+        oldAppJSON = _.extend({}, that.oldAppJSON);
+        newAppJSON = _.extend({}, that.newAppJSON);
+        hasCompChange = false;
+        if (_.size(that.addedComps) || _.size(that.removedComps) || _.size(that.modifiedComps)) {
+          hasCompChange = true;
+        }
+        diffTree = new DiffTree();
+        layoutModifiedComps = diffTree.compare(oldAppJSON.layout, newAppJSON.layout);
+        hasLayoutChange = false;
+        if (_.size(layoutModifiedComps)) {
+          hasLayoutChange = true;
+        }
+        hasStateChange = false;
+        onlyStateChange = true;
+        _.each(that.modifiedComps, function(comp, uid) {
+          if (comp.state) {
+            hasStateChange = true;
+          }
+          if (_.size(comp) === 1 && comp.state) {
+            delete that.modifiedComps[uid];
+          } else {
+            onlyStateChange = false;
+          }
+          if (comp && comp.state) {
+            delete comp.state;
+          }
+          return null;
+        });
+        if (onlyStateChange && _.size(that.addedComps) === 0 && _.size(that.removedComps) === 0) {
+          hasCompChange = false;
+        }
+        delete oldAppJSON.component;
+        delete oldAppJSON.layout;
+        delete newAppJSON.component;
+        delete newAppJSON.layout;
+        appModifiedComps = diffTree.compare(oldAppJSON, newAppJSON);
+        if (_.size(appModifiedComps) > 0) {
+          hasLayoutChange = true;
+        }
+        return {
+          compChange: hasCompChange,
+          layoutChange: hasLayoutChange,
+          stateChange: hasStateChange
+        };
+      },
+      getChangeInfo: function() {
+        var hasResChange, needUpdateLayout, newComps, oldComps, that;
+        that = this;
+        hasResChange = false;
+        if (_.size(that.addedComps) || _.size(that.removedComps) || _.size(that.modifiedComps)) {
+          hasResChange = true;
+        }
+        needUpdateLayout = _.some(that.addedComps, function(comp) {
+          return that.newAppJSON.layout[comp.uid];
+        });
+        newComps = that.newAppJSON.component;
+        oldComps = that.oldAppJSON.component;
+        _.each(that.modifiedComps, function(comp, uid) {
+          var originComp, _ref;
+          originComp = oldComps[uid];
+          if (originComp && ((_ref = originComp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL)) {
+            if (originComp && originComp.number > 1) {
+              needUpdateLayout = true;
+            }
+          }
+          return null;
+        });
+        _.each(that.modifiedComps, function(comp, uid) {
+          var instanceAry;
+          if (oldComps[uid] && oldComps[uid].type === constant.RESTYPE.ELB) {
+            if (comp && comp.resource && comp.resource.Instances) {
+              instanceAry = [];
+              _.map(comp.resource.Instances, function(refObj) {
+                var _refObj;
+                _refObj = refObj.InstanceId;
+                if (_refObj) {
+                  if (_refObj.__old__) {
+                    instanceAry.push(_refObj.__old__);
+                  }
+                  if (_refObj.__new__) {
+                    return instanceAry.push(_refObj.__new__);
+                  }
+                }
+              });
+              _.each(instanceAry, function(uidRef) {
+                uid = MC.extractID(uidRef);
+                if (oldComps[uid] && oldComps[uid].number > 1) {
+                  needUpdateLayout = true;
+                }
+                return null;
+              });
+            }
+          }
+          return null;
+        });
+        _.each(that.modifiedComps, function(comp, uid) {
+          if (newComps[uid] && newComps[uid].type === constant.RESTYPE.ASG) {
+            if (comp && comp.resource && comp.resource.AvailabilityZones) {
+              needUpdateLayout = true;
+            }
+            if (comp && comp.resource && comp.resource.VPCZoneIdentifier) {
+              needUpdateLayout = true;
+            }
+          }
+          return null;
+        });
+        _.each(that.removedComps, function(comp) {
+          var originComp, serverGroupUid, _ref;
+          if ((_ref = comp.type) === constant.RESTYPE.ENI || _ref === constant.RESTYPE.EIP || _ref === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.VOL) {
+            serverGroupUid = that.getRelatedInstanceGroupUID(oldComps, comp);
+            originComp = oldComps[serverGroupUid];
+            if (originComp && originComp.number > 1) {
+              needUpdateLayout = true;
+            }
+          }
+          return null;
+        });
+        return {
+          hasResChange: hasResChange,
+          needUpdateLayout: needUpdateLayout
+        };
+      }
+    });
+  });
+
+}).call(this);
+
+
+define("component/ResDiff", function(){});
