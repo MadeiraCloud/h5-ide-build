@@ -15,19 +15,19 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff") format("woff"); }
+  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff?v=fe27504d") format("woff"); }
 
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 700;
-  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff") format("woff"); }
+  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff?v=66c8242c") format("woff"); }
 
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff") format("woff"); }
+  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff?v=0dfaf006") format("woff"); }
 
 body {
   font-family: Lato, "Helvetica Neue", "Helvetica", Arial, sans-serif;
@@ -2998,7 +2998,7 @@ input.parsley-error {
   left: 50%;
   margin: -40px 0 0 -40px;
   opacity: .8;
-  background: url("../images/ide/gearbig.svg");
+  background: url("../images/ide/gearbig.svg?v=3d55f265");
   background-size: 100% 100%;
   -webkit-animation: gear 2s linear infinite;
   -moz-animation: gear 2s linear infinite;
@@ -3010,7 +3010,7 @@ input.parsley-error {
   height: 30px;
   opacity: .6;
   margin: -11px 0 0 -11px;
-  background-image: url("../images/ide/gearsmall.svg");
+  background-image: url("../images/ide/gearsmall.svg?v=d0a553c0");
   -webkit-animation: smallgear 1.5s linear infinite;
   -moz-animation: smallgear 1.5s linear infinite;
   -o-animation: smallgear 1.5s linear infinite;
