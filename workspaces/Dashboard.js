@@ -2663,7 +2663,7 @@ function program26(depth0,data) {
                 eni: resourceMap(resources["AWS|VPC|NetworkInterface"]),
                 eip: resourceMap(resources["AWS|EC2|EIP"]),
                 elb: resourceMap(resources["AWS|ELB"]),
-                username: resources['username'] ? window.atob(resources['username']) : void 0
+                username: resources['username'] ? Base64.decode(resources['username']) : void 0
               };
               obj.disabled = obj.eni.length > 300;
               vpcs.push(obj);

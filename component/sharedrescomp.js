@@ -422,21 +422,16 @@ return TEMPLATE; });
           that.cancel();
           if (success.length === 1) {
             console.debug(success);
-            notification('info', sprintf(lang.NOTIFY.XXX_IS_DELETED, success[0].attributes.keyName));
-            return;
+            sprintf(lang.NOTIFY.XXX_IS_DELETED, success[0].attributes.keyName);
           } else if (success.length > 1) {
             notification('info', sprintf(lang.NOTIFY.SELECTED_KEYPAIRS_ARE_DELETED, success.length));
-            return;
           }
           if (!that.collection.toJSON().length) {
             that.M$('#t-m-select-all').get(0).checked = false;
           }
-          _.each(error, function(s) {
+          return _.each(error, function(s) {
             return console.log(s);
           });
-          if (error.length > 0) {
-            return notification('error', lang.NOTIFY.FAILED_TO_DELETE_KP);
-          }
         });
         return function(res) {
           console.debug(res);
@@ -494,7 +489,7 @@ return TEMPLATE; });
           keyName = this.M$('#import-kp-name').val();
           this.switchAction('processing');
           try {
-            keyContent = btoa(that.__upload.getData());
+            keyContent = (Base64.encode || window.btoa)(that.__upload.getData());
           } catch (_error) {
             this.modal.error('Key is not in valid OpenSSH public key format');
             that.switchAction('init');
@@ -504,7 +499,7 @@ return TEMPLATE; });
             keyName: keyName,
             keyData: keyContent
           }).save().then(function(res) {
-            notification('info', sprintf(lang.NOTIFY.XXX_IS_IMPORTED, keyName));
+            notification('info', sprintf(lang.NOTIFY.XXX_IS_IMPORTED(keyName)));
             return that.cancel();
           }, function(err) {
             var msg;
@@ -3970,6 +3965,7 @@ return TEMPLATE; });
           '*.resource.GroupDescription': true,
           '*.resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
           '*.resource.Attachment.AttachmentId': true,
+          'DBINSTANCE.resource.DBName': true,
           'DBINSTANCE.resource.AvailabilityZone': true,
           'DBINSTANCE.resource.Endpoint.Address': true,
           'DBINSTANCE.resource.ApplyImmediately': true,

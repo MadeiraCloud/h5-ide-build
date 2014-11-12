@@ -5062,7 +5062,7 @@ return Markdown;
         var $contentElem, logContent;
         $('#modal-instance-sys-log .instance-sys-log-loading').hide();
         if (result && result.output) {
-          logContent = window.atob(result.output);
+          logContent = Base64.decode(result.output);
           $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
           $contentElem.html(MC.template.convertBreaklines({
             content: logContent

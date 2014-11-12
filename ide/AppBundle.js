@@ -2002,7 +2002,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       Saving: 9
     };
     OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
-    OpsModelLastestVersion = "2014-11-11";
+    OpsModelLastestVersion = "2014-09-18";
     OpsModel = Backbone.Model.extend({
       defaults: function() {
         return {
@@ -3401,7 +3401,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       initialize: function() {
         this.set({
           usercode: $.cookie("usercode"),
-          username: window.atob($.cookie("usercode")),
+          username: Base64.decode($.cookie("usercode")),
           session: $.cookie("session_id")
         });
       },
@@ -3440,16 +3440,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         paymentInfo = result.payment || {};
         selfPage = paymentInfo.self_page || {};
         res = {
-          email: window.atob(result.email),
+          email: Base64.decode(result.email),
           repo: result.mod_repo,
           tag: result.mod_tag,
           state: parseInt(result.state, 10),
           intercomHash: result.intercom_secret,
           account: result.account_id,
-          firstName: window.atob(result.first_name || ""),
-          lastName: window.atob(result.last_name || ""),
-          cardFirstName: window.atob(selfPage.first_name || ""),
-          cardLastName: window.atob(selfPage.last_name || ""),
+          firstName: Base64.decode(result.first_name || ""),
+          lastName: Base64.decode(result.last_name || ""),
+          cardFirstName: Base64.decode(selfPage.first_name || ""),
+          cardLastName: Base64.decode(selfPage.last_name || ""),
           voQuotaCurrent: paymentInfo.current_quota || 0,
           voQuotaPerMonth: paymentInfo.max_quota || 3600,
           has_card: !!paymentInfo.has_card,
@@ -3521,8 +3521,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               billingEnd: new Date(result.current_period_ends_at || null),
               billingStart: new Date(result.current_period_started_at || null),
               paymentUrl: result.url,
-              cardFirstName: result.card ? window.atob(result.first_name || "") : void 0,
-              cardLastName: result.card ? window.atob(result.last_name || "") : void 0
+              cardFirstName: result.card ? Base64.decode(result.first_name || "") : void 0,
+              cardLastName: result.card ? Base64.decode(result.last_name || "") : void 0
             };
             that.set(paymentInfo);
             return that.trigger("paymentUpdate");

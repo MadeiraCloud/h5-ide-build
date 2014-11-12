@@ -355,6 +355,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         Design.instance().component(id).setName(name);
         this.set("name", name);
         return null;
+      },
+      setDesc: function(description) {
+        var id;
+        id = this.get("uid");
+        console.assert(id, "This property model doesn't have an id");
+        return Design.instance().component(id).setDesc(description);
       }
     });
     return PropertyModel;
@@ -1531,6 +1537,7 @@ function program9(depth0,data) {
         attr.instance_type = component.getInstanceTypeList();
         attr.tenancy = component.isDefaultTenancy();
         attr.displayCount = attr.count - 1;
+        attr.description = component.get("description");
         eni = component.getEmbedEni();
         attr.number_disable = eni && eni.connections('RTB_Route').length > 0;
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).allObjects()[0];
@@ -2085,7 +2092,11 @@ function program57(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.displayCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>]\n				</div>\n				<div class=\"fitfloat\">\n					<input class=\"input instance-name\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-instance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n				</div>\n			</div>\n\n		</section>\n		<section class=\"property-control-group\" data-bind=\"true\">\n			<label class=\"left\" for=\"property-instance-count\" >"
+    + "\" id=\"property-instance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n				</div>\n			</div>\n		</section>\n		<section class=\"property-control-group\" data-bind=\"true\">\n			<label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n			<textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n		</section>\n		<section class=\"property-control-group\" data-bind=\"true\">\n			<label class=\"left\" for=\"property-instance-count\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NUMBER", {hash:{},data:data}))
     + "</label>\n			<span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
@@ -2160,6 +2171,7 @@ function program57(depth0,data) {
     InstanceView = PropertyView.extend({
       events: {
         'change .instance-name': 'instanceNameChange',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-instance-count': 'countChange',
         'change #property-instance-ebs-optimized': 'ebsOptimizedSelect',
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
@@ -2274,6 +2286,9 @@ function program57(depth0,data) {
           this.setTitle(name);
         }
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       countChange: function(event) {
         var target, that, val;
@@ -2549,6 +2564,9 @@ function program57(depth0,data) {
           myInstanceComponent = Design.instance().component(effective.uid);
           this.set('uid', effective.uid);
           this.set('mid', effective.mid);
+        }
+        if (myInstanceComponent) {
+          this.set('description', myInstanceComponent.get("description"));
         }
         if (!myInstanceComponent) {
           console.warn("instance.app_model.init(): can not find InstanceModel");
@@ -3059,6 +3077,10 @@ function program39(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.instanceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_STATE", {hash:{},data:data}))
     + "</dt>\n      <dd><i class=\"status status-"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3304,7 +3326,7 @@ function program39(depth0,data) {
         var $contentElem, logContent;
         $('#modal-instance-sys-log .instance-sys-log-loading').hide();
         if (result && result.output) {
-          logContent = window.atob(result.output);
+          logContent = Base64.decode(result.output);
           $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
           $contentElem.html(MC.template.convertBreaklines({
             content: logContent
@@ -3424,6 +3446,7 @@ function program39(depth0,data) {
         this.set('number', myInstanceComponent.get('count'));
         this.set('name', myInstanceComponent.get('name'));
         this.set('monitoring', myInstanceComponent.get('monitoring'));
+        this.set('description', myInstanceComponent.get('description'));
         this.getGroupList();
         this.getEni();
         return null;
@@ -3530,7 +3553,11 @@ function program3(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_DETAIL", {hash:{},data:data}))
-    + "</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-instance-count\" >"
+    + "</div>\n  <div class=\"option-group\">\n\n    <section class=\"property-control-group\" data-bind=\"true\">\n        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-instance-count\" >XXX"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NUMBER", {hash:{},data:data}))
     + "</label>\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
@@ -3911,6 +3938,7 @@ function program12(depth0,data) {
     var InstanceView;
     InstanceView = PropertyView.extend({
       events: {
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-instance-count': "countChange",
         'click #property-ami': "openAmiPanel",
         'OPTION_CHANGE #instance-type-select': "instanceTypeSelect",
@@ -3952,6 +3980,9 @@ function program12(depth0,data) {
         this.updateInstanceList();
         this.setEditableIP(val === 1);
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       ebsOptimizedSelect: function(event) {
         this.model.setEbsOptimized(event.target.checked);
@@ -4460,7 +4491,7 @@ function program10(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/editor/property/missing/main',['../base/main', '../base/model', '../base/view', 'constant'], function(PropertyModule, PropertyModel, PropertyView, constant) {
+  define('workspaces/editor/property/missing/main',['../base/main', '../base/model', '../base/view', 'constant', 'i18n!/nls/lang.js'], function(PropertyModule, PropertyModel, PropertyView, constant, lang) {
     var MissingModule, MissingView, m, model, view;
     MissingView = PropertyView.extend({
       render: function() {
@@ -5846,6 +5877,7 @@ function program7(depth0,data) {
         attr = component != null ? component.toJSON() : void 0;
         attr.uid = uid;
         attr.isVpc = true;
+        attr.description = component != null ? component.get("description") : void 0;
         pingArr = component.getHealthCheckTarget();
         attr.pingProtocol = pingArr[0];
         attr.pingPort = pingArr[1];
@@ -6139,7 +6171,7 @@ function program6(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_REQUIRED", {hash:{},data:data}))
     + "</span>\n			<input data-ignore=\"true\" data-required-rollback=\"true\" maxlength=\"17\" class=\"input elb-name\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-elb-name\"/>\n		</section>\n\n		";
+    + "\" id=\"property-elb-name\"/>\n		</section>\n		";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVpc), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	";
@@ -6337,7 +6369,11 @@ function program30(depth0,data) {
     + "</div>\n	<div class=\"option-group\" data-bind=\"true\" >\n	";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.appData), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				<input id=\"elb-cross-az-select\" type=\"checkbox\" ";
+  buffer += "\n		<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n		<textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n		</section>\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				<input id=\"elb-cross-az-select\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.crossZone), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n				<label for=\"elb-cross-az-select\"></label>\n			</div>\n			<label for=\"elb-cross-az-select\" >"
@@ -6468,6 +6504,7 @@ function program30(depth0,data) {
     ElbView = PropertyView.extend({
       events: {
         'keyup #property-elb-name': 'elbNameChange',
+        'change #property-res-desc': 'onChangeDesc',
         'change #elb-scheme-select1': "schemeSelectChange",
         'change #elb-scheme-select2': "schemeSelectChange",
         'OPTION_CHANGE #elb-property-health-protocol-select': "healthProtocolSelect",
@@ -6535,6 +6572,9 @@ function program30(depth0,data) {
             }
           });
         }
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       schemeSelectChange: function(event) {
         this.model.setScheme(event.currentTarget.value);
@@ -7098,6 +7138,7 @@ function program30(depth0,data) {
           return false;
         }
         elb = elb.toJSON();
+        elb.description = myElbComponent.get("description");
         if (elb.ConnectionDraining) {
           if (elb.ConnectionDraining.Enabled) {
             elb.ConnectionDrainingInfo = "Enabled; Timeout: " + elb.ConnectionDraining.Timeout + " seconds";
@@ -7401,6 +7442,10 @@ function program27(depth0,data) {
     + "\">(A/AAAA)dualstack."
     + escapeExpression(((stack1 = (depth0 && depth0.Dnsname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </dd>\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n        <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_HOST_ZONE_ID", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.CanonicalHostedZoneNameID)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -7709,7 +7754,8 @@ function program5(depth0,data) {
           uid: uid,
           name: subnet_component.get("name"),
           networkACL: networkACLs,
-          isAppEdit: this.isAppEdit
+          isAppEdit: this.isAppEdit,
+          description: subnet_component.get("description")
         });
         if (this.isAppEdit) {
           subnet = (_ref = CloudResources(constant.RESTYPE.SUBNET, Design.instance().region()).get(subnet_component.get('appId'))) != null ? _ref.toJSON() : void 0;
@@ -7813,7 +7859,11 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_RT_ID", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.routeTable)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n  </div>\n\n  ";
+    + "</dd>\n    </dl>\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n  </div>\n\n  ";
   return buffer;
   }
 
@@ -7828,7 +7878,11 @@ function program3(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" lastValue=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-subnet-name\" maxlength=\"255\" data-required-rollback=\"true\" data-ignore=\"true\"/>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label class=\"left\" for=\"property-cidr-block\">"
+    + "\" id=\"property-subnet-name\" maxlength=\"255\" data-required-rollback=\"true\" data-ignore=\"true\"/>\n    </section>\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n    <section class=\"property-control-group\">\n      <label class=\"left\" for=\"property-cidr-block\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_DETAIL_LBL_CIDR_BLOCK", {hash:{},data:data}))
     + "</label>\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
@@ -7919,6 +7973,7 @@ function program4(depth0,data) {
     SubnetView = PropertyView.extend({
       events: {
         "change #property-subnet-name": 'onChangeName',
+        "change #property-res-desc": 'onChangeDesc',
         "focus #property-cidr-block": 'onFocusCIDR',
         "keypress #property-cidr-block": 'onPressCIDR',
         "blur #property-cidr-block": 'onBlurCIDR',
@@ -7940,6 +7995,9 @@ function program4(depth0,data) {
           this.model.setName(name);
           return this.setTitle(name);
         }
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       onPressCIDR: function(event) {
         if (event.keyCode === 13) {
@@ -8056,6 +8114,7 @@ function program4(depth0,data) {
         }
         subnet = _.clone(subnet);
         subnet.name = mySubnetComponent.get('name');
+        subnet.description = mySubnetComponent.get('description');
         subnet.acl = this.getACL(uid);
         subnet.uid = uid;
         routeTable = mySubnetComponent.connectionTargets('RTB_Asso')[0];
@@ -8120,6 +8179,10 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_ID", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.subnetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
     + "</dd>\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_STATE", {hash:{},data:data}))
     + "</dt>\n      <dd><i class=\"status status-"
@@ -8233,7 +8296,8 @@ function program1(depth0,data) {
           name: component.get("name"),
           cidr: component.get("cidr"),
           dhcp: dhcp,
-          isAppEdit: this.isAppEdit
+          isAppEdit: this.isAppEdit,
+          description: component.get("description")
         };
         if (this.isAppEdit) {
           myVPCComponent = Design.instance().component(uid);
@@ -8350,12 +8414,16 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_APP_DEFAULT_ACL", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.defaultACL)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-dns-resolution\" type=\"checkbox\"";
+    + "</dd>\n    </dl>\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-dns-resolution\" type=\"checkbox\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.dnsSupport), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"dns-resolution\">\n        <label for=\"property-dns-resolution\"></label>\n      </div>\n      <label for=\"property-dns-resolution\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DETAIL_LBL_ENABLE_DNS_RESOLUTION", {hash:{},data:data}))
-    + "</label>\n    </section>\n\n\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-dns-hostname\" type=\"checkbox\"";
+    + "</label>\n    </section>\n\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-dns-hostname\" type=\"checkbox\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.dnsHosts), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"dns-hostname\">\n        <label for=\"property-dns-hostname\"></label>\n      </div>\n      <label for=\"property-dns-hostname\">"
@@ -8380,7 +8448,11 @@ function program4(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
     + "</span>\n      <input class=\"input vpc-name\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-vpc-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n    </section>\n\n    <section class=\"property-control-group clearfix\">\n      <label class=\"left\" for=\"property-cidr-block\">"
+    + "\" id=\"property-vpc-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n    </section>\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n    <section class=\"property-control-group clearfix\">\n      <label class=\"left\" for=\"property-cidr-block\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DETAIL_LBL_CIDR_BLOCK", {hash:{},data:data}))
     + "</label>\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
@@ -8468,6 +8540,7 @@ function program9(depth0,data) {
     VPCView = PropertyView.extend({
       events: {
         'change #property-vpc-name': 'onChangeName',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-cidr-block': 'onChangeCidr',
         'change #property-dns-resolution': 'onChangeDnsSupport',
         'change #property-dns-hostname': 'onChangeDnsHostname',
@@ -8536,6 +8609,9 @@ function program9(depth0,data) {
           this.setTitle(name);
         }
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       onChangeCidr: function(event) {
         var cidr, target;
@@ -8612,6 +8688,7 @@ function program9(depth0,data) {
         }
         vpc = $.extend(true, {}, vpc);
         vpc.name = myVPCComponent.get('name');
+        vpc.description = myVPCComponent.get('description');
         TYPE_RTB = constant.RESTYPE.RT;
         TYPE_ACL = constant.RESTYPE.ACL;
         RtbModel = Design.modelClassForType(TYPE_RTB);
@@ -8793,6 +8870,10 @@ function program20(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_APP_STATE", {hash:{},data:data}))
     + "</dt>\n      <dd><i class=\"status status-"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -8822,7 +8903,7 @@ function program20(depth0,data) {
   buffer += "\n\n  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.defaultDhcp), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>\n\n  \n</article>";
+  buffer += "\n  </div>\n\n\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -8921,6 +9002,7 @@ function program20(depth0,data) {
         routes = [];
         data = {
           uid: component.id,
+          description: component.get("description"),
           title: component.get("name"),
           isMain: component.get("main"),
           local_route: VPCModel.theVPC().get("cidr"),
@@ -9034,7 +9116,11 @@ function program3(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"rt-name\">\n	</div>\n\n	";
+    + "\" id=\"rt-name\">\n	</div>\n\n	<section class=\"property-control-group\" data-bind=\"true\">\n        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n	</section>\n\n	";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(9, program9, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n\n	<div class=\"option-group-head expand\">"
@@ -9197,11 +9283,15 @@ function program20(depth0,data) {
         'change .propagation': 'changePropagation',
         "focus .ipt-wrapper .input": 'onFocusCIDR',
         "keypress .ipt-wrapper .input": 'onPressCIDR',
-        "blur .ipt-wrapper .input": 'onBlurCIDR'
+        "blur .ipt-wrapper .input": 'onBlurCIDR',
+        'change #property-res-desc': 'onChangeDescription'
       },
       render: function() {
         this.$el.html(template(this.model.attributes));
         return this.model.attributes.title;
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       processParsley: function(event) {
         $(event.currentTarget).find('input').last().focus().removeClass('parsley-validated').removeClass('parsley-error').next('.parsley-error-list').remove();
@@ -9388,6 +9478,7 @@ function program20(depth0,data) {
         }
         rtb = $.extend(true, {}, rtb);
         rtb.name = routeTable.get('name');
+        rtb.description = routeTable.get('description');
         has_main = false;
         if (rtb.associationSet && rtb.associationSet.length) {
           _ref1 = rtb.associationSet;
@@ -9461,6 +9552,10 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_ID", {hash:{},data:data}))
     + "</dt>\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n    <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
     + "</dd>\n\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LBL_MAIN_RT", {hash:{},data:data}))
     + "</dt>\n    <dd>"
@@ -9775,6 +9870,7 @@ function program15(depth0,data) {
         this.set({
           uid: uid,
           name: cgw.get("name"),
+          description: cgw.get("description"),
           BGP: cgw.get("bgpAsn"),
           ip: cgw.get("ip")
         });
@@ -9817,7 +9913,11 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
     + "</span>\n		<input class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-cgw-name\" data-ignore=\"true\"/>\n	</div>\n\n	<div class=\"property-control-group clearfix\">\n		<label class=\"left\" for=\"property-cgw-ip\">"
+    + "\" id=\"property-cgw-name\" data-ignore=\"true\"/>\n	</div>\n\n\n	<div class=\"property-control-group\">\n        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n	</div>\n\n	<div class=\"property-control-group clearfix\">\n		<label class=\"left\" for=\"property-cgw-ip\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_LBL_IPADDR", {hash:{},data:data}))
     + "</label>\n		<span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
@@ -9861,11 +9961,15 @@ function program3(depth0,data) {
         "change #property-cgw-name": 'onChangeName',
         "focus #property-cgw-ip": 'onFocusIP',
         "keypress #property-cgw-ip": 'onPressIP',
-        "blur #property-cgw-ip": 'onBlurIP'
+        "blur #property-cgw-ip": 'onBlurIP',
+        'change #property-res-desc': 'onChangeDescription'
       },
       render: function() {
         this.$el.html(template(this.model.toJSON()));
         return this.model.get('name');
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       onChangeRouting: function() {
         $('#property-cgw-bgp-wrapper').toggle($('#property-routing-dynamic').is(':checked'));
@@ -9972,7 +10076,9 @@ function program3(depth0,data) {
           return false;
         }
         cgw = $.extend(true, {}, cgw);
+        cgw.uid = uid;
         cgw.name = myCGWComponent.get('name');
+        cgw.description = myCGWComponent.get('description');
         this.set(cgw);
         return null;
       }
@@ -9985,14 +10091,41 @@ function program3(depth0,data) {
 define('workspaces/editor/property/cgw/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n    <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <section class=\"property-control-group\" data-bind=\"true\">\n    <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n    <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n  </section>\n  ";
+  return buffer;
+  }
 
   buffer += "<article class=\"property-app\">\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_APP_CGW_LBL_ID", {hash:{},data:data}))
     + "</dt>\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.customerGatewayId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    <dt>"
+    + "</dd>\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  </dl>\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_APP_CGW_LBL_STATE", {hash:{},data:data}))
     + "</dt>\n    <dd><i class=\"status status-xgw-"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -10017,10 +10150,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   define('workspaces/editor/property/cgw/app_view',['../base/view', './template/app'], function(PropertyView, template) {
     var CGWAppView;
     CGWAppView = PropertyView.extend({
+      events: {
+        'change #property-res-desc': 'onChangeDescription'
+      },
       render: function() {
         var _ref;
-        this.$el.html(template((_ref = this.model) != null ? _ref.toJSON() : void 0));
+        this.$el.html(template(_.extend({
+          isEditable: this.model.isAppEdit
+        }, (_ref = this.model) != null ? _ref.toJSON() : void 0)));
         return this.model.get('id');
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       }
     });
     return new CGWAppView();
@@ -10040,11 +10181,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       initApp: function() {
         this.model = app_model;
+        this.model.isAppEdit = false;
         this.view = app_view;
         return null;
       },
       initAppEdit: function() {
         this.model = app_model;
+        this.model.isAppEdit = true;
         this.view = app_view;
         return null;
       }
@@ -10114,7 +10257,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         });
         dc_filename = dc_data.vpnConnectionId || 'download_configuration';
         dc_data = MC.template.configurationDownload(dc_data);
-        return "{\"download\":true, \"filecontent\":\"" + (window.btoa(dc_data)) + "\", \"filename\":\"" + dc_filename + "\", \"btnname\":\"" + config.name + "\"}";
+        return "{\"download\":true, \"filecontent\":\"" + (Base64.encode(dc_data)) + "\", \"filename\":\"" + dc_filename + "\", \"btnname\":\"" + config.name + "\"}";
       });
       return "[ " + (parse_result.join(',')) + " ]";
     };
@@ -10588,7 +10731,8 @@ function program29(depth0,data) {
           sourceDestCheck: component.get("sourceDestCheck"),
           isAppEdit: this.isAppEdit,
           isGroupMode: this.isGroupMode,
-          attached: component.connections("EniAttachment").length > 0
+          attached: component.connections("EniAttachment").length > 0,
+          description: component.get("description")
         };
         this.set(data);
         this.getIpList();
@@ -10733,10 +10877,14 @@ function program3(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n\n<article>\n  <div id=\"prop-appedit-eni-list\" class=\"expand\"></div>\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_LBL_DETAIL", {hash:{},data:data}))
-    + "</div>\n  <div class=\"option-group\">\n";
+    + "</div>\n  <div class=\"option-group\">\n<!-- ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
+  buffer += " -->\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sourceDestCheck), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " />\n        <label for=\"property-eni-source-check\"></label>\n      </div>\n      <label for=\"property-eni-source-check\">"
@@ -10919,7 +11067,7 @@ function program14(depth0,data) {
     };
     ENIView = PropertyView.extend({
       events: {
-        "change #property-eni-desc": "setEniDesc",
+        'change #property-res-desc': 'onChangeDesc',
         "change #property-eni-source-check": "setEniSourceDestCheck",
         'click .toggle-eip': 'setEip',
         'click #property-eni-ip-add': "addIp",
@@ -10936,6 +11084,9 @@ function program14(depth0,data) {
       setEniDesc: function(event) {
         this.model.setEniDesc(event.target.value);
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       setEniSourceDestCheck: function(event) {
         this.model.setSourceDestCheck(event.target.checked);
@@ -11108,6 +11259,7 @@ function program14(depth0,data) {
           }
           eni.id = eni_comp.appId;
           eni.name = eni_comp.name ? "" + eni_comp.name + "-0" : "" + (myEniComponent.get('name')) + "-" + (memberIndex || index);
+          eni.description = myEniComponent.get('description');
           eni.idx = memberIndex || index;
           eni.sourceDestCheck = eni.sourceDestCheck ? 'enabled' : 'disabled';
           formated_group.push(eni);
@@ -11147,6 +11299,10 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_DEVICE_NAME", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
     + "</dd>\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_ID", {hash:{},data:data}))
     + "</dt>\n      <dd>"
@@ -12606,7 +12762,11 @@ function program34(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\n			<input class=\"input launch-configuration-name\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"property-instance-name\" id=\"property-instance-name\" maxlength=\"240\" data-required-rollback=\"true\" data-ignore=\"true\"/>\n		</section>\n		<section class=\"property-control-group\">\n			<label>"
+    + "\" name=\"property-instance-name\" id=\"property-instance-name\" maxlength=\"240\" data-required-rollback=\"true\" data-ignore=\"true\"/>\n		</section>\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n            <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n        </section>\n		<section class=\"property-control-group\">\n			<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_AMI", {hash:{},data:data}))
     + "</label>\n			<div id=\"property-ami\" class=\"property-block-wrap clearfix\" data-uid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -12666,6 +12826,7 @@ function program34(depth0,data) {
     LanchConfigView = PropertyView.extend({
       events: {
         'change .launch-configuration-name': 'lcNameChange',
+        'change #property-res-desc': 'onChangeDescription',
         'change .instance-type-select': 'instanceTypeSelect',
         'change #property-instance-ebs-optimized': 'ebsOptimizedSelect',
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
@@ -12679,6 +12840,9 @@ function program34(depth0,data) {
         'click #volume-type-radios input': 'changeVolumeType',
         'keyup #iops-ranged': 'changeIops',
         'keyup #volume-size-ranged': 'sizeChanged'
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       changeVolumeType: function(event) {
         var $this, iops, type, volumeSize;
@@ -12864,9 +13028,31 @@ function program34(depth0,data) {
 define('workspaces/editor/property/launchconfig/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n      ";
+  return buffer;
+  }
+
+function program5(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dd>"
@@ -12875,7 +13061,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-function program3(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -12889,7 +13075,7 @@ function program3(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.readableVt.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
@@ -12898,15 +13084,15 @@ function program3(depth0,data) {
     + " GB</dd>\n<!--         <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</dt>\n        <dd>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd> -->\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -12917,19 +13103,19 @@ function program4(depth0,data) {
   return buffer;
   }
 
-function program6(depth0,data) {
+function program10(depth0,data) {
   
   
   return "Yes";
   }
 
-function program8(depth0,data) {
+function program12(depth0,data) {
   
   
   return "No";
   }
 
-function program10(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>IOPS</dt>\n        <dd>"
@@ -12940,11 +13126,17 @@ function program10(depth0,data) {
 
   buffer += "<article class=\"property-app\">\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_TITLE", {hash:{},data:data}))
-    + "</div>\n  <div class=\"option-group\">\n\n    <dl class=\"dl-vertical\">\n      <dt>"
+    + "</div>\n  <div class=\"option-group\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    <dl class=\"dl-vertical\">\n      ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_CREATE_TIME", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, ((stack1 = (depth0 && depth0.lc)),stack1 == null || stack1 === false ? stack1 : stack1.CreatedTime), {hash:{},data:data}))
-    + "</dd>\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
+    + "</dd>\n    </dl>\n\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_AMI", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -12955,14 +13147,14 @@ function program10(depth0,data) {
     + "</dd>\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(1, program1, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(5, program5, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.ebsOptimized)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -12976,14 +13168,20 @@ function program10(depth0,data) {
       events: {
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
         'change #property-instance-user-data': 'userdataChange',
+        'change #property-res-desc': 'onChangeDescription',
         'keyup #property-instance-name': 'checkInstanceName'
       },
       kpModalClosed: false,
       render: function() {
         var data;
-        data = this.model.toJSON();
+        data = _.extend({
+          isEditable: this.model.isAppEdit
+        }, this.model.toJSON());
         this.$el.html(template(data));
         return data.name;
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       cloudwatchSelect: function(event) {
         this.model.setCloudWatch(event.target.checked);
@@ -13038,12 +13236,14 @@ function program10(depth0,data) {
       initApp: function() {
         this.model = model;
         this.model.isApp = true;
+        this.model.isAppEdit = false;
         this.view = app_view;
         return null;
       },
       initAppEdit: function() {
         this.model = model;
         this.model.isApp = true;
+        this.model.isAppEdit = true;
         this.view = app_view;
         return null;
       },
@@ -13225,7 +13425,11 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_REQUIRED", {hash:{},data:data}))
     + "</span>\n			<input class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-asg-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n		</section>\n\n		<section class=\"property-control-group clearfix\">\n			<div class=\"left property-asg-size\">\n				<label class=\"left\" for=\"property-asg-min\">"
+    + "\" id=\"property-asg-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n		</section>\n\n		<section class=\"property-control-group\" data-bind=\"true\">\n	        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n	        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n		</section>\n\n		<section class=\"property-control-group clearfix\">\n			<div class=\"left property-asg-size\">\n				<label class=\"left\" for=\"property-asg-min\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_MIN_SIZE", {hash:{},data:data}))
     + "</label>\n				<input class=\"input\" type=\"text\" id=\"property-asg-min\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.minSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -13681,7 +13885,8 @@ function program4(depth0,data) {
         "change #property-asg-healthcheck": "setHealthCheckGrace",
         "click #property-asg-policy-add": "addScalingPolicy",
         "click #property-asg-policies .icon-edit": "editScalingPolicy",
-        "click #property-asg-policies .icon-del": "delScalingPolicy"
+        "click #property-asg-policies .icon-del": "delScalingPolicy",
+        'change #property-res-desc': 'onChangeDescription'
       },
       render: function() {
         var data, p, selectTopicName, _i, _len, _ref;
@@ -13704,6 +13909,9 @@ function program4(depth0,data) {
         this.$el.html(template(data));
         this.processNotiTopic(null, true);
         return data.name;
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       wheatherHasNoti: function() {
         var n, _ref;
@@ -14197,6 +14405,7 @@ function program4(depth0,data) {
         data = {
           uid: uid,
           name: asg_comp.get('name'),
+          description: asg_comp.get('description'),
           minSize: asg_comp.get('minSize'),
           maxSize: asg_comp.get('maxSize'),
           capacity: asg_comp.get('capacity'),
@@ -14497,7 +14706,13 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_NAME", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsResName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      <dt>"
+    + "</dd>\n      ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </dl>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_ARN", {hash:{},data:data}))
     + "</dt>\n      <dd class=\"click-select tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_TIP_CLICK_TO_SELECT", {hash:{},data:data}))
@@ -14508,18 +14723,40 @@ function program1(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, (depth0 && depth0.createTime), {hash:{},data:data}))
     + "</dd>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </div>\n  ";
   return buffer;
   }
 function program2(depth0,data) {
   
+  var buffer = "";
+  buffer += "\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n      ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n    </section>\n    ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
   
   return "\n    </dl>\n    ";
   }
 
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dt>"
@@ -14554,7 +14791,7 @@ function program4(depth0,data) {
   return buffer;
   }
 
-function program6(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"property-control-group\">\n    <p class=\"property-info tac\">Auto Scaling Group "
@@ -14563,7 +14800,7 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head expand\">"
@@ -14589,19 +14826,19 @@ function program8(depth0,data) {
     + "</span>\n    </section>\n\n    <section class=\"property-control-group clearfix\">\n      <label clas=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_HEALTH_CHECK_TYPE", {hash:{},data:data}))
     + "</label>\n      <div class=\"asg-radio-group\">\n        <div class=\"radio\">\n          <input id=\"property-asg-ec2\" type=\"radio\" value=\"ec2\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"property-asg-hc-option\" />\n          <label for=\"property-asg-ec2\"></label>\n        </div>\n        <label for=\"property-asg-ec2\">EC2</label>\n      </div>\n      <div ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n        <div class=\"radio\">\n          <input id=\"property-asg-elb\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"elb\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"property-asg-hc-option\" />\n          <label for=\"property-asg-elb\"></label>\n        </div>\n        <label for=\"property-asg-elb\">ELB</label>\n        <p id=\"property-asg-elb-warn\" class=\"hide property-info\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_ELB_WARN", {hash:{},data:data}))
@@ -14614,13 +14851,13 @@ function program8(depth0,data) {
     + "</span>\n    </section>\n\n  </div>\n  ";
   return buffer;
   }
-function program9(depth0,data) {
+function program13(depth0,data) {
   
   
   return "checked=\"true\"";
   }
 
-function program11(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "";
   buffer += "data-tooltip=\""
@@ -14629,25 +14866,25 @@ function program11(depth0,data) {
   return buffer;
   }
 
-function program13(depth0,data) {
+function program17(depth0,data) {
   
   
   return "class=\"asg-radio-group\"";
   }
 
-function program15(depth0,data) {
+function program19(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program17(depth0,data) {
+function program21(depth0,data) {
   
   
   return " style=\"display: block\"";
   }
 
-function program19(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <div class=\"option-group-head\">"
@@ -14655,23 +14892,23 @@ function program19(depth0,data) {
     + " <span class=\"property-head-num-wrap\">("
     + escapeExpression(((stack1 = (depth0 && depth0.instance_count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span></div>\n    <div class=\"option-group\">\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_groups), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_groups), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </div>\n  ";
   return buffer;
   }
-function program20(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <div class=\"property-group-head\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n      <ul class=\"property-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </ul>\n      ";
   return buffer;
   }
-function program21(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n          <li><i class=\"status status-"
@@ -14684,7 +14921,7 @@ function program21(depth0,data) {
   return buffer;
   }
 
-function program23(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <section class=\"property-control-group pos-r\">\n        <h5>"
@@ -14692,12 +14929,12 @@ function program23(depth0,data) {
     + "</h5>\n        <p class=\"termination-policy-brief\">"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.term_policy_brief), {hash:{},data:data}))
     + "</p>\n      </section>\n      <ul id=\"property-asg-policies\" class=\"property-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </ul>\n    ";
   return buffer;
   }
-function program24(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n          <li class=\"pos-r\" data-uid=\""
@@ -14707,12 +14944,12 @@ function program24(depth0,data) {
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.arn), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.arn), {hash:{},inverse:self.program(31, program31, data),fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n          </li>\n\n        ";
   return buffer;
   }
-function program25(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <div class=\"click-select tooltip\" data-tooltip=\""
@@ -14723,7 +14960,7 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program31(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <span class=\"asg-p-metric asg-p-tag\" title=\""
@@ -14759,7 +14996,7 @@ function program27(depth0,data) {
   return buffer;
   }
 
-function program29(depth0,data) {
+function program33(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <section class=\"property-control-group pos-r property-term-p\">\n        <h5>"
@@ -14783,10 +15020,10 @@ function program29(depth0,data) {
     + "\"></i>\n            <i class=\"icon-remove icon-del tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_POLICY_TLT_REMOVE", {hash:{},data:data}))
     + "\"></i>\n          </div>\n        </li>\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      </ul>\n      <div class=\"property-control-group tac\">\n        <button class=\"btn btn-blue ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"property-asg-policy-add\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_TIP_YOU_CAN_ONLY_ADD_25_SCALING_POLICIES", {hash:{},data:data}))
@@ -14795,7 +15032,7 @@ function program29(depth0,data) {
     + "</button>\n      </div>\n    ";
   return buffer;
   }
-function program30(depth0,data) {
+function program34(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <li class=\"pos-r\" data-uid=\""
@@ -14841,67 +15078,49 @@ function program30(depth0,data) {
   return buffer;
   }
 
-function program32(depth0,data) {
+function program36(depth0,data) {
   
   
   return "disabled tooltip";
   }
 
-function program34(depth0,data) {
+function program38(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <div class=\"property-asg-notification-wrap property-control-group\">\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(46, program46, data),fn:self.program(35, program35, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(50, program50, data),fn:self.program(39, program39, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </div>\n\n    ";
   return buffer;
   }
-function program35(depth0,data) {
+function program39(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
     + "</label>\n        <section>\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[1]), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[1]), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[2]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[2]), {hash:{},inverse:self.noop,fn:self.program(44, program44, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[3]), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[3]), {hash:{},inverse:self.noop,fn:self.program(46, program46, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(44, program44, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(48, program48, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </section>\n        ";
   return buffer;
   }
-function program36(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
-  return buffer;
-  }
-
-function program38(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
-  return buffer;
-  }
-
 function program40(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
@@ -14910,7 +15129,7 @@ function program42(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
@@ -14919,12 +15138,30 @@ function program44(depth0,data) {
   
   var buffer = "";
   buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</p>";
   return buffer;
   }
 
 function program46(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + "</p>";
+  return buffer;
+  }
+
+function program48(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
+    + "</p>";
+  return buffer;
+  }
+
+function program50(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <p class=\"property-info tac\">"
@@ -14933,33 +15170,33 @@ function program46(depth0,data) {
   return buffer;
   }
 
-function program48(depth0,data) {
+function program52(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <div class=\"property-control-group property-asg-notification-wrap\">\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
     + "</p>\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns1\" type=\"checkbox\" data-key=\"instanceLaunch\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns1\"></label>\n        </div>\n        <label for=\"property-asg-sns1\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns2\" type=\"checkbox\" data-key=\"instanceLaunchError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns2\"></label>\n        </div>\n        <label for=\"property-asg-sns2\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns3\" type=\"checkbox\" data-key=\"instanceTerminate\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns3\"></label>\n        </div>\n        <label for=\"property-asg-sns3\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns4\" type=\"checkbox\" data-key=\"instanceTerminateError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns4\"></label>\n        </div>\n        <label for=\"property-asg-sns4\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\n\n        <div><div class=\"checkbox\">\n          <input id=\"property-asg-sns5\" type=\"checkbox\" data-key=\"test\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n          <label for=\"property-asg-sns5\"></label>\n        </div>\n        <label for=\"property-asg-sns5\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
@@ -14968,30 +15205,30 @@ function program48(depth0,data) {
     + "</label>\n        <div id=\"sns-placeholder\"></div>\n      </div>\n    ";
   return buffer;
   }
-function program49(depth0,data) {
+function program53(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
   buffer += "<article class=\"property-app\">\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_POLICY", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(29, program29, data),fn:self.program(23, program23, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(33, program33, data),fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n  </div>\n\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_NOTIFICATION", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\" id=\"property-asg-sns\">\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(48, program48, data),fn:self.program(34, program34, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(52, program52, data),fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  </div>\n\n</article>";
   return buffer;
@@ -15046,7 +15283,11 @@ function program49(depth0,data) {
         "change #property-asg-healthcheck": "setHealthCheckGrace",
         "click #property-asg-policy-add": "addScalingPolicy",
         "click #property-asg-policies .icon-edit": "editScalingPolicy",
-        "click #property-asg-policies .icon-del": "delScalingPolicy"
+        "click #property-asg-policies .icon-del": "delScalingPolicy",
+        'change #property-res-desc': 'onChangeDescription'
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       setASGCoolDown: function(event) {
         var $target;
@@ -15655,7 +15896,11 @@ function program11(depth0,data) {
   buffer += "\n\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(21, program21, data),fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        <div id =\"lvia-container\"></div>\n\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-version-update\" type=\"checkbox\" ";
+  buffer += "\n\n        <section class=\"property-control-group\" data-bind=\"true\">\n          <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n          <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n        </section>\n\n        <div id =\"lvia-container\"></div>\n\n        <section class=\"property-control-group\">\n            <div class=\"checkbox\">\n                <input id=\"property-dbinstance-version-update\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.autoMinorVersionUpgrade), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-dbinstance-version-update\">\n                <label for=\"property-dbinstance-version-update\"></label>\n            </div>\n            <label for=\"property-dbinstance-version-update\">"
@@ -16547,7 +16792,11 @@ function program24(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\n            <input class=\"input\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n        </section>\n\n        <section class=\"property-control-group\">\n            <label class=\"left\">"
+    + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n        </section>\n\n        <section class=\"property-control-group\" data-bind=\"true\">\n          <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n          <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n        </section>\n\n        <section class=\"property-control-group\">\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_CLASS", {hash:{},data:data}))
     + "</label>\n            <div class=\"selectbox selectbox-mega\" id=\"property-dbinstance-class-select\">\n                <div class=\"selection\"></div>\n                <ul class=\"dropdown\">\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.classes), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -17140,6 +17389,7 @@ return TEMPLATE; });
     DBInstanceView = PropertyView.extend({
       events: {
         'change #property-dbinstance-name': 'changeInstanceName',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-dbinstance-mutil-az-check': 'changeMutilAZ',
         'change #property-dbinstance-storage': 'changeAllocatedStorage',
         'keyup #property-dbinstance-storage': 'inputAllocatedStorage',
@@ -18015,6 +18265,9 @@ return TEMPLATE; });
         }
         return null;
       },
+      onChangeDesc: function(event) {
+        return this.resModel.setDesc($(event.currentTarget).val());
+      },
       changeMutilAZ: function(event) {
         var $item, $select, value;
         value = event.target.checked;
@@ -18778,6 +19031,10 @@ function program71(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENDPOINT", {hash:{},data:data}))
     + "</dt>\n            <dd>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -19056,6 +19313,7 @@ return TEMPLATE; });
             uid: (ogComp != null ? ogComp.id : void 0) || ''
           });
         });
+        data.description = this.resModel.get("description");
         this.$el.html(template.appView(data));
         return this.resModel.get('name');
       },

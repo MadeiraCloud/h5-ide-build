@@ -1644,6 +1644,9 @@
         this.set("name", name);
         return null;
       },
+      setDesc: function(description) {
+        return this.set("description", description);
+      },
       remove: function() {
         var cns, l;
         this.markAsRemoved();
@@ -2410,6 +2413,7 @@
           type: this.type,
           uid: this.id,
           name: name,
+          description: this.get("description") || "",
           index: 0,
           number: this.get("count"),
           serverGroupUid: this.id,
@@ -2586,7 +2590,7 @@
         return data || [];
       },
       getEffectiveId: function(instance_id) {
-        var asg, data, design, index, instance, member, obj, resource_list, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+        var asg, data, design, index, insAndEniAry, instance, member, obj, resource_list, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         design = Design.instance();
         if (design.component(instance_id)) {
           return {
@@ -2594,18 +2598,19 @@
             mid: null
           };
         }
-        _ref = this.allObjects();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          instance = _ref[_i];
+        insAndEniAry = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
+        insAndEniAry = insAndEniAry.concat(Design.modelClassForType(constant.RESTYPE.ENI).allObjects());
+        for (_i = 0, _len = insAndEniAry.length; _i < _len; _i++) {
+          instance = insAndEniAry[_i];
           if (instance.get("appId") === instance_id) {
             return {
               uid: instance.id,
               mid: "" + instance.id + "_0"
             };
           } else if (instance.groupMembers) {
-            _ref1 = instance.groupMembers();
-            for (index = _j = 0, _len1 = _ref1.length; _j < _len1; index = ++_j) {
-              member = _ref1[index];
+            _ref = instance.groupMembers();
+            for (index = _j = 0, _len1 = _ref.length; _j < _len1; index = ++_j) {
+              member = _ref[index];
               if (member && member.appId === instance_id) {
                 return {
                   uid: instance.id,
@@ -2616,17 +2621,17 @@
           }
         }
         resource_list = CloudResources(constant.RESTYPE.ASG, Design.instance().region());
-        _ref2 = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          asg = _ref2[_k];
-          data = (_ref3 = resource_list.get(asg.get('appId'))) != null ? _ref3.toJSON() : void 0;
+        _ref1 = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          asg = _ref1[_k];
+          data = (_ref2 = resource_list.get(asg.get('appId'))) != null ? _ref2.toJSON() : void 0;
           if (!data || !data.Instances) {
             continue;
           }
           data = data.Instances;
-          _ref4 = data.member || data;
-          for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
-            obj = _ref4[_l];
+          _ref3 = data.member || data;
+          for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+            obj = _ref3[_l];
             if (obj === instance_id || obj.InstanceId === instance_id) {
               return {
                 uid: asg.getLc().id,
@@ -2682,6 +2687,7 @@
         attr = {
           id: data.uid,
           name: data.serverGroupName || data.name,
+          description: data.description || "",
           appId: data.resource.InstanceId,
           count: data.number,
           imageId: data.resource.ImageId,
@@ -3302,12 +3308,13 @@
           uid: memberData.id,
           type: this.type,
           name: eniName,
+          description: this.get("description") || "",
           serverGroupUid: this.id,
           serverGroupName: this.get("name"),
           number: servergroupOption.number || 1,
           resource: {
             SourceDestCheck: this.get("sourceDestCheck"),
-            Description: this.get("description"),
+            Description: "",
             NetworkInterfaceId: memberData.appId,
             AvailabilityZone: az.createRef(),
             VpcId: parent.getVpcRef(),
@@ -3485,7 +3492,7 @@
         attr = {
           id: data.uid,
           appId: data.resource.NetworkInterfaceId,
-          description: data.resource.Description,
+          description: data.description || "",
           sourceDestCheck: data.resource.SourceDestCheck,
           assoPublicIp: data.resource.AssociatePublicIpAddress,
           attachmentId: attachment ? attachment.AttachmentId : "",
@@ -4543,6 +4550,7 @@
         component = {
           uid: this.id,
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           resource: {
             AvailabilityZones: azs,
@@ -4572,6 +4580,7 @@
         asg = new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.AutoScalingGroupARN,
           parent: resolve(MC.extractID(layout_data.groupUId)),
           cooldown: String(data.resource.DefaultCooldown),
@@ -4744,6 +4753,7 @@
     Model = GroupModel.extend({
       type: constant.RESTYPE.VPC,
       defaults: {
+        description: "",
         dnsSupport: true,
         dnsHostnames: false,
         tenancy: "default",
@@ -4826,6 +4836,7 @@
         }
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -4852,6 +4863,7 @@
         new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.VpcId,
           cidr: data.resource.CidrBlock,
           dnsHostnames: data.resource.EnableDnsHostnames,
@@ -5019,6 +5031,7 @@
         var component;
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -5039,6 +5052,7 @@
         return new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.CustomerGatewayId,
           bgpAsn: data.resource.BgpAsn,
           ip: data.resource.IpAddress,
@@ -6919,6 +6933,7 @@
           type: this.type,
           uid: this.id,
           name: this.get("name"),
+          description: this.get("description") || "",
           resource: {
             AvailabilityZones: [],
             Subnets: subnets,
@@ -6976,6 +6991,7 @@
         attr = {
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.DNSName,
           parent: resolve(layout_data.groupUId),
           internal: data.resource.Scheme === 'internal',
@@ -7243,6 +7259,7 @@
           type: this.type,
           uid: this.id,
           name: this.get("name"),
+          description: this.get("description") || "",
           state: this.get("state"),
           resource: {
             UserData: this.get("userData"),
@@ -7276,6 +7293,7 @@
         attr = {
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           state: data.state,
           appId: data.resource.LaunchConfigurationARN,
           imageId: data.resource.ImageId,
@@ -7746,6 +7764,7 @@
         var component;
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -7807,6 +7826,7 @@
           id: data.uid,
           appId: data.resource.RouteTableId,
           name: data.name,
+          description: data.description || "",
           main: !!asso_main,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
@@ -8071,6 +8091,7 @@
         var component;
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -8247,6 +8268,7 @@
         new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.SubnetId,
           cidr: data.resource.CidrBlock,
           x: layout_data.coordinate[0],
@@ -8806,7 +8828,7 @@
     });
     Model = GroupModel.extend({
       type: constant.RESTYPE.DBSBG,
-      newNameTmpl: "subnet-group",
+      newNameTmpl: "subnetgroup",
       defaults: {
         x: 2,
         y: 2,
@@ -9770,6 +9792,7 @@
         }
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -9866,6 +9889,7 @@
         model = new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           createdBy: resource.CreatedBy,
           appId: resource.DBInstanceIdentifier,
           instanceId: resource.DBInstanceIdentifier,
