@@ -2002,7 +2002,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       Saving: 9
     };
     OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
-    OpsModelLastestVersion = "2014-09-18";
+    OpsModelLastestVersion = "2014-11-11";
     OpsModel = Backbone.Model.extend({
       defaults: function() {
         return {

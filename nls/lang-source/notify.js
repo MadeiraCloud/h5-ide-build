@@ -37,6 +37,10 @@
         en: "KeyPair with the same name already exists.",
         zh: ""
       },
+      FAILED_TO_DELETE_KP: {
+        en: "Failed to delete keypair, please try again later.",
+        zh: ""
+      },
       WARN_CANNT_AUTO_ASSIGN_CIDR_FOR_SUBNET: {
         en: "Cannot auto-assign cidr for subnets, please manually update subnets' cidr before changing vpc's cidr.",
         zh: ""
@@ -134,7 +138,7 @@
         zh: ""
       },
       XXX_IS_DELETED: {
-        en: "%s is deleted.",
+        en: "%s is deleted successfully.",
         zh: ""
       },
       SELECTED_KEYPAIRS_ARE_DELETED: {

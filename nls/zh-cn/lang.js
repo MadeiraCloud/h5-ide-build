@@ -790,6 +790,7 @@ define({
         "WARN_AMI_NOT_EXIST_TRY_USE_OTHER": "",
         "WARN_ATTACH_VOLUME_REACH_INSTANCE_LIMIT": "",
         "WARN_KEYPAIR_NAME_ALREADY_EXISTS": "",
+        "FAILED_TO_DELETE_KP": "",
         "WARN_CANNT_AUTO_ASSIGN_CIDR_FOR_SUBNET": "",
         "WARN_VPC_DOES_NOT_EXIST": "",
         "INFO_APP_REFRESH_FINISH": "完成应用( %s )的资源刷新。",
