@@ -915,7 +915,9 @@ return TEMPLATE; });
       },
       duplicateStack: function() {
         var newOps;
-        newOps = App.model.createStackByJson(this.workspace.design.serialize());
+        newOps = App.model.createStackByJson(this.workspace.design.serialize({
+          duplicateStack: true
+        }));
         App.openOps(newOps);
       },
       zoomIn: function() {

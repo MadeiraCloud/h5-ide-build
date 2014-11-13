@@ -481,7 +481,9 @@
       delete data.canvasSize;
       data.property = this.attributes.property || {};
       data.property.stoppable = this.isStoppable();
-      data.version = OpsModel.LatestVersion;
+      if (options && options.toStack || this.modeIsStack()) {
+        data.version = OpsModel.LatestVersion;
+      }
       data.state = this.__opsModel.getStateDesc() || "Enabled";
       data.id = this.__opsModel.get("id");
       if (currentDesignObj) {
@@ -4394,6 +4396,16 @@
           }
         }
         return true;
+      },
+      setName: function(name) {
+        var expand, _i, _len, _ref;
+        ComplexResModel.prototype.setName.call(this, name);
+        _ref = this.get("expandedList");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          expand = _ref[_i];
+          expand.trigger('change:name');
+        }
+        return null;
       },
       setLc: function(lc) {
         if (this.getLc() || !lc) {
