@@ -1,5 +1,5 @@
 (function() {
-  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, userRoute, validPassword, xhr;
+  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
 
   (function() {
     var MC_DOMAIN, hosts, location;
@@ -44,6 +44,8 @@
   };
 
   deepth = 'RESET';
+
+  timezone = (new Date().getTimezoneOffset()) / -60;
 
   userRoute = function(routes) {
     var hashArray, pathArray, _name;
@@ -250,10 +252,14 @@
             $(".error-msg").hide();
             $(".control-group").removeClass('error');
             submitBtn.attr('disabled', true).val(langsrc.RESET.reset_waiting);
-            return ajaxLogin([$user.val(), $password.val()], function(statusCode) {
+            return ajaxLogin([
+              $user.val(), $password.val(), {
+                timezone: timezone
+              }
+            ], function(statusCode) {
               if (statusCode === 100) {
                 $('#error-msg-1').hide();
-                $('#error-msg-3').show().text(langsrc.SERVICE['ERROR_CODE_100_MESSAGE']);
+                $('#error-msg-3').show().text(langsrc.SERVICE.ERROR_CODE_100_MESSAGE);
               } else {
                 $('#error-msg-1').show();
                 $('#error-msg-3').hide();
@@ -534,7 +540,8 @@
                   return ajaxRegister([
                     $username.val(), $password.val(), $email.val(), {
                       first_name: $firstName.val(),
-                      last_name: $lastName.val()
+                      last_name: $lastName.val(),
+                      timezone: timezone
                     }
                   ], function(statusCode) {
                     resetRegForm(true);
