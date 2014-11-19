@@ -5430,7 +5430,7 @@ function program5(depth0,data,depth1) {
   stack1 = helpers['if'].call(depth0, (depth1 && depth1.preview), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <td>\n                <div class=\"prop_main\">\n                    ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.noop,fn:self.programWithDepth(14, program14, data, depth0),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "select", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.inputType), "input", {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
@@ -5481,7 +5481,7 @@ function program12(depth0,data) {
   return "&lt;empty&gt;";
   }
 
-function program14(depth0,data,depth1) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <select name=\""
@@ -5493,7 +5493,7 @@ function program14(depth0,data,depth1) {
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.ParameterValue), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(19, program19, data, depth0, depth1),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(19, program19, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                        </select>\n                    ";
   return buffer;
@@ -5510,23 +5510,23 @@ function program17(depth0,data) {
   return "<option value=\"<engine-default>\">&lt;engine-default&gt;</option>";
   }
 
-function program19(depth0,data,depth1,depth2) {
+function program19(depth0,data,depth1) {
   
   var buffer = "", stack1;
   buffer += "\n                                <option value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
-  stack1 = helpers['if'].call(depth0, (depth2 && depth2.newValue), {hash:{},inverse:self.programWithDepth(23, program23, data, depth1),fn:self.programWithDepth(20, program20, data, depth1),data:data});
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.newValue), {hash:{},inverse:self.programWithDepth(23, program23, data, depth0),fn:self.programWithDepth(20, program20, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "</option>\n                            ";
   return buffer;
   }
-function program20(depth0,data,depth2) {
+function program20(depth0,data,depth1) {
   
   var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth1 && depth1.newValue), depth0, {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
@@ -5536,10 +5536,10 @@ function program21(depth0,data) {
   return "selected=\"selected\" ";
   }
 
-function program23(depth0,data,depth2) {
+function program23(depth0,data,depth1) {
   
   var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth2 && depth2.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth1 && depth1.ParameterValue), depth0, {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }

@@ -2,6 +2,10 @@
 /* Common Style for Modal with Toolbar */
 .modal-toolbar {
   width: 855px; }
+  .modal-toolbar .container.optiongroup {
+    position: absolute;
+    top: 111px;
+    bottom: 64px; }
   .modal-toolbar .no-credential {
     color: #F5F5F5;
     margin: 55px auto; }
@@ -2301,7 +2305,7 @@ input.parsley-error {
   left: 50%;
   margin: -40px 0 0 -40px;
   opacity: .8;
-  background: url("../images/ide/gearbig.svg?v=3d55f265");
+  background: url("../images/ide/gearbig.svg");
   background-size: 100% 100%;
   -webkit-animation: gear 2s linear infinite;
   -moz-animation: gear 2s linear infinite;
@@ -2313,7 +2317,7 @@ input.parsley-error {
   height: 30px;
   opacity: .6;
   margin: -11px 0 0 -11px;
-  background-image: url("../images/ide/gearsmall.svg?v=d0a553c0");
+  background-image: url("../images/ide/gearsmall.svg");
   -webkit-animation: smallgear 1.5s linear infinite;
   -moz-animation: smallgear 1.5s linear infinite;
   -o-animation: smallgear 1.5s linear infinite;

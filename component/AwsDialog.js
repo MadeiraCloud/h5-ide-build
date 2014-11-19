@@ -2416,7 +2416,7 @@ function program20(depth0,data) {
   buffer += "\n            ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.engineType), "sqlserver", {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </div>\n        <div class=\"container\">\n            <div class=\"input-item\">\n                <label class=\"left\">"
+  buffer += "\n        </div>\n        <div class=\"container optiongroup\">\n            <div class=\"input-item\">\n                <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
     + "</label>\n                <input class=\"input og-name\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))

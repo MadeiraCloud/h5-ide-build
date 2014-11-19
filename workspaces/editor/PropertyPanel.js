@@ -3262,7 +3262,9 @@ function program39(depth0,data) {
         if (action === 'check') {
           if (data) {
             this.__kpUpload && this.__kpUpload.remove();
-            this.__kpUpload = new kp_upload();
+            this.__kpUpload = new kp_upload({
+              type: "Private Key"
+            });
             this.__kpUpload.on('load', function() {
               return $("#do-kp-decrypt").prop('disabled', false);
             });
