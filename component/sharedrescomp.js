@@ -5220,9 +5220,7 @@ function program14(depth0,data,depth1) {
   buffer += ">\n                            ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.ParameterValue), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                            "
-    + escapeExpression(helpers.debug.call(depth0, (depth0 && depth0.selections), {hash:{},data:data}))
-    + "\n                            ";
+  buffer += "\n                            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.selections), {hash:{},inverse:self.noop,fn:self.programWithDepth(19, program19, data, depth0, depth1),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </select>\n                        ";
