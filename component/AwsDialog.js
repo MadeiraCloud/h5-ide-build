@@ -1990,7 +1990,7 @@ Refer to kpView.coffee
           return this;
         }
         $activeButton = this.$('.toolbar .active');
-        this.trigger('slideup', $activeButton.data('btn'));
+        this.trigger('slideup', $activeButton.data('btn'), this.getChecked());
         if (!this.options.longtermActive) {
           $activeButton.removeClass('active');
         }
