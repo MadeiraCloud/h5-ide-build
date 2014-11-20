@@ -19786,7 +19786,7 @@ function program2(depth0,data) {
       setName: function(e) {
         var $target;
         $target = $(e.currentTarget);
-        if ($target.parsley('validate' && MC.aws.aws.checkResName(this.model.get('id'), $target, "Subnet Group"))) {
+        if ($target.parsley('validate') && MC.aws.aws.checkResName(this.model.get('id'), $target, "Subnet Group")) {
           return this.model.set('name', $target.val());
         }
       },
