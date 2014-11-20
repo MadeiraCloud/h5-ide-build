@@ -8669,7 +8669,7 @@ function program9(depth0,data) {
         var name, target;
         target = $(event.currentTarget);
         name = target.val();
-        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "Route Table")) {
+        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "VPC")) {
           this.model.setName(name);
           this.setTitle(name);
         }
@@ -19786,7 +19786,7 @@ function program2(depth0,data) {
       setName: function(e) {
         var $target;
         $target = $(e.currentTarget);
-        if ($target.parsley('validate')) {
+        if ($target.parsley('validate' && MC.aws.aws.checkResName(this.model.get('uid'), $target, "Subnet Group"))) {
           return this.model.set('name', $target.val());
         }
       },
