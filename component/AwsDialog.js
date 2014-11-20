@@ -1789,7 +1789,7 @@ Refer to kpView.coffee
             $button.removeClass('active');
             this.toggleSlide(false);
             this.__slide = null;
-            this.trigger('slideup', button);
+            this.trigger('slideup', button, this.getChecked());
           } else {
             $activeButton.removeClass('active');
             $button.addClass('active');
