@@ -1789,7 +1789,7 @@ Refer to kpView.coffee
             $button.removeClass('active');
             this.toggleSlide(false);
             this.__slide = null;
-            this.trigger('slideup', button, this.getChecked());
+            this.trigger('slideup', button);
           } else {
             $activeButton.removeClass('active');
             $button.addClass('active');
@@ -1990,7 +1990,7 @@ Refer to kpView.coffee
           return this;
         }
         $activeButton = this.$('.toolbar .active');
-        this.trigger('slideup', $activeButton.data('btn'), this.getChecked());
+        this.trigger('slideup', $activeButton.data('btn'));
         if (!this.options.longtermActive) {
           $activeButton.removeClass('active');
         }
