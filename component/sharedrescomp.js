@@ -5705,6 +5705,7 @@ return TEMPLATE; });
         this.manager = new toolbar_modal(this.getModalOptions());
         this.manager.on('refresh', this.refresh, this);
         this.manager.on("slidedown", this.renderSlides, this);
+        this.manager.on('slideup', this.slideDown, this);
         this.manager.on('action', this.doAction, this);
         this.manager.on('close', (function(_this) {
           return function() {
@@ -5772,7 +5773,8 @@ return TEMPLATE; });
         data = this.collection.toJSON();
         _.each(data, function(e) {
           if (e.DBParameterGroupName.indexOf("default.") === 0) {
-            return e.isDefault = true;
+            e.isDefault = true;
+            return e;
           }
         });
         dataSet = {
@@ -5787,6 +5789,22 @@ return TEMPLATE; });
         $(".slidebox .content").removeAttr('style');
         slides = this.getSlides();
         return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
+      },
+      slideDown: function(param, checked) {
+        var parameters, target;
+        if (param === "edit" && checked.length === 1) {
+          target = this.collection.findWhere({
+            id: checked[0].data.id
+          });
+          parameters = target.getParameters();
+          return parameters.fetch().then(function(result) {
+            return _.each(result.models, function(e) {
+              if (e.has("newValue")) {
+                return e.unset("newValue");
+              }
+            });
+          });
+        }
       },
       getSlides: function() {
         return {
@@ -5874,8 +5892,9 @@ return TEMPLATE; });
           _.each(tempArray, function(value) {
             var range;
             range = value.split('-');
-            if (range.length = 2 && isNumberString(range[0]) && isNumberString(range[1])) {
-              return isMixed = true;
+            if (range.length === 2 && isNumberString(range[0]) && isNumberString(range[1])) {
+              isMixed = true;
+              return null;
             }
           });
           return isMixed;
@@ -5953,12 +5972,13 @@ return TEMPLATE; });
           if (that.filterDelay) {
             window.clearTimeout(that.filterDelay);
           }
-          return that.filterDelay = window.setTimeout(function() {
+          that.filterDelay = window.setTimeout(function() {
             return (that.getSlides().edit.bind(that))(template.slide_edit, checked, {
               filter: val,
               sort: sortType
             });
           }, 200);
+          return null;
         });
         return $("#sort-parameter-name").on('OPTION_CHANGE', function(event, value, data) {
           sortType = (data != null ? data.id : void 0) || value;
@@ -6049,7 +6069,8 @@ return TEMPLATE; });
         var afterModify, changeMap;
         changeMap = {};
         _.each(change, function(e) {
-          return changeMap[e.ParameterName] = e.newValue;
+          changeMap[e.ParameterName] = e.newValue;
+          return null;
         });
         _.each(parameters.models, function(d) {
           return d.unset('newValue');
@@ -6139,7 +6160,8 @@ return TEMPLATE; });
           if (deleteErrorCount > 0) {
             this.manager.error(result.awsResult || deleteErrorCount + " DB Parameter Group(s) failed to delete, please try again later.");
             this.switchAction();
-            return deleteErrorCount = 0;
+            deleteErrorCount = 0;
+            return null;
           } else {
             notification('info', lang.NOTIFY.DELETE_SUCCESSFULLY);
             this.manager.unCheckSelectAll();
@@ -6214,7 +6236,8 @@ return TEMPLATE; });
         selected = this.resModel.attributes.pgName;
         _.each(data, function(e) {
           if (e.DBParameterGroupName === selected) {
-            return e.selected = true;
+            e.selected = true;
+            return null;
           }
         });
         datas = {

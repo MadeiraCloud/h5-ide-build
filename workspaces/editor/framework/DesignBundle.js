@@ -3005,7 +3005,7 @@
           obj = {
             hasEip: ip.hasEip,
             autoAssign: ip.autoAssign,
-            editable: !(isServergroup || ip.fixedIpInApp),
+            editable: !(isServergroup || (ip.fixedIpInApp && ip.ip !== "x.x.x.x")),
             prefix: prefixSuffixAry[0]
           };
           if (obj.autoAssign || isServergroup) {
