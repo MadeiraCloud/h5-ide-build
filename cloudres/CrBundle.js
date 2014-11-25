@@ -136,8 +136,7 @@
         dbname: "DBName",
         dbparameterGroups: "DBParameterGroups",
         dbsecurityGroups: "DBSecurityGroups",
-        dbsubnetGroup: "DBSubnetGroup",
-        dbname: "DBName"
+        dbsubnetGroup: "DBSubnetGroup"
       },
       ALL: {
         associations: 'associationSet',
@@ -203,7 +202,7 @@
         return this.__lastFetchError;
       },
       fetch: function() {
-        var self;
+        var self, _ref;
         if (!this.isLastFetchFailed() && this.__fetchPromise) {
           return this.__fetchPromise;
         }
@@ -211,7 +210,7 @@
         this.__ready = false;
         this.__lastFetchError = null;
         self = this;
-        this.__fetchPromise = this.doFetch().then(function(data) {
+        this.__fetchPromise = (_ref = this.doFetch()) != null ? typeof _ref.then === "function" ? _ref.then(function(data) {
           var d, e, _i, _len;
           if (!self.__selfParseData) {
             try {
@@ -249,7 +248,7 @@
           self.__ready = true;
           self.trigger("update");
           throw error;
-        });
+        }) : void 0 : void 0;
         return this.__fetchPromise;
       },
       fetchForce: function() {
@@ -305,11 +304,11 @@
         }
         return visopsTag;
       },
-      __parseExternalData: function(awsData, extraAttr, category) {
+      __parseExternalData: function(awsData, extraAttr, category, dataCollection) {
         var d, e, i, toAddIds, ts, _i, _j, _len, _len1, _ref;
         try {
           if (this.parseExternalData) {
-            awsData = this.parseExternalData(awsData, category);
+            awsData = this.parseExternalData(awsData, category, dataCollection);
           } else if (this.parseFetchData) {
             awsData = this.parseFetchData(awsData);
           }
@@ -457,6 +456,43 @@
           this.camelToPascal(value);
         }
         return obj;
+      },
+      camelToUnderscore: function(obj) {
+        var camelKey, exceptionList, self, underscoreKey, value;
+        exceptionList = [];
+        self = this;
+        if (!_.isObject(obj)) {
+          return obj;
+        }
+        if (_.isArray(obj)) {
+          return _.map(obj, function(arr) {
+            return self.camelToUnderscore(arr);
+          });
+        }
+        for (camelKey in obj) {
+          value = obj[camelKey];
+          if (!(obj.hasOwnProperty(camelKey))) {
+            continue;
+          }
+          if (!_.isArray(obj) && __indexOf.call(exceptionList, camelKey) < 0 && __indexOf.call(camelKey, '::') < 0) {
+            underscoreKey = _.map(camelKey, function(char, index) {
+              var _ref;
+              if (index === 0) {
+                return char;
+              }
+              if ((65 <= (_ref = char.charCodeAt()) && _ref <= 90)) {
+                return "_" + (char.toLowerCase());
+              }
+              return char;
+            }).join('');
+            if (underscoreKey !== camelKey) {
+              obj[underscoreKey] = value;
+              delete obj[camelKey];
+            }
+          }
+          self.camelToUnderscore(value);
+        }
+        return obj;
       }
     }, {
       category: function(category) {
@@ -542,6 +578,76 @@
       }
     };
     return CloudResources;
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/CrOpsResource',["ApiRequest", "./CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+
+    /* This Connection is used to fetch all the resource of an vpc */
+    return CrCollection.extend({
+
+      /* env:dev                                               env:dev:end */
+      type: "OpsResource",
+      init: function(region, provider) {
+        this.__region = region;
+        this.__provider = provider;
+        return this;
+      },
+      fetchForceDedup: function() {
+        var p;
+        this.__forceDedup = false;
+        p = this.fetchForce();
+        this.__forceDedup = true;
+        return p;
+      },
+      fetchForce: function() {
+        var d;
+        if (this.__forceDedup) {
+          this.__forceDedup = false;
+          d = Q.defer();
+          d.resolve();
+          return d.promise;
+        }
+        this.generatedJson = null;
+        return CrCollection.prototype.fetchForce.call(this);
+      },
+      doFetch: function() {
+        var self;
+        self = this;
+        CloudResources.clearWhere((function(m) {
+          return m.RES_TAG === self.category;
+        }), this.__region);
+        console.assert(this.__region && this.__provider, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
+        return ApiRequest("resource_get_resource", {
+          region_name: this.__region,
+          provider: this.__provider,
+          res_id: this.category
+        });
+      },
+      parseFetchData: function(data) {
+        var app_json, cln, d, extraAttr, type;
+        app_json = data.app_json;
+        delete data.app_json;
+        extraAttr = {
+          RES_TAG: this.category
+        };
+        for (type in data) {
+          d = data[type];
+          cln = CloudResources(type, this.__region);
+          if (!cln) {
+            console.warn("Cannot find cloud resource collection for type:", type);
+            continue;
+          }
+          cln.__parseExternalData(d, extraAttr, this.__region, data);
+        }
+        this.generatedJson = this.fixGeneratedJson(app_json);
+      },
+      fixGeneratedJson: function(json) {
+        return json;
+      }
+    });
   });
 
 }).call(this);
@@ -717,7 +823,8 @@
           cert_body: this.get("CertificateBody"),
           private_key: this.get("PrivateKey"),
           cert_chain: this.get("CertificateChain"),
-          path: this.get("Path")
+          path: this.get("Path"),
+          region_name: Design.instance().region()
         }).then(function(res) {
           var e;
           self.attributes.CertificateChain = "";
@@ -1265,7 +1372,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrCommonCollection',["ApiRequest", "./CrCollection", "./CrModel", "constant"], function(ApiRequest, CrCollection, CrModel, constant) {
+  define('cloudres/aws/CrCommonCollection',["ApiRequest", "../CrCollection", "../CrModel", "constant"], function(ApiRequest, CrCollection, CrModel, constant) {
     var CrCommonCollection, EmptyArr;
     EmptyArr = [];
     CrCommonCollection = CrCollection.extend({
@@ -1407,7 +1514,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrClnCommonRes',["../CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
+  define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
 
     /* Elb */
     CrCommonCollection.extend({
@@ -2285,137 +2392,6 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrClnOpsResource',["ApiRequest", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
-
-    /* This Connection is used to fetch all the resource of an vpc */
-    return CrCollection.extend({
-
-      /* env:dev                                               env:dev:end */
-      type: "OpsResource",
-      init: function(region) {
-        this.__region = region;
-        return this;
-      },
-      fetchForceDedup: function() {
-        var p;
-        this.__forceDedup = false;
-        p = this.fetchForce();
-        this.__forceDedup = true;
-        return p;
-      },
-      fetchForce: function() {
-        var d;
-        if (this.__forceDedup) {
-          this.__forceDedup = false;
-          d = Q.defer();
-          d.resolve();
-          return d.promise;
-        }
-        this.generatedJson = null;
-        return CrCollection.prototype.fetchForce.call(this);
-      },
-      doFetch: function() {
-        var self;
-        self = this;
-        CloudResources.clearWhere((function(m) {
-          return m.RES_TAG === self.category;
-        }), this.__region);
-        console.assert(this.__region, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
-        return ApiRequest("resource_vpc_resource", {
-          region_name: this.__region,
-          vpc_id: this.category
-        });
-      },
-      parseFetchData: function(data) {
-        var app_id, app_json, cln, comp, d, eni, extraAttr, id, kpComp, originalJson, originalKpComp, sg, type, _ref, _ref1, _ref2;
-        delete data.vpc;
-        app_json = data.app_json;
-        delete data.app_json;
-        extraAttr = {
-          RES_TAG: this.category
-        };
-        for (type in data) {
-          d = data[type];
-          cln = CloudResources(type, this.__region);
-          if (!cln) {
-            console.warn("Cannot find cloud resource collection for type:", type);
-            continue;
-          }
-          cln.__parseExternalData(d, extraAttr, this.__region);
-        }
-        app_id = App.workspaces.getAwakeSpace().opsModel.get("id");
-        if (app_id && app_id.substr(0, 4) === 'app-') {
-          originalJson = App.model.attributes.appList.where({
-            id: app_id
-          });
-          if (originalJson && originalJson.length > 0) {
-            originalJson = originalJson[0].__jsonData;
-          }
-        }
-        if (app_json) {
-          this.generatedJson = app_json;
-          if (!(app_json.agent.module.repo && app_json.agent.module.tag)) {
-            this.generatedJson.agent.module.repo = App.user.get("repo");
-            this.generatedJson.agent.module.tag = App.user.get("tag");
-          }
-          console.log("Generated Json from backend:", $.extend(true, {}, this.generatedJson));
-          _ref = this.generatedJson.component;
-          for (id in _ref) {
-            comp = _ref[id];
-            if (comp.type === constant.RESTYPE.ENI) {
-              eni = CloudResources(constant.RESTYPE.ENI, this.__region).where({
-                id: comp.resource.NetworkInterfaceId
-              });
-              if (eni && eni.length > 0 && eni.attachment && !comp.resource.Attachment.AttachmentId) {
-                eni = eni[0].attributes;
-                comp.resource.Attachment.AttachmentId = eni.attachment.attachmentId;
-                console.warn("[patch app_json] fill AttachmentId of eni");
-              }
-            } else if (comp.type === constant.RESTYPE.KP) {
-              kpComp = $.extend(true, {}, comp);
-            }
-            null;
-          }
-          if (originalJson) {
-            _ref1 = originalJson.component;
-            for (id in _ref1) {
-              comp = _ref1[id];
-              if (comp.type === constant.RESTYPE.KP) {
-                originalKpComp = $.extend(true, {}, comp);
-              } else if (comp.type === constant.RESTYPE.SG && ((_ref2 = comp.name) === "DefaultSG" || _ref2 === "default")) {
-                sg = CloudResources(constant.RESTYPE.SG, this.__region).where({
-                  id: comp.resource.GroupId
-                });
-                if (sg && sg.length > 0 && comp.resource.GroupName !== sg[0].get("groupName")) {
-                  comp.resource.GroupName = sg[0].get("groupName");
-                  console.warn("[patch app_json] change groupName from 'default' to real value @{comp.resource.GroupName}");
-                }
-              }
-              null;
-            }
-            if (originalKpComp) {
-              if (kpComp && originalKpComp.uid !== kpComp.uid) {
-                delete this.generatedJson.component[kpComp.uid];
-                this.generatedJson.component[originalKpComp.uid] = originalKpComp;
-              }
-            } else {
-              originalJson.component[kpComp.uid] = kpComp;
-            }
-          }
-          this.generatedJson.agent.enabled = originalJson ? originalJson.agent.enabled : false;
-        } else {
-
-          /* env:dev                                                                                                                                                                      env:dev:end */
-        }
-      }
-
-      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  env:dev:end */
-    });
-  });
-
-}).call(this);
-
-(function() {
   define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
     var INVALID_AMI_ID, MALFORM_AMI_ID, OS_TYPE_LIST, SQL_STANDARD_PATTERN, SQL_WEB_PATTERN, SpecificAmiCollection, fixDescribeImages, getOSFamily, getOSType;
     OS_TYPE_LIST = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'amazon', 'amzn'];
@@ -2676,14 +2652,11 @@
         });
       },
       parseFetchData: function(data) {
-        var ami, amiIds, id, savedAmis, _ref;
+        var ami, amiIds, id, savedAmis;
         savedAmis = [];
         amiIds = [];
         for (id in data) {
           ami = data[id];
-          if (ami.architecture === 'i386' || (ami.name.indexOf('by VisualOps') === -1 && ((_ref = ami.osType) !== 'windows' && _ref !== 'suse'))) {
-            continue;
-          }
           ami.id = id;
           savedAmis.push(ami);
           amiIds.push(id);
@@ -3520,7 +3493,559 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrBundle',["CloudResources", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnOpsResource", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam"], function(CloudResources) {
+  define('cloudres/openstack/CrModelKeypair',["../CrModel", "ApiRequestOs"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                                env:dev:end */
+      defaults: {
+        name: "",
+        public_key: "",
+        fingerprint: ""
+      },
+      idAttribute: "name",
+      taggable: false,
+      doCreate: function() {
+        var promise, self;
+        self = this;
+        promise = ApiRequest("os_keypair_Create", {
+          region: this.getCollection().region(),
+          keypair_name: this.get("name"),
+          public_key: this.get("public_key")
+        });
+        return promise.then(function(res) {
+          var e, keyName;
+          console.log(res);
+          try {
+            res = res.keypair;
+            self.set(res);
+            keyName = res.name;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
+          }
+          self.set('name', keyName);
+          console.log("Created keypair resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("os_keypair_Delete", {
+          region: this.getCollection().region(),
+          keypair_name: this.get("name")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrModelSnapshot',["../CrModel", "ApiRequestOs"], function(CrModel, ApiRequest) {
+    return CrModel.extend({
+
+      /* env:dev                                                 env:dev:end */
+      defaults: {
+        status: "",
+        description: "",
+        created_at: "",
+        name: "",
+        volume_id: "",
+        size: "",
+        id: "",
+        metadata: ""
+      },
+      taggable: false,
+      doCreate: function() {
+        var promise, self;
+        self = this;
+        promise = ApiRequest("os_snapshot_Create", {
+          region: this.getCollection().region(),
+          display_name: this.get("name"),
+          volume_id: this.get('volume_id'),
+          display_description: this.get("description"),
+          is_force: true
+        });
+        return promise.then(function(res) {
+          var e, name;
+          try {
+            res = res.snapshot;
+            self.set(res);
+            name = res.name;
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
+          }
+          self.set('name', name);
+          console.log("Created keypair resource", self);
+          return self;
+        });
+      },
+      doDestroy: function() {
+        return ApiRequest("os_snapshot_Delete", {
+          region: this.getCollection().region(),
+          snapshot_id: this.get("id")
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnSharedRes',["../CrCollection", "CloudResources", "ApiRequestOs", "constant", "./CrModelKeypair", "./CrModelSnapshot"], function(CrCollection, CloudResources, ApiRequest, constant, CrModelKeypair, CrModelSnapshot) {
+
+    /* Keypair */
+    CrCollection.extend({
+
+      /* env:dev                                                     env:dev:end */
+      type: constant.RESTYPE.OSKP,
+      model: CrModelKeypair,
+      doFetch: function() {
+        return ApiRequest("os_keypair_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(res) {
+        var data, i, rlt, _i, _len, _ref;
+        data = (res != null ? res.keypairs : void 0) || [];
+        rlt = [];
+        _ref = data || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          i = i.keypair;
+          if (i) {
+            i.id = i.name;
+            rlt.push(i);
+          }
+          null;
+        }
+        return rlt;
+      }
+    });
+
+    /* Snapshot */
+    return CrCollection.extend({
+
+      /* env:dev                                                      env:dev:end */
+      type: constant.RESTYPE.OSSNAP,
+      model: CrModelSnapshot,
+      doFetch: function() {
+        return ApiRequest("os_snapshot_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(res) {
+        return (res != null ? res.snapshots : void 0) || [];
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnImage',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+    CrCollection.extend({
+
+      /* env:dev                                                   env:dev:end */
+      type: constant.RESTYPE.OSIMAGE,
+      doFetch: function() {
+        return ApiRequest("os_image_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(res) {
+        var data, item, _i, _len, _ref, _ref1;
+        data = (res != null ? res.images : void 0) || [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          item = data[_i];
+          if (item.architecture && item.os_distro && ((_ref = item.architecture) === "i686" || _ref === "x86_64") && ((_ref1 = item.os_distro) === "centos" || _ref1 === "debian" || _ref1 === "fedora" || _ref1 === "gentoo" || _ref1 === "opensuse" || _ref1 === "redhat" || _ref1 === "suse" || _ref1 === "ubuntu" || _ref1 === "windows" || _ref1 === "cirros")) {
+            item.os_type = item.os_distro;
+          } else {
+            item.os_type = "unknown";
+          }
+        }
+        return data;
+      }
+    });
+    return CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSFLAVOR,
+      doFetch: function() {
+        var tempDefer;
+        tempDefer = Q.defer();
+        tempDefer.resolve();
+        return tempDefer.promise;
+      },
+      parseFetchData: function(res) {
+        return _.values(res);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnNetwork',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+    return CrCollection.extend({
+
+      /* env:dev                                                     env:dev:end */
+      type: constant.RESTYPE.OSNETWORK,
+      getExtNetworks: function() {
+        return this.where({
+          "external": true
+        });
+      },
+      doFetch: function() {
+        return ApiRequest("os_network_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var network, _i, _len, _ref;
+        _ref = data.networks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          network = _ref[_i];
+          network['physical_network'] = network['provider:physical_network'];
+          network['external'] = network['router:external'];
+          delete network['provider:physical_network'];
+          delete network['router:external'];
+        }
+        return data.networks;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/openstack/CrClnCommonRes',["../CrCollection", "../CrModel", "ApiRequestOs", "constant", "CloudResources"], function(CrCollection, CrModel, ApiRequest, constant, CloudResources) {
+
+    /* FIP */
+    CrCollection.extend({
+
+      /* env:dev                                                 env:dev:end */
+      type: constant.RESTYPE.OSFIP,
+      doFetch: function() {
+        return ApiRequest("os_floatingip_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.floatingips;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Pool */
+    CrCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: constant.RESTYPE.OSPOOL,
+      doFetch: function() {
+        return ApiRequest("os_pool_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.pools;
+      },
+      parseExternalData: function(data, category, dataCollection) {
+        var m, members, newmembers, r, res, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        members = {};
+        _ref = dataCollection["OS::Neutron::Member"] || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          members[m.id] = m;
+        }
+        res = $.extend(true, [], data);
+        for (_j = 0, _len1 = res.length; _j < _len1; _j++) {
+          r = res[_j];
+          newmembers = [];
+          _ref1 = r.members || [];
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            m = _ref1[_k];
+            m = members[m];
+            if (m) {
+              newmembers.push(m);
+            }
+          }
+          r.members = newmembers;
+        }
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Listener(VIP) */
+    CrCollection.extend({
+
+      /* env:dev                                                      env:dev:end */
+      type: constant.RESTYPE.OSLISTENER,
+      doFetch: function() {
+        return ApiRequest("os_vip_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.vips;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* HealthMonitor */
+    CrCollection.extend({
+
+      /* env:dev                                                           env:dev:end */
+      type: constant.RESTYPE.OSHM,
+      doFetch: function() {
+        return ApiRequest("os_healthmonitor_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.health_monitors;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Router */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSRT,
+      doFetch: function() {
+        return ApiRequest("os_router_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.routers;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Server */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSSERVER,
+      doFetch: function() {
+        var region;
+        region = this.region();
+        return ApiRequest("os_server_List", {
+          region: region
+        }).then(function(res) {
+          var servers;
+          servers = _.pluck(res.servers, "id");
+          if (!servers.length) {
+            return;
+          }
+          return ApiRequest("os_server_Info", {
+            region: region,
+            ids: servers
+          });
+        });
+      },
+      parseFetchData: function(data) {
+        var server, _i, _len;
+        data = _.values(data);
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          server = data[_i];
+          server['diskConfig'] = server['OS-DCF:diskConfig'];
+          server['availability_zone'] = server['OS-EXT-AZ:availability_zone'];
+          server['power_state'] = server['OS-EXT-STS:power_state'];
+          server['task_state'] = server['OS-EXT-STS:task_state'];
+          server['vm_state'] = server['OS-EXT-STS:vm_state'];
+          server['launched_at'] = server['OS-SRV-USG:launched_at'];
+          server['terminated_at'] = server['OS-SRV-USG:terminated_at'];
+          server['volumes_attached'] = server['os-extended-volumes:volumes_attached'];
+          delete server['OS-DCF:diskConfig'];
+          delete server['OS-EXT-AZ:availability_zone'];
+          delete server['OS-EXT-STS:power_state'];
+          delete server['OS-EXT-STS:task_state'];
+          delete server['OS-EXT-STS:vm_state'];
+          delete server['OS-SRV-USG:launched_at'];
+          delete server['OS-SRV-USG:terminated_at'];
+          delete server['os-extended-volumes:volumes_attached'];
+        }
+        return data;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Volume */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSVOL,
+      doFetch: function() {
+        var region;
+        region = this.region();
+        return ApiRequest("os_volume_List", {
+          region: region
+        }).then(function(res) {
+          var volumes;
+          volumes = _.pluck(res.volumes, "id");
+          if (!volumes.length) {
+            return;
+          }
+          return ApiRequest("os_volume_Info", {
+            region: region,
+            ids: volumes
+          });
+        });
+      },
+      parseFetchData: function(data) {
+        return _.values(data);
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Subnet */
+    CrCollection.extend({
+
+      /* env:dev                                                    env:dev:end */
+      type: constant.RESTYPE.OSSUBNET,
+      doFetch: function() {
+        return ApiRequest("os_subnet_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.subnets;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* SG */
+    CrCollection.extend({
+
+      /* env:dev                                                env:dev:end */
+      type: constant.RESTYPE.OSSG,
+      doFetch: function() {
+        return ApiRequest("os_securitygroup_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        return data.security_groups;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Port */
+    CrCollection.extend({
+
+      /* env:dev                                                  env:dev:end */
+      type: constant.RESTYPE.OSPORT,
+      doFetch: function() {
+        return ApiRequest("os_port_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        var port, _i, _len, _ref;
+        _ref = data.ports;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          port = _ref[_i];
+          port['vif_details'] = port['binding:vif_details'];
+          port['vif_type'] = port['binding:vif_type'];
+          port['profile'] = port['binding:profile'];
+          port['vnic_type'] = port['binding:vnic_type'];
+          port['host_id'] = port['binding:host_id'];
+          delete port['binding:vif_details'];
+          delete port['binding:vif_type'];
+          delete port['binding:profile'];
+          delete port['binding:vnic_type'];
+          delete port['binding:host_id'];
+        }
+        return data.ports;
+      },
+      parseExternalData: function(data) {
+        var res;
+        res = $.extend(true, [], data);
+        return this.camelToUnderscore(res);
+      }
+    });
+
+    /* Neutron Quota */
+    CrCollection.extend({
+
+      /* env:dev                                                        env:dev:end */
+      type: constant.RESTYPE.OSNQ,
+      doFetch: function() {
+        return ApiRequest("os_neutron_quota_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        if (data != null ? data.quota : void 0) {
+          data.quota.id = "neutron_quota";
+        }
+        return [data != null ? data.quota : void 0];
+      }
+    });
+
+    /* Cinder Quota */
+    return CrCollection.extend({
+
+      /* env:dev                                                       env:dev:end */
+      type: constant.RESTYPE.OSCQ,
+      doFetch: function() {
+        return ApiRequest("os_cinder_quota_List", {
+          region: this.region()
+        });
+      },
+      parseFetchData: function(data) {
+        if (data != null ? data.quota_set : void 0) {
+          data.quota_set.id = "cinder_quota";
+        }
+        return [data != null ? data.quota_set : void 0];
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('cloudres/CrBundle',["CloudResources", "./CrOpsResource", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam", "./openstack/CrClnSharedRes", "./openstack/CrClnImage", "./openstack/CrClnNetwork", "./openstack/CrClnCommonRes"], function(CloudResources) {
 
     /* env:dev                                                             env:dev:end */
 
