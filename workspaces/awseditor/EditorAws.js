@@ -3255,7 +3255,7 @@ function program39(depth0,data) {
         }, true));
         that = this;
         ApiRequest("ins_GetConsoleOutput", {
-          region: Design.instance().region(),
+          region_name: Design.instance().region(),
           instance_id: instanceId
         }).then(function(data) {
           return that.refreshSysLog(data.GetConsoleOutputResponse);

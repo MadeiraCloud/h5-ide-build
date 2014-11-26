@@ -2532,19 +2532,11 @@ return TEMPLATE; });
         serverId = this.model.get('appId');
         that = this;
         region = Design.instance().region();
-        if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          reqApi = "os_server_GetConsoleOutput";
-          ApiRequestOs(reqApi, {
-            region: region,
-            server_id: serverId
-          }).then(this.refreshSysLog, this.refreshSysLog);
-        } else {
-          reqApi = "ins_GetConsoleOutput";
-          ApiRequest(reqApi, {
-            region: region,
-            instance_id: serverId
-          }).then(this.refreshSysLog, this.refreshSysLog);
-        }
+        reqApi = "os_server_GetConsoleOutput";
+        ApiRequestOs(reqApi, {
+          region: region,
+          server_id: serverId
+        }).then(this.refreshSysLog, this.refreshSysLog);
         modal(MC.template.modalInstanceSysLog({
           instance_id: serverId,
           log_content: ''

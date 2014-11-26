@@ -5785,7 +5785,7 @@ return Markdown;
         } else {
           reqApi = "ins_GetConsoleOutput";
           ApiRequest(reqApi, {
-            region: region,
+            region_name: region,
             instance_id: serverId
           }).then(this.refreshSysLog, this.refreshSysLog);
         }
@@ -5796,18 +5796,25 @@ return Markdown;
         return false;
       },
       refreshSysLog: function(result) {
-        var $contentElem, logContent;
+        var $contentElem, logContent, output, _ref;
         $('#modal-instance-sys-log .instance-sys-log-loading').hide();
-        if (result && result.output) {
-          logContent = Base64.decode(result.output);
-          $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
-          $contentElem.html(MC.template.convertBreaklines({
-            content: logContent
-          }));
-          $contentElem.show();
-        } else {
-          $('#modal-instance-sys-log .instance-sys-log-info').show();
+        if (result) {
+          output = (_ref = result.GetConsoleOutputResponse) != null ? _ref.output : void 0;
+          if (Design.instance().type() === OpsModel.Type.OpenStack) {
+            output = result.output;
+          }
+          if (output) {
+            logContent = Base64.decode(output);
+            $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
+            $contentElem.html(MC.template.convertBreaklines({
+              content: logContent
+            }));
+            $contentElem.show();
+            modal.position();
+            return;
+          }
         }
+        $('#modal-instance-sys-log .instance-sys-log-info').show();
         return modal.position();
       },
       onStateLogDetailBtnClick: function(event) {
