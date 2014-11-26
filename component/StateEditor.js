@@ -3047,7 +3047,7 @@ return Markdown;
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequestOs', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest) {
+  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequest', 'ApiRequestOs', 'OpsModel', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest, ApiRequestOs, OpsModel) {
     var StateClipboard, StateEditorView, id, tpl;
     StateClipboard = [];
     for (id in template) {
@@ -5772,14 +5772,23 @@ return Markdown;
         return $stateLogItem.toggleClass('view');
       },
       openSysLogModal: function() {
-        var region, serverId, that;
+        var region, reqApi, serverId, that;
         that = this;
         serverId = that.currentResId;
         region = Design.instance().region();
-        ApiRequest("os_server_GetConsoleOutput", {
-          region: region,
-          server_id: serverId
-        }).then(this.refreshSysLog, this.refreshSysLog);
+        if (Design.instance().type() === OpsModel.Type.OpenStack) {
+          reqApi = "os_server_GetConsoleOutput";
+          ApiRequestOs(reqApi, {
+            region: region,
+            server_id: serverId
+          }).then(this.refreshSysLog, this.refreshSysLog);
+        } else {
+          reqApi = "ins_GetConsoleOutput";
+          ApiRequest(reqApi, {
+            region: region,
+            instance_id: serverId
+          }).then(this.refreshSysLog, this.refreshSysLog);
+        }
         modal(MC.template.modalInstanceSysLog({
           instance_id: serverId,
           log_content: ''

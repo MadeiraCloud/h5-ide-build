@@ -2485,7 +2485,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/oseditor/property/osserver/appView',['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequestOs'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest) {
+  define('workspaces/oseditor/property/osserver/appView',['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequest', 'ApiRequestOs', 'OpsModel'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest, ApiRequestOs, OpsModel) {
     return OsPropertyView.extend({
       events: {
         'click .os-server-image-info': 'openImageInfoPanel',
@@ -2528,14 +2528,23 @@ return TEMPLATE; });
         return this;
       },
       openSysLogModal: function() {
-        var region, serverId, that;
+        var region, reqApi, serverId, that;
         serverId = this.model.get('appId');
         that = this;
         region = Design.instance().region();
-        ApiRequest("os_server_GetConsoleOutput", {
-          region: region,
-          server_id: serverId
-        }).then(this.refreshSysLog, this.refreshSysLog);
+        if (Design.instance().type() === OpsModel.Type.OpenStack) {
+          reqApi = "os_server_GetConsoleOutput";
+          ApiRequestOs(reqApi, {
+            region: region,
+            server_id: serverId
+          }).then(this.refreshSysLog, this.refreshSysLog);
+        } else {
+          reqApi = "ins_GetConsoleOutput";
+          ApiRequest(reqApi, {
+            region: region,
+            instance_id: serverId
+          }).then(this.refreshSysLog, this.refreshSysLog);
+        }
         modal(MC.template.modalInstanceSysLog({
           instance_id: serverId,
           log_content: ''
