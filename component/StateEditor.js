@@ -17,7 +17,7 @@
         if (!(resModel && resModel.serialize)) {
           return;
         }
-        resId = resModel.get('appId');
+        resId = options.resId || resModel.get('appId');
         allCompData = Design.instance().serialize().component;
         compData = allCompData[resUID];
         that.set({
@@ -26492,7 +26492,8 @@ define("component/stateeditor/lib/ace", function(){});
       compData = allCompData[uid];
       if (compData) {
         model = new Model({
-          resUID: uid
+          resUID: uid,
+          resId: resId
         });
       } else {
         model = new Backbone.Model();

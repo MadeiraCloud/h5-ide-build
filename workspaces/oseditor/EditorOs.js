@@ -2485,7 +2485,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/oseditor/property/osserver/appView',['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequest', 'ApiRequestOs', 'OpsModel'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest, ApiRequestOs, OpsModel) {
+  define('workspaces/oseditor/property/osserver/appView',['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequest', 'ApiRequestOs'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest, ApiRequestOs) {
     return OsPropertyView.extend({
       events: {
         'click .os-server-image-info': 'openImageInfoPanel',

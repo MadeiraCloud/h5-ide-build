@@ -694,7 +694,7 @@ return TEMPLATE; });
             return comp = ds[0].component;
           }).then(function() {
             var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
-            name = App.model.appList().get(id).get("name");
+            name = App.model.appList().get(app.get("id")).get("name");
             hasEC2Instance = !!(_.filter(comp, function(e) {
               return e.type === constant.RESTYPE.INSTANCE;
             })).length;
@@ -984,7 +984,7 @@ return TEMPLATE; });
           title: lang.IDE.TITLE_CONFIRM_TO_FORGET,
           template: AppTpl.loading(),
           confirm: {
-            text: "Forget",
+            text: lang.TOOLBAR.BTN_FORGET_CONFIRM,
             color: "red",
             disabled: production
           },

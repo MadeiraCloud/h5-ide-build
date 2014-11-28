@@ -2071,7 +2071,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (opts.jsonData) {
             provider = opts.jsonData.provider;
           }
-          provider = provider || attr.provider;
+          provider = provider || attr.provider || "aws::global";
           console.assert(KnownOpsModelClass[provider], "Cannot find specific OpsModel for provider '" + attr.provider + "'");
           Model = KnownOpsModelClass[provider];
           if (Model) {
@@ -4475,9 +4475,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
     VisualOps.prototype.importJson = function(json) {
       var result;
-      result = JsonExporter.importJson(json);
-      if (_.isString(result)) {
-        return result;
+      if (_.isString(json)) {
+        result = JsonExporter.importJson(json);
+        if (_.isString(result)) {
+          return result;
+        }
+      } else {
+        result = json;
       }
       return this.openOps(this.model.createStackByJson(result));
     };

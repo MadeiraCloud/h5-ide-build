@@ -1602,7 +1602,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div id=\"modal-import-json-dropzone\">"
+  buffer += "<div class=\"loading-spinner loading-spinner-small hide\"></div>\n<div id=\"modal-import-json-dropzone\">"
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_LBL", {hash:{},data:data}))
     + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
@@ -1802,7 +1802,7 @@ function program26(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", 'AppAction', "CloudResources", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang, appAction, CloudResources) {
+  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", 'AppAction', "CloudResources", "ApiRequest", "JsonExporter", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang, appAction, CloudResources, ApiRequest, JsonExporter) {
     Handlebars.registerHelper("awsAmiIcon", function(amiId, region) {
       var ami;
       ami = CloudResources(constant.RESTYPE.AMI, region).get(amiId);
@@ -2095,7 +2095,31 @@ function program26(depth0,data) {
         });
         reader = new FileReader();
         reader.onload = function(evt) {
-          var error;
+          var error, result;
+          result = JsonExporter.importJson(reader.result);
+          if (_.isString(result)) {
+            $("#import-json-error").html(error);
+            return;
+          }
+          if (result.AWSTemplateFormatVersion) {
+            modal.tpl.find(".loading-spinner").show();
+            $("#import-json-error, #modal-import-json-dropzone").hide();
+            console.log(reader.result);
+            ApiRequest("stack_import_cloudformation", {
+              cf_template: reader.result
+            }).then(function(data) {
+              data.provider = "aws::china";
+              data.region = "cn-north-1";
+              data.autoLayout = true;
+              App.importJson(data);
+              return modal.close();
+            }, function() {
+              modal.tpl.find(".loading-spinner").hide();
+              $("#import-json-error, #modal-import-json-dropzone").show();
+              return $("#import-json-error").html(lang.IDE.POP_IMPORT_CFM_ERROR);
+            });
+            return;
+          }
           error = App.importJson(reader.result);
           if (_.isString(error)) {
             $("#import-json-error").html(error);
@@ -2161,7 +2185,7 @@ function program26(depth0,data) {
         $("#RefreshResource").addClass("reloading").text("");
         this.model.clearVisualizeData();
         App.discardAwsCache().done(function() {
-          return $("#RefreshResource").removeClass("reloading").text("just now");
+          return $("#RefreshResource").removeClass("reloading").text(lang.IDE.DASH_TPL_JUST_NOW);
         });
       },
       deleteStack: function(event) {
@@ -2250,7 +2274,7 @@ function program26(depth0,data) {
           id = $tgt.attr("data-vpcid");
           region = $tgt.closest("ul").attr("data-region");
           self.visModal.close();
-          App.openOps(App.model.createImportOps(region, id));
+          App.openOps(App.model.createImportOps(region, "aws::china", id));
           return false;
         });
       },

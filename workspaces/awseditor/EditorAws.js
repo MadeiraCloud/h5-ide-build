@@ -14460,6 +14460,7 @@ function program4(depth0,data) {
           this.set('cooldown', asg_data.DefaultCooldown);
           this.set('healCheckType', asg_data.HealthCheckType);
           this.set('healthCheckGracePeriod', asg_data.HealthCheckGracePeriod);
+          this.set('notiTopicName', this.getNotificationTopicName());
           this.handlePolicy(asg_comp, asg_data);
           this.handleNotify(asg_comp, asg_data);
         } else {
@@ -15125,18 +15126,22 @@ function program36(depth0,data) {
 function program38(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <div class=\"property-asg-notification-wrap property-control-group\">\n        ";
+  buffer += "\n      <dl class=\"dl-vertical\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(50, program50, data),fn:self.program(39, program39, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      </div>\n\n    ";
+  buffer += "\n\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNS_TOPIC", {hash:{},data:data}))
+    + "</dt>\n        <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.notiTopicName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n      </dl>\n\n    ";
   return buffer;
   }
 function program39(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <label>"
+  buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
-    + "</label>\n        <section>\n          ";
+    + "</dt>\n          ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n          ";
@@ -15151,60 +15156,60 @@ function program39(depth0,data) {
   buffer += "\n          ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(48, program48, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </section>\n        ";
+  buffer += "\n        ";
   return buffer;
   }
 function program40(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
+  buffer += "<dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
+    + "</dd>";
   return buffer;
   }
 
 function program42(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
+  buffer += "<dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
+    + "</dd>";
   return buffer;
   }
 
 function program44(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
+  buffer += "<dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
-    + "</p>";
+    + "</dd>";
   return buffer;
   }
 
 function program46(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
+  buffer += "<dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
-    + "</p>";
+    + "</dd>";
   return buffer;
   }
 
 function program48(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
+  buffer += "<dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
-    + "</p>";
+    + "</dd>";
   return buffer;
   }
 
 function program50(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <p class=\"property-info tac\">"
+  buffer += "\n        <dd class=\"property-info tac\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_MSG_NO_NOTIFICATION_WARN", {hash:{},data:data}))
-    + "</p>\n        ";
+    + "</dd>\n        ";
   return buffer;
   }
 
@@ -16416,7 +16421,7 @@ function program74(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" >\n                <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACKUP_RETENTION_PERIOD", {hash:{},data:data}))
-    + "</label>\n                <input class=\"input shorter-input\" title=\"hours\" value=\""
+    + "</label>\n                <input class=\"input shorter-input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.backupRetentionPeriod)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"property-dbinstance-backup-period\" type=\"text\" data-type=\"digits\" data-min=\"1\" data-max=\"35\" data-ignore=\"true\">\n                <label class=\"property-label-right\" for=\"property-dbinstance-backup-period\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACK_RETANTION_PERIOD_DAY", {hash:{},data:data}))
@@ -17486,7 +17491,7 @@ return TEMPLATE; });
             title: lang.IDE.TITLE_CONFIRM_PROMOTE_READ_REPLICA,
             template: template_component.modalPromoteConfirm({}),
             confirm: {
-              text: "Confirm"
+              text: lang.PROP.DB_CONFIRM_PROMOTE
             },
             disableClose: true,
             onConfirm: function() {
@@ -21328,7 +21333,7 @@ return TEMPLATE; });
           });
           if (result.compChange) {
             $diffTree = differ.renderAppUpdateView();
-            $('#app-update-summary-table .scroll-content').html($diffTree);
+            $('#app-update-summary-table').html($diffTree);
           }
           that.renderKpDropdown(that.updateModal);
           TA.loadModule('stack').then(function() {
@@ -21423,6 +21428,28 @@ function program3(depth0,data) {
   
   
   return "disableRds";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<li class=\"tooltip resource-item vgw\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VGW", {hash:{},data:data}))
+    + "' data-type=\"VGW\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VGW", {hash:{},data:data}))
+    + "</li>";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<li class=\"tooltip resource-item cgw\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_CGW", {hash:{},data:data}))
+    + "' data-type=\"CGW\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_CGW", {hash:{},data:data}))
+    + "</li>";
+  return buffer;
   }
 
   buffer += "<button class=\"tooltip sidebar-hider icon-caret-left HideOEPanelLeft\" data-tooltip='"
@@ -21538,15 +21565,13 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_IGW", {hash:{},data:data}))
     + "' data-type=\"IGW\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_IGW", {hash:{},data:data}))
-    + "</li>\n\n      <li class=\"tooltip resource-item vgw\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VGW", {hash:{},data:data}))
-    + "' data-type=\"VGW\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VGW", {hash:{},data:data}))
-    + "</li>\n\n      <li class=\"tooltip resource-item cgw\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_CGW", {hash:{},data:data}))
-    + "' data-type=\"CGW\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_CGW", {hash:{},data:data}))
-    + "</li>\n\n      <li class=\"tooltip resource-item eni\" data-tooltip='"
+    + "</li>\n\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasVGW), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasCGW), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n      <li class=\"tooltip resource-item eni\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ENI", {hash:{},data:data}))
     + "' data-type=\"ENI\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_ENI", {hash:{},data:data}))
@@ -22170,7 +22195,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "../template/TplLeftPanel", "constant", 'dhcp', 'snapshotManager', 'rds_snapshot', 'sslcert_manage', 'sns_manage', 'kp_manage', 'rds_pg', 'rds_snapshot', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', "backbone", 'UI.radiobuttons', "UI.nanoscroller", "UI.dnd"], function(CloudResources, Design, LeftPanelTpl, constant, dhcpManager, EbsSnapshotManager, RdsSnapshotManager, sslCertManager, snsManager, keypairManager, rdsPgManager, rdsSnapshot, AmiBrowser, lang, ApiRequest) {
+  define('workspaces/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "../template/TplLeftPanel", "constant", 'dhcp', 'snapshotManager', 'rds_snapshot', 'sslcert_manage', 'sns_manage', 'kp_manage', 'rds_pg', 'rds_snapshot', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', 'OpsModel', "backbone", 'UI.radiobuttons', "UI.nanoscroller", "UI.dnd"], function(CloudResources, Design, LeftPanelTpl, constant, dhcpManager, EbsSnapshotManager, RdsSnapshotManager, sslCertManager, snsManager, keypairManager, rdsPgManager, rdsSnapshot, AmiBrowser, lang, ApiRequest, OpsModel) {
     var LcItemView, __resizeAccdTO;
     __resizeAccdTO = null;
     $(window).on("resize", function() {
@@ -22284,8 +22309,15 @@ return TEMPLATE; });
         return this.render();
       },
       render: function() {
+        var hasCGW, hasVGW;
+        hasVGW = hasCGW = true;
+        if (Design.instance().region() === 'cn-north-1') {
+          hasVGW = hasCGW = false;
+        }
         this.$el.html(LeftPanelTpl.panel({
-          rdsDisabled: this.workspace.isRdsDisabled()
+          rdsDisabled: this.workspace.isRdsDisabled(),
+          hasVGW: hasVGW,
+          hasCGW: hasCGW
         }));
         this.$el.toggleClass("hidden", this.__leftPanelHidden || false);
         this.recalcAccordion();
@@ -28774,7 +28806,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/model/ElbModel',["Design", "constant", "ResourceModel", "ComplexResModel", "./SgModel", "./SslCertModel", "./connection/SgAsso", "i18n!/nls/lang.js", "./connection/ElbAsso"], function(Design, constant, ResourceModel, ComplexResModel, SgModel, SslCertModel, SgAsso, lang) {
+  define('workspaces/awseditor/model/ElbModel',["Design", "constant", "ResourceModel", "ComplexResModel", "./SgModel", "./SslCertModel", "./connection/SgAsso", "i18n!/nls/lang.js", "CloudResources", "./connection/ElbAsso"], function(Design, constant, ResourceModel, ComplexResModel, SgModel, SslCertModel, SgAsso, lang, CloudResources) {
     var Model;
     Model = ComplexResModel.extend({
       defaults: function() {
@@ -28884,8 +28916,9 @@ return TEMPLATE; });
         return null;
       },
       setSSLCert: function(idx, sslCertId) {
-        var listeners, sslCertData;
+        var listeners, sslCertCol, sslCertData;
         if (idx >= 0) {
+          sslCertCol = CloudResources(constant.RESTYPE.IAM);
           listeners = this.get("listeners");
           sslCertData = sslCertCol.get(sslCertId);
           return listeners[idx].sslCert = SslCertModel.createNew(sslCertData);

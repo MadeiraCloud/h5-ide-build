@@ -841,7 +841,7 @@ function program10(depth0,data) {
         }
         $("#OsReloadResource").addClass("reloading").text("");
         App.discardAwsCache().done(function() {
-          return $("#OsReloadResource").removeClass("reloading").text("just now");
+          return $("#OsReloadResource").removeClass("reloading").text(lang.IDE.DASH_TPL_JUST_NOW);
         });
       },
       deleteStack: function(event) {
@@ -963,7 +963,7 @@ function program10(depth0,data) {
         id = $tgt.attr("data-id");
         region = $tgt.closest("ul").attr("data-region");
         this.visModal.close();
-        App.openOps(App.model.createImportOps(region, "openstack", this.model.provider, id));
+        App.openOps(App.model.createImportOps(region, this.model.provider, id));
         return false;
       }
     });

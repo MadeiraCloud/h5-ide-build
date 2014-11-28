@@ -2438,7 +2438,11 @@ return TEMPLATE; });
         this.opsModel.__setJsonData(this.design.serialize());
       };
 
-      OpsEditorBase.prototype.initEditor = function() {};
+      OpsEditorBase.prototype.initEditor = function() {
+        if (this.opsModel.get("autoLayout")) {
+          this.view.canvas.autoLayout();
+        }
+      };
 
       OpsEditorBase.prototype.saveThumbnail = function() {
         if (this.opsModel.isPersisted()) {
@@ -6065,20 +6069,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         switch (opsModel.get("state")) {
           case OpsModel.State.Starting:
-            text = "Starting your app...";
+            text = lang.IDE.STARTING_YOUR_APP;
             break;
           case OpsModel.State.Stopping:
-            text = "Stopping your app...";
+            text = lang.IDE.STOPPING_YOUR_APP;
             break;
           case OpsModel.State.Terminating:
-            text = "Terminating your app..";
+            text = lang.IDE.TERMINATING_YOUR_APP;
             break;
           case OpsModel.State.Updating:
-            text = "Applying changes to your app...";
+            text = lang.IDE.APPLYING_CHANGES_TO_YOUR_APP;
             break;
           default:
             console.warn("Unknown opsmodel state when showing loading in AppEditor,", opsModel);
-            text = "Processing your request...";
+            text = lang.IDE.PROCESSING_YOUR_REQUEST;
         }
         this.__progress = 0;
         this.$el.append(OpsEditorTpl.appProcessing(text));

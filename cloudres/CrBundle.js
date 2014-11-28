@@ -805,7 +805,8 @@
         return ApiRequest("iam_UpdateServerCertificate", {
           servercer_name: this.get("Name"),
           new_servercer_name: newAttr.Name,
-          new_path: newAttr.Path
+          new_path: newAttr.Path,
+          region_name: Design.instance().region()
         }).then(function(res) {
           var newArn, oldArn;
           oldArn = self.get('Arn');
@@ -848,7 +849,8 @@
       },
       doDestroy: function() {
         return ApiRequest("iam_DeleteServerCertificate", {
-          servercer_name: this.get("Name")
+          servercer_name: this.get("Name"),
+          region_name: Design.instance().region()
         });
       }
     });
@@ -1170,7 +1172,9 @@
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
-        return ApiRequest("iam_ListServerCertificates");
+        return ApiRequest("iam_ListServerCertificates", {
+          region_name: this.region()
+        });
       },
       trAwsXml: function(res) {
         var _ref;

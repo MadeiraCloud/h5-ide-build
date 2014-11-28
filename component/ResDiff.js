@@ -626,7 +626,7 @@ return TEMPLATE; });
       render: function() {
         var okText, options, that;
         that = this;
-        okText = 'OK, got it';
+        okText = lang.PROP.APP_DIFF_CHANGE_CONFIRM;
         options = {
           template: template.frame(),
           title: lang.IDE.TITLE_APP_CHANGES,

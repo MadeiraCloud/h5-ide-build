@@ -2482,9 +2482,6 @@ return TEMPLATE; });
 
 (function() {
   define('sns_dropdown',['constant', 'CloudResources', 'sns_manage', 'combo_dropdown', 'component/awscomps/SnsTpl', 'i18n!/nls/lang.js'], function(constant, CloudResources, snsManage, comboDropdown, template, lang) {
-    var subCol, topicCol;
-    subCol = CloudResources(constant.RESTYPE.SUBSCRIPTION, 'us-east-1');
-    topicCol = CloudResources(constant.RESTYPE.TOPIC, 'us-east-1');
     return Backbone.View.extend({
       tagName: 'section',
       initCol: function() {
@@ -5741,13 +5738,14 @@ return TEMPLATE; });
         });
       },
       "delete": function(invalid, checked) {
-        var count, onDeleteFinish;
+        var count, onDeleteFinish, that;
         count = checked.length;
+        that = this;
         onDeleteFinish = this.genDeleteFinish(count);
         this.switchAction('processing');
         return _.each(checked, function(c) {
           var m;
-          m = this.sslCertCol.get(c.data.id);
+          m = that.sslCertCol.get(c.data.id);
           return m != null ? m.destroy().then(onDeleteFinish, onDeleteFinish) : void 0;
         });
       },
@@ -5792,7 +5790,7 @@ return TEMPLATE; });
         var detailTpl, sslCertData, sslCertId, that;
         that = this;
         sslCertId = data.id;
-        sslCertData = sslCertCol.get(sslCertId).toJSON();
+        sslCertData = this.sslCertCol.get(sslCertId).toJSON();
         sslCertData.Expiration = MC.dateFormat(new Date(sslCertData.Expiration), 'yyyy-MM-dd hh:mm:ss');
         detailTpl = template['detail_info'];
         return this.modal.setDetail($tr, detailTpl(sslCertData));
@@ -5929,9 +5927,6 @@ return TEMPLATE; });
 
 (function() {
   define('sslcert_dropdown',['constant', 'CloudResources', 'sslcert_manage', 'combo_dropdown', 'component/awscomps/SslCertTpl', 'i18n!/nls/lang.js'], function(constant, CloudResources, sslCertManage, comboDropdown, template, lang) {
-    var sslCertCol;
-    sslCertCol = CloudResources(constant.RESTYPE.IAM);
-    window.sslCertCol = sslCertCol;
     return Backbone.View.extend({
       tagName: 'section',
       initCol: function() {
