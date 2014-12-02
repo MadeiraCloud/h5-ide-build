@@ -26508,9 +26508,12 @@ return TEMPLATE; });
             EntrySet: ruleSet,
             NetworkAclId: this.get("appId"),
             VpcId: vpc.createRef("VpcId"),
-            Tags: {
-              "visops_default": this.isDefault() ? "true" : "false"
-            }
+            Tags: [
+              {
+                Key: "visops_default",
+                Value: this.isDefault() ? "true" : "false"
+              }
+            ]
           }
         };
         _ref = this.get("rules");
@@ -28294,9 +28297,12 @@ return TEMPLATE; });
             VpcId: this.getVpcRef(),
             IpPermissions: [],
             IpPermissionsEgress: [],
-            Tags: {
-              "visops_default": this.isDefault() ? "true" : "false"
-            }
+            Tags: [
+              {
+                Key: "visops_default",
+                Value: this.isDefault() ? "true" : "false"
+              }
+            ]
           }
         };
         return {
@@ -29920,9 +29926,12 @@ return TEMPLATE; });
                 GatewayId: "local"
               }
             ],
-            Tags: {
-              "visops_default": this.get("main") ? "true" : "false"
-            }
+            Tags: [
+              {
+                Key: "visops_default",
+                Value: this.get("main") ? "true" : "false"
+              }
+            ]
           }
         };
         if (this.get("main")) {
