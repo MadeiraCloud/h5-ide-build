@@ -61,7 +61,8 @@ define({
         "CVS_ASG_DROP_LC_4": "configuration",
         "ATTACH_NETWORK_INTERFACE_TO_INTERFACE": "Attach Network Interface to Instance",
         "ATTACH_AND_REMOVE_PUBLIC_IP": "Attach and Remove Public IP",
-        "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "The Network Interface is attached to the instance. No need to connect them by security group rule."
+        "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "The Network Interface is attached to the instance. No need to connect them by security group rule.",
+        "LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL": "Launch Configuration must be created from AMI in Resource Panel"
     },
     "IDE": {
         "COMPONENT_CREATE_KEYPAIR": "Create Key Pair",

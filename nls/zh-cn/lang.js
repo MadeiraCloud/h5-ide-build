@@ -61,7 +61,8 @@ define({
         "CVS_ASG_DROP_LC_4": " ",
         "ATTACH_NETWORK_INTERFACE_TO_INTERFACE": "连接网络接口到实例",
         "ATTACH_AND_REMOVE_PUBLIC_IP": "连接并且删除公有IP",
-        "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "此网络接口已连接到实例，不必用安全组连接。"
+        "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "此网络接口已连接到实例，不必用安全组连接。",
+        "LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL": "启动配置只能从通过资源面板拖拽 AMI 来创建"
     },
     "IDE": {
         "COMPONENT_CREATE_KEYPAIR": "创建密钥对",

@@ -33901,7 +33901,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/canvas/CeInstance',["CanvasElement", "constant", "CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "event"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, ide_event) {
+  define('workspaces/awseditor/canvas/CeInstance',["CanvasElement", "constant", "CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "event", "UI.notification"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, ide_event) {
     return CanvasElement.extend({
 
       /* env:dev                                          env:dev:end */
@@ -34137,6 +34137,10 @@ return TEMPLATE; });
             return CanvasElement.createResource(type, attr, option);
           case constant.RESTYPE.ASG:
           case "ExpandedAsg":
+            if (option.cloneSource) {
+              notification('error', lang.CANVAS.LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL);
+              return;
+            }
             TYPE_LC = constant.RESTYPE.LC;
             return CanvasElement.getClassByType(TYPE_LC).createResource(TYPE_LC, attr, option);
           case constant.RESTYPE.AZ:
