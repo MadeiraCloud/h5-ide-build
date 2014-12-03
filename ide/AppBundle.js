@@ -2306,6 +2306,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (this.attributes.name !== json.name) {
           this.set("name", json.name);
         }
+        if (json.autoLayout) {
+          this.set("autoLayout", json.autoLayout);
+        }
         return this;
       },
       save: function(newJson, thumbnail) {
