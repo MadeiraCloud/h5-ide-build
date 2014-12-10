@@ -41,7 +41,8 @@
       }
       if (!option.noDiffArrayAttrMap) {
         option.noDiffArrayAttrMap = {
-          '*.state': true
+          '*.state': true,
+          '*.resource.TerminationPolicies': true
         };
       }
       option.filterResMap = {};

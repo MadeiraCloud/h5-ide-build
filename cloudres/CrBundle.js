@@ -1191,10 +1191,6 @@
         }
         return res;
       }
-    }, {
-      category: function() {
-        return "";
-      }
     });
 
     /* Sns Topic */

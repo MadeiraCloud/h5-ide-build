@@ -2110,8 +2110,7 @@ function program26(depth0,data) {
             }).then(function(data) {
               data.provider = "aws::china";
               data.region = "cn-north-1";
-              data.autoLayout = true;
-              App.importJson(data);
+              App.importJson(data, true);
               return modal.close();
             }, function() {
               modal.tpl.find(".loading-spinner").hide();

@@ -2168,7 +2168,7 @@ return TEMPLATE; });
           width: "420",
           template: OpsEditorTpl.modal.onClose(name),
           confirm: {
-            text: "Close Tab",
+            text: lang.TOOLBAR.TIT_CLOSE_TAB,
             color: "red"
           },
           onConfirm: function() {
@@ -2471,7 +2471,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('CanvasManager',["constant"], function(constant) {
+  define('CanvasManager',['CloudResources', 'constant'], function(CloudResources, constant) {
     var CanvasManager;
     CanvasManager = {
       hasClass: function(elements, klass) {
@@ -2552,6 +2552,14 @@ return TEMPLATE; });
         var imgUrl, ip, toggle, tootipStr, _ref;
         if (node.length) {
           node = node[0];
+        }
+        if (targetModel && targetModel.type === constant.RESTYPE.ENI) {
+          if (!targetModel.connections("EniAttachment").length) {
+            $(node).hide();
+            return;
+          } else {
+            $(node).show();
+          }
         }
         toggle = targetModel.hasPrimaryEip();
         if (toggle) {

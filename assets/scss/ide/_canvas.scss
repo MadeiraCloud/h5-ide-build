@@ -51,6 +51,9 @@
     }
 
     .fip-status { pointer-events:none; }
+    .eip-status { pointer-events:none; }
+    .server-number { text-decoration: underline; cursor:pointer; }
+    .server-number-bg { cursor:pointer; }
   }
 
   .canvasel.selected, .canvasel.connectable, .canvasel.droppable {
@@ -196,9 +199,8 @@
   fill: #74B1FD;
   pointer-events:none;
 }
-.volume-image, .eip-status {
-  cursor: pointer;
-}
+.volume-image, .eip-status { cursor: pointer; }
+.canvas-view[data-mode="app"] .eip-status { cursor: default; }
 
 .cvs-hover {
   cursor: pointer;

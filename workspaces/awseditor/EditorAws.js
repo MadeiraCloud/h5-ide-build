@@ -2706,7 +2706,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "No Key Pair";
+  return escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NO_KP", {hash:{},data:data}));
   }
 
 function program6(depth0,data) {
@@ -2749,8 +2749,11 @@ function program10(depth0,data) {
 
 function program12(depth0,data) {
   
-  
-  return "\n          No Key Pair\n        ";
+  var buffer = "";
+  buffer += "\n          "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NO_KP", {hash:{},data:data}))
+    + "\n        ";
+  return buffer;
   }
 
 function program14(depth0,data) {
@@ -4374,6 +4377,7 @@ function program10(depth0,data) {
         $("#changeAmiDropZone").on("addItem_drop", function(evt, data) {
           return self.onDropAmi(data);
         });
+        return this.model.id;
       },
       showChangeAmiPanel: function() {
         $("#changeAmiPanel").show().siblings(".property-ami-info").hide();
@@ -6333,13 +6337,7 @@ function program30(depth0,data) {
     + "</div>\n	<div class=\"option-group\" data-bind=\"true\" >\n	";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.appData), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		<section class=\"property-control-group\">\n			<label class=\"left\" for=\"property-elb-name\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_NAME", {hash:{},data:data}))
-    + "</label>\n			<span class=\"required-input right\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_REQUIRED", {hash:{},data:data}))
-    + "</span>\n			<input data-ignore=\"true\" data-required-rollback=\"true\" maxlength=\"17\" class=\"input elb-name\"  type=\"text\" value=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-elb-name\"/>\n		</section>\n		<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-res-desc\">"
+  buffer += "\n		<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-res-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
     + "</label>\n		<textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -8986,7 +8984,7 @@ function program20(depth0,data) {
           component = component.getTarget(res_type.RT);
           if (subnet) {
             this.set({
-              title: lang.ide.TITLE_SUBNET_RT_ASSO,
+              title: lang.IDE.TITLE_SUBNET_RT_ASSO,
               association: {
                 subnet: subnet.get("name"),
                 rtb: component.get("name")
@@ -9394,7 +9392,7 @@ function program18(depth0,data) {
           return;
         }
         dialog_template = MC.template.setupCIDRConfirm({
-          remove_content: 'Remove Route',
+          remove_content: lang.PROP.REMOVE_ROUTE,
           main_content: mainContent,
           desc_content: descContent
         });
@@ -13816,8 +13814,10 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></label>\n            </div>\n            <label for=\"property-asg-term"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"list-name\">"
+    + "\" class=\"list-name\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</label>\n            <span class=\"drag-handle tooltip icon-sort\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_TERMINATION_MSG_DRAG", {hash:{},data:data}))
     + "\"></span>\n          </li>\n          ";
@@ -13849,7 +13849,7 @@ function program4(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.useDefault), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n              <label for=\"property-asg-term-def\"></label>\n            </div>\n            <span>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DEFAULT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DEFAULT", {hash:{},data:data}))
     + "</span>\n          </li>\n        </ul>\n      </div>\n   </div>\n   <div class=\"modal-footer\">\n      <button id=\"property-asg-term-done\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DONE", {hash:{},data:data}))
     + "</button>\n      <button class=\"btn modal-close btn-silver\">"
@@ -13922,11 +13922,16 @@ function program4(depth0,data) {
           p.alarmData.metricName = metricMap[p.alarmData.metricName];
           p.adjustmentType = adjustMap[p.adjustmentType];
         }
-        data.term_policy_brief = data.terminationPolicies.join(" > ");
+        data.term_policy_brief = this.getTerminationPoliciesText(data.terminationPolicies);
         data.can_add_policy = data.policies.length < 25;
         this.$el.html(template(data));
         this.processNotiTopic(null, true);
         return data.name;
+      },
+      getTerminationPoliciesText: function(policies) {
+        return _.map(policies, function(p) {
+          return p;
+        }).join(" > ");
       },
       createSnsNotiDropdown: function(selection) {
         var params;
@@ -14063,18 +14068,20 @@ function program4(depth0,data) {
           } else {
             data.push({
               name: policy,
-              checked: true
+              checked: true,
+              text: policy
             });
             checked[policy] = true;
           }
         }
-        _ref1 = [lang.PROP.ASG_TERMINATION_POLICY_OLDEST, lang.PROP.ASG_TERMINATION_POLICY_NEWEST, lang.PROP.ASG_TERMINATION_POLICY_OLDEST_LAUNCH, lang.PROP.ASG_TERMINATION_POLICY_CLOSEST];
+        _ref1 = ['OldestInstance', 'NewestInstance', 'OldestLaunchConfiguration', 'ClosestToNextInstanceHour'];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           p = _ref1[_j];
           if (!checked[p]) {
             data.push({
               name: p,
-              checked: false
+              checked: false,
+              text: p
             });
           }
         }
@@ -14108,14 +14115,14 @@ function program4(depth0,data) {
           var $this;
           $this = $(this);
           if ($this.closest("li").hasClass("enabled")) {
-            data.push($this.text());
+            data.push($this.data('name'));
           }
           return null;
         });
         if ($("#property-asg-term-def").is(":checked")) {
           data.push("Default");
         }
-        $(".termination-policy-brief").text(data.join(" > "));
+        $(".termination-policy-brief").text(this.getTerminationPoliciesText(data));
         return this.model.setTerminatePolicy(data);
       },
       delScalingPolicy: function(event) {
@@ -14197,7 +14204,7 @@ function program4(depth0,data) {
           width: '480px',
           compact: true,
           confirm: {
-            text: 'Done'
+            text: lang.PROP.LBL_DONE
           }
         };
         modalPlus = new modalplus(options);
@@ -15370,18 +15377,20 @@ function program53(depth0,data) {
           } else {
             data.push({
               name: policy,
-              checked: true
+              checked: true,
+              text: policy
             });
             checked[policy] = true;
           }
         }
-        _ref1 = [lang.PROP.ASG_TERMINATION_POLICY_OLDEST, lang.PROP.ASG_TERMINATION_POLICY_NEWEST, lang.PROP.ASG_TERMINATION_POLICY_OLDEST_LAUNCH, lang.PROP.ASG_TERMINATION_POLICY_CLOSEST];
+        _ref1 = ['OldestInstance', 'NewestInstance', 'OldestLaunchConfiguration', 'ClosestToNextInstanceHour'];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           p = _ref1[_j];
           if (!checked[p]) {
             data.push({
               name: p,
-              checked: false
+              checked: false,
+              text: p
             });
           }
         }
@@ -15415,14 +15424,14 @@ function program53(depth0,data) {
           var $this;
           $this = $(this);
           if ($this.closest("li").hasClass("enabled")) {
-            data.push($this.text());
+            data.push($this.data('name'));
           }
           return null;
         });
         if ($("#property-asg-term-def").is(":checked")) {
           data.push("Default");
         }
-        $(".termination-policy-brief").text(data.join(" > "));
+        $(".termination-policy-brief").text(this.getTerminationPoliciesText(data));
         return this.model.setTerminatePolicy(data);
       },
       delScalingPolicy: function(event) {
@@ -15747,13 +15756,18 @@ function program53(depth0,data) {
             p.adjustmentType = adjustMap[p.adjustmentType];
             p.isNew = !p.appId;
           }
-          data.term_policy_brief = data.terminationPolicies.join(" > ");
+          data.term_policy_brief = this.getTerminationPoliciesText(data.terminationPolicies);
           data.can_add_policy = data.policies.length < 25;
         }
         console.debug(data);
         this.$el.html(template(data));
         this.processNotiTopic(null, true);
         return data.name;
+      },
+      getTerminationPoliciesText: function(policies) {
+        return _.map(policies, function(p) {
+          return p;
+        }).join(" > ");
       },
       wheatherHasNoti: function() {
         var n, _ref;
@@ -19996,13 +20010,12 @@ return TEMPLATE; });
         this.$el.find(".property-second-panel").show().animate({
           left: "0%"
         }, 200);
-        return this.$el.find(".property-first-panel").animate({
+        this.$el.find(".property-first-panel").animate({
           left: "-30%"
         }, 200, (function(_this) {
-          return function() {
-            return _this.$el.find(".property-first-panel").hide();
-          };
+          return function() {};
         })(this));
+        return this.$el.find(".property-first-panel").hide();
       },
       immShowSecondPanel: function(type, id) {
         this.$el.find(".HideSecondPanel").data("tooltip", "Back to " + this.$el.find(".property-title").text());
@@ -20626,7 +20639,7 @@ return TEMPLATE; });
     } else {
       API_HOST = location.hostname;
     }
-    API_URL = "https://api." + API_HOST + "/v1/apps/";
+    API_URL = window.location.protocol + "//api." + API_HOST + "/v1/apps/";
     return Backbone.View.extend({
       events: {
         "click .icon-save": "saveStack",
@@ -24893,7 +24906,7 @@ return TEMPLATE; });
             return kp.get('name');
           }
         } else {
-          return this.get('keyName') || 'No Key Pair';
+          return this.get('keyName') || lang.PROP.INSTANCE_NO_KP;
         }
       },
       isDefaultKey: function() {
@@ -29460,13 +29473,13 @@ return TEMPLATE; });
         return null;
       },
       deserialize: function(data, layout_data, resolve) {
-        var KP, SgAsso, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1;
+        var KP, SgAsso, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1, _ref2;
         model = resolve(data.uid);
         rd = model.getAmiRootDevice();
         _ref = data.resource.BlockDeviceMapping || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           volume = _ref[_i];
-          if (rd && volume.DeviceName === rd.DeviceName) {
+          if ((rd && volume.DeviceName === rd.DeviceName) || (!rd && ((_ref1 = volume.DeviceName) === '/dev/xvda' || _ref1 === '/dev/sda1'))) {
             model.set("rdSize", volume.Ebs.VolumeSize);
             model.set("rdIops", volume.Ebs.Iops);
             model.set("rdType", volume.Ebs.VolumeType);
@@ -29485,9 +29498,9 @@ return TEMPLATE; });
           }
         }
         SgAsso = Design.modelClassForType("SgAsso");
-        _ref1 = data.resource.SecurityGroups || [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          sg = _ref1[_j];
+        _ref2 = data.resource.SecurityGroups || [];
+        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+          sg = _ref2[_j];
           new SgAsso(model, resolve(MC.extractID(sg)));
         }
         KP = resolve(MC.extractID(data.resource.KeyName));

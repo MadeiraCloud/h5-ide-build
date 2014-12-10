@@ -1733,7 +1733,7 @@ return TEMPLATE; });
         };
         if (this.data.keyName === '$DefaultKeyPair') {
           this.data.defaultKey = true;
-        } else if (this.data.keyName === 'No Key Pair') {
+        } else if (this.data.keyName === lang.PROP.INSTANCE_NO_KP) {
           this.data.noKey = true;
         }
         this.data.isRunTime = this.__mode === 'runtime';
@@ -5602,7 +5602,9 @@ return TEMPLATE; });
     return Backbone.View.extend({
       tagName: 'section',
       initCol: function() {
-        this.sslCertCol = CloudResources(constant.RESTYPE.IAM);
+        var region;
+        region = Design.instance().region();
+        this.sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
         if (App.user.hasCredential()) {
           this.sslCertCol.fetch();
         }
@@ -5930,7 +5932,9 @@ return TEMPLATE; });
     return Backbone.View.extend({
       tagName: 'section',
       initCol: function() {
-        this.sslCertCol = CloudResources(constant.RESTYPE.IAM);
+        var region;
+        region = Design.instance().region();
+        this.sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
         return this.sslCertCol.on('update', this.processCol, this);
       },
       initDropdown: function() {

@@ -3323,14 +3323,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.attributes.stackList.add(m);
         return m;
       },
-      createStackByJson: function(json) {
+      createStackByJson: function(json, updateLayout) {
         var m;
+        if (updateLayout == null) {
+          updateLayout = false;
+        }
         if (!this.attributes.stackList.isNameAvailable(json.name)) {
           json.name = this.stackList().getNewName(json.name);
         }
         m = new OpsModel({
           name: json.name,
-          region: json.region
+          region: json.region,
+          autoLayout: updateLayout
         }, {
           jsonData: json
         });
@@ -4476,7 +4480,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     VisualOps.prototype.discardAwsCache = function() {
       return CloudResources.invalidate();
     };
-    VisualOps.prototype.importJson = function(json) {
+    VisualOps.prototype.importJson = function(json, updateLayout) {
       var result;
       if (_.isString(json)) {
         result = JsonExporter.importJson(json);
@@ -4486,7 +4490,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       } else {
         result = json;
       }
-      return this.openOps(this.model.createStackByJson(result));
+      return this.openOps(this.model.createStackByJson(result, updateLayout));
     };
     VisualOps.prototype.openOps = function(opsModel, refresh) {
       var editor;

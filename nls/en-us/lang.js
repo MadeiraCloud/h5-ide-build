@@ -1195,7 +1195,7 @@ define({
     },
     "PROP": {
         "LBL_REQUIRED": "Required",
-        "LBL_DEFAULT": "Default",
+        "DEFAULT": "Default",
         "LBL_DONE": "Done",
         "LBL_CANCEL": "Cancel",
         "LBL_LOADING": "Loading...",
@@ -1620,10 +1620,10 @@ define({
         "ASG_TERMINATION_EDIT": "Edit Termination Policy",
         "ASG_TERMINATION_TEXT_WARN": "You can either specify any one of the policies as a standalone policy, or you can list multiple policies in an ordered list. The policies are executed in the order they are listed.",
         "ASG_TERMINATION_MSG_DRAG": "Drag to sort policy",
-        "ASG_TERMINATION_POLICY_OLDEST": "OldestInstance",
-        "ASG_TERMINATION_POLICY_NEWEST": "NewestInstance",
-        "ASG_TERMINATION_POLICY_OLDEST_LAUNCH": "OldestLaunchConfiguration",
-        "ASG_TERMINATION_POLICY_CLOSEST": "ClosestToNextInstanceHour",
+        "OLDESTINSTANCE": "OldestInstance",
+        "NEWESTINSTANCE": "NewestInstance",
+        "OLDESTLAUNCHCONFIGURATION": "OldestLaunchConfiguration",
+        "CLOSESTTONEXTINSTANCEHOUR": "ClosestToNextInstanceHour",
         "ASG_ADD_POLICY_TITLE_ADD": "Add",
         "ASG_ADD_POLICY_TITLE_EDIT": "Edit",
         "ASG_ADD_POLICY_TITLE_CONTENT": "Scaling Policy",
@@ -2042,7 +2042,8 @@ define({
         "EXPAND": "Expand",
         "EG_MINUS_1": "eg. -1",
         "EG_5": "eg. 5",
-        "EG_MINUS_30": "eg. -30"
+        "EG_MINUS_30": "eg. -30",
+        "REMOVE_ROUTE": "Remove Route"
     },
     "SERVICE": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",
