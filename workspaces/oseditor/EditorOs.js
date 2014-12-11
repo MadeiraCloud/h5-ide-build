@@ -5711,7 +5711,7 @@ return TEMPLATE; });
               width: "420px",
               template: ToolbarTpl.confirm.enableState(),
               confirm: {
-                text: "Enable VisualOps"
+                text: lang.IDE.ENABLE_VISUALOPS
               },
               onConfirm: function() {
                 that.clearUserData();

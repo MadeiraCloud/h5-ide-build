@@ -21377,7 +21377,7 @@ return TEMPLATE; });
               width: "420px",
               template: OpsEditorTpl.confirm.enableState(),
               confirm: {
-                text: "Enable VisualOps"
+                text: lang.IDE.ENABLE_VISUALOPS
               },
               onConfirm: function() {
                 agent.enabled = true;
@@ -25626,15 +25626,17 @@ return TEMPLATE; });
         }
         return null;
       },
-      onParentChanged: function() {
+      onParentChanged: function(oldParent) {
         var idx, ipObj, _i, _len, _ref, _results;
-        _ref = this.get("ips");
-        _results = [];
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          ipObj = _ref[idx];
-          _results.push(this.setIp(idx, null, true, ipObj.hasEip));
+        if (oldParent) {
+          _ref = this.get("ips");
+          _results = [];
+          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+            ipObj = _ref[idx];
+            _results.push(this.setIp(idx, null, true, ipObj.hasEip));
+          }
+          return _results;
         }
-        return _results;
       },
       generateJSON: function(index, servergroupOption, eniIndex) {
         var autoAssign, az, component, eip, eniName, hasEip, idx, instanceId, ipObj, ips, memberData, parent, resources, securitygroups, sgTarget, subnetId, vpcId, _i, _len, _ref;

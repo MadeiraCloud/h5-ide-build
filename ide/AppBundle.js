@@ -1195,7 +1195,11 @@ return TEMPLATE; });
       updateNotification: function() {
         var html, i, notification, unread_num, _i, _len;
         console.log("Notification Updated, Websocket isReady:", App.WS.isReady());
-        notification = App.model.get("notification");
+        notification = _.map(App.model.get("notification"), function(n) {
+          return _.extend({}, n, {
+            operation: lang.TOOLBAR[n.operation.toUpperCase()] || n.operation
+          });
+        });
         html = "";
         unread_num = 0;
         for (_i = 0, _len = notification.length; _i < _len; _i++) {
@@ -1809,7 +1813,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
     + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">You can later update this information in <em>Settings &gt; Account</em></p>\n</div>";
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
+    + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
+    + "</p>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3256,7 +3262,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil) {
+  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "i18n!/nls/lang.js", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil, lang) {
     return Backbone.Model.extend({
       defaults: function() {
         return {
@@ -3626,9 +3632,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (!isNaN(time_begin) && !isNaN(time_end) && time_end >= time_begin) {
               duration = time_end - time_begin;
               if (duration < 60) {
-                request.duration = "Took " + duration + " sec.";
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
               } else {
-                request.duration = "Took " + (Math.round(duration / 60)) + " min.";
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
               }
             }
           }
