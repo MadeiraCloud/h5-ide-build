@@ -1,1 +1,4734 @@
-(function(){define("ide/Websocket",["Meteor","backbone","event","MC"],function(e,t,n){var r,i,s;return r=""+MC.API_HOST+"/ws/",e._debug=function(){return console.log.apply(console,arguments)},s=null,i=function(){var t;return s?s:(s=this,this.__readyDefer=Q.defer(),this.__isReady=!1,this.connection=e.connect(r,!0),t={connection:this.connection},this.collection={request:new e.Collection("request",t),request_detail:new e.Collection("request_detail",t),stack:new e.Collection("stack",t),app:new e.Collection("app",t),status:new e.Collection("status",t),imports:new e.Collection("imports",t),user_state:new e.Collection("user",t)},Deps.autorun(function(e){return function(){return e.statusChanged()}}(this)),this.subscribe(),this.pipeChanges(),setTimeout(function(e){return function(){e.shouldNotify=!0;if(!e.connection.status.connected)return e.statusChanged()}}(this),5e3),this)},i.prototype.statusChanged=function(){var e;e=this.connection.status().connected,e&&(this.shouldNotify=!0);if(!this.shouldNotify)return;return this.trigger("StatusChanged",e)},i.prototype.subscribe=function(){var e,t,n,r,i;if(this.subscribed)return;r=!0,t=function(){return this.__isReady=!0,this.__readyDefer.resolve()},i=App.user.get("usercode"),n=App.user.get("session"),e={onReady:_.bind(t,this),onError:_.bind(this.onError,this)},this.connection.subscribe("request",i,n,e),this.connection.subscribe("stack",i,n),this.connection.subscribe("app",i,n),this.connection.subscribe("status",i,n),this.connection.subscribe("imports",i,n),this.connection.subscribe("user",i,n)},i.prototype.ready=function(){return this.__readyDefer.promise},i.prototype.isReady=function(){return this.__isReady},i.prototype.onError=function(e){void 0,this.subscribed=!1,this.trigger("Disconnected")},i.prototype.pipeChanges=function(){var e;return e=this,this.collection.user_state.find().fetch(),this.collection.user_state.find().observeChanges({added:function(t,n){return e.trigger("userStateChange",t,n)},changed:function(t,n){return e.trigger("userStateChange",t,n)}}),this.collection.request.find().fetch(),this.collection.request.find().observeChanges({added:function(t,n){return e.trigger("requestChange",t,n)},changed:function(t,n){return e.trigger("requestChange",t,n)}}),this.collection.imports.find().fetch(),this.collection.imports.find().observe({added:function(t,n){return e.trigger("visualizeUpdate",t)},changed:function(t,n){return e.trigger("visualizeUpdate",t)}}),this.collection.status.find().fetch(),this.collection.status.find().observe({added:function(e,t){return n.trigger(n.UPDATE_STATE_STATUS_DATA,"add",e,t),n.trigger(n.UPDATE_STATE_STATUS_DATA_TO_EDITOR,e?[e.res_id]:[])},changed:function(e,t){return n.trigger(n.UPDATE_STATE_STATUS_DATA,"change",e,t),n.trigger(n.UPDATE_STATE_STATUS_DATA_TO_EDITOR,e?[e.res_id]:[])}})},_.extend(i.prototype,t.Events),i})}).call(this),define("ide/subviews/SessionDialogTpl",["handlebars"],function(e){var t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<section style="width:400px;" class="invalid-session" id="SessionDialog">\n  <div class="confirmSession">\n  <div class="modal-header"><h3>'+o(n.i18n.call(t,"IDE.DASH_INVALID_SESSION",{hash:{},data:i}))+'</h3></div>\n\n  <article class="modal-body">\n    <div class="modal-text-major">\n        <p>'+o(n.i18n.call(t,"IDE.DASH_INVALID_SESSION_ERROR",{hash:{},data:i}))+"</p>\n        <p>"+o(n.i18n.call(t,"IDE.DASH_INVALID_SESSION_ACTION",{hash:{},data:i}))+'</p>\n    </div>\n    <div class="modal-text-minor">'+o(n.i18n.call(t,"IDE.DASH_INVALID_SESSION_WARNING",{hash:{},data:i}))+'</div>\n  </article>\n\n  <footer class="modal-footer">\n    <button id="SessionReconnect" class="btn btn-blue">'+o(n.i18n.call(t,"IDE.DASH_LBL_RECONNECT",{hash:{},data:i}))+'</button>\n    <button id="SessionClose" class="btn btn-silver">'+o(n.i18n.call(t,"IDE.DASH_LBL_CLOSE_SESSION",{hash:{},data:i}))+'</button>\n  </footer>\n  </div>\n\n  <div class="reconnectSession" style="display:none;">\n  <div class="modal-header"><h3>'+o(n.i18n.call(t,"IDE.DASH_RECONNECT_SESSION",{hash:{},data:i}))+'</h3></div>\n  <article class="modal-body">\n    <div class="modal-text-major">'+o(n.i18n.call(t,"IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT",{hash:{},data:i}))+'</div>\n    <div class="modal-input">\n      <input type="password" id="SessionPassword" class="input" placeholder="Password" style="width:200px;" autofocus>\n    </div>\n  </article>\n  <footer class="modal-footer">\n    <button id="SessionConnect" class="btn btn-blue" disabled>'+o(n.i18n.call(t,"IDE.DASH_LBL_CONNECT",{hash:{},data:i}))+'</button>\n    <button id="SessionClose2" class="btn btn-red">'+o(n.i18n.call(t,"IDE.DASH_LBL_CLOSE_SESSION",{hash:{},data:i}))+"</button>\n  </footer>\n  </div>\n</section>",s};return e.template(t)}),function(){define("ide/subviews/SessionDialog",["i18n!/nls/lang.js","./SessionDialogTpl","backbone"],function(e,t){var n,r;return n=null,r=Backbone.View.extend({events:{"click #SessionReconnect":"showReconnect","click #SessionClose":"closeSession","click #SessionClose2":"closeSession","click #SessionConnect":"connect","keyup #SessionPassword":"passwordChanged"},constructor:function(){return n?n:(n=this,this.defer=Q.defer(),modal(t(),!1),this.setElement($("#modal-wrap")))},promise:function(){return this.defer.promise},showReconnect:function(){$(".invalid-session .confirmSession").hide(),$(".invalid-session .reconnectSession").show()},closeSession:function(){return App.logout()},connect:function(){if($("#SessionConnect").is(":disabled"))return;return $("#SessionConnect").attr("disabled","disabled"),App.user.acquireSession($("#SessionPassword").val()).then(function(e){return function(){e.remove(),e.defer.resolve()}}(this),function(t){$("#SessionConnect").removeAttr("disabled"),notification("error",e.NOTIFY.WARN_AUTH_FAILED),$("#SessionPassword").toggleClass("parsley-error",!0)})},passwordChanged:function(e){$("#SessionPassword").toggleClass("parsley-error",!1),($("#SessionPassword").val()||"").length>=6?$("#SessionConnect").removeAttr("disabled"):$("#SessionConnect").attr("disabled","disabled"),e.which===13&&this.connect()}}),r})}.call(this),define("ide/subviews/HeaderTpl",["handlebars"],function(e){var t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function";return s+='<nav id="header">\n  <section class="voquota tooltip" data-tooltip="<span>3600 free instance hours used up <br>\nYou are in limited status now</span>" data-tooltip-type="html">\n      <div class="payment-exclamation">!</div>\n  </section>\n  <a id="support" class="icon-support" href="mailto:3rp02j1w@incoming.intercom.io" target="_blank">'+u(n.i18n.call(t,"IDE.DASH_LBL_SUPPORT",{hash:{},data:i}))+'</a>\n\n  <section class="dropdown">\n    <div id="HeaderNotification" class="js-toggle-dropdown">\n      <i class="icon-notification"></i>\n      <span id="NotificationCounter"></span>\n    </div>\n\n    <div class="dropdown-menu">\n      <div id="notification-panel-wrapper" class="scroll-wrap">\n        <div class="scrollbar-veritical-wrap"><div class="scrollbar-veritical-thumb"></div></div>\n        <ul class="scroll-content"></ul>\n\n        <div class="notification-empty">\n          <div class="title">'+u(n.i18n.call(t,"IDE.HEAD_LABEL_BLANK_NOTIFICATION",{hash:{},data:i}))+'</div>\n          <div class="description">'+u(n.i18n.call(t,"HEAD_LABEL_BLANK_NOTIFICATION_DESC",{hash:{},data:i}))+'</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class="dropdown">\n    <div id="HeaderUser" class="js-toggle-dropdown">\n      <span class="truncate left" style="max-width:100px;">'+u((o=t&&t.username,typeof o===a?o.apply(t):o))+'</span>\n      <i class="icon-caret-down"></i>\n    </div>\n\n    <ul class="dropdown-menu">\n      <li id="HeaderShortcuts">'+u(n.i18n.call(t,"HEAD_LABEL_MENUITEM_KEY_SHORT",{hash:{},data:i}))+'</li>\n      <li><a class="dis-blk" href="http://docs.visualops.io" target="_blank" >'+u(n.i18n.call(t,"HEAD_LABEL_MENUITEM_DOC",{hash:{},data:i}))+'</a></li>\n      <li id="HeaderSettings">'+u(n.i18n.call(t,"HEAD_LABEL_MENUITEM_SETTING",{hash:{},data:i}))+'</li>\n      <li id="HeaderBilling">'+u(n.i18n.call(t,"HEAD_LABEL_MENUITEM_BILLING",{hash:{},data:i}))+'</li>\n      <li id="HeaderLogout">'+u(n.i18n.call(t,"HEAD_LABEL_MENUITEM_LOGOUT",{hash:{},data:i}))+"</li>\n    </ul>\n  </section>\n</nav>",s};return e.template(t)}),define("ide/subviews/SettingsDialogTpl",["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){return'style="display:block;"'}function c(e,t){var r="";return r+='\n        <button id="CredSetupRemove" class="link-style">'+u(n.i18n.call(e,"SETTINGS_LABEL_REMOVE_CREDENTIAL",{hash:{},data:t}))+"</button>\n        ",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function",f=this;s+='<nav id="SettingsNav">\n  <span data-target="AccountTab">'+u(n.i18n.call(t,"HEAD_LABEL_ACCOUNT",{hash:{},data:i}))+'</span>\n  <span data-target="CredentialTab">'+u(n.i18n.call(t,"HEAD_LABEL_CREDENTIAL",{hash:{},data:i}))+'</span>\n  <span data-target="TokenTab">'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCESSTOKEN",{hash:{},data:i}))+'</span>\n</nav>\n\n<div class="tabContent" id="SettingsBody">\n  <section id="AccountTab">\n    <dl class="dl-horizontal">\n      <dt>'+u(n.i18n.call(t,"HEAD_LABEL_ACCOUNT_USERNAME",{hash:{},data:i}))+"</dt><dd>"+u((o=t&&t.username,typeof o===a?o.apply(t):o))+'</dd>\n    </dl>\n\n    <dl class="dl-horizontal">\n      <dt class="accountFullNameRO">'+u(n.i18n.call(t,"HEAD_LABEL_ACCOUNT_FULLNAME",{hash:{},data:i}))+'</dt><dd class="accountFullNameRO"> <span class="fullNameText">'+u((o=t&&t.firstName,typeof o===a?o.apply(t):o))+" "+u((o=t&&t.lastName,typeof o===a?o.apply(t):o))+' </span> <button class="icon-edit link-style tooltip" data-tooltip=\''+u(n.i18n.call(t,"HEAD_LABEL_ACCOUNT_FULLNAME",{hash:{},data:i}))+'\' id="AccountFullName"></button></dd>\n    </dl>\n    <div id="AccountFullNameWrap" class="accountEditWrap">\n      <dl class="dl-horizontal">\n          <dt>'+u(n.i18n.call(t,"FIRST_NAME",{hash:{},data:i}))+'</dt>\n          <dd><input type="text" class="input" id="AccountFirstName"/></dd>\n          <dt>'+u(n.i18n.call(t,"LAST_NAME",{hash:{},data:i}))+'</dt>\n          <dd><input type="text" class="input" id="AccountLastName"/></dd>\n      </dl>\n      <div id="AccountFullNameInfo" class="empty-hide"></div>\n      <div class="accountPwdBtns">\n          <button class="btn btn-blue" id="AccountUpdateFullName" disabled>'+u(n.i18n.call(t,"HEAD_BTN_UPDATE",{hash:{},data:i}))+'</button>\n          <span id="AccountCancelFullName" class="link-style">'+u(n.i18n.call(t,"HEAD_BTN_CANCEL",{hash:{},data:i}))+'</span>\n      </div>\n    </div>\n\n    <dl class="dl-horizontal">\n      <dt class="accountEmailRO">'+u(n.i18n.call(t,"HEAD_LABEL_ACCOUNT_EMAIL",{hash:{},data:i}))+'</dt><dd class="accountEmailRO"><span>'+u((o=t&&t.email,typeof o===a?o.apply(t):o))+'</span><button class="icon-edit link-style tooltip" data-tooltip=\''+u(n.i18n.call(t,"HEAD_LABEL_NEW_EMAIL",{hash:{},data:i}))+'\' id="AccountEmail"></button></dd>\n    </dl>\n    <div id="AccountEmailWrap" class="accountEditWrap">\n      <dl class="dl-horizontal">\n        <dt>'+u(n.i18n.call(t,"HEAD_LABEL_NEW_EMAIL",{hash:{},data:i}))+'</dt>\n        <dd><input type="string" class="input" id="AccountNewEmail" /></dd>\n\n        <dt>'+u(n.i18n.call(t,"HEAD_LABEL_CURRENT_PASSWORD",{hash:{},data:i}))+'</dt>\n        <dd><input type="password" class="input" id="AccountEmailPwd" /></dd>\n      </dl>\n\n      <div id="AccountEmailInfo" class="empty-hide"></div>\n\n      <div class="accountPwdBtns">\n        <button class="btn btn-blue" id="AccountUpdateEmail" disabled>'+u(n.i18n.call(t,"HEAD_BTN_UPDATE",{hash:{},data:i}))+'</button>\n        <span id="AccountCancelEmail" class="link-style">'+u(n.i18n.call(t,"HEAD_BTN_CANCEL",{hash:{},data:i}))+'</span>\n      </div>\n    </div>\n\n    <button id="AccountPwd" class="link-style">'+u(n.i18n.call(t,"HEAD_LABEL_CHANGE_PASSWORD",{hash:{},data:i}))+'</button>\n    <div id="AccountPwdWrap" class="accountEditWrap">\n\n      <dl class="dl-horizontal">\n        <dt>'+u(n.i18n.call(t,"HEAD_LABEL_CURRENT_PASSWORD",{hash:{},data:i}))+'</dt>\n        <dd><input type="password" class="input" id="AccountCurrentPwd" /></dd>\n\n        <dt>'+u(n.i18n.call(t,"HAED_LABEL_NEW_PASSWORD",{hash:{},data:i}))+'</dt>\n        <dd><input type="password" class="input" id="AccountNewPwd" /></dd>\n      </dl>\n\n      <div id="AccountInfo" class="empty-hide"></div>\n\n      <div class="accountPwdBtns">\n        <button class="btn btn-blue" id="AccountUpdatePwd" disabled>'+u(n.i18n.call(t,"HEAD_BTN_UPDATE",{hash:{},data:i}))+'</button>\n        <span id="AccountCancelPwd" class="link-style">'+u(n.i18n.call(t,"HEAD_BTN_CANCEL",{hash:{},data:i}))+'</span>\n      </div>\n    </div>\n  </section>\n\n  <section id="CredentialTab">\n    <div id="CredDemoWrap" ',o=n.unless.call(t,t&&t.account,{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+=">\n      <h3>"+u(n.i18n.call(t,"SETTINGS_CRED_DEMO_TIT",{hash:{},data:i}))+"</h3>\n      <p>"+u(n.i18n.call(t,"SETTINGS_CRED_DEMO_TEXT",{hash:{},data:i}))+'</p>\n      <p class="tac"><button class="btn btn-blue cred-setup">'+u(n.i18n.call(t,"SETTINGS_CRED_DEMO_SETUP",{hash:{},data:i}))+'</button></p>\n    </div>\n\n    <div id="CredAwsWrap" class="pos-r" ',o=n["if"].call(t,t&&t.account,{hash:{},inverse:f.noop,fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+=">\n      <h3>"+u(n.i18n.call(t,"SETTINGS_CRED_CONNECTED_TIT",{hash:{},data:i}))+'</h3>\n      <button class="cred-setup link-style">'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNT_UPDATE",{hash:{},data:i}))+'</button>\n      <dl class="dl-horizontal cred-setup-msg" style="margin-top:15px;">\n        <dt>'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNTID",{hash:{},data:i}))+"</dt><dd>"+u((o=t&&t.account,typeof o===a?o.apply(t):o))+"</dd>\n        <dt>"+u(n.i18n.call(t,"SETTINGS_LABEL_ACCESSKEY",{hash:{},data:i}))+"</dt><dd>"+u((o=t&&t.awsAccessKey,typeof o===a?o.apply(t):o))+"</dd>\n        <dt>"+u(n.i18n.call(t,"SETTINGS_LABEL_SECRETKEY",{hash:{},data:i}))+"</dt><dd>"+u((o=t&&t.awsSecretKey,typeof o===a?o.apply(t):o))+'</dd>\n      </dl>\n    </div>\n\n    <div id="CredSetupWrap">\n      <div id="CredSetupMsg" class="cred-setup-msg empty-hide"></div>\n      <ul>\n        <li>\n          <i class="icon-info icon-label tooltip" data-tooltip="'+u(n.i18n.call(t,"SETTINGS_TIP_CRED_ACCOUNTID",{hash:{},data:i}))+'"></i>\n          <label>'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNTID",{hash:{},data:i}))+'</label>\n          <input autocomplete="off" class="input" id="CredSetupAccount" type="text" value="'+u((o=t&&t.account,typeof o===a?o.apply(t):o))+'">\n        </li>\n        <li>\n          <i class="icon-info icon-label tooltip" data-tooltip="'+u(n.i18n.call(t,"SETTINGS_TIP_CRED_ACCESSKEY",{hash:{},data:i}))+'"></i>\n          <label>'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCESSKEY",{hash:{},data:i}))+'</label>\n          <input autocomplete="off" class="input" id="CredSetupAccessKey" type="text" placeholder="'+u((o=t&&t.awsAccessKey,typeof o===a?o.apply(t):o))+'">\n        </li>\n        <li>\n          <i class="icon-info icon-label tooltip" data-tooltip="'+u(n.i18n.call(t,"SETTINGS_TIP_CRED_SECRETKEY",{hash:{},data:i}))+'"></i>\n          <label>'+u(n.i18n.call(t,"SETTINGS_LABEL_SECRETKEY",{hash:{},data:i}))+'</label>\n          <input autocomplete="off" class="input" id="CredSetupSecretKey" type="password" placeholder="'+u((o=t&&t.awsSecretKey,typeof o===a?o.apply(t):o))+'">\n        </li>\n      </ul>\n\n      <div class="cred-btn-wrap clearfix">\n        ',o=n.unless.call(t,t&&t.credNeeded,{hash:{},inverse:f.noop,fn:f.program(3,c,i),data:i});if(o||o===0)s+=o;return s+='\n        <button class="right link-style cred-setup-cancel">'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNT_CANCEL",{hash:{},data:i}))+'</button>\n        <button id="CredSetupSubmit" class="btn btn-blue right">'+u(n.i18n.call(t,"HEAD_BTN_SUBMIT",{hash:{},data:i}))+'</button>\n      </div>\n\n    </div>\n\n    <div id="CredRemoveWrap">\n      <h3>'+u((o=t&&t.credRemoveTitle,typeof o===a?o.apply(t):o))+"</h3>\n      <div>"+u(n.i18n.call(t,"SETTINGS_CRED_REMOVE_TEXT",{hash:{},data:i}))+'</div>\n      <div class="cred-btn-wrap clearfix">\n        <button class="right link-style cred-cancel">'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNT_CANCEL",{hash:{},data:i}))+'</button>\n        <button id="CredRemoveConfirm" class="btn btn-red right">'+u(n.i18n.call(t,"SETTINGS_LABEL_REMOVE_CREDENTIAL",{hash:{},data:i}))+'</button>\n      </div>\n    </div>\n\n    <div id="CredConfirmWrap">\n      <h3>'+u(n.i18n.call(t,"SETTINGS_CRED_UPDATE_CONFIRM_TIT",{hash:{},data:i}))+"</h3>\n      <div>"+u(n.i18n.call(t,"SETTINGS_CRED_UPDATE_CONFIRM_TEXT",{hash:{},data:i}))+'</div>\n      <div class="cred-btn-wrap clearfix">\n        <button class="right link-style cred-cancel">'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNT_CANCEL",{hash:{},data:i}))+'</button>\n        <button id="CredSetupConfirm" class="btn btn-red right">'+u(n.i18n.call(t,"SETTINGS_LABEL_UPDATE_CONFIRM",{hash:{},data:i}))+'</button>\n      </div>\n    </div>\n\n    <div id="CredRemoving"><p>'+u(n.i18n.call(t,"SETTINGS_CRED_REMOVING",{hash:{},data:i}))+'</p><div class="loading-spinner"></div></div>\n    <div id="CredUpdating"><p>'+u(n.i18n.call(t,"SETTINGS_CRED_UPDATING",{hash:{},data:i}))+'</p><div class="loading-spinner"></div></div>\n\n  </section>\n\n  <section id="TokenTab">\n    <div id="TokenManager">\n      <p class="clearfix"><button class="btn btn-blue right" id="TokenCreate">'+u(n.i18n.call(t,"SETTINGS_BTN_TOKEN_CREATE",{hash:{},data:i}))+"</button>"+u(n.i18n.call(t,"SETTINGS_INFO_TOKEN",{hash:{},data:i}))+'<a href="http://docs.visualops.io/app_management/reload_states.html" target="_blank">'+u(n.i18n.call(t,"SETTINGS_INFO_TOKEN_LINK",{hash:{},data:i}))+'</a> </p>\n      <section class="token-table">\n        <header class="clearfix">\n          <span class="tokenName">'+u(n.i18n.call(t,"SETTINGS_LABEL_TOKENTABLE_NAME",{hash:{},data:i}))+'</span>\n          <span class="tokenToken">'+u(n.i18n.call(t,"SETTINGS_LABEL_TOKENTABLE_TOKEN",{hash:{},data:i}))+'</span>\n        </header>\n        <div class="scroll-wrap">\n          <div class="scrollbar-veritical-wrap"><div class="scrollbar-veritical-thumb"></div></div>\n          <ul id="TokenList" class="scroll-content" data-empty="'+u(n.i18n.call(t,"SETTINGS_INFO_TOKEN_EMPTY",{hash:{},data:i}))+'"></ul>\n        </div>\n      </section>\n    </div>\n    <div id="TokenRmConfirm" class="hide">\n      <h3 id="TokenRmTit"></h3>\n      <p>'+u(n.i18n.call(t,"SETTINGS_CONFIRM_TOKEN_RM",{hash:{},data:i}))+'</p>\n      <div class="cred-btn-wrap clearfix">\n        <button class="right link-style" id="TokenRmCancel">'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNT_CANCEL",{hash:{},data:i}))+'</button>\n        <button id="TokenRemove" class="btn btn-red right">'+u(n.i18n.call(t,"SETTINGS_BTN_TOKEN_REMOVE",{hash:{},data:i}))+"</button>\n      </div>\n    </div>\n  </section>\n</div>",s};return e.template(t)}),function(){define("ide/subviews/SettingsDialog",["./SettingsDialogTpl","i18n!/nls/lang.js","ApiRequest","UI.modalplus","backbone"],function(e,t,n,r){var i;return i=Backbone.View.extend({events:{"click #SettingsNav span":"switchTab","click #AccountPwd":"showPwd","click #AccountCancelPwd":"hidePwd","click #AccountUpdatePwd":"changePwd","click .cred-setup, .cred-cancel":"showCredSetup","click .cred-setup-cancel":"cancelCredSetup","click #CredSetupRemove":"showRemoveCred","click #CredRemoveConfirm":"removeCred","click #CredSetupSubmit":"submitCred","click #CredSetupConfirm":"confirmCred","click #TokenCreate":"createToken","click .tokenControl .icon-edit":"editToken","click .tokenControl .icon-delete":"removeToken","click .tokenControl .tokenDone":"doneEditToken","click #TokenRemove":"confirmRmToken","click #TokenRmCancel":"cancelRmToken","keyup  #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey":"updateSubmitBtn","change #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey":"updateSubmitBtn","change #AccountCurrentPwd, #AccountNewPwd":"updatePwdBtn","keyup  #AccountCurrentPwd, #AccountNewPwd":"updatePwdBtn","click #AccountEmail":"showEmail","click #AccountCancelEmail":"hideEmail","click #AccountUpdateEmail":"changeEmail","click #AccountCancelFullName":"hideFullName","change #AccountNewEmail, #AccountEmailPwd":"updateEmailBtn","keyup  #AccountNewEmail, #AccountEmailPwd":"updateEmailBtn","click #AccountUpdateFullName":"changeFullName","change #AccountFirstName, #AccountLastName":"updateFullNameBtn","keyup #AccountFirstName, #AccountLastName":"updateFullNameBtn","click #AccountFullName":"showFullName"},initialize:function(n){var s,o;s={username:App.user.get("username"),firstName:App.user.get("firstName")||"",lastName:App.user.get("lastName")||"",email:App.user.get("email"),account:App.user.get("account"),awsAccessKey:App.user.get("awsAccessKey"),awsSecretKey:App.user.get("awsSecretKey"),credRemoveTitle:sprintf(t.IDE.SETTINGS_CRED_REMOVE_TIT,App.user.get("username")),credNeeded:!!App.model.appList().length},this.modal=new r({template:e(s),title:t.IDE.HEAD_LABEL_SETTING,disableFooter:!0,compact:!0,width:"490px"}),this.setElement(this.modal.tpl),this.modal.$("#SettingsNav span[data-target='AccountTab']").click(),this.modal.resize(),o=0,n&&(o=n.defaultTab||0,o===i.TAB.CredentialInvalid&&(this.showCredSetup(),this.modal.tpl.find(".modal-close").hide(),this.modal.tpl.find("#CredSetupMsg").text(t.IDE.SETTINGS_ERR_CRED_VALIDATE)),o<0&&(o=Math.abs(o))),this.modal.$("#SettingsNav").children().eq(o).click(),this.updateTokenTab()},updateCredSettings:function(){var n;return n={username:App.user.get("username"),email:App.user.get("email"),account:App.user.get("account"),awsAccessKey:App.user.get("awsAccessKey"),awsSecretKey:App.user.get("awsSecretKey"),credRemoveTitle:sprintf(t.IDE.SETTINGS_CRED_REMOVE_TIT,App.user.get("username"))},this.modal.setContent(e(n)),this.modal.$("#SettingsNav").children().eq(i.TAB.Credential).click()},switchTab:function(e){var t;t=$(e.currentTarget);if(t.hasClass("selected"))return;this.modal.$("#SettingsBody").children().hide(),this.modal.$("#SettingsNav").children().removeClass("selected"),this.modal.$("#"+t.addClass("selected").attr("data-target")).show()},showPwd:function(){this.modal.$("#AccountPwd").hide(),this.modal.$("#AccountPwdWrap").show(),this.modal.$("#AccountCurrentPwd").focus()},hidePwd:function(){this.modal.$("#AccountPwd").show(),this.modal.$("#AccountPwdWrap").hide(),this.modal.$("#AccountCurrentPwd, #AccountNewPwd").val(""),this.modal.$("#AccountInfo").empty()},updatePwdBtn:function(){var e,t;t=this.modal.$("#AccountCurrentPwd").val()||"",e=this.modal.$("#AccountNewPwd").val()||"",t.length&&e.length?this.modal.$("#AccountUpdatePwd").removeAttr("disabled"):this.modal.$("#AccountUpdatePwd").attr("disabled","disabled")},changePwd:function(){var e,n,r;r=this,n=this.modal.$("#AccountCurrentPwd").val()||"",e=this.modal.$("#AccountNewPwd").val()||"";if(e.length<6){this.modal.$("#AccountInfo").text(t.IDE.SETTINGS_ERR_INVALID_PWD);return}this.modal.$("#AccountInfo").empty(),this.modal.$("#AccountUpdatePwd").attr("disabled","disabled"),App.user.changePassword(n,e).then(function(){notification("info",t.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS),$("#AccountCancelPwd").click()},function(e){return e.error===2?r.modal.$("#AccountInfo").html(""+t.IDE.SETTINGS_ERR_WRONG_PWD+" <a href='/reset/' target='_blank'>"+t.IDE.SETTINGS_INFO_FORGET_PWD+"</a>"):r.modal.$("#AccountInfo").text(t.IDE.SETTINGS_UPDATE_PWD_FAILURE),r.modal.$("#AccountUpdatePwd").removeAttr("disabled")})},showEmail:function(){this.hideFullName(),$(".accountEmailRO").hide(),$("#AccountEmailWrap").show(),$("#AccountNewEmail").focus()},hideEmail:function(){$(".accountEmailRO").show(),$("#AccountEmailWrap").hide(),$("#AccountNewEmail, #AccountEmailPwd").val(""),$("#AccountEmailInfo").empty()},showFullName:function(){this.hideEmail(),$(".accountFullNameRO").hide(),$("#AccountFullNameWrap").show(),$("#AccountFirstName").val(App.user.get("firstName")||"").focus(),$("#AccountLastName").val(App.user.get("lastName")||"")},hideFullName:function(){return $(".accountFullNameRO").show(),$("#AccountFullNameWrap").hide(),$("#AccountFirstName, #AccountLastName").val(""),$("#AccountUpdateFullName").attr("disabled",!1)},updateEmailBtn:function(){var e,t;t=$("#AccountNewEmail").val()||"",e=$("#AccountEmailPwd").val()||"",t.length&&e.length>=6?$("#AccountUpdateEmail").removeAttr("disabled"):$("#AccountUpdateEmail").attr("disabled","disabled")},updateFullNameBtn:function(){var e,t;e=$("#AccountFirstName").val()||"",t=$("#AccountLastName").val()||"",e.length&&t.length?$("#AccountUpdateFullName").removeAttr("disabled"):$("#AccountUpdateFullName").attr("disabled","disabled")},changeFullName:function(){var e,n,r;r=this,e=$("#AccountFirstName").val()||"",n=$("#AccountLastName").val()||"";if(e&&n)return $("#AccountUpdateFullName").attr("disabled",!0),App.user.changeName(e,n).then(function(i){r.hideFullName(),$(".fullNameText").text(e+" "+n);if(i)return notification("info",t.NOTIFY.UPDATED_FULLNAME_SUCCESS)},function(e){return notification("error",t.NOTIFY.UPDATED_FULLNAME_FAIL),$("#AccountUpdateFullName").attr("disabled",!1),void 0})},changeEmail:function(){var e,n;e=$("#AccountNewEmail").val()||"",n=$("#AccountEmailPwd").val()||"",$("#AccountEmailInfo").empty(),$("#AccountUpdateEmail").attr("disabled","disabled"),App.user.changeEmail(e,n).then(function(){notification("info",t.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS),$("#AccountCancelEmail").click(),$(".accountEmailRO").children("span").text(App.user.get("email"))},function(e){var n;switch(e.error){case 116:n=t.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;break;case 117:n=t.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;break;default:n=t.IDE.SETTINGS_UPDATE_EMAIL_FAIL1}return $("#AccountEmailInfo").text(n),$("#AccountUpdateEmail").removeAttr("disabled")})},showCredSetup:function(){this.modal.$("#CredentialTab").children().hide(),this.modal.$("#CredSetupWrap").show(),this.modal.$("#CredSetupAccount").focus()[0].select(),this.modal.$("#CredSetupRemove").toggle(App.user.hasCredential()),this.updateSubmitBtn()},cancelCredSetup:function(){this.modal.$("#CredentialTab").children().hide(),App.user.hasCredential()?this.modal.$("#CredAwsWrap").show():this.modal.$("#CredDemoWrap").show()},showRemoveCred:function(){this.modal.$("#CredentialTab").children().hide(),this.modal.$("#CredRemoveWrap").show()},removeCred:function(){var e;this.modal.$("#CredentialTab").children().hide(),this.modal.$("#CredRemoving").show(),this.modal.$("#modal-box .modal-close").hide(),e=this,App.user.changeCredential().then(function(){e.updateCredSettings()},function(){return e.modal.$("#CredSetupMsg").text(t.IDE.SETTINGS_ERR_CRED_REMOVE),e.modal.$("#modal-box .modal-close").show(),e.showCredSetup()})},updateSubmitBtn:function(){var e,t,n;t=this.modal.$("#CredSetupAccount").val(),e=this.modal.$("#CredSetupAccessKey").val(),n=this.modal.$("#CredSetupSecretKey").val(),t.length&&e.length&&n.length?this.modal.$("#CredSetupSubmit").removeAttr("disabled"):this.modal.$("#CredSetupSubmit").attr("disabled","disabled")},submitCred:function(){var e,n,r;return this.modal.$("#CredentialTab").children().hide(),this.modal.$("#CredUpdating").show(),this.modal.$("#modal-box .modal-close").hide(),e=this.modal.$("#CredSetupAccessKey").val(),n=this.modal.$("#CredSetupSecretKey").val(),r=this,App.user.validateCredential(e,n).then(function(){r.setCred()},function(){r.modal.$("#CredSetupMsg").text(t.IDE.SETTINGS_ERR_CRED_VALIDATE),r.modal.$("#modal-box .modal-close").show(),r.showCredSetup()})},setCred:function(){var e,t,r,i;return t=this.modal.$("#CredSetupAccount").val(),e=this.modal.$("#CredSetupAccessKey").val(),r=this.modal.$("#CredSetupSecretKey").val(),t==="demo_account"&&(t="user_demo_account",this.modal.$("#CredSetupAccount").val(t)),i=this,App.user.changeCredential(t,e,r,!1).then(function(){return i.updateCredSettings()},function(e){e.error===n.Errors.ChangeCredConfirm?i.showCredConfirm():i.showCredUpdateFail()})},showCredUpdateFail:function(){return this.modal.$("#CredSetupMsg").text(t.IDE.SETTINGS_ERR_CRED_UPDATE),this.modal.$("#modal-box .modal-close").show(),this.showCredSetup()},showCredConfirm:function(){return this.modal.$("#CredentialTab").children().hide(),this.modal.$("#CredConfirmWrap").show(),this.modal.$("#modal-box .modal-close").show()},confirmCred:function(){var e,t,n,r;t=this.modal.$("#CredSetupAccount").val(),e=this.modal.$("#CredSetupAccessKey").val(),n=this.modal.$("#CredSetupSecretKey").val(),r=this,App.user.changeCredential(t,e,n,!0).then(function(){return r.updateCredSettings()},function(){return r.showCredUpdateFail()})},editToken:function(e){var t,n;n=$(e.currentTarget),t=n.closest("li").toggleClass("editing",!0),t.children(".tokenName").removeAttr("readonly").focus().select()},removeToken:function(e){var n,r;n=$(e.currentTarget).closest("li"),r=n.children(".tokenName").val(),this.rmToken=n.children(".tokenToken").text(),this.modal.$("#TokenManager").hide(),this.modal.$("#TokenRmConfirm").show(),this.modal.$("#TokenRmTit").text(sprintf(t.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT,r))},createToken:function(){var e;this.modal.$("#TokenCreate").attr("disabled","disabled"),e=this,App.user.createToken().then(function(){return e.updateTokenTab(),e.modal.$("#TokenCreate").removeAttr("disabled")},function(){return notification("error",t.NOTIFY.FAIL_TO_CREATE_TOKEN),e.modal.$("#TokenCreate").removeAttr("disabled")})},doneEditToken:function(e){var n,r,i,s,o,u,a,f,l;n=$(e.currentTarget).closest("li").removeClass("editing"),n.children(".tokenName").attr("readonly",!0),u=n.children(".tokenToken").text(),i=n.children(".tokenName").val(),l=App.user.get("tokens");for(a=0,f=l.length;a<f;a++)o=l[a],o.token===u?s=o.name:o.name===i&&(r=!0);if(!i||r){n.children(".tokenName").val(s);return}App.user.updateToken(u,i).fail(function(){return s="",n.children(".tokenName").val(s),notification("error",t.NOTIFY.FAIL_TO_UPDATE_TOKEN)})},confirmRmToken:function(){var e;this.modal.$("#TokenRemove").attr("disabled","disabled"),e=this,App.user.removeToken(this.rmToken).then(function(){return e.updateTokenTab(),e.cancelRmToken()},function(){return notification(t.NOTIFY.FAIL_TO_DELETE_TOKEN),e.cancelRmToken()})},cancelRmToken:function(){this.rmToken="",this.modal.$("#TokenRemove").removeAttr("disabled"),this.modal.$("#TokenManager").show(),this.modal.$("#TokenRmConfirm").hide()},updateTokenTab:function(){var e;e=App.user.get("tokens"),this.modal.$("#TokenManager").find(".token-table").toggleClass("empty",e.length===0),e.length?this.modal.$("#TokenList").html(MC.template.accessTokenTable(e)):this.modal.$("#TokenList").empty()}}),i.TAB={CredentialInvalid:-1,Normal:0,Credential:1,Token:2},i})}.call(this),define("ide/subviews/BillingDialogTpl",["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){function l(e,t){var n;return a((n=(n=e&&e.paymentUpdate,n==null||n===!1?n:n.card),typeof n===u?n.apply(e):n))}function c(e,t){return a(n.i18n.call(e,"NO_CARD",{hash:{},data:t}))}function h(e,t){var r="",i;r+='\n                <table class="table-head">\n                    <thead>\n                    <tr>\n                        <th class="sortable desc-sort" data-row-type="datetime" style="width:25%;">'+a(n.i18n.call(e,"DATE",{hash:{},data:t}))+'</th>\n                        <th data-row-type="string" style="width:25%;">'+a(n.i18n.call(e,"AMOUNT",{hash:{},data:t}))+'</th>\n                        <th data-row-type="string" style="width:25%;">'+a(n.i18n.call(e,"STATUS",{hash:{},data:t}))+'</th>\n                        <th data-row-type="string" style="width:25%;">'+a(n.i18n.call(e,"ACTION",{hash:{},data:t}))+'</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class="scroll-wrap" style="max-height:200px;">\n                    <div class="scrollbar-veritical-wrap"><div class="scrollbar-veritical-thumb"></div></div>\n                    <div class="scroll-content">\n                        <table class="table">\n                            <thead>\n                            <tr>\n                                <th style="width: 25%">\n                                    <div class="th-inner"></div>\n                                </th>\n                                <th style="width: 25%">\n                                    <div class="th-inner"></div>\n                                </th>\n                                <th style="width: 25%">\n                                    <div class="th-inner"></div>\n                                </th>\n                                <th style="width: 25%">\n                                    <div class="th-inner"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class="t-m-content">\n                            ',i=n.each.call(e,e&&e.paymentHistory,{hash:{},inverse:f.noop,fn:f.program(6,p,t),data:t});if(i||i===0)r+=i;return r+="\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                ",r}function p(e,t){var r="",i;r+='\n                                <tr class="item" data-id="'+a((i=t==null||t===!1?t:t.index,typeof i===u?i.apply(e):i))+'">\n                                    <td>'+a(n.formatTime.call(e,e&&e.updated_at,"MMMM d, yyyy",{hash:{},data:t}))+"</td>\n                                    <td>$ "+a(n.or.call(e,e&&e.ending_balance,e&&e.total_balance,{hash:{},data:t}))+"</td>\n                                    <td>",i=n["if"].call(e,e&&e.success,{hash:{},inverse:f.program(9,v,t),fn:f.program(7,d,t),data:t});if(i||i===0)r+=i;return r+='</td>\n                                    <td>\n                                        <a class="payment-receipt link-blue" href="#">'+a(n.i18n.call(e,"PAYMENT_VIEW_RECEIPT",{hash:{},data:t}))+"</a></td>\n                                </tr>\n                            ",r}function d(e,t){return a(n.i18n.call(e,"PAYMENT_PAID",{hash:{},data:t}))}function v(e,t){var r="";return r+='<span class="link-red">'+a(n.i18n.call(e,"PAYMENT_FAILED",{hash:{},data:t}))+"</span>",r}function m(e,t){var r="";return r+='\n                    <div class="full-space">\n                        '+a(n.i18n.call(e,"NO_BILLING_EVENT",{hash:{},data:t}))+"\n                    </div>\n                ",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u="function",a=this.escapeExpression,f=this;s+='<div id="billing-status">\n    <nav id="PaymentNav">\n        <span data-target="PaymentBillingTab" class="selected">'+a(n.i18n.call(t,"PAYMENT_BILLING_TAB",{hash:{},data:i}))+'</span>\n        <span data-target="UsageTab">'+a(n.i18n.call(t,"PAYMENT_USAGE_TAB",{hash:{},data:i}))+'</span>\n    </nav>\n    <div class="tabContent" id="PaymentBody">\n        <section id="PaymentBillingTab">\n            <p class="warning-red"></p>\n            <h5>'+a(n.i18n.call(t,"CREDIT_CARD_INFORMATION",{hash:{},data:i}))+'</h5>\n            <div class="clearfix">\n                <div class="left clearfix">\n                    <div class="payment-credit-middle left">\n\n                    </div>\n                    <div class="left">\n                        <p class="payment-number">',o=n["if"].call(t,(o=t&&t.paymentUpdate,o==null||o===!1?o:o.card),{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;s+='</p>\n                        <p class="payment-username">'+a((o=(o=t&&t.paymentUpdate,o==null||o===!1?o:o.first_name),typeof o===u?o.apply(t):o))+" "+a((o=(o=t&&t.paymentUpdate,o==null||o===!1?o:o.last_name),typeof o===u?o.apply(t):o))+'</p>\n                    </div>\n                </div>\n                <div class="right">\n                    <a class="btn btn-blue update-payment" href="'+a((o=(o=t&&t.paymentUpdate,o==null||o===!1?o:o.url),typeof o===u?o.apply(t):o))+'" target="_blank">'+a(n.i18n.call(t,"UPDATE_BILLING_INFORMATION",{hash:{},data:i}))+'<i class="icon-right"></i></a>\n                </div>\n            </div>\n            <h5>'+a(n.i18n.call(t,"BILLING_HISTORY",{hash:{},data:i}))+' <span class="payment-next-billing">'+a(n.i18n.call(t,"NEXT_BILLING_ON",{hash:{},data:i}))+" "+a(n.formatTime.call(t,(o=t&&t.paymentUpdate,o==null||o===!1?o:o.billingEnd),"MMMM d, yyyy",{hash:{},data:i}))+'</span></h5>\n            <div class="table-head-fix">\n                ',o=n["if"].call(t,t&&t.hasPaymentHistory,{hash:{},inverse:f.program(11,m,i),fn:f.program(5,h,i),data:i});if(o||o===0)s+=o;return s+='\n            </div>\n        </section>\n        <section id="UsageTab" class="hide">\n            <p class="warning-red"></p>\n            <h5 class="billing_usage_title">'+a(n.i18n.call(t,"PAYMENT_CURRENT_USAGE",{hash:{},data:i}))+a(n.formatTime.call(t,(o=t&&t.paymentUpdate,o==null||o===!1?o:o.last_billing_time),"d MMM yyyy",{hash:{},data:i}))+a(n.i18n.call(t,"PAYMENT_CURRENT_USAGE_SPAN",{hash:{},data:i}))+'</h5>\n            <div class="usage-wrapper">\n                <div class="used-points">\n                    <div class="usage-number">\n                        '+a((o=(o=t&&t.paymentUpdate,o==null||o===!1?o:o.current_quota),typeof o===u?o.apply(t):o))+"\n                    </div>\n                    <span>"+a(n.i18n.call(t,"PAYMENT_INSTANT_HOUR",{hash:{},data:i}))+'</span>\n                </div>\n            </div>\n            <p class="renew-points">'+a(n.i18n.call(t,"PAYMENT_RENEW_FREE_INFO",(o=t&&t.paymentUpdate,o==null||o===!1?o:o.max_quota),(o=t&&t.paymentUpdate,o==null||o===!1?o:o.renewRemainDays),{hash:{},data:i}))+"</p>\n        </section>\n    </div>\n</div>",s},n.billingTemplate=e.template(t),n}),function(){define("ide/subviews/BillingDialog",["./BillingDialogTpl","i18n!/nls/lang.js","ApiRequest","UI.modalplus","ApiRequestR","backbone"],function(e,t,n,r,i){var s;return s=Backbone.View.extend({events:{"click #PaymentNav span":"switchTab","click #PaymentBody a.payment-receipt":"viewPaymentReceipt","click .update-payment":"_bindPaymentEvent"},initialize:function(n){var i,s;return s=this,i=App.user.get("paymentState"),n?(this.modal=n,this.modal.setWidth("650px").setTitle(t.IDE.PAYMENT_SETTING_TITLE).setContent(MC.template.loadingSpiner).find(".modal-confirm").hide()):this.modal=new r({title:t.IDE.PAYMENT_SETTING_TITLE,width:"650px",template:MC.template.loadingSpiner,disableClose:!0,confirm:{hide:!0}}),this.getPaymentHistory().then(function(t){var n,r,i,o;return void 0,i={url:App.user.get("paymentUrl"),card:App.user.get("creditCard"),billingEnd:App.user.get("billingEnd"),current_quota:App.user.get("voQuotaCurrent"),max_quota:App.user.get("voQuotaPerMonth"),renewRemainDays:Math.round((App.user.get("renewDate")-new Date)/864e5),last_billing_time:App.user.get("billingStart")||new Date},n=App.user.get("voQuotaCurrent")-App.user.get("voQuotaPerMonth"),i.billable_quota=n>0?n:0,s.modal.find(".modal-body").css("padding","0"),r=_.keys(t).length,o=[],_.each(t,function(e){return e.ending_balance=e.ending_balance_in_cents/100,e.total_balance=e.total_in_cents/100,e.start_balance=e.starting_balance_in_cents/100,o.push(e)}),o.reverse(),t=o,s.paymentHistory=o,s.paymentUpdate=_.clone(i),s.modal.setContent(e.billingTemplate({paymentUpdate:i,paymentHistory:t,hasPaymentHistory:r})),App.user.get("creditCard")||(s.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({url:App.user.get("paymentUrl"),freePointsPerMonth:App.user.get("voQuotaPerMonth"),shouldPay:App.user.shouldPay()})),s.modal.listenTo(App.user,"paymentUpdate",function(){return s.initialize(s.modal),s.modal.stopListening()})),s.updateUsage()},function(){var e;return notification("error","Error while getting user payment info, please try again later."),(e=s.modal)!=null?e.close():void 0}),this.listenTo(App.user,"paymentUpdate",function(){return s.updateUsage()}),this.setElement(this.modal.tpl)},getPaymentHistory:function(){var e;return e=new Q.defer,App.user.get("creditCard")?i("payment_statement").then(function(t){return e.resolve(t)},function(t){return e.reject(t)}):e.resolve({}),e.promise},switchTab:function(e){var t;return t=$(e.currentTarget),void 0,this.modal.find("#PaymentNav").find("span").removeClass("selected"),this.modal.find(".tabContent > section").addClass("hide"),$("#"+t.addClass("selected").data("target")).removeClass("hide"),this.updateUsage()},_bindPaymentEvent:function(e){var t;return t=this,e.preventDefault(),window.open($(e.currentTarget).attr("href"),""),this.modal.listenTo(App.user,"change:paymentState",function(){var e;e=App.user.get("paymentState");if(t.modal.isClosed)return!1;if(e==="active")return t._renderBillingDialog(t.modal)}),this.modal.on("close",function(){return t.modal.stopListening(App.user)}),!1},_renderBillingDialog:function(e){return new s(e)},updateUsage:function(){var e,n;return this.modal.isClosed?!1:(n=App.user.shouldPay(),this.modal.$(".usage-block").toggleClass("error",n),this.modal.$(".used-points").toggleClass("error",n),e=App.user.get("voQuotaCurrent"),this.modal.find(".payment-number").text(App.user.get("creditCard")||"No Card"),this.modal.find(".payment-username").text(""+App.user.get("cardFirstName")+" "+App.user.get("cardLastName")),this.modal.find(".used-points .usage-number").text(e),App.user.shouldPay()?this.modal.find(".warning-red").not(".no-change").show().html(sprintf(t.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD,App.user.get("paymentUrl"),App.user.get("creditCard")?"Update":"Provide")):App.user.isUnpaid()?this.modal.find(".warning-red").not(".no-change").show().html(sprintf(t.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA,App.user.get("paymentUrl"))):this.modal.find(".warning-red").not(".no-change").hide())},viewPaymentReceipt:function(e){var t,n,r,i,s;return t=$(e.currentTarget),r=t.parent().parent().data("id"),s=this.paymentHistory[r],n=".billing_statement_section {\n    display: block;\n    position: relative;\n}\n.billing_statement_section h2 {\n    display: block;\n    background: #E6E6E6;\n    font-size: 16px;\n    padding: 10px;\n    font-weight: bold;\n    margin-bottom: 0;\n    border-bottom: 1px solid #727272;\n}\n.billing_statement_section_content {\n    display: block;\n    position: relative;\n    padding-top: 10px;\n}\ntable {\n    border-collapse: collapse;\n    width: 100%;\n}\ntable, td, th {\n    border: 1px solid #333;\n    padding: 7px;\n    text-align: left;\n    font-size: 14px;\n}\ntable thead {\n    background: #dedede;\n}\ntable tr.billing_statement_listing_tfoot {\n    font-weight: bold;\n    text-align: right;\n}\n#billing_statement {\n    width: 800px;\n    margin: 20px auto;\n    padding-bottom: 50px;\n}\n.billing_statement_section .billing_statement_section_content h3 {\n    font-size: 14px;\n    position: relative;\n    margin: 10px 0;\n    font-weight: bold;\n    margin-bottom: 14px;\n    background: #F3F3F3;\n    padding: 5px;\n}\ndiv#billing_statement_account_information_section {\n    width: 49%;\n    float: left;\n}\ndiv#billing_statement_summary_section {\n    width: 49%;\n    float: right;\n}\ndiv#billing_statement_detail_section {\n    clear: both;\n    padding-top: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_label {\n    font-weight: bold;\n    font-size: 16px;\n    width: 44%;\n    display: inline-block;\n    text-align: right;\n}\n.billing_statement_section_content> div {\n    margin-bottom: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_value {\n    text-align: right;\n    float: right;\n    color: #666;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_paid {\n    float: right;\n    font-size: 30px;\n    color: #50B816;\n    margin-top: 10px;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_unpaid {\n    float: right;\n    font-size: 30px;\n    color: #C70000;\n    margin-top: 10px;\n}\nbody {font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;}",i=function(){var e,t,r,i;return r=window.open("",""),r.focus(),e=s.html,r.document.write(e),t=r.document.head||r.document.getElementsByTagName("head")[0],i=document.createElement("style"),i.type="text/css",i.styleSheet?i.styleSheet.cssText=n:i.appendChild(document.createTextNode(n)),t.appendChild(i),r.document.close()},i()}}),s})}.call(this),function(){define("ide/subviews/HeaderView",["./HeaderTpl","./SettingsDialog","./BillingDialog","i18n!/nls/lang.js","backbone","UI.selectbox"],function(e,t,n,r){var i;return i=Backbone.View.extend({events:{"click #HeaderLogout":"logout","click #HeaderSettings":"settings","click #HeaderShortcuts":"shortcuts","click #HeaderBilling":"billingSettings","click .voquota":"billingSettings","DROPDOWN_CLOSE #HeaderNotification":"dropdownClosed"},initialize:function(){this.listenTo(App.user,"change",this.update),this.listenTo(App.model,"change:notification",this.updateNotification),this.setElement($(e(App.user.toJSON())).prependTo("#wrapper")),this.update()},logout:function(){return App.logout()},shortcuts:function(){return modal(MC.template.shortkey())},settings:function(){return new t},update:function(){var e;return e=$("#header").children(".voquota"),App.user.shouldPay()?e.addClass("show"):e.removeClass("show")},setAlertCount:function(e){return $("#NotificationCounter").text(e||"")},updateNotification:function(){var e,t,n,i,s,o;void 0,n=_.map(App.model.get("notification"),function(e){return _.extend({},e,{operation:r.TOOLBAR[e.operation.toUpperCase()]||e.operation})}),e="",i=0;for(s=0,o=n.length;s<o;s++)t=n[s],e+=MC.template.headerNotifyItem(t),t.readed||i++;return this.setAlertCount(i),$("#notification-panel-wrapper").find(".scroll-content").html(e),$("#notification-panel-wrapper").css("max-height",Math.ceil(window.innerHeight*.8)),null},dropdownClosed:function(){return $("#notification-panel-wrapper").find(".scroll-content").children().removeClass("unread"),this.setAlertCount(),App.model.markNotificationRead(),null},billingSettings:function(){return new n}}),i})}.call(this),define("ide/subviews/WelcomeTpl",["handlebars"],function(e){var t=function(e,t,n,r,i){function l(e,t){var r="";return r+="\n    <p>"+u(n.i18n.call(e,"WELCOME_PROVIDE_CRED_DESC",{hash:{},data:t}))+"</p>\n  ",r}function c(e,t){var r="",i;return r+="\n    <h2>"+u(n.i18n.call(e,"WELCOME_TIT",{hash:{},data:t}))+"<span>"+u((i=e&&e.username,typeof i===a?i.apply(e):i))+"</span></h2>\n    <p>"+u(n.i18n.call(e,"WELCOME_DESC",{hash:{},data:t}))+"</p>\n  ",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function",f=this;s+='<section id="WelcomeSettings">\n  <header>\n  ',o=n["if"].call(t,t&&t.noWelcome,{hash:{},inverse:f.program(3,c,i),fn:f.program(1,l,i),data:i});if(o||o===0)s+=o;return s+='\n  </header>\n  <div id="CredSetupWrap">\n    <div id="CredSetupMsg" class="cred-setup-msg empty-hide"></div>\n    <ul>\n      <li>\n        <i class="icon-info icon-label tooltip" data-tooltip="'+u(n.i18n.call(t,"SETTINGS_TIP_CRED_ACCOUNTID",{hash:{},data:i}))+'"></i>\n        <label>'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCOUNTID",{hash:{},data:i}))+'</label>\n        <input autocomplete="off" class="input" id="CredSetupAccount" type="text">\n      </li>\n      <li>\n        <i class="icon-info icon-label tooltip" data-tooltip="'+u(n.i18n.call(t,"SETTINGS_TIP_CRED_ACCESSKEY",{hash:{},data:i}))+'"></i>\n        <label>'+u(n.i18n.call(t,"SETTINGS_LABEL_ACCESSKEY",{hash:{},data:i}))+'</label>\n        <input autocomplete="off" class="input" id="CredSetupAccessKey" type="text">\n      </li>\n      <li>\n        <i class="icon-info icon-label tooltip" data-tooltip="'+u(n.i18n.call(t,"SETTINGS_TIP_CRED_SECRETKEY",{hash:{},data:i}))+'"></i>\n        <label>'+u(n.i18n.call(t,"SETTINGS_LABEL_SECRETKEY",{hash:{},data:i}))+'</label>\n        <input autocomplete="off" class="input" id="CredSetupSecretKey" type="password">\n      </li>\n    </ul>\n\n    <footer class="cred-btn-wrap clearfix tar">\n      <button id="WelcomeSkip" class="link-style">'+u(n.i18n.call(t,"HEAD_LABEL_ACCOUNT_SKIP",{hash:{},data:i}))+'</button>\n      <button id="CredSetupSubmit" class="btn btn-blue" disabled="disabled">'+u(n.i18n.call(t,"HEAD_BTN_SUBMIT",{hash:{},data:i}))+'</button>\n    </footer>\n  </div>\n</section>\n\n<section id="WelcomeCredUpdate" class="hide">\n  <p>'+u(n.i18n.call(t,"SETTINGS_CRED_UPDATING",{hash:{},data:i}))+'</p>\n  <div class="loading-spinner"></div>\n</section>\n\n<section id="WelcomeSkipWarning" class="hide modal-body">\n  <h3>'+u(n.i18n.call(t,"WELCOME_SKIP_TIT",{hash:{},data:i}))+"</h3>\n  <h5>"+u(n.i18n.call(t,"WELCOME_SKIP_SUBTIT",{hash:{},data:i}))+"</h5>\n  <p>"+u(n.i18n.call(t,"WELCOME_SKIP_MSG",{hash:{},data:i}))+"</p>\n  <p>"+u(n.i18n.call(t,"WELCOME_SKIP_MSG_EXTRA",{hash:{},data:i}))+'</p>\n  <footer class="cred-btn-wrap clearfix tar">\n    <button id="WelcomeBack" class="link-style">'+u(n.i18n.call(t,"HEAD_BTN_BACK",{hash:{},data:i}))+'</button>\n    <button id="WelcomeDone" class="btn btn-blue">'+u(n.i18n.call(t,"HEAD_BTN_DONE",{hash:{},data:i}))+'</button>\n  </footer>\n</section>\n\n<section id="WelcomeDoneWrap" class="hide">\n  <p id="WelcomeDoneTitDemo">'+u(n.i18n.call(t,"WELCOME_DONE_HINT_DEMO",{hash:{},data:i}))+'</p>\n  <p id="WelcomeDoneTit">'+u(n.i18n.call(t,"WELCOME_DONE_HINT",{hash:{},data:i}))+" <span></span></p>\n  <h3>"+u(n.i18n.call(t,"WELCOME_DONE_TIT",{hash:{},data:i}))+"</h3>\n  <ul>"+u(n.i18n.call(t,"WELCOME_DONE_MSG",{hash:{},data:i}))+'</ul>\n  <footer class="cred-btn-wrap clearfix tar">\n    <button id="WelcomeClose" class="btn btn-blue">'+u(n.i18n.call(t,"HEAD_BTN_DONE",{hash:{},data:i}))+"</button>\n  </footer>\n</section>",s};return e.template(t)}),function(){define("ide/subviews/WelcomeDialog",["./WelcomeTpl","UI.modalplus","i18n!/nls/lang.js","backbone"],function(e,t,n){var r,i;return r=null,i=Backbone.View.extend({events:{"click #WelcomeSkip":"skip","click #WelcomeBack":"back","click #WelcomeDone":"skipDone","click #WelcomeClose":"close","click #CredSetupSubmit":"submitCred","keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey":"updateSubmitBtn"},constructor:function(){return r?r:(r=this,Backbone.View.apply(this,arguments))},initialize:function(r){var i,s;i={username:App.user.get("username")},r&&r.askForCredential?(s=n.IDE.WELCOME_PROVIDE_CRED_TIT,i.noWelcome=!0):s=n.IDE.WELCOME_DIALOG_TIT,this.modal=new t({title:s,template:e(i),width:"600",disableClose:!0,disableFooter:!0,compact:!0,hideClose:!0,cancel:{hide:!0}}),this.modal.tpl.find(".context-wrap").attr("id","WelcomeDialog"),this.setElement(this.modal.tpl)},skip:function(){return $("#WelcomeSettings").hide(),$("#WelcomeSkipWarning").show()},back:function(){return $("#WelcomeSettings").show(),$("#WelcomeSkipWarning").hide()},skipDone:function(){if(!App.user.hasCredential()){this.done();return}$("#CredSetupAccount").val(""),$("#CredSetupAccessKey").val(""),$("#CredSetupSecretKey").val(""),$("#WelcomeSkipWarning").hide(),$("#WelcomeCredUpdate").show(),this.setCred()},done:function(){return $("#WelcomeSettings, #WelcomeSkipWarning, #WelcomeCredUpdate").hide(),$("#WelcomeDoneWrap").show(),App.user.hasCredential()?($("#WelcomeDoneTitDemo").hide(),$("#WelcomeDoneTit").children("span").text(App.user.get("account"))):($("#WelcomeDoneTitDemo").show(),$("#WelcomeDoneTit").hide())},close:function(){return r=null,this.modal.close()},updateSubmitBtn:function(){var e,t,n;t=$("#CredSetupAccount").val(),e=$("#CredSetupAccessKey").val(),n=$("#CredSetupSecretKey").val(),t.length&&e.length&&n.length?$("#CredSetupSubmit").removeAttr("disabled"):$("#CredSetupSubmit").attr("disabled","disabled")},submitCred:function(){var e,t,r;return $("#WelcomeSettings").hide(),$("#WelcomeCredUpdate").show(),e=$("#CredSetupAccessKey").val(),t=$("#CredSetupSecretKey").val(),r=this,App.user.validateCredential(e,t).then(function(){r.setCred()},function(){$("#CredSetupMsg").text(n.IDE.SETTINGS_ERR_CRED_VALIDATE),r.showCredSetup()})},setCred:function(){var e,t,r,i;return t=$("#CredSetupAccount").val(),e=$("#CredSetupAccessKey").val(),r=$("#CredSetupSecretKey").val(),t==="demo_account"&&(t="user_demo_account",$("#CredSetupAccount").val(t)),i=this,App.user.changeCredential(t,e,r,!0).then(function(){i.done()},function(e){$("#CredSetupMsg").text(n.IDE.SETTINGS_ERR_CRED_UPDATE),i.showCredSetup()})},showCredSetup:function(){$("#WelcomeDialog").children().hide(),$("#WelcomeSettings").show(),$("#CredSetupAccount").focus()[0].select(),this.updateSubmitBtn()}}),i})}.call(this),define("ide/subviews/NavigationTpl",["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<aside id="navigation">\n  <nav>\n    <button class="off-canvas-tab" id="off-canvas-app">'+o(n.i18n.call(t,"NAV_TIT_APPS",{hash:{},data:i}))+'</button>\n    <button class="off-canvas-tab selected" id="off-canvas-stack">'+o(n.i18n.call(t,"NAV_TIT_STACKS",{hash:{},data:i}))+'</button>\n  </nav>\n  <div style="overflow-y:scroll;position:absolute;top:50px;bottom:0;left:0;right:0;">\n    <ul id="nav-app-region" class="hide"></ul>\n    <ul id="nav-stack-region"></ul>\n  </div>\n\n<!--   <section class="scroll-wrap">\n    <div class="scrollbar-veritical-wrap"><div class="scrollbar-veritical-thumb"></div></div>\n    <div class="scroll-content">\n      <ul class="scroll-content hide" id="nav-app-region"></ul>\n      <div class="scroll-content" id="nav-stack">\n        <ul id="nav-stack-region"></ul>\n        <div id="nav-show-empty">'+o(n.i18n.call(t,"TOOLBAR.SHOW_UNUSED_REGIONS",{hash:{},data:i}))+'</div>\n        <ul id="nav-region-empty-list" class="hide"></ul>\n      </div>\n    </div>\n  </section> -->\n</aside>\n<button id="off-canvas-menu" class="icon-menu"></button>\n<div id="off-canvas-overlay"></div>',s},n.navigation=e.template(t),t=function(e,t,n,r,i){function f(e,t){var r="",i;r+='<li data-region="'+o((i=e&&e.region,typeof i===u?i.apply(e):i))+'">\n	<h3 class="nav-group-title">'+o((i=e&&e.regionName,typeof i===u?i.apply(e):i))+" ("+o((i=(i=e&&e.data,i==null||i===!1?i:i.length),typeof i===u?i.apply(e):i))+')</h3>\n	<ul class="nav-item-list app-list">\n	',i=n.each.call(e,e&&e.data,{hash:{},inverse:a.noop,fn:a.program(2,l,t),data:t});if(i||i===0)r+=i;return r+="\n	</ul>\n</li>",r}function l(e,t){var r="",i;r+='<li data-id="'+o((i=e&&e.id,typeof i===u?i.apply(e):i))+'" class="truncate nav-truncate icon-app-',i=n["if"].call(e,e&&e.progressing,{hash:{},inverse:a.program(5,h,t),fn:a.program(3,c,t),data:t});if(i||i===0)r+=i;r+='" title="'+o((i=e&&e.name,typeof i===u?i.apply(e):i))+" ["+o((i=e&&e.stateDesc,typeof i===u?i.apply(e):i))+']">'+o((i=e&&e.name,typeof i===u?i.apply(e):i)),i=n["if"].call(e,e&&e.usage,{hash:{},inverse:a.noop,fn:a.program(7,p,t),data:t});if(i||i===0)r+=i;return r+="</li>",r}function c(e,t){return"pending"}function h(e,t){return o(n.tolower.call(e,e&&e.stateDesc,{hash:{},data:t}))}function p(e,t){var n="",r;return n+='<i class="icon-app-type-'+o((r=e&&e.usage,typeof r===u?r.apply(e):r))+'"></i>',n}function d(e,t){var r="";return r+='\n<div class="nav-empty">'+o(n.i18n.call(e,"DASH_LBL_NO_APP",{hash:{},data:t}))+"</div>\n",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o=this.escapeExpression,u="function",a=this;return s=n.each.call(t,t,{hash:{},inverse:a.program(9,d,i),fn:a.program(1,f,i),data:i}),s||s===0?s:""},n.applist=e.template(t),t=function(e,t,n,r,i){function f(e,t){var r;return r=n["if"].call(e,(r=e&&e.data,r==null||r===!1?r:r.length),{hash:{},inverse:a.noop,fn:a.program(2,l,t),data:t}),r||r===0?r:""}function l(e,t){var r="",i;r+='<li data-region="'+u((i=e&&e.region,typeof i===o?i.apply(e):i))+'">\n	<h3 class="nav-group-title">'+u((i=e&&e.regionName,typeof i===o?i.apply(e):i))+" ("+u((i=(i=e&&e.data,i==null||i===!1?i:i.length),typeof i===o?i.apply(e):i))+')<button class="icon-new-stack tooltip" data-tooltip=\''+u(n.i18n.call(e,"IDE_COM_CREATE_NEW_STACK",{hash:{},data:t}))+'\'></button></h3>\n	<ul class="nav-item-list stack-list">\n	',i=n.each.call(e,e&&e.data,{hash:{},inverse:a.noop,fn:a.program(3,c,t),data:t});if(i||i===0)r+=i;return r+="</ul>\n</li>",r}function c(e,t){var n="",r;return n+='<li data-id="'+u((r=e&&e.id,typeof r===o?r.apply(e):r))+'" class="truncate nav-truncate icon-stack-nav">'+u((r=e&&e.name,typeof r===o?r.apply(e):r))+"</li>",n}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o="function",u=this.escapeExpression,a=this;return s=n.each.call(t,t,{hash:{},inverse:a.noop,fn:a.program(1,f,i),data:i}),s||s===0?s:""},n.stacklist=e.template(t),t=function(e,t,n,r,i){function f(e,t){var r;return r=n.unless.call(e,(r=e&&e.data,r==null||r===!1?r:r.length),{hash:{},inverse:a.noop,fn:a.program(2,l,t),data:t}),r||r===0?r:""}function l(e,t){var r="",i;return r+='<li class="nav-group-title" data-region="'+u((i=e&&e.region,typeof i===o?i.apply(e):i))+'">'+u((i=e&&e.regionName,typeof i===o?i.apply(e):i))+' (0) <button class="icon-new-stack tooltip" data-tooltip=\''+u(n.i18n.call(e,"IDE_COM_CREATE_NEW_STACK",{hash:{},data:t}))+"'></button></li>",r}this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s,o="function",u=this.escapeExpression,a=this;return s=n.each.call(t,t,{hash:{},inverse:a.noop,fn:a.program(1,f,i),data:i}),s||s===0?s:""},n.regionlist=e.template(t),n}),function(){define("ide/subviews/Navigation",["./NavigationTpl","backbone"],function(e){return Backbone.View.extend({events:{"click #off-canvas-app":"showNavApp","click #off-canvas-stack":"showNavStack","click .stack-list li, .app-list li":"openOps","click #nav-show-empty":"showEmptyRegion","click .icon-new-stack":"createStack"},initialize:function(){this.setElement($(e.navigation()).appendTo("#wrapper").eq(0)),$("#off-canvas-menu").click(_.bind(this.showOffCanvas,this)),$("#off-canvas-overlay").click(_.bind(this.hideOffCanvas,this)),this.updateStackList(),this.updateAppList(),this.listenTo(App.model.stackList(),"update",function(){this.showing?this.updateStackList():this.stackDirty=!0}),this.listenTo(App.model.appList(),"update change:state",function(){void 0,this.showing?this.updateAppList():this.appDirty=!0})},showOffCanvas:function(){if($("#wrapper").hasClass("off-canvas"))return $("wrapper").removeClass("off-canvas");this.stackDirty&&this.updateStackList(),this.appDirty&&this.updateAppList(),this.showing=!0,this.stackDirty=this.appDirty=!1,$("#nav-app-region").children(".nav-empty").length?this.showNavStack():this.showNavApp(),$("#wrapper").addClass("off-canvas")},hideOffCanvas:function(){$("#wrapper").removeClass("off-canvas"),this.showing=!1},showNavApp:function(){$("#nav-app-region").show(),$("#nav-stack-region").hide(),$("#off-canvas-app").toggleClass("selected",!0),$("#off-canvas-stack").toggleClass("selected",!1)},showNavStack:function(){$("#nav-app-region").hide(),$("#nav-stack-region").show(),$("#off-canvas-app").toggleClass("selected",!1),$("#off-canvas-stack").toggleClass("selected",!0)},showEmptyRegion:function(){$("#nav-show-empty").hide(),$("#nav-region-empty-list").show()},updateStackList:function(){var t;return t=App.model.stackList().groupByRegion(!0),$("#nav-stack-region").html($.trim(e.stacklist(t))),$("#nav-region-empty-list").html(e.regionlist(t))},updateAppList:function(){return $("#nav-app-region").html(e.applist(App.model.appList().groupByRegion()))},openOps:function(e){this.hideOffCanvas(),App.openOps($(e.currentTarget).attr("data-id"))},createStack:function(e){var t;t=$(e.currentTarget).closest("li").attr("data-region");if(!t)return;this.hideOffCanvas(),App.createOps(t)}})})}.call(this),define("ide/subviews/AppTpl",["handlebars"],function(e){var t,n={};return t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function";return s+='<header class="modal-header" style="width:390px;"><h3>'+u(n.i18n.call(t,"TOOLBAR.TIP_DELETE_STACK",{hash:{},data:i}))+'</h3><i class="modal-close">&times;</i></header>\n<div class="modal-body modal-text-wraper" style="width:390px;">\n  <div class="modal-center-align-helper">\n      <div class="modal-text-major">'+u((o=t&&t.msg,typeof o===a?o.apply(t):o))+'</div>\n  </div>\n</div>\n<div class="modal-footer">\n  <button class="btn modal-close btn-red" id="confirmRmStack">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_DELETE_STACK",{hash:{},data:i}))+'</button>\n  <button class="btn modal-close btn-silver">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.removeStackConfirm=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o,u=this.escapeExpression,a="function";return s+='<header class="modal-header" style="width:390px;"><h3>'+u(n.i18n.call(t,"TOOLBAR.TIP_DUPLICATE_STACK",{hash:{},data:i}))+'</h3><i class="modal-close">&times;</i></header>\n<div class="modal-body modal-text-wraper" style="width:390px;">\n  <div class="modal-center-align-helper">\n    <div class="modal-control-group">\n      <label class="modal-text-major">'+u(n.i18n.call(t,"TOOLBAR.POP_BODY_DUPLICATE_STACK",{hash:{},data:i}))+'</label>\n      <input id="confirmDupStackIpt" class="input" type="text" value="'+u((o=t&&t.newName,typeof o===a?o.apply(t):o))+'">\n    </div>\n  </div>\n</div>\n<div class="modal-footer">\n  <button class="btn btn-red" id="confirmDupStack">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_DUPLICATE_STACK",{hash:{},data:i}))+'</button>\n  <button class="btn modal-close btn-silver">'+u(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.dupStackConfirm=e.template(t),t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<div class="loading-spinner"></div>'},n.loading=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<section class="disconnected-msg">\n  <div>'+o(n.i18n.call(t,"TOOLBAR.CONNECTION_LOST_TO_RECONNECT",{hash:{},data:i}))+"</div>\n  <div>"+o(n.i18n.call(t,"TOOLBAR.CHANGES_MAY_NOT_BE_SAVED",{hash:{},data:i}))+"</div>\n</section>",s},n.disconnectedMsg=e.template(t),t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<header class="modal-header" style="width:390px;"><h3>'+o(n.i18n.call(t,"TOOLBAR.POP_FORCE_TERMINATE",{hash:{},data:i}))+'</h3><i class="modal-close">&times;</i></header>\n<div class="modal-body modal-text-wraper" style="width:390px;">\n  <div class="modal-center-align-helper">\n      <div class="modal-text-major">'+o(n.i18n.call(t,"TOOLBAR.POP_FORCE_TERMINATE_CONTENT",t&&t.name,{hash:{},data:i}))+'</div>\n  </div>\n</div>\n<div class="modal-footer">\n  <button class="btn modal-close btn-red" id="forceTerminateApp">'+o(n.i18n.call(t,"TOOLBAR.POP_BTN_DELETE_STACK",{hash:{},data:i}))+'</button>\n  <button class="btn modal-close btn-silver">'+o(n.i18n.call(t,"TOOLBAR.POP_BTN_CANCEL",{hash:{},data:i}))+"</button>\n</div>",s},n.forceTerminateApp=e.template(t),n}),define("ide/subviews/FullnameTpl",["handlebars"],function(e){var t=function(e,t,n,r,i){this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{};var s="",o=this.escapeExpression;return s+='<div class="complete-fullname">\n    <div class="control-group fullname">\n        <div class="half-group">\n            <label for="complete-firstname" class="account-label">'+o(n.i18n.call(t,"FIRST_NAME",{hash:{},data:i}))+'</label>\n            <input autocomplete="off" id="complete-firstname" class="input" type="text"/>\n        </div>\n        <div class="half-group">\n            <label for="complete-lastname" class="account-label">'+o(n.i18n.call(t,"LAST_NAME",{hash:{},data:i}))+'</label>\n            <input autocomplete="off" id="complete-lastname" class="input" type="text"/>\n        </div>\n    </div>\n    <p class="information">'+o(n.i18n.call(t,"YOU_CAN_LATER_UPDATE_PROFILE",{hash:{},data:i}))+"</p>\n</div>",s};return e.template(t)}),function(){define("ide/subviews/FullnameSetup",["./FullnameTpl","UI.modalplus","i18n!/nls/lang.js","ApiRequest","backbone"],function(e,t,n,r){return Backbone.View.extend({events:{"click #submitFullName":"submit","change #complete-firstname":"changeInput","change #complete-lastname":"changeInput","keyup #complete-lastname":"changeInput","keyup #complete-lastname":"changeInput"},initialize:function(){return this.modal=new t({title:n.IDE.COMPLETE_YOUR_PROFILE,template:e(),width:"600",disableClose:!0,hideClose:!0,cancel:{hide:!0},confirm:{disabled:!0}}),this.modal.on("confirm",this.submit.bind(this)),this.setElement(this.modal.tpl)},changeInput:function(){var e,t,n;return n=this.modal.find(".modal-confirm"),e=this.modal.find("#complete-firstname"),t=this.modal.find("#complete-lastname"),!e.val()||!t.val()?n.attr("disabled",!0):n.attr("disabled",!1)},submit:function(){var e,t,i;return i=this,e=i.modal.$("#complete-firstname").val(),t=i.modal.$("#complete-lastname").val(),!e||!t?!1:(this.modal.find(".modal-confirm").attr("disabled",!0),this.modal.setContent(MC.template.loadingSpiner()),r("account_update_account",{attributes:{first_name:e,last_name:t}}).then(function(){return App.user.set("firstName",e),App.user.set("lastName",t),this.modal.close(),notification("info",n.IDE.PROFILE_UPDATED_SUCCESSFULLY)},function(){return this.modal.close(),notification("error",n.IDE.PROFILE_UPDATED_FAILED)}))}})})}.call(this),function(){define("ide/ApplicationView",["backbone","./subviews/SessionDialog","./subviews/HeaderView","./subviews/WelcomeDialog","./subviews/SettingsDialog","./subviews/Navigation","./subviews/AppTpl","./subviews/FullnameSetup","i18n!/nls/lang.js","CloudResources","constant","UI.modalplus"],function(e,t,n,r,i,s,o,u,a,f,l,c){return e.View.extend({el:$("body")[0],events:{"click .click-select":"selectText"},initialize:function(){this.header=new n,new s,this.listenTo(App.user,"change:state",this.toggleWelcome),this.listenTo(App.model.appList(),"change:terminateFail",this.askForForceTerminate),$(window).on("beforeunload",this.checkUnload),$(window).on("keydown",this.globalKeyEvent)},checkUnload:function(){return App.canQuit()?void 0:a.IDE.BEFOREUNLOAD_MESSAGE},globalKeyEvent:function(e){var t;t=e.target.nodeName.toLowerCase();if(t==="input"||t==="textarea"||e.target.contentEditable==="true")return;switch(e.which){case 8:e.preventDefault();return;case 191:return modal(MC.template.shortkey(),!0),!1}},toggleWSStatus:function(e){if(e)return $(".disconnected-msg").remove();if($(".disconnected-msg").show().length>0)return;return $(o.disconnectedMsg()).appendTo("body").on("mouseover",function(){$(".disconnected-msg").addClass("hovered"),$("body").on("mousemove.disconnectedmsg",function(e){var t,n,r,i;t=$(".disconnected-msg");if(!t.length){$("body").off("mousemove.disconnectedmsg");return}n=t.offset(),r=e.pageX,i=e.pageY;if(r<n.left||i<n.top||r>=n.left+t.outerWidth()||i>=n.top+t.outerHeight())$("body").off("mousemove.disconnectedmsg"),t.removeClass("hovered")})})},toggleWelcome:function(){App.user.isFirstVisit()?new r:App.user.fullnameNotSet()&&new u},askForAwsCredential:function(){return new r({askForCredential:!0})},showSessionDialog:function(){return(new t).promise()},selectText:function(e){var t,n;try{n=document.body.createTextRange(),n.moveToElementText(e.currentTarget),n.select(),void 0}catch(r){t=r,window.getSelection&&(n=document.createRange(),n.selectNode(e.currentTarget),window.getSelection().addRange(n),void 0)}return!1},askForForceTerminate:function(e){if(!e.get("terminateFail"))return;modal(o.forceTerminateApp({name:e.get("name")})),$("#forceTerminateApp").on("click",function(){e.terminate(!0).fail(function(e){var t;return t=e.awsError?e.error+"."+e.awsError:e.error,notification(sprintf(a.NOTIFY.ERROR_FAILED_TERMINATE,name,t))})})},notifyUnpay:function(){notification("error","Failed to charge your account. Please update your billing info.")}})})}.call(this),function(){define("OpsModel",["ApiRequest","constant","CloudResources","ThumbnailUtil","backbone"],function(e,t,n,r){var i,s,o,u,a,f,l;return i={},l=Backbone.Model.extend,f={OpenStack:"OpenstackOps",Amazon:"AwsOps"},u={UnRun:0,Running:1,Stopped:2,Initializing:3,Starting:4,Updating:5,Stopping:6,Terminating:7,Destroyed:8,Saving:9},a=["","Running","Stopped","Starting","Starting","Updating","Stopping","Terminating","","Saving"],o="2014-11-11",s=Backbone.Model.extend({type:"GenericOps",defaults:function(){return{updateTime:+(new Date),region:"",state:u.UnRun,stoppable:!0,name:"",version:o,provider:""}},constructor:function(e,t){var n,r;e=e||{},t=t||{};if(this.type==="GenericOps"){t.jsonData&&(r=t.jsonData.provider),r=r||e.provider||"aws::global",void 0,n=i[r];if(n)return new n(e,t)}Backbone.Model.apply(this,arguments)},initialize:function(e,t){t&&(t.initJsonData&&this.__initJsonData(),t.jsonData&&this.__setJsonData(t.jsonData))},url:function(){return this.get("id")?"ops/"+this.get("id"):"ops/"+this.cid+"/unsaved"},isStack:function(){return this.attributes.state===u.UnRun||this.attributes.state===u.Saving},isApp:function(){return!this.isStack()},isImported:function(){return!!this.attributes.importMsrId},isPMRestricted:function(){return this.get("version")>="2014-11-11"&&this.isApp()},testState:function(e){return this.attributes.state===e},getStateDesc:function(){return a[this.attributes.state]},toJSON:function(e){var n;return n=Backbone.Model.prototype.toJSON.call(this),n.stateDesc=a[n.state],n.regionName=t.REGION_SHORT_LABEL[n.region],this.isProcessing()&&(n.progressing=!0),e&&e.thumbnail&&(n.thumbnail=r.fetch(n.id)),n},isPersisted:function(){return!!this.get("id")},isExisting:function(){var e;return e=this.get("state"),e===u.Destroyed&&void 0,!!this.get("id")&&e!==u.Destroyed},getMsrId:function(){return this.get("importMsrId")||void 0},getThumbnail:function(){return r.fetch(this.get("id"))},saveThumbnail:function(e){e?(r.save(this.get("id"),e),this.trigger("change")):r.save(this.get("id"),"")},hasJsonData:function(){return!!this.__jsonData},getJsonData:function(){return this.__jsonData},fetchJsonData:function(){var e;return this.__jsonData?(e=Q.defer(),e.resolve(this),e.promise):this.__fjdTemplate(this)||this.__fjdImport(this)||this.__fjdStack(this)||this.__fjdApp(this)},__fjdTemplate:function(t){var n;n=this.get("sampleId");if(!n)return;return e("stackstore_fetch_stackstore",{sub_path:"master/stack/"+n+"/"+n+".json"}).then(function(e){var n,r;try{r=JSON.parse(e),delete r.id,delete r.signature,t.collection.isNameAvailable(r.name)||(r.name=t.collection.getNewName(r.name)),t.attributes.region=r.region,t.__setJsonData(r)}catch(i){n=i,r=null,t.attributes.region="us-east-1",t.__initJsonData()}return r&&t.set("name",r.name),t})},__fjdImport:function(e){if(!this.isImported())return;return n("OpsResource",this.getMsrId()).init(this.get("region"),this.get("provider")).fetchForceDedup().then(function(){return e.__onFjdImported()})},generateJsonFromRes:function(){var e;return e=n("OpsResource",this.getMsrId()).generatedJson,e.agent.module.repo||(e.agent.module={repo:App.user.get("repo"),tag:App.user.get("tag")}),e},__onFjdImported:function(){var e;return e=this.generateJsonFromRes(),this.__setJsonData(e),this.attributes.name=e.name,this},__fjdStack:function(t){if(!this.isStack())return;return e("stack_info",{region_name:this.get("region"),stack_ids:[this.get("id")]}).then(function(e){return t.__setJsonData(e[0])})},__fjdApp:function(t){if(!this.isApp())return;return e("app_info",{region_name:this.get("region"),app_ids:[this.get("id")]}).then(function(e){return t.__setJsonData(e[0])})},__setJsonData:function(t){var n;if(!t)throw this.__destroy(),new McError(e.Errors.MissingDataInServer,"Stack/App doesn't exist.");return t.agent||(t.agent={enabled:!1,module:{repo:App.user.get("repo"),tag:App.user.get("tag")}}),t.property||(t.property={stoppable:!0}),t.layout&&t.layout.component&&(n=$.extend({},t.layout.component.node,t.layout.component.group),n.size=t.layout.size,t.layout=n),t.layout&&!t.layout.size&&(t.layout.size=[240,240]),(t.version||"").split("-").length<3&&(t.version=o),this.__jsonData=t,this.attributes.name!==t.name&&this.set("name",t.name),t.autoLayout&&this.set("autoLayout",t.autoLayout),this},save:function(t,n){var i,s,o,a;return this.isApp()||this.testState(u.Saving)?this.__returnErrorPromise():(t||(t=this.__jsonData),this.set("state",u.Saving),o=this.collection.where({name:t.name})||[],o.length>1||o[0]&&o[0]!==this?(s=Q.defer(),s.reject(McError(e.Errors.StackRepeatedStack,"Stack name has already been used.")),s.promise):(i=this.get("id")?"stack_save":"stack_create",t.state!=="Enabled"&&(void 0,t.state="Enabled"),t.id=this.get("id"),a=this,e(i,{region_name:this.get("region"),spec:t}).then(function(e){var i;return i={name:t.name,version:t.version,updateTime:+(new Date),stoppable:e.property.stoppable,state:u.UnRun},a.get("id")||(i.id=e.id),n&&r.save(a.get("id")||i.id,n),a.set(i),a.__jsonData=e,a.trigger("jsonDataSaved",a),i.id&&a.collection.__triggerUpdate(a),a},function(e){throw a.set("state",u.UnRun),e})))},remove:function(){var t,n;return this.isPersisted()&&this.isApp()?this.__returnErrorPromise():(this.__destroy(),this.get("id")?(n=this,e("stack_remove",{region_name:this.get("region"),stack_id:this.get("id")}).fail(function(){return this.set("state",u.UnRun),App.model.stackList().add(n)})):(t=Q.defer(),t.resolve(),t.promise))},run:function(t,n){var r;return r=this.get("region"),t.id=this.get("id")||"",e("stack_run_v2",{region_name:r,stack:t,app_name:n}).then(function(e){var i;return i=new s({name:n,requestId:e[0],state:u.Initializing,progress:0,region:r,provider:t.provider,usage:t.usage,version:t.version,updateTime:+(new Date),stoppable:t.property.stoppable,resource_diff:!1}),App.model.appList().add(i),i})},duplicate:function(t){var n,i,o;if(this.isApp())return;return o=r.fetch(this.get("id")),n=$.extend(!0,{},this.attributes,{name:t,updateTime:+(new Date),provider:this.get("provider")}),i=this.collection,e("stack_save_as",{region_name:this.get("region"),stack_id:this.get("id"),new_name:t||this.collection.getNewName()}).then(function(e){return o&&r.save(e,o),n.id=e,i.add(new s(n))})},stop:function(){var t;return!this.isApp()||this.get("state")!==u.Running?this.__returnErrorPromise():(t=this,this.set("state",u.Stopping),this.attributes.progress=0,e("app_stop",{region_name:this.get("region"),app_id:this.get("id"),app_name:this.get("name")}).fail(function(e){throw t.set("state",u.Running),e}))},start:function(){var t;return!this.isApp()||this.get("state")!==u.Stopped?this.__returnErrorPromise():(t=this,this.set("state",u.Starting),this.attributes.progress=0,e("app_start",{region_name:this.get("region"),app_id:this.get("id"),app_name:this.get("name")}).fail(function(e){throw t.set("state",u.Stopped),e}))},terminate:function(t,n){var r,i,s;return t==null&&(t=!1),this.isApp()?(r=this.get("state"),this.set("state",u.Terminating),this.attributes.progress=0,this.attributes.terminateFail=!1,s=this,i=$.extend({region_name:this.get("region"),app_id:this.get("id"),app_name:this.get("name"),flag:t},n||{}),e("app_terminate",i).then(function(){t&&s.__destroy()},function(e){throw e.error<0?e:(s.set({state:r,terminateFail:!0}),e)})):this.__returnErrorPromise()},update:function(t,n){var r,i,s;return this.isApp()?this.__updateAppDefer?(void 0,this.__updateAppDefer.promise):(i=this.get("state"),this.set("state",u.Updating),this.attributes.progress=0,this.__updateAppDefer=Q.defer(),s=this,e("app_update",{region_name:this.get("region"),spec:t,app_id:this.get("id"),fast_update:n}).fail(function(e){return s.__updateAppDefer.reject(e)}),r=function(e){throw s.__updateAppDefer=null,s.attributes.progress=0,s.set({state:i}),e},this.__updateAppDefer.promise.then(function(){return s.__jsonData=null,s.fetchJsonData().then(function(){return s.__updateAppDefer=null,s.importMsrId=void 0,s.set({name:t.name,state:u.Running})},r)},r)):this.__returnErrorPromise()},saveApp:function(t){var n,r;return this.isApp()?this.__saveAppDefer?(void 0,this.__saveAppDefer.promise):(t.changed=!1,t.state!==this.getStateDesc()&&(void 0,t.state=this.getStateDesc()),void 0,t.id?(t.id!==this.get("id")&&void 0,t.id=this.get("id")):t.id="",n=this.get("state"),this.set("state",u.Saving),this.attributes.progress=0,this.__saveAppDefer=Q.defer(),r=this,e("app_save_info",{spec:t}).then(function(e){r.id||(r.attributes.requestId=e[0]),r.attributes.importMsrId=void 0},function(e){return r.__saveAppDefer.reject(e)}),this.__saveAppDefer.promise.then(function(){r.__jsonData=t,r.attributes.requestId=void 0,r.__saveAppDefer=null,r.set({name:t.name,state:n,usage:t.usage})},function(e){throw r.__saveAppDefer=null,r.attributes.requestId=void 0,r.attributes.progress=0,r.set({state:n}),e})):this.__returnErrorPromise()},setStatusProgress:function(e,t){var n;n=parseInt(e*100/t),this.attributes.progress!==n&&(this.attributes.progress=n,this.trigger("change:progress",this,n))},isProcessing:function(){var e;return e=this.attributes.state,e===u.Initializing||e===u.Stopping||e===u.Updating||e===u.Terminating||e===u.Starting||e===u.Saving},setStatusWithApiResult:function(e){return void 0,this.set("state",u[e])},setStatusWithWSEvent:function(t,n,r){var i,s,o;void 0;switch(t){case"launch":n.completed?o=u.Running:n.failed&&(o=u.Destroyed);break;case"stop":n.completed?o=u.Stopped:n.failed&&(o=u.Running);break;case"update":if(!this.__updateAppDefer){void 0;return}n.completed?(this.__jsonData=null,s=this,this.fetchJsonData().then(function(){return i=s.__updateAppDefer,s.__updateAppDefer=null,i.resolve()})):(i=this.__updateAppDefer,this.__updateAppDefer=null,i.reject(McError(e.Errors.OperationFailure,r)));return;case"save":if(!this.__saveAppDefer){void 0;return}i=this.__saveAppDefer,this.__saveAppDefer=null,n.completed?i.resolve():i.reject(McError(e.Errors.OperationFailure,r));return;case"terminate":n.completed?o=u.Destroyed:(o=u.Stopped,this.attributes.terminateFail=!1,this.set("terminateFail",!0));break;case"start":n.completed?o=u.Running:o=u.Stopped}r&&(this.attributes.opsActionError=r),o===u.Destroyed?this.__destroy():o&&(this.attributes.progress=0,this.set("state",o))},destroy:function(){return void 0},__destroy:function(){var e,t;if(this.attributes.state===u.Destroyed)return;return r.remove(this.get("id")),e=this.getMsrId(),e&&(t=n("OpsResource",e))!=null&&t.destroy(),this.attributes.state=u.Destroyed,this.trigger("destroy",this,this.collection)},__returnErrorPromise:function(){var t;return t=Q.defer(),t.resolve(McError(e.Errors.InvalidMethodCall,"The method is not supported by this model.")),t.promise},__createRawJson:function(){return{id:this.get("id")||"",name:this.get("name"),description:"",region:this.get("region"),platform:"ec2-vpc",state:"Enabled",version:this.get("version"),resource_diff:!0,component:{},provider:this.get("provider"),layout:{size:[240,240]},agent:{enabled:!0,module:{repo:App.user.get("repo"),tag:App.user.get("tag")}},property:{stoppable:!0}}},__initJsonData:function(){this.__jsonData=this.__createRawJson()}},{extend:function(e,t){var n,r,s,o,u;r=l.call(this,e,t),u=t.supportedProviders;for(s=0,o=u.length;s<o;s++)n=u[s],i[n]=r;return r}}),s.Type=f,s.State=u,s.LatestVersion=o,s})}.call(this),function(){define("ide/submodels/OpsCollection",["OpsModel","constant","backbone"],function(e,t){return Backbone.Collection.extend({model:e,newNameTmpl:"untitled",comparator:function(e,t){return-(e.attributes.updateTime-t.attributes.updateTime)},initialize:function(){this.on("change:updateTime",this.sort,this),this.on("add remove",this.__triggerUpdate,this),this.on("change:id",this.__triggerUpdate,this),this.__debounceUpdate=_.debounce(function(){return this.trigger("update")})},getNewName:function(e){var t,n,r,i,s;n=this.groupBy("name"),t=0,e?(r=e.match(/(.+)(-\d*)$/),s=r?r[1]:e):s=this.newNameTmpl,i=s+"-0";for(;;){if(!n[i])break;t+=1,i=s+"-"+t}return i},isNameAvailable:function(e){return e&&!this.findWhere({name:e})},groupByRegion:function(e,n,r){var i,s,o,u,a,f,l,c,h,p,d,v,m;e==null&&(e=!1),n==null&&(n=!0),r==null&&(r=!1),f={},v=this.models;for(c=0,p=v.length;c<p;c++){o=v[c];if(!r&&!o.isExisting())continue;a=o.attributes.region,s=f[a]||(f[a]=[]),s.push(n?o.toJSON():o)}l=[],m=t.REGION_KEYS;for(h=0,d=m.length;h<d;h++){i=m[h],u=f[i];if(!u&&!e)continue;l.push({region:i,regionName:t.REGION_SHORT_LABEL[i],data:u||[]})}return l},filterRecent:function(t){var n,r,i,s,o,u,a;t==null&&(t=!1),i=Math.round(+(new Date)/1e3),n=[],a=this.models;for(o=0,u=a.length;o<u;o++){r=a[o];if(r.testState(e.State.Terminating))continue;s=r.get("updateTime");if(i-s>=2592e3)break;t&&(r=r.toJSON(),r.formatedTime=MC.intervalDate(s)),n.push(r)}return n},__triggerUpdate:function(e){if(!e)return;if(this.indexOf(e)!==-1&&!e.isExisting())return;this.__debounceUpdate()},add:function(e){var t;return this.isNameAvailable(e.get("name"))||(t=this.getNewName(),e.attributes.name=t,e.__jsonData&&(e.__jsonData.name=t)),Backbone.Collection.prototype.add.apply(this,arguments)}})})}.call(this),function(){define("ide/submodels/OpsModelOs",["OpsModel","ApiRequest","constant","CloudResources"],function(e,t,n,r){var i;return i=e.extend({type:e.Type.OpenStack,getMsrId:function(){var t,r,i,s;r=e.prototype.getMsrId.call(this);if(r)return r;if(!this.__jsonData)return void 0;s=this.__jsonData.component;for(i in s){t=s[i];if(t.type===n.RESTYPE.OSNETWORK)return t.resource.id}return void 0},__initJsonData:function(){var e,t,n,r,i,s,o,u;r=this.__createRawJson(),s={NETWORK:{coordinate:[27,3],size:[60,60]},SUBNET:{coordinate:[30,6],size:[25,54]},RT:{coordinate:[10,3]}},t={KP:{type:"OS::Nova::KeyPair",name:"DefaultKP",resource:{}},NETWORK:{type:"OS::Neutron::Network",resource:{name:"network1"}},SG:{type:"OS::Neutron::SecurityGroup",resource:{name:"DefaultSG",description:"default security group",rules:[]}},RT:{type:"OS::Neutron::Router",resource:{external_gateway_info:{}}},SUBNET:{type:"OS::Neutron::Subnet",resource:{cidr:"10.0.0.0/16",enable_dhcp:!0}}};for(n in t)e=t[n],e.uid=MC.guid(),r.component[e.uid]=e,s[n]&&(i=s[n],i.uid=e.uid,r.layout[i.uid]=i),e.type==="OS::Neutron::Subnet"?u=e.uid:e.type==="OS::Neutron::Network"&&(o=e.uid);for(n in t)e=t[n],e.type==="OS::Neutron::Subnet"?e.resource.network_id="@{"+o+".resource.id}":e.type==="OS::Neutron::Router"&&(e.resource.router_interface=[{subnet_id:"@{"+u+".resource.id}"}]);this.__jsonData=r}},{supportedProviders:["os::awcloud_bj"]}),i})}.call(this),function(){define("ide/submodels/OpsModelAws",["OpsModel","ApiRequest","constant","CloudResources"],function(e,t,n,r){var i;return i=e.extend({type:e.Type.Amazon,getMsrId:function(){var t,r,i,s;r=e.prototype.getMsrId.call(this);if(r)return r;if(!this.__jsonData)return void 0;s=this.__jsonData.component;for(i in s){t=s[i];if(t.type===n.RESTYPE.VPC)return t.resource.VpcId}return void 0},__initJsonData:function(){var e,t,n,r,i,s,o,u;r=this.__createRawJson(),o=MC.guid(),u="@{"+o+".resource.VpcId}",s={VPC:{coordinate:[5,3],size:[60,60]},RTB:{coordinate:[50,5],groupUId:o}},t={KP:{type:"AWS.EC2.KeyPair",name:"DefaultKP",resource:{KeyName:"DefaultKP",KeyFingerprint:""}},SG:{type:"AWS.EC2.SecurityGroup",name:"DefaultSG",resource:{IpPermissions:[{IpProtocol:"tcp",IpRanges:"0.0.0.0/0",FromPort:"22",ToPort:"22"}],IpPermissionsEgress:[{FromPort:"0",IpProtocol:"-1",IpRanges:"0.0.0.0/0",ToPort:"65535"}],Default:!0,GroupId:"",GroupName:"DefaultSG",GroupDescription:"default VPC security group",VpcId:u}},ACL:{type:"AWS.VPC.NetworkAcl",name:"DefaultACL",resource:{AssociationSet:[],Default:!0,NetworkAclId:"",VpcId:u,EntrySet:[{RuleAction:"allow",Protocol:-1,CidrBlock:"0.0.0.0/0",Egress:!0,IcmpTypeCode:{Type:"",Code:""},PortRange:{To:"",From:""},RuleNumber:100},{RuleAction:"allow",Protocol:-1,CidrBlock:"0.0.0.0/0",Egress:!1,IcmpTypeCode:{Type:"",Code:""},PortRange:{To:"",From:""},RuleNumber:100},{RuleAction:"deny",Protocol:-1,CidrBlock:"0.0.0.0/0",Egress:!0,IcmpTypeCode:{Type:"",Code:""},PortRange:{To:"",From:""},RuleNumber:32767},{RuleAction:"deny",Protocol:-1,CidrBlock:"0.0.0.0/0",Egress:!1,IcmpTypeCode:{Type:"",Code:""},PortRange:{To:"",From:""},RuleNumber:32767}]}},VPC:{type:"AWS.VPC.VPC",name:"vpc",resource:{VpcId:"",CidrBlock:"10.0.0.0/16",DhcpOptionsId:"",EnableDnsHostnames:!1,EnableDnsSupport:!0,InstanceTenancy:"default"}},RTB:{type:"AWS.VPC.RouteTable",name:"RT-0",resource:{VpcId:u,RouteTableId:"",AssociationSet:[{Main:"true",SubnetId:"",RouteTableAssociationId:""}],PropagatingVgwSet:[],RouteSet:[{InstanceId:"",NetworkInterfaceId:"",Origin:"CreateRouteTable",GatewayId:"local",DestinationCidrBlock:"10.0.0.0/16"}]}}};for(n in t)e=t[n],n==="VPC"?e.uid=o:e.uid=MC.guid(),r.component[e.uid]=e,s[n]&&(i=s[n],i.uid=e.uid,r.layout[e.uid]=i);this.__jsonData=r}},{supportedProviders:["aws::china","aws::global"]}),i})}.call(this),function(){define("ide/ApplicationModel",["./submodels/OpsCollection","OpsModel","ApiRequest","ApiRequestOs","backbone","constant","ThumbnailUtil","i18n!/nls/lang.js","./submodels/OpsModelOs","./submodels/OpsModelAws"],function(e,t,n,r,i,s,o,u){return i.Model.extend({defaults:function(){return{__websocketReady:!1,notification:[],stackList:new e,appList:new e}},markNotificationRead:function(){var e,t,n,r;r=this.attributes.notification;for(t=0,n=r.length;t<n;t++)e=r[t],e.readed=!0},stackList:function(){return this.attributes.stackList},appList:function(){return this.attributes.appList},getOpsModelById:function(e){return this.attributes.appList.get(e)||this.attributes.stackList.get(e)},createImportOps:function(e,n,r){var i;return i=this.attributes.appList.findWhere({importMsrId:r}),i?i:(i=new t({name:"ImportedApp",importMsrId:r,region:e,provider:n,state:t.State.Running}),this.attributes.appList.add(i),i)},createSampleOps:function(e){var n;return n=new t({sampleId:e}),this.attributes.stackList.add(n),n},createStack:function(e,n){var r;return n==null&&(n="aws::china"),r=new t({region:e,provider:n},{initJsonData:!0}),this.attributes.stackList.add(r),r},createStackByJson:function(e,n){var r;return n==null&&(n=!1),this.attributes.stackList.isNameAvailable(e.name)||(e.name=this.stackList().getNewName(e.name)),r=new t({name:e.name,region:e.region,autoLayout:n},{jsonData:e}),this.attributes.stackList.add(r),r},getPriceData:function(e){return(this.__awsdata[e]||{}).price},getOsFamilyConfig:function(e){return(this.__awsdata[e]||{}).osFamilyConfig},getInstanceTypeConfig:function(e){return(this.__awsdata[e]||{}).instanceTypeConfig},getRdsData:function(e){return(this.__awsdata[e]||{}).rds},getStateModule:function(e,t){return this.__stateModuleData[e+":"+t]},getOpenstackFlavors:function(e,t){return this.__osdata[e][t].flavors},getOpenstackQuotas:function(e){return this.__osdata[e].quota},initialize:function(){this.__awsdata={},this.__osdata={},this.__stateModuleData={},this.__initializeNotification()},fetch:function(){var e,t,i,s,u;return s=this,u=n("stack_list",{region_name:null}).then(function(e){return s.get("stackList").set(s.__parseListRes(e))}),e=n("app_list",{region_name:null}).then(function(e){return s.get("appList").set(s.__parseListRes(e))}),t=n("aws_aws",{fields:["region","price","instance_types","rds"]}).then(function(e){return s.__parseAwsData(e)}),i=r("os_os",{provider:null}).then(function(e){return s.__parseOsData(e)}),Q.all([u,e,t,i]).then(function(){var e;try{o.cleanup(s.appList().pluck("id").concat(s.stackList().pluck("id")))}catch(t){e=t}})},__parseAwsData:function(e){var t,n,r,i,s,o,u,a,f,l;for(o=0,a=e.length;o<a;o++){n=e[o],r={},this.__awsdata[n.region]={price:n.price,osFamilyConfig:n.instance_types.sort,instanceTypeConfig:r,rds:n.rds},l=n.instance_types.info||[];for(u=0,f=l.length;u<f;u++){s=l[u];if(!s)continue;t=s.cpu||{},s.name=s.description,s.formated_desc=[s.name||"",t.units+" ECUs",t.cores+" vCPUs",s.memory+" GiB memory"],s.description=s.formated_desc.join(", "),i=s.storage,i&&i.ssd===!0&&(s.description+=", "+i.count+" x "+i.size+" GiB SSD Storage Capacity"),r[s.typeName]=s}}},__parseOsData:function(e){var t,n,s,o,u,a,f,l;a=this;for(o in e){n=e[o];for(f=0,l=n.length;f<l;f++)t=n[f],u=this.__osdata[o]||(this.__osdata[o]={}),u[t.region]={flavors:new i.Collection(_.values(t.flavor))};s=r("os_quota",{provider:o}).then(function(e){return a.__parseOsQuota(e)})}},__parseOsQuota:function(e){var t,n,r,i,s,o,u,a;a={};for(o in e){r=e[o];for(t in r){n=r[t];for(i in n)u=n[i],a[""+t+"::"+i]=u}s=this.__osdata[o]||(this.__osdata[o]={}),s.quota=a}},fetchStateModule:function(e,t){var r,i,s;return i=this.getStateModule(e,t),i?(r=Q.defer(),r.resolve(i),r.promise):(s=this,n("state_module",{mod_repo:e,mod_tag:t}).then(function(r){var i;try{r=JSON.parse(r)}catch(o){throw i=o,McError(n.Errors.InvalidRpcReturn,"Can't load state data. Please retry.")}return s.__stateModuleData[e+":"+t]=r,r}))},__parseListRes:function(e){var n,r,i,s;r=[];for(i=0,s=e.length;i<s;i++)n=e[i],r.push({id:n.id,updateTime:n.time_update,region:n.region,usage:n.usage,name:n.name,version:n.version,provider:n.provider,state:t.State[n.state]||t.State.UnRun,stoppable:!n.property||n.property.stoppable!==!1});return r},__initializeNotification:function(){var e;return e=this,App.WS.on("requestChange",function(t,n){return e.__processSingleNotification(t,n)})},__triggerNotification:_.debounce(function(){return this.trigger("change:notification")},400),__processSingleNotification:function(e){var t,n,r,i,s,o,u,a,f;s=App.WS.collection.request.findOne({_id:e});if(!s)return;r=this.__parseRequestInfo(s);if(!r)return;this.__handleRequestChange(r);if(r.operation==="save")return;n=this.attributes.notification;for(e=a=0,f=n.length;a<f;e=++a){t=n[e];if(t.id===r.id){o=t;break}}if(o&&_.isEqual(o.state,r.state))return;return r.readed=!App.WS.isReady(),!r.readed&&App.workspaces&&!r.state.failed&&(u=App.workspaces.getAwakeSpace(),i=this.appList().get(r.targetId)||this.stackList().get(r.targetId),r.readed=u.isWorkingOn(i)),n.splice(e,1),n.splice(0,0,r),n.length>30&&(n.length=30),this.__triggerNotification(),null},__parseRequestInfo:function(e){var t,n,r,i,o,a,f,l,c;if(!e.brief)return;t=e.dag,i={id:e.id,region:s.REGION_SHORT_LABEL[e.region],time:e.time_end,operation:s.OPS_CODE_NAME[e.code],targetId:t&&t.spec?t.spec.id:e.rid,targetName:e.brief.split(" ")[2]||"",state:{processing:!0},readed:!0};switch(e.state){case s.OPS_STATE.OPS_STATE_FAILED:i.error=e.data,i.state={failed:!0};break;case s.OPS_STATE.OPS_STATE_INPROCESS:i.time=e.time_begin,i.step=0;if(e.dag&&e.dag.step){i.totalSteps=e.dag.step.length,c=e.dag.step;for(f=0,l=c.length;f<l;f++)r=c[f],r[1]==="done"&&++i.step}else i.totalSteps=1;break;case s.OPS_STATE.OPS_STATE_DONE:i.operation==="save"&&(i.targetId=e.data),i.state={completed:!0,terminated:e.code==="Forge.App.Terminate"};break;case s.OPS_STATE.OPS_STATE_PENDING:i.state={pending:!0},i.time=""}return i.time&&(i.time=MC.dateFormat(new Date(i.time*1e3),"hh:mm yyyy-MM-dd"),e.state!==s.OPS_STATE.OPS_STATE_INPROCESS&&(o=parseInt(e.time_begin,10),a=parseInt(e.time_end,10),!isNaN(o)&&!isNaN(a)&&a>=o&&(n=a-o,n<60?i.duration=sprintf(u.TOOLBAR.TOOK_XXX_SEC,n):i.duration=sprintf(u.TOOLBAR.TOOK_XXX_MIN,Math.round(n/60))))),i},__handleRequestChange:function(e){var n;if(!App.WS.isReady()&&!e.state.processing)return;if(e.state.pending)return;n=this.appList().get(e.targetId),n||(n=this.appList().findWhere({requestId:e.id}),n&&e.targetId&&n.set("id",e.targetId));if(!n)return;if(!e.state.processing&&!n.isProcessing())return;if(n.testState(t.State.Terminating)&&e.operation!=="terminate"){void 0;return}return e.state.processing?n.setStatusProgress(e.step,e.totalSteps):n.setStatusWithWSEvent(e.operation,e.state,e.error)}})})}.call(this),function(){define("ide/User",["ApiRequest","ApiRequestR","backbone"],function(e,t){var n,r,i;return i={NotFirstTime:2},r={NoInfo:"",Pastdue:"pastdue",Unpaid:"unpaid",Active:"active"},n=Backbone.Model.extend({defaults:{paymentState:"",voQuotaPerMonth:1e3,voQuotaCurrent:0},initialize:function(){this.set({usercode:$.cookie("usercode"),username:Base64.decode($.cookie("usercode")),session:$.cookie("session_id")})},hasCredential:function(){return!!this.get("account")},isFirstVisit:function(){return!(i.NotFirstTime&this.get("state"))},fullnameNotSet:function(){return!this.get("firstName")||!this.get("lastName")},isUnpaid:function(){return this.get("paymentState")===r.Unpaid},shouldPay:function(){return this.get("voQuotaCurrent")>=this.get("voQuotaPerMonth")&&(!this.get("creditCard")||this.isUnpaid())},getBillingOverview:function(){var e;return e={quotaTotal:this.get("voQuotaPerMonth"),quotaCurrent:this.get("voQuotaCurrent"),billingStart:this.get("billingStart"),billingEnd:this.get("billingEnd"),billingRemain:Math.round((this.get("billingEnd")-new Date)/24/36e5)},e.quotaRemain=Math.max(e.quotaTotal-e.quotaCurrent,0),e.billingRemain=Math.min(e.billingRemain,31),e.billingRemain=Math.max(e.billingRemain,0),e.quotaPercent=Math.round(Math.min(e.quotaCurrent,e.quotaTotal)/Math.max(e.quotaCurrent,e.quotaTotal)*100),e},userInfoAccuired:function(t){var n,r,s,o,u,a,f,l;r=t.payment||{},o=r.self_page||{},s={email:Base64.decode(t.email),repo:t.mod_repo,tag:t.mod_tag,state:parseInt(t.state,10),intercomHash:t.intercom_secret,account:t.account_id,firstName:Base64.decode(t.first_name||""),lastName:Base64.decode(t.last_name||""),cardFirstName:Base64.decode(o.first_name||""),cardLastName:Base64.decode(o.last_name||""),voQuotaCurrent:r.current_quota||0,voQuotaPerMonth:r.max_quota||3600,has_card:!!r.has_card,paymentUrl:o.url,creditCard:o.card,billingEnd:new Date(o.current_period_ends_at||null),billingStart:new Date(o.current_period_started_at||null),renewDate:r?new Date(r.next_reset_time*1e3):new Date,paymentState:r.state||"",awsAccessKey:t.access_key,awsSecretKey:t.secret_key,tokens:t.tokens||[],defaultToken:""},t.account_id==="demo_account"&&(s.account=s.awsAccessKey=s.awsSecretKey=""),l=s.tokens;for(n=a=0,f=l.length;a<f;n=++a){u=l[n];if(!u.name){s.defaultToken=u.token,s.tokens.splice(n,1);break}}this.set(s),this.isFirstVisit()&&e("account_update_account",{attributes:{state:""+(this.get("state")|i.NotFirstTime)}})},onWsUserStateChange:function(e){var n,r,i,s,o,u,a;void 0,o=this,s=e.payment;if(!e)return;n={current_quota:"voQuotaCurrent",max_quota:"voQuotaPerMonth",has_card:"creditCard",state:"paymentState"},r=!!e.time_update,u={};for(i in n){a=n[i];if(s!=null?s.hasOwnProperty(i):void 0)r=!0,u[a]=s[i]}r&&this.set(u),(s!=null?s.next_reset_time:void 0)&&App.user.set("renewDate",new Date(s.next_reset_time*1e3)),App.user.get("firstName")&&App.user.get("lastName")&&t("payment_self").then(function(e){return s={creditCard:e.card,billingEnd:new Date(e.current_period_ends_at||null),billingStart:new Date(e.current_period_started_at||null),paymentUrl:e.url,cardFirstName:e.card?Base64.decode(e.first_name||""):void 0,cardLastName:e.card?Base64.decode(e.last_name||""):void 0},o.set(s),o.trigger("paymentUpdate")})},bootIntercom:function(){var e;if(!window.Intercom){e=setInterval(function(t){return function(){window.Intercom&&(void 0,clearInterval(e),t.bootIntercom())}}(this),1e3);return}window.Intercom("boot",{app_id:"3rp02j1w",email:this.get("email"),username:this.get("username"),user_hash:this.get("intercomHash"),widget:{activator:"#support"}})},fetch:function(){var t;return t=this,e("session_login",{username:this.get("username"),password:this.get("session")}).then(function(n){t.userInfoAccuired(n),t.bootIntercom();if(t.hasCredential())return e("ec2_DescribeRegions").fail(function(){})},function(t){throw t.error<0?t.error===e.Errors.Network500?window.location="/500":window.location.reload():App.logout(),t})},acquireSession:function(t){return e("session_login",{username:this.get("username"),password:t}).then(function(e){return function(t){$.cookie("session_id",t.session_id,{expires:30,path:"/"}),e.set("session",t.session_id),e.userInfoAccuired(t),e.trigger("SessionUpdated")}}(this))},logout:function(){var e,t,n,r,i;r={domain:window.location.hostname.replace("ide",""),path:"/"},n={path:"/"},i=$.cookie();for(t in i)e=i[t],$.removeCookie(t,r),$.removeCookie(t,n)},changePassword:function(t,n){return e("account_update_account",{attributes:{password:t,new_password:n}})},changeEmail:function(t,n){var r;return r=this,e("account_update_account",{attributes:{password:n,email:t}}).then(function(){return r.set("email",t)})},changeName:function(t,n){var r,i;return i=this,r=new Q.defer,t===i.get("firstName")&&n===i.get("lastName")&&r.resolve(),e("account_update_account",{attributes:{first_name:t,last_name:n}}).then(function(e){return i.userInfoAccuired(e),r.resolve(e)},function(e){return r.reject(e)}),r.promise},validateCredential:function(t,n){return e("account_validate_credential",{access_key:t,secret_key:n})},changeCredential:function(t,n,r,i){var s;return t==null&&(t=""),n==null&&(n=""),r==null&&(r=""),i==null&&(i=!1),s=this,e("account_set_credential",{access_key:n,secret_key:r,account_id:t,force_update:i}).then(function(){var e;e={account:t,awsAccessKey:n,awsSecretKey:r},e.awsAccessKey.length>6&&(e.awsAccessKey=(new Array(n.length-6)).join("*")+n.substr(-6)),e.awsSecretKey.length>6&&(e.awsSecretKey=(new Array(r.length-6)).join("*")+r.substr(-6)),s.set(e),s.trigger("change:credential")})},createToken:function(){var t,n,r,i,s,o,u,a,f;o="MyToken",t=1,n={},f=this.attributes.tokens;for(u=0,a=f.length;u<a;u++)s=f[u],n[s.name]=!0;for(;;){r=o+t;if(!n[r])break;t+=1}return i=this,e("token_create",{token_name:r}).then(function(e){i.attributes.tokens.splice(0,0,{name:e[0],token:e[1]})})},removeToken:function(t){var n,r,i,s,o,u;u=this.attributes.tokens;for(n=s=0,o=u.length;s<o;n=++s){i=u[n];if(i.token===t)break}return r=this,e("token_remove",{token:t,token_name:i.name}).then(function(e){n=r.attributes.tokens.indexOf(i),n>=0&&r.attributes.tokens.splice(n,1)})},updateToken:function(t,n){var r;return r=this,e("token_update",{token:t,new_token_name:n}).then(function(e){var i,s,o,u,a;a=r.attributes.tokens;for(i=o=0,u=a.length;o<u;i=++o){s=a[i];if(s.token===t){s.name=n;break}}})}}),n.PaymentState=r,n})}.call(this),function(){define("ide/subviews/WorkspaceView",["backbone","jquerysort"],function(){return Backbone.View.extend({el:$("#tabbar-wrapper")[0],events:{"click li":"onClick","click .icon-close":"onClose"},initialize:function(e){var t;t=this,this.tabsWidth=0,this.$el.find("#ws-tabs").dragsort({horizontal:!0,dragSelectorExclude:".fixed, .icon-close",dragEnd:function(){t.updateTabOrder()}})},updateTabOrder:function(){return this.trigger("orderChanged",this.tabOrder())},tabOrder:function(){return _.map(this.$el.find("li"),function(e){return e.id})},setTabIndex:function(e,t,n){var r,i,s;s=this.$el.find("#"+e);if(!s.length)return;t?i=$("#ws-fixed-tabs"):(i=$("#ws-tabs"),n-=$("#ws-fixed-tabs").children().length),r=i.children().eq(n),r.length?s.insertBefore(r):i.append(s)},addTab:function(e,t,n){var r,i,s;return t==null&&(t=-1),n==null&&(n=!1),r=n?$("#ws-fixed-tabs"):$("#ws-tabs"),s="<li class='"+e.klass+"' id='"+e.id+"' title='"+e.title+"'><span class='truncate'>"+e.title+"</span>",e.closable&&(s+='<i class="icon-close" title="Close Tab"></i>'),i=r.children().eq(t),i.length?i=$(s+"</li>").insertAfter(i):i=$(s+"</li>").appendTo(r),this.tabsWidth+=i.outerWidth(),this.ensureTabSize(),i},removeTab:function(e){var t;return t=this.$el.find("#"+e),this.tabsWidth-=t.outerWidth(),t.remove(),this.ensureTabSize(),t},ensureTabSize:function(){var e,t,n;n=$(window).width(),e=n-$("#header").outerWidth()-$("#ws-tabs").offset().left,t=$("#ws-tabs").children(),this.tabsWidth<e?t.css("max-width","auto"):(e=Math.floor(e/t.length),t.css("max-width",e))},updateTab:function(e,t,n){var r;r=this.$el.find("#"+e);if(t!==void 0||t!==null)this.tabsWidth-=r.outerWidth(),r.attr("title",t),r.children("span").text(t),r.attr("title",t),this.tabsWidth+=r.outerWidth(),this.ensureTabSize();if(n!==void 0||n!==null)r.hasClass("active")&&(n+=" active"),r.attr("class",n)},activateTab:function(e){this.$el.find(".active").removeClass("active"),this.$el.find("#"+e).addClass("active")},onClick:function(e){this.trigger("click",e.currentTarget.id)},onClose:function(e){return this.trigger("close",$(e.currentTarget).closest("li")[0].id),!1},showLoading:function(){return $("#GlobalLoading").show()},hideLoading:function(){return $("#GlobalLoading").hide()}})})}.call(this),function(){define("ide/WorkspaceManager",["./subviews/WorkspaceView","underscore"],function(e){var t;return t=function(){function t(){var t;return this.view=new e,t=this,this.view.on("orderChanged",function(e){return t.__updateOrder(e)}),this.view.on("click",function(e){return t.awakeWorkspace(e)}),this.view.on("close",function(e){return t.remove(e)}),this.__spaces=[],this.__spacesById={},this.__awakeSpace=null,this}return t.prototype.__updateOrder=function(e){var t;t=this,this.__spaces=e.map(function(e){return t.__spacesById[e]})},t.prototype.spaces=function(){return this.__spaces.slice(0)},t.prototype.get=function(e){return this.__spacesById[e]},t.prototype.setIndex=function(e,t){this.view.setTabIndex(e.id,e.isFixed(),t),this.__updateOrder(this.view.tabOrder())},t.prototype.add=function(e){return this.__spacesById[e.id]=e,this.view.addTab({title:e.title(),id:e.id,closable:!e.isFixed(),klass:e.tabClass()},-1,e.isFixed()),this.__updateOrder(this.view.tabOrder()),this.__spaces.length===1&&this.awakeWorkspace(e),e},t.prototype.getAwakeSpace=function(){return this.__awakeSpace},t.prototype.awakeWorkspace=function(e){var t;if(!e)return;_.isString(e)&&(e=this.__spacesById[e]);if(this.__awakeSpace===e)return;if(e.isRemoved())return;this.__awakeSpace&&this.__awakeSpace.sleep(),this.__awakeSpace=e,this.__updateUrl(),this.view.activateTab(e.id),t=e.awake(),t&&t.then&&t.isFulfilled&&!t.isFulfilled()?(t.then(function(e){return function(){return e.view.hideLoading()}}(this)),this.view.showLoading()):this.view.hideLoading()},t.prototype.update=function(e){if(!e)return;return e===this.__awakeSpace&&this.__updateUrl(!0),this.view.updateTab(e.id,e.title(),e.tabClass()),e},t.prototype.remove=function(e,t){var n;if(!e)return;_.isString(e)&&(e=this.__spacesById[e]);if(!t&&!e.isRemovable())return;return n=e.id,this.view.removeTab(n),delete this.__spacesById[n],this.__spaces.splice(this.__spaces.indexOf(e),1),e.stopListening(),e.cleanup(),this.__awakeSpace===e&&(this.__awakeSpace=null,this.awakeWorkspace(this.__spaces[this.__spaces.length-1])),e},t.prototype.removeAllSpaces=function(e){var t,n,r,i;i=this.__spaces.slice(0);for(n=0,r=i.length;n<r;n++)t=i[n],!t.isFixed()&&(!e||e(t))&&this.remove(t,!0)},t.prototype.find=function(e){return _.find(this.__spaces,function(t){return t.isWorkingOn(e)})},t.prototype.hasUnsaveSpaces=function(){return this.__spaces.some(function(e){return e.isModified()})},t.prototype.__updateUrl=function(e){return e==null&&(e=!1),Router.navigate(this.__awakeSpace.url(),{replace:e})},t}(),t})}.call(this),function(){define("ide/Application",["ApiRequest","./Websocket","./ApplicationView","./ApplicationModel","./User","./subviews/SettingsDialog","CloudResources","./WorkspaceManager","OpsModel","JsonExporter","constant","i18n!/nls/lang.js","underscore"],function(e,t,n,r,i,s,o,u,a,f,l,c){var h;return h=function(){if(window.App){void 0;return}window.App=this},h.prototype.initialize=function(){var e;return this.__createUser(),this.__createWebsocket(),this.workspaces=new u,this.model=new r,this.__view=new n,e=this.model.fetch().fail(function(e){throw notification(c.NOTIFY.CANNOT_LOAD_APPLICATION_DATA),e}),Q.all([this.user.fetch(),e])},h.prototype.__createWebsocket=function(){this.WS=new t,this.WS.on("Disconnected",function(){return App.acquireSession()}),this.WS.on("StatusChanged",function(e){void 0;if(App.__view)return App.__view.toggleWSStatus(e)}),this.WS.on("userStateChange",function(e,t){return App.user.onWsUserStateChange(t)})},h.prototype.__createUser=function(){this.user=new i,this.user.on("SessionUpdated",function(e){return function(){return e.WS.subscribe()}}(this)),this.user.on("change:credential",function(e){return function(){return e.discardAwsCache()}}(this))},h.prototype.acquireSession=function(){return this.__view.showSessionDialog()},h.prototype.logout=function(){var e;App.user.logout(),e=window.location.pathname,e==="/"&&(e=window.location.hash.replace("#","/")),e&&e!=="/"?window.location.href="/login?ref="+e:window.location.href="/login"},h.prototype.canQuit=function(){return!this.workspaces.hasUnsaveSpaces()},h.prototype.showSettings=function(e){return new s({defaultTab:e})},h.prototype.showSettings.TAB=s.TAB,h.prototype.askForAwsCredential=function(){return this.__view.askForAwsCredential()},h.prototype.deleteStack=function(e,t){return this.__view.deleteStack(e,t)},h.prototype.duplicateStack=function(e){return this.__view.duplicateStack(e)},h.prototype.startApp=function(e){return this.__view.startApp(e)},h.prototype.stopApp=function(e){return this.__view.stopApp(e)},h.prototype.terminateApp=function(e){return this.__view.terminateApp(e)},h.prototype.discardAwsCache=function(){return o.invalidate()},h.prototype.importJson=function(e,t){var n;if(_.isString(e)){n=f.importJson(e);if(_.isString(n))return n}else n=e;return this.openOps(this.model.createStackByJson(n,t))},h.prototype.openOps=function(e,t){var n;if(!e)return;_.isString(e)&&(e=this.model.getOpsModelById(e));if(!e){void 0;return}if(e.testState(a.State.Destroyed)){void 0;return}return n=this.workspaces.find(e),n&&t&&(n.remove(),n=null),n||(n=new OpsEditor(e)),n.activate(),n},h.prototype.createOps=function(e,t){var n;if(!e)return;n=new OpsEditor(this.model.createStack(e,t)),n.activate(),n},h})}.call(this),function(){define("Workspace",["backbone"],function(){var e,t;return t=0,e=function(){function e(e){var n,r,i,s;s=App.workspaces.spaces();for(r=0,i=s.length;r<i;r++){n=s[r];if(n instanceof this.constructor&&n.isWorkingOn(e))return void 0,n}return this.id="space_"+ ++t,this.initialize(e),App.workspaces.add(this),this}return e.prototype.isAwake=function(){return App.workspaces.getAwakeSpace()===this},e.prototype.index=function(){return App.workspaces.spaces().indexOf(this)},e.prototype.setIndex=function(e){return App.workspaces.setIndex(this,e)},e.prototype.isRemoved=function(){return!!this.__isRemoved},e.prototype.remove=function(){if(this.__isRemoved)return;return this.__isRemoved=!0,App.workspaces.remove(this,!0)},e.prototype.updateTab=function(){return App.workspaces.update(this)},e.prototype.activate=function(){return App.workspaces.awakeWorkspace(this)},e.prototype.initialize=function(e){},e.prototype.isFixed=function(){return!1},e.prototype.isModified=function(){return!1},e.prototype.tabClass=function(){return""},e.prototype.title=function(){return""},e.prototype.awake=function(){if(this.view)return this.view.$el.show()},e.prototype.sleep=function(){$(document.activeElement).filter("input, textarea").blur();if(this.view)return this.view.$el.hide()},e.prototype.cleanup=function(){this.view?this.view.remove():void 0},e.prototype.isRemovable=function(){return!0},e.prototype.isWorkingOn=function(e){return!1},e.prototype.updateUrl=function(){this.isAwake()&&Router.navigate(this.url(),{replace:!0})},e}(),_.extend(e.prototype,Backbone.Events),e})}.call(this),function(){define("ide/Router",["backbone"],function(){return Backbone.Router.extend({routes:{"":"openDashboard"},initialize:function(){this.route(/^ops\/([^/]+$)/,"openOps"),this.route(/^store\/([^/]+$)/,"openStore")},openStore:function(e){var t;t=App.model.stackList().findWhere({sampleId:e}),t||(t=App.model.createSampleOps(e)),Router.navigate(t.url(),{replace:!0}),App.openOps(t)},openOps:function(e){App.openOps(e)||Router.navigate("/",{replace:!0})},openDashboard:function(){if(window.Dashboard)return window.Dashboard.activate()},start:function(){Backbone.history.start({pushState:!0})||(void 0,this.navigate("/",{replace:!0})),this.route(/^ops\/([^/]+)/,"openOps")},execute:function(){this.__forceReplace=!0,Backbone.Router.prototype.execute.apply(this,arguments),this.__forceReplace=!1},navigate:function(e,t){return this.__forceReplace&&(t=t||{},t.replace=!0),$(document).trigger("urlroute"),Backbone.Router.prototype.navigate.apply(this,arguments)}})})}.call(this),function(){define("ide/AppBundle",["./Application","OpsModel","Workspace","./Router"],function(e){return e})}.call(this);
+
+/*
+----------------------------
+  A refactor version of previous lib/websocket
+  The usage of Meteor seems to be wrong, but whatever.
+----------------------------
+ */
+
+(function() {
+  define('ide/Websocket',["Meteor", "backbone", "event", "MC"], function(Meteor, Backbone, ide_event) {
+    var WEBSOCKET_URL, Websocket, singleton;
+    WEBSOCKET_URL = "" + MC.API_HOST + "/ws/";
+    Meteor._debug = function() {
+      return console.log.apply(console, arguments);
+    };
+    singleton = null;
+    Websocket = function() {
+      var opts;
+      if (singleton) {
+        return singleton;
+      }
+      singleton = this;
+      this.__readyDefer = Q.defer();
+      this.__isReady = false;
+      this.connection = Meteor.connect(WEBSOCKET_URL, true);
+      opts = {
+        connection: this.connection
+      };
+      this.collection = {
+        request: new Meteor.Collection("request", opts),
+        request_detail: new Meteor.Collection("request_detail", opts),
+        stack: new Meteor.Collection("stack", opts),
+        app: new Meteor.Collection("app", opts),
+        status: new Meteor.Collection("status", opts),
+        imports: new Meteor.Collection("imports", opts),
+        user_state: new Meteor.Collection("user", opts)
+      };
+      Deps.autorun((function(_this) {
+        return function() {
+          return _this.statusChanged();
+        };
+      })(this));
+      this.subscribe();
+      this.pipeChanges();
+      setTimeout((function(_this) {
+        return function() {
+          _this.shouldNotify = true;
+          if (!_this.connection.status.connected) {
+            return _this.statusChanged();
+          }
+        };
+      })(this), 5000);
+      return this;
+    };
+    Websocket.prototype.statusChanged = function() {
+      var status;
+      status = this.connection.status().connected;
+      if (status) {
+        this.shouldNotify = true;
+      }
+      if (!this.shouldNotify) {
+        return;
+      }
+      return this.trigger("StatusChanged", status);
+    };
+    Websocket.prototype.subscribe = function() {
+      var callback, onReady, session, subscribed, usercode;
+      if (this.subscribed) {
+        return;
+      }
+      subscribed = true;
+      onReady = function() {
+        this.__isReady = true;
+        return this.__readyDefer.resolve();
+      };
+      usercode = App.user.get('usercode');
+      session = App.user.get('session');
+      callback = {
+        onReady: _.bind(onReady, this),
+        onError: _.bind(this.onError, this)
+      };
+      this.connection.subscribe("request", usercode, session, callback);
+      this.connection.subscribe("stack", usercode, session);
+      this.connection.subscribe("app", usercode, session);
+      this.connection.subscribe("status", usercode, session);
+      this.connection.subscribe("imports", usercode, session);
+      this.connection.subscribe("user", usercode, session);
+    };
+    Websocket.prototype.ready = function() {
+      return this.__readyDefer.promise;
+    };
+    Websocket.prototype.isReady = function() {
+      return this.__isReady;
+    };
+    Websocket.prototype.onError = function(error) {
+      console.error("Websocket/Meteor Error:", error);
+      this.subscribed = false;
+      this.trigger("Disconnected");
+    };
+    Websocket.prototype.pipeChanges = function() {
+      var self;
+      self = this;
+      this.collection.user_state.find().fetch();
+      this.collection.user_state.find().observeChanges({
+        added: function(idx, dag) {
+          return self.trigger("userStateChange", idx, dag);
+        },
+        changed: function(idx, dag) {
+          return self.trigger("userStateChange", idx, dag);
+        }
+      });
+      this.collection.request.find().fetch();
+      this.collection.request.find().observeChanges({
+        added: function(idx, dag) {
+          return self.trigger("requestChange", idx, dag);
+        },
+        changed: function(idx, dag) {
+          return self.trigger("requestChange", idx, dag);
+        }
+      });
+      this.collection.imports.find().fetch();
+      this.collection.imports.find().observe({
+        added: function(idx, dag) {
+          return self.trigger("visualizeUpdate", idx);
+        },
+        changed: function(idx, dag) {
+          return self.trigger("visualizeUpdate", idx);
+        }
+      });
+      this.collection.status.find().fetch();
+      return this.collection.status.find().observe({
+        added: function(idx, statusData) {
+          ide_event.trigger(ide_event.UPDATE_STATE_STATUS_DATA, 'add', idx, statusData);
+          return ide_event.trigger(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, idx ? [idx.res_id] : []);
+        },
+        changed: function(newDocument, oldDocument) {
+          ide_event.trigger(ide_event.UPDATE_STATE_STATUS_DATA, 'change', newDocument, oldDocument);
+          return ide_event.trigger(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, newDocument ? [newDocument.res_id] : []);
+        }
+      });
+    };
+    _.extend(Websocket.prototype, Backbone.Events);
+    return Websocket;
+  });
+
+}).call(this);
+
+define('ide/subviews/SessionDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<section style=\"width:400px;\" class=\"invalid-session\" id=\"SessionDialog\">\n  <div class=\"confirmSession\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
+    + "</p>\n        <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
+    + "</p>\n    </div>\n    <div class=\"modal-text-minor\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
+    + "</div>\n  </article>\n\n  <footer class=\"modal-footer\">\n    <button id=\"SessionReconnect\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_RECONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose\" class=\"btn btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n\n  <div class=\"reconnectSession\" style=\"display:none;\">\n  <div class=\"modal-header\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_RECONNECT_SESSION", {hash:{},data:data}))
+    + "</h3></div>\n  <article class=\"modal-body\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n    <div class=\"modal-input\">\n      <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n    </div>\n  </article>\n  <footer class=\"modal-footer\">\n    <button id=\"SessionConnect\" class=\"btn btn-blue\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CONNECT", {hash:{},data:data}))
+    + "</button>\n    <button id=\"SessionClose2\" class=\"btn btn-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_CLOSE_SESSION", {hash:{},data:data}))
+    + "</button>\n  </footer>\n  </div>\n</section>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/SessionDialog',['i18n!/nls/lang.js', "./SessionDialogTpl", "backbone"], function(lang, template) {
+    var CurrentSessionDialog, SessionDialogView;
+    CurrentSessionDialog = null;
+    SessionDialogView = Backbone.View.extend({
+      events: {
+        'click #SessionReconnect': 'showReconnect',
+        'click #SessionClose': 'closeSession',
+        'click #SessionClose2': 'closeSession',
+        'click #SessionConnect': 'connect',
+        'keyup #SessionPassword': 'passwordChanged'
+      },
+      constructor: function() {
+        if (CurrentSessionDialog) {
+          return CurrentSessionDialog;
+        }
+        CurrentSessionDialog = this;
+        this.defer = Q.defer();
+        modal(template(), false);
+        return this.setElement($('#modal-wrap'));
+      },
+      promise: function() {
+        return this.defer.promise;
+      },
+      showReconnect: function() {
+        $(".invalid-session .confirmSession").hide();
+        $(".invalid-session .reconnectSession").show();
+      },
+      closeSession: function() {
+        return App.logout();
+      },
+      connect: function() {
+        if ($("#SessionConnect").is(":disabled")) {
+          return;
+        }
+        $("#SessionConnect").attr("disabled", "disabled");
+        return App.user.acquireSession($("#SessionPassword").val()).then((function(_this) {
+          return function() {
+            _this.remove();
+            _this.defer.resolve();
+          };
+        })(this), function(error) {
+          $("#SessionConnect").removeAttr("disabled");
+          notification('error', lang.NOTIFY.WARN_AUTH_FAILED);
+          $("#SessionPassword").toggleClass("parsley-error", true);
+        });
+      },
+      passwordChanged: function(evt) {
+        $("#SessionPassword").toggleClass("parsley-error", false);
+        if (($("#SessionPassword").val() || "").length >= 6) {
+          $("#SessionConnect").removeAttr("disabled");
+        } else {
+          $("#SessionConnect").attr("disabled", "disabled");
+        }
+        if (evt.which === 13) {
+          this.connect();
+        }
+      }
+    });
+    return SessionDialogView;
+  });
+
+}).call(this);
+
+define('ide/subviews/HeaderTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<nav id=\"header\">\n  <section class=\"voquota tooltip\" data-tooltip=\"<span>3600 free instance hours used up <br>\nYou are in limited status now</span>\" data-tooltip-type=\"html\">\n      <div class=\"payment-exclamation\">!</div>\n  </section>\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
+    + "</a>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\n      <i class=\"icon-notification\"></i>\n      <span id=\"NotificationCounter\"></span>\n    </div>\n\n    <div class=\"dropdown-menu\">\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n        <ul class=\"scroll-content\"></ul>\n\n        <div class=\"notification-empty\">\n          <div class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
+    + "</div>\n          <div class=\"description\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
+    + "</div>\n        </div>\n      </div>\n\n    </div>\n  </section>\n\n  <section class=\"dropdown\">\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown\">\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n      <i class=\"icon-caret-down\"></i>\n    </div>\n\n    <ul class=\"dropdown-menu\">\n      <li id=\"HeaderShortcuts\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
+    + "</li>\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
+    + "</a></li>\n      <li id=\"HeaderSettings\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
+    + "</li>\n      <li id=\"HeaderBilling\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_BILLING", {hash:{},data:data}))
+    + "</li>\n      <li id=\"HeaderLogout\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
+    + "</li>\n    </ul>\n  </section>\n</nav>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+define('ide/subviews/SettingsDialogTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "style=\"display:block;\"";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <button id=\"CredSetupRemove\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
+    + "</button>\n        ";
+  return buffer;
+  }
+
+  buffer += "<nav id=\"SettingsNav\">\n  <span data-target=\"AccountTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
+    + "</span>\n  <span data-target=\"CredentialTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CREDENTIAL", {hash:{},data:data}))
+    + "</span>\n  <span data-target=\"TokenTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
+    + "</span>\n</nav>\n\n<div class=\"tabContent\" id=\"SettingsBody\">\n  <section id=\"AccountTab\">\n    <dl class=\"dl-horizontal\">\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n    </dl>\n\n    <dl class=\"dl-horizontal\">\n      <dt class=\"accountFullNameRO\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
+    + "</dt><dd class=\"accountFullNameRO\"> <span class=\"fullNameText\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = (depth0 && depth0.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " </span> <button class=\"icon-edit link-style tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
+    + "' id=\"AccountFullName\"></button></dd>\n    </dl>\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap\">\n      <dl class=\"dl-horizontal\">\n          <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
+    + "</dt>\n          <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\n          <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
+    + "</dt>\n          <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\n      </dl>\n      <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\n      <div class=\"accountPwdBtns\">\n          <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
+    + "</button>\n          <span id=\"AccountCancelFullName\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
+    + "</span>\n      </div>\n    </div>\n\n    <dl class=\"dl-horizontal\">\n      <dt class=\"accountEmailRO\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
+    + "</dt><dd class=\"accountEmailRO\"><span>"
+    + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span><button class=\"icon-edit link-style tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
+    + "' id=\"AccountEmail\"></button></dd>\n    </dl>\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap\">\n      <dl class=\"dl-horizontal\">\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
+    + "</dt>\n        <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\n\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountEmailInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"accountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
+    + "</button>\n        <span id=\"AccountCancelEmail\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
+    + "</span>\n      </div>\n    </div>\n\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
+    + "</button>\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap\">\n\n      <dl class=\"dl-horizontal\">\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
+    + "</dt>\n        <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n      </dl>\n\n      <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"accountPwdBtns\">\n        <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
+    + "</button>\n        <span id=\"AccountCancelPwd\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
+    + "</span>\n      </div>\n    </div>\n  </section>\n\n  <section id=\"CredentialTab\">\n    <div id=\"CredDemoWrap\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n      <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TIT", {hash:{},data:data}))
+    + "</h3>\n      <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_TEXT", {hash:{},data:data}))
+    + "</p>\n      <p class=\"tac\"><button class=\"btn btn-blue cred-setup\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_DEMO_SETUP", {hash:{},data:data}))
+    + "</button></p>\n    </div>\n\n    <div id=\"CredAwsWrap\" class=\"pos-r\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.account), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n      <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_CONNECTED_TIT", {hash:{},data:data}))
+    + "</h3>\n      <button class=\"cred-setup link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_UPDATE", {hash:{},data:data}))
+    + "</button>\n      <dl class=\"dl-horizontal cred-setup-msg\" style=\"margin-top:15px;\">\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
+    + "</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n      </dl>\n    </div>\n\n    <div id=\"CredSetupWrap\">\n      <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n      <ul>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
+    + "\"></i>\n          <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.account)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
+    + "\"></i>\n          <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\" placeholder=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.awsAccessKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </li>\n        <li>\n          <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
+    + "\"></i>\n          <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
+    + "</label>\n          <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\" placeholder=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.awsSecretKey)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </li>\n      </ul>\n\n      <div class=\"cred-btn-wrap clearfix\">\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.credNeeded), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <button class=\"right link-style cred-setup-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"CredSetupSubmit\" class=\"btn btn-blue right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
+    + "</button>\n      </div>\n\n    </div>\n\n    <div id=\"CredRemoveWrap\">\n      <h3>"
+    + escapeExpression(((stack1 = (depth0 && depth0.credRemoveTitle)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</h3>\n      <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVE_TEXT", {hash:{},data:data}))
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"CredRemoveConfirm\" class=\"btn btn-red right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_REMOVE_CREDENTIAL", {hash:{},data:data}))
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredConfirmWrap\">\n      <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TIT", {hash:{},data:data}))
+    + "</h3>\n      <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TEXT", {hash:{},data:data}))
+    + "</div>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style cred-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"CredSetupConfirm\" class=\"btn btn-red right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_UPDATE_CONFIRM", {hash:{},data:data}))
+    + "</button>\n      </div>\n    </div>\n\n    <div id=\"CredRemoving\"><p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_REMOVING", {hash:{},data:data}))
+    + "</p><div class=\"loading-spinner\"></div></div>\n    <div id=\"CredUpdating\"><p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
+    + "</p><div class=\"loading-spinner\"></div></div>\n\n  </section>\n\n  <section id=\"TokenTab\">\n    <div id=\"TokenManager\">\n      <p class=\"clearfix\"><button class=\"btn btn-blue right\" id=\"TokenCreate\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_CREATE", {hash:{},data:data}))
+    + "</button>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
+    + "<a href=\"http://docs.visualops.io/app_management/reload_states.html\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
+    + "</a> </p>\n      <section class=\"token-table\">\n        <header class=\"clearfix\">\n          <span class=\"tokenName\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
+    + "</span>\n          <span class=\"tokenToken\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
+    + "</span>\n        </header>\n        <div class=\"scroll-wrap\">\n          <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n          <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
+    + "\"></ul>\n        </div>\n      </section>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n      <h3 id=\"TokenRmTit\"></h3>\n      <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
+    + "</p>\n      <div class=\"cred-btn-wrap clearfix\">\n        <button class=\"right link-style\" id=\"TokenRmCancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
+    + "</button>\n        <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
+    + "</button>\n      </div>\n    </div>\n  </section>\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/SettingsDialog',["./SettingsDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "UI.modalplus", "backbone"], function(SettingsTpl, lang, ApiRequest, Modal) {
+    var SettingsDialog;
+    SettingsDialog = Backbone.View.extend({
+      events: {
+        "click #SettingsNav span": "switchTab",
+        "click #AccountPwd": "showPwd",
+        "click #AccountCancelPwd": "hidePwd",
+        "click #AccountUpdatePwd": "changePwd",
+        "click .cred-setup, .cred-cancel": "showCredSetup",
+        "click .cred-setup-cancel": "cancelCredSetup",
+        "click #CredSetupRemove": "showRemoveCred",
+        "click #CredRemoveConfirm": "removeCred",
+        "click #CredSetupSubmit": "submitCred",
+        "click #CredSetupConfirm": "confirmCred",
+        "click #TokenCreate": "createToken",
+        "click .tokenControl .icon-edit": "editToken",
+        "click .tokenControl .icon-delete": "removeToken",
+        "click .tokenControl .tokenDone": "doneEditToken",
+        "click #TokenRemove": "confirmRmToken",
+        "click #TokenRmCancel": "cancelRmToken",
+        "keyup  #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn",
+        "change #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn",
+        "change #AccountCurrentPwd, #AccountNewPwd": "updatePwdBtn",
+        "keyup  #AccountCurrentPwd, #AccountNewPwd": "updatePwdBtn",
+        "click #AccountEmail": "showEmail",
+        "click #AccountCancelEmail": "hideEmail",
+        "click #AccountUpdateEmail": "changeEmail",
+        "click #AccountCancelFullName": "hideFullName",
+        "change #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn",
+        "keyup  #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn",
+        "click #AccountUpdateFullName": "changeFullName",
+        "change #AccountFirstName, #AccountLastName": "updateFullNameBtn",
+        "keyup #AccountFirstName, #AccountLastName": "updateFullNameBtn",
+        'click #AccountFullName': "showFullName"
+      },
+      initialize: function(options) {
+        var attributes, tab;
+        attributes = {
+          username: App.user.get("username"),
+          firstName: App.user.get("firstName") || "",
+          lastName: App.user.get("lastName") || "",
+          email: App.user.get("email"),
+          account: App.user.get("account"),
+          awsAccessKey: App.user.get("awsAccessKey"),
+          awsSecretKey: App.user.get("awsSecretKey"),
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username")),
+          credNeeded: !!App.model.appList().length
+        };
+        this.modal = new Modal({
+          template: SettingsTpl(attributes),
+          title: lang.IDE.HEAD_LABEL_SETTING,
+          disableFooter: true,
+          compact: true,
+          width: "490px"
+        });
+        this.setElement(this.modal.tpl);
+        this.modal.$("#SettingsNav span[data-target='AccountTab']").click();
+        this.modal.resize();
+        tab = 0;
+        if (options) {
+          tab = options.defaultTab || 0;
+          if (tab === SettingsDialog.TAB.CredentialInvalid) {
+            this.showCredSetup();
+            this.modal.tpl.find(".modal-close").hide();
+            this.modal.tpl.find("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
+          }
+          if (tab < 0) {
+            tab = Math.abs(tab);
+          }
+        }
+        this.modal.$("#SettingsNav").children().eq(tab).click();
+        this.updateTokenTab();
+      },
+      updateCredSettings: function() {
+        var attributes;
+        attributes = {
+          username: App.user.get("username"),
+          email: App.user.get("email"),
+          account: App.user.get("account"),
+          awsAccessKey: App.user.get("awsAccessKey"),
+          awsSecretKey: App.user.get("awsSecretKey"),
+          credRemoveTitle: sprintf(lang.IDE.SETTINGS_CRED_REMOVE_TIT, App.user.get("username"))
+        };
+        this.modal.setContent(SettingsTpl(attributes));
+        return this.modal.$("#SettingsNav").children().eq(SettingsDialog.TAB.Credential).click();
+      },
+      switchTab: function(evt) {
+        var $this;
+        $this = $(evt.currentTarget);
+        if ($this.hasClass("selected")) {
+          return;
+        }
+        this.modal.$("#SettingsBody").children().hide();
+        this.modal.$("#SettingsNav").children().removeClass("selected");
+        this.modal.$("#" + $this.addClass("selected").attr("data-target")).show();
+      },
+      showPwd: function() {
+        this.modal.$("#AccountPwd").hide();
+        this.modal.$("#AccountPwdWrap").show();
+        this.modal.$("#AccountCurrentPwd").focus();
+      },
+      hidePwd: function() {
+        this.modal.$("#AccountPwd").show();
+        this.modal.$("#AccountPwdWrap").hide();
+        this.modal.$("#AccountCurrentPwd, #AccountNewPwd").val("");
+        this.modal.$("#AccountInfo").empty();
+      },
+      updatePwdBtn: function() {
+        var new_pwd, old_pwd;
+        old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
+        new_pwd = this.modal.$("#AccountNewPwd").val() || "";
+        if (old_pwd.length && new_pwd.length) {
+          this.modal.$("#AccountUpdatePwd").removeAttr("disabled");
+        } else {
+          this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
+        }
+      },
+      changePwd: function() {
+        var new_pwd, old_pwd, that;
+        that = this;
+        old_pwd = this.modal.$("#AccountCurrentPwd").val() || "";
+        new_pwd = this.modal.$("#AccountNewPwd").val() || "";
+        if (new_pwd.length < 6) {
+          this.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_ERR_INVALID_PWD);
+          return;
+        }
+        this.modal.$("#AccountInfo").empty();
+        this.modal.$("#AccountUpdatePwd").attr("disabled", "disabled");
+        App.user.changePassword(old_pwd, new_pwd).then(function() {
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS);
+          $("#AccountCancelPwd").click();
+        }, function(err) {
+          if (err.error === 2) {
+            that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
+          } else {
+            that.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_UPDATE_PWD_FAILURE);
+          }
+          return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
+        });
+      },
+      showEmail: function() {
+        this.hideFullName();
+        $(".accountEmailRO").hide();
+        $("#AccountEmailWrap").show();
+        $("#AccountNewEmail").focus();
+      },
+      hideEmail: function() {
+        $(".accountEmailRO").show();
+        $("#AccountEmailWrap").hide();
+        $("#AccountNewEmail, #AccountEmailPwd").val("");
+        $("#AccountEmailInfo").empty();
+      },
+      showFullName: function() {
+        this.hideEmail();
+        $(".accountFullNameRO").hide();
+        $("#AccountFullNameWrap").show();
+        $("#AccountFirstName").val(App.user.get("firstName") || "").focus();
+        $("#AccountLastName").val(App.user.get("lastName") || "");
+      },
+      hideFullName: function() {
+        $(".accountFullNameRO").show();
+        $("#AccountFullNameWrap").hide();
+        $("#AccountFirstName, #AccountLastName").val("");
+        return $("#AccountUpdateFullName").attr("disabled", false);
+      },
+      updateEmailBtn: function() {
+        var new_pwd, old_pwd;
+        old_pwd = $("#AccountNewEmail").val() || "";
+        new_pwd = $("#AccountEmailPwd").val() || "";
+        if (old_pwd.length && new_pwd.length >= 6) {
+          $("#AccountUpdateEmail").removeAttr("disabled");
+        } else {
+          $("#AccountUpdateEmail").attr("disabled", "disabled");
+        }
+      },
+      updateFullNameBtn: function() {
+        var first_name, last_name;
+        first_name = $("#AccountFirstName").val() || "";
+        last_name = $("#AccountLastName").val() || "";
+        if (first_name.length && last_name.length) {
+          $("#AccountUpdateFullName").removeAttr("disabled");
+        } else {
+          $("#AccountUpdateFullName").attr("disabled", "disabled");
+        }
+      },
+      changeFullName: function() {
+        var first_name, last_name, that;
+        that = this;
+        first_name = $("#AccountFirstName").val() || "";
+        last_name = $("#AccountLastName").val() || "";
+        if (first_name && last_name) {
+          $("#AccountUpdateFullName").attr("disabled", true);
+          return App.user.changeName(first_name, last_name).then(function(result) {
+            that.hideFullName();
+            $(".fullNameText").text(first_name + " " + last_name);
+            if (result) {
+              return notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
+            }
+          }, function(err) {
+            notification("error", lang.NOTIFY.UPDATED_FULLNAME_FAIL);
+            $("#AccountUpdateFullName").attr("disabled", false);
+            return console.error("Change Full name Failed due to ->", err);
+          });
+        }
+      },
+      changeEmail: function() {
+        var email, pwd;
+        email = $("#AccountNewEmail").val() || "";
+        pwd = $("#AccountEmailPwd").val() || "";
+        $("#AccountEmailInfo").empty();
+        $("#AccountUpdateEmail").attr("disabled", "disabled");
+        App.user.changeEmail(email, pwd).then(function() {
+          notification('info', lang.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS);
+          $("#AccountCancelEmail").click();
+          $(".accountEmailRO").children("span").text(App.user.get("email"));
+        }, function(err) {
+          var text;
+          switch (err.error) {
+            case 116:
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;
+              break;
+            case 117:
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;
+              break;
+            default:
+              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL1;
+          }
+          $('#AccountEmailInfo').text(text);
+          return $("#AccountUpdateEmail").removeAttr("disabled");
+        });
+      },
+      showCredSetup: function() {
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredSetupWrap").show();
+        this.modal.$("#CredSetupAccount").focus()[0].select();
+        this.modal.$("#CredSetupRemove").toggle(App.user.hasCredential());
+        this.updateSubmitBtn();
+      },
+      cancelCredSetup: function() {
+        this.modal.$("#CredentialTab").children().hide();
+        if (App.user.hasCredential()) {
+          this.modal.$("#CredAwsWrap").show();
+        } else {
+          this.modal.$("#CredDemoWrap").show();
+        }
+      },
+      showRemoveCred: function() {
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredRemoveWrap").show();
+      },
+      removeCred: function() {
+        var self;
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredRemoving").show();
+        this.modal.$("#modal-box .modal-close").hide();
+        self = this;
+        App.user.changeCredential().then(function() {
+          self.updateCredSettings();
+        }, function() {
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_REMOVE);
+          self.modal.$("#modal-box .modal-close").show();
+          return self.showCredSetup();
+        });
+      },
+      updateSubmitBtn: function() {
+        var accesskey, account, privatekey;
+        account = this.modal.$("#CredSetupAccount").val();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
+        if (account.length && accesskey.length && privatekey.length) {
+          this.modal.$("#CredSetupSubmit").removeAttr("disabled");
+        } else {
+          this.modal.$("#CredSetupSubmit").attr("disabled", "disabled");
+        }
+      },
+      submitCred: function() {
+        var accesskey, privatekey, self;
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredUpdating").show();
+        this.modal.$("#modal-box .modal-close").hide();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
+        self = this;
+        return App.user.validateCredential(accesskey, privatekey).then(function() {
+          self.setCred();
+        }, function() {
+          self.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
+          self.modal.$("#modal-box .modal-close").show();
+          self.showCredSetup();
+        });
+      },
+      setCred: function() {
+        var accesskey, account, privatekey, self;
+        account = this.modal.$("#CredSetupAccount").val();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
+        if (account === "demo_account") {
+          account = "user_demo_account";
+          this.modal.$("#CredSetupAccount").val(account);
+        }
+        self = this;
+        return App.user.changeCredential(account, accesskey, privatekey, false).then(function() {
+          return self.updateCredSettings();
+        }, function(err) {
+          if (err.error === ApiRequest.Errors.ChangeCredConfirm) {
+            self.showCredConfirm();
+          } else {
+            self.showCredUpdateFail();
+          }
+        });
+      },
+      showCredUpdateFail: function() {
+        this.modal.$("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
+        this.modal.$("#modal-box .modal-close").show();
+        return this.showCredSetup();
+      },
+      showCredConfirm: function() {
+        this.modal.$("#CredentialTab").children().hide();
+        this.modal.$("#CredConfirmWrap").show();
+        return this.modal.$("#modal-box .modal-close").show();
+      },
+      confirmCred: function() {
+        var accesskey, account, privatekey, self;
+        account = this.modal.$("#CredSetupAccount").val();
+        accesskey = this.modal.$("#CredSetupAccessKey").val();
+        privatekey = this.modal.$("#CredSetupSecretKey").val();
+        self = this;
+        App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
+          return self.updateCredSettings();
+        }, function() {
+          return self.showCredUpdateFail();
+        });
+      },
+      editToken: function(evt) {
+        var $p, $t;
+        $t = $(evt.currentTarget);
+        $p = $t.closest("li").toggleClass("editing", true);
+        $p.children(".tokenName").removeAttr("readonly").focus().select();
+      },
+      removeToken: function(evt) {
+        var $p, name;
+        $p = $(evt.currentTarget).closest("li");
+        name = $p.children(".tokenName").val();
+        this.rmToken = $p.children(".tokenToken").text();
+        this.modal.$("#TokenManager").hide();
+        this.modal.$("#TokenRmConfirm").show();
+        this.modal.$("#TokenRmTit").text(sprintf(lang.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+      },
+      createToken: function() {
+        var self;
+        this.modal.$("#TokenCreate").attr("disabled", "disabled");
+        self = this;
+        App.user.createToken().then(function() {
+          self.updateTokenTab();
+          return self.modal.$("#TokenCreate").removeAttr("disabled");
+        }, function() {
+          notification("error", lang.NOTIFY.FAIL_TO_CREATE_TOKEN);
+          return self.modal.$("#TokenCreate").removeAttr("disabled");
+        });
+      },
+      doneEditToken: function(evt) {
+        var $p, duplicate, newTokenName, oldName, t, token, _i, _len, _ref;
+        $p = $(evt.currentTarget).closest("li").removeClass("editing");
+        $p.children(".tokenName").attr("readonly", true);
+        token = $p.children(".tokenToken").text();
+        newTokenName = $p.children(".tokenName").val();
+        _ref = App.user.get("tokens");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          t = _ref[_i];
+          if (t.token === token) {
+            oldName = t.name;
+          } else if (t.name === newTokenName) {
+            duplicate = true;
+          }
+        }
+        if (!newTokenName || duplicate) {
+          $p.children(".tokenName").val(oldName);
+          return;
+        }
+        App.user.updateToken(token, newTokenName).fail(function() {
+          oldName = "";
+          $p.children(".tokenName").val(oldName);
+          return notification("error", lang.NOTIFY.FAIL_TO_UPDATE_TOKEN);
+        });
+      },
+      confirmRmToken: function() {
+        var self;
+        this.modal.$("#TokenRemove").attr("disabled", "disabled");
+        self = this;
+        App.user.removeToken(this.rmToken).then(function() {
+          self.updateTokenTab();
+          return self.cancelRmToken();
+        }, function() {
+          notification(lang.NOTIFY.FAIL_TO_DELETE_TOKEN);
+          return self.cancelRmToken();
+        });
+      },
+      cancelRmToken: function() {
+        this.rmToken = "";
+        this.modal.$("#TokenRemove").removeAttr("disabled");
+        this.modal.$("#TokenManager").show();
+        this.modal.$("#TokenRmConfirm").hide();
+      },
+      updateTokenTab: function() {
+        var tokens;
+        tokens = App.user.get("tokens");
+        this.modal.$("#TokenManager").find(".token-table").toggleClass("empty", tokens.length === 0);
+        if (tokens.length) {
+          this.modal.$("#TokenList").html(MC.template.accessTokenTable(tokens));
+        } else {
+          this.modal.$("#TokenList").empty();
+        }
+      }
+    });
+    SettingsDialog.TAB = {
+      CredentialInvalid: -1,
+      Normal: 0,
+      Credential: 1,
+      Token: 2
+    };
+    return SettingsDialog;
+  });
+
+}).call(this);
+
+define('ide/subviews/BillingDialogTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "NO_CARD", {hash:{},data:data}));
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DATE", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "AMOUNT", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATUS", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "ACTION", {hash:{},data:data}))
+    + "</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\">\n                        <table class=\"table\">\n                            <thead>\n                            <tr>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class=\"t-m-content\">\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                <tr class=\"item\" data-id=\""
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n                                    <td>"
+    + escapeExpression(helpers.formatTime.call(depth0, (depth0 && depth0.updated_at), "MMMM d, yyyy", {hash:{},data:data}))
+    + "</td>\n                                    <td>$ "
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
+    + "</td>\n                                    <td>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n                                    <td>\n                                        <a class=\"payment-receipt link-blue\" href=\"#\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_VIEW_RECEIPT", {hash:{},data:data}))
+    + "</a></td>\n                                </tr>\n                            ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "PAYMENT_PAID", {hash:{},data:data}));
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<span class=\"link-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_FAILED", {hash:{},data:data}))
+    + "</span>";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                    <div class=\"full-space\">\n                        "
+    + escapeExpression(helpers.i18n.call(depth0, "NO_BILLING_EVENT", {hash:{},data:data}))
+    + "\n                    </div>\n                ";
+  return buffer;
+  }
+
+  buffer += "<div id=\"billing-status\">\n    <nav id=\"PaymentNav\">\n        <span data-target=\"PaymentBillingTab\" class=\"selected\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
+    + "</span>\n        <span data-target=\"UsageTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_USAGE_TAB", {hash:{},data:data}))
+    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            <p class=\"warning-red\"></p>\n            <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "CREDIT_CARD_INFORMATION", {hash:{},data:data}))
+    + "</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</p>\n                        <p class=\"payment-username\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.first_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>\n                    </div>\n                </div>\n                <div class=\"right\">\n                    <a class=\"btn btn-blue update-payment\" href=\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "UPDATE_BILLING_INFORMATION", {hash:{},data:data}))
+    + "<i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "BILLING_HISTORY", {hash:{},data:data}))
+    + " <span class=\"payment-next-billing\">"
+    + escapeExpression(helpers.i18n.call(depth0, "NEXT_BILLING_ON", {hash:{},data:data}))
+    + " "
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingEnd), "MMMM d, yyyy", {hash:{},data:data}))
+    + "</span></h5>\n            <div class=\"table-head-fix\">\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(11, program11, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_CURRENT_USAGE", {hash:{},data:data}))
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_CURRENT_USAGE_SPAN", {hash:{},data:data}))
+    + "</h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <div class=\"usage-number\">\n                        "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                    </div>\n                    <span>"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_INSTANT_HOUR", {hash:{},data:data}))
+    + "</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_RENEW_FREE_INFO", ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota), ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays), {hash:{},data:data}))
+    + "</p>\n        </section>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.billingTemplate=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  define('ide/subviews/BillingDialog',["./BillingDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "UI.modalplus", "ApiRequestR", "backbone"], function(BillingDialogTpl, lang, ApiRequest, Modal, ApiRequestR) {
+    var BillingDialog;
+    BillingDialog = Backbone.View.extend({
+      events: {
+        "click #PaymentNav span": "switchTab",
+        'click #PaymentBody a.payment-receipt': "viewPaymentReceipt",
+        'click .update-payment': "_bindPaymentEvent"
+      },
+      initialize: function(modal) {
+        var paymentState, that;
+        that = this;
+        paymentState = App.user.get("paymentState");
+        if (modal) {
+          this.modal = modal;
+          this.modal.setWidth("650px").setTitle(lang.IDE.PAYMENT_SETTING_TITLE).setContent(MC.template.loadingSpiner).find('.modal-confirm').hide();
+        } else {
+          this.modal = new Modal({
+            title: lang.IDE.PAYMENT_SETTING_TITLE,
+            width: "650px",
+            template: MC.template.loadingSpiner,
+            disableClose: true,
+            confirm: {
+              hide: true
+            }
+          });
+        }
+        this.getPaymentHistory().then(function(paymentHistory) {
+          var billable_quota, hasPaymentHistory, paymentUpdate, tempArray;
+          console.log(paymentHistory);
+          paymentUpdate = {
+            url: App.user.get("paymentUrl"),
+            card: App.user.get("creditCard"),
+            billingEnd: App.user.get("billingEnd"),
+            current_quota: App.user.get("voQuotaCurrent"),
+            max_quota: App.user.get("voQuotaPerMonth"),
+            renewRemainDays: Math.round((App.user.get("renewDate") - (new Date())) / (1000 * 60 * 60 * 24)),
+            last_billing_time: App.user.get("billingStart") || new Date()
+          };
+          billable_quota = App.user.get("voQuotaCurrent") - App.user.get("voQuotaPerMonth");
+          paymentUpdate.billable_quota = billable_quota > 0 ? billable_quota : 0;
+          that.modal.find(".modal-body").css('padding', "0");
+          hasPaymentHistory = (_.keys(paymentHistory)).length;
+          tempArray = [];
+          _.each(paymentHistory, function(e) {
+            e.ending_balance = e.ending_balance_in_cents / 100;
+            e.total_balance = e.total_in_cents / 100;
+            e.start_balance = e.starting_balance_in_cents / 100;
+            return tempArray.push(e);
+          });
+          tempArray.reverse();
+          paymentHistory = tempArray;
+          that.paymentHistory = tempArray;
+          that.paymentUpdate = _.clone(paymentUpdate);
+          that.modal.setContent(BillingDialogTpl.billingTemplate({
+            paymentUpdate: paymentUpdate,
+            paymentHistory: paymentHistory,
+            hasPaymentHistory: hasPaymentHistory
+          }));
+          if (!App.user.get("creditCard")) {
+            that.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({
+              url: App.user.get("paymentUrl"),
+              freePointsPerMonth: App.user.get("voQuotaPerMonth"),
+              shouldPay: App.user.shouldPay()
+            }));
+            that.modal.listenTo(App.user, "paymentUpdate", function() {
+              that.initialize(that.modal);
+              return that.modal.stopListening();
+            });
+          }
+          return that.updateUsage();
+        }, function() {
+          var _ref;
+          notification('error', "Error while getting user payment info, please try again later.");
+          return (_ref = that.modal) != null ? _ref.close() : void 0;
+        });
+        this.listenTo(App.user, "paymentUpdate", function() {
+          return that.updateUsage();
+        });
+        return this.setElement(this.modal.tpl);
+      },
+      getPaymentHistory: function() {
+        var historyDefer;
+        historyDefer = new Q.defer();
+        if (!App.user.get("creditCard")) {
+          historyDefer.resolve({});
+        } else {
+          ApiRequestR("payment_statement").then(function(paymentHistory) {
+            return historyDefer.resolve(paymentHistory);
+          }, function(err) {
+            return historyDefer.reject(err);
+          });
+        }
+        return historyDefer.promise;
+      },
+      switchTab: function(event) {
+        var target;
+        target = $(event.currentTarget);
+        console.log("Switching Tabs");
+        this.modal.find("#PaymentNav").find("span").removeClass("selected");
+        this.modal.find(".tabContent > section").addClass("hide");
+        $("#" + target.addClass("selected").data('target')).removeClass("hide");
+        return this.updateUsage();
+      },
+      _bindPaymentEvent: function(event) {
+        var that;
+        that = this;
+        event.preventDefault();
+        window.open($(event.currentTarget).attr("href"), "");
+        this.modal.listenTo(App.user, 'change:paymentState', function() {
+          var paymentState;
+          paymentState = App.user.get('paymentState');
+          if (that.modal.isClosed) {
+            return false;
+          }
+          if (paymentState === 'active') {
+            return that._renderBillingDialog(that.modal);
+          }
+        });
+        this.modal.on('close', function() {
+          return that.modal.stopListening(App.user);
+        });
+        return false;
+      },
+      _renderBillingDialog: function(modal) {
+        return new BillingDialog(modal);
+      },
+      updateUsage: function() {
+        var current_quota, shouldPay;
+        if (this.modal.isClosed) {
+          return false;
+        }
+        shouldPay = App.user.shouldPay();
+        this.modal.$(".usage-block").toggleClass("error", shouldPay);
+        this.modal.$(".used-points").toggleClass("error", shouldPay);
+        current_quota = App.user.get("voQuotaCurrent");
+        this.modal.find(".payment-number").text(App.user.get("creditCard") || "No Card");
+        this.modal.find(".payment-username").text("" + (App.user.get("cardFirstName")) + " " + (App.user.get("cardLastName")));
+        this.modal.find(".used-points .usage-number").text(current_quota);
+        if (App.user.shouldPay()) {
+          return this.modal.find(".warning-red").not(".no-change").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
+        } else if (App.user.isUnpaid()) {
+          return this.modal.find(".warning-red").not(".no-change").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
+        } else {
+          return this.modal.find(".warning-red").not(".no-change").hide();
+        }
+      },
+      viewPaymentReceipt: function(event) {
+        var $target, cssToInsert, id, makeNewWindow, paymentHistory;
+        $target = $(event.currentTarget);
+        id = $target.parent().parent().data("id");
+        paymentHistory = this.paymentHistory[id];
+        cssToInsert = ".billing_statement_section {\n    display: block;\n    position: relative;\n}\n.billing_statement_section h2 {\n    display: block;\n    background: #E6E6E6;\n    font-size: 16px;\n    padding: 10px;\n    font-weight: bold;\n    margin-bottom: 0;\n    border-bottom: 1px solid #727272;\n}\n.billing_statement_section_content {\n    display: block;\n    position: relative;\n    padding-top: 10px;\n}\ntable {\n    border-collapse: collapse;\n    width: 100%;\n}\ntable, td, th {\n    border: 1px solid #333;\n    padding: 7px;\n    text-align: left;\n    font-size: 14px;\n}\ntable thead {\n    background: #dedede;\n}\ntable tr.billing_statement_listing_tfoot {\n    font-weight: bold;\n    text-align: right;\n}\n#billing_statement {\n    width: 800px;\n    margin: 20px auto;\n    padding-bottom: 50px;\n}\n.billing_statement_section .billing_statement_section_content h3 {\n    font-size: 14px;\n    position: relative;\n    margin: 10px 0;\n    font-weight: bold;\n    margin-bottom: 14px;\n    background: #F3F3F3;\n    padding: 5px;\n}\ndiv#billing_statement_account_information_section {\n    width: 49%;\n    float: left;\n}\ndiv#billing_statement_summary_section {\n    width: 49%;\n    float: right;\n}\ndiv#billing_statement_detail_section {\n    clear: both;\n    padding-top: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_label {\n    font-weight: bold;\n    font-size: 16px;\n    width: 44%;\n    display: inline-block;\n    text-align: right;\n}\n.billing_statement_section_content> div {\n    margin-bottom: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_value {\n    text-align: right;\n    float: right;\n    color: #666;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_paid {\n    float: right;\n    font-size: 30px;\n    color: #50B816;\n    margin-top: 10px;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_unpaid {\n    float: right;\n    font-size: 30px;\n    color: #C70000;\n    margin-top: 10px;\n}\nbody {font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;}";
+        makeNewWindow = function() {
+          var content, headTag, newWindow, styleTag;
+          newWindow = window.open("", "");
+          newWindow.focus();
+          content = paymentHistory.html;
+          newWindow.document.write(content);
+          headTag = newWindow.document.head || newWindow.document.getElementsByTagName('head')[0];
+          styleTag = document.createElement('style');
+          styleTag.type = 'text/css';
+          if (styleTag.styleSheet) {
+            styleTag.styleSheet.cssText = cssToInsert;
+          } else {
+            styleTag.appendChild(document.createTextNode(cssToInsert));
+          }
+          headTag.appendChild(styleTag);
+          return newWindow.document.close();
+        };
+        return makeNewWindow();
+      }
+    });
+    return BillingDialog;
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/subviews/HeaderView',["./HeaderTpl", "./SettingsDialog", './BillingDialog', 'i18n!/nls/lang.js', 'backbone', "UI.selectbox"], function(tmpl, SettingsDialog, BillingDialog, lang) {
+    var HeaderView;
+    HeaderView = Backbone.View.extend({
+      events: {
+        'click #HeaderLogout': 'logout',
+        'click #HeaderSettings': 'settings',
+        'click #HeaderShortcuts': 'shortcuts',
+        'click #HeaderBilling': 'billingSettings',
+        'click .voquota': "billingSettings",
+        'DROPDOWN_CLOSE #HeaderNotification': 'dropdownClosed'
+      },
+      initialize: function() {
+        this.listenTo(App.user, "change", this.update);
+        this.listenTo(App.model, "change:notification", this.updateNotification);
+        this.setElement($(tmpl(App.user.toJSON())).prependTo("#wrapper"));
+        this.update();
+      },
+      logout: function() {
+        return App.logout();
+      },
+      shortcuts: function() {
+        return modal(MC.template.shortkey());
+      },
+      settings: function() {
+        return new SettingsDialog();
+      },
+      update: function() {
+        var $quota;
+        $quota = $("#header").children(".voquota");
+        if (App.user.shouldPay()) {
+          return $quota.addClass("show");
+        } else {
+          return $quota.removeClass("show");
+        }
+      },
+      setAlertCount: function(count) {
+        return $('#NotificationCounter').text(count || "");
+      },
+      updateNotification: function() {
+        var html, i, notification, unread_num, _i, _len;
+        console.log("Notification Updated, Websocket isReady:", App.WS.isReady());
+        notification = _.map(App.model.get("notification"), function(n) {
+          return _.extend({}, n, {
+            operation: lang.TOOLBAR[n.operation.toUpperCase()] || n.operation
+          });
+        });
+        html = "";
+        unread_num = 0;
+        for (_i = 0, _len = notification.length; _i < _len; _i++) {
+          i = notification[_i];
+          html += MC.template.headerNotifyItem(i);
+          if (!i.readed) {
+            unread_num++;
+          }
+        }
+        this.setAlertCount(unread_num);
+        $("#notification-panel-wrapper").find(".scroll-content").html(html);
+        $("#notification-panel-wrapper").css("max-height", Math.ceil(window.innerHeight * 0.8));
+        return null;
+      },
+      dropdownClosed: function() {
+        $("#notification-panel-wrapper").find(".scroll-content").children().removeClass("unread");
+        this.setAlertCount();
+        App.model.markNotificationRead();
+        return null;
+      },
+      billingSettings: function() {
+        return new BillingDialog();
+      }
+    });
+    return HeaderView;
+  });
+
+}).call(this);
+
+define('ide/subviews/WelcomeTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_PROVIDE_CRED_DESC", {hash:{},data:data}))
+    + "</p>\n  ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <h2>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_TIT", {hash:{},data:data}))
+    + "<span>"
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></h2>\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DESC", {hash:{},data:data}))
+    + "</p>\n  ";
+  return buffer;
+  }
+
+  buffer += "<section id=\"WelcomeSettings\">\n  <header>\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.noWelcome), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  </header>\n  <div id=\"CredSetupWrap\">\n    <div id=\"CredSetupMsg\" class=\"cred-setup-msg empty-hide\"></div>\n    <ul>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCOUNTID", {hash:{},data:data}))
+    + "\"></i>\n        <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNTID", {hash:{},data:data}))
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccount\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_ACCESSKEY", {hash:{},data:data}))
+    + "\"></i>\n        <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSKEY", {hash:{},data:data}))
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupAccessKey\" type=\"text\">\n      </li>\n      <li>\n        <i class=\"icon-info icon-label tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_TIP_CRED_SECRETKEY", {hash:{},data:data}))
+    + "\"></i>\n        <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_SECRETKEY", {hash:{},data:data}))
+    + "</label>\n        <input autocomplete=\"off\" class=\"input\" id=\"CredSetupSecretKey\" type=\"password\">\n      </li>\n    </ul>\n\n    <footer class=\"cred-btn-wrap clearfix tar\">\n      <button id=\"WelcomeSkip\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_SKIP", {hash:{},data:data}))
+    + "</button>\n      <button id=\"CredSetupSubmit\" class=\"btn btn-blue\" disabled=\"disabled\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_SUBMIT", {hash:{},data:data}))
+    + "</button>\n    </footer>\n  </div>\n</section>\n\n<section id=\"WelcomeCredUpdate\" class=\"hide\">\n  <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATING", {hash:{},data:data}))
+    + "</p>\n  <div class=\"loading-spinner\"></div>\n</section>\n\n<section id=\"WelcomeSkipWarning\" class=\"hide modal-body\">\n  <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_TIT", {hash:{},data:data}))
+    + "</h3>\n  <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_SUBTIT", {hash:{},data:data}))
+    + "</h5>\n  <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG", {hash:{},data:data}))
+    + "</p>\n  <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_SKIP_MSG_EXTRA", {hash:{},data:data}))
+    + "</p>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeBack\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
+    + "</button>\n    <button id=\"WelcomeDone\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
+    + "</button>\n  </footer>\n</section>\n\n<section id=\"WelcomeDoneWrap\" class=\"hide\">\n  <p id=\"WelcomeDoneTitDemo\">"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT_DEMO", {hash:{},data:data}))
+    + "</p>\n  <p id=\"WelcomeDoneTit\">"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_HINT", {hash:{},data:data}))
+    + " <span></span></p>\n  <h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_TIT", {hash:{},data:data}))
+    + "</h3>\n  <ul>"
+    + escapeExpression(helpers.i18n.call(depth0, "WELCOME_DONE_MSG", {hash:{},data:data}))
+    + "</ul>\n  <footer class=\"cred-btn-wrap clearfix tar\">\n    <button id=\"WelcomeClose\" class=\"btn btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_DONE", {hash:{},data:data}))
+    + "</button>\n  </footer>\n</section>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/WelcomeDialog',["./WelcomeTpl", "UI.modalplus", 'i18n!/nls/lang.js', "backbone"], function(WelcomeTpl, Modal, lang) {
+    var SingletonWelcome, WelcomeDialog;
+    SingletonWelcome = null;
+    WelcomeDialog = Backbone.View.extend({
+      events: {
+        "click #WelcomeSkip": "skip",
+        "click #WelcomeBack": "back",
+        "click #WelcomeDone": "skipDone",
+        "click #WelcomeClose": "close",
+        "click #CredSetupSubmit": "submitCred",
+        "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn"
+      },
+      constructor: function() {
+        if (SingletonWelcome) {
+          return SingletonWelcome;
+        }
+        SingletonWelcome = this;
+        return Backbone.View.apply(this, arguments);
+      },
+      initialize: function(options) {
+        var attributes, title;
+        attributes = {
+          username: App.user.get("username")
+        };
+        if (options && options.askForCredential) {
+          title = lang.IDE.WELCOME_PROVIDE_CRED_TIT;
+          attributes.noWelcome = true;
+        } else {
+          title = lang.IDE.WELCOME_DIALOG_TIT;
+        }
+        this.modal = new Modal({
+          title: title,
+          template: WelcomeTpl(attributes),
+          width: "600",
+          disableClose: true,
+          disableFooter: true,
+          compact: true,
+          hideClose: true,
+          cancel: {
+            hide: true
+          }
+        });
+        this.modal.tpl.find(".context-wrap").attr("id", "WelcomeDialog");
+        this.setElement(this.modal.tpl);
+      },
+      skip: function() {
+        $("#WelcomeSettings").hide();
+        return $("#WelcomeSkipWarning").show();
+      },
+      back: function() {
+        $("#WelcomeSettings").show();
+        return $("#WelcomeSkipWarning").hide();
+      },
+      skipDone: function() {
+        if (!App.user.hasCredential()) {
+          this.done();
+          return;
+        }
+        $("#CredSetupAccount").val("");
+        $("#CredSetupAccessKey").val("");
+        $("#CredSetupSecretKey").val("");
+        $("#WelcomeSkipWarning").hide();
+        $("#WelcomeCredUpdate").show();
+        this.setCred();
+      },
+      done: function() {
+        $("#WelcomeSettings, #WelcomeSkipWarning, #WelcomeCredUpdate").hide();
+        $("#WelcomeDoneWrap").show();
+        if (App.user.hasCredential()) {
+          $("#WelcomeDoneTitDemo").hide();
+          return $("#WelcomeDoneTit").children("span").text(App.user.get("account"));
+        } else {
+          $("#WelcomeDoneTitDemo").show();
+          return $("#WelcomeDoneTit").hide();
+        }
+      },
+      close: function() {
+        SingletonWelcome = null;
+        return this.modal.close();
+      },
+      updateSubmitBtn: function() {
+        var accesskey, account, privatekey;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        if (account.length && accesskey.length && privatekey.length) {
+          $("#CredSetupSubmit").removeAttr("disabled");
+        } else {
+          $("#CredSetupSubmit").attr("disabled", "disabled");
+        }
+      },
+      submitCred: function() {
+        var accesskey, privatekey, self;
+        $("#WelcomeSettings").hide();
+        $("#WelcomeCredUpdate").show();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        self = this;
+        return App.user.validateCredential(accesskey, privatekey).then(function() {
+          self.setCred();
+        }, function() {
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_VALIDATE);
+          self.showCredSetup();
+        });
+      },
+      setCred: function() {
+        var accesskey, account, privatekey, self;
+        account = $("#CredSetupAccount").val();
+        accesskey = $("#CredSetupAccessKey").val();
+        privatekey = $("#CredSetupSecretKey").val();
+        if (account === "demo_account") {
+          account = "user_demo_account";
+          $("#CredSetupAccount").val(account);
+        }
+        self = this;
+        return App.user.changeCredential(account, accesskey, privatekey, true).then(function() {
+          self.done();
+        }, function(err) {
+          $("#CredSetupMsg").text(lang.IDE.SETTINGS_ERR_CRED_UPDATE);
+          self.showCredSetup();
+        });
+      },
+      showCredSetup: function() {
+        $("#WelcomeDialog").children().hide();
+        $("#WelcomeSettings").show();
+        $("#CredSetupAccount").focus()[0].select();
+        this.updateSubmitBtn();
+      }
+    });
+    return WelcomeDialog;
+  });
+
+}).call(this);
+
+define('ide/subviews/NavigationTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<aside id=\"navigation\">\n  <nav>\n    <button class=\"off-canvas-tab\" id=\"off-canvas-app\">"
+    + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_APPS", {hash:{},data:data}))
+    + "</button>\n    <button class=\"off-canvas-tab selected\" id=\"off-canvas-stack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_STACKS", {hash:{},data:data}))
+    + "</button>\n  </nav>\n  <div style=\"overflow-y:scroll;position:absolute;top:50px;bottom:0;left:0;right:0;\">\n    <ul id=\"nav-app-region\" class=\"hide\"></ul>\n    <ul id=\"nav-stack-region\"></ul>\n  </div>\n\n<!--   <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.SHOW_UNUSED_REGIONS", {hash:{},data:data}))
+    + "</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section> -->\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
+  return buffer;
+  };
+TEMPLATE.navigation=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li data-region=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n	<h3 class=\"nav-group-title\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ("
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.data)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</h3>\n	<ul class=\"nav-item-list app-list\">\n	";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</ul>\n</li>";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"truncate nav-truncate icon-app-";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" title=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ["
+    + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "]\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</li>";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  return "pending";
+  }
+
+function program5(depth0,data) {
+  
+  
+  return escapeExpression(helpers.tolower.call(depth0, (depth0 && depth0.stateDesc), {hash:{},data:data}));
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<i class=\"icon-app-type-"
+    + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></i>";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n<div class=\"nav-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_NO_APP", {hash:{},data:data}))
+    + "</div>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.applist=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.data)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li data-region=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n	<h3 class=\"nav-group-title\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ("
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.data)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")<button class=\"icon-new-stack tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE_COM_CREATE_NEW_STACK", {hash:{},data:data}))
+    + "'></button></h3>\n	<ul class=\"nav-item-list stack-list\">\n	";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</ul>\n</li>";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"truncate nav-truncate icon-stack-nav\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.stacklist=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.data)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li class=\"nav-group-title\" data-region=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.regionName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " (0) <button class=\"icon-new-stack tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE_COM_CREATE_NEW_STACK", {hash:{},data:data}))
+    + "'></button></li>";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.regionlist=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+(function() {
+  define('ide/subviews/Navigation',["./NavigationTpl", 'backbone'], function(NavPartsTpl) {
+    return Backbone.View.extend({
+      events: {
+        "click #off-canvas-app": "showNavApp",
+        "click #off-canvas-stack": "showNavStack",
+        'click .stack-list li, .app-list li': 'openOps',
+        'click #nav-show-empty': 'showEmptyRegion',
+        'click .icon-new-stack': 'createStack'
+      },
+      initialize: function() {
+        this.setElement($(NavPartsTpl.navigation()).appendTo("#wrapper").eq(0));
+        $("#off-canvas-menu").click(_.bind(this.showOffCanvas, this));
+        $("#off-canvas-overlay").click(_.bind(this.hideOffCanvas, this));
+        this.updateStackList();
+        this.updateAppList();
+        this.listenTo(App.model.stackList(), "update", function() {
+          if (this.showing) {
+            this.updateStackList();
+          } else {
+            this.stackDirty = true;
+          }
+        });
+        this.listenTo(App.model.appList(), "update change:state", function() {
+          console.log("Navigation updated due to appList update", arguments);
+          if (this.showing) {
+            this.updateAppList();
+          } else {
+            this.appDirty = true;
+          }
+        });
+      },
+      showOffCanvas: function() {
+        if ($("#wrapper").hasClass("off-canvas")) {
+          return $("wrapper").removeClass("off-canvas");
+        }
+        if (this.stackDirty) {
+          this.updateStackList();
+        }
+        if (this.appDirty) {
+          this.updateAppList();
+        }
+        this.showing = true;
+        this.stackDirty = this.appDirty = false;
+        if ($("#nav-app-region").children(".nav-empty").length) {
+          this.showNavStack();
+        } else {
+          this.showNavApp();
+        }
+        $("#wrapper").addClass("off-canvas");
+      },
+      hideOffCanvas: function() {
+        $("#wrapper").removeClass("off-canvas");
+        this.showing = false;
+      },
+      showNavApp: function() {
+        $("#nav-app-region").show();
+        $("#nav-stack-region").hide();
+        $("#off-canvas-app").toggleClass("selected", true);
+        $("#off-canvas-stack").toggleClass("selected", false);
+      },
+      showNavStack: function() {
+        $("#nav-app-region").hide();
+        $("#nav-stack-region").show();
+        $("#off-canvas-app").toggleClass("selected", false);
+        $("#off-canvas-stack").toggleClass("selected", true);
+      },
+      showEmptyRegion: function() {
+        $("#nav-show-empty").hide();
+        $("#nav-region-empty-list").show();
+      },
+      updateStackList: function() {
+        var list;
+        list = App.model.stackList().groupByRegion(true);
+        $('#nav-stack-region').html($.trim(NavPartsTpl.stacklist(list)));
+        return $('#nav-region-empty-list').html(NavPartsTpl.regionlist(list));
+      },
+      updateAppList: function() {
+        return $('#nav-app-region').html(NavPartsTpl.applist(App.model.appList().groupByRegion()));
+      },
+      openOps: function(event) {
+        this.hideOffCanvas();
+        App.openOps($(event.currentTarget).attr("data-id"));
+      },
+      createStack: function(event) {
+        var region;
+        region = $(event.currentTarget).closest("li").attr("data-region");
+        if (!region) {
+          return;
+        }
+        this.hideOffCanvas();
+        App.createOps(region);
+      }
+    });
+  });
+
+}).call(this);
+
+define('ide/subviews/AppTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.msg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"confirmRmStack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + "</button>\n  <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.removeStackConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n    <div class=\"modal-control-group\">\n      <label class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
+    + "</label>\n      <input id=\"confirmDupStackIpt\" class=\"input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.newName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n    </div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn btn-red\" id=\"confirmDupStack\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
+    + "</button>\n  <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"loading-spinner\"></div>";
+  };
+TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<section class=\"disconnected-msg\">\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONNECTION_LOST_TO_RECONNECT", {hash:{},data:data}))
+    + "</div>\n  <div>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CHANGES_MAY_NOT_BE_SAVED", {hash:{},data:data}))
+    + "</div>\n</section>";
+  return buffer;
+  };
+TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE", {hash:{},data:data}))
+    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n  <div class=\"modal-center-align-helper\">\n      <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE_CONTENT", (depth0 && depth0.name), {hash:{},data:data}))
+    + "</div>\n  </div>\n</div>\n<div class=\"modal-footer\">\n  <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
+    + "</button>\n  <button class=\"btn modal-close btn-silver\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.forceTerminateApp=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+define('ide/subviews/FullnameTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
+    + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
+    + "</p>\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/FullnameSetup',["./FullnameTpl", "UI.modalplus", 'i18n!/nls/lang.js', 'ApiRequest', "backbone"], function(FullnameTpl, Modal, lang, ApiRequest) {
+    return Backbone.View.extend({
+      events: {
+        "click #submitFullName": "submit",
+        "change #complete-firstname": "changeInput",
+        "change #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput"
+      },
+      initialize: function() {
+        this.modal = new Modal({
+          title: lang.IDE.COMPLETE_YOUR_PROFILE,
+          template: FullnameTpl(),
+          width: "600",
+          disableClose: true,
+          hideClose: true,
+          cancel: {
+            hide: true
+          },
+          confirm: {
+            disabled: true
+          }
+        });
+        this.modal.on('confirm', this.submit.bind(this));
+        return this.setElement(this.modal.tpl);
+      },
+      changeInput: function() {
+        var $firstNameInput, $lastNameInput, confirmBtn;
+        confirmBtn = this.modal.find(".modal-confirm");
+        $firstNameInput = this.modal.find("#complete-firstname");
+        $lastNameInput = this.modal.find("#complete-lastname");
+        if (!!$firstNameInput.val() && !!$lastNameInput.val()) {
+          return confirmBtn.attr("disabled", false);
+        } else {
+          return confirmBtn.attr("disabled", true);
+        }
+      },
+      submit: function() {
+        var firstname, lastname, that;
+        that = this;
+        firstname = that.modal.$("#complete-firstname").val();
+        lastname = that.modal.$("#complete-lastname").val();
+        if (!(firstname && lastname)) {
+          return false;
+        }
+        this.modal.find(".modal-confirm").attr('disabled', true);
+        this.modal.setContent(MC.template.loadingSpiner());
+        return ApiRequest("account_update_account", {
+          attributes: {
+            first_name: firstname,
+            last_name: lastname
+          }
+        }).then(function() {
+          App.user.set("firstName", firstname);
+          App.user.set("lastName", lastname);
+          this.modal.close();
+          return notification("info", lang.IDE.PROFILE_UPDATED_SUCCESSFULLY);
+        }, function() {
+          this.modal.close();
+          return notification('error', lang.IDE.PROFILE_UPDATED_FAILED);
+        });
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The View for application
+----------------------------
+ */
+
+(function() {
+  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", "./subviews/FullnameSetup", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, FullnameSetup, lang, CloudResources, constant, modalPlus) {
+    return Backbone.View.extend({
+      el: $("body")[0],
+      events: {
+        "click .click-select": "selectText"
+      },
+      initialize: function() {
+        this.header = new HeaderView();
+        new Navigation();
+        this.listenTo(App.user, "change:state", this.toggleWelcome);
+        this.listenTo(App.model.appList(), "change:terminateFail", this.askForForceTerminate);
+
+        /* env:dev                                                                           env:dev:end */
+
+        /* env:debug */
+        require(["./ide/subviews/DebugTool"], function(DT) {
+          return new DT();
+        });
+
+        /* env:debug:end */
+        $(window).on("beforeunload", this.checkUnload);
+        $(window).on('keydown', this.globalKeyEvent);
+      },
+      checkUnload: function() {
+        if (App.canQuit()) {
+          return void 0;
+        } else {
+          return lang.IDE.BEFOREUNLOAD_MESSAGE;
+        }
+      },
+      globalKeyEvent: function(event) {
+        var nodeName;
+        nodeName = event.target.nodeName.toLowerCase();
+        if (nodeName === "input" || nodeName === "textarea" || event.target.contentEditable === 'true') {
+          return;
+        }
+        switch (event.which) {
+          case 8:
+            event.preventDefault();
+            return;
+          case 191:
+            modal(MC.template.shortkey(), true);
+            return false;
+        }
+      },
+      toggleWSStatus: function(isConnected) {
+        if (isConnected) {
+          return $(".disconnected-msg").remove();
+        } else {
+          if ($(".disconnected-msg").show().length > 0) {
+            return;
+          }
+          return $(AppTpl.disconnectedMsg()).appendTo("body").on("mouseover", function() {
+            $(".disconnected-msg").addClass("hovered");
+            $("body").on("mousemove.disconnectedmsg", function(e) {
+              var msg, pos, x, y;
+              msg = $(".disconnected-msg");
+              if (!msg.length) {
+                $("body").off("mousemove.disconnectedmsg");
+                return;
+              }
+              pos = msg.offset();
+              x = e.pageX;
+              y = e.pageY;
+              if (x < pos.left || y < pos.top || x >= pos.left + msg.outerWidth() || y >= pos.top + msg.outerHeight()) {
+                $("body").off("mousemove.disconnectedmsg");
+                msg.removeClass("hovered");
+              }
+            });
+          });
+        }
+      },
+      toggleWelcome: function() {
+        if (App.user.isFirstVisit()) {
+          new WelcomeDialog();
+        } else if (App.user.fullnameNotSet()) {
+          new FullnameSetup();
+        }
+      },
+      askForAwsCredential: function() {
+        return new WelcomeDialog({
+          askForCredential: true
+        });
+      },
+      showSessionDialog: function() {
+        return (new SessionDialog()).promise();
+      },
+      selectText: function(event) {
+        var e, range;
+        try {
+          range = document.body.createTextRange();
+          range.moveToElementText(event.currentTarget);
+          range.select();
+          console.warn("Select text by document.body.createTextRange");
+        } catch (_error) {
+          e = _error;
+          if (window.getSelection) {
+            range = document.createRange();
+            range.selectNode(event.currentTarget);
+            window.getSelection().addRange(range);
+            console.warn("Select text by document.createRange");
+          }
+        }
+        return false;
+      },
+      askForForceTerminate: function(model) {
+        if (!model.get("terminateFail")) {
+          return;
+        }
+        modal(AppTpl.forceTerminateApp({
+          name: model.get("name")
+        }));
+        $("#forceTerminateApp").on("click", function() {
+          model.terminate(true).fail(function(err) {
+            var error;
+            error = err.awsError ? err.error + "." + err.awsError : err.error;
+            return notification(sprintf(lang.NOTIFY.ERROR_FAILED_TERMINATE, name, error));
+          });
+        });
+      },
+      notifyUnpay: function() {
+        notification("error", "Failed to charge your account. Please update your billing info.");
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", "backbone"], function(ApiRequest, constant, CloudResources, ThumbUtil) {
+    var KnownOpsModelClass, OpsModel, OpsModelLastestVersion, OpsModelState, OpsModelStateDesc, OpsModelType, __detailExtend;
+    KnownOpsModelClass = {};
+    __detailExtend = Backbone.Model.extend;
+
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        env:dev:end */
+    OpsModelType = {
+      OpenStack: "OpenstackOps",
+      Amazon: "AwsOps"
+    };
+    OpsModelState = {
+      UnRun: 0,
+      Running: 1,
+      Stopped: 2,
+      Initializing: 3,
+      Starting: 4,
+      Updating: 5,
+      Stopping: 6,
+      Terminating: 7,
+      Destroyed: 8,
+      Saving: 9
+    };
+    OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
+    OpsModelLastestVersion = "2014-11-11";
+    OpsModel = Backbone.Model.extend({
+      type: "GenericOps",
+      defaults: function() {
+        return {
+          updateTime: +(new Date()),
+          region: "",
+          state: OpsModelState.UnRun,
+          stoppable: true,
+          name: "",
+          version: OpsModelLastestVersion,
+          provider: ""
+        };
+      },
+      constructor: function(attr, opts) {
+        var Model, provider;
+        attr = attr || {};
+        opts = opts || {};
+        if (this.type === "GenericOps") {
+          if (opts.jsonData) {
+            provider = opts.jsonData.provider;
+          }
+          provider = provider || attr.provider || "aws::global";
+          console.assert(KnownOpsModelClass[provider], "Cannot find specific OpsModel for provider '" + attr.provider + "'");
+          Model = KnownOpsModelClass[provider];
+          if (Model) {
+            return new Model(attr, opts);
+          }
+        }
+        Backbone.Model.apply(this, arguments);
+      },
+      initialize: function(attr, options) {
+        if (options) {
+          if (options.initJsonData) {
+            this.__initJsonData();
+          }
+          if (options.jsonData) {
+            this.__setJsonData(options.jsonData);
+          }
+        }
+
+        /* env:dev                                                                                                                        env:dev:end */
+
+        /* env:debug */
+        this.listenTo(this, "change:state", function() {
+          return console.log("OpsModel's state changed", this, MC.prettyStackTrace());
+        });
+
+        /* env:debug:end */
+      },
+      url: function() {
+        if (this.get("id")) {
+          return "ops/" + (this.get('id'));
+        } else {
+          return "ops/" + this.cid + "/unsaved";
+        }
+      },
+      isStack: function() {
+        return this.attributes.state === OpsModelState.UnRun || this.attributes.state === OpsModelState.Saving;
+      },
+      isApp: function() {
+        return !this.isStack();
+      },
+      isImported: function() {
+        return !!this.attributes.importMsrId;
+      },
+      isPMRestricted: function() {
+        return this.get("version") >= "2014-11-11" && this.isApp();
+      },
+      testState: function(state) {
+        return this.attributes.state === state;
+      },
+      getStateDesc: function() {
+        return OpsModelStateDesc[this.attributes.state];
+      },
+      toJSON: function(options) {
+        var o;
+        o = Backbone.Model.prototype.toJSON.call(this);
+        o.stateDesc = OpsModelStateDesc[o.state];
+        o.regionName = constant.REGION_SHORT_LABEL[o.region];
+        if (this.isProcessing()) {
+          o.progressing = true;
+        }
+        if (options) {
+          if (options.thumbnail) {
+            o.thumbnail = ThumbUtil.fetch(o.id);
+          }
+        }
+        return o;
+      },
+      isPersisted: function() {
+        return !!this.get("id");
+      },
+      isExisting: function() {
+        var state;
+        state = this.get("state");
+        if (state === OpsModelState.Destroyed) {
+          console.warn("There's probably a bug existing that the destroyed opsmodel is still be using by someone.");
+        }
+        return !!(this.get("id") && state !== OpsModelState.Destroyed);
+      },
+      getMsrId: function() {
+        return this.get("importMsrId") || void 0;
+      },
+      getThumbnail: function() {
+        return ThumbUtil.fetch(this.get("id"));
+      },
+      saveThumbnail: function(thumb) {
+        if (thumb) {
+          ThumbUtil.save(this.get("id"), thumb);
+          this.trigger("change");
+        } else {
+          ThumbUtil.save(this.get("id"), "");
+        }
+      },
+      hasJsonData: function() {
+        return !!this.__jsonData;
+      },
+      getJsonData: function() {
+        return this.__jsonData;
+      },
+      fetchJsonData: function() {
+        var d;
+        if (this.__jsonData) {
+          d = Q.defer();
+          d.resolve(this);
+          return d.promise;
+        }
+        return this.__fjdTemplate(this) || this.__fjdImport(this) || this.__fjdStack(this) || this.__fjdApp(this);
+      },
+      __fjdTemplate: function(self) {
+        var sampleId;
+        sampleId = this.get("sampleId");
+        if (!sampleId) {
+          return;
+        }
+        return ApiRequest('stackstore_fetch_stackstore', {
+          sub_path: "master/stack/" + sampleId + "/" + sampleId + ".json"
+        }).then(function(result) {
+          var e, j;
+          try {
+            j = JSON.parse(result);
+            delete j.id;
+            delete j.signature;
+            if (!self.collection.isNameAvailable(j.name)) {
+              j.name = self.collection.getNewName(j.name);
+            }
+            self.attributes.region = j.region;
+            self.__setJsonData(j);
+          } catch (_error) {
+            e = _error;
+            j = null;
+            self.attributes.region = "us-east-1";
+            self.__initJsonData();
+          }
+          if (j) {
+            self.set("name", j.name);
+          }
+          return self;
+        });
+      },
+      __fjdImport: function(self) {
+        if (!this.isImported()) {
+          return;
+        }
+        return CloudResources("OpsResource", this.getMsrId()).init(this.get("region"), this.get("provider")).fetchForceDedup().then(function() {
+          return self.__onFjdImported();
+        });
+      },
+      generateJsonFromRes: function() {
+        var json;
+        json = CloudResources('OpsResource', this.getMsrId()).generatedJson;
+        if (!json.agent.module.repo) {
+          json.agent.module = {
+            repo: App.user.get("repo"),
+            tag: App.user.get("tag")
+          };
+        }
+        return json;
+      },
+      __onFjdImported: function() {
+        var json;
+        json = this.generateJsonFromRes();
+        this.__setJsonData(json);
+        this.attributes.name = json.name;
+        return this;
+      },
+      __fjdStack: function(self) {
+        if (!this.isStack()) {
+          return;
+        }
+        return ApiRequest("stack_info", {
+          region_name: this.get("region"),
+          stack_ids: [this.get("id")]
+        }).then(function(ds) {
+          return self.__setJsonData(ds[0]);
+        });
+      },
+      __fjdApp: function(self) {
+        if (!this.isApp()) {
+          return;
+        }
+        return ApiRequest("app_info", {
+          region_name: this.get("region"),
+          app_ids: [this.get("id")]
+        }).then(function(ds) {
+          return self.__setJsonData(ds[0]);
+        });
+      },
+      __setJsonData: function(json) {
+        var newLayout;
+        if (!json) {
+          this.__destroy();
+          throw new McError(ApiRequest.Errors.MissingDataInServer, "Stack/App doesn't exist.");
+        }
+        if (!json.agent) {
+          json.agent = {
+            enabled: false,
+            module: {
+              repo: App.user.get("repo"),
+              tag: App.user.get("tag")
+            }
+          };
+        }
+        if (!json.property) {
+          json.property = {
+            stoppable: true
+          };
+        }
+
+        /*
+        Old JSON will have structure like :
+        layout : {
+          component : { node : {}, group : {} }
+          size : []
+        }
+        New JSON will have structure like :
+        layout : {
+          xxx  : {}
+          size : []
+        }
+         */
+        if (json.layout && json.layout.component) {
+          newLayout = $.extend({}, json.layout.component.node, json.layout.component.group);
+          newLayout.size = json.layout.size;
+          json.layout = newLayout;
+        }
+        if (json.layout && !json.layout.size) {
+          json.layout.size = [240, 240];
+        }
+        if ((json.version || "").split("-").length < 3) {
+          json.version = OpsModelLastestVersion;
+        }
+        this.__jsonData = json;
+        if (this.attributes.name !== json.name) {
+          this.set("name", json.name);
+        }
+        if (json.autoLayout) {
+          this.set("autoLayout", json.autoLayout);
+        }
+        return this;
+      },
+      save: function(newJson, thumbnail) {
+        var api, d, nameClash, self;
+        if (this.isApp() || this.testState(OpsModelState.Saving)) {
+          return this.__returnErrorPromise();
+        }
+        if (!newJson) {
+          newJson = this.__jsonData;
+        }
+        this.set("state", OpsModelState.Saving);
+        nameClash = this.collection.where({
+          name: newJson.name
+        }) || [];
+        if (nameClash.length > 1 || (nameClash[0] && nameClash[0] !== this)) {
+          d = Q.defer();
+          d.reject(McError(ApiRequest.Errors.StackRepeatedStack, "Stack name has already been used."));
+          return d.promise;
+        }
+        api = this.get("id") ? "stack_save" : "stack_create";
+        if (newJson.state !== "Enabled") {
+          console.warn("The json's state isnt `Enabled` when saving the stack", this, newJson);
+          newJson.state = "Enabled";
+        }
+        newJson.id = this.get("id");
+        self = this;
+        return ApiRequest(api, {
+          region_name: this.get("region"),
+          spec: newJson
+        }).then(function(res) {
+          var attr;
+          attr = {
+            name: newJson.name,
+            version: newJson.version,
+            updateTime: +(new Date()),
+            stoppable: res.property.stoppable,
+            state: OpsModelState.UnRun
+          };
+          if (!self.get("id")) {
+            attr.id = res.id;
+          }
+          if (thumbnail) {
+            ThumbUtil.save(self.get("id") || attr.id, thumbnail);
+          }
+          self.set(attr);
+          self.__jsonData = res;
+          self.trigger("jsonDataSaved", self);
+          if (attr.id) {
+            self.collection.__triggerUpdate(self);
+          }
+          return self;
+        }, function(err) {
+          self.set("state", OpsModelState.UnRun);
+          throw err;
+        });
+      },
+      remove: function() {
+        var d, self;
+        if (this.isPersisted() && this.isApp()) {
+          return this.__returnErrorPromise();
+        }
+        this.__destroy();
+        if (!this.get("id")) {
+          d = Q.defer();
+          d.resolve();
+          return d.promise;
+        }
+        self = this;
+        return ApiRequest("stack_remove", {
+          region_name: this.get("region"),
+          stack_id: this.get("id")
+        }).fail(function() {
+          this.set("state", OpsModelState.UnRun);
+          return App.model.stackList().add(self);
+        });
+      },
+      run: function(toRunJson, appName) {
+        var region;
+        region = this.get("region");
+        toRunJson.id = this.get("id") || "";
+        return ApiRequest("stack_run_v2", {
+          region_name: region,
+          stack: toRunJson,
+          app_name: appName
+        }).then(function(res) {
+          var m;
+          m = new OpsModel({
+            name: appName,
+            requestId: res[0],
+            state: OpsModelState.Initializing,
+            progress: 0,
+            region: region,
+            provider: toRunJson.provider,
+            usage: toRunJson.usage,
+            version: toRunJson.version,
+            updateTime: +(new Date()),
+            stoppable: toRunJson.property.stoppable,
+            resource_diff: false
+          });
+          App.model.appList().add(m);
+          return m;
+        });
+      },
+      duplicate: function(name) {
+        var attr, collection, thumbnail;
+        if (this.isApp()) {
+          return;
+        }
+        thumbnail = ThumbUtil.fetch(this.get("id"));
+        attr = $.extend(true, {}, this.attributes, {
+          name: name,
+          updateTime: +(new Date()),
+          provider: this.get("provider")
+        });
+        collection = this.collection;
+        return ApiRequest("stack_save_as", {
+          region_name: this.get("region"),
+          stack_id: this.get("id"),
+          new_name: name || this.collection.getNewName()
+        }).then(function(id) {
+          if (thumbnail) {
+            ThumbUtil.save(id, thumbnail);
+          }
+          attr.id = id;
+          return collection.add(new OpsModel(attr));
+        });
+      },
+      stop: function() {
+        var self;
+        if (!this.isApp() || this.get("state") !== OpsModelState.Running) {
+          return this.__returnErrorPromise();
+        }
+        self = this;
+        this.set("state", OpsModelState.Stopping);
+        this.attributes.progress = 0;
+        return ApiRequest("app_stop", {
+          region_name: this.get("region"),
+          app_id: this.get("id"),
+          app_name: this.get("name")
+        }).fail(function(err) {
+          self.set("state", OpsModelState.Running);
+          throw err;
+        });
+      },
+      start: function() {
+        var self;
+        if (!this.isApp() || this.get("state") !== OpsModelState.Stopped) {
+          return this.__returnErrorPromise();
+        }
+        self = this;
+        this.set("state", OpsModelState.Starting);
+        this.attributes.progress = 0;
+        return ApiRequest("app_start", {
+          region_name: this.get("region"),
+          app_id: this.get("id"),
+          app_name: this.get("name")
+        }).fail(function(err) {
+          self.set("state", OpsModelState.Stopped);
+          throw err;
+        });
+      },
+      terminate: function(force, extraOption) {
+        var oldState, options, self;
+        if (force == null) {
+          force = false;
+        }
+        if (!this.isApp()) {
+          return this.__returnErrorPromise();
+        }
+        oldState = this.get("state");
+        this.set("state", OpsModelState.Terminating);
+        this.attributes.progress = 0;
+        this.attributes.terminateFail = false;
+        self = this;
+        options = $.extend({
+          region_name: this.get("region"),
+          app_id: this.get("id"),
+          app_name: this.get("name"),
+          flag: force
+        }, extraOption || {});
+        return ApiRequest("app_terminate", options).then(function() {
+          if (force) {
+            self.__destroy();
+          }
+        }, function(err) {
+          if (err.error < 0) {
+            throw err;
+          }
+          self.set({
+            state: oldState,
+            terminateFail: true
+          });
+          throw err;
+        });
+      },
+      update: function(newJson, fastUpdate) {
+        var errorHandler, oldState, self;
+        if (!this.isApp()) {
+          return this.__returnErrorPromise();
+        }
+        if (this.__updateAppDefer) {
+          console.error("The app is already updating!");
+          return this.__updateAppDefer.promise;
+        }
+        oldState = this.get("state");
+        this.set("state", OpsModelState.Updating);
+        this.attributes.progress = 0;
+        this.__updateAppDefer = Q.defer();
+        self = this;
+        ApiRequest("app_update", {
+          region_name: this.get("region"),
+          spec: newJson,
+          app_id: this.get("id"),
+          fast_update: fastUpdate
+        }).fail(function(error) {
+          return self.__updateAppDefer.reject(error);
+        });
+        errorHandler = function(error) {
+          self.__updateAppDefer = null;
+          self.attributes.progress = 0;
+          self.set({
+            state: oldState
+          });
+          throw error;
+        };
+        return this.__updateAppDefer.promise.then(function() {
+          self.__jsonData = null;
+          return self.fetchJsonData().then(function() {
+            self.__updateAppDefer = null;
+            self.importMsrId = void 0;
+            return self.set({
+              name: newJson.name,
+              state: OpsModelState.Running
+            });
+          }, errorHandler);
+        }, errorHandler);
+      },
+      saveApp: function(newJson) {
+        var oldState, self;
+        if (!this.isApp()) {
+          return this.__returnErrorPromise();
+        }
+        if (this.__saveAppDefer) {
+          console.error("The app is already saving!");
+          return this.__saveAppDefer.promise;
+        }
+        newJson.changed = false;
+        if (newJson.state !== this.getStateDesc()) {
+          console.warn("The new app json's state isnt the same as the app", this, newJson);
+          newJson.state = this.getStateDesc();
+        }
+        console.assert((newJson.id || "").indexOf("stack-") === -1, "The newJson has wrong appid, in saveApp()");
+        if (newJson.id) {
+          if (newJson.id !== this.get("id")) {
+            console.warn("The newJson has different id, in saveApp()");
+          }
+          newJson.id = this.get("id");
+        } else {
+          newJson.id = "";
+        }
+        oldState = this.get("state");
+        this.set("state", OpsModelState.Saving);
+        this.attributes.progress = 0;
+        this.__saveAppDefer = Q.defer();
+        self = this;
+        ApiRequest("app_save_info", {
+          spec: newJson
+        }).then(function(res) {
+          if (!self.id) {
+            self.attributes.requestId = res[0];
+          }
+          self.attributes.importMsrId = void 0;
+        }, function(error) {
+          return self.__saveAppDefer.reject(error);
+        });
+        return this.__saveAppDefer.promise.then(function() {
+          self.__jsonData = newJson;
+          self.attributes.requestId = void 0;
+          self.__saveAppDefer = null;
+          self.set({
+            name: newJson.name,
+            state: oldState,
+            usage: newJson.usage
+          });
+        }, function(error) {
+          self.__saveAppDefer = null;
+          self.attributes.requestId = void 0;
+          self.attributes.progress = 0;
+          self.set({
+            state: oldState
+          });
+          throw error;
+        });
+      },
+      setStatusProgress: function(steps, totalSteps) {
+        var progress;
+        progress = parseInt(steps * 100.0 / totalSteps);
+        if (this.attributes.progress !== progress) {
+          this.attributes.progress = progress;
+          this.trigger("change:progress", this, progress);
+        }
+      },
+      isProcessing: function() {
+        var state;
+        state = this.attributes.state;
+        return state === OpsModelState.Initializing || state === OpsModelState.Stopping || state === OpsModelState.Updating || state === OpsModelState.Terminating || state === OpsModelState.Starting || state === OpsModelState.Saving;
+      },
+      setStatusWithApiResult: function(state) {
+        console.info("OpsModel's state changes due to ApiRequest:", state, this);
+        return this.set("state", OpsModelState[state]);
+      },
+      setStatusWithWSEvent: function(operation, state, error) {
+        var d, self, toState;
+        console.info("OpsModel's state changes due to WS event:", operation, state, error, this);
+        switch (operation) {
+          case "launch":
+            if (state.completed) {
+              toState = OpsModelState.Running;
+            } else if (state.failed) {
+              toState = OpsModelState.Destroyed;
+            }
+            break;
+          case "stop":
+            if (state.completed) {
+              toState = OpsModelState.Stopped;
+            } else if (state.failed) {
+              toState = OpsModelState.Running;
+            }
+            break;
+          case "update":
+            if (!this.__updateAppDefer) {
+              console.warn("UpdateAppDefer is null when setStatusWithWSEvent with `update` event.");
+              return;
+            }
+            if (!state.completed) {
+              d = this.__updateAppDefer;
+              this.__updateAppDefer = null;
+              d.reject(McError(ApiRequest.Errors.OperationFailure, error));
+            } else {
+              this.__jsonData = null;
+              self = this;
+              this.fetchJsonData().then(function() {
+                d = self.__updateAppDefer;
+                self.__updateAppDefer = null;
+                return d.resolve();
+              });
+            }
+            return;
+          case "save":
+            if (!this.__saveAppDefer) {
+              console.warn("SaveAppDefer is null when setStatusWithWSEvent with `save` event.");
+              return;
+            }
+            d = this.__saveAppDefer;
+            this.__saveAppDefer = null;
+            if (state.completed) {
+              d.resolve();
+            } else {
+              d.reject(McError(ApiRequest.Errors.OperationFailure, error));
+            }
+            return;
+          case "terminate":
+            if (state.completed) {
+              toState = OpsModelState.Destroyed;
+            } else {
+              toState = OpsModelState.Stopped;
+              this.attributes.terminateFail = false;
+              this.set("terminateFail", true);
+            }
+            break;
+          case "start":
+            if (state.completed) {
+              toState = OpsModelState.Running;
+            } else {
+              toState = OpsModelState.Stopped;
+            }
+        }
+        if (error) {
+          this.attributes.opsActionError = error;
+        }
+        if (toState === OpsModelState.Destroyed) {
+          this.__destroy();
+        } else if (toState) {
+          this.attributes.progress = 0;
+          this.set("state", toState);
+        }
+      },
+
+      /*
+       Internal Methods
+       */
+      destroy: function() {
+        return console.info("OpsModel's destroy() doesn't do anything. You probably want to call remove(), stop() or terminate()");
+      },
+      __destroy: function() {
+        var msrId, _ref;
+        if (this.attributes.state === OpsModelState.Destroyed) {
+          return;
+        }
+        ThumbUtil.remove(this.get("id"));
+        msrId = this.getMsrId();
+        if (msrId) {
+          if ((_ref = CloudResources("OpsResource", msrId)) != null) {
+            _ref.destroy();
+          }
+        }
+        this.attributes.state = OpsModelState.Destroyed;
+        return this.trigger('destroy', this, this.collection);
+      },
+      __returnErrorPromise: function() {
+        var d;
+        d = Q.defer();
+        d.resolve(McError(ApiRequest.Errors.InvalidMethodCall, "The method is not supported by this model."));
+        return d.promise;
+      },
+      __createRawJson: function() {
+        return {
+          id: this.get("id") || "",
+          name: this.get("name"),
+          description: "",
+          region: this.get("region"),
+          platform: "ec2-vpc",
+          state: "Enabled",
+          version: this.get("version"),
+          resource_diff: true,
+          component: {},
+          provider: this.get("provider"),
+          layout: {
+            size: [240, 240]
+          },
+          agent: {
+            enabled: true,
+            module: {
+              repo: App.user.get("repo"),
+              tag: App.user.get("tag")
+            }
+          },
+          property: {
+            stoppable: true
+          }
+        };
+      },
+      __initJsonData: function() {
+        this.__jsonData = this.__createRawJson();
+      }
+    }, {
+      extend: function(protoProps, staticProps) {
+        var provider, subClass, _i, _len, _ref;
+        subClass = __detailExtend.call(this, protoProps, staticProps);
+        _ref = staticProps.supportedProviders;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          provider = _ref[_i];
+          KnownOpsModelClass[provider] = subClass;
+        }
+        return subClass;
+      }
+    });
+    OpsModel.Type = OpsModelType;
+    OpsModel.State = OpsModelState;
+    OpsModel.LatestVersion = OpsModelLastestVersion;
+    return OpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The collection for stack / app
+----------------------------
+
+  This collection will trigger an "update" event when the list ( containing all visible items ) is changed.
+ */
+
+(function() {
+  define('ide/submodels/OpsCollection',["OpsModel", "constant", "backbone"], function(OpsModel, constant) {
+    return Backbone.Collection.extend({
+      model: OpsModel,
+      newNameTmpl: "untitled",
+      comparator: function(m1, m2) {
+        return -(m1.attributes.updateTime - m2.attributes.updateTime);
+      },
+      initialize: function() {
+        this.on("change:updateTime", this.sort, this);
+        this.on("add remove", this.__triggerUpdate, this);
+        this.on("change:id", this.__triggerUpdate, this);
+        this.__debounceUpdate = _.debounce(function() {
+          return this.trigger("update");
+        });
+      },
+      getNewName: function(possibleName) {
+        var base, nameMap, nameMatch, newName, tmpl;
+        nameMap = this.groupBy("name");
+        base = 0;
+        if (possibleName) {
+          nameMatch = possibleName.match(/(.+)(-\d*)$/);
+          tmpl = nameMatch ? nameMatch[1] : possibleName;
+        } else {
+          tmpl = this.newNameTmpl;
+        }
+        newName = tmpl + "-0";
+        while (true) {
+          if (nameMap[newName]) {
+            base += 1;
+          } else {
+            break;
+          }
+          newName = tmpl + "-" + base;
+        }
+        return newName;
+      },
+      isNameAvailable: function(name) {
+        return name && !this.findWhere({
+          name: name
+        });
+      },
+      groupByRegion: function(includeEmptyRegion, toJSON, includeEveryOps) {
+        var R, list, m, models, r, regionMap, regions, _i, _j, _len, _len1, _ref, _ref1;
+        if (includeEmptyRegion == null) {
+          includeEmptyRegion = false;
+        }
+        if (toJSON == null) {
+          toJSON = true;
+        }
+        if (includeEveryOps == null) {
+          includeEveryOps = false;
+        }
+        regionMap = {};
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (!includeEveryOps && !m.isExisting()) {
+            continue;
+          }
+          r = m.attributes.region;
+          list = regionMap[r] || (regionMap[r] = []);
+          list.push(toJSON ? m.toJSON() : m);
+        }
+        regions = [];
+        _ref1 = constant.REGION_KEYS;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          R = _ref1[_j];
+          models = regionMap[R];
+          if (!models && !includeEmptyRegion) {
+            continue;
+          }
+          regions.push({
+            region: R,
+            regionName: constant.REGION_SHORT_LABEL[R],
+            data: models || []
+          });
+        }
+        return regions;
+      },
+      filterRecent: function(toJSON) {
+        var filters, m, now, time, _i, _len, _ref;
+        if (toJSON == null) {
+          toJSON = false;
+        }
+        now = Math.round(+(new Date()) / 1000);
+        filters = [];
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (m.testState(OpsModel.State.Terminating)) {
+            continue;
+          }
+          time = m.get("updateTime");
+          if (now - time >= 2592000) {
+            break;
+          }
+          if (toJSON) {
+            m = m.toJSON();
+            m.formatedTime = MC.intervalDate(time);
+          }
+          filters.push(m);
+        }
+        return filters;
+      },
+      __triggerUpdate: function(model) {
+        if (!model) {
+          return;
+        }
+        if (this.indexOf(model) !== -1 && !model.isExisting()) {
+          return;
+        }
+        this.__debounceUpdate();
+      },
+      add: function(model) {
+        var newName;
+        if (!this.isNameAvailable(model.get("name"))) {
+          newName = this.getNewName();
+          model.attributes.name = newName;
+          if (model.__jsonData) {
+            model.__jsonData.name = newName;
+          }
+        }
+        return Backbone.Collection.prototype.add.apply(this, arguments);
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('ide/submodels/OpsModelOs',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
+    var OsOpsModel;
+    OsOpsModel = OpsModel.extend({
+      type: OpsModel.Type.OpenStack,
+      getMsrId: function() {
+        var comp, msrId, uid, _ref;
+        msrId = OpsModel.prototype.getMsrId.call(this);
+        if (msrId) {
+          return msrId;
+        }
+        if (!this.__jsonData) {
+          return void 0;
+        }
+        _ref = this.__jsonData.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === constant.RESTYPE.OSNETWORK) {
+            return comp.resource.id;
+          }
+        }
+        return void 0;
+      },
+      __initJsonData: function() {
+        var comp, component, id, json, l, layout, networkId, subnetId;
+        json = this.__createRawJson();
+        layout = {
+          "NETWORK": {
+            coordinate: [27, 3],
+            size: [60, 60]
+          },
+          "SUBNET": {
+            coordinate: [30, 6],
+            size: [25, 54]
+          },
+          "RT": {
+            coordinate: [10, 3]
+          }
+        };
+        component = {
+          'KP': {
+            type: "OS::Nova::KeyPair",
+            name: "DefaultKP",
+            resource: {}
+          },
+          "NETWORK": {
+            type: "OS::Neutron::Network",
+            resource: {
+              name: "network1"
+            }
+          },
+          "SG": {
+            type: "OS::Neutron::SecurityGroup",
+            resource: {
+              name: "DefaultSG",
+              description: "default security group",
+              rules: []
+            }
+          },
+          "RT": {
+            type: "OS::Neutron::Router",
+            resource: {
+              external_gateway_info: {}
+            }
+          },
+          "SUBNET": {
+            type: "OS::Neutron::Subnet",
+            resource: {
+              cidr: "10.0.0.0/16",
+              enable_dhcp: true
+            }
+          }
+        };
+        for (id in component) {
+          comp = component[id];
+          comp.uid = MC.guid();
+          json.component[comp.uid] = comp;
+          if (layout[id]) {
+            l = layout[id];
+            l.uid = comp.uid;
+            json.layout[l.uid] = l;
+          }
+          if (comp.type === "OS::Neutron::Subnet") {
+            subnetId = comp.uid;
+          } else if (comp.type === "OS::Neutron::Network") {
+            networkId = comp.uid;
+          }
+        }
+        for (id in component) {
+          comp = component[id];
+          if (comp.type === "OS::Neutron::Subnet") {
+            comp.resource.network_id = "@{" + networkId + ".resource.id}";
+          } else if (comp.type === "OS::Neutron::Router") {
+            comp.resource.router_interface = [
+              {
+                subnet_id: "@{" + subnetId + ".resource.id}"
+              }
+            ];
+          }
+        }
+        this.__jsonData = json;
+      }
+    }, {
+      supportedProviders: ["os::awcloud_bj"]
+    });
+    return OsOpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
+    var AwsOpsModel;
+    AwsOpsModel = OpsModel.extend({
+      type: OpsModel.Type.Amazon,
+      getMsrId: function() {
+        var comp, msrId, uid, _ref;
+        msrId = OpsModel.prototype.getMsrId.call(this);
+        if (msrId) {
+          return msrId;
+        }
+        if (!this.__jsonData) {
+          return void 0;
+        }
+        _ref = this.__jsonData.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === constant.RESTYPE.VPC) {
+            return comp.resource.VpcId;
+          }
+        }
+        return void 0;
+      },
+      __initJsonData: function() {
+        var comp, component, id, json, l, layout, vpcId, vpcRef;
+        json = this.__createRawJson();
+        vpcId = MC.guid();
+        vpcRef = "@{" + vpcId + ".resource.VpcId}";
+        layout = {
+          VPC: {
+            coordinate: [5, 3],
+            size: [60, 60]
+          },
+          RTB: {
+            coordinate: [50, 5],
+            groupUId: vpcId
+          }
+        };
+        component = {
+          KP: {
+            type: "AWS.EC2.KeyPair",
+            name: "DefaultKP",
+            resource: {
+              KeyName: "DefaultKP",
+              KeyFingerprint: ""
+            }
+          },
+          SG: {
+            type: "AWS.EC2.SecurityGroup",
+            name: "DefaultSG",
+            resource: {
+              IpPermissions: [
+                {
+                  IpProtocol: "tcp",
+                  IpRanges: "0.0.0.0/0",
+                  FromPort: "22",
+                  ToPort: "22"
+                }
+              ],
+              IpPermissionsEgress: [
+                {
+                  FromPort: "0",
+                  IpProtocol: "-1",
+                  IpRanges: "0.0.0.0/0",
+                  ToPort: "65535"
+                }
+              ],
+              Default: true,
+              GroupId: "",
+              GroupName: "DefaultSG",
+              GroupDescription: 'default VPC security group',
+              VpcId: vpcRef
+            }
+          },
+          ACL: {
+            type: "AWS.VPC.NetworkAcl",
+            name: "DefaultACL",
+            resource: {
+              AssociationSet: [],
+              Default: true,
+              NetworkAclId: "",
+              VpcId: vpcRef,
+              EntrySet: [
+                {
+                  RuleAction: "allow",
+                  Protocol: -1,
+                  CidrBlock: "0.0.0.0/0",
+                  Egress: true,
+                  IcmpTypeCode: {
+                    Type: "",
+                    Code: ""
+                  },
+                  PortRange: {
+                    To: "",
+                    From: ""
+                  },
+                  RuleNumber: 100
+                }, {
+                  RuleAction: "allow",
+                  Protocol: -1,
+                  CidrBlock: "0.0.0.0/0",
+                  Egress: false,
+                  IcmpTypeCode: {
+                    Type: "",
+                    Code: ""
+                  },
+                  PortRange: {
+                    To: "",
+                    From: ""
+                  },
+                  RuleNumber: 100
+                }, {
+                  RuleAction: "deny",
+                  Protocol: -1,
+                  CidrBlock: "0.0.0.0/0",
+                  Egress: true,
+                  IcmpTypeCode: {
+                    Type: "",
+                    Code: ""
+                  },
+                  PortRange: {
+                    To: "",
+                    From: ""
+                  },
+                  RuleNumber: 32767
+                }, {
+                  RuleAction: "deny",
+                  Protocol: -1,
+                  CidrBlock: "0.0.0.0/0",
+                  Egress: false,
+                  IcmpTypeCode: {
+                    Type: "",
+                    Code: ""
+                  },
+                  PortRange: {
+                    To: "",
+                    From: ""
+                  },
+                  RuleNumber: 32767
+                }
+              ]
+            }
+          },
+          VPC: {
+            type: "AWS.VPC.VPC",
+            name: "vpc",
+            resource: {
+              VpcId: "",
+              CidrBlock: "10.0.0.0/16",
+              DhcpOptionsId: "",
+              EnableDnsHostnames: false,
+              EnableDnsSupport: true,
+              InstanceTenancy: "default"
+            }
+          },
+          RTB: {
+            type: "AWS.VPC.RouteTable",
+            name: "RT-0",
+            resource: {
+              VpcId: vpcRef,
+              RouteTableId: "",
+              AssociationSet: [
+                {
+                  Main: "true",
+                  SubnetId: "",
+                  RouteTableAssociationId: ""
+                }
+              ],
+              PropagatingVgwSet: [],
+              RouteSet: [
+                {
+                  InstanceId: "",
+                  NetworkInterfaceId: "",
+                  Origin: 'CreateRouteTable',
+                  GatewayId: 'local',
+                  DestinationCidrBlock: '10.0.0.0/16'
+                }
+              ]
+            }
+          }
+        };
+        for (id in component) {
+          comp = component[id];
+          if (id === "VPC") {
+            comp.uid = vpcId;
+          } else {
+            comp.uid = MC.guid();
+          }
+          json.component[comp.uid] = comp;
+          if (layout[id]) {
+            l = layout[id];
+            l.uid = comp.uid;
+            json.layout[comp.uid] = l;
+          }
+        }
+        this.__jsonData = json;
+      }
+    }, {
+      supportedProviders: ["aws::china", "aws::global"]
+    });
+    return AwsOpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for application
+----------------------------
+
+  This model holds all the data of the user in our database. For example, stack list / app list / notification things and extra.
+ */
+
+(function() {
+  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "i18n!/nls/lang.js", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil, lang) {
+    return Backbone.Model.extend({
+      defaults: function() {
+        return {
+          __websocketReady: false,
+          notification: [],
+          stackList: new OpsCollection(),
+          appList: new OpsCollection()
+        };
+      },
+      markNotificationRead: function() {
+        var i, _i, _len, _ref;
+        _ref = this.attributes.notification;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          i.readed = true;
+        }
+      },
+      stackList: function() {
+        return this.attributes.stackList;
+      },
+      appList: function() {
+        return this.attributes.appList;
+      },
+      getOpsModelById: function(opsId) {
+        return this.attributes.appList.get(opsId) || this.attributes.stackList.get(opsId);
+      },
+      createImportOps: function(region, provider, msrId) {
+        var m;
+        m = this.attributes.appList.findWhere({
+          importMsrId: msrId
+        });
+        if (m) {
+          return m;
+        }
+        m = new OpsModel({
+          name: "ImportedApp",
+          importMsrId: msrId,
+          region: region,
+          provider: provider,
+          state: OpsModel.State.Running
+        });
+        this.attributes.appList.add(m);
+        return m;
+      },
+      createSampleOps: function(sampleId) {
+        var m;
+        m = new OpsModel({
+          sampleId: sampleId
+        });
+        this.attributes.stackList.add(m);
+        return m;
+      },
+      createStack: function(region, provider) {
+        var m;
+        if (provider == null) {
+          provider = "aws::china";
+        }
+        m = new OpsModel({
+          region: region,
+          provider: provider
+        }, {
+          initJsonData: true
+        });
+        this.attributes.stackList.add(m);
+        return m;
+      },
+      createStackByJson: function(json, updateLayout) {
+        var m;
+        if (updateLayout == null) {
+          updateLayout = false;
+        }
+        if (!this.attributes.stackList.isNameAvailable(json.name)) {
+          json.name = this.stackList().getNewName(json.name);
+        }
+        m = new OpsModel({
+          name: json.name,
+          region: json.region,
+          autoLayout: updateLayout
+        }, {
+          jsonData: json
+        });
+        this.attributes.stackList.add(m);
+        return m;
+      },
+      getPriceData: function(awsRegion) {
+        return (this.__awsdata[awsRegion] || {}).price;
+      },
+      getOsFamilyConfig: function(awsRegion) {
+        return (this.__awsdata[awsRegion] || {}).osFamilyConfig;
+      },
+      getInstanceTypeConfig: function(awsRegion) {
+        return (this.__awsdata[awsRegion] || {}).instanceTypeConfig;
+      },
+      getRdsData: function(awsRegion) {
+        return (this.__awsdata[awsRegion] || {}).rds;
+      },
+      getStateModule: function(repo, tag) {
+        return this.__stateModuleData[repo + ":" + tag];
+      },
+      getOpenstackFlavors: function(provider, region) {
+        return this.__osdata[provider][region].flavors;
+      },
+      getOpenstackQuotas: function(provider) {
+        return this.__osdata[provider].quota;
+      },
+
+      /*
+        Internal methods
+       */
+      initialize: function() {
+        this.__awsdata = {};
+        this.__osdata = {};
+        this.__stateModuleData = {};
+        this.__initializeNotification();
+      },
+      fetch: function() {
+        var ap, awsData, osData, self, sp;
+        self = this;
+        sp = ApiRequest("stack_list", {
+          region_name: null
+        }).then(function(res) {
+          return self.get("stackList").set(self.__parseListRes(res));
+        });
+        ap = ApiRequest("app_list", {
+          region_name: null
+        }).then(function(res) {
+          return self.get("appList").set(self.__parseListRes(res));
+        });
+        awsData = ApiRequest("aws_aws", {
+          fields: ["region", "price", "instance_types", "rds"]
+        }).then(function(res) {
+          return self.__parseAwsData(res);
+        });
+        osData = ApiRequestOs("os_os", {
+          provider: null
+        }).then(function(res) {
+          return self.__parseOsData(res);
+        });
+        return Q.all([sp, ap, awsData, osData]).then(function() {
+          var e;
+          try {
+            ThumbUtil.cleanup(self.appList().pluck("id").concat(self.stackList().pluck("id")));
+          } catch (_error) {
+            e = _error;
+          }
+        });
+      },
+      __parseAwsData: function(res) {
+        var cpu, i, instanceTypeConfig, storage, typeInfo, _i, _j, _len, _len1, _ref;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          instanceTypeConfig = {};
+          this.__awsdata[i.region] = {
+            price: i.price,
+            osFamilyConfig: i.instance_types.sort,
+            instanceTypeConfig: instanceTypeConfig,
+            rds: i.rds
+          };
+          _ref = i.instance_types.info || [];
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            typeInfo = _ref[_j];
+            if (!typeInfo) {
+              continue;
+            }
+            cpu = typeInfo.cpu || {};
+            typeInfo.name = typeInfo.description;
+            typeInfo.formated_desc = [typeInfo.name || "", cpu.units + " ECUs", cpu.cores + " vCPUs", typeInfo.memory + " GiB memory"];
+            typeInfo.description = typeInfo.formated_desc.join(", ");
+            storage = typeInfo.storage;
+            if (storage && storage.ssd === true) {
+              typeInfo.description += ", " + storage.count + " x " + storage.size + " GiB SSD Storage Capacity";
+            }
+            instanceTypeConfig[typeInfo.typeName] = typeInfo;
+          }
+        }
+      },
+      __parseOsData: function(res) {
+        var data, dataset, osQuota, provider, providerData, self, _i, _len;
+        self = this;
+        for (provider in res) {
+          dataset = res[provider];
+          for (_i = 0, _len = dataset.length; _i < _len; _i++) {
+            data = dataset[_i];
+            providerData = this.__osdata[provider] || (this.__osdata[provider] = {});
+            providerData[data.region] = {
+              flavors: new Backbone.Collection(_.values(data.flavor))
+            };
+          }
+          osQuota = ApiRequestOs("os_quota", {
+            provider: provider
+          }).then(function(res) {
+            return self.__parseOsQuota(res);
+          });
+        }
+      },
+      __parseOsQuota: function(res) {
+        var cate, data, dataset, key, pd, provider, q, quota;
+        quota = {};
+        for (provider in res) {
+          dataset = res[provider];
+          for (cate in dataset) {
+            data = dataset[cate];
+            for (key in data) {
+              q = data[key];
+              quota["" + cate + "::" + key] = q;
+            }
+          }
+          pd = this.__osdata[provider] || (this.__osdata[provider] = {});
+          pd.quota = quota;
+        }
+      },
+      fetchStateModule: function(repo, tag) {
+        var d, data, self;
+        data = this.getStateModule(repo, tag);
+        if (data) {
+          d = Q.defer();
+          d.resolve(data);
+          return d.promise;
+        }
+        self = this;
+        return ApiRequest("state_module", {
+          mod_repo: repo,
+          mod_tag: tag
+        }).then(function(d) {
+          var e;
+          try {
+            d = JSON.parse(d);
+          } catch (_error) {
+            e = _error;
+            throw McError(ApiRequest.Errors.InvalidRpcReturn, "Can't load state data. Please retry.");
+          }
+          self.__stateModuleData[repo + ":" + tag] = d;
+          return d;
+        });
+      },
+      __parseListRes: function(res) {
+        var ops, r, _i, _len;
+        r = [];
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          ops = res[_i];
+          r.push({
+            id: ops.id,
+            updateTime: ops.time_update,
+            region: ops.region,
+            usage: ops.usage,
+            name: ops.name,
+            version: ops.version,
+            provider: ops.provider,
+            state: OpsModel.State[ops.state] || OpsModel.State.UnRun,
+            stoppable: !(ops.property && ops.property.stoppable === false)
+          });
+        }
+        return r;
+      },
+      __initializeNotification: function() {
+        var self;
+        self = this;
+        return App.WS.on("requestChange", function(idx, dag) {
+          return self.__processSingleNotification(idx, dag);
+        });
+      },
+      __triggerNotification: _.debounce(function() {
+        return this.trigger("change:notification");
+      }, 400),
+      __processSingleNotification: function(idx) {
+        var i, info_list, item, ops, req, same_req, space, _i, _len;
+        req = App.WS.collection.request.findOne({
+          '_id': idx
+        });
+        if (!req) {
+          return;
+        }
+        item = this.__parseRequestInfo(req);
+        if (!item) {
+          return;
+        }
+        this.__handleRequestChange(item);
+        if (item.operation === "save") {
+          return;
+        }
+        info_list = this.attributes.notification;
+        for (idx = _i = 0, _len = info_list.length; _i < _len; idx = ++_i) {
+          i = info_list[idx];
+          if (i.id === item.id) {
+            same_req = i;
+            break;
+          }
+        }
+        if (same_req && _.isEqual(same_req.state, item.state)) {
+          return;
+        }
+        item.readed = !App.WS.isReady();
+        if (!item.readed && App.workspaces && !item.state.failed) {
+          space = App.workspaces.getAwakeSpace();
+          ops = this.appList().get(item.targetId) || this.stackList().get(item.targetId);
+          item.readed = space.isWorkingOn(ops);
+        }
+        info_list.splice(idx, 1);
+        info_list.splice(0, 0, item);
+        if (info_list.length > 30) {
+          info_list.length = 30;
+        }
+        this.__triggerNotification();
+        return null;
+      },
+      __parseRequestInfo: function(req) {
+        var dag, duration, i, request, time_begin, time_end, _i, _len, _ref;
+        if (!req.brief) {
+          return;
+        }
+        dag = req.dag;
+        request = {
+          id: req.id,
+          region: constant.REGION_SHORT_LABEL[req.region],
+          time: req.time_end,
+          operation: constant.OPS_CODE_NAME[req.code],
+          targetId: dag && dag.spec ? dag.spec.id : req.rid,
+          targetName: req.brief.split(" ")[2] || "",
+          state: {
+            processing: true
+          },
+          readed: true
+        };
+        switch (req.state) {
+          case constant.OPS_STATE.OPS_STATE_FAILED:
+            request.error = req.data;
+            request.state = {
+              failed: true
+            };
+            break;
+          case constant.OPS_STATE.OPS_STATE_INPROCESS:
+            request.time = req.time_begin;
+            request.step = 0;
+            if (req.dag && req.dag.step) {
+              request.totalSteps = req.dag.step.length;
+              _ref = req.dag.step;
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                i = _ref[_i];
+                if (i[1] === "done") {
+                  ++request.step;
+                }
+              }
+            } else {
+              request.totalSteps = 1;
+            }
+            break;
+          case constant.OPS_STATE.OPS_STATE_DONE:
+            if (request.operation === "save") {
+              request.targetId = req.data;
+            }
+            request.state = {
+              completed: true,
+              terminated: req.code === 'Forge.App.Terminate'
+            };
+            break;
+          case constant.OPS_STATE.OPS_STATE_PENDING:
+            request.state = {
+              pending: true
+            };
+            request.time = "";
+        }
+        if (request.time) {
+          request.time = MC.dateFormat(new Date(request.time * 1000), "hh:mm yyyy-MM-dd");
+          if (req.state !== constant.OPS_STATE.OPS_STATE_INPROCESS) {
+            time_begin = parseInt(req.time_begin, 10);
+            time_end = parseInt(req.time_end, 10);
+            if (!isNaN(time_begin) && !isNaN(time_end) && time_end >= time_begin) {
+              duration = time_end - time_begin;
+              if (duration < 60) {
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
+              } else {
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
+              }
+            }
+          }
+        }
+        return request;
+      },
+      __handleRequestChange: function(request) {
+        var theApp;
+        if (!App.WS.isReady() && !request.state.processing) {
+          return;
+        }
+        if (request.state.pending) {
+          return;
+        }
+        theApp = this.appList().get(request.targetId);
+        if (!theApp) {
+          theApp = this.appList().findWhere({
+            requestId: request.id
+          });
+          if (theApp && request.targetId) {
+            theApp.set("id", request.targetId);
+          }
+        }
+        if (!theApp) {
+          return;
+        }
+        if (!request.state.processing && !theApp.isProcessing()) {
+          return;
+        }
+        if (theApp.testState(OpsModel.State.Terminating) && request.operation !== "terminate") {
+          console.error("We recevied a request notification, which operation is not `terminate`. But the app is terminating.", request);
+          return;
+        }
+        if (request.state.processing) {
+          return theApp.setStatusProgress(request.step, request.totalSteps);
+        } else {
+          return theApp.setStatusWithWSEvent(request.operation, request.state, request.error);
+        }
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  User is a model containing user's data. Nothing more, nothing less.
+  Currently most of the data is stored in cookie. But in the future,
+  it might just fetch user data at the beginning.
+----------------------------
+ */
+
+(function() {
+  define('ide/User',["ApiRequest", "ApiRequestR", "backbone"], function(ApiRequest, ApiRequestR) {
+    var Model, PaymentState, UserState;
+    UserState = {
+      NotFirstTime: 2
+    };
+    PaymentState = {
+      NoInfo: "",
+      Pastdue: "pastdue",
+      Unpaid: "unpaid",
+      Active: "active"
+    };
+    Model = Backbone.Model.extend({
+      defaults: {
+        paymentState: "",
+        voQuotaPerMonth: 1000,
+        voQuotaCurrent: 0
+      },
+      initialize: function() {
+        this.set({
+          usercode: $.cookie("usercode"),
+          username: Base64.decode($.cookie("usercode")),
+          session: $.cookie("session_id")
+        });
+      },
+      hasCredential: function() {
+        return !!this.get("account");
+      },
+      isFirstVisit: function() {
+        return !(UserState.NotFirstTime & this.get("state"));
+      },
+      fullnameNotSet: function() {
+        return !this.get("firstName") || !this.get("lastName");
+      },
+      isUnpaid: function() {
+        return this.get("paymentState") === PaymentState.Unpaid;
+      },
+      shouldPay: function() {
+        return (this.get("voQuotaCurrent") >= this.get("voQuotaPerMonth")) && (!this.get("creditCard") || this.isUnpaid());
+      },
+      getBillingOverview: function() {
+        var ov;
+        ov = {
+          quotaTotal: this.get("voQuotaPerMonth"),
+          quotaCurrent: this.get("voQuotaCurrent"),
+          billingStart: this.get("billingStart"),
+          billingEnd: this.get("billingEnd"),
+          billingRemain: Math.round((this.get("billingEnd") - new Date()) / 24 / 3600000)
+        };
+        ov.quotaRemain = Math.max(ov.quotaTotal - ov.quotaCurrent, 0);
+        ov.billingRemain = Math.min(ov.billingRemain, 31);
+        ov.billingRemain = Math.max(ov.billingRemain, 0);
+        ov.quotaPercent = Math.round(Math.min(ov.quotaCurrent, ov.quotaTotal) / Math.max(ov.quotaCurrent, ov.quotaTotal) * 100);
+        return ov;
+      },
+      userInfoAccuired: function(result) {
+        var idx, paymentInfo, res, selfPage, t, _i, _len, _ref;
+        paymentInfo = result.payment || {};
+        selfPage = paymentInfo.self_page || {};
+        res = {
+          email: Base64.decode(result.email),
+          repo: result.mod_repo,
+          tag: result.mod_tag,
+          state: parseInt(result.state, 10),
+          intercomHash: result.intercom_secret,
+          account: result.account_id,
+          firstName: Base64.decode(result.first_name || ""),
+          lastName: Base64.decode(result.last_name || ""),
+          cardFirstName: Base64.decode(selfPage.first_name || ""),
+          cardLastName: Base64.decode(selfPage.last_name || ""),
+          voQuotaCurrent: paymentInfo.current_quota || 0,
+          voQuotaPerMonth: paymentInfo.max_quota || 3600,
+          has_card: !!paymentInfo.has_card,
+          paymentUrl: selfPage.url,
+          creditCard: selfPage.card,
+          billingEnd: new Date(selfPage.current_period_ends_at || null),
+          billingStart: new Date(selfPage.current_period_started_at || null),
+          renewDate: paymentInfo ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
+          paymentState: paymentInfo.state || "",
+          awsAccessKey: result.access_key,
+          awsSecretKey: result.secret_key,
+          tokens: result.tokens || [],
+          defaultToken: ""
+        };
+        if (result.account_id === "demo_account") {
+          res.account = res.awsAccessKey = res.awsSecretKey = "";
+        }
+        _ref = res.tokens;
+        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+          t = _ref[idx];
+          if (!t.name) {
+            res.defaultToken = t.token;
+            res.tokens.splice(idx, 1);
+            break;
+          }
+        }
+        this.set(res);
+        if (this.isFirstVisit()) {
+          ApiRequest("account_update_account", {
+            attributes: {
+              state: "" + (this.get("state") | UserState.NotFirstTime)
+            }
+          });
+        }
+      },
+      onWsUserStateChange: function(changes) {
+        var attr, changed, key, paymentInfo, that, toChange, value;
+        console.log(changes);
+        that = this;
+        paymentInfo = changes.payment;
+        if (!changes) {
+          return;
+        }
+        attr = {
+          current_quota: "voQuotaCurrent",
+          max_quota: "voQuotaPerMonth",
+          has_card: "creditCard",
+          state: "paymentState"
+        };
+        changed = !!changes.time_update;
+        toChange = {};
+        for (key in attr) {
+          value = attr[key];
+          if (paymentInfo != null ? paymentInfo.hasOwnProperty(key) : void 0) {
+            changed = true;
+            toChange[value] = paymentInfo[key];
+          }
+        }
+        if (changed) {
+          this.set(toChange);
+        }
+        if (paymentInfo != null ? paymentInfo.next_reset_time : void 0) {
+          App.user.set("renewDate", new Date(paymentInfo.next_reset_time * 1000));
+        }
+        if (App.user.get("firstName") && App.user.get("lastName")) {
+          ApiRequestR("payment_self").then(function(result) {
+            paymentInfo = {
+              creditCard: result.card,
+              billingEnd: new Date(result.current_period_ends_at || null),
+              billingStart: new Date(result.current_period_started_at || null),
+              paymentUrl: result.url,
+              cardFirstName: result.card ? Base64.decode(result.first_name || "") : void 0,
+              cardLastName: result.card ? Base64.decode(result.last_name || "") : void 0
+            };
+            that.set(paymentInfo);
+            return that.trigger("paymentUpdate");
+          });
+        }
+      },
+      bootIntercom: function() {
+        var intId;
+        if (!window.Intercom) {
+          intId = setInterval((function(_this) {
+            return function() {
+              if (window.Intercom) {
+                console.log("Intercom Loaded, Booting Intercom");
+                clearInterval(intId);
+                _this.bootIntercom();
+              }
+            };
+          })(this), 1000);
+          return;
+        }
+        window.Intercom("boot", {
+          app_id: "3rp02j1w",
+          email: this.get("email"),
+          username: this.get("username"),
+          user_hash: this.get("intercomHash"),
+          widget: {
+            'activator': '#support'
+          }
+        });
+      },
+      fetch: function() {
+        var self;
+        self = this;
+        return ApiRequest("session_login", {
+          username: this.get("username"),
+          password: this.get("session")
+        }).then(function(result) {
+          self.userInfoAccuired(result);
+
+          /* env:prod */
+          self.bootIntercom();
+
+          /* env:prod:end */
+          if (self.hasCredential()) {
+            return ApiRequest("ec2_DescribeRegions").fail(function() {});
+          }
+        }, function(err) {
+          if (err.error < 0) {
+            if (err.error === ApiRequest.Errors.Network500) {
+              window.location = "/500";
+            } else {
+              window.location.reload();
+            }
+          } else {
+            App.logout();
+          }
+          throw err;
+        });
+      },
+      acquireSession: function(password) {
+        return ApiRequest("session_login", {
+          username: this.get("username"),
+          password: password
+        }).then((function(_this) {
+          return function(result) {
+            $.cookie("session_id", result.session_id, {
+              expires: 30,
+              path: '/'
+            });
+            _this.set("session", result.session_id);
+            _this.userInfoAccuired(result);
+            _this.trigger("SessionUpdated");
+          };
+        })(this));
+      },
+      logout: function() {
+        var cValue, ckey, def, domain, _ref;
+        domain = {
+          "domain": window.location.hostname.replace("ide", ""),
+          "path": "/"
+        };
+        def = {
+          "path": "/"
+        };
+        _ref = $.cookie();
+        for (ckey in _ref) {
+          cValue = _ref[ckey];
+          $.removeCookie(ckey, domain);
+          $.removeCookie(ckey, def);
+        }
+      },
+      changePassword: function(oldPwd, newPwd) {
+        return ApiRequest("account_update_account", {
+          attributes: {
+            password: oldPwd,
+            new_password: newPwd
+          }
+        });
+      },
+      changeEmail: function(email, oldPwd) {
+        var self;
+        self = this;
+        return ApiRequest("account_update_account", {
+          attributes: {
+            password: oldPwd,
+            email: email
+          }
+        }).then(function() {
+          return self.set("email", email);
+        });
+      },
+      changeName: function(firstName, lastName) {
+        var defer, self;
+        self = this;
+        defer = new Q.defer();
+        if (firstName === self.get("firstName") && lastName === self.get("lastName")) {
+          defer.resolve();
+        }
+        ApiRequest("account_update_account", {
+          attributes: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }).then(function(res) {
+          self.userInfoAccuired(res);
+          return defer.resolve(res);
+        }, function(err) {
+          return defer.reject(err);
+        });
+        return defer.promise;
+      },
+      validateCredential: function(accessKey, secretKey) {
+        return ApiRequest("account_validate_credential", {
+          access_key: accessKey,
+          secret_key: secretKey
+        });
+      },
+      changeCredential: function(account, accessKey, secretKey, force) {
+        var self;
+        if (account == null) {
+          account = "";
+        }
+        if (accessKey == null) {
+          accessKey = "";
+        }
+        if (secretKey == null) {
+          secretKey = "";
+        }
+        if (force == null) {
+          force = false;
+        }
+        self = this;
+        return ApiRequest("account_set_credential", {
+          access_key: accessKey,
+          secret_key: secretKey,
+          account_id: account,
+          force_update: force
+        }).then(function() {
+          var attr;
+          attr = {
+            account: account,
+            awsAccessKey: accessKey,
+            awsSecretKey: secretKey
+          };
+          if (attr.awsAccessKey.length > 6) {
+            attr.awsAccessKey = (new Array(accessKey.length - 6)).join("*") + accessKey.substr(-6);
+          }
+          if (attr.awsSecretKey.length > 6) {
+            attr.awsSecretKey = (new Array(secretKey.length - 6)).join("*") + secretKey.substr(-6);
+          }
+          self.set(attr);
+          self.trigger("change:credential");
+        });
+      },
+      createToken: function() {
+        var base, nameMap, newName, self, t, tmpl, _i, _len, _ref;
+        tmpl = "MyToken";
+        base = 1;
+        nameMap = {};
+        _ref = this.attributes.tokens;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          t = _ref[_i];
+          nameMap[t.name] = true;
+        }
+        while (true) {
+          newName = tmpl + base;
+          if (nameMap[newName]) {
+            base += 1;
+          } else {
+            break;
+          }
+        }
+        self = this;
+        return ApiRequest("token_create", {
+          token_name: newName
+        }).then(function(res) {
+          self.attributes.tokens.splice(0, 0, {
+            name: res[0],
+            token: res[1]
+          });
+        });
+      },
+      removeToken: function(token) {
+        var idx, self, t, _i, _len, _ref;
+        _ref = this.attributes.tokens;
+        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+          t = _ref[idx];
+          if (t.token === token) {
+            break;
+          }
+        }
+        self = this;
+        return ApiRequest("token_remove", {
+          token: token,
+          token_name: t.name
+        }).then(function(res) {
+          idx = self.attributes.tokens.indexOf(t);
+          if (idx >= 0) {
+            self.attributes.tokens.splice(idx, 1);
+          }
+        });
+      },
+      updateToken: function(token, newName) {
+        var self;
+        self = this;
+        return ApiRequest("token_update", {
+          token: token,
+          new_token_name: newName
+        }).then(function(res) {
+          var idx, t, _i, _len, _ref;
+          _ref = self.attributes.tokens;
+          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+            t = _ref[idx];
+            if (t.token === token) {
+              t.name = newName;
+              break;
+            }
+          }
+        });
+      }
+    });
+    Model.PaymentState = PaymentState;
+    return Model;
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/subviews/WorkspaceView',["backbone", "jquerysort"], function() {
+    return Backbone.View.extend({
+      el: $("#tabbar-wrapper")[0],
+      events: {
+        "click li": "onClick",
+        "click .icon-close": "onClose"
+      },
+      initialize: function(options) {
+        var self;
+        self = this;
+        this.tabsWidth = 0;
+        this.$el.find("#ws-tabs").dragsort({
+          horizontal: true,
+          dragSelectorExclude: ".fixed, .icon-close",
+          dragEnd: function() {
+            self.updateTabOrder();
+          }
+        });
+      },
+      updateTabOrder: function() {
+        return this.trigger("orderChanged", this.tabOrder());
+      },
+      tabOrder: function() {
+        return _.map(this.$el.find("li"), function(li) {
+          return li.id;
+        });
+      },
+      setTabIndex: function(id, isFixed, idx) {
+        var $after, $group, $tgt;
+        $tgt = this.$el.find("#" + id);
+        if (!$tgt.length) {
+          return;
+        }
+        if (isFixed) {
+          $group = $("#ws-fixed-tabs");
+        } else {
+          $group = $("#ws-tabs");
+          idx -= $("#ws-fixed-tabs").children().length;
+        }
+        $after = $group.children().eq(idx);
+        if ($after.length) {
+          $tgt.insertBefore($after);
+        } else {
+          $group.append($tgt);
+        }
+      },
+      addTab: function(data, index, fixed) {
+        var $parent, $tgt, tpl;
+        if (index == null) {
+          index = -1;
+        }
+        if (fixed == null) {
+          fixed = false;
+        }
+        $parent = fixed ? $("#ws-fixed-tabs") : $("#ws-tabs");
+        tpl = "<li class='" + data.klass + "' id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
+        if (data.closable) {
+          tpl += '<i class="icon-close" title="Close Tab"></i>';
+        }
+        $tgt = $parent.children().eq(index);
+        if ($tgt.length) {
+          $tgt = $(tpl + "</li>").insertAfter($tgt);
+        } else {
+          $tgt = $(tpl + "</li>").appendTo($parent);
+        }
+        this.tabsWidth += $tgt.outerWidth();
+        this.ensureTabSize();
+        return $tgt;
+      },
+      removeTab: function(id) {
+        var $tgt;
+        $tgt = this.$el.find("#" + id);
+        this.tabsWidth -= $tgt.outerWidth();
+        $tgt.remove();
+        this.ensureTabSize();
+        return $tgt;
+      },
+      ensureTabSize: function() {
+        var availableSpace, children, windowWidth;
+        windowWidth = $(window).width();
+        availableSpace = windowWidth - $("#header").outerWidth() - $("#ws-tabs").offset().left;
+        children = $("#ws-tabs").children();
+        if (this.tabsWidth < availableSpace) {
+          children.css("max-width", "auto");
+        } else {
+          availableSpace = Math.floor(availableSpace / children.length);
+          children.css("max-width", availableSpace);
+        }
+      },
+      updateTab: function(id, title, klass) {
+        var $tgt;
+        $tgt = this.$el.find("#" + id);
+        if (title !== void 0 || title !== null) {
+          this.tabsWidth -= $tgt.outerWidth();
+          $tgt.attr("title", title);
+          $tgt.children("span").text(title);
+          $tgt.attr("title", title);
+          this.tabsWidth += $tgt.outerWidth();
+          this.ensureTabSize();
+        }
+        if (klass !== void 0 || klass !== null) {
+          if ($tgt.hasClass("active")) {
+            klass += " active";
+          }
+          $tgt.attr("class", klass);
+        }
+      },
+      activateTab: function(id) {
+        this.$el.find(".active").removeClass("active");
+        this.$el.find("#" + id).addClass("active");
+      },
+      onClick: function(evt) {
+        this.trigger("click", evt.currentTarget.id);
+      },
+      onClose: function(evt) {
+        this.trigger("close", $(evt.currentTarget).closest("li")[0].id);
+        return false;
+      },
+      showLoading: function() {
+        return $("#GlobalLoading").show();
+      },
+      hideLoading: function() {
+        return $("#GlobalLoading").hide();
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/WorkspaceManager',["./subviews/WorkspaceView", "underscore"], function(WorkspaceView) {
+    var WorkspaceManager;
+    WorkspaceManager = (function() {
+      function WorkspaceManager() {
+        var self;
+        this.view = new WorkspaceView();
+        self = this;
+        this.view.on("orderChanged", function(order) {
+          return self.__updateOrder(order);
+        });
+        this.view.on("click", function(id) {
+          return self.awakeWorkspace(id);
+        });
+        this.view.on("close", function(id) {
+          return self.remove(id);
+        });
+        this.__spaces = [];
+        this.__spacesById = {};
+        this.__awakeSpace = null;
+        return this;
+      }
+
+      WorkspaceManager.prototype.__updateOrder = function(order) {
+        var self;
+        self = this;
+        this.__spaces = order.map(function(id) {
+          return self.__spacesById[id];
+        });
+      };
+
+      WorkspaceManager.prototype.spaces = function() {
+        return this.__spaces.slice(0);
+      };
+
+      WorkspaceManager.prototype.get = function(id) {
+        return this.__spacesById[id];
+      };
+
+      WorkspaceManager.prototype.setIndex = function(workspace, idx) {
+        this.view.setTabIndex(workspace.id, workspace.isFixed(), idx);
+        this.__updateOrder(this.view.tabOrder());
+      };
+
+      WorkspaceManager.prototype.add = function(workspace) {
+        this.__spacesById[workspace.id] = workspace;
+        this.view.addTab({
+          title: workspace.title(),
+          id: workspace.id,
+          closable: !workspace.isFixed(),
+          klass: workspace.tabClass()
+        }, -1, workspace.isFixed());
+        this.__updateOrder(this.view.tabOrder());
+        if (this.__spaces.length === 1) {
+          this.awakeWorkspace(workspace);
+        }
+        return workspace;
+      };
+
+      WorkspaceManager.prototype.getAwakeSpace = function() {
+        return this.__awakeSpace;
+      };
+
+      WorkspaceManager.prototype.awakeWorkspace = function(workspace) {
+        var promise;
+        if (!workspace) {
+          return;
+        }
+        if (_.isString(workspace)) {
+          workspace = this.__spacesById[workspace];
+        }
+        if (this.__awakeSpace === workspace) {
+          return;
+        }
+        if (workspace.isRemoved()) {
+          return;
+        }
+        if (this.__awakeSpace) {
+          this.__awakeSpace.sleep();
+        }
+        this.__awakeSpace = workspace;
+        this.__updateUrl();
+        this.view.activateTab(workspace.id);
+        promise = workspace.awake();
+        if (promise && promise.then && promise.isFulfilled && !promise.isFulfilled()) {
+          promise.then((function(_this) {
+            return function() {
+              return _this.view.hideLoading();
+            };
+          })(this));
+          this.view.showLoading();
+        } else {
+          this.view.hideLoading();
+        }
+      };
+
+      WorkspaceManager.prototype.update = function(workspace) {
+        if (!workspace) {
+          return;
+        }
+        if (workspace === this.__awakeSpace) {
+          this.__updateUrl(true);
+        }
+        this.view.updateTab(workspace.id, workspace.title(), workspace.tabClass());
+        return workspace;
+      };
+
+      WorkspaceManager.prototype.remove = function(workspace, force) {
+        var id;
+        if (!workspace) {
+          return;
+        }
+        if (_.isString(workspace)) {
+          workspace = this.__spacesById[workspace];
+        }
+        if (!force && !workspace.isRemovable()) {
+          return;
+        }
+        id = workspace.id;
+        this.view.removeTab(id);
+        delete this.__spacesById[id];
+        this.__spaces.splice(this.__spaces.indexOf(workspace), 1);
+        workspace.stopListening();
+        workspace.cleanup();
+        if (this.__awakeSpace === workspace) {
+          this.__awakeSpace = null;
+          this.awakeWorkspace(this.__spaces[this.__spaces.length - 1]);
+        }
+        return workspace;
+      };
+
+      WorkspaceManager.prototype.removeAllSpaces = function(filter) {
+        var space, _i, _len, _ref;
+        _ref = this.__spaces.slice(0);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          space = _ref[_i];
+          if (!space.isFixed() && (!filter || filter(space))) {
+            this.remove(space, true);
+          }
+        }
+      };
+
+      WorkspaceManager.prototype.find = function(attribute) {
+        return _.find(this.__spaces, function(space) {
+          return space.isWorkingOn(attribute);
+        });
+      };
+
+      WorkspaceManager.prototype.hasUnsaveSpaces = function() {
+        return this.__spaces.some(function(ws) {
+          return ws.isModified();
+        });
+      };
+
+      WorkspaceManager.prototype.__updateUrl = function(replace) {
+        if (replace == null) {
+          replace = false;
+        }
+        return Router.navigate(this.__awakeSpace.url(), {
+          replace: replace
+        });
+      };
+
+      return WorkspaceManager;
+
+    })();
+    return WorkspaceManager;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  This is the core / entry point / controller of the whole IDE.
+----------------------------
+
+  It contains some basical logics to maintain the IDE. And it holds other components
+  to provide other functionality
+ */
+
+(function() {
+  define('ide/Application',["ApiRequest", "./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./subviews/SettingsDialog", "CloudResources", "./WorkspaceManager", "OpsModel", "JsonExporter", "constant", "i18n!/nls/lang.js", "underscore"], function(ApiRequest, Websocket, ApplicationView, ApplicationModel, User, SettingsDialog, CloudResources, WorkspaceManager, OpsModel, JsonExporter, constant, lang) {
+    var VisualOps;
+    VisualOps = function() {
+      if (window.App) {
+        console.error("Application is already created.");
+        return;
+      }
+      window.App = this;
+    };
+    VisualOps.prototype.initialize = function() {
+      var fetchModel;
+      this.__createUser();
+      this.__createWebsocket();
+      this.workspaces = new WorkspaceManager();
+      this.model = new ApplicationModel();
+      this.__view = new ApplicationView();
+      fetchModel = this.model.fetch().fail(function(err) {
+        notification(lang.NOTIFY.CANNOT_LOAD_APPLICATION_DATA);
+        throw err;
+      });
+      return Q.all([this.user.fetch(), fetchModel]);
+    };
+    VisualOps.prototype.__createWebsocket = function() {
+      this.WS = new Websocket();
+      this.WS.on("Disconnected", function() {
+        return App.acquireSession();
+      });
+      this.WS.on("StatusChanged", function(isConnected) {
+        console.info("Websocket Status changed, isConnected:", isConnected);
+        if (App.__view) {
+          return App.__view.toggleWSStatus(isConnected);
+        }
+      });
+      this.WS.on("userStateChange", function(idx, dag) {
+        return App.user.onWsUserStateChange(dag);
+      });
+    };
+    VisualOps.prototype.__createUser = function() {
+      this.user = new User();
+      this.user.on("SessionUpdated", (function(_this) {
+        return function() {
+          return _this.WS.subscribe();
+        };
+      })(this));
+      this.user.on("change:credential", (function(_this) {
+        return function() {
+          return _this.discardAwsCache();
+        };
+      })(this));
+    };
+    VisualOps.prototype.acquireSession = function() {
+      return this.__view.showSessionDialog();
+    };
+    VisualOps.prototype.logout = function() {
+      var p;
+      App.user.logout();
+      p = window.location.pathname;
+      if (p === "/") {
+        p = window.location.hash.replace("#", "/");
+      }
+      if (p && p !== "/") {
+        window.location.href = "/login?ref=" + p;
+      } else {
+        window.location.href = "/login";
+      }
+    };
+    VisualOps.prototype.canQuit = function() {
+      return !this.workspaces.hasUnsaveSpaces();
+    };
+    VisualOps.prototype.showSettings = function(tab) {
+      return new SettingsDialog({
+        defaultTab: tab
+      });
+    };
+    VisualOps.prototype.showSettings.TAB = SettingsDialog.TAB;
+    VisualOps.prototype.askForAwsCredential = function() {
+      return this.__view.askForAwsCredential();
+    };
+    VisualOps.prototype.deleteStack = function(id, name) {
+      return this.__view.deleteStack(id, name);
+    };
+    VisualOps.prototype.duplicateStack = function(id) {
+      return this.__view.duplicateStack(id);
+    };
+    VisualOps.prototype.startApp = function(id) {
+      return this.__view.startApp(id);
+    };
+    VisualOps.prototype.stopApp = function(id) {
+      return this.__view.stopApp(id);
+    };
+    VisualOps.prototype.terminateApp = function(id) {
+      return this.__view.terminateApp(id);
+    };
+    VisualOps.prototype.discardAwsCache = function() {
+      return CloudResources.invalidate();
+    };
+    VisualOps.prototype.importJson = function(json, updateLayout) {
+      var result;
+      if (_.isString(json)) {
+        result = JsonExporter.importJson(json);
+        if (_.isString(result)) {
+          return result;
+        }
+      } else {
+        result = json;
+      }
+      return this.openOps(this.model.createStackByJson(result, updateLayout));
+    };
+    VisualOps.prototype.openOps = function(opsModel, refresh) {
+      var editor;
+      if (!opsModel) {
+        return;
+      }
+      if (_.isString(opsModel)) {
+        opsModel = this.model.getOpsModelById(opsModel);
+      }
+      if (!opsModel) {
+        console.warn("The OpsModel is not found when opening.");
+        return;
+      }
+      if (opsModel.testState(OpsModel.State.Destroyed)) {
+        console.error("The OpsModel is destroyed", opsModel);
+        return;
+      }
+      editor = this.workspaces.find(opsModel);
+      if (editor && refresh) {
+        editor.remove();
+        editor = null;
+      }
+      if (!editor) {
+        editor = new OpsEditor(opsModel);
+      }
+      editor.activate();
+      return editor;
+    };
+    VisualOps.prototype.createOps = function(region, provider) {
+      var editor;
+      if (!region) {
+        return;
+      }
+      editor = new OpsEditor(this.model.createStack(region, provider));
+      editor.activate();
+      editor;
+    };
+    return VisualOps;
+  });
+
+}).call(this);
+
+(function() {
+  define('Workspace',["backbone"], function() {
+    var Workspace, wsid;
+    wsid = 0;
+    Workspace = (function() {
+      function Workspace(attributes) {
+        var ws, _i, _len, _ref;
+        _ref = App.workspaces.spaces();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          ws = _ref[_i];
+          if (ws instanceof this.constructor && ws.isWorkingOn(attributes)) {
+            console.info("Found a workspace that is working on, ", attributes, ws);
+            return ws;
+          }
+        }
+        this.id = "space_" + (++wsid);
+        this.initialize(attributes);
+        App.workspaces.add(this);
+        return this;
+      }
+
+      Workspace.prototype.isAwake = function() {
+        return App.workspaces.getAwakeSpace() === this;
+      };
+
+      Workspace.prototype.index = function() {
+        return App.workspaces.spaces().indexOf(this);
+      };
+
+      Workspace.prototype.setIndex = function(idx) {
+        return App.workspaces.setIndex(this, idx);
+      };
+
+      Workspace.prototype.isRemoved = function() {
+        return !!this.__isRemoved;
+      };
+
+      Workspace.prototype.remove = function() {
+        if (this.__isRemoved) {
+          return;
+        }
+        this.__isRemoved = true;
+        return App.workspaces.remove(this, true);
+      };
+
+      Workspace.prototype.updateTab = function() {
+        return App.workspaces.update(this);
+      };
+
+      Workspace.prototype.activate = function() {
+        return App.workspaces.awakeWorkspace(this);
+      };
+
+
+      /*
+        Methods that should be override
+       */
+
+      Workspace.prototype.initialize = function(attributes) {};
+
+      Workspace.prototype.isFixed = function() {
+        return false;
+      };
+
+      Workspace.prototype.isModified = function() {
+        return false;
+      };
+
+      Workspace.prototype.tabClass = function() {
+        return "";
+      };
+
+      Workspace.prototype.title = function() {
+        return "";
+      };
+
+      Workspace.prototype.awake = function() {
+        if (this.view) {
+          return this.view.$el.show();
+        }
+      };
+
+      Workspace.prototype.sleep = function() {
+        $(document.activeElement).filter("input, textarea").blur();
+        if (this.view) {
+          return this.view.$el.hide();
+        }
+      };
+
+      Workspace.prototype.cleanup = function() {
+        if (this.view) {
+          this.view.remove();
+        } else {
+          console.warn("Cannot find @view when workspace is about to remove:", this);
+        }
+      };
+
+      Workspace.prototype.isRemovable = function() {
+        return true;
+      };
+
+      Workspace.prototype.isWorkingOn = function(attributes) {
+        return false;
+      };
+
+      Workspace.prototype.updateUrl = function() {
+        if (this.isAwake()) {
+          Router.navigate(this.url(), {
+            replace: true
+          });
+        }
+      };
+
+      return Workspace;
+
+    })();
+    _.extend(Workspace.prototype, Backbone.Events);
+    return Workspace;
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/Router',["backbone"], function() {
+    return Backbone.Router.extend({
+      routes: {
+        "": "openDashboard"
+      },
+      initialize: function() {
+        this.route(/^ops\/([^/]+$)/, "openOps");
+        this.route(/^store\/([^/]+$)/, "openStore");
+      },
+      openStore: function(id) {
+        var opsModel;
+        opsModel = App.model.stackList().findWhere({
+          sampleId: id
+        });
+        if (!opsModel) {
+          opsModel = App.model.createSampleOps(id);
+        }
+        Router.navigate(opsModel.url(), {
+          replace: true
+        });
+        App.openOps(opsModel);
+      },
+      openOps: function(id) {
+        if (!App.openOps(id)) {
+          Router.navigate("/", {
+            replace: true
+          });
+        }
+      },
+      openDashboard: function() {
+        if (window.Dashboard) {
+          return window.Dashboard.activate();
+        }
+      },
+      start: function() {
+        if (!Backbone.history.start({
+          pushState: true
+        })) {
+          console.warn("URL doesn't match any routes.");
+          this.navigate("/", {
+            replace: true
+          });
+        }
+        this.route(/^ops\/([^/]+)/, "openOps");
+      },
+      execute: function() {
+        this.__forceReplace = true;
+        Backbone.Router.prototype.execute.apply(this, arguments);
+        this.__forceReplace = false;
+      },
+      navigate: function(fragment, options) {
+        if (this.__forceReplace) {
+          options = options || {};
+          options.replace = true;
+        }
+        $(document).trigger("urlroute");
+        return Backbone.Router.prototype.navigate.apply(this, arguments);
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/AppBundle',["./Application", "OpsModel", "Workspace", "./Router"], function(Application) {
+    return Application;
+  });
+
+}).call(this);
+
