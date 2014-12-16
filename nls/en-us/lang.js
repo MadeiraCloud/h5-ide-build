@@ -654,6 +654,7 @@ define({
         "DHCP_DELETE_CONFIRM_MULTY": "Confirm to delete selected %s  DHCP Options set?",
         "DHCP_DELETE_CONFIRM_ONE": "Confirm to delete %s ?",
         "OPTION_GROUP_USED_FOR": "This Option Group is used for ",
+        "READ_AWS_DOCUMENT": "Read AWS Document.",
         "CONFIRM_DELETE_PARAMETER_GROUP": "Confirm to delete  RDS Parameter Groups %s?",
         "CONFIRM_DELETE_PARAMETER_GROUP_MULTY": "Confirm to delete selected %s RDS Parameter Groups?",
         "DELETE_SNS_TOPIC_CONFIRM": "Confirm to delete SNS Topics %s and all associated subscriptions?",

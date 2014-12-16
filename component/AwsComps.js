@@ -6307,20 +6307,29 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  
-  return "\n            <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.MySQL.Options.html\" data-tooltip=\"Read AWS documentation…\" target=\"_blank\"></a>\n            ";
+  var buffer = "";
+  buffer += "\n            <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.MySQL.Options.html\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "READ_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n            ";
+  return buffer;
   }
 
 function program3(depth0,data) {
   
-  
-  return "\n            <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.Options.html\" data-tooltip=\"Read AWS documentation…\" target=\"_blank\"></a>\n            ";
+  var buffer = "";
+  buffer += "\n            <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.Options.html\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "READ_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n            ";
+  return buffer;
   }
 
 function program5(depth0,data) {
   
-  
-  return "\n            <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.html\" data-tooltip=\"Read AWS documentation…\" target=\"_blank\"></a>\n            ";
+  var buffer = "";
+  buffer += "\n            <a class=\"tooltip icon-info\" href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.html\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "READ_AWS_DOCUMENT", {hash:{},data:data}))
+    + "\" target=\"_blank\"></a>\n            ";
+  return buffer;
   }
 
 function program7(depth0,data) {
