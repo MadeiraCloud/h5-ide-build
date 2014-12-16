@@ -62,7 +62,9 @@ define({
         "ATTACH_NETWORK_INTERFACE_TO_INTERFACE": "Attach Network Interface to Instance",
         "ATTACH_AND_REMOVE_PUBLIC_IP": "Attach and Remove Public IP",
         "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "The Network Interface is attached to the instance. No need to connect them by security group rule.",
-        "LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL": "Launch Configuration must be created from AMI in Resource Panel"
+        "LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL": "Launch Configuration must be created from AMI in Resource Panel",
+        "DETACH_ELASTIC_IP_FROM_PRIMARY_IP": "Detach Elastic IP from primary IP",
+        "ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP": "Associate Elastic IP to primary IP"
     },
     "IDE": {
         "COMPONENT_CREATE_KEYPAIR": "Create Key Pair",
@@ -238,6 +240,14 @@ define({
         "DASH_BUB_KERNELID": "KernelId",
         "DASH_BUB_ROOTDEVICENAME": "Root Device Name",
         "DASH_BUB_ROOTDEVICETYPE": "Root Device Type",
+        "DASH_BUB_VOLUMEID": "Volume ID",
+        "DASH_BUB_STATUS": "Status",
+        "DASH_BUB_STARTTIME": "Start Time",
+        "DASH_BUB_PROGRESS": "Progress",
+        "DASH_BUB_VOLUMESIZE": "Volume Size",
+        "DASH_BUB_ENCRYPTED": "Encrypted",
+        "DASH_BUB_ID": "ID",
+        "DASH_BUB_OWNERID": "Owner ID",
         "DASH_POP_CREATE_STACK_CREATE_THIS_STACK_IN": "Create this stack in",
         "DASH_POP_CREATE_STACK_CREATE_STACK_ERROR": "Create stack error",
         "DASH_POP_FALE_LOAD_RESOURCE_PLEASE_RETRY": "Failed to load region information. Please try agian.",
@@ -644,6 +654,7 @@ define({
         "DHCP_DELETE_CONFIRM_MULTY": "Confirm to delete selected %s  DHCP Options set?",
         "DHCP_DELETE_CONFIRM_ONE": "Confirm to delete %s ?",
         "OPTION_GROUP_USED_FOR": "This Option Group is used for ",
+        "READ_AWS_DOCUMENT": "Read AWS Document.",
         "CONFIRM_DELETE_PARAMETER_GROUP": "Confirm to delete  RDS Parameter Groups %s?",
         "CONFIRM_DELETE_PARAMETER_GROUP_MULTY": "Confirm to delete selected %s RDS Parameter Groups?",
         "DELETE_SNS_TOPIC_CONFIRM": "Confirm to delete SNS Topics %s and all associated subscriptions?",
