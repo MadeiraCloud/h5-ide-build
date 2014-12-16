@@ -452,7 +452,7 @@ return TEMPLATE; });
     var AppAction;
     AppAction = Backbone.View.extend({
       runStack: function(event, workspace) {
-        var appNameDom, checkAppNameRepeat, cloudType, cost, self, that;
+        var appNameDom, checkAppNameRepeat, cloudType, cost, currency, self, that;
         this.workspace = workspace;
         cloudType = this.workspace.opsModel.type;
         that = this;
@@ -476,7 +476,8 @@ return TEMPLATE; });
         this.renderKpDropdown(this.modal, cloudType);
         cost = Design.instance().getCost();
         this.modal.tpl.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
-        this.modal.tpl.find("#label-total-fee").find('b').text("$" + cost.totalFee);
+        currency = Design.instance().getCurrency();
+        this.modal.tpl.find("#label-total-fee").find('b').text("" + (currency + cost.totalFee));
         TA.loadModule('stack').then((function(_this) {
           return function() {
             var _ref;

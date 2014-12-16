@@ -1490,8 +1490,11 @@ function program2(depth0,data) {
 
 function program4(depth0,data) {
   
-  
-  return "\n        Select Key Pair as $DefaultKeyPair\n    ";
+  var buffer = "";
+  buffer += "\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "COMPONENT_SELECT_KEYPAIR", {hash:{},data:data}))
+    + "\n    ";
+  return buffer;
   }
 
 function program6(depth0,data) {

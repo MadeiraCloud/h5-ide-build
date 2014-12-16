@@ -3763,9 +3763,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           has_card: !!paymentInfo.has_card,
           paymentUrl: selfPage.url,
           creditCard: selfPage.card,
-          billingEnd: new Date(selfPage.current_period_ends_at || null),
-          billingStart: new Date(selfPage.current_period_started_at || null),
-          renewDate: paymentInfo ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
+          billingEnd: new Date(selfPage.current_period_ends_at || new Date()),
+          billingStart: new Date(selfPage.current_period_started_at || new Date()),
+          renewDate: paymentInfo.next_reset_time ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
           paymentState: paymentInfo.state || "",
           awsAccessKey: result.access_key,
           awsSecretKey: result.secret_key,
@@ -4079,7 +4079,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('ide/subviews/WorkspaceView',["backbone", "jquerysort"], function() {
+  define('ide/subviews/WorkspaceView',['i18n!/nls/lang.js', "backbone", "jquerysort"], function(lang) {
     return Backbone.View.extend({
       el: $("#tabbar-wrapper")[0],
       events: {
@@ -4136,7 +4136,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         $parent = fixed ? $("#ws-fixed-tabs") : $("#ws-tabs");
         tpl = "<li class='" + data.klass + "' id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
         if (data.closable) {
-          tpl += '<i class="icon-close" title="Close Tab"></i>';
+          tpl += '<i class="icon-close" title="' + lang.TOOLBAR.TIT_CLOSE_TAB + '"></i>';
         }
         $tgt = $parent.children().eq(index);
         if ($tgt.length) {

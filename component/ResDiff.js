@@ -34,6 +34,7 @@
           'DBINSTANCE.resource.UseLatestRestorableTime': true,
           'ASG.resource.AutoScalingGroupARN': true,
           'ASG.resource.PolicyARN': true,
+          '*.resource.Tags': true,
           '*.resource.adminPass': true,
           '*.resource.key_name': true,
           '*.resource.bootable': true

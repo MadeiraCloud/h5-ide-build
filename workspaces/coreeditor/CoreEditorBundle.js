@@ -2471,7 +2471,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('CanvasManager',['CloudResources', 'constant'], function(CloudResources, constant) {
+  define('CanvasManager',['CloudResources', 'constant', 'i18n!/nls/lang.js'], function(CloudResources, constant, lang) {
     var CanvasManager;
     CanvasManager = {
       hasClass: function(elements, klass) {
@@ -2563,10 +2563,10 @@ return TEMPLATE; });
         }
         toggle = targetModel.hasPrimaryEip();
         if (toggle) {
-          tootipStr = 'Detach Elastic IP from primary IP';
+          tootipStr = lang.CANVAS.DETACH_ELASTIC_IP_FROM_PRIMARY_IP;
           imgUrl = 'ide/icon/icn-eipon.png';
         } else {
-          tootipStr = 'Associate Elastic IP to primary IP';
+          tootipStr = lang.CANVAS.ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP;
           imgUrl = 'ide/icon/icn-eipoff.png';
         }
         if (targetModel.design().modeIsApp()) {

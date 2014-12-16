@@ -402,6 +402,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.set('isStack', true);
         }
         this.set(Design.instance().getCost());
+        this.set("currency", Design.instance().getCurrency());
         return null;
       },
       createAcl: function() {
@@ -796,7 +797,7 @@ function program17(depth0,data) {
 function program19(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "$"
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.currency)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "/";
   stack1 = helpers.i18n.call(depth0, "PROP.STACK_LBL_COST_CYCLE", {hash:{},data:data});
@@ -2439,7 +2440,7 @@ function program57(depth0,data) {
         } else {
           tooltip = lang.PROP.INSTANCE_IP_MSG_3;
         }
-        $target.toggleClass("associated", attach).data("tooltip", tooltip);
+        $target.toggleClass("associated", attach).attr("data-tooltip", tooltip);
         this.model.attachEip(index, attach);
         return null;
       },
@@ -11120,7 +11121,7 @@ function program14(depth0,data) {
         } else {
           tooltip = lang.PROP.INSTANCE_IP_MSG_3;
         }
-        $target.toggleClass("associated", attach).data("tooltip", tooltip);
+        $target.toggleClass("associated", attach).attr("data-tooltip", tooltip);
         this.model.attachEip(index, attach);
         return null;
       },
@@ -21278,7 +21279,7 @@ return TEMPLATE; });
           }
         });
         return this.checkDBinstance(oldDBInstanceList).then(function(DBInstances) {
-          var $diffTree, cost, costSymbol, notAvailableDB, removeList, removeListNotReady, _ref;
+          var $diffTree, cost, currency, notAvailableDB, removeList, removeListNotReady;
           notAvailableDB = DBInstances.filter(function(e) {
             var _ref;
             return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(dbInstanceList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
@@ -21315,12 +21316,9 @@ return TEMPLATE; });
           that.updateModal.tpl.find('.modal-confirm').prop("disabled", true).text((App.user.hasCredential() ? lang.IDE.UPDATE_APP_CONFIRM_BTN : lang.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL));
           that.updateModal.resize();
           cost = Design.instance().getCost();
-          costSymbol = "$";
-          if ((_ref = Design.instance().region()) === 'cn-north-1') {
-            costSymbol = "￥";
-          }
-          that.updateModal.find("#label-total-fee").find('b').text("" + (costSymbol + cost.totalFee));
-          that.updateModal.find("#label-visualops-fee").find('b').text("" + (costSymbol + cost.visualOpsFee));
+          currency = Design.instance().getCurrency();
+          that.updateModal.find("#label-total-fee").find('b').text("" + (currency + cost.totalFee));
+          that.updateModal.find("#label-visualops-fee").find('b').text("" + (currency + cost.visualOpsFee));
           window.setTimeout(function() {
             return that.updateModal.resize();
           }, 100);
@@ -21330,7 +21328,7 @@ return TEMPLATE; });
             });
           }
           that.updateModal.on('confirm', function() {
-            var _ref1;
+            var _ref;
             if (!App.user.hasCredential()) {
               App.showSettings(App.showSettings.TAB.Credential);
               return false;
@@ -21342,7 +21340,7 @@ return TEMPLATE; });
               usage: 'updateApp'
             });
             that.workspace.applyAppEdit(newJson, !result.compChange);
-            return (_ref1 = that.updateModal) != null ? _ref1.close() : void 0;
+            return (_ref = that.updateModal) != null ? _ref.close() : void 0;
           });
           if (result.compChange) {
             $diffTree = differ.renderAppUpdateView();
@@ -21350,15 +21348,15 @@ return TEMPLATE; });
           }
           that.renderKpDropdown(that.updateModal);
           TA.loadModule('stack').then(function() {
-            var _ref1;
+            var _ref;
             that.updateModal && that.updateModal.toggleConfirm(false);
-            return (_ref1 = that.updateModal) != null ? _ref1.resize() : void 0;
+            return (_ref = that.updateModal) != null ? _ref.resize() : void 0;
           }, function(err) {
-            var _ref1;
+            var _ref;
             console.log(err);
             that.updateModal && that.updateModal.toggleConfirm(true);
             that.updateModal && that.updateModal.tpl.find("#take-rds-snapshot").off('change');
-            return (_ref1 = that.updateModal) != null ? _ref1.resize() : void 0;
+            return (_ref = that.updateModal) != null ? _ref.resize() : void 0;
           });
         });
       },
@@ -21853,7 +21851,7 @@ function program1(depth0,data) {
   }
 
   buffer += "<div class=\"bubble-head\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.ID), {hash:{},data:data}))
     + "</div>\n<dl class=\"bubble-content dl-horizontal\">";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -21881,21 +21879,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_ALL_PLATFORMS", {hash:{},data:data}))
     + "</li>\n        <li class=\"item\" data-id=\"amazonlinux\"> <span class=\"icon-ami-os amz-linux\">Amazon Linux</span> </li>\n        <li class=\"item\" data-id=\"centos\"> <span class=\"icon-ami-os centos\">Cent OS</span> </li>\n        <li class=\"item\" data-id=\"debian\"> <span class=\"icon-ami-os debian\">Debian</span> </li>\n        <li class=\"item\" data-id=\"fedora\"> <span class=\"icon-ami-os fedora\">Fedora</span> </li>\n        <li class=\"item\" data-id=\"gentoo\"> <span class=\"icon-ami-os gentoo\">Gentoo</span> </li>\n        <li class=\"item\" data-id=\"opensuse\"><span class=\"icon-ami-os opensuse\">OpenSUSE</span> </li>\n        <li class=\"item\" data-id=\"ubuntu\"> <span class=\"icon-ami-os ubuntu\">Ubuntu</span> </li>\n        <li class=\"item\" data-id=\"redhat\"> <span class=\"icon-ami-os redhat\">Red Hat</span> </li>\n        <li class=\"item\" data-id=\"windows\"><span class=\"icon-ami-os windows\">Windows</span> </li>\n        <li class=\"item\" data-id=\"otherlinux\"> <span class=\"icon-ami-os linux-other\">Other Linux</span> </li>\n      </ul>\n    </div>\n\n    <div class=\"ami-option-group\">\n      <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_VISIBILITY", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-type\">\n        <button type=\"button\" class=\"btn active\">"
+    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-type\">\n        <button type=\"button\" class=\"btn active\" data-radio=\"Public\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_PUBLIC", {hash:{},data:data}))
-    + "</button>\n        <button type=\"button\" class=\"btn\">"
+    + "</button>\n        <button type=\"button\" class=\"btn\" data-radio=\"Private\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_PRIVATE", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n\n    <div class=\"ami-option-group\">\n      <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_ARCHITECTURE", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-32bit-64bit\">\n        <button type=\"button\" class=\"btn active\">"
+    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-32bit-64bit\">\n        <button type=\"button\" class=\"btn active\" data-radio=\"32bit\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_32_BIT", {hash:{},data:data}))
-    + "</button>\n        <button type=\"button\" class=\"btn\">"
+    + "</button>\n        <button type=\"button\" class=\"btn\" data-radio=\"64bit\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_64_BIT", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n\n    <div class=\"ami-option-group\">\n      <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_ROOT_DEVICE_TYPE", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-EBS-Instance\">\n        <button type=\"button\" class=\"btn active\">"
+    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-EBS-Instance\">\n        <button type=\"button\" class=\"btn active\" data-radio=\"EBS\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_EBS", {hash:{},data:data}))
-    + "</button>\n        <button type=\"button\" class=\"btn\">"
+    + "</button>\n        <button type=\"button\" class=\"btn\" data-radio=\"Instance Store\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_INSTANCE_STORE", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n\n    <div id=\"btn-search-ami\" class=\"btn btn-blue\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_SEARCHING", {hash:{},data:data}))
@@ -22166,6 +22164,9 @@ return TEMPLATE; });
         if (itemEnd > total) {
           itemEnd = total;
         }
+        if (itemEnd === 0) {
+          itemBegin = 0;
+        }
         $('.page-tip').text(sprintf(lang.IDE.AMI_LBL_PAGEINFO, itemBegin, itemEnd, total));
         pagination = $('.pagination');
         if (max_page === 0) {
@@ -22254,7 +22255,7 @@ return TEMPLATE; });
       return LeftPanelTpl.resourcePanelBubble(ss.toJSON());
     };
     MC.template.resPanelSnapshot = function(data) {
-      var ss;
+      var newData, ss;
       if (!data.region || !data.id) {
         return;
       }
@@ -22262,7 +22263,13 @@ return TEMPLATE; });
       if (!ss) {
         return;
       }
-      return LeftPanelTpl.resourcePanelBubble(ss.toJSON());
+      newData = {};
+      _.each(ss.toJSON(), function(value, key) {
+        var newKey;
+        newKey = lang.IDE["DASH_BUB_" + key.toUpperCase()] || key;
+        return newData[newKey] = value;
+      });
+      return LeftPanelTpl.resourcePanelBubble(newData);
     };
     LcItemView = Backbone.View.extend({
       tagName: 'li',
@@ -23760,6 +23767,14 @@ return TEMPLATE; });
           costList: costList,
           totalFee: Math.round(totalFee * 100) / 100
         };
+      },
+      getCurrency: function() {
+        var currency, _ref;
+        currency = "$";
+        if ((_ref = Design.instance().region()) === "cn-north-1") {
+          currency = "￥";
+        }
+        return currency;
       }
     });
     return AwsDesign;
@@ -25306,20 +25321,25 @@ return TEMPLATE; });
         return this.__groupMembers;
       },
       updateName: function() {
-        var attachment, instance, name;
-        instance = this.__embedInstance;
-        if (instance) {
-          name = "eni0";
-        } else {
-          attachment = this.connections("EniAttachment")[0];
-          if (attachment) {
-            name = "eni" + attachment.get("index");
-          } else {
-            name = "eni";
-          }
+        this.trigger("change:name");
+        return this.trigger("change");
+      },
+      get: function(attr) {
+        if (attr === "name") {
+          return this.getName();
         }
-        this.set("name", name);
-        return null;
+        return this.attributes[attr];
+      },
+      getName: function() {
+        var attachment;
+        if (this.__embedInstance) {
+          return "eni0";
+        }
+        attachment = this.connections("EniAttachment")[0];
+        if (attachment) {
+          return "eni" + attachment.get("index");
+        }
+        return "eni";
       },
       isReparentable: function(newParent) {
         var check;
@@ -25933,7 +25953,6 @@ return TEMPLATE; });
           attr.ips.push(ipObj);
         }
         if (embed) {
-          attr.name = "eni0";
           option = {
             instance: instance
           };
