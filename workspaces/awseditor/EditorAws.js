@@ -26604,6 +26604,7 @@ return TEMPLATE; });
         _ref = data.resource.AssociationSet || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           asso = _ref[_i];
+          asso.NetworkAclAssociationId = "";
           subnet = resolve(MC.extractID(asso.SubnetId));
           if (!subnet) {
             continue;
