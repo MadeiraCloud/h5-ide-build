@@ -17517,10 +17517,13 @@ return TEMPLATE; });
           });
         }
       },
-      openRestoreConfigModal: function() {
+      openRestoreConfigModal: function(defaultRes) {
         var currentTime, customDay, customDayStr, customMonth, customMonthStr, customYear, customYearStr, dateLang, dbRestoreTime, lastestDay, lastestMonth, lastestRestoreTime, lastestYear, modal, noRestore, penddingObj, sourceDbAppModel, sourceDbModel, that, timezone, _getCurrentSelectedTime, _setDefaultSelectedTime;
+        if (!(defaultRes && defaultRes.type === constant.RESTYPE.DBINSTANCE)) {
+          defaultRes = this.resModel;
+        }
         that = this;
-        sourceDbModel = this.resModel.getSourceDBForRestore();
+        sourceDbModel = defaultRes.getSourceDBForRestore();
         sourceDbAppModel = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(sourceDbModel.get('appId'));
         if (sourceDbAppModel) {
           penddingObj = sourceDbAppModel.get('PendingModifiedValues');
@@ -17547,15 +17550,15 @@ return TEMPLATE; });
             disableConfirm: true,
             width: "580",
             onCancel: function() {
-              return that.resModel.remove();
+              return defaultRes.remove();
             },
             onClose: function() {
-              return that.resModel.remove();
+              return defaultRes.remove();
             }
           });
         } else {
           lastestRestoreTime = new Date(sourceDbAppModel.get('LatestRestorableTime'));
-          dbRestoreTime = this.resModel.get('dbRestoreTime');
+          dbRestoreTime = defaultRes.get('dbRestoreTime');
           if (dbRestoreTime) {
             currentTime = new Date(dbRestoreTime);
           } else {
@@ -17624,21 +17627,21 @@ return TEMPLATE; });
               isCustomTime = $('#modal-db-instance-restore-radio-custom')[0].checked;
               if (isCustomTime) {
                 selectedDate = _getCurrentSelectedTime();
-                that.resModel.set('dbRestoreTime', selectedDate.toISOString());
+                defaultRes.set('dbRestoreTime', selectedDate.toISOString());
               } else {
-                that.resModel.set('dbRestoreTime', '');
+                defaultRes.set('dbRestoreTime', '');
               }
-              that.resModel.isRestored = true;
+              defaultRes.isRestored = true;
               return modal.close();
             },
             onCancel: function() {
-              if (!that.resModel.isRestored) {
-                return that.resModel.remove();
+              if (!defaultRes.isRestored) {
+                return defaultRes.remove();
               }
             },
             onClose: function() {
-              if (!that.resModel.isRestored) {
-                return that.resModel.remove();
+              if (!defaultRes.isRestored) {
+                return defaultRes.remove();
               }
             }
           });
@@ -18081,7 +18084,7 @@ return TEMPLATE; });
         });
         attr.name;
         if (this.resModel.getSourceDBForRestore() && !this.resModel.isRestored) {
-          return this.openRestoreConfigModal();
+          return this.openRestoreConfigModal(this.resModel);
         }
       },
       bindParsley: function() {
@@ -19565,12 +19568,12 @@ return TEMPLATE; });
             {
               icon: 'unknown',
               type: 'log',
-              name: 'Log',
+              name: lang.IDE.LBL_LOG,
               active: true
             }, {
               icon: 'unknown',
               type: 'event',
-              name: 'Event'
+              name: lang.IDE.LBL_EVENT
             }
           ]
         };
@@ -19584,25 +19587,25 @@ return TEMPLATE; });
         return [
           {
             sortable: true,
-            name: 'Name'
+            name: lang.PROP.LBL_NAME
           }, {
             sortable: true,
             rowType: 'datetime',
-            name: 'Last Written',
+            name: lang.IDE.LBL_LAST_WRITTEN,
             width: "28%"
           }, {
             sortable: true,
             rowType: 'number',
             width: "10%",
-            name: 'Size(B)'
+            name: lang.IDE.LBL_SIZE_B
           }, {
             sortable: false,
             width: "10%",
-            name: 'View'
+            name: lang.PROP.LBL_VIEW
           }, {
             sortable: false,
             width: "10%",
-            name: 'Download'
+            name: lang.PROP.LBL_DOWNLOAD
           }
         ];
       },
@@ -20462,7 +20465,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">"
+  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.INSTANTLY_RERUN_ALL_STATES_IN_THIS_APP", {hash:{},data:data}))
+    + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
     + "</button>";
   return buffer;
