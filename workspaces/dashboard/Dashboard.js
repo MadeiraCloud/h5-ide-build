@@ -2108,7 +2108,7 @@ function program26(depth0,data) {
             ApiRequest("stack_import_cloudformation", {
               cf_template: reader.result
             }).then(function(data) {
-              data.provider = "aws::china";
+              data.provider = "aws::global";
               data.region = "cn-north-1";
               App.importJson(data, true);
               return modal.close();
@@ -2273,7 +2273,7 @@ function program26(depth0,data) {
           id = $tgt.attr("data-vpcid");
           region = $tgt.closest("ul").attr("data-region");
           self.visModal.close();
-          App.openOps(App.model.createImportOps(region, "aws::china", id));
+          App.openOps(App.model.createImportOps(region, "aws::global", id));
           return false;
         });
       },

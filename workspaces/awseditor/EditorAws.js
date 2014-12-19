@@ -28968,9 +28968,10 @@ return TEMPLATE; });
         return null;
       },
       setSSLCert: function(idx, sslCertId) {
-        var listeners, sslCertCol, sslCertData;
+        var listeners, region, sslCertCol, sslCertData;
         if (idx >= 0) {
-          sslCertCol = CloudResources(constant.RESTYPE.IAM);
+          region = Design.instance().region();
+          sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
           listeners = this.get("listeners");
           sslCertData = sslCertCol.get(sslCertId);
           return listeners[idx].sslCert = SslCertModel.createNew(sslCertData);

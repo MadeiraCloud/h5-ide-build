@@ -3245,7 +3245,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.__jsonData = json;
       }
     }, {
-      supportedProviders: ["aws::china", "aws::global"]
+      supportedProviders: ["aws::global", "aws::global"]
     });
     return AwsOpsModel;
   });
@@ -3318,7 +3318,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       createStack: function(region, provider) {
         var m;
         if (provider == null) {
-          provider = "aws::china";
+          provider = "aws::global";
         }
         m = new OpsModel({
           region: region,

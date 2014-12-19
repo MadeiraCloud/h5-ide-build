@@ -40,7 +40,7 @@
   };
 
   langType = function() {
-    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || "zh-cn";
+    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || navigator.browserLanguage || navigator.language || "zh-cn";
   };
 
   deepth = 'RESET';
