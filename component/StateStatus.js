@@ -31,41 +31,51 @@ TEMPLATE.content=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "IS_UPDATED", {hash:{},data:data}));
+  var buffer = "", stack1;
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.parent)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "'s ";
+  return buffer;
   }
 
 function program3(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "HAS_FAILED", {hash:{},data:data}));
+  return "<s>has failed</s> is updated.";
   }
 
 function program5(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_UPDATE_AFTER_CHANGE", {hash:{},data:data}));
+  return "has failed";
   }
 
 function program7(depth0,data) {
   
   
+  return "State log will update after change is applied.";
+  }
+
+function program9(depth0,data) {
+  
+  
   return escapeExpression(helpers.UTC.call(depth0, (depth0 && depth0.time), {hash:{},data:data}));
   }
 
-  buffer += "<div class=\"state-status-item-icon\">\n	<i class=\"status status-red\"></i>\n</div>\n<div class=\"state-status-item-info\">\n	<div class=\"state-status-item-desc truncate\">\n		"
-    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.parent), (depth0 && depth0.name), {hash:{},data:data}))
-    + escapeExpression(helpers.i18n.call(depth0, "XXX_S_STATE", {hash:{},data:data}))
+  buffer += "<div class=\"state-status-item-icon\">\n	<i class=\"status status-red\"></i>\n</div>\n<div class=\"state-status-item-info\">\n	<div class=\"state-status-item-desc truncate\">\n		";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.parent), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " 's state "
     + escapeExpression(((stack1 = (depth0 && depth0.stateId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n	<div class=\"timestamp\">\n		";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.updated), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n</div>";
   return buffer;
