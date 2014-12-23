@@ -2231,7 +2231,7 @@ return TEMPLATE; });
       extractUserInput: function($li) {
         var AllowedPattern, allowed, av, idx, name, param, type, v, value, valueArray, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
         type = $li.attr("data-type");
-        value = $li.find("input").val();
+        value = $li.find("input:not(.tt-hint)").val();
         name = $li.attr("data-name");
         param = this.cfJson.Parameters[name];
         if (!value) {
