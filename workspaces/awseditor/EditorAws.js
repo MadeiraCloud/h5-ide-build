@@ -26289,9 +26289,10 @@ return TEMPLATE; });
         return null;
       },
       generateJSON: function(index, serverGroupOption) {
-        var appId, instanceId, member, owner, uid;
+        var appId, instanceId, member, owner, uid, volumeName;
         console.assert(!serverGroupOption || serverGroupOption.instanceId !== void 0, "Invalid serverGroupOption");
         this.ensureEnoughMember();
+        volumeName = (serverGroupOption.instanceName || "") + this.get("name");
         appId = "";
         if (index > 0) {
           member = this.groupMembers()[index - 1];
@@ -26306,7 +26307,7 @@ return TEMPLATE; });
         return {
           uid: uid,
           type: this.type,
-          name: this.get("name"),
+          name: volumeName,
           serverGroupUid: this.id,
           serverGroupName: this.get("name"),
           index: index,
@@ -26360,6 +26361,9 @@ return TEMPLATE; });
           instance = attachment && attachment.InstanceId ? resolve(MC.extractID(attachment.InstanceId)) : null;
         } else {
           console.error("deserialize failed");
+          return null;
+        }
+        if (instance.getAmiRootDeviceName() === attachment.Device) {
           return null;
         }
         attr = {
@@ -28964,9 +28968,10 @@ return TEMPLATE; });
         return null;
       },
       setSSLCert: function(idx, sslCertId) {
-        var listeners, sslCertCol, sslCertData;
+        var listeners, region, sslCertCol, sslCertData;
         if (idx >= 0) {
-          sslCertCol = CloudResources(constant.RESTYPE.IAM);
+          region = Design.instance().region();
+          sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
           listeners = this.get("listeners");
           sslCertData = sslCertCol.get(sslCertId);
           return listeners[idx].sslCert = SslCertModel.createNew(sslCertData);

@@ -202,7 +202,7 @@
         return this.__lastFetchError;
       },
       fetch: function() {
-        var self, _ref;
+        var self;
         if (!this.isLastFetchFailed() && this.__fetchPromise) {
           return this.__fetchPromise;
         }
@@ -210,7 +210,7 @@
         this.__ready = false;
         this.__lastFetchError = null;
         self = this;
-        this.__fetchPromise = (_ref = this.doFetch()) != null ? typeof _ref.then === "function" ? _ref.then(function(data) {
+        this.__fetchPromise = this.doFetch().then(function(data) {
           var d, e, _i, _len;
           if (!self.__selfParseData) {
             try {
@@ -248,7 +248,7 @@
           self.__ready = true;
           self.trigger("update");
           throw error;
-        }) : void 0 : void 0;
+        });
         return this.__fetchPromise;
       },
       fetchForce: function() {
@@ -3672,10 +3672,16 @@
       /* env:dev                                                    env:dev:end */
       type: constant.RESTYPE.OSFLAVOR,
       doFetch: function() {
-        var tempDefer;
-        tempDefer = Q.defer();
-        tempDefer.resolve();
-        return tempDefer.promise;
+        var region;
+        region = this.region();
+        return ApiRequest("os_flavor_List", {
+          region: region
+        }).then(function(res) {
+          return ApiRequest("os_flavor_Info", {
+            region: region,
+            ids: _.pluck(res.flavors, "id")
+          });
+        });
       },
       parseFetchData: function(res) {
         return _.values(res);
