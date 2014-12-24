@@ -40,7 +40,7 @@
   };
 
   langType = function() {
-    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || "en-us";
+    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || navigator.browserLanguage || navigator.language || "zh-cn";
   };
 
   deepth = 'RESET';
@@ -131,6 +131,16 @@
         return console.log(error, "error");
       }
     }).done(function() {
+      var templates;
+      templates = $("[type='text/x-language-template']");
+      if (templates.size()) {
+        templates.each(function(index, element) {
+          var template;
+          element = $(element);
+          template = Handlebars.compile(element.html());
+          return $("#" + element.data('target')).html(template(window.langsrc));
+        });
+      }
       return cb();
     });
   };

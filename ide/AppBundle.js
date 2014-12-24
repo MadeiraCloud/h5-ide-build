@@ -864,72 +864,111 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "NO_CARD", {hash:{},data:data}));
+  }
+
+function program5(depth0,data) {
+  
   var buffer = "", stack1;
-  buffer += "\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">Date</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Amount</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Status</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">Action</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\">\n                        <table class=\"table\">\n                            <thead>\n                            <tr>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class=\"t-m-content\">\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  buffer += "\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DATE", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "AMOUNT", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATUS", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "ACTION", {hash:{},data:data}))
+    + "</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\">\n                        <table class=\"table\">\n                            <thead>\n                            <tr>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class=\"t-m-content\">\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                ";
   return buffer;
   }
-function program2(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                                <tr class=\"item\" data-id=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n                                    <td>"
-    + escapeExpression(helpers.formatTime.call(depth0, (depth0 && depth0.updated_at), "MMMM d, yyyy", {hash:{},data:data}))
+    + escapeExpression(helpers.formatTime.call(depth0, (depth0 && depth0.updated_at), "yyyy-MM-d", {hash:{},data:data}))
     + "</td>\n                                    <td>$ "
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
     + "</td>\n                                    <td>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n                                    <td>\n                                        <a class=\"payment-receipt link-blue\" href=\"#\">View Receipt</a></td>\n                                </tr>\n                            ";
+  buffer += "</td>\n                                    <td>\n                                        <a class=\"payment-receipt link-blue\" href=\"#\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_VIEW_RECEIPT", {hash:{},data:data}))
+    + "</a></td>\n                                </tr>\n                            ";
   return buffer;
   }
-function program3(depth0,data) {
-  
-  
-  return "Paid";
-  }
-
-function program5(depth0,data) {
-  
-  
-  return "<span class=\"link-red\">Failed</span>";
-  }
-
 function program7(depth0,data) {
   
   
-  return "\n                    <div class=\"full-space\">\n                        No billing event yet.\n                    </div>\n                ";
+  return escapeExpression(helpers.i18n.call(depth0, "PAYMENT_PAID", {hash:{},data:data}));
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<span class=\"link-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_FAILED", {hash:{},data:data}))
+    + "</span>";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                    <div class=\"full-space\">\n                        "
+    + escapeExpression(helpers.i18n.call(depth0, "NO_BILLING_EVENT", {hash:{},data:data}))
+    + "\n                    </div>\n                ";
+  return buffer;
   }
 
   buffer += "<div id=\"billing-status\">\n    <nav id=\"PaymentNav\">\n        <span data-target=\"PaymentBillingTab\" class=\"selected\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
     + "</span>\n        <span data-target=\"UsageTab\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_USAGE_TAB", {hash:{},data:data}))
-    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            <p class=\"warning-red\"></p>\n            <h5>Credit Card Infomation</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">"
-    + escapeExpression(helpers.or.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), "No Card", {hash:{},data:data}))
-    + "</p>\n                        <p class=\"payment-username\">"
+    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            <p class=\"warning-red\"></p>\n            <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "CREDIT_CARD_INFORMATION", {hash:{},data:data}))
+    + "</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</p>\n                        <p class=\"payment-username\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.first_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>\n                    </div>\n                </div>\n                <div class=\"right\">\n                    <a class=\"btn btn-blue update-payment\" href=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" target=\"_blank\">Update Billing Information <i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>Billing History <span class=\"payment-next-billing\">Next Billing on "
-    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingEnd), "MMMM d, yyyy", {hash:{},data:data}))
+    + "\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "UPDATE_BILLING_INFORMATION", {hash:{},data:data}))
+    + "<i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "BILLING_HISTORY", {hash:{},data:data}))
+    + " <span class=\"payment-next-billing\">"
+    + escapeExpression(helpers.i18n.call(depth0, "NEXT_BILLING_ON", {hash:{},data:data}))
+    + " "
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingEnd), "yyyy-MM-d", {hash:{},data:data}))
     + "</span></h5>\n            <div class=\"table-head-fix\">\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(11, program11, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">Current Usage <span class=\"billing_start_from\">Since "
-    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "d MMM yyyy", {hash:{},data:data}))
-    + "</span></h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <div class=\"usage-number\">\n                        "
+  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_CURRENT_USAGE", {hash:{},data:data}))
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "yyyy-MM-d", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_CURRENT_USAGE_SPAN", {hash:{},data:data}))
+    + "</h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <div class=\"usage-number\">\n                        "
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n                    </div>\n                    <span>Instance Hour</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " free instance hours will be renewed in "
-    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " days</p>\n        </section>\n    </div>\n</div>";
+    + "\n                    </div>\n                    <span>"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_INSTANT_HOUR", {hash:{},data:data}))
+    + "</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_RENEW_FREE_INFO", ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota), ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays), {hash:{},data:data}))
+    + "</p>\n        </section>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.billingTemplate=Handlebars.template(__TEMPLATE__);
@@ -1156,7 +1195,11 @@ return TEMPLATE; });
       updateNotification: function() {
         var html, i, notification, unread_num, _i, _len;
         console.log("Notification Updated, Websocket isReady:", App.WS.isReady());
-        notification = App.model.get("notification");
+        notification = _.map(App.model.get("notification"), function(n) {
+          return _.extend({}, n, {
+            operation: lang.TOOLBAR[n.operation.toUpperCase()] || n.operation
+          });
+        });
         html = "";
         unread_num = 0;
         for (_i = 0, _len = notification.length; _i < _len; _i++) {
@@ -1406,9 +1449,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_APPS", {hash:{},data:data}))
     + "</button>\n    <button class=\"off-canvas-tab selected\" id=\"off-canvas-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_STACKS", {hash:{},data:data}))
-    + "</button>\n  </nav>\n\n  <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">"
+    + "</button>\n  </nav>\n  <div style=\"overflow-y:scroll;position:absolute;top:50px;bottom:0;left:0;right:0;\">\n    <ul id=\"nav-app-region\" class=\"hide\"></ul>\n    <ul id=\"nav-stack-region\"></ul>\n  </div>\n\n<!--   <section class=\"scroll-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <div class=\"scroll-content\">\n      <ul class=\"scroll-content hide\" id=\"nav-app-region\"></ul>\n      <div class=\"scroll-content\" id=\"nav-stack\">\n        <ul id=\"nav-stack-region\"></ul>\n        <div id=\"nav-show-empty\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.SHOW_UNUSED_REGIONS", {hash:{},data:data}))
-    + "</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section>\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
+    + "</div>\n        <ul id=\"nav-region-empty-list\" class=\"hide\"></ul>\n      </div>\n    </div>\n  </section> -->\n</aside>\n<button id=\"off-canvas-menu\" class=\"icon-menu\"></button>\n<div id=\"off-canvas-overlay\"></div>";
   return buffer;
   };
 TEMPLATE.navigation=Handlebars.template(__TEMPLATE__);
@@ -1623,17 +1666,17 @@ return TEMPLATE; });
       },
       hideOffCanvas: function() {
         $("#wrapper").removeClass("off-canvas");
-        return this.showing = false;
+        this.showing = false;
       },
       showNavApp: function() {
         $("#nav-app-region").show();
-        $("#nav-stack").hide();
+        $("#nav-stack-region").hide();
         $("#off-canvas-app").toggleClass("selected", true);
         $("#off-canvas-stack").toggleClass("selected", false);
       },
       showNavStack: function() {
         $("#nav-app-region").hide();
-        $("#nav-stack").show();
+        $("#nav-stack-region").show();
         $("#off-canvas-app").toggleClass("selected", false);
         $("#off-canvas-stack").toggleClass("selected", true);
       },
@@ -1770,7 +1813,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
     + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">You can later update this information in <em>Settings &gt; Account</em></p>\n</div>";
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
+    + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
+    + "</p>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -1988,7 +2033,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 (function() {
   define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", "backbone"], function(ApiRequest, constant, CloudResources, ThumbUtil) {
-    var OpsModel, OpsModelLastestVersion, OpsModelState, OpsModelStateDesc;
+    var KnownOpsModelClass, OpsModel, OpsModelLastestVersion, OpsModelState, OpsModelStateDesc, OpsModelType, __detailExtend;
+    KnownOpsModelClass = {};
+    __detailExtend = Backbone.Model.extend;
+
+    /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        env:dev:end */
+    OpsModelType = {
+      OpenStack: "OpenstackOps",
+      Amazon: "AwsOps"
+    };
     OpsModelState = {
       UnRun: 0,
       Running: 1,
@@ -2004,6 +2057,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
     OpsModelLastestVersion = "2014-11-11";
     OpsModel = Backbone.Model.extend({
+      type: "GenericOps",
       defaults: function() {
         return {
           updateTime: +(new Date()),
@@ -2011,8 +2065,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           state: OpsModelState.UnRun,
           stoppable: true,
           name: "",
-          version: OpsModelLastestVersion
+          version: OpsModelLastestVersion,
+          provider: ""
         };
+      },
+      constructor: function(attr, opts) {
+        var Model, provider;
+        attr = attr || {};
+        opts = opts || {};
+        if (this.type === "GenericOps") {
+          if (opts.jsonData) {
+            provider = opts.jsonData.provider;
+          }
+          provider = provider || attr.provider || "aws::global";
+          console.assert(KnownOpsModelClass[provider], "Cannot find specific OpsModel for provider '" + attr.provider + "'");
+          Model = KnownOpsModelClass[provider];
+          if (Model) {
+            return new Model(attr, opts);
+          }
+        }
+        Backbone.Model.apply(this, arguments);
       },
       initialize: function(attr, options) {
         if (options) {
@@ -2047,7 +2119,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return !this.isStack();
       },
       isImported: function() {
-        return !!this.attributes.importVpcId;
+        return !!this.attributes.importMsrId;
       },
       isPMRestricted: function() {
         return this.get("version") >= "2014-11-11" && this.isApp();
@@ -2084,22 +2156,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         return !!(this.get("id") && state !== OpsModelState.Destroyed);
       },
-      getVpcId: function() {
-        var comp, uid, _ref;
-        if (this.get("importVpcId")) {
-          return this.get("importVpcId");
-        }
-        if (!this.__jsonData) {
-          return void 0;
-        }
-        _ref = this.__jsonData.component;
-        for (uid in _ref) {
-          comp = _ref[uid];
-          if (comp.type === constant.RESTYPE.VPC) {
-            return comp.resource.VpcId;
-          }
-        }
-        return void 0;
+      getMsrId: function() {
+        return this.get("importMsrId") || void 0;
       },
       getThumbnail: function() {
         return ThumbUtil.fetch(this.get("id"));
@@ -2162,12 +2220,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (!this.isImported()) {
           return;
         }
-        return CloudResources("OpsResource", this.getVpcId()).init(this.get("region")).fetchForceDedup().then(function() {
+        return CloudResources("OpsResource", this.getMsrId()).init(this.get("region"), this.get("provider")).fetchForceDedup().then(function() {
           return self.__onFjdImported();
         });
       },
       generateJsonFromRes: function() {
-        return CloudResources('OpsResource', this.getVpcId()).generatedJson;
+        var json;
+        json = CloudResources('OpsResource', this.getMsrId()).generatedJson;
+        if (!json.agent.module.repo) {
+          json.agent.module = {
+            repo: App.user.get("repo"),
+            tag: App.user.get("tag")
+          };
+        }
+        return json;
       },
       __onFjdImported: function() {
         var json;
@@ -2245,6 +2311,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.__jsonData = json;
         if (this.attributes.name !== json.name) {
           this.set("name", json.name);
+        }
+        if (json.autoLayout) {
+          this.set("autoLayout", json.autoLayout);
         }
         return this;
       },
@@ -2338,6 +2407,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             state: OpsModelState.Initializing,
             progress: 0,
             region: region,
+            provider: toRunJson.provider,
             usage: toRunJson.usage,
             version: toRunJson.version,
             updateTime: +(new Date()),
@@ -2356,7 +2426,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         thumbnail = ThumbUtil.fetch(this.get("id"));
         attr = $.extend(true, {}, this.attributes, {
           name: name,
-          updateTime: +(new Date())
+          updateTime: +(new Date()),
+          provider: this.get("provider")
         });
         collection = this.collection;
         return ApiRequest("stack_save_as", {
@@ -2405,13 +2476,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           throw err;
         });
       },
-      terminate: function(force, create_db_snapshot) {
-        var oldState, self;
+      terminate: function(force, extraOption) {
+        var oldState, options, self;
         if (force == null) {
           force = false;
-        }
-        if (create_db_snapshot == null) {
-          create_db_snapshot = false;
         }
         if (!this.isApp()) {
           return this.__returnErrorPromise();
@@ -2421,13 +2489,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.attributes.progress = 0;
         this.attributes.terminateFail = false;
         self = this;
-        return ApiRequest("app_terminate", {
+        options = $.extend({
           region_name: this.get("region"),
           app_id: this.get("id"),
           app_name: this.get("name"),
-          flag: force,
-          create_snapshot: create_db_snapshot
-        }).then(function() {
+          flag: force
+        }, extraOption || {});
+        return ApiRequest("app_terminate", options).then(function() {
           if (force) {
             self.__destroy();
           }
@@ -2476,7 +2544,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           self.__jsonData = null;
           return self.fetchJsonData().then(function() {
             self.__updateAppDefer = null;
-            self.importVpcId = void 0;
+            self.importMsrId = void 0;
             return self.set({
               name: newJson.name,
               state: OpsModelState.Running
@@ -2518,7 +2586,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (!self.id) {
             self.attributes.requestId = res[0];
           }
-          self.attributes.importVpcId = void 0;
+          self.attributes.importMsrId = void 0;
         }, function(error) {
           return self.__saveAppDefer.reject(error);
         });
@@ -2642,13 +2710,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return console.info("OpsModel's destroy() doesn't do anything. You probably want to call remove(), stop() or terminate()");
       },
       __destroy: function() {
-        var _ref;
+        var msrId, _ref;
         if (this.attributes.state === OpsModelState.Destroyed) {
           return;
         }
         ThumbUtil.remove(this.get("id"));
-        if (this.getVpcId()) {
-          if ((_ref = CloudResources("OpsResource", this.getVpcId())) != null) {
+        msrId = this.getMsrId();
+        if (msrId) {
+          if ((_ref = CloudResources("OpsResource", msrId)) != null) {
             _ref.destroy();
           }
         }
@@ -2672,6 +2741,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           version: this.get("version"),
           resource_diff: true,
           component: {},
+          provider: this.get("provider"),
           layout: {
             size: [240, 240]
           },
@@ -2686,6 +2756,319 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             stoppable: true
           }
         };
+      },
+      __initJsonData: function() {
+        this.__jsonData = this.__createRawJson();
+      }
+    }, {
+      extend: function(protoProps, staticProps) {
+        var provider, subClass, _i, _len, _ref;
+        subClass = __detailExtend.call(this, protoProps, staticProps);
+        _ref = staticProps.supportedProviders;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          provider = _ref[_i];
+          KnownOpsModelClass[provider] = subClass;
+        }
+        return subClass;
+      }
+    });
+    OpsModel.Type = OpsModelType;
+    OpsModel.State = OpsModelState;
+    OpsModel.LatestVersion = OpsModelLastestVersion;
+    return OpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The collection for stack / app
+----------------------------
+
+  This collection will trigger an "update" event when the list ( containing all visible items ) is changed.
+ */
+
+(function() {
+  define('ide/submodels/OpsCollection',["OpsModel", "constant", "backbone"], function(OpsModel, constant) {
+    return Backbone.Collection.extend({
+      model: OpsModel,
+      newNameTmpl: "untitled",
+      comparator: function(m1, m2) {
+        return -(m1.attributes.updateTime - m2.attributes.updateTime);
+      },
+      initialize: function() {
+        this.on("change:updateTime", this.sort, this);
+        this.on("add remove", this.__triggerUpdate, this);
+        this.on("change:id", this.__triggerUpdate, this);
+        this.__debounceUpdate = _.debounce(function() {
+          return this.trigger("update");
+        });
+      },
+      getNewName: function(possibleName) {
+        var base, nameMap, nameMatch, newName, tmpl;
+        nameMap = this.groupBy("name");
+        base = 0;
+        if (possibleName) {
+          nameMatch = possibleName.match(/(.+)(-\d*)$/);
+          tmpl = nameMatch ? nameMatch[1] : possibleName;
+        } else {
+          tmpl = this.newNameTmpl;
+        }
+        newName = tmpl + "-0";
+        while (true) {
+          if (nameMap[newName]) {
+            base += 1;
+          } else {
+            break;
+          }
+          newName = tmpl + "-" + base;
+        }
+        return newName;
+      },
+      isNameAvailable: function(name) {
+        return name && !this.findWhere({
+          name: name
+        });
+      },
+      groupByRegion: function(includeEmptyRegion, toJSON, includeEveryOps) {
+        var R, list, m, models, r, regionMap, regions, _i, _j, _len, _len1, _ref, _ref1;
+        if (includeEmptyRegion == null) {
+          includeEmptyRegion = false;
+        }
+        if (toJSON == null) {
+          toJSON = true;
+        }
+        if (includeEveryOps == null) {
+          includeEveryOps = false;
+        }
+        regionMap = {};
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (!includeEveryOps && !m.isExisting()) {
+            continue;
+          }
+          r = m.attributes.region;
+          list = regionMap[r] || (regionMap[r] = []);
+          list.push(toJSON ? m.toJSON() : m);
+        }
+        regions = [];
+        _ref1 = constant.REGION_KEYS;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          R = _ref1[_j];
+          models = regionMap[R];
+          if (!models && !includeEmptyRegion) {
+            continue;
+          }
+          regions.push({
+            region: R,
+            regionName: constant.REGION_SHORT_LABEL[R],
+            data: models || []
+          });
+        }
+        return regions;
+      },
+      filterRecent: function(toJSON) {
+        var filters, m, now, time, _i, _len, _ref;
+        if (toJSON == null) {
+          toJSON = false;
+        }
+        now = Math.round(+(new Date()) / 1000);
+        filters = [];
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          if (m.testState(OpsModel.State.Terminating)) {
+            continue;
+          }
+          time = m.get("updateTime");
+          if (now - time >= 2592000) {
+            break;
+          }
+          if (toJSON) {
+            m = m.toJSON();
+            m.formatedTime = MC.intervalDate(time);
+          }
+          filters.push(m);
+        }
+        return filters;
+      },
+      __triggerUpdate: function(model) {
+        if (!model) {
+          return;
+        }
+        if (this.indexOf(model) !== -1 && !model.isExisting()) {
+          return;
+        }
+        this.__debounceUpdate();
+      },
+      add: function(model) {
+        var newName;
+        if (!this.isNameAvailable(model.get("name"))) {
+          newName = this.getNewName();
+          model.attributes.name = newName;
+          if (model.__jsonData) {
+            model.__jsonData.name = newName;
+          }
+        }
+        return Backbone.Collection.prototype.add.apply(this, arguments);
+      }
+    });
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('ide/submodels/OpsModelOs',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
+    var OsOpsModel;
+    OsOpsModel = OpsModel.extend({
+      type: OpsModel.Type.OpenStack,
+      getMsrId: function() {
+        var comp, msrId, uid, _ref;
+        msrId = OpsModel.prototype.getMsrId.call(this);
+        if (msrId) {
+          return msrId;
+        }
+        if (!this.__jsonData) {
+          return void 0;
+        }
+        _ref = this.__jsonData.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === constant.RESTYPE.OSNETWORK) {
+            return comp.resource.id;
+          }
+        }
+        return void 0;
+      },
+      __initJsonData: function() {
+        var comp, component, id, json, l, layout, networkId, subnetId;
+        json = this.__createRawJson();
+        layout = {
+          "NETWORK": {
+            coordinate: [27, 3],
+            size: [60, 60]
+          },
+          "SUBNET": {
+            coordinate: [30, 6],
+            size: [25, 54]
+          },
+          "RT": {
+            coordinate: [10, 3]
+          }
+        };
+        component = {
+          'KP': {
+            type: "OS::Nova::KeyPair",
+            name: "DefaultKP",
+            resource: {}
+          },
+          "NETWORK": {
+            type: "OS::Neutron::Network",
+            resource: {
+              name: "network1"
+            }
+          },
+          "SG": {
+            type: "OS::Neutron::SecurityGroup",
+            resource: {
+              name: "DefaultSG",
+              description: "default security group",
+              rules: []
+            }
+          },
+          "RT": {
+            type: "OS::Neutron::Router",
+            resource: {
+              external_gateway_info: {}
+            }
+          },
+          "SUBNET": {
+            type: "OS::Neutron::Subnet",
+            resource: {
+              cidr: "10.0.0.0/16",
+              enable_dhcp: true
+            }
+          }
+        };
+        for (id in component) {
+          comp = component[id];
+          comp.uid = MC.guid();
+          json.component[comp.uid] = comp;
+          if (layout[id]) {
+            l = layout[id];
+            l.uid = comp.uid;
+            json.layout[l.uid] = l;
+          }
+          if (comp.type === "OS::Neutron::Subnet") {
+            subnetId = comp.uid;
+          } else if (comp.type === "OS::Neutron::Network") {
+            networkId = comp.uid;
+          }
+        }
+        for (id in component) {
+          comp = component[id];
+          if (comp.type === "OS::Neutron::Subnet") {
+            comp.resource.network_id = "@{" + networkId + ".resource.id}";
+          } else if (comp.type === "OS::Neutron::Router") {
+            comp.resource.router_interface = [
+              {
+                subnet_id: "@{" + subnetId + ".resource.id}"
+              }
+            ];
+          }
+        }
+        this.__jsonData = json;
+      }
+    }, {
+      supportedProviders: ["os::awcloud_bj"]
+    });
+    return OsOpsModel;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+
+(function() {
+  define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
+    var AwsOpsModel;
+    AwsOpsModel = OpsModel.extend({
+      type: OpsModel.Type.Amazon,
+      getMsrId: function() {
+        var comp, msrId, uid, _ref;
+        msrId = OpsModel.prototype.getMsrId.call(this);
+        if (msrId) {
+          return msrId;
+        }
+        if (!this.__jsonData) {
+          return void 0;
+        }
+        _ref = this.__jsonData.component;
+        for (uid in _ref) {
+          comp = _ref[uid];
+          if (comp.type === constant.RESTYPE.VPC) {
+            return comp.resource.VpcId;
+          }
+        }
+        return void 0;
       },
       __initJsonData: function() {
         var comp, component, id, json, l, layout, vpcId, vpcRef;
@@ -2861,138 +3244,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         this.__jsonData = json;
       }
+    }, {
+      supportedProviders: ["aws::global", "aws::global"]
     });
-    OpsModel.State = OpsModelState;
-    OpsModel.LatestVersion = OpsModelLastestVersion;
-    return OpsModel;
-  });
-
-}).call(this);
-
-
-/*
-----------------------------
-  The collection for stack / app
-----------------------------
-
-  This collection will trigger an "update" event when the list ( containing all visible items ) is changed.
- */
-
-(function() {
-  define('ide/submodels/OpsCollection',["OpsModel", "constant", "backbone"], function(OpsModel, constant) {
-    return Backbone.Collection.extend({
-      model: OpsModel,
-      newNameTmpl: "untitled",
-      comparator: function(m1, m2) {
-        return -(m1.attributes.updateTime - m2.attributes.updateTime);
-      },
-      initialize: function() {
-        this.on("change:updateTime", this.sort, this);
-        this.on("add remove", this.__triggerUpdate, this);
-        this.on("change:id", this.__triggerUpdate, this);
-        this.__debounceUpdate = _.debounce(function() {
-          return this.trigger("update");
-        });
-      },
-      getNewName: function(possibleName) {
-        var base, nameMap, nameMatch, newName, tmpl;
-        nameMap = this.groupBy("name");
-        base = 0;
-        if (possibleName) {
-          nameMatch = possibleName.match(/(.+)(-\d*)$/);
-          tmpl = nameMatch ? nameMatch[1] : possibleName;
-        } else {
-          tmpl = this.newNameTmpl;
-        }
-        newName = tmpl + "-0";
-        while (true) {
-          if (nameMap[newName]) {
-            base += 1;
-          } else {
-            break;
-          }
-          newName = tmpl + "-" + base;
-        }
-        return newName;
-      },
-      isNameAvailable: function(name) {
-        return !this.findWhere({
-          name: name
-        });
-      },
-      groupByRegion: function(includeEmptyRegion, toJSON, includeEveryOps) {
-        var R, list, m, models, r, regionMap, regions, _i, _j, _len, _len1, _ref, _ref1;
-        if (includeEmptyRegion == null) {
-          includeEmptyRegion = false;
-        }
-        if (toJSON == null) {
-          toJSON = true;
-        }
-        if (includeEveryOps == null) {
-          includeEveryOps = false;
-        }
-        regionMap = {};
-        _ref = this.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          m = _ref[_i];
-          if (!includeEveryOps && !m.isExisting()) {
-            continue;
-          }
-          r = m.attributes.region;
-          list = regionMap[r] || (regionMap[r] = []);
-          list.push(toJSON ? m.toJSON() : m);
-        }
-        regions = [];
-        _ref1 = constant.REGION_KEYS;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          R = _ref1[_j];
-          models = regionMap[R];
-          if (!models && !includeEmptyRegion) {
-            continue;
-          }
-          regions.push({
-            region: R,
-            regionName: constant.REGION_SHORT_LABEL[R],
-            data: models || []
-          });
-        }
-        return regions;
-      },
-      filterRecent: function(toJSON) {
-        var filters, m, now, time, _i, _len, _ref;
-        if (toJSON == null) {
-          toJSON = false;
-        }
-        now = Math.round(+(new Date()) / 1000);
-        filters = [];
-        _ref = this.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          m = _ref[_i];
-          if (m.testState(OpsModel.State.Terminating)) {
-            continue;
-          }
-          time = m.get("updateTime");
-          if (now - time >= 2592000) {
-            break;
-          }
-          if (toJSON) {
-            m = m.toJSON();
-            m.formatedTime = MC.intervalDate(time);
-          }
-          filters.push(m);
-        }
-        return filters;
-      },
-      __triggerUpdate: function(model) {
-        if (!model) {
-          return;
-        }
-        if (this.indexOf(model) !== -1 && !model.isExisting()) {
-          return;
-        }
-        this.__debounceUpdate();
-      }
-    });
+    return AwsOpsModel;
   });
 
 }).call(this);
@@ -3007,7 +3262,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "backbone", "constant", "ThumbnailUtil"], function(OpsCollection, OpsModel, ApiRequest, Backbone, constant, ThumbUtil) {
+  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "i18n!/nls/lang.js", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil, lang) {
     return Backbone.Model.extend({
       defaults: function() {
         return {
@@ -3034,23 +3289,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       getOpsModelById: function(opsId) {
         return this.attributes.appList.get(opsId) || this.attributes.stackList.get(opsId);
       },
-      clearImportOps: function() {
-        return this.attributes.appList.remove(this.attributes.appList.find(function(m) {
-          return m.isImported();
-        }));
-      },
-      createImportOps: function(region, vpcId) {
+      createImportOps: function(region, provider, msrId) {
         var m;
         m = this.attributes.appList.findWhere({
-          importVpcId: vpcId
+          importMsrId: msrId
         });
         if (m) {
           return m;
         }
         m = new OpsModel({
-          name: "",
-          importVpcId: vpcId,
+          name: "ImportedApp",
+          importMsrId: msrId,
           region: region,
+          provider: provider,
           state: OpsModel.State.Running
         });
         this.attributes.appList.add(m);
@@ -3064,26 +3315,32 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.attributes.stackList.add(m);
         return m;
       },
-      createStack: function(region) {
+      createStack: function(region, provider) {
         var m;
-        console.assert(constant.REGION_KEYS.indexOf(region) >= 0, "Region is not recongnised when creating stack:", region);
+        if (provider == null) {
+          provider = "aws::global";
+        }
         m = new OpsModel({
-          name: this.stackList().getNewName(),
-          region: region
+          region: region,
+          provider: provider
         }, {
           initJsonData: true
         });
         this.attributes.stackList.add(m);
         return m;
       },
-      createStackByJson: function(json) {
+      createStackByJson: function(json, updateLayout) {
         var m;
+        if (updateLayout == null) {
+          updateLayout = false;
+        }
         if (!this.attributes.stackList.isNameAvailable(json.name)) {
           json.name = this.stackList().getNewName(json.name);
         }
         m = new OpsModel({
           name: json.name,
-          region: json.region
+          region: json.region,
+          autoLayout: updateLayout
         }, {
           jsonData: json
         });
@@ -3091,31 +3348,38 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return m;
       },
       getPriceData: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).price;
+        return (this.__awsdata[awsRegion] || {}).price;
       },
       getOsFamilyConfig: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).osFamilyConfig;
+        return (this.__awsdata[awsRegion] || {}).osFamilyConfig;
       },
       getInstanceTypeConfig: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).instanceTypeConfig;
+        return (this.__awsdata[awsRegion] || {}).instanceTypeConfig;
       },
       getRdsData: function(awsRegion) {
-        return (this.__appdata[awsRegion] || {}).rds;
+        return (this.__awsdata[awsRegion] || {}).rds;
       },
       getStateModule: function(repo, tag) {
         return this.__stateModuleData[repo + ":" + tag];
+      },
+      getOpenstackFlavors: function(provider, region) {
+        return this.__osdata[provider][region].flavors;
+      },
+      getOpenstackQuotas: function(provider) {
+        return this.__osdata[provider].quota;
       },
 
       /*
         Internal methods
        */
       initialize: function() {
-        this.__appdata = {};
+        this.__awsdata = {};
+        this.__osdata = {};
         this.__stateModuleData = {};
         this.__initializeNotification();
       },
       fetch: function() {
-        var ap, appdata, self, sp;
+        var ap, awsData, osData, self, sp;
         self = this;
         sp = ApiRequest("stack_list", {
           region_name: null
@@ -3127,38 +3391,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }).then(function(res) {
           return self.get("appList").set(self.__parseListRes(res));
         });
-        appdata = ApiRequest("aws_aws", {
+        awsData = ApiRequest("aws_aws", {
           fields: ["region", "price", "instance_types", "rds"]
         }).then(function(res) {
-          var cpu, i, instanceTypeConfig, storage, typeInfo, _i, _j, _len, _len1, _ref;
-          for (_i = 0, _len = res.length; _i < _len; _i++) {
-            i = res[_i];
-            instanceTypeConfig = {};
-            self.__appdata[i.region] = {
-              price: i.price,
-              osFamilyConfig: i.instance_types.sort,
-              instanceTypeConfig: instanceTypeConfig,
-              rds: i.rds
-            };
-            _ref = i.instance_types.info || [];
-            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-              typeInfo = _ref[_j];
-              if (!typeInfo) {
-                continue;
-              }
-              cpu = typeInfo.cpu || {};
-              typeInfo.name = typeInfo.description;
-              typeInfo.formated_desc = [typeInfo.name || "", cpu.units + " ECUs", cpu.cores + " vCPUs", typeInfo.memory + " GiB memory"];
-              typeInfo.description = typeInfo.formated_desc.join(", ");
-              storage = typeInfo.storage;
-              if (storage && storage.ssd === true) {
-                typeInfo.description += ", " + storage.count + " x " + storage.size + " GiB SSD Storage Capacity";
-              }
-              instanceTypeConfig[typeInfo.typeName] = typeInfo;
-            }
-          }
+          return self.__parseAwsData(res);
         });
-        return Q.all([sp, ap, appdata]).then(function() {
+        osData = ApiRequestOs("os_os", {
+          provider: null
+        }).then(function(res) {
+          return self.__parseOsData(res);
+        });
+        return Q.all([sp, ap, awsData, osData]).then(function() {
           var e;
           try {
             ThumbUtil.cleanup(self.appList().pluck("id").concat(self.stackList().pluck("id")));
@@ -3166,6 +3409,70 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             e = _error;
           }
         });
+      },
+      __parseAwsData: function(res) {
+        var cpu, i, instanceTypeConfig, storage, typeInfo, _i, _j, _len, _len1, _ref;
+        for (_i = 0, _len = res.length; _i < _len; _i++) {
+          i = res[_i];
+          instanceTypeConfig = {};
+          this.__awsdata[i.region] = {
+            price: i.price,
+            osFamilyConfig: i.instance_types.sort,
+            instanceTypeConfig: instanceTypeConfig,
+            rds: i.rds
+          };
+          _ref = i.instance_types.info || [];
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            typeInfo = _ref[_j];
+            if (!typeInfo) {
+              continue;
+            }
+            cpu = typeInfo.cpu || {};
+            typeInfo.name = typeInfo.description;
+            typeInfo.formated_desc = [typeInfo.name || "", cpu.units + " ECUs", cpu.cores + " vCPUs", typeInfo.memory + " GiB memory"];
+            typeInfo.description = typeInfo.formated_desc.join(", ");
+            storage = typeInfo.storage;
+            if (storage && storage.ssd === true) {
+              typeInfo.description += ", " + storage.count + " x " + storage.size + " GiB SSD Storage Capacity";
+            }
+            instanceTypeConfig[typeInfo.typeName] = typeInfo;
+          }
+        }
+      },
+      __parseOsData: function(res) {
+        var data, dataset, osQuota, provider, providerData, self, _i, _len;
+        self = this;
+        for (provider in res) {
+          dataset = res[provider];
+          for (_i = 0, _len = dataset.length; _i < _len; _i++) {
+            data = dataset[_i];
+            providerData = this.__osdata[provider] || (this.__osdata[provider] = {});
+            providerData[data.region] = {
+              flavors: new Backbone.Collection(_.values(data.flavor))
+            };
+          }
+          osQuota = ApiRequestOs("os_quota", {
+            provider: provider
+          }).then(function(res) {
+            return self.__parseOsQuota(res);
+          });
+        }
+      },
+      __parseOsQuota: function(res) {
+        var cate, data, dataset, key, pd, provider, q, quota;
+        quota = {};
+        for (provider in res) {
+          dataset = res[provider];
+          for (cate in dataset) {
+            data = dataset[cate];
+            for (key in data) {
+              q = data[key];
+              quota["" + cate + "::" + key] = q;
+            }
+          }
+          pd = this.__osdata[provider] || (this.__osdata[provider] = {});
+          pd.quota = quota;
+        }
       },
       fetchStateModule: function(repo, tag) {
         var d, data, self;
@@ -3203,6 +3510,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             usage: ops.usage,
             name: ops.name,
             version: ops.version,
+            provider: ops.provider,
             state: OpsModel.State[ops.state] || OpsModel.State.UnRun,
             stoppable: !(ops.property && ops.property.stoppable === false)
           });
@@ -3324,9 +3632,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (!isNaN(time_begin) && !isNaN(time_end) && time_end >= time_begin) {
               duration = time_end - time_begin;
               if (duration < 60) {
-                request.duration = "Took " + duration + " sec.";
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
               } else {
-                request.duration = "Took " + (Math.round(duration / 60)) + " min.";
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
               }
             }
           }
@@ -3455,9 +3763,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           has_card: !!paymentInfo.has_card,
           paymentUrl: selfPage.url,
           creditCard: selfPage.card,
-          billingEnd: new Date(selfPage.current_period_ends_at || null),
-          billingStart: new Date(selfPage.current_period_started_at || null),
-          renewDate: paymentInfo ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
+          billingEnd: new Date(selfPage.current_period_ends_at || new Date()),
+          billingStart: new Date(selfPage.current_period_started_at || new Date()),
+          renewDate: paymentInfo.next_reset_time ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
           paymentState: paymentInfo.state || "",
           awsAccessKey: result.access_key,
           awsSecretKey: result.secret_key,
@@ -3771,7 +4079,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('ide/subviews/WorkspaceView',["backbone", "jquerysort"], function() {
+  define('ide/subviews/WorkspaceView',['i18n!/nls/lang.js', "backbone", "jquerysort"], function(lang) {
     return Backbone.View.extend({
       el: $("#tabbar-wrapper")[0],
       events: {
@@ -3828,7 +4136,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         $parent = fixed ? $("#ws-fixed-tabs") : $("#ws-tabs");
         tpl = "<li class='" + data.klass + "' id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
         if (data.closable) {
-          tpl += '<i class="icon-close" title="Close Tab"></i>';
+          tpl += '<i class="icon-close" title="' + lang.TOOLBAR.TIT_CLOSE_TAB + '"></i>';
         }
         $tgt = $parent.children().eq(index);
         if ($tgt.length) {
@@ -4176,16 +4484,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return this.__view.terminateApp(id);
     };
     VisualOps.prototype.discardAwsCache = function() {
-      App.model.clearImportOps();
       return CloudResources.invalidate();
     };
-    VisualOps.prototype.importJson = function(json) {
+    VisualOps.prototype.importJson = function(json, updateLayout) {
       var result;
-      result = JsonExporter.importJson(json);
-      if (_.isString(result)) {
-        return result;
+      if (_.isString(json)) {
+        result = JsonExporter.importJson(json);
+        if (_.isString(result)) {
+          return result;
+        }
+      } else {
+        result = json;
       }
-      return this.openOps(this.model.createStackByJson(result));
+      return this.openOps(this.model.createStackByJson(result, updateLayout));
     };
     VisualOps.prototype.openOps = function(opsModel, refresh) {
       var editor;
@@ -4214,12 +4525,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       editor.activate();
       return editor;
     };
-    VisualOps.prototype.createOps = function(region) {
+    VisualOps.prototype.createOps = function(region, provider) {
       var editor;
       if (!region) {
         return;
       }
-      editor = new OpsEditor(this.model.createStack(region));
+      editor = new OpsEditor(this.model.createStack(region, provider));
       editor.activate();
       editor;
     };
