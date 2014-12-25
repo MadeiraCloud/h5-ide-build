@@ -1830,7 +1830,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <section> Specify parameters for template:\n  <div class=\"scroll-wrap scrollbar-auto-hide cf-params-wrap\">\n    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n    <ul class=\"cf-params scroll-content\" id=\"import-cf-params\">\n      ";
+  buffer += "\n  <section> Specify parameters for template:\n\n  <div class=\"nano cf-params-wrap\">\n    <ul class=\"cf-params nano-content\" id=\"import-cf-params\">\n      ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.parameters), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n  </div>\n  </section>\n  ";
@@ -1913,7 +1913,7 @@ function program16(depth0,data) {
   buffer += "\n      </ul>\n      </ul>\n    </div>\n  </section>\n\n  ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner loading-spinner-small\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-red\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner loading-spinner-small hide\"></div>";
+  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner loading-spinner-small\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner loading-spinner-small hide\"></div>";
   return buffer;
   };
 TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
@@ -1921,7 +1921,7 @@ TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('workspaces/dashboard/ImportDialog',['./ImportDialogTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "CloudResources", "ApiRequest", "JsonExporter", "backbone", "UI.typeahead", "UI.tokenfield"], function(tplPartials, Modal, constant, lang, CloudResources, ApiRequest, JsonExporter) {
+  define('workspaces/dashboard/ImportDialog',['./ImportDialogTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "CloudResources", "ApiRequest", "JsonExporter", "backbone", "UI.select2", "UI.nanoscroller"], function(tplPartials, Modal, constant, lang, CloudResources, ApiRequest, JsonExporter) {
     return Backbone.View.extend({
       events: {
         "change #modal-import-json-file": "onSelectFile",
@@ -1932,22 +1932,22 @@ return TEMPLATE; });
         "click #import-cf-cancel": "cancelImport",
         "click #import-cf-import": "doImport",
         "keypress .cf-input": "onFocusInput",
-        "OPTION_CHANGE #import-cf-region": "onRegionChange",
-        "change .cf-input": "ensureCorrectValue",
-        "typeahead:selected .cf-input": "ensureCorrectValue",
-        "tokenfield:createtoken .cf-input": "ensureCorrectToken"
+        "OPTION_CHANGE #import-cf-region": "onRegionChange"
       },
       initialize: function() {
         var self;
+        self = this;
         this.modal = new Modal({
           title: lang.IDE.POP_IMPORT_JSON_TIT,
           template: tplPartials.importJSON(),
           width: "470",
-          disableFooter: true
+          disableFooter: true,
+          onClose: function() {
+            return self.onModalClose();
+          }
         });
         this.setElement(this.modal.tpl);
         this.regionForceFetchMap = {};
-        self = this;
         this.reader = new FileReader();
         this.reader.onload = function(evt) {
           return self.onReaderLoader(evt);
@@ -2050,87 +2050,62 @@ return TEMPLATE; });
         this.modal.setContent(tplPartials.importCF(data));
         this.modal.setWidth("570");
         this.modal.setTitle(lang.IDE.POP_IMPORT_CF_TIT);
+        this.modal.tpl.find(".cf-params-wrap").nanoScroller();
         this.initInputs();
         this.onRegionChange();
       },
-      ensureCorrectValue: function(evt) {
-        var $ipt, $wrapper, allowed, av, name, param, type, val, _i, _j, _len, _len1, _ref, _ref1;
-        $ipt = $(evt.currentTarget);
-        $wrapper = $ipt.closest(".cf-input-entry");
-        if (!$wrapper.length) {
-          return;
-        }
-        name = $wrapper.attr("data-name");
-        type = $wrapper.attr("data-type");
-        val = $ipt.val();
-        if (type === "CommaDelimitedList" || type === "List<Number>") {
-          return;
-        }
-        _ref = this.parameters;
+      onModalClose: function() {
+        var ipt, select2, _i, _len, _ref;
+        _ref = this.modal.tpl.find("#import-cf-params").children().find("input.cf-input");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          param = _ref[_i];
-          if (param.Name === name) {
-            if (param.AllowedValues) {
-              _ref1 = param.AllowedValues;
-              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                av = _ref1[_j];
-                if (av + "" === val) {
-                  allowed = true;
-                  break;
-                }
-              }
-              if (!allowed) {
-                $ipt.typeahead("val", param.Default);
-              } else {
-                param.Default = val;
-              }
-              break;
-            } else {
-              return;
-            }
-          }
-        }
-      },
-      ensureCorrectToken: function(evt) {
-        var $ipt, $wrapper, allowed, av, name, param, type, val, _i, _j, _len, _len1, _ref, _ref1;
-        $ipt = $(evt.currentTarget);
-        $wrapper = $ipt.closest(".cf-input-entry");
-        if (!$wrapper.length) {
-          return;
-        }
-        name = $wrapper.attr("data-name");
-        type = $wrapper.attr("data-type");
-        val = $ipt.val();
-        _ref = this.parameters;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          param = _ref[_i];
-          if (param.Name === name) {
-            if (param.AllowedValues) {
-              _ref1 = param.AllowedValues;
-              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                av = _ref1[_j];
-                if (av + "" === evt.attrs.value) {
-                  allowed = true;
-                  break;
-                }
-              }
-              if (!allowed) {
-                evt.attrs.value = evt.attrs.label = "";
-                return;
-              }
-              break;
-            } else {
-              return;
-            }
+          ipt = _ref[_i];
+          select2 = $(ipt).data("select2");
+          if (select2) {
+            $(ipt).select2("destroy");
           }
         }
       },
       initInputs: function() {
-        var $inputs, ipt, param, self, typeaheadOption, _i, _len, _ref;
+        var $inputs, av, avs, formatNoMatches, ipt, kpInitSelection, kpQuery, numberCreateSC, param, select2, select2Option, self, _i, _j, _len, _len1, _ref, _ref1;
         self = this;
-        typeaheadOption = {
-          hint: true,
-          minLength: 0
+        kpQuery = function(options) {
+          var kp, kps, term, _i, _len, _ref;
+          kps = [];
+          term = options.term.toLowerCase();
+          _ref = self.currentRegionKps;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            kp = _ref[_i];
+            if (kp.toLowerCase().indexOf(term) >= 0) {
+              kps.push({
+                id: kp,
+                text: kp
+              });
+            }
+          }
+          return options.callback({
+            more: false,
+            results: kps
+          });
+        };
+        kpInitSelection = function(element, callback) {
+          var def;
+          def = element.select2("val");
+          return callback({
+            id: def,
+            text: def
+          });
+        };
+        numberCreateSC = function(term) {
+          if (isNaN(Number(term))) {
+            return;
+          }
+          return {
+            id: term,
+            text: term
+          };
+        };
+        formatNoMatches = function() {
+          return "";
         };
         $inputs = $("#import-cf-params").children();
         _ref = this.parameters;
@@ -2139,38 +2114,47 @@ return TEMPLATE; });
           if (param.NoEcho) {
             continue;
           }
+          select2 = false;
           ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input");
+          select2Option = {
+            allowClear: true,
+            data: [],
+            formatNoMatches: formatNoMatches
+          };
+          if (param.Type === "CommaDelimitedList" || param.Type === "List<Number>") {
+            select2 = true;
+            select2Option.multiple = true;
+            select2Option.allowDuplicate = true;
+            if (!param.AllowedValues) {
+              select2Option.tags = [];
+              select2Option.data = void 0;
+              select2Option.tokenSeparators = [","];
+            }
+          }
+          if (param.Type === "List<Number>") {
+            select2Option.createSearchChoice = numberCreateSC;
+          }
           if (param.Type === "AWS::EC2::KeyPair::KeyName") {
-            ipt.typeahead(typeaheadOption, {
-              name: "importcf",
-              source: this.createTypeaheadMatch(param)
-            });
-            continue;
+            select2 = true;
+            select2Option.query = kpQuery;
+            select2Option.initSelection = kpInitSelection;
           }
           if (param.AllowedValues) {
-            if (param.Type === "CommaDelimitedList" || param.Type === "List<Number>") {
-              ipt.tokenfield({
-                showAutocompleteOnFocus: true,
-                createTokensOnBlur: true,
-                typeahead: [
-                  typeaheadOption, {
-                    name: "importcf",
-                    source: this.createTypeaheadMatch(param)
-                  }
-                ]
+            select2 = true;
+            avs = [];
+            _ref1 = param.AllowedValues;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              av = _ref1[_j];
+              avs.push({
+                id: "" + av,
+                text: "" + av
               });
-              continue;
-            } else if (param.Type === "String" || param.Type === "Number") {
-              ipt.typeahead(typeaheadOption, {
-                name: "importcf",
-                source: this.createTypeaheadMatch(param)
-              });
-              continue;
             }
-          } else {
-            if (param.Type === "CommaDelimitedList" || param.Type === "List<Number>") {
-              ipt.tokenfield();
-            }
+            select2Option.data = avs;
+            select2Option.selectOnComma = true;
+          }
+          if (select2) {
+            ipt.select2(select2Option);
           }
         }
       },
@@ -2187,51 +2171,29 @@ return TEMPLATE; });
         self = this;
         $("#import-cf-form .loader").show();
         CloudResources(constant.RESTYPE.KP, currentRegion).fetch().then(function() {
-          var currentRegionKps, param, _i, _len, _ref;
+          var $inputs, $ipt, param, _i, _len, _ref;
           $("#import-cf-form .loader").hide();
-          currentRegionKps = CloudResources(constant.RESTYPE.KP, currentRegion).pluck("id");
+          self.currentRegionKps = CloudResources(constant.RESTYPE.KP, currentRegion).pluck("id");
+          $inputs = $("#import-cf-params").children();
           _ref = self.parameters;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             param = _ref[_i];
             if (param.Type === "AWS::EC2::KeyPair::KeyName") {
-              param.AllowedValues = currentRegionKps;
+              $ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input.cf-input");
+              $ipt.select2("val", $ipt.select2("val") || param.Default);
             }
           }
         });
       },
-      typeaheadMatch: function(query, cb, source) {
-        var i, matches, queryReg, _i, _j, _len, _len1;
-        matches = [];
-        queryReg = new RegExp(query, "i");
-        for (_i = 0, _len = source.length; _i < _len; _i++) {
-          i = source[_i];
-          if (queryReg.test(i)) {
-            matches.push({
-              value: "" + i
-            });
-          }
-        }
-        if (matches.length === 0) {
-          for (_j = 0, _len1 = source.length; _j < _len1; _j++) {
-            i = source[_j];
-            matches.push({
-              value: "" + i
-            });
-          }
-        }
-        return cb(matches);
-      },
-      createTypeaheadMatch: function(source) {
-        var self;
-        self = this;
-        return function(query, cb) {
-          return self.typeaheadMatch(query, cb, source.AllowedValues);
-        };
-      },
       extractUserInput: function($li) {
-        var AllowedPattern, allowed, av, idx, name, param, type, v, value, valueArray, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+        var $input, AllowedPattern, allowed, av, idx, name, param, type, v, value, valueArray, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
         type = $li.attr("data-type");
-        value = $li.find("input:not(.tt-hint)").val();
+        $input = $li.find("input.cf-input");
+        if ($input.siblings(".select2-container").length) {
+          value = $input.select2("val");
+        } else {
+          value = $li.find("input.cf-input").val();
+        }
         name = $li.attr("data-name");
         param = this.cfJson.Parameters[name];
         if (!value) {
@@ -2240,7 +2202,11 @@ return TEMPLATE; });
         if (type === "Number" || type === "String") {
           valueArray = [value];
         } else {
-          valueArray = value.split(",");
+          if (_.isArray(value)) {
+            valueArray = value;
+          } else {
+            valueArray = value.split(",");
+          }
         }
         if (type === "Number" || type === "List<Number>") {
           for (idx = _i = 0, _len = valueArray.length; _i < _len; idx = ++_i) {
@@ -2263,13 +2229,13 @@ return TEMPLATE; });
           }
           for (idx = _j = 0, _len1 = valueArray.length; _j < _len1; idx = ++_j) {
             v = valueArray[idx];
-            if (param.MinLength && Number(param.MinLength) > value.length) {
+            if (param.MinLength && Number(param.MinLength) > v.length) {
               return false;
             }
-            if (param.MaxLength && Number(param.MaxLength) < value.length) {
+            if (param.MaxLength && Number(param.MaxLength) < v.length) {
               return false;
             }
-            if (AllowedPattern && !AllowedPattern.test(value)) {
+            if (AllowedPattern && !AllowedPattern.test(v)) {
               return false;
             }
           }
@@ -2280,7 +2246,7 @@ return TEMPLATE; });
             _ref = param.AllowedValues || [];
             for (_l = 0, _len3 = _ref.length; _l < _len3; _l++) {
               av = _ref[_l];
-              if (av + "" === v) {
+              if ("" + av === "" + v) {
                 allowed = true;
                 break;
               }
@@ -2288,6 +2254,11 @@ return TEMPLATE; });
             if (!allowed) {
               return false;
             }
+          }
+        }
+        if (param.Type === "AWS::EC2::KeyPair::KeyName") {
+          if (this.currentRegionKps.indexOf(value) < 0) {
+            return false;
           }
         }
         if (type === "String" || type === "Number") {
@@ -2340,7 +2311,7 @@ return TEMPLATE; });
             }
           }).then(function(data) {
             self.modal.close();
-            data.provider = "aws::china";
+            data.provider = "aws::global";
             return App.importJson(data, true);
           }, function() {
             self.modal.close();
@@ -2644,85 +2615,7 @@ return TEMPLATE; });
         this.updateRegionResources();
       },
       importJson: function() {
-        var hanldeFile, modal, reader, zone;
-        modal = new Modal({
-          title: lang.IDE.POP_IMPORT_JSON_TIT,
-          template: tplPartials.importJSON(),
-          width: "470",
-          disableFooter: true
-        });
-        reader = new FileReader();
-        reader.onload = function(evt) {
-          var error, result;
-          result = JsonExporter.importJson(reader.result);
-          if (_.isString(result)) {
-            $("#import-json-error").html(error);
-            return;
-          }
-          if (result.AWSTemplateFormatVersion) {
-            modal.tpl.find(".loading-spinner").show();
-            $("#import-json-error, #modal-import-json-dropzone").hide();
-            console.log(reader.result);
-            ApiRequest("stack_import_cloudformation", {
-              cf_template: reader.result
-            }).then(function(data) {
-              data.provider = "aws::global";
-              data.region = "cn-north-1";
-              App.importJson(data, true);
-              return modal.close();
-            }, function() {
-              modal.tpl.find(".loading-spinner").hide();
-              $("#import-json-error, #modal-import-json-dropzone").show();
-              return $("#import-json-error").html(lang.IDE.POP_IMPORT_CFM_ERROR);
-            });
-            return;
-          }
-          error = App.importJson(reader.result);
-          if (_.isString(error)) {
-            $("#import-json-error").html(error);
-          } else {
-            modal.close();
-            reader = null;
-          }
-          return null;
-        };
-        reader.onerror = function() {
-          $("#import-json-error").html(lang.IDE.POP_IMPORT_ERROR);
-          return null;
-        };
-        hanldeFile = function(evt) {
-          var files;
-          evt.stopPropagation();
-          evt.preventDefault();
-          $("#modal-import-json-dropzone").removeClass("dragover");
-          $("#import-json-error").html("");
-          evt = evt.originalEvent;
-          files = (evt.dataTransfer || evt.target).files;
-          if (!files || !files.length) {
-            return;
-          }
-          reader.readAsText(files[0]);
-          return null;
-        };
-        $("#modal-import-json-file").on("change", hanldeFile);
-        zone = $("#modal-import-json-dropzone").on("drop", hanldeFile);
-        zone.on("dragenter", function() {
-          return $(this).closest("#modal-import-json-dropzone").toggleClass("dragover", true);
-        });
-        zone.on("dragleave", function() {
-          return $(this).closest("#modal-import-json-dropzone").toggleClass("dragover", false);
-        });
-        zone.on("dragover", function(evt) {
-          var dt;
-          dt = evt.originalEvent.dataTransfer;
-          if (dt) {
-            dt.dropEffect = "copy";
-          }
-          evt.stopPropagation();
-          evt.preventDefault();
-          return null;
-        });
-        return null;
+        return new ImportDialog();
       },
       openItem: function(event) {
         return App.openOps($(event.currentTarget).attr("data-id"));
