@@ -26363,7 +26363,7 @@ return TEMPLATE; });
           console.error("deserialize failed");
           return null;
         }
-        if (instance.getAmiRootDeviceName() === attachment.Device) {
+        if (!instance || instance.getAmiRootDeviceName() === attachment.Device) {
           return null;
         }
         attr = {
@@ -29512,17 +29512,19 @@ return TEMPLATE; });
             model.set("rdIops", volume.Ebs.Iops);
             model.set("rdType", volume.Ebs.VolumeType);
           } else {
-            _attr = {
-              name: volume.DeviceName,
-              snapshotId: volume.Ebs.SnapshotId,
-              volumeSize: volume.Ebs.VolumeSize,
-              volumeType: volume.Ebs.VolumeType,
-              iops: volume.Ebs.Iops,
-              owner: model
-            };
-            new VolumeModel(_attr, {
-              noNeedGenName: true
-            });
+            if (volume.Ebs) {
+              _attr = {
+                name: volume.DeviceName,
+                snapshotId: volume.Ebs.SnapshotId,
+                volumeSize: volume.Ebs.VolumeSize,
+                volumeType: volume.Ebs.VolumeType,
+                iops: volume.Ebs.Iops,
+                owner: model
+              };
+              new VolumeModel(_attr, {
+                noNeedGenName: true
+              });
+            }
           }
         }
         SgAsso = Design.modelClassForType("SgAsso");
