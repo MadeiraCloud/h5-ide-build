@@ -804,7 +804,7 @@ define({
         "SYSTEM_LOG_NOT_READY": "System log is not ready yet. Please try in a short while.",
         "PROVIDE_BILLING_INFORMATION": "Provide Billing Information",
         "WHILE_ENJOYING_PROVIDE_CARD": "While enjoying your free %s instance hours each month, provide billing information in case of running out of quota.",
-        "YOUR_ACCOUNT_IN_LIMITED_STATUS": "Your account is in limited status now. Import VPC, app operation, monitoring and state ensuring are disabled.",
+        "YOUR_ACCOUNT_IN_LIMITED_STATUS": "Your account is in limited status now. <br>Import VPC, app operation, monitoring and state ensuring are disabled.",
         "INSTANCE_HOURS_PER_MONTH": "%s instance hours per month",
         "LALEL_FREE": "Free",
         "INSTANCE_HOURS_CONSUMED_OVER_XXX": "Instance hours consumed over %s",

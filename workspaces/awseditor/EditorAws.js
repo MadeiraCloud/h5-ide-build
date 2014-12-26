@@ -20777,7 +20777,7 @@ return TEMPLATE; });
         });
       },
       deleteStack: function() {
-        return appAction.deleteStack(this.workspace.opsModel.cid, this.workspace.design.get("name"));
+        return appAction.deleteStack(this.workspace.opsModel.cid, this.workspace.opsModel.get("name"));
       },
       createStack: function() {
         return App.createOps(this.workspace.opsModel.get("region"));

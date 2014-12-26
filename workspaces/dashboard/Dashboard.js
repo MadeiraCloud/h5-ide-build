@@ -1929,7 +1929,7 @@ function program16(depth0,data) {
   buffer += "\n      </ul>\n      </ul>\n    </div>\n  </section>\n\n  ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
+  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn modal-close btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
   return buffer;
   };
 TEMPLATE.importCFConfirm=Handlebars.template(__TEMPLATE__);
@@ -2324,6 +2324,7 @@ return TEMPLATE; });
         this.modal.tpl.find(".loading-spinner").show();
         this.modal.tpl.closest(".modal-box").find(".modal-close").hide();
         $("#import-cf-form").hide();
+        this.modal.resize();
         region = $("#import-cf-region").find(".selected").attr("data-id");
         return CloudResources(constant.RESTYPE.AZ, region).fetch().then(function() {
           return ApiRequest("stack_import_cloudformation", {
