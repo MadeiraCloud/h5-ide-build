@@ -1813,7 +1813,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_CF_LBL", {hash:{},data:data}))
     + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
-    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>";
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>\n<ul class=\"import-cf-notice\">\n  <li>Currently only templates meet following requirements can be imported:</li>\n  <li>Must be in VPC platform. EC2 Classic template is not supported.</li>\n  <li>Must not include reference to existing VPC, Subnet or Security Group. <br> These components must be defined as complete new resources.</li>\n  <li>Resources used in template must be already <u>supported by VisualOps.</u> <br> Unsupported resources will be ignored.</li>\n  <li>All DependsOn attribute will be ignored.</li>\n</ul>";
   return buffer;
   };
 TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
@@ -2129,8 +2129,12 @@ return TEMPLATE; });
             text: term
           };
         };
-        formatNoMatches = function() {
-          return "Invalid input";
+        formatNoMatches = function(term) {
+          if (!term) {
+            return "Input value...";
+          } else {
+            return "Invalid input";
+          }
         };
         $inputs = $("#import-cf-params").children();
         _ref = this.parameters;
