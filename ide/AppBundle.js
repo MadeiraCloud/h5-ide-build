@@ -2077,9 +2077,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (opts.jsonData) {
             provider = opts.jsonData.provider;
           }
-          provider = provider || attr.provider || "aws::global";
-          console.assert(KnownOpsModelClass[provider], "Cannot find specific OpsModel for provider '" + attr.provider + "'");
-          Model = KnownOpsModelClass[provider];
+          attr.provider = provider || attr.provider || "aws::global";
+          console.assert(KnownOpsModelClass[attr.provider], "Cannot find specific OpsModel for provider '" + attr.provider + "'");
+          Model = KnownOpsModelClass[attr.provider];
           if (Model) {
             return new Model(attr, opts);
           }
@@ -2307,6 +2307,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         if ((json.version || "").split("-").length < 3) {
           json.version = OpsModelLastestVersion;
+        }
+        if (!json.provider && this.get("provider")) {
+          json.provider = this.get("provider");
         }
         this.__jsonData = json;
         if (this.attributes.name !== json.name) {
@@ -3245,7 +3248,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.__jsonData = json;
       }
     }, {
-      supportedProviders: ["aws::global", "aws::global"]
+      supportedProviders: ["aws::global", "aws::china"]
     });
     return AwsOpsModel;
   });

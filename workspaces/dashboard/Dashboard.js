@@ -29,14 +29,14 @@ function program3(depth0,data) {
 
   buffer += "<div>\n\n<header id=\"global-region-header\">\n	<button id=\"RefreshResource\" class=\"icon-refresh\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
-    + "</button>\n\n	<button class=\"btn btn-primary icon-new-stack js-toggle-dropdown\">"
+    + "</button>\n\n  <div class=\"hovermenu\">\n    <button class=\"btn btn-primary icon-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n\n	<ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">\n	";
+    + "<i class=\"icon-caret-down\"></i></button>\n    <ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n\n	<button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
+  buffer += "</ul>\n  </div>\n\n  <div class=\"hovermenu\">\n    <button class=\"btn btn-primary icon-import\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
-    + "</button>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + "<i class=\"icon-caret-down\"></i></button>\n    <ul class=\"dropdown-menu\" id=\"ImportStack\">\n      <li data-type=\"stack\" data-analytics-plus=\"import_json\">Import stack</li>\n      <li data-type=\"cf\" data-analytics-plus=\"import_cf\">Import cloudformation</li>\n    </ul>\n  </div>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
     + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n    <div id=\"global-region-map-wrap\">\n        <div id=\"global-region-map-content\" class=\"clearfix\">\n            <ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n            <div id=\"global-region-status-widget\">\n                <header class=\"clearfix\">\n                    <div class=\"global-region-status-tab\">\n                        <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
@@ -445,9 +445,9 @@ function program27(depth0,data) {
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DUPLICATE_STACK", {hash:{},data:data}))
-    + "\"></i>\n      <i class=\"icon-duplicate duplicate-stack tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DEL_STACK", {hash:{},data:data}))
+    + "\"></i>\n      <i class=\"icon-duplicate duplicate-stack tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DUPLICATE_STACK", {hash:{},data:data}))
     + "\"></i>\n      <span class=\"truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n    </div>\n  </li>\n";
@@ -1806,6 +1806,22 @@ TEMPLATE.importJSON=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"loading-spinner loading-spinner-small hide\"></div>\n<div id=\"modal-import-json-dropzone\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_CF_LBL", {hash:{},data:data}))
+    + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>";
+  return buffer;
+  };
+TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
@@ -1830,7 +1846,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <section> Specify parameters for template:\n\n  <div class=\"nano cf-params-wrap\">\n    <ul class=\"cf-params nano-content\" id=\"import-cf-params\">\n      ";
+  buffer += "\n  <section class=\"modal-control-group\"> <h5>Specify parameters for template:</h5>\n\n  <div class=\"nano cf-params-wrap\">\n    <ul class=\"cf-params nano-content\" id=\"import-cf-params\">\n      ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.parameters), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n  </div>\n  </section>\n  ";
@@ -1846,24 +1862,24 @@ function program5(depth0,data) {
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.NoEcho), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n      <span class=\"cf-name\">"
+  buffer += ">\n      <div class=\"cf-left\">\n        <span class=\"cf-name\">"
     + escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n      <span class=\"cf-input-wrap\">\n        <input class=\"input cf-input\" ";
+    + "</span>\n        <span class=\"cf-type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.Type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n      </div>\n      <div class=\"cf-right\">\n        <span class=\"cf-input-wrap\">\n          <input class=\"input cf-input\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.NoEcho), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.Default)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n      </span>\n      <span class=\"cf-type\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.Type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n      <div class=\"cf-desc\"><p>"
+    + "\">\n        </span>\n\n        <div class=\"cf-desc\"><p>"
     + escapeExpression(((stack1 = (depth0 && depth0.Description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.__Constraint), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n      <span class=\"cf-error\">";
+  buffer += "</div>\n        <span class=\"cf-error\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.ConstraintDescription), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</span>\n      </li>";
+  buffer += "</span>\n      </div>\n      </li>";
   return buffer;
   }
 function program6(depth0,data) {
@@ -1905,7 +1921,7 @@ function program16(depth0,data) {
   return "Parameter value does not meet its constraint.";
   }
 
-  buffer += "<div id=\"import-cf-form\">\n  <section> Region:\n    <div class=\"selectbox selectbox-mega\" id=\"import-cf-region\">\n      <div class=\"selection\">"
+  buffer += "<div id=\"import-cf-form\">\n  <section class=\"modal-control-group clearfix\"> <label class=\"label\">Region:</label>\n    <div class=\"selectbox combo-dd\" id=\"import-cf-region\">\n      <div class=\"selection\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.regions)),stack1 == null || stack1 === false ? stack1 : stack1[0])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n      <ul class=\"dropdown\" tabindex=\"-1\">\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.regions), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -1913,10 +1929,10 @@ function program16(depth0,data) {
   buffer += "\n      </ul>\n      </ul>\n    </div>\n  </section>\n\n  ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner loading-spinner-small\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner loading-spinner-small hide\"></div>";
+  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
   return buffer;
   };
-TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
+TEMPLATE.importCFConfirm=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
@@ -1934,12 +1950,13 @@ return TEMPLATE; });
         "keypress .cf-input": "onFocusInput",
         "OPTION_CHANGE #import-cf-region": "onRegionChange"
       },
-      initialize: function() {
+      initialize: function(attr) {
         var self;
         self = this;
+        this.type = attr.type;
         this.modal = new Modal({
-          title: lang.IDE.POP_IMPORT_JSON_TIT,
-          template: tplPartials.importJSON(),
+          title: this.type === "stack" ? lang.IDE.POP_IMPORT_JSON_TIT : lang.IDE.POP_IMPORT_CF_TIT,
+          template: this.type === "stack" ? tplPartials.importJSON() : tplPartials.importCF(),
           width: "470",
           disableFooter: true,
           onClose: function() {
@@ -1990,11 +2007,19 @@ return TEMPLATE; });
           $("#import-json-error").html(result);
           return;
         }
-        if (result.AWSTemplateFormatVersion) {
-          this.handleCFTemplate(result);
-          return;
+        if (this.type === "stack" && result.AWSTemplateFormatVersion) {
+          error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
+        } else if (this.type === "cf" && !result.AWSTemplateFormatVersion) {
+          error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
         }
-        error = App.importJson(this.reader.result);
+        if (!error) {
+          if (result.AWSTemplateFormatVersion) {
+            this.handleCFTemplate(result);
+            return;
+          } else {
+            error = App.importJson(this.reader.result);
+          }
+        }
         if (_.isString(error)) {
           $("#import-json-error").html(error);
         } else {
@@ -2047,7 +2072,7 @@ return TEMPLATE; });
           regions: constant.REGION_KEYS.slice(0),
           parameters: parameters
         };
-        this.modal.setContent(tplPartials.importCF(data));
+        this.modal.setContent(tplPartials.importCFConfirm(data));
         this.modal.setWidth("570");
         this.modal.setTitle(lang.IDE.POP_IMPORT_CF_TIT);
         this.modal.tpl.find(".cf-params-wrap").nanoScroller();
@@ -2105,7 +2130,7 @@ return TEMPLATE; });
           };
         };
         formatNoMatches = function() {
-          return "";
+          return "Invalid input";
         };
         $inputs = $("#import-cf-params").children();
         _ref = this.parameters;
@@ -2373,11 +2398,19 @@ return TEMPLATE; });
         'click #region-resource-tab li': 'switchAppStack',
         'click .resource-tab': 'switchResource',
         "click .global-resource-li": "gotoRegionResource",
-        'click #ImportStack': 'importJson',
         'click #VisualizeVPC': 'visualizeVPC',
         'click .show-credential': 'showCredential',
         'click #RefreshResource': 'reloadResource',
-        "click .icon-detail": "showResourceDetail"
+        "click .icon-detail": "showResourceDetail",
+        "mouseenter .hovermenu": "showMenu",
+        "mouseleave .hovermenu": "hideMenu",
+        'click #ImportStack li': 'importJson'
+      },
+      showMenu: function(evt) {
+        return $(evt.currentTarget).children(".dropdown-menu").show();
+      },
+      hideMenu: function(evt) {
+        return $(evt.currentTarget).children(".dropdown-menu").hide();
       },
       initialize: function() {
         var data, self;
@@ -2614,8 +2647,10 @@ return TEMPLATE; });
         this.resourcesTab = $(evt.currentTarget).addClass("on").attr("data-type");
         this.updateRegionResources();
       },
-      importJson: function() {
-        return new ImportDialog();
+      importJson: function(evt) {
+        return new ImportDialog({
+          type: $(evt.currentTarget).attr("data-type")
+        });
       },
       openItem: function(event) {
         return App.openOps($(event.currentTarget).attr("data-id"));

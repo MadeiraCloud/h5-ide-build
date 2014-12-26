@@ -564,7 +564,8 @@ define({
         "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL": "Please type in the name of this app to confirm terminating it.",
         "POP_IMPORT_JSON_TIT": "Import Stack from JSON file",
         "POP_IMPORT_CF_TIT": "Import CloudFormation",
-        "POP_IMPORT_DROP_LBL": "Drop JSON file here or ",
+        "POP_IMPORT_DROP_LBL": "Drop a JSON file here or ",
+        "POP_IMPORT_DROP_CF_LBL": "Drop a CloudFormation template here or",
         "POP_IMPORT_SELECT_LBL": " select a file.",
         "POP_IMPORT_ERROR": "An error occured when reading the file. Please try again.",
         "POP_IMPORT_FORMAT_ERROR": "The JSON file is malformed.",
@@ -1689,7 +1690,7 @@ define({
         "ASG_TIP_CLICK_TO_SELECT": "Click to select",
         "ASG_TIP_YOU_CAN_ONLY_ADD_25_SCALING_POLICIES": "You can only add 25 scaling policies",
         "ASG_ARN": "Auto Scaling Group ARN",
-        "LC_TITLE": "Launch Configuation",
+        "LC_TITLE": "Launch Configuration",
         "LC_NAME": "Name",
         "LC_CREATE_TIME": "Create Time",
         "RT_ASSOCIATION": "This is an association of ",
@@ -2114,6 +2115,8 @@ define({
         "CONSTANT_MSG_E_PARAM": "Parameter Error!"
     },
     "TA": {
+        "INSTANCE": "Instance",
+        "LAUNCH_CONFIGURATION": "Launch Configuration",
         "WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE": "No instance in VPC has Elastic IP or auto-assigned public IP, which means this VPC can only connect to outside via VPN.",
         "ERROR_CIDR_ERROR_CONNECT_TO_ELB": "Subnet <span class='validation-tag tag-subnet'>%s</span> is attached with a Load Balancer. Its mask must be smaller than /27.",
         "NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME": "Instance <span class='validation-tag tag-instance'>%s</span> has an attached Provisioned IOPS volume but is not EBS-Optimized.",
