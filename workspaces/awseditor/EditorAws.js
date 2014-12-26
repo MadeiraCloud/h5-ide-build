@@ -25011,7 +25011,7 @@ return TEMPLATE; });
         data = App.model.getOsFamilyConfig(region);
         try {
           data = data[ami.osFamily] || data[constant.OS_TYPE_MAPPING[ami.osType]];
-          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance store'];
+          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance_store'];
           data = data[ami.architecture];
           data = data[ami.virtualizationType || "paravirtual"];
         } catch (_error) {

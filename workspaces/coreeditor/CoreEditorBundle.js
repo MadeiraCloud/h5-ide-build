@@ -2369,6 +2369,7 @@ return TEMPLATE; });
       };
 
       OpsEditorBase.prototype.additionalDataLoaded = function() {
+        var e;
         if (this.isRemoved()) {
           return;
         }
@@ -2378,7 +2379,14 @@ return TEMPLATE; });
           this.view = null;
         }
         if (this.isAwake() && !this.__inited) {
-          this.__initEditor();
+          try {
+            this.__initEditor();
+          } catch (_error) {
+            e = _error;
+            console.error(e);
+            notification("error", "Failed to open the stack/app, please contact our support team.");
+            this.remove();
+          }
         }
       };
 
