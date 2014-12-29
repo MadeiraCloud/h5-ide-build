@@ -2315,9 +2315,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (this.attributes.name !== json.name) {
           this.set("name", json.name);
         }
-        if (json.autoLayout) {
-          this.set("autoLayout", json.autoLayout);
-        }
         return this;
       },
       save: function(newJson, thumbnail) {
@@ -3343,7 +3340,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         m = new OpsModel({
           name: json.name,
           region: json.region,
-          autoLayout: updateLayout
+          autoLayout: updateLayout,
+          __________itsshitdontsave: updateLayout
         }, {
           jsonData: json
         });

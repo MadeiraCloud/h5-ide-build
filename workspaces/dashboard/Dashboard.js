@@ -31,12 +31,12 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
     + "</button>\n\n  <div class=\"hovermenu\">\n    <button class=\"btn btn-primary icon-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n    <ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">";
+    + "<i class=\"icon-caret-down\"></i></button>\n    <div class=\"dropdown-menu\">\n      <ul id=\"global-region-create-stack-list\">";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n  </div>\n\n  <div class=\"hovermenu\">\n    <button class=\"btn btn-primary icon-import\">"
+  buffer += "</ul>\n    </div>\n  </div>\n\n  <div class=\"hovermenu\">\n    <button class=\"btn btn-primary icon-import\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n    <ul class=\"dropdown-menu\" id=\"ImportStack\">\n      <li data-type=\"stack\" data-analytics-plus=\"import_json\">Import from stack JSON</li>\n      <li data-type=\"cf\" data-analytics-plus=\"import_cf\">Import from CloudFormation</li>\n    </ul>\n  </div>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + "<i class=\"icon-caret-down\"></i></button>\n    <div class=\"dropdown-menu\">\n      <ul id=\"ImportStack\">\n        <li data-type=\"stack\" data-analytics-plus=\"import_json\">Import from stack JSON</li>\n        <li data-type=\"cf\" data-analytics-plus=\"import_cf\">Import from CloudFormation</li>\n      </ul>\n    </div>\n  </div>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
     + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n    <div id=\"global-region-map-wrap\">\n        <div id=\"global-region-map-content\" class=\"clearfix\">\n            <ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n            <div id=\"global-region-status-widget\">\n                <header class=\"clearfix\">\n                    <div class=\"global-region-status-tab\">\n                        <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
@@ -1813,7 +1813,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_CF_LBL", {hash:{},data:data}))
     + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
-    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>\n<ul class=\"import-cf-notice\">\n  <li>Currently only templates meet following requirements can be imported:</li>\n  <li>Must be in VPC platform. EC2 Classic template is not supported.</li>\n  <li>Must not include reference to existing VPC, Subnet or Security Group. <br> These components must be defined as complete new resources.</li>\n  <li>Resources used in template must be already <u>supported by VisualOps.</u> <br> Unsupported resources will be ignored.</li>\n  <li>All DependsOn attribute will be ignored.</li>\n</ul>";
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>\n<ul class=\"import-cf-notice\">\n  <li>Currently only templates meet following requirements can be imported:</li>\n  <li>Must be in VPC platform. EC2 Classic template is not supported.</li>\n  <li>Must not include reference to existing VPC, Subnet or Security Group. <br> These components must be defined as complete new resources.</li>\n  <li>Resources used in template must be already <span class=\"tooltip\" data-tooltip=\"EC2, VPC, Auto Scaling, Elastic Load Balancing, EBS, RDS\">supported by VisualOps.</span> <br> Unsupported resources will be ignored.</li>\n  <li>All DependsOn attribute will be ignored.</li>\n</ul>";
   return buffer;
   };
 TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
@@ -1929,7 +1929,7 @@ function program16(depth0,data) {
   buffer += "\n      </ul>\n      </ul>\n    </div>\n  </section>\n\n  ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn modal-close btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
+  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <span class=\"param-empty hide\">Some paramters are left empty. If you are sure they should be empty, click Import button again to proceed.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn modal-close btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
   return buffer;
   };
 TEMPLATE.importCFConfirm=Handlebars.template(__TEMPLATE__);
@@ -2226,7 +2226,10 @@ return TEMPLATE; });
         name = $li.attr("data-name");
         param = this.cfJson.Parameters[name];
         if (!value) {
-          return false;
+          return {
+            name: name,
+            value: ""
+          };
         }
         if (type === "Number" || type === "String") {
           valueArray = [value];
@@ -2301,9 +2304,10 @@ return TEMPLATE; });
         };
       },
       checkCFParameter: function() {
-        var $entries, $li, error, li, result, _i, _len;
+        var $entries, $li, error, hasEmpty, li, result, _i, _len;
         $entries = this.modal.tpl.find(".cf-params").children();
         error = false;
+        hasEmpty = false;
         for (_i = 0, _len = $entries.length; _i < _len; _i++) {
           li = $entries[_i];
           $li = $(li);
@@ -2312,8 +2316,22 @@ return TEMPLATE; });
             error = true;
             $li.toggleClass("error", true);
           } else {
+            if (!result.value) {
+              hasEmpty = true;
+            }
             this.cfJson.Parameters[result.name].Default = result.value;
             $li.toggleClass("error", false);
+          }
+        }
+        this.modal.tpl.find(".param-error").hide();
+        this.modal.tpl.find(".param-empty").hide();
+        if (error) {
+          this.modal.tpl.find(".param-error").show();
+          this.emptyParamConfirm = false;
+        } else if (hasEmpty) {
+          this.modal.tpl.find(".param-empty").show();
+          if (!this.emptyParamConfirm) {
+            error = this.emptyParamConfirm = true;
           }
         }
         return !error;
@@ -2321,7 +2339,6 @@ return TEMPLATE; });
       doImport: function() {
         var region, self;
         if (!this.checkCFParameter()) {
-          this.modal.tpl.find(".param-error").show();
           return;
         }
         self = this;

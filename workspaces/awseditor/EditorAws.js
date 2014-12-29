@@ -14036,9 +14036,6 @@ function program4(depth0,data) {
       },
       constantCheck: function(val) {
         val = +val;
-        if (val < 1) {
-          return sprintf(lang.PARSLEY.VALUE_MUST_BE_GREATERTHAN_VAR, 1);
-        }
         if (val > 65534) {
           return sprintf(lang.PARSLEY.VALUE_MUST_BE_LESSTHAN_VAR, 65534);
         }
@@ -15798,39 +15795,41 @@ function program53(depth0,data) {
         }
       },
       setSizeGroup: function(event) {
-        var $capacity, $max, $min;
+        var $capacity, $max, $min, that;
+        that = this;
         $min = this.$el.find('#property-asg-min');
         $max = this.$el.find('#property-asg-max');
         $capacity = this.$el.find('#property-asg-capacity');
         $min.parsley('custom', function(val) {
-          if (+val < 1) {
-            return lang.PARSLEY.ASG_SIZE_MUST_BE_EQUAL_OR_GREATER_THAN_1;
-          }
           if (+val > +$max.val()) {
             return lang.PARSLEY.MINIMUM_SIZE_MUST_BE_LESSTHAN_MAXIMUM_SIZE;
           }
+          return that.constantCheck(val);
         });
         $max.parsley('custom', function(val) {
-          if (+val < 1) {
-            return lang.PARSLEY.ASG_SIZE_MUST_BE_EQUAL_OR_GREATER_THAN_1;
-          }
           if (+val < +$min.val()) {
             return lang.PARSLEY.MINIMUM_SIZE_MUST_BE_LESSTHAN_MAXIMUM_SIZE;
           }
+          return that.constantCheck(val);
         });
         $capacity.parsley('custom', function(val) {
-          if (+val < 1) {
-            return lang.PARSLEY.DESIRED_CAPACITY_EQUAL_OR_GREATER_1;
-          }
           if (+val < +$min.val() || +val > +$max.val()) {
             return lang.PARSLEY.DESIRED_CAPACITY_IN_ALLOW_SCOPE;
           }
+          return that.constantCheck(val);
         });
         if ($(event.currentTarget).parsley('validateForm')) {
           this.model.setASGMin($min.val());
           this.model.setASGMax($max.val());
           return this.model.setASGDesireCapacity($capacity.val());
         }
+      },
+      constantCheck: function(val) {
+        val = +val;
+        if (val > 65534) {
+          return sprintf(lang.PARSLEY.VALUE_MUST_BE_LESSTHAN_VAR, 65534);
+        }
+        return null;
       }
     });
     return new ASGAppEditView();
@@ -20695,7 +20694,9 @@ return TEMPLATE; });
         this.setElement(this.parent.$el.find(".OEPanelTop").html(tpl));
         that = this;
         setTimeout(function() {
-          return that.updateTbBtns();
+          if (!that.workspace.isRemoved()) {
+            return that.updateTbBtns();
+          }
         }, 1000);
         this.updateZoomButtons();
       },
@@ -21421,6 +21422,9 @@ return TEMPLATE; });
           });
         }
         return false;
+      },
+      xxxxxx: function() {
+        return this.setElement(this.parent.$el.find(".OEPanelTop").html(OpsEditorTpl.toolbar.BtnActionPng()));
       }
     });
   });
@@ -23904,6 +23908,16 @@ return TEMPLATE; });
           return true;
         }
         return this.design && this.design.isModified();
+      };
+
+      StackEditor.prototype.fetchJsonData = function() {
+        var opsModel;
+        opsModel = this.opsModel;
+        return opsModel.fetchJsonData().then(function() {
+          if (!opsModel.isPersisted() && !opsModel.get("__________itsshitdontsave")) {
+            return opsModel.save();
+          }
+        });
       };
 
       return StackEditor;
@@ -30764,7 +30778,7 @@ return TEMPLATE; });
           id: data.uid,
           name: data.name,
           appId: data.resource.InternetGatewayId,
-          parent: resolve(layout_data.groupUId),
+          parent: resolve(data.resource.AttachmentSet[0].VpcId),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });
@@ -30811,7 +30825,7 @@ return TEMPLATE; });
           id: data.uid,
           name: data.name,
           appId: data.resource.VpnGatewayId,
-          parent: resolve(layout_data.groupUId),
+          parent: resolve(data.resource.Attachments[0].VpcId),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });

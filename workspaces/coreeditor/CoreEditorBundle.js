@@ -2047,21 +2047,31 @@ return TEMPLATE; });
       },
       template: OpsEditorTpl.frame,
       constructor: function(options) {
-        var opt;
         _.extend(this, options);
         this.setElement($(this.template()).appendTo("#main").attr("data-ws", this.workspace.id).show()[0]);
+      },
+      __initialize: function() {
+        var opt;
         opt = {
           workspace: this.workspace,
           parent: this
         };
-        this.toolbar = new (options.TopPanel || Backbone.View)(opt);
-        this.propertyPanel = new (options.RightPanel || Backbone.View)(opt);
-        this.resourcePanel = new (options.LeftPanel || Backbone.View)(opt);
-        this.statusbar = new (options.BottomPanel || Backbone.View)(opt);
-        this.canvas = new options.CanvasView(opt);
+        this.toolbar = new (this.TopPanel || Backbone.View)(opt);
+        this.propertyPanel = new (this.RightPanel || Backbone.View)(opt);
+        this.resourcePanel = new (this.LeftPanel || Backbone.View)(opt);
+        this.statusbar = new (this.BottomPanel || Backbone.View)(opt);
+        this.canvas = new this.CanvasView(opt);
         this.listenTo(this.canvas, "itemSelected", this.onItemSelected);
         this.listenTo(this.canvas, "doubleclick", this.onCanvasDoubleClick);
         this.initialize();
+        if (this.workspace.opsModel.get("__________itsshitdontsave")) {
+          this.propertyPanel.$el.remove();
+          this.statusbar.$el.remove();
+          this.$el.find(".canvas-view").css("pointer-events", "none");
+          this.canvas.updateSize();
+          this.toolbar.xxxxxx();
+          this.resourcePanel.$el.addClass("force-hidden");
+        }
       },
       onItemSelected: function(type, id) {},
       showProperty: function() {},
@@ -2439,6 +2449,7 @@ return TEMPLATE; });
         this.view = new this.viewClass({
           workspace: this
         });
+        this.view.__initialize();
         this.initEditor();
         if (!this.opsModel.getThumbnail()) {
           this.saveThumbnail();
@@ -2463,7 +2474,7 @@ return TEMPLATE; });
       };
 
       OpsEditorBase.prototype.isRemovable = function() {
-        if (!this.__inited || !this.isModified()) {
+        if (!this.__inited || !this.isModified() || this.opsModel.get("__________itsshitdontsave")) {
           return true;
         }
         this.view.showCloseConfirm();
