@@ -30778,7 +30778,7 @@ return TEMPLATE; });
           id: data.uid,
           name: data.name,
           appId: data.resource.InternetGatewayId,
-          parent: resolve(data.resource.AttachmentSet[0].VpcId),
+          parent: resolve(MC.extractID(data.resource.AttachmentSet[0].VpcId)),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });
@@ -30825,7 +30825,7 @@ return TEMPLATE; });
           id: data.uid,
           name: data.name,
           appId: data.resource.VpnGatewayId,
-          parent: resolve(data.resource.Attachments[0].VpcId),
+          parent: resolve(MC.extractID(data.resource.Attachments[0].VpcId)),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });
