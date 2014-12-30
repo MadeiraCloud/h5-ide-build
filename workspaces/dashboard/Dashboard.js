@@ -36,7 +36,11 @@ function program3(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</ul>\n    </div>\n  </div>\n\n  <div class=\"hovermenu\">\n    <button class=\"btn btn-primary icon-import\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n    <div class=\"dropdown-menu\">\n      <ul id=\"ImportStack\">\n        <li data-type=\"stack\" data-analytics-plus=\"import_json\">Import from stack JSON</li>\n        <li data-type=\"cf\" data-analytics-plus=\"import_cf\">Import from CloudFormation</li>\n      </ul>\n    </div>\n  </div>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + "<i class=\"icon-caret-down\"></i></button>\n    <div class=\"dropdown-menu\">\n      <ul id=\"ImportStack\">\n        <li data-type=\"stack\" data-analytics-plus=\"import_json\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_FORM_STACK_JSON", {hash:{},data:data}))
+    + "</li>\n        <li data-type=\"cf\" data-analytics-plus=\"import_cf\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_FORM_CLOUDFORMATION", {hash:{},data:data}))
+    + "</li>\n      </ul>\n    </div>\n  </div>\n\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
     + "\n	</button>\n</header>\n\n\n<div id=\"global-region-wrap\" class=\"nano\">\n<div class=\"nano-content\">\n	<!-- Global Map -->\n    <div id=\"global-region-map-wrap\">\n        <div id=\"global-region-map-content\" class=\"clearfix\">\n            <ul id=\"global-region-spot\" class=\"pos-r\"></ul>\n            <div id=\"global-region-status-widget\">\n                <header class=\"clearfix\">\n                    <div class=\"global-region-status-tab\">\n                        <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
@@ -1813,7 +1817,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_CF_LBL", {hash:{},data:data}))
     + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
-    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>\n<ul class=\"import-cf-notice\">\n  <li>Currently only templates meet following requirements can be imported:</li>\n  <li>Must be in VPC platform. EC2 Classic template is not supported.</li>\n  <li>Must not include reference to existing VPC, Subnet or Security Group. <br> These components must be defined as complete new resources.</li>\n  <li>Resources used in template must be already <span class=\"tooltip\" data-tooltip=\"EC2, VPC, Auto Scaling, Elastic Load Balancing, EBS, RDS\">supported by VisualOps.</span> <br> Unsupported resources will be ignored.</li>\n  <li>All DependsOn attribute will be ignored.</li>\n</ul>";
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>\n<ul class=\"import-cf-notice\">\n"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_NOTICE", {hash:{},data:data}))
+    + "\n</ul>";
   return buffer;
   };
 TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
@@ -1846,7 +1852,9 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <section class=\"modal-control-group\"> <h5>Specify parameters for template:</h5>\n\n  <div class=\"nano cf-params-wrap\">\n    <ul class=\"cf-params nano-content\" id=\"import-cf-params\">\n      ";
+  buffer += "\n  <section class=\"modal-control-group\"> <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "SPECIFY_PARAMETERS_FOR_TEMPLATE", {hash:{},data:data}))
+    + "</h5>\n\n  <div class=\"nano cf-params-wrap\">\n    <ul class=\"cf-params nano-content\" id=\"import-cf-params\">\n      ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.parameters), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n  </div>\n  </section>\n  ";
@@ -1918,10 +1926,12 @@ function program14(depth0,data) {
 function program16(depth0,data) {
   
   
-  return "Parameter value does not meet its constraint.";
+  return escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_NOT_MEET_CONSTRAINT", {hash:{},data:data}));
   }
 
-  buffer += "<div id=\"import-cf-form\">\n  <section class=\"modal-control-group clearfix\"> <label class=\"label\">Region:</label>\n    <div class=\"selectbox combo-dd\" id=\"import-cf-region\">\n      <div class=\"selection\">"
+  buffer += "<div id=\"import-cf-form\">\n  <section class=\"modal-control-group clearfix\"> <label class=\"label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_REGION", {hash:{},data:data}))
+    + ":</label>\n    <div class=\"selectbox combo-dd\" id=\"import-cf-region\">\n      <div class=\"selection\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.regions)),stack1 == null || stack1 === false ? stack1 : stack1[0])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n      <ul class=\"dropdown\" tabindex=\"-1\">\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.regions), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -1929,7 +1939,15 @@ function program16(depth0,data) {
   buffer += "\n      </ul>\n      </ul>\n    </div>\n  </section>\n\n  ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">Please provide valid value for each parameter.</span>\n    <span class=\"param-empty hide\">Some paramters are left empty. If you are sure they should be empty, click Import button again to proceed.</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">Import</button>\n    <button class=\"btn modal-close btn-silver\" id=\"import-cf-cancel\">Cancel</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
+  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_PARAMS_ERROR", {hash:{},data:data}))
+    + "</span>\n    <span class=\"param-empty hide\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_PARAMS_EMPTY", {hash:{},data:data}))
+    + "</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_IMPORT", {hash:{},data:data}))
+    + "</button>\n    <button class=\"btn modal-close btn-silver\" id=\"import-cf-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
+    + "</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
   return buffer;
   };
 TEMPLATE.importCFConfirm=Handlebars.template(__TEMPLATE__);
@@ -1997,6 +2015,7 @@ return TEMPLATE; });
         if (!files || !files.length) {
           return;
         }
+        this.filename = (files[0].name || "").split(".")[0];
         this.reader.readAsText(files[0]);
         return null;
       },
@@ -2359,6 +2378,9 @@ return TEMPLATE; });
           }).then(function(data) {
             self.modal.close();
             data.provider = "aws::global";
+            if (self.filename) {
+              data.name = self.filename;
+            }
             return App.importJson(data, true);
           }, function() {
             self.modal.close();

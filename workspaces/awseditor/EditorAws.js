@@ -23417,7 +23417,7 @@ return TEMPLATE; });
         }, CanvasView.prototype.events);
       },
       recreateStructure: function() {
-        this.svg.clear().add([this.svg.group().classes("layer_vpc"), this.svg.group().classes("layer_az"), this.svg.group().classes("layer_subnet"), this.svg.group().classes("layer_asg"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_sgline"), this.svg.group().classes("layer_node")]);
+        this.svg.clear().add([this.svg.group().classes("layer_vpc"), this.svg.group().classes("layer_az"), this.svg.group().classes("layer_subnet"), this.svg.group().classes("layer_asg"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_sgline"), this.svg.group().classes("layer_lc"), this.svg.group().classes("layer_node")]);
       },
       appendVpc: function(svgEl) {
         return this.__appendSvg(svgEl, ".layer_vpc");
@@ -25340,20 +25340,25 @@ return TEMPLATE; });
         return this.__groupMembers;
       },
       updateName: function() {
-        var attachment, instance, name;
-        instance = this.__embedInstance;
-        if (instance) {
-          name = "eni0";
-        } else {
-          attachment = this.connections("EniAttachment")[0];
-          if (attachment) {
-            name = "eni" + attachment.get("index");
-          } else {
-            name = "eni";
-          }
+        this.trigger("change:name");
+        return this.trigger("change");
+      },
+      get: function(attr) {
+        if (attr === "name") {
+          return this.getName();
         }
-        this.set("name", name);
-        return null;
+        return this.attributes[attr];
+      },
+      getName: function() {
+        var attachment;
+        if (this.__embedInstance) {
+          return "eni0";
+        }
+        attachment = this.connections("EniAttachment")[0];
+        if (attachment) {
+          return "eni" + attachment.get("index");
+        }
+        return "eni";
       },
       isReparentable: function(newParent) {
         var check;
@@ -25967,7 +25972,6 @@ return TEMPLATE; });
           attr.ips.push(ipObj);
         }
         if (embed) {
-          attr.name = "eni0";
           option = {
             instance: instance
           };
@@ -34387,6 +34391,32 @@ return TEMPLATE; });
         "mousedown .volume-image": "showVolume",
         "click .volume-image": "suppressEvent",
         "click .server-number-group": "suppressEvent"
+      },
+      hover: function(evt) {
+        var $asg, $lc, $lcLayer, asgPos;
+        $lc = $(evt.currentTarget);
+        $asg = $lc.parent();
+        asgPos = $asg[0].instance.transform();
+        if (!CanvasManager.hasClass($asg, "AWS-AutoScaling-Group") && !CanvasManager.hasClass($asg, "ExpandedAsg")) {
+          return;
+        }
+        $lcLayer = this.canvas.getLayer("layer_lc");
+        $lcLayer.attr({
+          "transform": "translate(" + asgPos.x + " " + asgPos.y + ")",
+          "data-id": $asg.attr("data-id")
+        });
+        $lcLayer.append($lc);
+      },
+      hoverOut: function(evt) {
+        var $layer, $lc, id;
+        $lc = $(evt.currentTarget);
+        $layer = $lc.parent();
+        if (!CanvasManager.hasClass($layer, "layer_lc")) {
+          return;
+        }
+        id = $layer.attr("data-id");
+        $layer.attr("data-id", "");
+        this.canvas.getItem(id).$el.children().eq(0).after($lc[0]);
       },
       suppressEvent: function() {
         return false;
