@@ -20464,7 +20464,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\""
+  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
+    + "\" data-disabled=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.INITIATING", {hash:{},data:data}))
+    + "…\"  data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.INSTANTLY_RERUN_ALL_STATES_IN_THIS_APP", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
