@@ -4972,7 +4972,7 @@ function program1(depth0,data) {
         if (sourceValue === 'custom') {
           rule.relation = descrition_dom.val();
         } else {
-          rule.relation = "@" + $('#sg-add-model-source-select').children("ul").children('.selected').attr("data-uid");
+          rule.relation = "@" + $('#sg-add-model-source-select').find('li.selected').attr("data-uid");
         }
         result = this.model.addRule(rule);
         if (!result) {
