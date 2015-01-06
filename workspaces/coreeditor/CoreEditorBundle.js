@@ -676,6 +676,9 @@ return TEMPLATE; });
         }
       },
       component: function(uid) {
+        if (!uid) {
+          return null;
+        }
         return this.__componentMap[uid];
       },
       componentsOfType: function(type) {
@@ -6282,7 +6285,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           e = _error;
           console.error(e);
         }
-        return this.opsModel.saveApp(newJson);
+        return this.opsModel.saveApp(this.design.serialize());
       };
 
       AppEditor.prototype.reloadAppData = function() {

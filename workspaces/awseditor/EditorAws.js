@@ -9016,6 +9016,7 @@ function program20(depth0,data) {
             name: theOtherPort.get("name"),
             type: theOtherPort.type,
             ref: cn.id,
+            readonly: theOtherPort.type === "ExternalVpcRouteTarget",
             isVgw: theOtherPort.type === res_type.VGW,
             isProp: cn.get("propagate"),
             cidr_set: cn.get("routes")
@@ -9124,9 +9125,9 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LOCAL", {hash:{},data:data}))
     + "</td>\n			  </tr>\n			  <tr>\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
-    + "</td>\n			    <td class=\"route-destination-input\">\n			    	<div class=\"route-destination-input multi-input\"><input class=\"input\" disabled=\"disabled\" value=\""
+    + "</td>\n			    <td class=\"route-destination-input\"> <div class=\"route-readonly\">"
     + escapeExpression(((stack1 = (depth0 && depth0.local_route)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></div>\n			    </td>\n			  </tr>\n			</table></li>\n\n			";
+    + "</div> </td>\n			  </tr>\n			</table></li>\n\n			";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.routes), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</ul>\n	</div>\n";
@@ -9202,39 +9203,66 @@ function program12(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n			  </tr>\n\n			  <tr>\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
-    + "</td>\n			    <td class=\"route-destination-input\">\n			    	<div class=\"route-destination-input multi-input\" data-ref=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.ref)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n\n						";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+    + "</td>\n			    <td class=\"route-destination-input\">\n			    	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.program(16, program16, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n				    </div>\n\n				    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVgw), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  buffer += "\n\n				    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVgw), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n			    </td>\n			  </tr>\n			</table></li>\n			";
   return buffer;
   }
 function program13(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n							";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n						";
+  return buffer;
+  }
+function program14(depth0,data) {
+  
   var buffer = "";
-  buffer += "\n						<div class=\"multi-ipt-row\">\n		          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n		          <span class=\"ipt-wrapper\"><input class=\"ip-main-input input\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" data-type=\"cidr\" data-trigger=\"change\" placeholder=\"eg. 0.0.0.0/0\" value=\""
+  buffer += " <div class=\"route-readonly\">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "\" type=\"text\"></span>\n		        </div>\n						";
+    + "</div> ";
   return buffer;
   }
 
-function program15(depth0,data) {
+function program16(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n			    	<div class=\"multi-input\" data-ref=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.ref)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n							";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.program(19, program19, data),fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n				    </div>\n				    ";
+  return buffer;
+  }
+function program17(depth0,data) {
   
-  return "\n						<div class=\"multi-ipt-row\">\n		          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n		          <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" placeholder=\"eg. 0.0.0.0/0\" data-empty-remove=\"true\" type=\"text\"></span>\n		        </div>\n			      ";
+  var buffer = "";
+  buffer += "\n							<div class=\"multi-ipt-row\">\n			          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n			          <span class=\"ipt-wrapper\"><input class=\"ip-main-input input\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" data-type=\"cidr\" data-trigger=\"change\" placeholder=\"eg. 0.0.0.0/0\" value=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\" type=\"text\"></span>\n			        </div>\n							";
+  return buffer;
   }
 
-function program17(depth0,data) {
+function program19(depth0,data) {
+  
+  
+  return "\n							<div class=\"multi-ipt-row\">\n			          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n			          <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" placeholder=\"eg. 0.0.0.0/0\" data-empty-remove=\"true\" type=\"text\"></span>\n			        </div>\n				      ";
+  }
+
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n				    <div class=\"property-control-group\">\n							<div class=\"checkbox\">\n								<input id=\"propagate_"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" class=\"propagation\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProp), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProp), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n								<label for=\"propagate_"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -9245,7 +9273,7 @@ function program17(depth0,data) {
     + "</label>\n						</div>\n						";
   return buffer;
   }
-function program18(depth0,data) {
+function program22(depth0,data) {
   
   
   return "checked=\"true\"";
@@ -29711,10 +29739,80 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/model/connection/Route',["constant", "ConnectionModel"], function(constant, ConnectionModel) {
-    var C;
+  define('workspaces/awseditor/model/connection/Route',["constant", "ConnectionModel", "ComplexResModel", "Design"], function(constant, ConnectionModel, ComplexResModel, Design) {
+    var C, VpcRouteTarget;
+    VpcRouteTarget = ComplexResModel.extend({
+      type: "ExternalVpcRouteTarget",
+      defaults: {
+        targetId: "",
+        targetType: ""
+      },
+
+      /*
+      This model is initialized by a something like:
+      {
+        GatewayId              : ""
+        InstanceId             : ""
+        NetworkInterfaceId     : ""
+        VpcPeeringConnectionId : ""
+      }
+      If either of above attributes is reference, make sure the referencing
+      component has already been created ( a.k.a can be retrieve by Design.instance().component() )
+       */
+      constructor: function(attr) {
+        var i, id, internalVpcRouteTarget, realAttr, vrt, _i, _j, _len, _len1, _ref, _ref1;
+        console.assert(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId || attr.VpcPeeringConnectionId, "Invalid attributes for creating Route Target");
+        id = MC.extractID(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId);
+        if (id) {
+          internalVpcRouteTarget = Design.instance().component(id);
+          if (internalVpcRouteTarget) {
+            return internalVpcRouteTarget;
+          }
+        }
+        _ref = ["GatewayId", "InstanceId", "NetworkInterfaceId", "VpcPeeringConnectionId"];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          if (attr[i]) {
+            realAttr = {
+              name: attr[i],
+              targetId: attr[i],
+              targetType: i
+            };
+            break;
+          }
+        }
+        if (realAttr) {
+          _ref1 = VpcRouteTarget.allObjects();
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            vrt = _ref1[_j];
+            if (vrt.get("targetId") === realAttr.targetId && vrt.get("targetType") === realAttr.targetType) {
+              return vrt;
+            }
+          }
+          return ComplexResModel.call(this, realAttr);
+        }
+      }
+    });
     C = ConnectionModel.extend({
       type: "RTB_Route",
+      isVisual: function() {
+        return !this.getTarget("ExternalVpcRouteTarget");
+      },
+      constructor: function(p1Comp, p2Comp, attr, option) {
+        var eniComp, rtbComp;
+        if (p1Comp.type === constant.RESTYPE.ENI) {
+          eniComp = p1Comp;
+          rtbComp = p2Comp;
+        } else if (p2Comp.type === constant.RESTYPE.ENI) {
+          eniComp = p2Comp;
+          rtbComp = p1Comp;
+        }
+        if (eniComp && eniComp.embedInstance()) {
+          p1Comp = eniComp.embedInstance();
+          p2Comp = rtbComp;
+        }
+        return ConnectionModel.call(this, p1Comp, p2Comp, attr, option);
+      },
       defaults: function() {
         return {
           routes: []
@@ -29723,13 +29821,16 @@ return TEMPLATE; });
       initialize: function(attr, option) {
         var igw;
         igw = this.getTarget(constant.RESTYPE.IGW);
-        if (igw && !attr.routes) {
+        if (igw && option && option.createByUser) {
           this.get("routes").push("0.0.0.0/0");
         }
         return null;
       },
       addRoute: function(route) {
         var idx, routes;
+        if (!route) {
+          return;
+        }
         routes = this.get("routes");
         idx = _.indexOf(routes, route);
         if (idx !== -1) {
@@ -29741,6 +29842,9 @@ return TEMPLATE; });
       },
       removeRoute: function(route) {
         var idx, routes;
+        if (!route) {
+          return;
+        }
         routes = this.get("routes");
         idx = _.indexOf(routes, route);
         if (idx !== -1) {
@@ -29781,6 +29885,9 @@ return TEMPLATE; });
             break;
           case TYPE.INSTANCE:
             r_temp.NetworkInterfaceId = otherTarget.getEmbedEni().createRef("NetworkInterfaceId");
+            break;
+          case "ExternalVpcRouteTarget":
+            r_temp[otherTarget.get("targetType")] = otherTarget.get("targetId");
         }
         _ref = this.get("routes");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -29829,6 +29936,15 @@ return TEMPLATE; });
             name: "rtb-tgt",
             type: constant.RESTYPE.RT
           }
+        }, {
+          port1: {
+            name: "",
+            type: constant.RESTYPE.RT
+          },
+          port2: {
+            name: "",
+            type: "ExternalVpcRouteTarget"
+          }
         }
       ]
     }, {
@@ -29843,7 +29959,8 @@ return TEMPLATE; });
           return false;
         }
         return true;
-      }
+      },
+      VpcRouteTarget: VpcRouteTarget
     });
     return C;
   });
@@ -29956,12 +30073,13 @@ return TEMPLATE; });
       },
       addRoute: function(targetId, r, propagating) {
         var component, connection;
-        component = Design.instance().component(targetId);
+        if (_.isString(targetId)) {
+          component = Design.instance().component(targetId);
+        } else {
+          component = new Route.VpcRouteTarget(targetId);
+        }
         if (!component) {
           return;
-        }
-        if (component.type === constant.RESTYPE.ENI && component.embedInstance()) {
-          component = component.embedInstance();
         }
         connection = new Route(this, component);
         connection.addRoute(r);
@@ -30061,7 +30179,7 @@ return TEMPLATE; });
         return null;
       },
       postDeserialize: function(data, layout_data) {
-        var design, i, id, propagateMap, r, ref, routes, rtb, _i, _j, _len, _len1, _ref, _ref1;
+        var design, propagateMap, r, ref, routes, rtb, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         design = Design.instance();
         rtb = design.component(data.uid);
         _ref = data.resource.AssociationSet || [];
@@ -30080,16 +30198,14 @@ return TEMPLATE; });
           _ref1 = data.resource.PropagatingVgwSet || [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             ref = _ref1[_j];
-            propagateMap[MC.extractID(ref)] = true;
+            propagateMap[ref] = true;
           }
-          i = 0;
-          while (i < routes.length) {
-            r = routes[i];
-            if (r.GatewayId !== "local") {
-              id = MC.extractID(r.GatewayId || r.InstanceId || r.NetworkInterfaceId);
-              rtb.addRoute(id, r.DestinationCidrBlock, propagateMap[id]);
+          for (_k = 0, _len2 = routes.length; _k < _len2; _k++) {
+            r = routes[_k];
+            if (r.GatewayId === "local") {
+              continue;
             }
-            ++i;
+            rtb.addRoute(r, r.DestinationCidrBlock, propagateMap[r.GatewayId]);
           }
         }
         return null;
