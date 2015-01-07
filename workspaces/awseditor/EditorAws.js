@@ -9452,7 +9452,7 @@ function program22(depth0,data) {
     RTBAppModel = PropertyModel.extend({
       processTarget: function(rtb) {
         rtb.routeSet = _.map(rtb.routeSet, function(item) {
-          item.target = item.instanceId || item.networkInterfaceId || item.gatewayId;
+          item.target = item.instanceId || item.networkInterfaceId || item.gatewayId || item.vpcPeeringConnectionId;
           if (item.target !== "local") {
             Design.instance().eachComponent(function(component) {
               if (component.get("appId") === item.target) {
@@ -29761,7 +29761,10 @@ return TEMPLATE; });
        */
       constructor: function(attr) {
         var i, id, internalVpcRouteTarget, realAttr, vrt, _i, _j, _len, _len1, _ref, _ref1;
-        console.assert(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId || attr.VpcPeeringConnectionId, "Invalid attributes for creating Route Target");
+        if (!(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId || attr.VpcPeeringConnectionId)) {
+          console.error("Invalid attributes for creating Route Target");
+          return;
+        }
         id = MC.extractID(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId);
         if (id) {
           internalVpcRouteTarget = Design.instance().component(id);
@@ -30078,7 +30081,8 @@ return TEMPLATE; });
         } else {
           component = new Route.VpcRouteTarget(targetId);
         }
-        if (!component) {
+        if (!component || !component.id) {
+          console.warn("Ignoring adding route:", targetId, r);
           return;
         }
         connection = new Route(this, component);
