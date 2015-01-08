@@ -4535,8 +4535,7 @@ return Markdown;
             singleLine: editorSingleLine,
             enableTab: enableTab,
             useSoftTabs: false,
-            tabSize: 4,
-            lineHeight: 90
+            tabSize: 4
           });
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;
@@ -4678,7 +4677,13 @@ return Markdown;
             return editor.setReadOnly(true);
           }
         };
-        return _initEditor();
+        if ($editorElem.hasClass('command-value') || $editorElem.hasClass('text-code-editor')) {
+          return _initEditor();
+        } else {
+          return setTimeout(function() {
+            return _initEditor();
+          }, 0);
+        }
       },
       highlightParaDesc: function(paraName) {
         var $paraNameSpan, err, paraNameSpan, paraParagraph, scrollToPos, that;
