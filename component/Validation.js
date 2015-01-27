@@ -61,10 +61,12 @@
     },
     get: function(key, platform) {
       var _ref;
-      if (platform == null) {
-        platform = Design.instance().get('cloud_type');
+      if (Design.instance().type() === "AwsOps") {
+        platform = "aws";
+      } else {
+        platform = "openstack";
       }
-      return ((_ref = this[key]) != null ? _ref[platform] : void 0) || this[key];
+      return ((_ref = this[key]) != null ? _ref[platform] : void 0) || this[key]['aws'];
     }
   });
 
@@ -73,7 +75,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', 'stack_service', 'ami_service', "CloudResources"], function(constant, $, MC, lang, ApiRequest, stackService, amiService, CloudResources) {
+  define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ApiRequest', "CloudResources"], function(constant, $, MC, lang, ApiRequest, CloudResources) {
     var getAZAryForDefaultVPC, isHaveNotExistAMI, isHaveNotExistAMIAsync, verify, _getCompName, _getCompType;
     getAZAryForDefaultVPC = function(elbUID) {
       var azNameAry, elbComp, elbInstances;
@@ -149,7 +151,7 @@
               }
             } catch (_error) {
               err = _error;
-              errInfoStr = "Stack format validation error";
+              errInfoStr = lang.TA.ERROR_STACK_FORMAT_VALID_ERROR;
             }
           } else {
             callback(null);
@@ -178,11 +180,12 @@
       }
     };
     isHaveNotExistAMIAsync = function(callback) {
-      var amiAry, currentRegion, err, instanceAMIMap;
+      var amiAry, cr, err, failure, instanceAMIMap, success, tipInfoAry;
       try {
         if (!callback) {
           callback = function() {};
         }
+        tipInfoAry = [];
         amiAry = [];
         instanceAMIMap = {};
         _.each(MC.canvas_data.component, function(compObj) {
@@ -206,84 +209,41 @@
           return null;
         });
         if (amiAry.length) {
-          currentRegion = MC.canvas_data.region;
-          amiService.DescribeImages({
-            sender: this
-          }, $.cookie('usercode'), $.cookie('session_id'), currentRegion, amiAry, null, null, null, function(result) {
-            var awsAMIIdAry, awsAMIIdAryStr, descAMIAry, descAMIIdAry, tipInfoAry;
-            tipInfoAry = [];
-            if (result.is_error && result.aws_error_code === 'InvalidAMIID.NotFound') {
-              awsAMIIdAryStr = result.error_message;
-              awsAMIIdAryStr = awsAMIIdAryStr.replace("The image ids '[", "").replace("]' do not exist", "").replace("The image id '[", "").replace("]' does not exist", "");
-              awsAMIIdAry = awsAMIIdAryStr.split(',');
-              awsAMIIdAry = _.map(awsAMIIdAry, function(awsAMIId) {
-                return $.trim(awsAMIId);
-              });
-              if (!awsAMIIdAry.length) {
-                callback(null);
-                return null;
+          cr = CloudResources(constant.RESTYPE.AMI, MC.canvas_data.region);
+          failure = function() {
+            return callback(null);
+          };
+          success = function() {
+            var amiId, id, infoObjType, infoTagType, instanceObj, instanceUID, invalids, _i, _j, _k, _len, _len1, _len2, _ref;
+            invalids = [];
+            for (_i = 0, _len = amiAry.length; _i < _len; _i++) {
+              id = amiAry[_i];
+              if (cr.isInvalidAmiId(id)) {
+                invalids.push(id);
               }
-              _.each(amiAry, function(amiId) {
-                var instanceUIDAry;
-                if (__indexOf.call(awsAMIIdAry, amiId) >= 0) {
-                  instanceUIDAry = instanceAMIMap[amiId];
-                  _.each(instanceUIDAry, function(instanceUID) {
-                    var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
-                    instanceObj = MC.canvas_data.component[instanceUID];
-                    instanceType = instanceObj.type;
-                    instanceName = instanceObj.name;
-                    infoObjType = 'Instance';
-                    infoTagType = 'instance';
-                    if (instanceType === constant.RESTYPE.LC) {
-                      infoObjType = 'Launch Configuration';
-                      infoTagType = 'lc';
-                    }
-                    tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
-                    tipInfoAry.push({
-                      level: constant.TA.ERROR,
-                      info: tipInfo,
-                      uid: instanceUID
-                    });
-                    return null;
-                  });
+            }
+            if (!invalids.length) {
+              return callback(null);
+            }
+            for (_j = 0, _len1 = invalids.length; _j < _len1; _j++) {
+              amiId = invalids[_j];
+              _ref = instanceAMIMap[amiId] || [];
+              for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+                instanceUID = _ref[_k];
+                instanceObj = MC.canvas_data.component[instanceUID];
+                if (instanceObj.type === constant.RESTYPE.LC) {
+                  infoTagType = 'lc';
+                  infoObjType = lang.PROP.LC_TITLE;
+                } else {
+                  infoTagType = "instance";
+                  infoObjType = lang.PROP.ELB_INSTANCES;
                 }
-                return null;
-              });
-            } else if (!result.is_error) {
-              descAMIIdAry = [];
-              descAMIAry = result.resolved_data;
-              if (_.isArray(descAMIAry)) {
-                _.each(descAMIAry, function(amiObj) {
-                  descAMIIdAry.push(amiObj.imageId);
-                  return null;
+                tipInfoAry.push({
+                  level: constant.TA.ERROR,
+                  uid: instanceUID,
+                  info: sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceObj.name, amiId)
                 });
               }
-              _.each(amiAry, function(amiId) {
-                var instanceUIDAry;
-                if (__indexOf.call(descAMIIdAry, amiId) < 0) {
-                  instanceUIDAry = instanceAMIMap[amiId];
-                  _.each(instanceUIDAry, function(instanceUID) {
-                    var infoObjType, infoTagType, instanceName, instanceObj, instanceType, tipInfo;
-                    instanceObj = MC.canvas_data.component[instanceUID];
-                    instanceType = instanceObj.type;
-                    instanceName = instanceObj.name;
-                    infoObjType = 'Instance';
-                    infoTagType = 'instance';
-                    if (instanceType === constant.RESTYPE.LC) {
-                      infoObjType = 'Launch Configuration';
-                      infoTagType = 'lc';
-                    }
-                    tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_AUTHED_AMI, infoObjType, infoTagType, instanceName, amiId);
-                    tipInfoAry.push({
-                      level: constant.TA.ERROR,
-                      info: tipInfo,
-                      uid: instanceUID
-                    });
-                    return null;
-                  });
-                }
-                return null;
-              });
             }
             if (tipInfoAry.length) {
               callback(tipInfoAry);
@@ -291,8 +251,8 @@
             } else {
               return callback(null);
             }
-          });
-          return null;
+          };
+          cr.fetchAmis(amiAry).then(success, failure);
         } else {
           return callback(null);
         }
@@ -336,10 +296,10 @@
             instanceObj = MC.canvas_data.component[instanceUID];
             instanceType = instanceObj.type;
             instanceName = instanceObj.name;
-            infoObjType = 'Instance';
+            infoObjType = lang.PROP.ELB_INSTANCES;
             infoTagType = 'instance';
             if (instanceType === constant.RESTYPE.LC) {
-              infoObjType = 'Launch Configuration';
+              infoObjType = lang.PROP.LC_TITLE;
               infoTagType = 'lc';
             }
             tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_AMI, infoObjType, infoTagType, instanceName, amiId);
@@ -2090,11 +2050,11 @@
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/aws/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'customergateway_service', 'TaHelper'], function(constant, $, MC, lang, cgwService, Helper) {
+  define('component/trustedadvisor/validation/aws/vpc/cgw',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'TaHelper', "CloudResources"], function(constant, $, MC, lang, Helper, CloudResources) {
     var i18n, isAttachVGW, isCGWHaveIPConflict, isValidCGWIP;
     i18n = Helper.i18n.short();
     isCGWHaveIPConflict = function(callback) {
-      var currentRegion, err, stackCGWIP, stackCGWId, stackCGWName, stackCGWUID, tipInfo;
+      var cr, err, failure, stackCGWIP, stackCGWId, stackCGWName, stackCGWUID, success;
       try {
         if (!callback) {
           callback = function() {};
@@ -2110,45 +2070,30 @@
           return null;
         });
         if (stackCGWIP && stackCGWName && stackCGWUID && !stackCGWId) {
-          currentRegion = MC.canvas_data.region;
-          cgwService.DescribeCustomerGateways({
-            sender: this
-          }, $.cookie('usercode'), $.cookie('session_id'), currentRegion, [], null, function(result) {
-            var cgwObjAry, checkResult, conflictInfo, validResultObj;
-            checkResult = true;
-            conflictInfo = null;
-            if (!result.is_error) {
-              cgwObjAry = result.resolved_data;
-              _.each(cgwObjAry, function(cgwObj) {
-                var cgwIP, cgwId, cgwState;
-                cgwId = cgwObj.customerGatewayId;
-                cgwIP = cgwObj.ipAddress;
-                cgwState = cgwObj.state;
-                if (stackCGWIP === cgwIP && cgwState === 'available') {
-                  conflictInfo = sprintf(lang.TA.ERROR_CGW_IP_CONFLICT, stackCGWName, stackCGWIP, cgwId, cgwIP);
-                  checkResult = false;
-                }
-                return null;
-              });
-            } else {
-              callback(null);
-            }
-            if (checkResult) {
-              callback(null);
-            } else {
-              validResultObj = {
+          cr = CloudResources(constant.RESTYPE.CGW, Design.instance().region());
+          failure = function() {
+            return callback(null);
+          };
+          success = function() {
+            var error, exist;
+            exist = cr.where({
+              "state": "available",
+              "ipAddress": stackCGWIP
+            })[0];
+            if (exist) {
+              error = {
                 level: constant.TA.ERROR,
-                info: conflictInfo
+                info: sprintf(lang.TA.ERROR_CGW_IP_CONFLICT, stackCGWName, stackCGWIP, exist.id, stackCGWIP)
               };
-              callback(validResultObj);
-              console.log(validResultObj);
+              console.log(error);
             }
+            callback(error || null);
             return null;
-          });
-          tipInfo = sprintf(lang.TA.ERROR_CGW_CHECKING_IP_CONFLICT);
+          };
+          cr.fetchForce().then(success, failure);
           return {
             level: constant.TA.ERROR,
-            info: tipInfo
+            info: sprintf(lang.TA.ERROR_CGW_CHECKING_IP_CONFLICT)
           };
         } else {
           return callback(null);
@@ -2998,12 +2943,10 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-  define('component/trustedadvisor/validation/aws/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'ebs_service'], function(constant, $, MC, lang, ebsService) {
+  define('component/trustedadvisor/validation/aws/ec2/ebs',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', "CloudResources"], function(constant, $, MC, lang, CloudResources) {
     var isSnapshotExist;
     isSnapshotExist = function(callback) {
-      var currentRegion, err, snaphostAry, snaphostMap;
+      var cr, err, failure, snaphostAry, snaphostMap, success;
       try {
         if (!callback) {
           callback = function() {};
@@ -3041,63 +2984,56 @@ This file use for validate component about state.
         });
         snaphostAry = _.keys(snaphostMap);
         if (snaphostAry.length) {
-          currentRegion = MC.canvas_data.region;
-          ebsService.DescribeSnapshots({
-            sender: this
-          }, $.cookie('usercode'), $.cookie('session_id'), currentRegion, snaphostAry, null, null, null, function(result) {
-            var awsSnapshotIdAry, awsSnapshotIdAryStr, tipInfoAry;
+          cr = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
+          failure = function() {
+            return callback(null);
+          };
+          success = function() {
+            var id, infoObjType, instanceId, instanceObj, instanceUID, missingIds, snapshotId, tipInfoAry, _i, _j, _k, _len, _len1, _len2, _ref, _results;
             tipInfoAry = [];
-            if (result.is_error && result.aws_error_code === 'InvalidSnapshot.NotFound') {
-              awsSnapshotIdAryStr = result.error_message;
-              awsSnapshotIdAryStr = awsSnapshotIdAryStr.replace("The snapshot '", "").replace("' does not exist.", "");
-              awsSnapshotIdAry = awsSnapshotIdAryStr.split(',');
-              awsSnapshotIdAry = _.map(awsSnapshotIdAry, function(awsSnapshotId) {
-                return $.trim(awsSnapshotId);
-              });
-              if (!awsSnapshotIdAry.length) {
-                callback(null);
-                return null;
+            missingIds = [];
+            for (_i = 0, _len = snaphostAry.length; _i < _len; _i++) {
+              id = snaphostAry[_i];
+              if (!cr.get(id)) {
+                missingIds.push(id);
               }
-              _.each(snaphostAry, function(snapshotId) {
-                var instanceUIDAry;
-                if (__indexOf.call(awsSnapshotIdAry, snapshotId) >= 0) {
-                  instanceUIDAry = snaphostMap[snapshotId];
-                  _.each(instanceUIDAry, function(instanceUID) {
-                    var infoObjType, infoTagType, instanceId, instanceName, instanceObj, instanceType, tipInfo;
-                    instanceObj = MC.canvas_data.component[instanceUID];
-                    instanceType = instanceObj.type;
-                    instanceName = instanceObj.name;
-                    infoObjType = 'Instance';
-                    infoTagType = 'instance';
-                    instanceId = null;
-                    if (instanceType === constant.RESTYPE.LC) {
-                      infoObjType = 'Launch Configuration';
-                      infoTagType = 'lc';
-                      instanceId = instanceObj.resource.LaunchConfigurationARN;
-                    } else {
-                      instanceId = instanceObj.resource.InstanceId;
-                    }
-                    if (!instanceId) {
-                      tipInfo = sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceName);
-                      tipInfoAry.push({
-                        level: constant.TA.ERROR,
-                        info: tipInfo,
-                        uid: instanceUID
-                      });
-                    }
-                    return null;
-                  });
-                }
-                return null;
-              });
             }
-            if (tipInfoAry.length) {
-              callback(tipInfoAry);
-              return console.log(tipInfoAry);
-            } else {
+            if (!missingIds.length) {
               return callback(null);
             }
-          });
+            _results = [];
+            for (_j = 0, _len1 = missingIds.length; _j < _len1; _j++) {
+              snapshotId = missingIds[_j];
+              _ref = snaphostMap[snapshotId] || [];
+              for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+                instanceUID = _ref[_k];
+                instanceObj = MC.canvas_data.component[instanceUID];
+                if (instanceObj.type === constant.RESTYPE.LC) {
+                  instanceId = instanceObj.resource.LaunchConfigurationARN;
+                  infoObjType = lang.PROP.LC_TITLE;
+                } else {
+                  instanceId = instanceObj.resource.InstanceId;
+                  infoObjType = lang.PROP.ELB_INSTANCES;
+                }
+                if (!instanceId) {
+                  tipInfoAry.push({
+                    level: constant.TA.ERROR,
+                    uid: instanceUID,
+                    info: sprintf(lang.TA.ERROR_STACK_HAVE_NOT_EXIST_SNAPSHOT, snapshotId, infoObjType, instanceObj.name)
+                  });
+                }
+                null;
+              }
+              if (tipInfoAry.length) {
+                callback(tipInfoAry);
+                _results.push(console.log(tipInfoAry));
+              } else {
+                _results.push(callback(null));
+              }
+            }
+            return _results;
+          };
+          cr.fetch().then(success, failure);
           return null;
         } else {
           return callback(null);
@@ -3115,7 +3051,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/aws/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'keypair_service', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, keypair_service, _, CloudResources) {
+  define('component/trustedadvisor/validation/aws/ec2/kp',['constant', 'MC', 'Design', 'TaHelper', 'underscore', 'CloudResources'], function(constant, MC, Design, Helper, _, CloudResources) {
     var i18n, isKeyPairExistInAws, isNotDefaultAndRefInstance, longLiveNotice;
     i18n = Helper.i18n.short();
     isNotDefaultAndRefInstance = function(uid) {
@@ -3140,10 +3076,10 @@ This file use for validate component about state.
         }
       }
       if (instanceStr) {
-        message += 'Instance ' + instanceStr;
+        message += i18n.INSTANCE + ' ' + instanceStr;
       }
       if (lcStr) {
-        message += 'Launch Configuration' + lcStr;
+        message += i18n.LAUNCH_CONFIGURATION + " " + lcStr;
       }
       message = message.slice(0, -2);
       return Helper.message.error(uid, i18n.ERROR_INSTANCE_REF_OLD_KEYPAIR, message, kp.get('name'));
@@ -3506,7 +3442,7 @@ This file use for validate component about state.
     var i18n, isSbgHasSbin2Az;
     i18n = Helper.i18n.short();
     isSbgHasSbin2Az = function(uid) {
-      var azs, sbg, sbs, tmpTip, uniqAzCount;
+      var azs, minAZCount, sbg, sbs, tmpTip, uniqAzCount, _ref;
       tmpTip = "Subnet Group %s must have subnets in at least 2 Availability Zones.";
       sbg = Design.instance().component(uid);
       sbs = sbg.connectionTargets("SubnetgAsso");
@@ -3515,7 +3451,12 @@ This file use for validate component about state.
         return sb.parent();
       });
       uniqAzCount = _.uniq(azs).length;
-      if (uniqAzCount > 1) {
+      if ((_ref = Design.instance().region()) === 'cn-north-1') {
+        minAZCount = 1;
+      } else {
+        minAZCount = 2;
+      }
+      if (uniqAzCount >= minAZCount) {
         return null;
       }
       return Helper.message.error(uid, sprintf(tmpTip, sbg.get('name')));
@@ -4016,7 +3957,7 @@ This file use for validate component about state.
     _validAsync = function() {
       var asyncList, finishTimes, syncFinish;
       asyncList = config.get('asyncList');
-      if (!asyncList || !asyncList.length) {
+      if (!asyncList || !_.size(asyncList)) {
         _syncFinish();
         return;
       }
@@ -4119,7 +4060,9 @@ function program5(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No error here.\r\n					</div>\r\n				";
+    + "\">\r\n						"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.GOOD_JOB_NO_ERROR_HERE", {hash:{},data:data}))
+    + "\r\n					</div>\r\n				";
   return buffer;
   }
 
@@ -4144,7 +4087,9 @@ function program9(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No warning here.\r\n					</div>\r\n				";
+    + "\">\r\n						"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.GOOD_JOB_NO_WARNING_HERE", {hash:{},data:data}))
+    + "\r\n					</div>\r\n				";
   return buffer;
   }
 
@@ -4155,7 +4100,9 @@ function program11(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-type=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n						Good job! No notice here.\r\n					</div>\r\n				";
+    + "\">\r\n						"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.GOOD_JOB_NO_NOTICE_HERE", {hash:{},data:data}))
+    + "\r\n					</div>\r\n				";
   return buffer;
   }
 
@@ -4183,7 +4130,9 @@ function program11(depth0,data) {
     + "</span></li>\r\n	</ul>\r\n	<div class=\"scroll-wrap scroll-wrap-validation\">\r\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n		<div class=\"content_wrap scroll-content\">\r\n\r\n			<div id=\"item-error\" class=\"content active\">\r\n\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>Some error validation only happens at the time to run stack.</div>\r\n\r\n			</div>\r\n			<div id=\"item-warning\" class=\"content\">\r\n				";
+  buffer += "\r\n\r\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>"
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.SOME_ERROR_VALIDATION_ONLY_HAPPENS_AT_THE_TIME_TO_RUN_STACK", {hash:{},data:data}))
+    + "</div>\r\n\r\n			</div>\r\n			<div id=\"item-warning\" class=\"content\">\r\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n			</div>\r\n			<div id=\"item-notice\" class=\"content\">\r\n				";
@@ -4204,7 +4153,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('component/trustedadvisor/gui/view',['event', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, template, modal_template) {
+  define('component/trustedadvisor/gui/view',['event', 'i18n!/nls/lang.js', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, lang, template, modal_template) {
     var TrustedAdvisorView;
     TrustedAdvisorView = Backbone.View.extend({
       el: '.status-bar-modal',
@@ -4242,7 +4191,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         } else if (notice.length) {
           return $tabs.eq(2).click();
         } else {
-          this.$el.find('.validation-content').text('Great job! No error, warning or notice here.');
+          this.$el.find('.validation-content').text(lang.IDE.GREAT_JOB_NO_ERROR_WARNING_NOTICE_HERE);
           return this.$el.find('.validation-content').addClass('empty');
         }
       },
@@ -4256,24 +4205,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         $details = $nutshell.prev('details');
         $summary = $details.find('summary');
         processNutshell = function(notShow) {
-          var content;
-          content = '';
+          var content, contentArr;
+          contentArr = [];
           if (error.length) {
-            content += "" + error.length + " error(s), ";
+            contentArr.push(sprintf(lang.IDE.LENGTH_ERROR, error.len));
             _.defer(function() {
               return modal.position();
             });
           }
           if (warning.length) {
-            content += "" + warning.length + " warning(s), ";
+            contentArr.push(sprintf(lang.IDE.LENGTH_WARNING, warning.length));
           }
           if (notice.length) {
-            content += "" + notice.length + " notice(s), ";
+            contentArr.push(sprintf(lang.IDE.LENGTH_NOTICE, notice.length));
           }
-          if (!content) {
-            content = 'No error, warning or notice.';
+          if (!contentArr.length) {
+            content = lang.IDE.NO_ERROR_WARNING_OR_NOTICE;
           } else {
-            content = content.slice(0, -2);
+            content = contentArr.join(lang.IDE.COMMA);
           }
           $nutshell.find('label').text(content);
           return $nutshell.click(function() {

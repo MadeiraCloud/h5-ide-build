@@ -54,13 +54,13 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   
-  return "Source";
+  return escapeExpression(helpers.i18n.call(depth0, "IDE.POP_SGRULE_LBL_SOURCE", {hash:{},data:data}));
   }
 
 function program7(depth0,data) {
   
   
-  return "Destination";
+  return escapeExpression(helpers.i18n.call(depth0, "IDE.POP_SGRULE_LBL_DEST", {hash:{},data:data}));
   }
 
   buffer += "<article class=\"property-info\" style=\"margin-top:0;\">\r\n   <section class=\"property-control-group\">"

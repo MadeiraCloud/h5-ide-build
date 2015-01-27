@@ -29,14 +29,18 @@ function program3(depth0,data) {
 
   buffer += "<div>\r\n\r\n<header id=\"global-region-header\">\r\n	<button id=\"RefreshResource\" class=\"icon-refresh\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
-    + "</button>\r\n\r\n	<button class=\"btn btn-primary icon-new-stack js-toggle-dropdown\">"
+    + "</button>\r\n\r\n  <div class=\"hovermenu\">\r\n    <button class=\"btn btn-primary icon-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\r\n\r\n	<ul id=\"global-region-create-stack-list\" class=\"dropdown-menu\">\r\n  <li data-region=\"guangzhou\" data-cloud=\"openstack\" data-provider=\"awcloud\">AwCloud - OpenStack</li>\r\n	";
+    + "<i class=\"icon-caret-down\"></i></button>\r\n    <div class=\"dropdown-menu\">\r\n      <ul id=\"global-region-create-stack-list\">";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\r\n\r\n	<button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
+  buffer += "</ul>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"hovermenu\">\r\n    <button class=\"btn btn-primary icon-import\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
-    + "</button>\r\n\r\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + "<i class=\"icon-caret-down\"></i></button>\r\n    <div class=\"dropdown-menu\">\r\n      <ul id=\"ImportStack\">\r\n        <li data-type=\"stack\" data-analytics-plus=\"import_json\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_FORM_STACK_JSON", {hash:{},data:data}))
+    + "</li>\r\n        <li data-type=\"cf\" data-analytics-plus=\"import_cf\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_FORM_CLOUDFORMATION", {hash:{},data:data}))
+    + "</li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n\r\n	<button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
     + "\r\n	</button>\r\n</header>\r\n\r\n\r\n<div id=\"global-region-wrap\" class=\"nano\">\r\n<div class=\"nano-content\">\r\n	<!-- Global Map -->\r\n    <div id=\"global-region-map-wrap\">\r\n        <div id=\"global-region-map-content\" class=\"clearfix\">\r\n            <ul id=\"global-region-spot\" class=\"pos-r\"></ul>\r\n            <div id=\"global-region-status-widget\">\r\n                <header class=\"clearfix\">\r\n                    <div class=\"global-region-status-tab\">\r\n                        <span>0</span><h5>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
@@ -444,7 +448,11 @@ function program27(depth0,data) {
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack\"></i>\n      <i class=\"icon-duplicate duplicate-stack\"></i>\n      <span class=\"truncate\">"
+  buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DEL_STACK", {hash:{},data:data}))
+    + "\"></i>\n      <i class=\"icon-duplicate duplicate-stack tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DUPLICATE_STACK", {hash:{},data:data}))
+    + "\"></i>\n      <span class=\"truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n    </div>\n  </li>\n";
   return buffer;
@@ -567,7 +575,7 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "table-app-link";
+  return "table-app-link link-style";
   }
 
 function program6(depth0,data) {
@@ -593,8 +601,11 @@ function program10(depth0,data) {
 
 function program12(depth0,data) {
   
-  
-  return "class=\"dashboard-eip tooltip\" data-tooltip=\"Elastic IP\"";
+  var buffer = "";
+  buffer += "class=\"dashboard-eip tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_ELASTIC_IP", {hash:{},data:data}))
+    + "\"";
+  return buffer;
   }
 
 function program14(depth0,data) {
@@ -752,7 +763,7 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "table-app-link";
+  return "table-app-link link-style";
   }
 
 function program6(depth0,data) {
@@ -880,7 +891,7 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "table-app-link";
+  return "table-app-link link-style";
   }
 
 function program6(depth0,data) {
@@ -1000,7 +1011,7 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "table-app-link";
+  return "table-app-link link-style";
   }
 
 function program6(depth0,data) {
@@ -1157,7 +1168,7 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "table-app-link";
+  return "table-app-link link-style";
   }
 
 function program6(depth0,data) {
@@ -1589,22 +1600,6 @@ function program1(depth0,data) {
 TEMPLATE.bubbleResourceSub=Handlebars.template(__TEMPLATE__);
 
 
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div id=\"modal-import-json-dropzone\">"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_LBL", {hash:{},data:data}))
-    + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
-    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>";
-  return buffer;
-  };
-TEMPLATE.importJSON=Handlebars.template(__TEMPLATE__);
-
-
 return TEMPLATE; });
 define('workspaces/dashboard/VisualizeVpcTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -1761,7 +1756,7 @@ function program18(depth0,data) {
 function program20(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "data-tooltip=\"This VPC was imported by "
+  buffer += "data-tooltip=\"This VPC has been imported by "
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"";
   return buffer;
@@ -1794,8 +1789,618 @@ function program26(depth0,data) {
   buffer += "\r\n\r\n	</div>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
+define('workspaces/dashboard/ImportDialogTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"loading-spinner loading-spinner-small hide\"></div>\n<div id=\"modal-import-json-dropzone\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_LBL", {hash:{},data:data}))
+    + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>";
+  return buffer;
+  };
+TEMPLATE.importJSON=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"loading-spinner loading-spinner-small hide\"></div>\n<div id=\"modal-import-json-dropzone\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_DROP_CF_LBL", {hash:{},data:data}))
+    + "<label for=\"modal-import-json-file\" class=\"select-file-link\">"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_IMPORT_SELECT_LBL", {hash:{},data:data}))
+    + "</label><input type=\"file\" id=\"modal-import-json-file\"></div>\n<div id=\"import-json-error\"></div>\n<ul class=\"import-cf-notice\">\n"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_NOTICE", {hash:{},data:data}))
+    + "\n</ul>";
+  return buffer;
+  };
+TEMPLATE.importCF=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li class=\"item";
+  stack1 = helpers.unless.call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\">"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</li>";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return " selected";
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <section class=\"modal-control-group\"> <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "SPECIFY_PARAMETERS_FOR_TEMPLATE", {hash:{},data:data}))
+    + "</h5>\n\n  <div class=\"nano cf-params-wrap\">\n    <ul class=\"cf-params nano-content\" id=\"import-cf-params\">\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.parameters), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </ul>\n  </div>\n  </section>\n  ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li class=\"cf-input-entry\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.Type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.NoEcho), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n      <div class=\"cf-left\">\n        <span class=\"cf-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.Name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n        <span class=\"cf-type\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.Type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\n      </div>\n      <div class=\"cf-right\">\n        <span class=\"cf-input-wrap\">\n          <input class=\"input cf-input\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.NoEcho), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.Default)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n        </span>\n\n        <div class=\"cf-desc\"><p>"
+    + escapeExpression(((stack1 = (depth0 && depth0.Description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.__Constraint), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n        <span class=\"cf-error\">";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ConstraintDescription), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</span>\n      </div>\n      </li>";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  
+  return "data-echo=\"false\"";
+  }
+
+function program8(depth0,data) {
+  
+  
+  return "type=\"password\"";
+  }
+
+function program10(depth0,data) {
+  
+  
+  return "type=\"text\"";
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<p>"
+    + escapeExpression(((stack1 = (depth0 && depth0.__Constraint)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>";
+  return buffer;
+  }
+
+function program14(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.ConstraintDescription)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program16(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_NOT_MEET_CONSTRAINT", {hash:{},data:data}));
+  }
+
+  buffer += "<div id=\"import-cf-form\">\n  <section class=\"modal-control-group clearfix\"> <label class=\"label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_REGION", {hash:{},data:data}))
+    + ":</label>\n    <div class=\"selectbox combo-dd\" id=\"import-cf-region\">\n      <div class=\"selection\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.regions)),stack1 == null || stack1 === false ? stack1 : stack1[0])),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n      <ul class=\"dropdown\" tabindex=\"-1\">\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.regions), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </ul>\n      </ul>\n    </div>\n  </section>\n\n  ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.parameters)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n  <div class=\"loader\"><div class=\"loading-spinner\"></div></div>\n\n  <div class=\"modal-footer\">\n    <span class=\"param-error hide\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_PARAMS_ERROR", {hash:{},data:data}))
+    + "</span>\n    <span class=\"param-empty hide\">"
+    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_CF_PARAMS_EMPTY", {hash:{},data:data}))
+    + "</span>\n    <button class=\"btn btn-blue\" id=\"import-cf-import\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_IMPORT", {hash:{},data:data}))
+    + "</button>\n    <button class=\"btn modal-close btn-silver\" id=\"import-cf-cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
+    + "</button>\n  </div>\n</div>\n<div class=\"loading-spinner hide\"></div>";
+  return buffer;
+  };
+TEMPLATE.importCFConfirm=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
 (function() {
-  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", 'AppAction', "CloudResources", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang, appAction, CloudResources) {
+  define('workspaces/dashboard/ImportDialog',['./ImportDialogTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "CloudResources", "ApiRequest", "JsonExporter", "backbone", "UI.select2", "UI.nanoscroller"], function(tplPartials, Modal, constant, lang, CloudResources, ApiRequest, JsonExporter) {
+    return Backbone.View.extend({
+      events: {
+        "change #modal-import-json-file": "onSelectFile",
+        "drop #modal-import-json-dropzone": "onSelectFile",
+        "dragenter #modal-import-json-dropzone": "onDragenter",
+        "dragleave #modal-import-json-dropzone": "onDragleave",
+        "dragover  #modal-import-json-dropzone": "onDragover",
+        "click #import-cf-cancel": "cancelImport",
+        "click #import-cf-import": "doImport",
+        "keypress .cf-input": "onFocusInput",
+        "OPTION_CHANGE #import-cf-region": "onRegionChange"
+      },
+      initialize: function(attr) {
+        var self;
+        self = this;
+        this.type = attr.type;
+        this.modal = new Modal({
+          title: this.type === "stack" ? lang.IDE.POP_IMPORT_JSON_TIT : lang.IDE.POP_IMPORT_CF_TIT,
+          template: this.type === "stack" ? tplPartials.importJSON() : tplPartials.importCF(),
+          width: "470",
+          disableFooter: true,
+          onClose: function() {
+            return self.onModalClose();
+          }
+        });
+        this.setElement(this.modal.tpl);
+        this.regionForceFetchMap = {};
+        this.reader = new FileReader();
+        this.reader.onload = function(evt) {
+          return self.onReaderLoader(evt);
+        };
+        this.reader.onerror = this.onReaderError;
+      },
+      onDragenter: function() {
+        return this.$el.find("#modal-import-json-dropzone").toggleClass("dragover", true);
+      },
+      onDragleave: function() {
+        return this.$el.find("#modal-import-json-dropzone").toggleClass("dragover", false);
+      },
+      onDragover: function(evt) {
+        var dt;
+        dt = evt.originalEvent.dataTransfer;
+        if (dt) {
+          dt.dropEffect = "copy";
+        }
+        evt.stopPropagation();
+        evt.preventDefault();
+      },
+      onSelectFile: function(evt) {
+        var files;
+        evt.stopPropagation();
+        evt.preventDefault();
+        $("#modal-import-json-dropzone").removeClass("dragover");
+        $("#import-json-error").html("");
+        evt = evt.originalEvent;
+        files = (evt.dataTransfer || evt.target).files;
+        if (!files || !files.length) {
+          return;
+        }
+        this.filename = (files[0].name || "").split(".")[0];
+        this.reader.readAsText(files[0]);
+        return null;
+      },
+      onReaderLoader: function(evt) {
+        var error, result;
+        result = JsonExporter.importJson(this.reader.result);
+        if (_.isString(result)) {
+          $("#import-json-error").html(result);
+          return;
+        }
+        if (this.type === "stack" && result.AWSTemplateFormatVersion) {
+          error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
+        } else if (this.type === "cf" && !result.AWSTemplateFormatVersion) {
+          error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
+        }
+        if (!error) {
+          if (result.AWSTemplateFormatVersion) {
+            this.handleCFTemplate(result);
+            return;
+          } else {
+            error = App.importJson(this.reader.result);
+          }
+        }
+        if (_.isString(error)) {
+          $("#import-json-error").html(error);
+        } else {
+          this.modal.close();
+          this.reader = null;
+        }
+        return null;
+      },
+      onReaderError: function() {
+        return $("#import-json-error").html(lang.IDE.POP_IMPORT_ERROR);
+      },
+      handleCFTemplate: function(cfJson) {
+        var data, key, parameters, value, _ref;
+        parameters = [];
+        _ref = cfJson.Parameters;
+        for (key in _ref) {
+          value = _ref[key];
+          value.Name = key;
+          value.NoEcho = value.NoEcho === true;
+          if (value.AllowedValues && !_.isArray(value.AllowedValues)) {
+            value.AllowedValues = void 0;
+          }
+          if (value.Type === "AWS::EC2::KeyPair::KeyName") {
+            this.hasKpParam = true;
+          }
+          value.__Constraint = "";
+          if (value.AllowedValues) {
+            value.__Constraint = "AllowedPattern: " + value.AllowedValues.join(",") + " ";
+          }
+          if (value.Type === "Number") {
+            if (value.MinValue) {
+              value.__Constraint += "MinValue: " + value.MinValue + " ";
+            }
+            if (value.MaxValue) {
+              value.__Constraint += "MaxValue: " + value.MaxValue + " ";
+            }
+          } else if (value.Type === "String") {
+            if (value.MinLength) {
+              value.__Constraint += "MinLength: " + value.MinLength + " ";
+            }
+            if (value.MaxLength) {
+              value.__Constraint += "MaxLength: " + value.MaxLength + " ";
+            }
+          }
+          parameters.push(value);
+        }
+        this.parameters = parameters;
+        this.cfJson = cfJson;
+        data = {
+          regions: constant.REGION_KEYS.slice(0),
+          parameters: parameters
+        };
+        this.modal.setContent(tplPartials.importCFConfirm(data));
+        this.modal.setWidth("570");
+        this.modal.setTitle(lang.IDE.POP_IMPORT_CF_TIT);
+        this.modal.tpl.find(".cf-params-wrap").nanoScroller();
+        this.initInputs();
+        this.onRegionChange();
+      },
+      onModalClose: function() {
+        var ipt, select2, _i, _len, _ref;
+        _ref = this.modal.tpl.find("#import-cf-params").children().find("input.cf-input");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          ipt = _ref[_i];
+          select2 = $(ipt).data("select2");
+          if (select2) {
+            $(ipt).select2("destroy");
+          }
+        }
+      },
+      initInputs: function() {
+        var $inputs, av, avs, formatNoMatches, ipt, kpInitSelection, kpQuery, numberCreateSC, param, select2, select2Option, self, _i, _j, _len, _len1, _ref, _ref1;
+        self = this;
+        kpQuery = function(options) {
+          var kp, kps, term, _i, _len, _ref;
+          kps = [];
+          term = options.term.toLowerCase();
+          _ref = self.currentRegionKps;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            kp = _ref[_i];
+            if (kp.toLowerCase().indexOf(term) >= 0) {
+              kps.push({
+                id: kp,
+                text: kp
+              });
+            }
+          }
+          return options.callback({
+            more: false,
+            results: kps
+          });
+        };
+        kpInitSelection = function(element, callback) {
+          var def;
+          def = element.select2("val");
+          return callback({
+            id: def,
+            text: def
+          });
+        };
+        numberCreateSC = function(term) {
+          if (isNaN(Number(term))) {
+            return;
+          }
+          return {
+            id: term,
+            text: term
+          };
+        };
+        formatNoMatches = function(term) {
+          if (!term) {
+            return "Input value...";
+          } else {
+            return "Invalid input";
+          }
+        };
+        $inputs = $("#import-cf-params").children();
+        _ref = this.parameters;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          param = _ref[_i];
+          if (param.NoEcho) {
+            continue;
+          }
+          select2 = false;
+          ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input");
+          select2Option = {
+            allowClear: true,
+            data: [],
+            formatNoMatches: formatNoMatches
+          };
+          if (param.Type === "CommaDelimitedList" || param.Type === "List<Number>") {
+            select2 = true;
+            select2Option.multiple = true;
+            select2Option.allowDuplicate = true;
+            if (!param.AllowedValues) {
+              select2Option.tags = [];
+              select2Option.data = void 0;
+              select2Option.tokenSeparators = [","];
+            }
+          }
+          if (param.Type === "List<Number>") {
+            select2Option.createSearchChoice = numberCreateSC;
+          }
+          if (param.Type === "AWS::EC2::KeyPair::KeyName") {
+            select2 = true;
+            select2Option.query = kpQuery;
+            select2Option.initSelection = kpInitSelection;
+          }
+          if (param.AllowedValues) {
+            select2 = true;
+            avs = [];
+            _ref1 = param.AllowedValues;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              av = _ref1[_j];
+              avs.push({
+                id: "" + av,
+                text: "" + av
+              });
+            }
+            select2Option.data = avs;
+            select2Option.selectOnComma = true;
+          }
+          if (select2) {
+            ipt.select2(select2Option);
+          }
+        }
+      },
+      onRegionChange: function() {
+        var currentRegion, self;
+        if (!this.hasKpParam) {
+          return;
+        }
+        currentRegion = $("#import-cf-region").find(".selected").attr("data-id");
+        if (!this.regionForceFetchMap[currentRegion]) {
+          this.regionForceFetchMap[currentRegion] = true;
+          CloudResources(constant.RESTYPE.KP, currentRegion).fetchForce();
+        }
+        self = this;
+        $("#import-cf-form .loader").show();
+        CloudResources(constant.RESTYPE.KP, currentRegion).fetch().then(function() {
+          var $inputs, $ipt, param, _i, _len, _ref;
+          $("#import-cf-form .loader").hide();
+          self.currentRegionKps = CloudResources(constant.RESTYPE.KP, currentRegion).pluck("id");
+          $inputs = $("#import-cf-params").children();
+          _ref = self.parameters;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            param = _ref[_i];
+            if (param.Type === "AWS::EC2::KeyPair::KeyName") {
+              $ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input.cf-input");
+              $ipt.select2("val", $ipt.select2("val") || param.Default);
+            }
+          }
+        });
+      },
+      extractUserInput: function($li) {
+        var $input, AllowedPattern, allowed, av, idx, name, param, type, v, value, valueArray, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+        type = $li.attr("data-type");
+        $input = $li.find("input.cf-input");
+        if ($input.siblings(".select2-container").length) {
+          value = $input.select2("val");
+        } else {
+          value = $li.find("input.cf-input").val();
+        }
+        name = $li.attr("data-name");
+        param = this.cfJson.Parameters[name];
+        if (!value) {
+          return {
+            name: name,
+            value: ""
+          };
+        }
+        if (type === "Number" || type === "String") {
+          valueArray = [value];
+        } else {
+          if (_.isArray(value)) {
+            valueArray = value;
+          } else {
+            valueArray = value.split(",");
+          }
+        }
+        if (type === "Number" || type === "List<Number>") {
+          for (idx = _i = 0, _len = valueArray.length; _i < _len; idx = ++_i) {
+            v = valueArray[idx];
+            v = Number(v);
+            if (isNaN(v)) {
+              return false;
+            }
+            if (param.MinValue && Number(param.MinValue) > v) {
+              return false;
+            }
+            if (param.MaxValue && Number(param.MaxValue) < v) {
+              return false;
+            }
+            valueArray[idx] = v;
+          }
+        } else if (type === "String" || type === "CommaDelimitedList") {
+          if (param.AllowedPattern) {
+            AllowedPattern = new RegExp(param.AllowedPattern);
+          }
+          for (idx = _j = 0, _len1 = valueArray.length; _j < _len1; idx = ++_j) {
+            v = valueArray[idx];
+            if (param.MinLength && Number(param.MinLength) > v.length) {
+              return false;
+            }
+            if (param.MaxLength && Number(param.MaxLength) < v.length) {
+              return false;
+            }
+            if (AllowedPattern && !AllowedPattern.test(v)) {
+              return false;
+            }
+          }
+        }
+        if (param.AllowedValues) {
+          for (_k = 0, _len2 = valueArray.length; _k < _len2; _k++) {
+            v = valueArray[_k];
+            _ref = param.AllowedValues || [];
+            for (_l = 0, _len3 = _ref.length; _l < _len3; _l++) {
+              av = _ref[_l];
+              if ("" + av === "" + v) {
+                allowed = true;
+                break;
+              }
+            }
+            if (!allowed) {
+              return false;
+            }
+          }
+        }
+        if (param.Type === "AWS::EC2::KeyPair::KeyName") {
+          if (this.currentRegionKps.indexOf(value) < 0) {
+            return false;
+          }
+        }
+        if (type === "String" || type === "Number") {
+          value = valueArray[0];
+        } else if (type === "List<Number>" || type === "CommaDelimitedList") {
+          value = valueArray.join(",");
+        }
+        return {
+          name: name,
+          value: value
+        };
+      },
+      checkCFParameter: function() {
+        var $entries, $li, error, hasEmpty, li, result, _i, _len;
+        $entries = this.modal.tpl.find(".cf-params").children();
+        error = false;
+        hasEmpty = false;
+        for (_i = 0, _len = $entries.length; _i < _len; _i++) {
+          li = $entries[_i];
+          $li = $(li);
+          result = this.extractUserInput($li);
+          if (!result) {
+            error = true;
+            $li.toggleClass("error", true);
+          } else {
+            if (!result.value) {
+              hasEmpty = true;
+            }
+            this.cfJson.Parameters[result.name].Default = result.value;
+            $li.toggleClass("error", false);
+          }
+        }
+        this.modal.tpl.find(".param-error").hide();
+        this.modal.tpl.find(".param-empty").hide();
+        if (error) {
+          this.modal.tpl.find(".param-error").show();
+          this.emptyParamConfirm = false;
+        } else if (hasEmpty) {
+          this.modal.tpl.find(".param-empty").show();
+          if (!this.emptyParamConfirm) {
+            error = this.emptyParamConfirm = true;
+          }
+        }
+        return !error;
+      },
+      doImport: function() {
+        var region, self;
+        if (!this.checkCFParameter()) {
+          return;
+        }
+        self = this;
+        this.modal.tpl.find(".loading-spinner").show();
+        this.modal.tpl.closest(".modal-box").find(".modal-close").hide();
+        $("#import-cf-form").hide();
+        this.modal.resize();
+        region = $("#import-cf-region").find(".selected").attr("data-id");
+        return CloudResources(constant.RESTYPE.AZ, region).fetch().then(function() {
+          return ApiRequest("stack_import_cloudformation", {
+            region_name: $("#import-cf-region").find(".selected").attr("data-id"),
+            cf_template: self.cfJson,
+            parameters: {
+              az: _.pluck(CloudResources(constant.RESTYPE.AZ, region).where({
+                category: region
+              }), "id")
+            }
+          }).then(function(data) {
+            self.modal.close();
+            data.provider = "aws::global";
+            if (self.filename) {
+              data.name = self.filename;
+            }
+            return App.importJson(data, true);
+          }, function() {
+            self.modal.close();
+            notification('error', sprintf(lang.IDE.POP_IMPORT_CFM_ERROR));
+          });
+        });
+      },
+      cancelImport: function() {
+        return this.modal.close();
+      },
+      onFocusInput: function(evt) {
+        return $(evt.currentTarget).closest("li").removeClass("error");
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/dashboard/DashboardView',['./DashboardTpl', './DashboardTplData', './VisualizeVpcTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", 'AppAction', "CloudResources", "ApiRequest", "./ImportDialog", "backbone", "UI.scrollbar", "UI.tooltip", "UI.table", "UI.bubble", "UI.nanoscroller"], function(template, tplPartials, VisualizeVpcTpl, Modal, constant, lang, appAction, CloudResources, ApiRequest, ImportDialog) {
     Handlebars.registerHelper("awsAmiIcon", function(amiId, region) {
       var ami;
       ami = CloudResources(constant.RESTYPE.AMI, region).get(amiId);
@@ -1837,11 +2442,19 @@ function program26(depth0,data) {
         'click #region-resource-tab li': 'switchAppStack',
         'click .resource-tab': 'switchResource',
         "click .global-resource-li": "gotoRegionResource",
-        'click #ImportStack': 'importJson',
         'click #VisualizeVPC': 'visualizeVPC',
         'click .show-credential': 'showCredential',
         'click #RefreshResource': 'reloadResource',
-        "click .icon-detail": "showResourceDetail"
+        "click .icon-detail": "showResourceDetail",
+        "mouseenter .hovermenu": "showMenu",
+        "mouseleave .hovermenu": "hideMenu",
+        'click #ImportStack li': 'importJson'
+      },
+      showMenu: function(evt) {
+        return $(evt.currentTarget).children(".dropdown-menu").show();
+      },
+      hideMenu: function(evt) {
+        return $(evt.currentTarget).children(".dropdown-menu").hide();
       },
       initialize: function() {
         var data, self;
@@ -1876,18 +2489,31 @@ function program26(depth0,data) {
         return this.$el.hide();
       },
       dashboardBubbleSub: function(data) {
-        var renderData;
+        var formattedData, renderData;
         renderData = {};
-        renderData.data = _.clone(data);
+        formattedData = {};
+        _.each(data, function(value, key) {
+          var newKey;
+          newKey = lang.IDE["BUBBLE_" + key.toUpperCase().split("-").join("_")] || key;
+          return formattedData[newKey] = value;
+        });
+        renderData.data = formattedData;
         renderData.title = data.id || data.name || data._title;
         delete renderData.data._title;
         return tplPartials.bubbleResourceSub(renderData);
       },
       dashboardBubble: function(data) {
-        var d, _ref;
+        var d, formattedData, resourceData, _ref;
+        resourceData = (_ref = this.model.getAwsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0;
+        formattedData = {};
+        _.each(resourceData, function(value, key) {
+          var newKey;
+          newKey = lang.IDE["BUBBLE_" + key.toUpperCase().split("-").join("_")] || key;
+          return formattedData[newKey] = value;
+        });
         d = {
           id: data.id,
-          data: (_ref = this.model.getAwsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0
+          data: formattedData
         };
         _.each(d.data, function(e, key) {
           if (_.isBoolean(e)) {
@@ -2065,63 +2691,10 @@ function program26(depth0,data) {
         this.resourcesTab = $(evt.currentTarget).addClass("on").attr("data-type");
         this.updateRegionResources();
       },
-      importJson: function() {
-        var hanldeFile, modal, reader, zone;
-        modal = new Modal({
-          title: lang.IDE.POP_IMPORT_JSON_TIT,
-          template: tplPartials.importJSON(),
-          width: "470",
-          disableFooter: true
+      importJson: function(evt) {
+        return new ImportDialog({
+          type: $(evt.currentTarget).attr("data-type")
         });
-        reader = new FileReader();
-        reader.onload = function(evt) {
-          var error;
-          error = App.importJson(reader.result);
-          if (_.isString(error)) {
-            $("#import-json-error").html(error);
-          } else {
-            modal.close();
-            reader = null;
-          }
-          return null;
-        };
-        reader.onerror = function() {
-          $("#import-json-error").html(lang.IDE.POP_IMPORT_ERROR);
-          return null;
-        };
-        hanldeFile = function(evt) {
-          var files;
-          evt.stopPropagation();
-          evt.preventDefault();
-          $("#modal-import-json-dropzone").removeClass("dragover");
-          $("#import-json-error").html("");
-          evt = evt.originalEvent;
-          files = (evt.dataTransfer || evt.target).files;
-          if (!files || !files.length) {
-            return;
-          }
-          reader.readAsText(files[0]);
-          return null;
-        };
-        $("#modal-import-json-file").on("change", hanldeFile);
-        zone = $("#modal-import-json-dropzone").on("drop", hanldeFile);
-        zone.on("dragenter", function() {
-          return $(this).closest("#modal-import-json-dropzone").toggleClass("dragover", true);
-        });
-        zone.on("dragleave", function() {
-          return $(this).closest("#modal-import-json-dropzone").toggleClass("dragover", false);
-        });
-        zone.on("dragover", function(evt) {
-          var dt;
-          dt = evt.originalEvent.dataTransfer;
-          if (dt) {
-            dt.dropEffect = "copy";
-          }
-          evt.stopPropagation();
-          evt.preventDefault();
-          return null;
-        });
-        return null;
       },
       openItem: function(event) {
         return App.openOps($(event.currentTarget).attr("data-id"));
@@ -2129,7 +2702,7 @@ function program26(depth0,data) {
       createStack: function(event) {
         var $tgt;
         $tgt = $(event.currentTarget);
-        return App.createOps($tgt.attr("data-region") || this.region, $tgt.attr("data-cloud"), $tgt.attr("data-provider"));
+        return App.createOps($tgt.attr("data-region") || this.region, $tgt.attr("data-provider"));
       },
       markUpdated: function() {
         this.lastUpdate = +(new Date());
@@ -2141,7 +2714,7 @@ function program26(depth0,data) {
         $("#RefreshResource").addClass("reloading").text("");
         this.model.clearVisualizeData();
         App.discardAwsCache().done(function() {
-          return $("#RefreshResource").removeClass("reloading").text("just now");
+          return $("#RefreshResource").removeClass("reloading").text(lang.IDE.DASH_TPL_JUST_NOW);
         });
       },
       deleteStack: function(event) {
@@ -2175,8 +2748,15 @@ function program26(depth0,data) {
         }));
       },
       visualizeVPC: function() {
+        var that;
+        that = this;
+        return appAction.showPayment().then(function(data) {
+          return that.__visualizeVPC(data.modal);
+        });
+      },
+      __visualizeVPC: function(modal) {
         var TO, attributes, self;
-        this.model.visualizeVpc(true);
+        this.model.visualizeVpc();
         attributes = {
           ready: this.model.isVisualizeReady(),
           fail: this.model.isVisualizeTimeout() || this.model.isVisualizeFailed(),
@@ -2186,17 +2766,25 @@ function program26(depth0,data) {
         TO = setTimeout(function() {
           return self.updateVisModel();
         }, 60 * 8 * 1000 + 1000);
-        this.visModal = new Modal({
-          title: lang.IDE.DASH_IMPORT_VPC_AS_APP,
-          width: "770",
-          template: VisualizeVpcTpl(attributes),
-          disableFooter: true,
-          compact: true,
-          onClose: function() {
+        if (modal) {
+          this.visModal = modal;
+          this.visModal.setTitle(lang.IDE.DASH_IMPORT_VPC_AS_APP).setContent(VisualizeVpcTpl(attributes)).setWidth('770px').compact().resize().on('close', function() {
             self.visModal = null;
             clearTimeout(TO);
-          }
-        });
+          });
+        } else {
+          this.visModal = new Modal({
+            title: lang.IDE.DASH_IMPORT_VPC_AS_APP,
+            width: "770",
+            template: VisualizeVpcTpl(attributes),
+            disableFooter: true,
+            compact: true,
+            onClose: function() {
+              self.visModal = null;
+              clearTimeout(TO);
+            }
+          });
+        }
         this.visModal.tpl.on("click", "#VisualizeReload", function() {
           self.model.visualizeVpc(true);
           self.visModal.tpl.find(".unmanaged-vpc-empty").hide();
@@ -2215,7 +2803,7 @@ function program26(depth0,data) {
           id = $tgt.attr("data-vpcid");
           region = $tgt.closest("ul").attr("data-region");
           self.visModal.close();
-          App.openOps(App.model.createImportOps(region, id));
+          App.openOps(App.model.createImportOps(region, "aws::global", id));
           return false;
         });
       },
@@ -2650,7 +3238,7 @@ function program26(depth0,data) {
                 eni: resourceMap(resources["AWS|VPC|NetworkInterface"]),
                 eip: resourceMap(resources["AWS|EC2|EIP"]),
                 elb: resourceMap(resources["AWS|ELB"]),
-                username: resources['username'] ? MC.base64Decode(resources['username']) : void 0
+                username: resources['username'] ? Base64.decode(resources['username']) : void 0
               };
               obj.disabled = obj.eni.length > 300;
               vpcs.push(obj);

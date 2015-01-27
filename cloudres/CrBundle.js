@@ -202,7 +202,7 @@
         return this.__lastFetchError;
       },
       fetch: function() {
-        var self, _ref;
+        var self;
         if (!this.isLastFetchFailed() && this.__fetchPromise) {
           return this.__fetchPromise;
         }
@@ -210,7 +210,7 @@
         this.__ready = false;
         this.__lastFetchError = null;
         self = this;
-        this.__fetchPromise = (_ref = this.doFetch()) != null ? typeof _ref.then === "function" ? _ref.then(function(data) {
+        this.__fetchPromise = this.doFetch().then(function(data) {
           var d, e, _i, _len;
           if (!self.__selfParseData) {
             try {
@@ -248,7 +248,7 @@
           self.__ready = true;
           self.trigger("update");
           throw error;
-        }) : void 0 : void 0;
+        });
         return this.__fetchPromise;
       },
       fetchForce: function() {
@@ -619,8 +619,6 @@
         CloudResources.clearWhere((function(m) {
           return m.RES_TAG === self.category;
         }), this.__region);
-
-        /* env:dev                                                                                                                                                                                                                                                              env:dev:end */
         console.assert(this.__region && this.__provider, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
         return ApiRequest("resource_get_resource", {
           region_name: this.__region,
@@ -629,8 +627,6 @@
         });
       },
       parseFetchData: function(data) {
-
-        /* env:dev                                                                                                                                                                       env:dev:end */
         var app_json, cln, d, extraAttr, type;
         app_json = data.app_json;
         delete data.app_json;
@@ -774,6 +770,7 @@
             throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
           }
           self.set('keyName', keyName);
+          self.set('id', keyName);
           console.log("Created keypair resource", self);
           return self;
         });
@@ -808,7 +805,8 @@
         return ApiRequest("iam_UpdateServerCertificate", {
           servercer_name: this.get("Name"),
           new_servercer_name: newAttr.Name,
-          new_path: newAttr.Path
+          new_path: newAttr.Path,
+          region_name: Design.instance().region()
         }).then(function(res) {
           var newArn, oldArn;
           oldArn = self.get('Arn');
@@ -826,7 +824,8 @@
           cert_body: this.get("CertificateBody"),
           private_key: this.get("PrivateKey"),
           cert_chain: this.get("CertificateChain"),
-          path: this.get("Path")
+          path: this.get("Path"),
+          region_name: Design.instance().region()
         }).then(function(res) {
           var e;
           self.attributes.CertificateChain = "";
@@ -850,7 +849,8 @@
       },
       doDestroy: function() {
         return ApiRequest("iam_DeleteServerCertificate", {
-          servercer_name: this.get("Name")
+          servercer_name: this.get("Name"),
+          region_name: Design.instance().region()
         });
       }
     });
@@ -1172,7 +1172,9 @@
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
-        return ApiRequest("iam_ListServerCertificates");
+        return ApiRequest("iam_ListServerCertificates", {
+          region_name: this.region()
+        });
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1188,10 +1190,6 @@
           delete i.ServerCertificateId;
         }
         return res;
-      }
-    }, {
-      category: function() {
-        return "";
       }
     });
 
@@ -2464,11 +2462,15 @@
         _ref1 = ((_ref = ami.blockDeviceMapping) != null ? _ref.item : void 0) || [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           item = _ref1[_j];
+          if (item.ebs && !ami.imageSize && ami.rootDeviceName.indexOf(item.deviceName) !== -1) {
+            ami.imageSize = Number(item.ebs.volumeSize);
+          }
           bdm[item.deviceName] = item.ebs || {};
         }
         ami.osType = getOSType(ami);
         ami.osFamily = getOSFamily(ami);
         ami.blockDeviceMapping = bdm;
+        ami.isPublic = ami.isPublic.toString();
         ms.push(ami.id);
       }
       return ms;
@@ -2650,14 +2652,11 @@
         });
       },
       parseFetchData: function(data) {
-        var ami, amiIds, id, savedAmis, _ref;
+        var ami, amiIds, id, savedAmis;
         savedAmis = [];
         amiIds = [];
         for (id in data) {
           ami = data[id];
-          if (ami.architecture === 'i386' || (ami.name.indexOf('by VisualOps') === -1 && ((_ref = ami.osType) !== 'windows' && _ref !== 'suse'))) {
-            continue;
-          }
           ami.id = id;
           savedAmis.push(ami);
           amiIds.push(id);
@@ -2775,6 +2774,7 @@
           return d.promise;
         }
         return ApiRequest("favorite_remove", {
+          region_name: self.region(),
           resource_ids: [id]
         }).then(function() {
           idx = self.__models.indexOf(id);
@@ -2794,6 +2794,7 @@
         }
         self = this;
         return ApiRequest("favorite_add", {
+          region_name: self.region(),
           resource: {
             id: imageId,
             provider: 'AWS',
@@ -3671,10 +3672,16 @@
       /* env:dev                                                      env:dev:end */
       type: constant.RESTYPE.OSFLAVOR,
       doFetch: function() {
-        var tempDefer;
-        tempDefer = Q.defer();
-        tempDefer.resolve();
-        return tempDefer.promise;
+        var region;
+        region = this.region();
+        return ApiRequest("os_flavor_List", {
+          region: region
+        }).then(function(res) {
+          return ApiRequest("os_flavor_Info", {
+            region: region,
+            ids: _.pluck(res.flavors, "id")
+          });
+        });
       },
       parseFetchData: function(res) {
         return _.values(res);

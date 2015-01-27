@@ -282,7 +282,7 @@ return TEMPLATE; });
     };
     OsPropertyView = Backbone.View.extend({
       events: {
-        'change [data-target]': 'updateAttribute'
+        'change .selection[data-target]': 'updateAttribute'
       },
       constructor: function(options) {
         if (options && _.isObject(options)) {
@@ -409,13 +409,28 @@ return TEMPLATE; });
       hideFloatPanel: function() {
         var _ref;
         return (_ref = this.getPanel()) != null ? _ref.hideFloatPanel.apply(this.getPanel(), arguments) : void 0;
-      }
+      },
+      beforeRender: function() {
+        var _ref;
+        return (_ref = this.getPanel()) != null ? _ref.hideFloatPanel() : void 0;
+      },
+      afterRender: function() {}
     }, {
       extend: function(protoProps, staticProps) {
         var childClass, handleModes, handleTypes;
         childClass = Backbone.View.extend.apply(this, arguments);
         delete childClass.register;
         delete childClass.getClass;
+        if (_.isFunction(childClass.prototype.render)) {
+          childClass.prototype.originalRender = childClass.prototype.render;
+          childClass.prototype.render = function() {
+            var result;
+            this.beforeRender();
+            result = this.originalRender();
+            this.afterRender();
+            return result;
+          };
+        }
         if (staticProps) {
           handleTypes = staticProps.handleTypes;
           handleModes = staticProps.handleModes;
@@ -729,7 +744,7 @@ function program9(depth0,data,depth1) {
   buffer += " data-tip=\"Input single port, port range or port range.\" ";
   stack1 = helpers['if'].call(depth0, (depth1 && depth1.modeIsApp), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/>\n                    <select data-target=\"ip\" class=\"selection option\" value=\"";
+  buffer += "/>\n                    <select data-target=\"ip\" data-button-tpl=\"ipTipTpl\" class=\"selection option\" value=\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sgId), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-valid-handle=\"ipValid\" ";
@@ -782,7 +797,7 @@ function program16(depth0,data,depth1) {
   buffer += " data-tip=\"Input single port, port range or a common protocol\" ";
   stack1 = helpers['if'].call(depth0, (depth1 && depth1.modeIsApp), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/>\n                    <select data-target=\"ip\" class=\"selection option\" value=\"";
+  buffer += "/>\n                    <select data-target=\"ip\" data-button-tpl=\"ipTipTpl\" class=\"selection option\" value=\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sgId), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-valid-handle=\"ipValid\" ";
@@ -838,7 +853,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"rule-item\">\n    <select data-target=\"protocol\" class=\"selection option\" value=\"\" >\n        <option value=\"tcp\">TCP</option>\n        <option value=\"udp\">UDP</option>\n        <option value=\"icmp\">ICMP</option>\n        <option value=\"all\">All</option>\n    </select>\n    <input class=\"selection\" data-target=\"port\" value=\"\" data-tip=\"Input single port, port range or a common protocol\" />\n    <select data-target=\"ip\" class=\"selection option\" value=\"\" data-valid-handle=\"ipValid\" ></select>\n    <div class=\"rule-item-remove icon-delete tooltip\" data-tooltip=\"Delete Rule\"></div>\n</div>";
+  return "<div class=\"rule-item\">\n    <select data-target=\"protocol\" class=\"selection option\" value=\"\" >\n        <option value=\"tcp\">TCP</option>\n        <option value=\"udp\">UDP</option>\n        <option value=\"icmp\">ICMP</option>\n        <option value=\"all\">All</option>\n    </select>\n    <input class=\"selection\" data-target=\"port\" value=\"\" data-tip=\"Input single port, port range or a common protocol\" />\n    <select data-target=\"ip\" class=\"selection option\" data-button-tpl=\"ipTipTpl\" value=\"\" data-valid-handle=\"ipValid\" ></select>\n    <div class=\"rule-item-remove icon-delete tooltip\" data-tooltip=\"Delete Rule\"></div>\n</div>";
   };
 TEMPLATE.newItem=Handlebars.template(__TEMPLATE__);
 
@@ -863,6 +878,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return "<input class=\"input os-sg-new-input\" placeholder=\"Add new rule...\" />";
   };
 TEMPLATE.sgNewInput=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"os-sg-rule-ip-tip\"><i class=\"icon-info\"></i>Input CIDR / Security Group</div>";
+  };
+TEMPLATE.sgIPInputTip=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
@@ -1017,7 +1043,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/ossg/view',['constant', '../OsPropertyView', './template', 'CloudResources', 'UI.selection', 'UI.bubblepopup', '../validation/ValidationBase'], function(constant, OsPropertyView, template, CloudResources, bindSelection, bubblePopup, ValidationBase) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute",
+        "change .selection[data-target]": "updateAttribute",
         "click .direction-switch .t-m-btn": "switchDirection",
         "click .rule-item-remove": "removeRule",
         "click .os-sg-remove": "removeSG",
@@ -1056,6 +1082,9 @@ return TEMPLATE; });
               }
             }
             return false;
+          },
+          ipTipTpl: function() {
+            return template.sgIPInputTip();
           }
         };
       },
@@ -1428,7 +1457,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/ossglist/view',['constant', '../OsPropertyView', './template', 'CloudResources', '../ossg/view', 'UI.selection', '../validation/ValidationBase'], function(constant, OsPropertyView, template, CloudResources, SgView, bindSelection, ValidationBase) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute",
+        "change .selection[data-target]": "updateAttribute",
         "select_dropdown_button_click .item-list": "addItem",
         "click .item-list .item": "editItem",
         "click .item-readable-list .item": "editItem",
@@ -1630,7 +1659,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/globalconfig/view',['constant', '../OsPropertyView', './stack', './app', '../ossglist/view'], function(constant, OsPropertyView, TplStack, TplApp, SgListView) {
     return OsPropertyView.extend({
       events: {
-        'change [data-target]': 'updateAttribute'
+        'change .selection[data-target]': 'updateAttribute'
       },
       initialize: function() {
         return this.sgListView = this.reg(new SgListView({
@@ -1848,7 +1877,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/ossubnet/view',['constant', '../OsPropertyView', './template'], function(constant, OsPropertyView, template) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute",
+        "change .selection[data-target]": "updateAttribute",
         "select_dropdown_button_click .item-list": "addItem",
         "click .item-list .item .item-remove": "removeItemClicked",
         "select_item_remove .item-list": "removeItem"
@@ -1993,18 +2022,24 @@ function program10(depth0,data) {
 function program12(depth0,data) {
   
   
-  return "true";
+  return "disabled=\"disabled\" placeholder=\"User Data is disabled to allow installing OpsAgent for VisualOps.\"";
   }
 
 function program14(depth0,data) {
   
   
+  return "true";
+  }
+
+function program16(depth0,data) {
+  
+  
   return "false";
   }
 
-  buffer += "<div class=\"option-group-head expand\">\n    Server Details\n</div>\n<div class=\"option-group\">\n    <section class=\"group required\">\n        <label class=\"name\">Server Name</label>\n        <input id=\"property-os-server-name\" data-target=\"name\" class=\"selection string\" value=\""
+  buffer += "<div class=\"option-group-head expand\">\n    Server Details\n</div>\n<div class=\"option-group\">\n    <section class=\"group required\">\n        <label for=\"property-os-server-name\" class=\"name\">Server Name</label>\n        <input id=\"property-os-server-name\" data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">Server Image</label>\n        <select class=\"selection option\" value=\""
+    + "\"/>\n    </section>\n    <section class=\"group required\">\n        <label for=\"property-os-server-image\" class=\"name\">Server Image</label>\n        <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"imageId\" id=\"property-os-server-image\" data-option-tpl=\"imageSelect\" data-item-tpl=\"imageValue\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -2012,7 +2047,9 @@ function program14(depth0,data) {
   buffer += ">\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.imageList), {hash:{},inverse:self.noop,fn:self.programWithDepth(3, program3, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </select>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">CPU</label>\n        <select class=\"selection option\"  data-target=\"CPU\" id=\"property-os-server-CPU\"></select>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name\">RAM</label>\n        <select class=\"selection option required\" data-target=\"RAM\" id=\"property-os-server-RAM\"></select>\n    </section>\n    <section class=\"group\">\n        <label class=\"name\">Credential</label>\n        <select id=\"property-os-server-credential\" data-target=\"credential\" class=\"selection option\" ";
+  buffer += "\n        </select>\n    </section>\n    <section class=\"group required\">\n        <label for=\"property-os-server-volsize\" class=\"name\">Volume Size (GB)</label>\n        <input id=\"property-os-server-volsize\" data-target=\"volumeSize\" class=\"selection number\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.volumeSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"/>\n    </section>\n    <section class=\"group required\">\n        <label for=\"property-os-server-CPU\" class=\"name\">CPU</label>\n        <select class=\"selection option\"  data-target=\"CPU\" id=\"property-os-server-CPU\"></select>\n    </section>\n    <section class=\"group required\">\n        <label for=\"property-os-server-RAM\" class=\"name\">RAM</label>\n        <select class=\"selection option required\" data-target=\"RAM\" id=\"property-os-server-RAM\"></select>\n    </section>\n    <section class=\"group\">\n        <label for=\"property-os-server-credential\" class=\"name\">Credential</label>\n        <select id=\"property-os-server-credential\" data-target=\"credential\" class=\"selection option\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n            <option value=\"keypair\" ";
@@ -2036,14 +2073,14 @@ function program14(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.agentEnabled), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.agentEnabled), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(((stack1 = (depth0 && depth0.userData)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</textarea>\n    </section>\n</div>\n<div class=\"option-group-head expand\">\n    Port Details\n</div>\n<div class=\"option-group\">\n    <section class=\"group required\">\n        <label class=\"name\">Fixed IP</label>\n        <input class=\"selection ipv4\" id=\"property-os-server-fip\" data-target=\"fixedIp\" value=\""
+    + "</textarea>\n    </section>\n</div>\n<div class=\"option-group-head expand\">\n    Port Details\n</div>\n<div class=\"option-group\">\n    <section class=\"group required\">\n        <label class=\"name\">Fixed IP</label>\n        <input class=\"selection\" id=\"property-os-server-fip\" data-target=\"fixedIp\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.fixedIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"/>\n    </section>\n    <section class=\"group required\">\n        <label class=\"name tooltip\">Associate Floating IP</label>\n        <select class=\"selection bool\" id=\"property-os-server-aip\" data-target=\"associateFip\" value=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.floatingIp), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.floatingIp), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"></select>\n    </section>\n</div>";
   return buffer;
@@ -2138,7 +2175,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.image_name), {hash:{},data:data}))
     + "<span class=\"uid\">"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.image_id), {hash:{},data:data}))
-    + "</span></p>\n            </div>\n        </dd>\n        <dt>Fixed IP</dt><dd>"
+    + "</span></p>\n            </div>\n        </dd>\n        <dt>Volume Size</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.volumeSize), {hash:{},data:data}))
+    + "</dd>\n        <dt>Fixed IP</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.fixedIp), {hash:{},data:data}))
     + "</dd>\n        <dt>MAC Address</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.macAddress), {hash:{},data:data}))
@@ -2228,23 +2267,28 @@ return TEMPLATE; });
         "change #property-os-server-adminPass": "updateServerAttr",
         "change #property-os-server-userdata": "updateServerAttr",
         'change #property-os-server-fip': "updateServerAttr",
-        'change #property-os-server-aip': "updateServerAttr"
+        'change #property-os-server-aip': "updateServerAttr",
+        'change #property-os-server-volsize': "updateServerAttr",
+        'select_initialize #property-os-server-image': "initImage",
+        'select_initialize #property-os-server-credential': "initCredential",
+        'select_initialize #property-os-server-RAM': "initRAM",
+        'select_initialize #property-os-server-CPU': "initCPU"
       },
       initialize: function() {
-        var _ref;
-        return this.sgListView = this.reg(new SgListView({
-          targetModel: (_ref = this.model) != null ? _ref.embedPort() : void 0
-        }));
+        return this.listenTo(this.model, 'change:fip', this.render);
       },
       render: function() {
-        var json, kpDropdown;
+        var currentImage, json, kpDropdown, _ref;
+        this.$el.empty();
         json = this.model.toJSON();
+        currentImage = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).get(this.model.get('imageId'));
         this.flavorList = App.model.getOpenstackFlavors(Design.instance().get("provider"), Design.instance().region());
         json.imageList = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).toJSON();
         json.floatingIp = !!this.model.embedPort().getFloatingIp();
         json.fixedIp = this.model.embedPort().get('ip');
         json.isAppEdit = this.modeIsAppEdit();
         json.agentEnabled = Design.instance().get('agent').enabled;
+        json.volumeSize || (json.volumeSize = currentImage.get("vol_size"));
         this.$el.html(template.stackTemplate(json));
         kpDropdown = new OsKp(this.model, template.kpSelection({
           isAppEdit: this.modeIsAppEdit()
@@ -2252,42 +2296,43 @@ return TEMPLATE; });
         this.$el.find("#property-os-server-keypair").html(kpDropdown.render().$el);
         this.stopListening(this.workspace.design);
         this.listenTo(this.workspace.design, "change:agent", this.render);
-        this.bindSelectizeEvent();
+        this.sgListView = this.reg(new SgListView({
+          targetModel: (_ref = this.model) != null ? _ref.embedPort() : void 0
+        }));
         this.$el.append(this.sgListView.render().el);
         return this;
       },
-      bindSelectizeEvent: function() {
-        var avaliableRams, currentFlavor, flavorGroup, that;
-        that = this;
-        flavorGroup = _.groupBy(that.flavorList.toJSON(), 'vcpus');
-        currentFlavor = that.flavorList.get(that.model.get('flavorId'));
+      initImage: function(event) {
+        return $(event.target)[0].selectize.setValue(this.model.get('imageId'));
+      },
+      initCredential: function(event) {
+        return this.checkWindowsDistro(this.model.get("imageId"));
+      },
+      initRAM: function(event) {
+        var avaliableRams, currentFlavor, flavorGroup;
+        flavorGroup = _.groupBy(this.flavorList.toJSON(), 'vcpus');
+        currentFlavor = this.flavorList.get(this.model.get('flavorId'));
         avaliableRams = _.map(_.pluck(flavorGroup[currentFlavor.get('vcpus')], 'ram'), function(e) {
           return {
             text: e / 1024 + " G",
             value: e
           };
         });
-        this.$el.find("#property-os-server-image").on('select_initialize', function() {
-          return this.selectize.setValue(that.model.get('imageId'));
+        $(event.target)[0].selectize.addOption(avaliableRams);
+        return $(event.target)[0].selectize.setValue(currentFlavor.get('ram'));
+      },
+      initCPU: function(event) {
+        var avaliableCPUs, currentFlavor, flavorGroup;
+        flavorGroup = _.groupBy(this.flavorList.toJSON(), 'vcpus');
+        currentFlavor = this.flavorList.get(this.model.get('flavorId'));
+        avaliableCPUs = _.map(flavorGroup, function(e, index) {
+          return {
+            text: index + " Core",
+            value: index
+          };
         });
-        this.$el.find("#property-os-server-credential").on('select_initialize', function() {
-          return that.checkWindowsDistro(that.model.get("imageId"));
-        });
-        this.$el.find('#property-os-server-RAM').on('select_initialize', function() {
-          this.selectize.addOption(avaliableRams);
-          return this.selectize.setValue(currentFlavor.get('ram'));
-        });
-        return this.$el.find('#property-os-server-CPU').on('select_initialize', function() {
-          var avaliableCPUs;
-          avaliableCPUs = _.map(flavorGroup, function(e, index) {
-            return {
-              text: index + " Core",
-              value: index
-            };
-          });
-          this.selectize.addOption(avaliableCPUs);
-          return this.selectize.setValue(currentFlavor.get('vcpus'));
-        });
+        $(event.target)[0].selectize.addOption(avaliableCPUs);
+        return $(event.target)[0].selectize.setValue(currentFlavor.get('vcpus'));
       },
       onChangeCredential: function(event, value) {
         var result;
@@ -2302,9 +2347,14 @@ return TEMPLATE; });
         }
       },
       checkWindowsDistro: function(imageId) {
-        var $serverCredential, distro, distroIsWindows, image, _ref;
+        var $serverCredential, distro, distroIsWindows, image, volumeSize, _ref;
         image = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
         distro = image.get("os_distro");
+        volumeSize = image.get("vol_size");
+        if ((this.model.get("volumeSize") || 0) < volumeSize) {
+          this.model.set("volumeSize", volumeSize);
+        }
+        $("#property-os-server-volsize").val(this.model.get("volumeSize") || image.get("vol_size"));
         distroIsWindows = distro === 'windows';
         $serverCredential = this.$el.find("#property-os-server-credential");
         $serverCredential.parents(".group").toggle(!distroIsWindows);
@@ -2321,70 +2371,69 @@ return TEMPLATE; });
         target = $(event.currentTarget);
         attr = target.data('target');
         selectize = target[0].selectize;
-        if (attr === 'imageId') {
-          this.model.setImage(target.val());
-          this.checkWindowsDistro(target.val());
-        }
-        if (attr === 'name') {
-          this.setTitle(target.val());
-        }
-        if (attr === 'CPU') {
-          flavorGroup = _.groupBy(this.flavorList.models, function(e) {
-            return e.get('vcpus');
-          });
-          availableRams = flavorGroup[target.val()];
-          if (availableRams != null ? availableRams.length : void 0) {
-            ramSelectize = this.$el.find("#property-os-server-RAM")[0].selectize;
-            if (!ramSelectize) {
-              return false;
-            }
-            ramValue = ramSelectize.getValue();
-            availableRamsValue = _.map(_.pluck(_.map(availableRams, function(ram) {
-              return ram.toJSON();
-            }), 'ram'), function(e) {
-              return {
-                text: e / 1024 + " G",
-                value: e
-              };
+        switch (attr) {
+          case 'imageId':
+            this.checkWindowsDistro(target.val());
+            this.model.setImage(target.val());
+            break;
+          case 'name':
+            this.setTitle(target.val());
+            break;
+          case 'CPU':
+            flavorGroup = _.groupBy(this.flavorList.models, function(e) {
+              return e.get('vcpus');
             });
-            currentRamFlavor = _.find(availableRams, function(e) {
-              return e.get('ram') === +ramValue;
-            });
-            if (!currentRamFlavor) {
-              ramValue = _.min(_.pluck(availableRamsValue, 'value'));
+            availableRams = flavorGroup[target.val()];
+            if (availableRams != null ? availableRams.length : void 0) {
+              ramSelectize = this.$el.find("#property-os-server-RAM")[0].selectize;
+              if (!ramSelectize) {
+                return false;
+              }
+              ramValue = ramSelectize.getValue();
+              availableRamsValue = _.map(_.pluck(_.map(availableRams, function(ram) {
+                return ram.toJSON();
+              }), 'ram'), function(e) {
+                return {
+                  text: e / 1024 + " G",
+                  value: e
+                };
+              });
               currentRamFlavor = _.find(availableRams, function(e) {
                 return e.get('ram') === +ramValue;
               });
+              if (!currentRamFlavor) {
+                ramValue = _.min(_.pluck(availableRamsValue, 'value'));
+                currentRamFlavor = _.find(availableRams, function(e) {
+                  return e.get('ram') === +ramValue;
+                });
+              }
+              this.model.set("flavorId", currentRamFlavor.get('id'));
+              this.updateRamOptions(availableRamsValue, ramValue);
+            } else {
+              return false;
             }
-            this.model.set("flavorId", currentRamFlavor.get('id'));
-            this.updateRamOptions(availableRamsValue, ramValue);
-          } else {
             return false;
-          }
-          return false;
+          case 'RAM':
+            oldRamFlavor = this.flavorList.get(this.model.get('flavorId'));
+            flavorGroup = _.groupBy(this.flavorList.models, function(e) {
+              return e.get('vcpus');
+            });
+            availableRams = flavorGroup[oldRamFlavor.get('vcpus')];
+            targetFlavor = _.find(availableRams, function(e) {
+              return e.get('ram') === +selectize.getValue();
+            });
+            this.model.set('flavorId', targetFlavor.get('id'));
+            return false;
+          case "fixedIp":
+            serverPort = this.model.embedPort();
+            serverPort.setIp(target.val());
+            return false;
+          case 'associateFip':
+            serverPort = this.model.embedPort();
+            serverPort.setFloatingIp(target.getValue());
+            return false;
         }
-        if (attr === 'RAM') {
-          oldRamFlavor = this.flavorList.get(this.model.get('flavorId'));
-          flavorGroup = _.groupBy(this.flavorList.models, function(e) {
-            return e.get('vcpus');
-          });
-          availableRams = flavorGroup[oldRamFlavor.get('vcpus')];
-          targetFlavor = _.find(availableRams, function(e) {
-            return e.get('ram') === +selectize.getValue();
-          });
-          this.model.set('flavorId', targetFlavor.get('id'));
-          return false;
-        }
-        if (attr === "fixedIp") {
-          serverPort = this.model.embedPort();
-          serverPort.setIp(target.val());
-          return false;
-        }
-        if (attr === 'associateFip') {
-          serverPort = this.model.embedPort();
-          serverPort.setFloatingIp(target.getValue());
-          return false;
-        }
+        console.log(attr, target.val());
         if (attr) {
           return this.model.set(attr, target.val());
         }
@@ -2436,7 +2485,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/oseditor/property/osserver/appView',['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequestOs'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest) {
+  define('workspaces/oseditor/property/osserver/appView',['constant', '../OsPropertyView', './template', 'CloudResources', 'underscore', 'OsKp', '../ossglist/view', 'ApiRequest', 'ApiRequestOs'], function(constant, OsPropertyView, template, CloudResources, _, OsKp, SgListView, ApiRequest, ApiRequestOs) {
     return OsPropertyView.extend({
       events: {
         'click .os-server-image-info': 'openImageInfoPanel',
@@ -2479,11 +2528,12 @@ return TEMPLATE; });
         return this;
       },
       openSysLogModal: function() {
-        var region, serverId, that;
+        var region, reqApi, serverId, that;
         serverId = this.model.get('appId');
         that = this;
         region = Design.instance().region();
-        ApiRequest("os_server_GetConsoleOutput", {
+        reqApi = "os_server_GetConsoleOutput";
+        ApiRequestOs(reqApi, {
           region: region,
           server_id: serverId
         }).then(this.refreshSysLog, this.refreshSysLog);
@@ -2653,7 +2703,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/osvol/view',['constant', '../OsPropertyView', './template', 'CloudResources'], function(constant, OsPropertyView, template, CloudResources) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute"
+        "change .selection[data-target]": "updateAttribute"
       },
       render: function() {
         var _ref;
@@ -2735,9 +2785,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
-    + escapeExpression(((stack1 = (depth0 && depth0.listenerName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
-    + escapeExpression(((stack1 = (depth0 && depth0.poolName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ", working as load balancer.\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
@@ -2745,12 +2795,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   define('workspaces/oseditor/property/oslistener-asso/view',['constant', '../OsPropertyView', './template'], function(constant, OsPropertyView, template) {
     return OsPropertyView.extend({
       render: function() {
-        var listenerName, poolName;
-        poolName = this.model.getTarget(constant.RESTYPE.OSPOOL).get('name');
-        listenerName = this.model.getTarget(constant.RESTYPE.OSLISTENER).get('name');
+        var namePort1, namePort2;
+        namePort1 = this.model.getTarget(constant.RESTYPE.OSPOOL).get('name');
+        namePort2 = this.model.getTarget(constant.RESTYPE.OSLISTENER).get('name');
         this.$el.html(template({
-          poolName: poolName,
-          listenerName: listenerName
+          namePort1: namePort1,
+          namePort2: namePort2
         }));
         return this;
       }
@@ -2916,12 +2966,13 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/osport/view',['constant', '../OsPropertyView', './template', 'CloudResources', '../ossglist/view'], function(constant, OsPropertyView, template, CloudResources, SgListView) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute"
+        "change .selection[data-target]": "updateAttribute"
       },
       initialize: function() {
-        return this.sgListView = this.reg(new SgListView({
+        this.sgListView = this.reg(new SgListView({
           targetModel: this.model
         }));
+        return this.listenTo(this.model, 'change:fip', this.render);
       },
       render: function() {
         var extendData, floatIPData, floatIPModel, float_ip, value, _ref;
@@ -3035,7 +3086,7 @@ function program4(depth0,data) {
   define('workspaces/oseditor/property/oslistener/view',['constant', '../OsPropertyView', '../osport/view', './template/stack', 'CloudResources'], function(constant, OsPropertyView, portView, template, CloudResources) {
     return OsPropertyView.extend({
       events: {
-        'change [data-target]': 'updateAttribute'
+        'change .selection[data-target]': 'updateAttribute'
       },
       render: function() {
         var region;
@@ -3348,7 +3399,7 @@ function program1(depth0,data) {
   return "disabled";
   }
 
-  buffer += "<h1>"
+  buffer += "<h1 class=\"title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</h1>\r\n<section class=\"group required\">\r\n    <label class=\"name\">Name</label>\r\n    <input data-id=\"hm-name\" data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3393,7 +3444,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<h1>"
+  buffer += "<h1 class=\"title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</h1>\r\n<section class=\"group\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Name</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3420,7 +3471,7 @@ function program3(depth0,data) {
   define('workspaces/oseditor/property/oshm/view',['constant', '../OsPropertyView', './stack', './app', 'CloudResources', 'UI.selection', '../validation/ValidationBase'], function(constant, OsPropertyView, TplStack, TplApp, CloudResources, bindSelection, ValidationBase) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute"
+        "change .selection[data-target]": "updateAttribute"
       },
       initialize: function(options) {
         this.isApp = options.isApp;
@@ -3475,7 +3526,7 @@ function program3(depth0,data) {
   define('workspaces/oseditor/property/oshmlist/view',['constant', '../OsPropertyView', './stack', './app', 'CloudResources', '../oshm/view', 'UI.selection', '../validation/ValidationBase'], function(constant, OsPropertyView, TplStack, TplApp, CloudResources, HmView, bindSelection, ValidationBase) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute",
+        "change .selection[data-target]": "updateAttribute",
         "select_dropdown_button_click .item-list": "addItem",
         "click .item-list .item": "editItem",
         "click .item-readable-list .item": "viewItem",
@@ -3624,7 +3675,7 @@ function program3(depth0,data) {
   define('workspaces/oseditor/property/ospool/view',['constant', '../OsPropertyView', './template/stack', '../oshmlist/view'], function(constant, OsPropertyView, template, HmlistView) {
     return OsPropertyView.extend({
       events: {
-        'change [data-target]': 'updateAttribute'
+        'change .selection[data-target]': 'updateAttribute'
       },
       initialize: function() {
         this.memConn = this.model.connections('OsPoolMembership');
@@ -3905,7 +3956,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/property/osrouter/view',['constant', '../OsPropertyView', './template', 'CloudResources'], function(constant, OsPropertyView, template, CloudResources) {
     return OsPropertyView.extend({
       events: {
-        "change [data-target]": "updateAttribute"
+        "change .selection[data-target]": "updateAttribute"
       },
       render: function() {
         var json, resData, subnets, _ref, _ref1;
@@ -4020,8 +4071,76 @@ function program4(depth0,data) {
 
 }).call(this);
 
+define('workspaces/oseditor/property/osrouter-asso/template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
+    + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " and "
+    + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".\r\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/oseditor/property/OsPropertyBundle',['./default/view', './globalconfig/view', './ossubnet/view', './osserver/view', './osserver/appView', './osvol/view', './osvol/appView', './oslistener-asso/view', './ospool-membership/view', './oslistener/view', './oslistener/appView', './ospool/view', './ospool/appView', './osport/view', './osrouter/view', './osnetwork/view'], function() {});
+  define('workspaces/oseditor/property/osrouter-asso/view',['constant', '../OsPropertyView', './template'], function(constant, OsPropertyView, template) {
+    return OsPropertyView.extend({
+      render: function() {
+        var namePort1, namePort2;
+        namePort1 = this.model.getTarget(constant.RESTYPE.OSSUBNET).get('name');
+        namePort2 = this.model.getTarget(constant.RESTYPE.OSRT).get('name');
+        this.$el.html(template({
+          namePort1: namePort1,
+          namePort2: namePort2
+        }));
+        return this;
+      }
+    }, {
+      handleTypes: ['OsRouterAsso'],
+      handleModes: ['stack', 'app', 'appedit']
+    });
+  });
+
+}).call(this);
+
+define('workspaces/oseditor/property/osport-usage/template',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"os-property-message\">\r\n    This is an association of "
+    + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " and "
+    + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ".\r\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('workspaces/oseditor/property/osport-usage/view',['constant', '../OsPropertyView', './template'], function(constant, OsPropertyView, template) {
+    return OsPropertyView.extend({
+      render: function() {
+        var namePort1, namePort2;
+        namePort1 = this.model.getTarget(constant.RESTYPE.OSSERVER).get('name');
+        namePort2 = this.model.getTarget(constant.RESTYPE.OSPORT).get('name');
+        this.$el.html(template({
+          namePort1: namePort1,
+          namePort2: namePort2
+        }));
+        return this;
+      }
+    }, {
+      handleTypes: ['OsPortUsage'],
+      handleModes: ['stack', 'app', 'appedit']
+    });
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/oseditor/property/OsPropertyBundle',['./default/view', './globalconfig/view', './ossubnet/view', './osserver/view', './osserver/appView', './osvol/view', './osvol/appView', './oslistener-asso/view', './ospool-membership/view', './oslistener/view', './oslistener/appView', './ospool/view', './ospool/appView', './osport/view', './osrouter/view', './osnetwork/view', './osrouter-asso/view', './osrouter-asso/view', './osport-usage/view'], function() {});
 
 }).call(this);
 
@@ -4146,12 +4265,23 @@ function program4(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/oseditor/property/validation/osserver',['constant', './ValidationBase', './osport'], function(constant, ValidationBase, PortValidation) {
+  define('workspaces/oseditor/property/validation/osserver',['constant', './ValidationBase', './osport', 'CloudResources', 'i18n!/nls/lang.js'], function(constant, ValidationBase, PortValidation, CloudResources, lang) {
     return ValidationBase.extend({
       limits: {
-        fixedIp: ValidationBase.limit.ipv4
+        fixedIp: ValidationBase.limit.ipv4,
+        volumeSize: ValidationBase.limit.positive
       },
-      fixedIp: (new PortValidation()).ip
+      fixedIp: (new PortValidation()).ip,
+      volumeSize: function(value) {
+        var image, imageId, minSize;
+        value = parseInt(value);
+        imageId = this.model.get("imageId");
+        image = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
+        minSize = parseInt(image.get("vol_size"));
+        if (value < minSize) {
+          return lang.IDE.VALIDATION_VOLUME_SIZE_LARGE_THAN_IMAGE_SIZE;
+        }
+      }
     }, {
       handleTypes: [constant.RESTYPE.OSSERVER]
     });
@@ -4420,7 +4550,24 @@ return TEMPLATE; });
         }
         this.subPanel = new subPanel(args);
         this.$('.panel-body').html(this.subPanel.render().el);
+        this.renderStateCount(args);
         return this.__restoreAccordion();
+      },
+      renderStateCount: function(args) {
+        var $stateCount, serverModel, stateCount, states;
+        $stateCount = this.parent.$el.find('.sidebar-title a.state .state-count');
+        if (args && args.type === constant.RESTYPE.OSSERVER) {
+          $stateCount.show();
+          serverModel = Design.instance().component(args.uid);
+          states = serverModel.get('state');
+          stateCount = 0;
+          if (states && _.isArray(states)) {
+            stateCount = states.length;
+          }
+          return $stateCount.text(stateCount);
+        } else {
+          return $stateCount.hide();
+        }
       },
       scrollTo: function(className) {
         var $container, $target, newTop, top;
@@ -4762,7 +4909,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<header class=\"sidebar-title resource\">\n    <a class=\"resource tooltip icon-resource\" data-target=\"resource\" data-tooltip=\"Resource (R)\"></a>\n    <a class=\"config tooltip icon-config\" data-target=\"config\" data-tooltip=\"Stack Settings (A)\"></a>\n    <a class=\"property tooltip icon-property\" data-target=\"property\" data-tooltip=\"Property (P)\"></a>\n    <a class=\"state tooltip icon-gear\" data-target=\"state\" data-tooltip=\"Instance State (S)\"></a>\n</header>";
+  return "<header class=\"sidebar-title resource\">\n    <a class=\"resource tooltip icon-resource\" data-target=\"resource\" data-tooltip=\"Resource (R)\"></a>\n    <a class=\"config tooltip icon-config\" data-target=\"config\" data-tooltip=\"Stack Property (A)\"></a>\n    <a class=\"property tooltip icon-property\" data-target=\"property\" data-tooltip=\"Property (P)\"></a>\n    <a class=\"state tooltip icon-gear\" data-target=\"state\" data-tooltip=\"Instance State (S)\">\n        <span class=\"state-count\">99</span>\n    </a>\n</header>";
   };
 TEMPLATE.PanelHeaderStack=Handlebars.template(__TEMPLATE__);
 
@@ -4773,7 +4920,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<header class=\"sidebar-title resource\" data-mode=\"app\">\n    <a class=\"resource tooltip icon-resource\" data-target=\"resource\" data-tooltip=\"Resource (R)\"></a>\n    <a class=\"config tooltip icon-config\" data-target=\"config\" data-tooltip=\"App Settings (A)\"></a>\n    <a class=\"property tooltip icon-property\" data-target=\"property\" data-tooltip=\"Property (P)\"></a>\n    <a class=\"state tooltip icon-gear\" data-target=\"state\" data-tooltip=\"Instance State (S)\"></a>\n</header>";
+  return "<header class=\"sidebar-title resource\" data-mode=\"app\">\n    <a class=\"resource tooltip icon-resource\" data-target=\"resource\" data-tooltip=\"Resource (R)\"></a>\n    <a class=\"config tooltip icon-config\" data-target=\"config\" data-tooltip=\"App Property (A)\"></a>\n    <a class=\"property tooltip icon-property\" data-target=\"property\" data-tooltip=\"Property (P)\"></a>\n    <a class=\"state tooltip icon-gear\" data-target=\"state\" data-tooltip=\"Instance State (S)\">\n        <span class=\"state-count\">99</span>\n    </a>\n</header>";
   };
 TEMPLATE.PanelHeaderApp=Handlebars.template(__TEMPLATE__);
 
@@ -5016,7 +5163,7 @@ return TEMPLATE; });
       createStack: function() {
         var opsModel;
         opsModel = this.workspace.opsModel;
-        App.createOps(opsModel.get("region"), "openstack", opsModel.get("provider"));
+        App.createOps(opsModel.get("region"), opsModel.get("provider"));
       },
       duplicateStack: function() {
         var newOps;
@@ -5390,7 +5537,7 @@ return TEMPLATE; });
           maxHeight: "450px",
           cancel: "Close"
         });
-        cloudType = that.workspace.opsModel.get('cloudType');
+        cloudType = that.workspace.opsModel.type;
         that.updateModal.tpl.find('.modal-confirm').prop("disabled", true).text((App.user.hasCredential() ? lang.IDE.UPDATE_APP_CONFIRM_BTN : lang.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL));
         if (hasNewServer) {
           appAction.renderKpDropdown(that.updateModal, cloudType);
@@ -5429,7 +5576,7 @@ return TEMPLATE; });
       },
       applyAppEdit: function() {
         var components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
-        if (Design.instance().get("cloud_type") === 'openstack') {
+        if (Design.instance().type() === OpsModel.Type.OpenStack) {
           this.applyOpenstackAppEdit();
           return false;
         }
@@ -5564,7 +5711,7 @@ return TEMPLATE; });
               width: "420px",
               template: ToolbarTpl.confirm.enableState(),
               confirm: {
-                text: "Enable VisualOps"
+                text: lang.IDE.ENABLE_VISUALOPS
               },
               onConfirm: function() {
                 that.clearUserData();
@@ -5672,7 +5819,7 @@ TEMPLATE.ta=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('workspaces/oseditor/subviews/Statusbar',["OpsModel", "Design", "../template/TplStatusbar", "constant", "backbone", "event", "state_status"], function(OpsModel, Design, template, constant, Backbone, ide_event, stateStatus) {
+  define('workspaces/oseditor/subviews/Statusbar',["OpsModel", "Design", "../template/TplStatusbar", "constant", "backbone", "event", "state_status", "i18n!/nls/lang.js"], function(OpsModel, Design, template, constant, Backbone, ide_event, stateStatus, lang) {
     var itemView, items;
     items = [
       {
@@ -5731,8 +5878,8 @@ return TEMPLATE; });
         click: function(event) {
           var btnDom, currentText;
           btnDom = $(event.currentTarget);
-          currentText = 'Validate';
-          btnDom.text('Validating...');
+          currentText = lang.IDE.LBL_VALIDATE;
+          btnDom.text(lang.IDE.VALIDATING_3DOT);
           return setTimeout(function() {
             MC.ta.validAll();
             btnDom.text(currentText);
@@ -7256,7 +7403,7 @@ return TEMPLATE; });
           name: data.resource.name,
           appId: data.resource.id,
           nat: data.resource.nat,
-          extNetworkId: data.resource.external_gateway_info.network_id || "",
+          extNetworkId: (data.resource.external_gateway_info || {}).network_id || "",
           publicip: data.resource.public_ip,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
@@ -7432,7 +7579,8 @@ return TEMPLATE; });
           availabilityZone: "",
           imageId: "",
           credential: "keypair",
-          state: []
+          state: [],
+          volumeSize: ""
         };
       },
       initialize: function(attr, option) {
@@ -7515,7 +7663,7 @@ return TEMPLATE; });
             id: this.get("appId"),
             name: this.get("name"),
             flavor: this.get('flavorId'),
-            image: this.get('imageId'),
+            image: this.get("imageId"),
             meta: this.get('meta'),
             NICS: this.connectionTargets("OsPortUsage").map(function(port) {
               return {
@@ -7524,7 +7672,17 @@ return TEMPLATE; });
             }),
             userdata: this.get('userData'),
             availabilityZone: this.get('availabilityZone'),
-            blockDeviceMapping: []
+            blockDeviceMappingV2: [
+              {
+                bootIndex: 0,
+                sourceType: "image",
+                volumeSize: this.get("volumeSize"),
+                deviceName: "",
+                uuid: this.get("imageId"),
+                destinationType: "volume",
+                deleteOnTermination: true
+              }
+            ]
           }
         };
         KeypairModel = Design.modelClassForType(constant.RESTYPE.OSKP);
@@ -7546,23 +7704,24 @@ return TEMPLATE; });
     }, {
       handleTypes: constant.RESTYPE.OSSERVER,
       deserialize: function(data, layout_data, resolve) {
-        var PortUsage, idx, port, server, _i, _len, _ref;
+        var PortUsage, idx, port, server, _i, _len, _ref, _ref1;
         server = new Model({
           id: data.uid,
           name: data.resource.name,
           appId: data.resource.id,
           flavorId: data.resource.flavor,
-          imageId: data.resource.image,
+          imageId: data.resource.image || data.resource.blockDeviceMappingV2[0].uuid,
           adminPass: data.resource.adminPass,
+          volumeSize: (_ref = data.resource.blockDeviceMappingV2) != null ? _ref[0].volumeSize : void 0,
           keypair: data.resource.key_name.split("{")[0] === "@" ? "$DefaultKeyPair" : data.resource.key_name,
           state: data.state,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });
         PortUsage = Design.modelClassForType("OsPortUsage");
-        _ref = data.resource.NICS || [];
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          port = _ref[idx];
+        _ref1 = data.resource.NICS || [];
+        for (idx = _i = 0, _len = _ref1.length; _i < _len; idx = ++_i) {
+          port = _ref1[idx];
           port = resolve(MC.extractID(port["port-id"]));
           if (idx === 0) {
             port.parent().addChild(server);
@@ -8567,7 +8726,11 @@ return TEMPLATE; });
         "elb": "horizontal"
       },
       events: {
-        "mousedown .fip-status": "toggleFip"
+        "mousedown .fip-status": "toggleFip",
+        "click .fip-status": "suppressEvent"
+      },
+      suppressEvent: function() {
+        return false;
       },
       listenModelEvents: function() {
         this.listenTo(this.model, 'change:fip', this.render);
@@ -8924,7 +9087,229 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/oseditor/EditorOs',["OpsEditor", "./OsEditorStack", "./OsEditorApp", "./model/OsModelFloatIp", "./model/OsModelHealthMonitor", "./model/OsModelListener", "./model/OsModelNetwork", "./model/OsModelElb", "./model/OsModelPool", "./model/OsModelPort", "./model/OsModelRt", "./model/OsModelKeypair", "./model/OsModelServer", "./model/OsModelSg", "./model/OsModelSgRule", "./model/OsModelSubnet", "./model/OsModelVolume", "./model/connection/OsFloatIpUsage", "./model/connection/OsListenerAsso", "./model/connection/OsPoolMembership", "./model/connection/OsPortUsage", "./model/connection/OsRouterAsso", "./model/connection/OsSgAsso", "./model/connection/OsVolumeUsage", "./model/seVisitors/AppToStack", "./canvas/CeNetwork", "./canvas/CeSubnet", "./canvas/CeRt", "./canvas/CePool", "./canvas/CeListener", "./canvas/CeElb", "./canvas/CeServer", "./canvas/CePort", "./canvas/CeOsLine"], function(OpsEditor, StackEditor, AppEditor) {
+  define('workspaces/oseditor/canvas/CanvasViewOsLayout',["./CanvasViewOs", "CanvasViewLayout", "constant"], function(OsCanvasView, CanvasViewLayoutHelpers, constant) {
+    var ArrangeForRtGroup, ArrangeForSubnetGroup, ArrangeForSvg, AutoLayoutConfig, GroupMForSubnet, SortForSvg, SubnetPosCache;
+    SubnetPosCache = null;
+    GroupMForSubnet = function(children) {
+      var ch, elbChildren, group, i, idx, pool, poolGroup, portGroup, serverGroup, subnetChildren, v, vip, vipGroup, _i, _j, _k, _l, _len, _len1, _len2, _len3;
+      group = CanvasViewLayoutHelpers.DefaultGroupMethod.call(this, children);
+      subnetChildren = [];
+      serverGroup = portGroup = vipGroup = poolGroup = [];
+      for (_i = 0, _len = group.length; _i < _len; _i++) {
+        ch = group[_i];
+        if (ch.type === "OS::Nova::Server_group") {
+          subnetChildren.push(ch);
+        } else if (ch.type === "OS::Neutron::Port_group") {
+          portGroup = ch.children;
+        } else if (ch.type === "OS::Neutron::VIP_group") {
+          vipGroup = ch.children;
+        } else if (ch.type === "OS::Neutron::Pool_group") {
+          poolGroup = ch.children;
+        }
+      }
+      elbChildren = [];
+      for (_j = 0, _len1 = poolGroup.length; _j < _len1; _j++) {
+        pool = poolGroup[_j];
+        vip = pool.component.connectionTargets("OsListenerAsso")[0];
+        idx = -1;
+        for (i = _k = 0, _len2 = vipGroup.length; _k < _len2; i = ++_k) {
+          v = vipGroup[i];
+          if (v.component === vip) {
+            idx = i;
+            break;
+          }
+        }
+        if (idx >= 0) {
+          vipGroup.splice(idx, 1);
+          elbChildren.push({
+            type: "ELB_pair",
+            children: [pool, v]
+          });
+        } else {
+          elbChildren.push(pool);
+        }
+      }
+      for (_l = 0, _len3 = vipGroup.length; _l < _len3; _l++) {
+        vip = vipGroup[_l];
+        elbChildren.push(vip);
+      }
+      if (elbChildren.length) {
+        subnetChildren.push({
+          type: "ELB_group",
+          children: elbChildren
+        });
+      }
+      if (portGroup.length) {
+        subnetChildren.push({
+          type: "OS::Neutron::Port_group",
+          children: portGroup
+        });
+      }
+      return subnetChildren;
+    };
+    SortForSvg = function(children) {
+      var ch, newChs, _i, _len;
+      newChs = [];
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        ch = children[_i];
+        if (ch.type === "OS::Neutron::Router") {
+          newChs.push(ch);
+        } else {
+          newChs.unshift(ch);
+        }
+      }
+      return newChs;
+    };
+    ArrangeForSvg = function(children) {
+      var ch, newChs, _i, _len;
+      newChs = [];
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        ch = children[_i];
+        if (ch.type === "OS::Neutron::Router_group") {
+          newChs.unshift(ch);
+        } else {
+          newChs.push(ch);
+        }
+      }
+      return CanvasViewLayoutHelpers.DefaultArrangeMethod.call(this, newChs);
+    };
+    ArrangeForSubnetGroup = function(children) {
+      var ch, ch2, idx, x1, x2, y1, y2, _i, _j, _len, _len1;
+      children.sort(function(a, b) {
+        return b.children.length - a.children.length;
+      });
+      SubnetPosCache = {};
+      x1 = -2;
+      x2 = -2;
+      y1 = 0;
+      y2 = 0;
+      ch2 = [];
+      for (idx = _i = 0, _len = children.length; _i < _len; idx = ++_i) {
+        ch = children[idx];
+        if (idx % 2 === 0) {
+          ch.y = 0;
+          ch.x = x1 + 2;
+          x1 = ch.x + ch.width;
+          if (ch.height > y1) {
+            y1 = ch.height;
+          }
+        } else {
+          ch2.push(ch);
+          ch.x = x2 + 2;
+          x2 = ch.x + ch.width;
+          if (ch.height > y2) {
+            y2 = ch.height;
+          }
+        }
+      }
+      for (_j = 0, _len1 = ch2.length; _j < _len1; _j++) {
+        ch = ch2[_j];
+        SubnetPosCache[ch.component.id] = ch.y = y1 + 2;
+      }
+      SubnetPosCache.y = y1 + 2;
+      return {
+        width: Math.max(x1, x2),
+        height: y1 + 2 + y2
+      };
+    };
+    ArrangeForRtGroup = function(children) {
+      var firstLine, rt, subnet, x1, x2, _i, _j, _len, _len1, _ref;
+      x1 = -2;
+      x2 = -2;
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        rt = children[_i];
+        firstLine = false;
+        _ref = rt.component.connectionTargets("OsRouterAsso");
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          subnet = _ref[_j];
+          if (!SubnetPosCache[subnet.id]) {
+            firstLine = true;
+            break;
+          }
+        }
+        if (firstLine) {
+          x1 += 2;
+          rt.x = x1;
+          x1 += 8;
+          rt.y = 0;
+        } else {
+          x2 += 2;
+          rt.x = x2;
+          x2 += 8;
+          rt.y = SubnetPosCache.y;
+        }
+      }
+      return {
+        width: Math.max(x1, x2),
+        height: SubnetPosCache.y + 8
+      };
+    };
+    AutoLayoutConfig = OsCanvasView.prototype.autoLayoutConfig = {
+      "SVG": {
+        sortMethod: SortForSvg,
+        arrangeMethod: ArrangeForSvg,
+        space: 6
+      },
+      "OS::Neutron::Network": {
+        space: 4,
+        margin: 3,
+        width: 60,
+        height: 60
+      },
+      "OS::Neutron::Router_group": {
+        arrangeMethod: ArrangeForRtGroup,
+        space: 4
+      },
+      "OS::Neutron::Router": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::Subnet_group": {
+        arrangeMethod: ArrangeForSubnetGroup,
+        space: 2
+      },
+      "OS::Neutron::Subnet": {
+        groupMethod: GroupMForSubnet,
+        arrangeMethod: "ArrangeVertical",
+        space: 2,
+        margin: 2,
+        width: 8,
+        height: 8
+      },
+      "OS::Nova::Server_group": {
+        space: 2
+      },
+      "OS::Nova::Server": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::Port": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::VIP": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::Pool": {
+        width: 8,
+        height: 8
+      },
+      "ELB_group": {
+        arrangeMethod: "ArrangeBinPack",
+        space: 2
+      },
+      'ELB_pair': {
+        space: 2
+      }
+    };
+    return null;
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/oseditor/EditorOs',["OpsEditor", "./OsEditorStack", "./OsEditorApp", "./model/OsModelFloatIp", "./model/OsModelHealthMonitor", "./model/OsModelListener", "./model/OsModelNetwork", "./model/OsModelElb", "./model/OsModelPool", "./model/OsModelPort", "./model/OsModelRt", "./model/OsModelKeypair", "./model/OsModelServer", "./model/OsModelSg", "./model/OsModelSgRule", "./model/OsModelSubnet", "./model/OsModelVolume", "./model/connection/OsFloatIpUsage", "./model/connection/OsListenerAsso", "./model/connection/OsPoolMembership", "./model/connection/OsPortUsage", "./model/connection/OsRouterAsso", "./model/connection/OsSgAsso", "./model/connection/OsVolumeUsage", "./model/seVisitors/AppToStack", "./canvas/CeNetwork", "./canvas/CeSubnet", "./canvas/CeRt", "./canvas/CePool", "./canvas/CeListener", "./canvas/CeElb", "./canvas/CeServer", "./canvas/CePort", "./canvas/CeOsLine", "./canvas/CanvasViewOs", "./canvas/CanvasViewOsLayout"], function(OpsEditor, StackEditor, AppEditor) {
     var OsEditor;
     OsEditor = function(opsModel) {
       if (opsModel.isStack()) {

@@ -355,6 +355,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         Design.instance().component(id).setName(name);
         this.set("name", name);
         return null;
+      },
+      setDesc: function(description) {
+        var id;
+        id = this.get("uid");
+        console.assert(id, "This property model doesn't have an id");
+        return Design.instance().component(id).setDesc(description);
       }
     });
     return PropertyModel;
@@ -364,13 +370,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 (function() {
   define('workspaces/awseditor/property/stack/model',['../base/model', 'constant', "Design"], function(PropertyModel, constant, Design) {
-    var StackModel, typeMap;
-    typeMap = {
-      'ec2-classic': 'EC2 Classic',
-      'ec2-vpc': 'EC2 VPC',
-      'default-vpc': 'Default VPC',
-      'custom-vpc': 'Custom VPC'
-    };
+    var StackModel;
     StackModel = PropertyModel.extend({
       init: function() {
         var agentData, design, vpc;
@@ -384,7 +384,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           id: design.get("id"),
           usage: design.get("usage"),
           description: design.get('description'),
-          type: typeMap[design.type()],
+          type: "EC2 VPC",
           region: constant.REGION_SHORT_LABEL[design.region()],
           isApp: this.isApp,
           isAppEdit: this.isAppEdit,
@@ -402,6 +402,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.set('isStack', true);
         }
         this.set(Design.instance().getCost());
+        this.set("currency", Design.instance().getCurrency());
         return null;
       },
       createAcl: function() {
@@ -450,6 +451,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         Design.instance().component(acl_uid).remove();
         this.getNetworkACL();
         return null;
+      },
+      updateStackName: function(name) {
+        this.set("name", name);
+        Design.instance().set("name", name);
+      },
+      updateDescription: function(description) {
+        this.set("description", description);
+        Design.instance().set('description', description);
       }
     });
     return new StackModel();
@@ -788,7 +797,7 @@ function program17(depth0,data) {
 function program19(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "$"
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.currency)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "/";
   stack1 = helpers.i18n.call(depth0, "PROP.STACK_LBL_COST_CYCLE", {hash:{},data:data});
@@ -979,7 +988,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         stackId = this.model.get('id');
         description = stackDescTextarea.val();
         if (stackDescTextarea.parsley('validate')) {
-          return this.trigger('STACK_DESC_CHANGED', description);
+          return this.model.updateDescription(description);
         }
       },
       stackNameChanged: function() {
@@ -994,13 +1003,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (!MC.validate('awsName', val)) {
             return lang.PARSLEY.SHOULD_BE_A_VALID_STACK_NAME;
           }
+          if (val === Design.instance().__opsModel.get("name")) {
+            return;
+          }
           if (!App.model.stackList().isNameAvailable(val)) {
             return sprintf(lang.PARSLEY.TYPE_NAME_CONFLICT, 'Stack', name);
           }
         });
         if (stackNameInput.parsley('validate')) {
-          this.trigger('STACK_NAME_CHANGED', name);
           this.setTitle("Stack - " + name);
+          this.model.updateStackName(name);
         }
         return null;
       },
@@ -1090,7 +1102,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (!needShow) {
             continue;
           }
-          if (sg.isDefault() || readonly || sg.get("appId")) {
+          if (sg.isDefault() || readonly) {
             deletable = false;
           } else {
             deletable = true;
@@ -1440,18 +1452,6 @@ function program9(depth0,data) {
 (function() {
   define('workspaces/awseditor/property/stack/main',['../base/main', './model', './view', '../sglist/main', 'event', "Design"], function(PropertyModule, model, view, sglist_main, ide_event, Design) {
     var StackModule;
-    view.on('STACK_NAME_CHANGED', function(name) {
-      var design;
-      design = Design.instance();
-      design.set("name", name);
-      return null;
-    });
-    view.on('STACK_DESC_CHANGED', function(description) {
-      var design;
-      design = Design.instance();
-      design.set('description', description);
-      return null;
-    });
     view.on('OPEN_ACL', function(uid) {
       PropertyModule.loadSubPanel("ACL", uid);
       return null;
@@ -1532,6 +1532,7 @@ function program9(depth0,data) {
         attr.instance_type = component.getInstanceTypeList();
         attr.tenancy = component.isDefaultTenancy();
         attr.displayCount = attr.count - 1;
+        attr.description = component.get("description");
         eni = component.getEmbedEni();
         attr.number_disable = eni && eni.connections('RTB_Route').length > 0;
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).allObjects()[0];
@@ -2086,7 +2087,11 @@ function program57(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.displayCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>]\r\n				</div>\r\n				<div class=\"fitfloat\">\r\n					<input class=\"input instance-name\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-instance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n				</div>\r\n			</div>\r\n\r\n		</section>\r\n		<section class=\"property-control-group\" data-bind=\"true\">\r\n			<label class=\"left\" for=\"property-instance-count\" >"
+    + "\" id=\"property-instance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n				</div>\r\n			</div>\r\n		</section>\r\n		<section class=\"property-control-group\" data-bind=\"true\">\r\n			<label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n			<textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n		</section>\r\n		<section class=\"property-control-group\" data-bind=\"true\">\r\n			<label class=\"left\" for=\"property-instance-count\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NUMBER", {hash:{},data:data}))
     + "</label>\r\n			<span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
@@ -2161,6 +2166,7 @@ function program57(depth0,data) {
     InstanceView = PropertyView.extend({
       events: {
         'change .instance-name': 'instanceNameChange',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-instance-count': 'countChange',
         'change #property-instance-ebs-optimized': 'ebsOptimizedSelect',
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
@@ -2275,6 +2281,9 @@ function program57(depth0,data) {
           this.setTitle(name);
         }
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       countChange: function(event) {
         var target, that, val;
@@ -2431,7 +2440,7 @@ function program57(depth0,data) {
         } else {
           tooltip = lang.PROP.INSTANCE_IP_MSG_3;
         }
-        $target.toggleClass("associated", attach).data("tooltip", tooltip);
+        $target.toggleClass("associated", attach).attr("data-tooltip", tooltip);
         this.model.attachEip(index, attach);
         return null;
       },
@@ -2493,7 +2502,7 @@ function program57(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/property/instance/app_model',['../base/model', 'keypair_model', 'keypair_service', 'instance_model', 'instance_service', 'constant', 'i18n!/nls/lang.js', 'Design', 'CloudResources'], function(PropertyModel, keypair_model, keypair_service, instance_model, instance_service, constant, lang, Design, CloudResources) {
+  define('workspaces/awseditor/property/instance/app_model',['../base/model', 'constant', 'i18n!/nls/lang.js', 'Design', 'CloudResources', "ApiRequest"], function(PropertyModel, constant, lang, Design, CloudResources, ApiRequest) {
     var AppInstanceModel;
     AppInstanceModel = PropertyModel.extend({
       defaults: {
@@ -2550,6 +2559,10 @@ function program57(depth0,data) {
           myInstanceComponent = Design.instance().component(effective.uid);
           this.set('uid', effective.uid);
           this.set('mid', effective.mid);
+        }
+        if (myInstanceComponent) {
+          this.set('description', myInstanceComponent.get("description"));
+          this.set('name', myInstanceComponent.get("name"));
         }
         if (!myInstanceComponent) {
           console.warn("instance.app_model.init(): can not find InstanceModel");
@@ -2642,72 +2655,14 @@ function program57(depth0,data) {
         }
         return data;
       },
-      genPasswordHandler: function(action) {
-        var me;
-        me = this;
-        return function(result) {
-          var curr_instance_id, instance, instance_id, instance_state, key_data, rdp, region_name, win_passwd;
-          region_name = result.param[3];
-          instance_id = result.param[4];
-          key_data = result.param[5];
-          instance = null;
-          instance_state = null;
-          win_passwd = null;
-          rdp = null;
-          curr_instance_id = me.get("instanceId");
-          if (curr_instance_id !== instance_id) {
-            return;
-          }
-          if (result.is_error) {
-            notification('error', lang.NOTIFY.ERR_GET_PASSWD_FAILED);
-            key_data = null;
-            return null;
-          } else {
-            if (result.resolved_data) {
-              win_passwd = result.resolved_data.passwordData;
-            }
-          }
-          if (action === 'check') {
-            me.trigger('PASSWORD_STATE', !!win_passwd);
-          } else if (action === 'download') {
-            me.trigger('KEYPAIR_DOWNLOAD', true, win_passwd, result.param[5]);
-          } else {
-            me.trigger("PASSWORD_GOT", win_passwd);
-          }
-          return null;
-        };
-      },
-      getPasswordData: function(key_data, check) {
-        var handler, instance_id, session, username;
-        instance_id = this.get("instanceId");
-        username = $.cookie("usercode");
-        session = $.cookie("session_id");
-        handler = this.genPasswordHandler(check ? 'check' : void 0);
-        instance_service.GetPasswordData(null, username, session, Design.instance().region(), instance_id, key_data).then(handler);
-        return null;
-      },
-      downloadKp: function(kpName) {
-        var handler, region, session, that, username;
-        that = this;
-        username = $.cookie("usercode");
-        session = $.cookie("session_id");
-        region = Design.instance().region();
-        handler = this.genPasswordHandler('download');
-        keypair_service.download(null, username, session, region, kpName).then(function(res) {
-          var instance_id, key_data;
-          if (!res.is_error) {
-            if (that.get('osType') === 'windows') {
-              instance_id = that.get("instanceId");
-              key_data = res.resolved_data;
-              return instance_service.GetPasswordData(null, username, session, region, instance_id, key_data).then(handler);
-            } else {
-              return that.trigger('KEYPAIR_DOWNLOAD', true, res.resolved_data);
-            }
-          } else {
-            return that.trigger('KEYPAIR_DOWNLOAD', false, res.resolved_data);
-          }
+      getPassword: function(key_data) {
+        return ApiRequest("ins_GetPasswordData", {
+          region: Design.instance().region(),
+          instance_id: this.get("instanceId"),
+          key_data: key_data || void 0
+        }).then(function(data) {
+          return data.GetPasswordDataResponse.passwordData;
         });
-        return null;
       },
       getEni: function() {
         var eni, eni_obj, instance;
@@ -2752,7 +2707,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "No Key Pair";
+  return escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NO_KP", {hash:{},data:data}));
   }
 
 function program6(depth0,data) {
@@ -2795,8 +2750,11 @@ function program10(depth0,data) {
 
 function program12(depth0,data) {
   
-  
-  return "\r\n          No Key Pair\r\n        ";
+  var buffer = "";
+  buffer += "\r\n          "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NO_KP", {hash:{},data:data}))
+    + "\r\n        ";
+  return buffer;
   }
 
 function program14(depth0,data) {
@@ -2870,13 +2828,13 @@ function program15(depth0,data) {
 function program17(depth0,data) {
   
   
-  return "Encrypted";
+  return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
 function program19(depth0,data) {
   
   
-  return "Not Encrypted";
+  return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_NOT_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
 function program21(depth0,data) {
@@ -3060,6 +3018,14 @@ function program39(depth0,data) {
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.instanceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\r\n\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_STATE", {hash:{},data:data}))
     + "</dt>\r\n      <dd><i class=\"status status-"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3136,7 +3102,7 @@ function program39(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('workspaces/awseditor/property/instance/app_view',['../base/view', './template/app', 'i18n!/nls/lang.js', 'instance_model', 'kp_upload', 'Design', 'JsonExporter'], function(PropertyView, template, lang, instance_model, kp_upload, Design, JsonExporter) {
+  define('workspaces/awseditor/property/instance/app_view',['../base/view', './template/app', 'i18n!/nls/lang.js', 'ApiRequest', 'kp_upload', 'Design', 'JsonExporter'], function(PropertyView, template, lang, ApiRequest, kp_upload, Design, JsonExporter) {
     var InstanceAppView, download, genDownload;
     download = JsonExporter.download;
     genDownload = function(name, str) {
@@ -3149,7 +3115,7 @@ function program39(depth0,data) {
         }
         if (!blob) {
           return {
-            data: "data://text/plain;," + str,
+            data: "data:text/plain;," + str,
             name: name
           };
         }
@@ -3164,7 +3130,6 @@ function program39(depth0,data) {
         "click #property-app-ami": "openAmiPanel",
         "click .property-btn-get-system-log": "openSysLogModal"
       },
-      kpModalClosed: false,
       render: function() {
         var data;
         data = this.model.toJSON();
@@ -3176,9 +3141,7 @@ function program39(depth0,data) {
         return this.proccessKpStuff();
       },
       proccessKpStuff: function(notOld) {
-        var isOldDefaultKp, isOldKp, isOldOtherKp, kp, kpName;
-        kpName = this.model.get('keyName');
-        isOldKp = false;
+        var isOldDefaultKp, isOldKp, isOldOtherKp, kp;
         if (!notOld) {
           kp = this.model.resModel.connectionTargets("KeypairUsage")[0];
           isOldDefaultKp = kp && kp.isDefault() && kp.get('appId') === ("DefaultKP---" + (Design.instance().get('id')));
@@ -3189,18 +3152,18 @@ function program39(depth0,data) {
           }
         }
         if (!isOldKp && this.model.get('osType') === 'windows') {
-          return this.decryptPassword(isOldKp);
+          return this.decryptPassword();
         } else {
-          return this.loginPrompt(isOldKp);
+          return this.loginPrompt();
         }
       },
-      loginPrompt: function(isOldKp) {
+      loginPrompt: function() {
         var keypair, me;
         keypair = this.model.get('keyName');
         modal(MC.template.modalDownloadKP({
           name: keypair,
           loginCmd: this.model.get('loginCmd'),
-          isOldKp: isOldKp,
+          isOldKp: false,
           windows: this.model.get('osType') === 'windows'
         }));
         me = this;
@@ -3212,25 +3175,29 @@ function program39(depth0,data) {
         });
         return false;
       },
-      decryptPassword: function(isOldKp) {
-        var keypair, me;
-        me = this;
-        keypair = this.model.get('keyName');
-        if (!isOldKp) {
-          this.model.getPasswordData(null, 'check');
-        }
+      decryptPassword: function() {
+        var me;
         modal(MC.template.modalDecryptPassword({
-          name: keypair,
-          isOldKp: isOldKp
+          name: this.model.get('keyName'),
+          isOldKp: false
         }));
+        this.kpModalClosed = false;
+        me = this;
         $('#modal-wrap').on("closed", function() {
           me.kpModalClosed = true;
-          return null;
+        });
+        this.model.getPassword().then(function(data) {
+          return this.updateKPModal("check", !!data);
+        }, function() {
+          return notification('error', lang.NOTIFY.ERR_GET_PASSWD_FAILED);
         });
         $("#do-kp-decrypt").off('click').on('click', function(event) {
-          return me.model.getPasswordData(me.__kpUpload.getData());
+          return me.model.getPassword(me.__kpUpload.getData()).then(function(data) {
+            return me.updateKPModal("got", data);
+          }, function() {
+            return notification('error', lang.NOTIFY.ERR_GET_PASSWD_FAILED);
+          });
         });
-        this.kpModalClosed = false;
         return false;
       },
       updateKPModal: function(action, data, data2, data3) {
@@ -3241,7 +3208,9 @@ function program39(depth0,data) {
         if (action === 'check') {
           if (data) {
             this.__kpUpload && this.__kpUpload.remove();
-            this.__kpUpload = new kp_upload();
+            this.__kpUpload = new kp_upload({
+              type: "Private Key"
+            });
             this.__kpUpload.on('load', function() {
               return $("#do-kp-decrypt").prop('disabled', false);
             });
@@ -3282,22 +3251,20 @@ function program39(depth0,data) {
         return false;
       },
       openSysLogModal: function() {
-        var currentRegion, instanceId, that;
+        var instanceId, that;
         instanceId = this.model.get('instanceId');
-        that = this;
-        currentRegion = Design.instance().region();
-        instance_model.GetConsoleOutput({
-          sender: that
-        }, $.cookie('usercode'), $.cookie('session_id'), currentRegion, instanceId);
         modal(MC.template.modalInstanceSysLog({
           instance_id: instanceId,
           log_content: ''
         }, true));
-        that.off('EC2_INS_GET_CONSOLE_OUTPUT_RETURN').on('EC2_INS_GET_CONSOLE_OUTPUT_RETURN', function(result) {
-          if (!result.is_error) {
-            console.log(result.resolved_data);
-          }
-          return that.refreshSysLog(result.resolved_data);
+        that = this;
+        ApiRequest("ins_GetConsoleOutput", {
+          region_name: Design.instance().region(),
+          instance_id: instanceId
+        }).then(function(data) {
+          return that.refreshSysLog(data.GetConsoleOutputResponse);
+        }, function() {
+          return that.refreshSysLog();
         });
         return false;
       },
@@ -3305,7 +3272,7 @@ function program39(depth0,data) {
         var $contentElem, logContent;
         $('#modal-instance-sys-log .instance-sys-log-loading').hide();
         if (result && result.output) {
-          logContent = MC.base64Decode(result.output);
+          logContent = Base64.decode(result.output);
           $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
           $contentElem.html(MC.template.convertBreaklines({
             content: logContent
@@ -3360,15 +3327,6 @@ function program39(depth0,data) {
       setupApp: function() {
         var me;
         me = this;
-        this.model.on("KEYPAIR_DOWNLOAD", function(success, data, data2) {
-          return me.view.updateKPModal('download', success, data, data2);
-        });
-        this.model.on("PASSWORD_STATE", function(data) {
-          return me.view.updateKPModal('check', data);
-        });
-        this.model.on("PASSWORD_GOT", function(data) {
-          return me.view.updateKPModal('got', data);
-        });
         this.view.on("OPEN_AMI", function(id) {
           return PropertyModule.loadSubPanel("STATIC", id);
         });
@@ -3425,6 +3383,8 @@ function program39(depth0,data) {
         this.set('number', myInstanceComponent.get('count'));
         this.set('name', myInstanceComponent.get('name'));
         this.set('monitoring', myInstanceComponent.get('monitoring'));
+        this.set('description', myInstanceComponent.get('description'));
+        this.set('displayCount', myInstanceComponent.get('count') - 1);
         this.getGroupList();
         this.getEni();
         return null;
@@ -3531,40 +3491,55 @@ function program3(depth0,data) {
   var buffer = "", stack1;
   buffer += "\r\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_DETAIL", {hash:{},data:data}))
-    + "</div>\r\n  <div class=\"option-group\">\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-instance-count\" >"
+    + "</div>\r\n  <div class=\"option-group\">\r\n\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n        <label class=\"left\" for=\"property-instance-name\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_HOSTNAME", {hash:{},data:data}))
+    + "</label>\r\n        <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
+    + "</span>\r\n\r\n        <div class=\"property-instance-name-wrap ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.count), 1, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\r\n            <div class=\"name-count-wrap\">\r\n                -[0-<span id=\"property-instance-name-count\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.displayCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>]\r\n            </div>\r\n            <div class=\"fitfloat\">\r\n                <input class=\"input instance-name\"  type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" id=\"property-instance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n            </div>\r\n        </div>\r\n    </section>\r\n\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-instance-count\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NUMBER", {hash:{},data:data}))
     + "</label>\r\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\r\n      <input class=\"input tooltip\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.number)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"property-instance-count\" data-ignore=\"true\" data-required=\"true\" data-type=\"digits\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.number_disable), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.number_disable), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n    </section>\r\n\r\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ami), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ami), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_editable), {hash:{},inverse:self.program(21, program21, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.type_editable), {hash:{},inverse:self.program(23, program23, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n  </div>\r\n\r\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\r\n  <div class=\"option-group\">\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        <label for=\"property-instance-enable-cloudwatch\"></label>\r\n      </div>\r\n      <label for=\"property-instance-enable-cloudwatch\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_CW_ENABLED", {hash:{},data:data}))
     + "</label>\r\n\r\n      <p class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " property-info\" id=\"property-cloudwatch-warn\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_CW_WARN", {hash:{},data:data}))
     + "<a target=\"_blank\" href=\"http://aws.amazon.com/cloudwatch\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SG_AMAZON_CLOUD_WATCH_PRODUCT_PAGE", {hash:{},data:data}))
     + "</a></p>\r\n    </section>\r\n  </div>\r\n\r\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  <div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -3573,6 +3548,12 @@ function program3(depth0,data) {
   }
 function program4(depth0,data) {
   
+  
+  return "single";
+  }
+
+function program6(depth0,data) {
+  
   var buffer = "";
   buffer += "disabled=\"disabled\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TIP_YOU_CANNOT_SPECIFY_INSTANCE_NUMBER", {hash:{},data:data}))
@@ -3580,7 +3561,7 @@ function program4(depth0,data) {
   return buffer;
   }
 
-function program6(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "";
   buffer += "data-tooltip=\""
@@ -3589,7 +3570,7 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    <section class=\"property-control-group\">\r\n      <label>"
@@ -3604,46 +3585,46 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_type)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_type)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n    ";
   return buffer;
   }
-function program11(depth0,data) {
+function program13(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    <section class=\"property-control-group\">\r\n      <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TYPE", {hash:{},data:data}))
     + "</label>\r\n      <div class=\"selectbox selectbox-mega\" id=\"instance-type-select\">\r\n        <div class=\"selection\"></div>\r\n        <ul class=\"dropdown\">\r\n          ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_type), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_type), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        </ul>\r\n      </div>\r\n    </section>\r\n    <section class=\"property-control-group ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_set_ebs), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_set_ebs), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-instance-ebs-optimized\" type=\"checkbox\" value=\"None\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ebs_optimized), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ebs_optimized), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"ebs-optimized\" />\r\n        <label for=\"property-instance-ebs-optimized\"></label>\r\n      </div>\r\n      <label for=\"property-instance-ebs-optimized\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</label>\r\n    </section>\r\n    ";
   return buffer;
   }
-function program12(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n          <li class=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "tooltip item\" data-tooltip=\""
     + escapeExpression(((stack1 = (depth0 && depth0.main)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hide), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hide), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\r\n            <div class=\"main truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.main)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3656,31 +3637,31 @@ function program12(depth0,data) {
     + "</span></div>\r\n          </li>\r\n          ";
   return buffer;
   }
-function program13(depth0,data) {
+function program15(depth0,data) {
   
   
   return "selected ";
   }
 
-function program15(depth0,data) {
+function program17(depth0,data) {
   
   
   return "style=\"display:none;\"";
   }
 
-function program17(depth0,data) {
+function program19(depth0,data) {
   
   
   return "hide";
   }
 
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program21(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n    <section class=\"property-control-group\">\r\n      <label>"
@@ -3691,19 +3672,19 @@ function program21(depth0,data) {
   return buffer;
   }
 
-function program23(depth0,data) {
+function program25(depth0,data) {
   
   
   return "\r\n        <input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" checked=\"true\" value=\"None\" name=\"property-instance-enable-cloudwatch\" />\r\n        ";
   }
 
-function program25(depth0,data) {
+function program27(depth0,data) {
   
   
   return "\r\n        <input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" value=\"None\" name=\"property-instance-enable-cloudwatch\" />\r\n        ";
   }
 
-function program27(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n  <div class=\"option-group-head\">Root Device</div>\r\n  <div class=\"option-group\">\r\n    <article class=\"property-app\">\r\n      <dl class=\"dl-vertical\">\r\n        <dt>"
@@ -3715,19 +3696,19 @@ function program27(depth0,data) {
     + "</dt>\r\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeType), {hash:{},data:data}))
     + "</dd>\r\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
     + "</dt>\r\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeSize), {hash:{},data:data}))
     + " GB</dd>\r\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n      </dl>\r\n    </article>\r\n  </div>\r\n  ";
   return buffer;
   }
-function program28(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <dt>"
@@ -3738,7 +3719,7 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program32(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <dt>IOPS</dt>\r\n        <dd>"
@@ -3747,13 +3728,13 @@ function program30(depth0,data) {
   return buffer;
   }
 
-function program32(depth0,data) {
+function program34(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_DETAIL", {hash:{},data:data}))
     + "</div>\r\n  <div class=\"option-group\">\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.sourceDestCheck), {hash:{},inverse:self.program(35, program35, data),fn:self.program(33, program33, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.sourceDestCheck), {hash:{},inverse:self.program(37, program37, data),fn:self.program(35, program35, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        <label for=\"property-instance-source-check\"></label>\r\n      </div>\r\n      <label for=\"property-instance-source-check\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_SOURCE_DEST_CHECK", {hash:{},data:data}))
@@ -3766,13 +3747,13 @@ function program32(depth0,data) {
     + "</button>\r\n        </div>\r\n        <ul class=\"network-list\" id=\"property-network-list\" data-bind=\"true\"></ul>\r\n      </div>\r\n    </section>\r\n  </div>\r\n  ";
   return buffer;
   }
-function program33(depth0,data) {
+function program35(depth0,data) {
   
   
   return "\r\n        <input id=\"property-instance-source-check\" type=\"checkbox\" checked=\"true\" value=\"None\" name=\"property-instance-source-check\" />\r\n        ";
   }
 
-function program35(depth0,data) {
+function program37(depth0,data) {
   
   
   return "\r\n        <input id=\"property-instance-source-check\" type=\"checkbox\" value=\"None\" name=\"property-instance-source-check\" />\r\n        ";
@@ -3912,6 +3893,8 @@ function program12(depth0,data) {
     var InstanceView;
     InstanceView = PropertyView.extend({
       events: {
+        'change .instance-name': 'instanceNameChange',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-instance-count': "countChange",
         'click #property-ami': "openAmiPanel",
         'OPTION_CHANGE #instance-type-select': "instanceTypeSelect",
@@ -3928,6 +3911,16 @@ function program12(depth0,data) {
         this.updateInstanceList();
         this.refreshIPList();
         return this.model.attributes.name;
+      },
+      instanceNameChange: function(event) {
+        var name, target;
+        target = $(event.currentTarget);
+        name = target.val();
+        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "Instance")) {
+          this.model.setName(name);
+          this.setTitle(name);
+        }
+        return null;
       },
       openAmiPanel: function(event) {
         this.trigger("OPEN_AMI", $(event.currentTarget).data("uid"));
@@ -3951,8 +3944,13 @@ function program12(depth0,data) {
         val = +target.val();
         this.model.setCount(val);
         this.updateInstanceList();
+        $(".property-instance-name-wrap").toggleClass("single", val === 1);
+        $("#property-instance-name-count").text(val - 1);
         this.setEditableIP(val === 1);
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       ebsOptimizedSelect: function(event) {
         this.model.setEbsOptimized(event.target.checked);
@@ -4380,6 +4378,7 @@ function program10(depth0,data) {
         $("#changeAmiDropZone").on("addItem_drop", function(evt, data) {
           return self.onDropAmi(data);
         });
+        return this.model.id;
       },
       showChangeAmiPanel: function() {
         $("#changeAmiPanel").show().siblings(".property-ami-info").hide();
@@ -4461,7 +4460,7 @@ function program10(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/property/missing/main',['../base/main', '../base/model', '../base/view', 'constant'], function(PropertyModule, PropertyModel, PropertyView, constant) {
+  define('workspaces/awseditor/property/missing/main',['../base/main', '../base/model', '../base/view', 'constant', 'i18n!/nls/lang.js'], function(PropertyModule, PropertyModel, PropertyView, constant, lang) {
     var MissingModule, MissingView, m, model, view;
     MissingView = PropertyView.extend({
       render: function() {
@@ -4805,9 +4804,9 @@ function program1(depth0,data) {
       },
       radioSgModalChange: function(event) {
         if ($('#sg-modal-direction input:checked').val() === "inbound") {
-          return $('#rule-modal-ip-range').text("Source");
+          return $('#rule-modal-ip-range').text(lang.IDE.POP_ACLRULE_LBL_SOURCE);
         } else {
-          return $('#rule-modal-ip-range').text("Destination");
+          return $('#rule-modal-ip-range').text(lang.IDE.POP_ACLRULE_LBL_DEST);
         }
       },
       sgModalSelectboxChange: function(event, id) {
@@ -4973,7 +4972,7 @@ function program1(depth0,data) {
         if (sourceValue === 'custom') {
           rule.relation = descrition_dom.val();
         } else {
-          rule.relation = "@" + $('#sg-add-model-source-select').children("ul").children('.selected').attr("data-uid");
+          rule.relation = "@" + $('#sg-add-model-source-select').find('li.selected').attr("data-uid");
         }
         result = this.model.addRule(rule);
         if (!result) {
@@ -5847,6 +5846,7 @@ function program7(depth0,data) {
         attr = component != null ? component.toJSON() : void 0;
         attr.uid = uid;
         attr.isVpc = true;
+        attr.description = component != null ? component.get("description") : void 0;
         pingArr = component.getHealthCheckTarget();
         attr.pingProtocol = pingArr[0];
         attr.pingPort = pingArr[1];
@@ -6140,7 +6140,7 @@ function program6(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_REQUIRED", {hash:{},data:data}))
     + "</span>\r\n			<input data-ignore=\"true\" data-required-rollback=\"true\" maxlength=\"17\" class=\"input elb-name\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-elb-name\"/>\r\n		</section>\r\n\r\n		";
+    + "\" id=\"property-elb-name\"/>\r\n		</section>\r\n		";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVpc), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n	";
@@ -6338,7 +6338,11 @@ function program30(depth0,data) {
     + "</div>\r\n	<div class=\"option-group\" data-bind=\"true\" >\r\n	";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.appData), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n		<section class=\"property-control-group\">\r\n			<div class=\"checkbox\">\r\n				<input id=\"elb-cross-az-select\" type=\"checkbox\" ";
+  buffer += "\r\n		<section class=\"property-control-group\" data-bind=\"true\">\r\n		<label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n		<textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n		</section>\r\n		<section class=\"property-control-group\">\r\n			<div class=\"checkbox\">\r\n				<input id=\"elb-cross-az-select\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.crossZone), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n				<label for=\"elb-cross-az-select\"></label>\r\n			</div>\r\n			<label for=\"elb-cross-az-select\" >"
@@ -6469,6 +6473,7 @@ function program30(depth0,data) {
     ElbView = PropertyView.extend({
       events: {
         'keyup #property-elb-name': 'elbNameChange',
+        'change #property-res-desc': 'onChangeDesc',
         'change #elb-scheme-select1': "schemeSelectChange",
         'change #elb-scheme-select2': "schemeSelectChange",
         'OPTION_CHANGE #elb-property-health-protocol-select': "healthProtocolSelect",
@@ -6536,6 +6541,9 @@ function program30(depth0,data) {
             }
           });
         }
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       schemeSelectChange: function(event) {
         this.model.setScheme(event.currentTarget.value);
@@ -7099,6 +7107,8 @@ function program30(depth0,data) {
           return false;
         }
         elb = elb.toJSON();
+        elb.description = myElbComponent.get("description");
+        elb.name = myElbComponent.get("name");
         if (elb.ConnectionDraining) {
           if (elb.ConnectionDraining.Enabled) {
             elb.ConnectionDrainingInfo = "Enabled; Timeout: " + elb.ConnectionDraining.Timeout + " seconds";
@@ -7402,6 +7412,14 @@ function program27(depth0,data) {
     + "\">(A/AAAA)dualstack."
     + escapeExpression(((stack1 = (depth0 && depth0.Dnsname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\r\n        </dd>\r\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n        <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n        <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ELB_HOST_ZONE_ID", {hash:{},data:data}))
     + "</dt>\r\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.CanonicalHostedZoneNameID)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -7710,7 +7728,8 @@ function program5(depth0,data) {
           uid: uid,
           name: subnet_component.get("name"),
           networkACL: networkACLs,
-          isAppEdit: this.isAppEdit
+          isAppEdit: this.isAppEdit,
+          description: subnet_component.get("description")
         });
         if (this.isAppEdit) {
           subnet = (_ref = CloudResources(constant.RESTYPE.SUBNET, Design.instance().region()).get(subnet_component.get('appId'))) != null ? _ref.toJSON() : void 0;
@@ -7814,7 +7833,19 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_RT_ID", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.routeTable)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n    </dl>\r\n  </div>\r\n\r\n  ";
+    + "</dd>\r\n    </dl>\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-subnet-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_DETAIL_LBL_NAME", {hash:{},data:data}))
+    + "</label>\r\n      <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
+    + "</span>\r\n      <input class=\"input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" lastValue=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" id=\"property-subnet-name\" maxlength=\"255\" data-required-rollback=\"true\" data-ignore=\"true\"/>\r\n    </section>\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n  </div>\r\n\r\n  ";
   return buffer;
   }
 
@@ -7829,7 +7860,11 @@ function program3(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" lastValue=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-subnet-name\" maxlength=\"255\" data-required-rollback=\"true\" data-ignore=\"true\"/>\r\n    </section>\r\n\r\n    <section class=\"property-control-group\">\r\n      <label class=\"left\" for=\"property-cidr-block\">"
+    + "\" id=\"property-subnet-name\" maxlength=\"255\" data-required-rollback=\"true\" data-ignore=\"true\"/>\r\n    </section>\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n    <section class=\"property-control-group\">\r\n      <label class=\"left\" for=\"property-cidr-block\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_DETAIL_LBL_CIDR_BLOCK", {hash:{},data:data}))
     + "</label>\r\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
@@ -7920,6 +7955,7 @@ function program4(depth0,data) {
     SubnetView = PropertyView.extend({
       events: {
         "change #property-subnet-name": 'onChangeName',
+        "change #property-res-desc": 'onChangeDesc',
         "focus #property-cidr-block": 'onFocusCIDR',
         "keypress #property-cidr-block": 'onPressCIDR',
         "blur #property-cidr-block": 'onBlurCIDR',
@@ -7941,6 +7977,9 @@ function program4(depth0,data) {
           this.model.setName(name);
           return this.setTitle(name);
         }
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       onPressCIDR: function(event) {
         if (event.keyCode === 13) {
@@ -8014,7 +8053,7 @@ function program4(depth0,data) {
           that = this;
           aclName = $target.attr('data-name');
           dialog_template = MC.template.modalDeleteSGOrACL({
-            title: 'Delete Network ACL',
+            title: lang.IDE.TITLE_DELETE_NETWORK_ACL,
             main_content: "Are you sure you want to delete " + aclName + "?",
             desc_content: "Subnets associated with " + aclName + " will use DefaultACL."
           });
@@ -8057,6 +8096,7 @@ function program4(depth0,data) {
         }
         subnet = _.clone(subnet);
         subnet.name = mySubnetComponent.get('name');
+        subnet.description = mySubnetComponent.get('description');
         subnet.acl = this.getACL(uid);
         subnet.uid = uid;
         routeTable = mySubnetComponent.connectionTargets('RTB_Asso')[0];
@@ -8121,6 +8161,14 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_ID", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.subnetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
     + "</dd>\r\n\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_STATE", {hash:{},data:data}))
     + "</dt>\r\n      <dd><i class=\"status status-"
@@ -8234,7 +8282,8 @@ function program1(depth0,data) {
           name: component.get("name"),
           cidr: component.get("cidr"),
           dhcp: dhcp,
-          isAppEdit: this.isAppEdit
+          isAppEdit: this.isAppEdit,
+          description: component.get("description")
         };
         if (this.isAppEdit) {
           myVPCComponent = Design.instance().component(uid);
@@ -8351,12 +8400,22 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_APP_DEFAULT_ACL", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.defaultACL)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n    </dl>\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-dns-resolution\" type=\"checkbox\"";
+    + "</dd>\r\n    </dl>\r\n    <section class=\"property-control-group clearfix\">\r\n      <label class=\"left\" for=\"property-vpc-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DETAIL_LBL_NAME", {hash:{},data:data}))
+    + "</label>\r\n      <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
+    + "</span>\r\n      <input class=\"input vpc-name\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" id=\"property-vpc-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n    </section>\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-dns-resolution\" type=\"checkbox\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.dnsSupport), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"dns-resolution\">\r\n        <label for=\"property-dns-resolution\"></label>\r\n      </div>\r\n      <label for=\"property-dns-resolution\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DETAIL_LBL_ENABLE_DNS_RESOLUTION", {hash:{},data:data}))
-    + "</label>\r\n    </section>\r\n\r\n\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-dns-hostname\" type=\"checkbox\"";
+    + "</label>\r\n    </section>\r\n\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-dns-hostname\" type=\"checkbox\"";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.dnsHosts), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"dns-hostname\">\r\n        <label for=\"property-dns-hostname\"></label>\r\n      </div>\r\n      <label for=\"property-dns-hostname\">"
@@ -8381,7 +8440,11 @@ function program4(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
     + "</span>\r\n      <input class=\"input vpc-name\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-vpc-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n    </section>\r\n\r\n    <section class=\"property-control-group clearfix\">\r\n      <label class=\"left\" for=\"property-cidr-block\">"
+    + "\" id=\"property-vpc-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n    </section>\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n    <section class=\"property-control-group clearfix\">\r\n      <label class=\"left\" for=\"property-cidr-block\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_DETAIL_LBL_CIDR_BLOCK", {hash:{},data:data}))
     + "</label>\r\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
@@ -8469,6 +8532,7 @@ function program9(depth0,data) {
     VPCView = PropertyView.extend({
       events: {
         'change #property-vpc-name': 'onChangeName',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-cidr-block': 'onChangeCidr',
         'change #property-dns-resolution': 'onChangeDnsSupport',
         'change #property-dns-hostname': 'onChangeDnsHostname',
@@ -8532,11 +8596,14 @@ function program9(depth0,data) {
         var name, target;
         target = $(event.currentTarget);
         name = target.val();
-        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "Route Table")) {
+        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "VPC")) {
           this.model.setName(name);
           this.setTitle(name);
         }
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       onChangeCidr: function(event) {
         var cidr, target;
@@ -8613,6 +8680,7 @@ function program9(depth0,data) {
         }
         vpc = $.extend(true, {}, vpc);
         vpc.name = myVPCComponent.get('name');
+        vpc.description = myVPCComponent.get('description');
         TYPE_RTB = constant.RESTYPE.RT;
         TYPE_ACL = constant.RESTYPE.ACL;
         RtbModel = Design.modelClassForType(TYPE_RTB);
@@ -8794,6 +8862,14 @@ function program20(depth0,data) {
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_APP_STATE", {hash:{},data:data}))
     + "</dt>\r\n      <dd><i class=\"status status-"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -8823,7 +8899,7 @@ function program20(depth0,data) {
   buffer += "\r\n\r\n  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.defaultDhcp), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n  </div>\r\n\r\n  \r\n</article>";
+  buffer += "\r\n  </div>\r\n\r\n\r\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -8881,7 +8957,7 @@ function program20(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/property/rtb/model',['../base/model', "Design", 'constant', "CloudResources"], function(PropertyModel, Design, constant, CloudResources) {
+  define('workspaces/awseditor/property/rtb/model',['../base/model', "Design", 'constant', "CloudResources", 'i18n!/nls/lang.js'], function(PropertyModel, Design, constant, CloudResources, lang) {
     var RTBModel;
     RTBModel = PropertyModel.extend({
       defaults: {
@@ -8909,7 +8985,7 @@ function program20(depth0,data) {
           component = component.getTarget(res_type.RT);
           if (subnet) {
             this.set({
-              title: 'Subnet-RT Association',
+              title: lang.IDE.TITLE_SUBNET_RT_ASSO,
               association: {
                 subnet: subnet.get("name"),
                 rtb: component.get("name")
@@ -8922,6 +8998,7 @@ function program20(depth0,data) {
         routes = [];
         data = {
           uid: component.id,
+          description: component.get("description"),
           title: component.get("name"),
           isMain: component.get("main"),
           local_route: VPCModel.theVPC().get("cidr"),
@@ -8939,6 +9016,7 @@ function program20(depth0,data) {
             name: theOtherPort.get("name"),
             type: theOtherPort.type,
             ref: cn.id,
+            readonly: theOtherPort.type === "ExternalVpcRouteTarget",
             isVgw: theOtherPort.type === res_type.VGW,
             isProp: cn.get("propagate"),
             cidr_set: cn.get("routes")
@@ -9030,13 +9108,14 @@ function program3(depth0,data) {
   var buffer = "", stack1;
   buffer += "\r\n	<div class=\"property-control-group\" data-bind=\"true\">\r\n		<label class=\"left\" for=\"rt-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_NAME", {hash:{},data:data}))
-    + "</label>\r\n		<input class=\"input\" type=\"text\" data-required=\"true\" data-ignore=\"true\" data-required-rollback=\"true\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\""
+    + "</label>\r\n		<input class=\"input\" type=\"text\" data-required=\"true\" data-ignore=\"true\" data-required-rollback=\"true\"  value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.title)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"rt-name\">\r\n	</div>\r\n\r\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(9, program9, data),fn:self.program(6, program6, data),data:data});
+    + "\" id=\"rt-name\">\r\n	</div>\r\n\r\n	<section class=\"property-control-group\" data-bind=\"true\">\r\n        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n	</section>\r\n\r\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(7, program7, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n\r\n\r\n	<div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LBL_ROUTE", {hash:{},data:data}))
@@ -9046,21 +9125,15 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LOCAL", {hash:{},data:data}))
     + "</td>\r\n			  </tr>\r\n			  <tr>\r\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
-    + "</td>\r\n			    <td class=\"route-destination-input\">\r\n			    	<div class=\"route-destination-input multi-input\"><input class=\"input\" disabled=\"disabled\" value=\""
+    + "</td>\r\n			    <td class=\"route-destination-input\"> <div class=\"route-readonly\">"
     + escapeExpression(((stack1 = (depth0 && depth0.local_route)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></div>\r\n			    </td>\r\n			  </tr>\r\n			</table></li>\r\n\r\n			";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.routes), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+    + "</div> </td>\r\n			  </tr>\r\n			</table></li>\r\n\r\n			";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.routes), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n		</ul>\r\n	</div>\r\n";
   return buffer;
   }
 function program4(depth0,data) {
-  
-  
-  return "disabled=\"disabled\"";
-  }
-
-function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n	  <dl class=\"dl-vertical\">\r\n	    <dt>"
@@ -9076,12 +9149,12 @@ function program6(depth0,data) {
     + "</dt>\r\n	    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.vpcId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\r\n	  </dl>\r\n\r\n	  	";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMain), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMain), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n	";
   return buffer;
   }
-function program7(depth0,data) {
+function program5(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n	  	<div class=\"tac property-control-group\">\r\n			<button class=\"btn btn-primary\" id=\"set-main-rt\" style=\"width: 200px;\">"
@@ -9092,16 +9165,16 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n		<div class=\"tac property-control-group\">\r\n			";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMain), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMain), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n		</div>\r\n	";
   return buffer;
   }
-function program10(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n			<p>"
@@ -9110,7 +9183,7 @@ function program10(depth0,data) {
   return buffer;
   }
 
-function program12(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n			<button class=\"btn btn-primary\" id=\"set-main-rt\" style=\"width: 200px;\">"
@@ -9121,7 +9194,7 @@ function program12(depth0,data) {
   return buffer;
   }
 
-function program14(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n			<li><table class=\"table-no-style\">\r\n			  <tr class=\"route-target\">\r\n			    <td class=\"route-label\">"
@@ -9130,39 +9203,66 @@ function program14(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\r\n			  </tr>\r\n\r\n			  <tr>\r\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
-    + "</td>\r\n			    <td class=\"route-destination-input\">\r\n			    	<div class=\"route-destination-input multi-input\" data-ref=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.ref)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\r\n\r\n						";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
+    + "</td>\r\n			    <td class=\"route-destination-input\">\r\n			    	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.program(16, program16, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n				    </div>\r\n\r\n				    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVgw), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  buffer += "\r\n\r\n				    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVgw), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n			    </td>\r\n			  </tr>\r\n			</table></li>\r\n			";
   return buffer;
   }
-function program15(depth0,data) {
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n							";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n						";
+  return buffer;
+  }
+function program14(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n						<div class=\"multi-ipt-row\">\r\n		          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\r\n		          <span class=\"ipt-wrapper\"><input class=\"ip-main-input input\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" data-type=\"cidr\" data-trigger=\"change\" placeholder=\"eg. 0.0.0.0/0\" value=\""
+  buffer += " <div class=\"route-readonly\">"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "\" type=\"text\"></span>\r\n		        </div>\r\n						";
+    + "</div> ";
   return buffer;
   }
 
+function program16(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n			    	<div class=\"multi-input\" data-ref=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.ref)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\r\n							";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.program(19, program19, data),fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n				    </div>\r\n				    ";
+  return buffer;
+  }
 function program17(depth0,data) {
   
-  
-  return "\r\n						<div class=\"multi-ipt-row\">\r\n		          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\r\n		          <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" placeholder=\"eg. 0.0.0.0/0\" data-empty-remove=\"true\" type=\"text\"></span>\r\n		        </div>\r\n			      ";
+  var buffer = "";
+  buffer += "\r\n							<div class=\"multi-ipt-row\">\r\n			          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\r\n			          <span class=\"ipt-wrapper\"><input class=\"ip-main-input input\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" data-type=\"cidr\" data-trigger=\"change\" placeholder=\"eg. 0.0.0.0/0\" value=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\" type=\"text\"></span>\r\n			        </div>\r\n							";
+  return buffer;
   }
 
 function program19(depth0,data) {
+  
+  
+  return "\r\n							<div class=\"multi-ipt-row\">\r\n			          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\r\n			          <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" placeholder=\"eg. 0.0.0.0/0\" data-empty-remove=\"true\" type=\"text\"></span>\r\n			        </div>\r\n				      ";
+  }
+
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n				    <div class=\"property-control-group\">\r\n							<div class=\"checkbox\">\r\n								<input id=\"propagate_"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" class=\"propagation\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProp), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProp), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\r\n								<label for=\"propagate_"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -9173,7 +9273,7 @@ function program19(depth0,data) {
     + "</label>\r\n						</div>\r\n						";
   return buffer;
   }
-function program20(depth0,data) {
+function program22(depth0,data) {
   
   
   return "checked=\"true\"";
@@ -9198,11 +9298,15 @@ function program20(depth0,data) {
         'change .propagation': 'changePropagation',
         "focus .ipt-wrapper .input": 'onFocusCIDR',
         "keypress .ipt-wrapper .input": 'onPressCIDR',
-        "blur .ipt-wrapper .input": 'onBlurCIDR'
+        "blur .ipt-wrapper .input": 'onBlurCIDR',
+        'change #property-res-desc': 'onChangeDescription'
       },
       render: function() {
         this.$el.html(template(this.model.attributes));
         return this.model.attributes.title;
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       processParsley: function(event) {
         $(event.currentTarget).find('input').last().focus().removeClass('parsley-validated').removeClass('parsley-error').next('.parsley-error-list').remove();
@@ -9317,7 +9421,7 @@ function program20(depth0,data) {
           return;
         }
         dialog_template = MC.template.setupCIDRConfirm({
-          remove_content: 'Remove Route',
+          remove_content: lang.PROP.REMOVE_ROUTE,
           main_content: mainContent,
           desc_content: descContent
         });
@@ -9348,7 +9452,7 @@ function program20(depth0,data) {
     RTBAppModel = PropertyModel.extend({
       processTarget: function(rtb) {
         rtb.routeSet = _.map(rtb.routeSet, function(item) {
-          item.target = item.instanceId || item.networkInterfaceId || item.gatewayId;
+          item.target = item.instanceId || item.networkInterfaceId || item.gatewayId || item.vpcPeeringConnectionId;
           if (item.target !== "local") {
             Design.instance().eachComponent(function(component) {
               if (component.get("appId") === item.target) {
@@ -9389,6 +9493,7 @@ function program20(depth0,data) {
         }
         rtb = $.extend(true, {}, rtb);
         rtb.name = routeTable.get('name');
+        rtb.description = routeTable.get('description');
         has_main = false;
         if (rtb.associationSet && rtb.associationSet.length) {
           _ref1 = rtb.associationSet;
@@ -9462,6 +9567,14 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_ID", {hash:{},data:data}))
     + "</dt>\r\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n\r\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n    <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n\r\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n    <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
     + "</dd>\r\n\r\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LBL_MAIN_RT", {hash:{},data:data}))
     + "</dt>\r\n    <dd>"
@@ -9776,6 +9889,7 @@ function program15(depth0,data) {
         this.set({
           uid: uid,
           name: cgw.get("name"),
+          description: cgw.get("description"),
           BGP: cgw.get("bgpAsn"),
           ip: cgw.get("ip")
         });
@@ -9818,7 +9932,11 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
     + "</span>\r\n		<input class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-cgw-name\" data-ignore=\"true\"/>\r\n	</div>\r\n\r\n	<div class=\"property-control-group clearfix\">\r\n		<label class=\"left\" for=\"property-cgw-ip\">"
+    + "\" id=\"property-cgw-name\" data-ignore=\"true\"/>\r\n	</div>\r\n\r\n	<div class=\"property-control-group\">\r\n        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n	</div>\r\n\r\n	<div class=\"property-control-group clearfix\">\r\n		<label class=\"left\" for=\"property-cgw-ip\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_LBL_IPADDR", {hash:{},data:data}))
     + "</label>\r\n		<span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
@@ -9862,11 +9980,15 @@ function program3(depth0,data) {
         "change #property-cgw-name": 'onChangeName',
         "focus #property-cgw-ip": 'onFocusIP',
         "keypress #property-cgw-ip": 'onPressIP',
-        "blur #property-cgw-ip": 'onBlurIP'
+        "blur #property-cgw-ip": 'onBlurIP',
+        'change #property-res-desc': 'onChangeDescription'
       },
       render: function() {
         this.$el.html(template(this.model.toJSON()));
         return this.model.get('name');
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       onChangeRouting: function() {
         $('#property-cgw-bgp-wrapper').toggle($('#property-routing-dynamic').is(':checked'));
@@ -9973,7 +10095,9 @@ function program3(depth0,data) {
           return false;
         }
         cgw = $.extend(true, {}, cgw);
+        cgw.uid = uid;
         cgw.name = myCGWComponent.get('name');
+        cgw.description = myCGWComponent.get('description');
         this.set(cgw);
         return null;
       }
@@ -9986,14 +10110,51 @@ function program3(depth0,data) {
 define('workspaces/awseditor/property/cgw/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n    <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n  <div class=\"property-control-group clearfix\">\r\n      <label class=\"left\" for=\"property-cgw-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_LBL_NAME", {hash:{},data:data}))
+    + "</label>\r\n      <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
+    + "</span>\r\n      <input class=\"input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" id=\"property-cgw-name\" data-ignore=\"true\"/>\r\n  </div>\r\n  <section class=\"property-control-group\" data-bind=\"true\">\r\n    <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n    <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n  </section>\r\n  ";
+  return buffer;
+  }
 
   buffer += "<article class=\"property-app\">\r\n  <dl class=\"dl-vertical\">\r\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_APP_CGW_LBL_ID", {hash:{},data:data}))
     + "</dt>\r\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.customerGatewayId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\r\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n    <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\r\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n  </dl>\r\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n  <dl class=\"dl-vertical\">\r\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_APP_CGW_LBL_STATE", {hash:{},data:data}))
     + "</dt>\r\n    <dd><i class=\"status status-xgw-"
     + escapeExpression(((stack1 = (depth0 && depth0.state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -10018,10 +10179,28 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   define('workspaces/awseditor/property/cgw/app_view',['../base/view', './template/app'], function(PropertyView, template) {
     var CGWAppView;
     CGWAppView = PropertyView.extend({
+      events: {
+        'change #property-res-desc': 'onChangeDescription',
+        "change #property-cgw-name": 'onChangeName'
+      },
       render: function() {
         var _ref;
-        this.$el.html(template((_ref = this.model) != null ? _ref.toJSON() : void 0));
+        this.$el.html(template(_.extend({
+          isEditable: this.model.isAppEdit
+        }, (_ref = this.model) != null ? _ref.toJSON() : void 0)));
         return this.model.get('id');
+      },
+      onChangeName: function(event) {
+        var name, target;
+        target = $(event.currentTarget);
+        name = target.val();
+        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "Customer Gateway")) {
+          this.model.setName(name);
+          return this.setTitle(name);
+        }
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       }
     });
     return new CGWAppView();
@@ -10041,11 +10220,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       initApp: function() {
         this.model = app_model;
+        this.model.isAppEdit = false;
         this.view = app_view;
         return null;
       },
       initAppEdit: function() {
         this.model = app_model;
+        this.model.isAppEdit = true;
         this.view = app_view;
         return null;
       }
@@ -10115,7 +10296,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         });
         dc_filename = dc_data.vpnConnectionId || 'download_configuration';
         dc_data = MC.template.configurationDownload(dc_data);
-        return "{\"download\":true, \"filecontent\":\"" + (window.btoa(dc_data)) + "\", \"filename\":\"" + dc_filename + "\", \"btnname\":\"" + config.name + "\"}";
+        return "{\"download\":true, \"filecontent\":\"" + (Base64.encode(dc_data)) + "\", \"filename\":\"" + dc_filename + "\", \"btnname\":\"" + config.name + "\"}";
       });
       return "[ " + (parse_result.join(',')) + " ]";
     };
@@ -10209,7 +10390,7 @@ function program1(depth0,data) {
     + "</dt>\r\n      <dd>";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.options)),stack1 == null || stack1 === false ? stack1 : stack1.staticRoutesOnly), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</dd>\r\n\r\n      <a class='btn btn-primary vpn-download' href=\"data://text/plain;base64,";
+  buffer += "</dd>\r\n\r\n      <a class='btn btn-primary vpn-download' href=\"data:text/plain;base64,";
   stack1 = ((stack1 = ((stack1 = (depth0 && depth0.vpncfg)),stack1 == null || stack1 === false ? stack1 : stack1.filecontent)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" download=\"";
@@ -10589,7 +10770,8 @@ function program29(depth0,data) {
           sourceDestCheck: component.get("sourceDestCheck"),
           isAppEdit: this.isAppEdit,
           isGroupMode: this.isGroupMode,
-          attached: component.connections("EniAttachment").length > 0
+          attached: component.connections("EniAttachment").length > 0,
+          description: component.get("description")
         };
         this.set(data);
         this.getIpList();
@@ -10734,10 +10916,14 @@ function program3(depth0,data) {
   var buffer = "", stack1;
   buffer += "\r\n\r\n<article>\r\n  <div id=\"prop-appedit-eni-list\" class=\"expand\"></div>\r\n\r\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_LBL_DETAIL", {hash:{},data:data}))
-    + "</div>\r\n  <div class=\"option-group\">\r\n";
+    + "</div>\r\n  <div class=\"option-group\">\r\n<!-- ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
+  buffer += " -->\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n    <section class=\"property-control-group\">\r\n      <div class=\"checkbox\">\r\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sourceDestCheck), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " />\r\n        <label for=\"property-eni-source-check\"></label>\r\n      </div>\r\n      <label for=\"property-eni-source-check\">"
@@ -10920,7 +11106,7 @@ function program14(depth0,data) {
     };
     ENIView = PropertyView.extend({
       events: {
-        "change #property-eni-desc": "setEniDesc",
+        'change #property-res-desc': 'onChangeDesc',
         "change #property-eni-source-check": "setEniSourceDestCheck",
         'click .toggle-eip': 'setEip',
         'click #property-eni-ip-add': "addIp",
@@ -10937,6 +11123,9 @@ function program14(depth0,data) {
       setEniDesc: function(event) {
         this.model.setEniDesc(event.target.value);
         return null;
+      },
+      onChangeDesc: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       setEniSourceDestCheck: function(event) {
         this.model.setSourceDestCheck(event.target.checked);
@@ -10960,7 +11149,7 @@ function program14(depth0,data) {
         } else {
           tooltip = lang.PROP.INSTANCE_IP_MSG_3;
         }
-        $target.toggleClass("associated", attach).data("tooltip", tooltip);
+        $target.toggleClass("associated", attach).attr("data-tooltip", tooltip);
         this.model.attachEip(index, attach);
         return null;
       },
@@ -11109,6 +11298,7 @@ function program14(depth0,data) {
           }
           eni.id = eni_comp.appId;
           eni.name = eni_comp.name ? "" + eni_comp.name + "-0" : "" + (myEniComponent.get('name')) + "-" + (memberIndex || index);
+          eni.description = myEniComponent.get('description');
           eni.idx = memberIndex || index;
           eni.sourceDestCheck = eni.sourceDestCheck ? 'enabled' : 'disabled';
           formated_group.push(eni);
@@ -11148,6 +11338,10 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_DEVICE_NAME", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
     + "</dd>\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_ID", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
@@ -12174,7 +12368,7 @@ function program3(depth0,data) {
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/property/launchconfig/model',['../base/model', 'keypair_model', 'constant', 'Design', "CloudResources"], function(PropertyModel, keypair_model, constant, Design, CloudResources) {
+  define('workspaces/awseditor/property/launchconfig/model',['../base/model', 'constant', 'Design', "CloudResources"], function(PropertyModel, constant, Design, CloudResources) {
     var LaunchConfigModel;
     LaunchConfigModel = PropertyModel.extend({
       initialize: function() {
@@ -12195,15 +12389,6 @@ function program3(depth0,data) {
           me.trigger("KP_DOWNLOADED", result.resolved_data);
           return null;
         });
-      },
-      downloadKP: function(keypairname) {
-        var session, username;
-        username = $.cookie("usercode");
-        session = $.cookie("session_id");
-        keypair_model.download({
-          sender: this
-        }, username, session, Design.instance().region(), keypairname);
-        return null;
       },
       init: function(uid) {
         var agentData, data, design, kp, rootDevice;
@@ -12607,7 +12792,11 @@ function program34(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\r\n			<input class=\"input launch-configuration-name\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"property-instance-name\" id=\"property-instance-name\" maxlength=\"240\" data-required-rollback=\"true\" data-ignore=\"true\"/>\r\n		</section>\r\n		<section class=\"property-control-group\">\r\n			<label>"
+    + "\" name=\"property-instance-name\" id=\"property-instance-name\" maxlength=\"240\" data-required-rollback=\"true\" data-ignore=\"true\"/>\r\n		</section>\r\n        <section class=\"property-control-group\" data-bind=\"true\">\r\n            <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n            <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n        </section>\r\n		<section class=\"property-control-group\">\r\n			<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_AMI", {hash:{},data:data}))
     + "</label>\r\n			<div id=\"property-ami\" class=\"property-block-wrap clearfix\" data-uid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -12667,6 +12856,7 @@ function program34(depth0,data) {
     LanchConfigView = PropertyView.extend({
       events: {
         'change .launch-configuration-name': 'lcNameChange',
+        'change #property-res-desc': 'onChangeDescription',
         'change .instance-type-select': 'instanceTypeSelect',
         'change #property-instance-ebs-optimized': 'ebsOptimizedSelect',
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
@@ -12680,6 +12870,9 @@ function program34(depth0,data) {
         'click #volume-type-radios input': 'changeVolumeType',
         'keyup #iops-ranged': 'changeIops',
         'keyup #volume-size-ranged': 'sizeChanged'
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       changeVolumeType: function(event) {
         var $this, iops, type, volumeSize;
@@ -12830,7 +13023,7 @@ function program34(depth0,data) {
         };
         if (using) {
           data = {
-            title: "Delete Key Pair",
+            title: lang.IDE.TITLE_DELETE_KEYPAIR,
             confirm: "Delete",
             color: "red",
             body: sprintf(lang.PROP.LC_DELETE_CUSTUME_KEY_PAIR_CONFIRM, $li.text())
@@ -12865,9 +13058,41 @@ function program34(depth0,data) {
 define('workspaces/awseditor/property/launchconfig/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n    <section class=\"property-control-group\" data-bind=\"true\">\r\n      <label class=\"left\" for=\"property-instance-name\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_NAME", {hash:{},data:data}))
+    + "</label>\r\n      <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
+    + "</span>\r\n      <input class=\"input launch-configuration-name\"  type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" name=\"property-instance-name\" id=\"property-instance-name\" maxlength=\"240\" data-required-rollback=\"true\" data-ignore=\"true\"/>\r\n    </section>\r\n    <section class=\"property-control-group\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n      ";
+  return buffer;
+  }
+
+function program5(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n      <dd>"
@@ -12876,7 +13101,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-function program3(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n  <div class=\"option-group-head\">"
@@ -12890,7 +13115,7 @@ function program3(depth0,data) {
     + "</dt>\r\n        <dd>"
     + escapeExpression(helpers.readableVt.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeType), {hash:{},data:data}))
     + "</dd>\r\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
@@ -12899,15 +13124,15 @@ function program3(depth0,data) {
     + " GB</dd>\r\n<!--         <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</dt>\r\n        <dd>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd> -->\r\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n      </dl>\r\n    </article>\r\n  </div>\r\n  ";
   return buffer;
   }
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <dt>"
@@ -12918,19 +13143,19 @@ function program4(depth0,data) {
   return buffer;
   }
 
-function program6(depth0,data) {
+function program10(depth0,data) {
   
   
   return "Yes";
   }
 
-function program8(depth0,data) {
+function program12(depth0,data) {
   
   
   return "No";
   }
 
-function program10(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <dt>IOPS</dt>\r\n        <dd>"
@@ -12939,13 +13164,19 @@ function program10(depth0,data) {
   return buffer;
   }
 
-  buffer += "<article class=\"property-app\">\r\n  <div class=\"option-group-head expand\">"
+  buffer += "<article class=\"property-app\" data-bind=\"true\">\r\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_TITLE", {hash:{},data:data}))
-    + "</div>\r\n  <div class=\"option-group\">\r\n\r\n    <dl class=\"dl-vertical\">\r\n      <dt>"
+    + "</div>\r\n  <div class=\"option-group\">\r\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n    <dl class=\"dl-vertical\">\r\n      ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_CREATE_TIME", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, ((stack1 = (depth0 && depth0.lc)),stack1 == null || stack1 === false ? stack1 : stack1.CreatedTime), {hash:{},data:data}))
-    + "</dd>\r\n    </dl>\r\n\r\n    <dl class=\"dl-vertical\">\r\n      <dt>"
+    + "</dd>\r\n    </dl>\r\n\r\n\r\n    <dl class=\"dl-vertical\">\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_AMI", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -12956,14 +13187,14 @@ function program10(depth0,data) {
     + "</dd>\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</dt>\r\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(1, program1, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(5, program5, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n    </dl>\r\n\r\n    <dl class=\"dl-vertical\">\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.ebsOptimized)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<dd>\r\n    </dl>\r\n  </div>\r\n\r\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -12977,14 +13208,30 @@ function program10(depth0,data) {
       events: {
         'change #property-instance-enable-cloudwatch': 'cloudwatchSelect',
         'change #property-instance-user-data': 'userdataChange',
-        'keyup #property-instance-name': 'checkInstanceName'
+        'change #property-res-desc': 'onChangeDescription',
+        'change .launch-configuration-name': 'lcNameChange'
       },
       kpModalClosed: false,
       render: function() {
         var data;
-        data = this.model.toJSON();
+        data = _.extend({
+          isEditable: this.model.isAppEdit
+        }, this.model.toJSON());
         this.$el.html(template(data));
         return data.name;
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
+      },
+      lcNameChange: function(event) {
+        var name, target;
+        target = $(event.currentTarget);
+        name = target.val();
+        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "LaunchConfiguration")) {
+          this.model.setName(name);
+          this.setTitle(name);
+        }
+        return null;
       },
       cloudwatchSelect: function(event) {
         this.model.setCloudWatch(event.target.checked);
@@ -13039,12 +13286,14 @@ function program10(depth0,data) {
       initApp: function() {
         this.model = model;
         this.model.isApp = true;
+        this.model.isAppEdit = false;
         this.view = app_view;
         return null;
       },
       initAppEdit: function() {
         this.model = model;
         this.model.isApp = true;
+        this.model.isAppEdit = true;
         this.view = app_view;
         return null;
       },
@@ -13221,12 +13470,16 @@ function program3(depth0,data) {
   buffer += "\r\n	<div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_DETAILS", {hash:{},data:data}))
     + "</div>\r\n	<div class=\"option-group\" data-bind=\"true\">\r\n		<section class=\"property-control-group\">\r\n			<label class=\"left\" for=\"property-asg-name\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
     + "</label>\r\n			<span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_REQUIRED", {hash:{},data:data}))
     + "</span>\r\n			<input class=\"input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-asg-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n		</section>\r\n\r\n		<section class=\"property-control-group clearfix\">\r\n			<div class=\"left property-asg-size\">\r\n				<label class=\"left\" for=\"property-asg-min\">"
+    + "\" id=\"property-asg-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n		</section>\r\n\r\n		<section class=\"property-control-group\" data-bind=\"true\">\r\n	        <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n	        <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n		</section>\r\n\r\n		<section class=\"property-control-group clearfix\">\r\n			<div class=\"left property-asg-size\">\r\n				<label class=\"left\" for=\"property-asg-min\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_MIN_SIZE", {hash:{},data:data}))
     + "</label>\r\n				<input class=\"input\" type=\"text\" id=\"property-asg-min\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.minSize)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -13590,8 +13843,10 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></label>\r\n            </div>\r\n            <label for=\"property-asg-term"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"list-name\">"
+    + "\" class=\"list-name\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</label>\r\n            <span class=\"drag-handle tooltip icon-sort\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_TERMINATION_MSG_DRAG", {hash:{},data:data}))
     + "\"></span>\r\n          </li>\r\n          ";
@@ -13623,7 +13878,7 @@ function program4(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.useDefault), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n              <label for=\"property-asg-term-def\"></label>\r\n            </div>\r\n            <span>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DEFAULT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DEFAULT", {hash:{},data:data}))
     + "</span>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n   </div>\r\n   <div class=\"modal-footer\">\r\n      <button id=\"property-asg-term-done\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DONE", {hash:{},data:data}))
     + "</button>\r\n      <button class=\"btn modal-close btn-silver\">"
@@ -13652,9 +13907,9 @@ function program4(depth0,data) {
       "PercentChangeInCapacity": lang.PROP.ASG_ADD_POLICY_ADJUSTMENT_PERCENT
     };
     adjustdefault = {
-      "ChangeInCapacity": "eg. -1",
-      "ExactCapacity": "eg. 5",
-      "PercentChangeInCapacity": "eg. -30"
+      "ChangeInCapacity": lang.PROP.EG_MINUS_1,
+      "ExactCapacity": lang.PROP.EG_5,
+      "PercentChangeInCapacity": lang.PROP.EG_MINUS_30
     };
     adjustTooltip = {
       "ChangeInCapacity": lang.PROP.ASG_ADJUST_TOOLTIP_CHANGE,
@@ -13682,16 +13937,12 @@ function program4(depth0,data) {
         "change #property-asg-healthcheck": "setHealthCheckGrace",
         "click #property-asg-policy-add": "addScalingPolicy",
         "click #property-asg-policies .icon-edit": "editScalingPolicy",
-        "click #property-asg-policies .icon-del": "delScalingPolicy"
+        "click #property-asg-policies .icon-del": "delScalingPolicy",
+        'change #property-res-desc': 'onChangeDescription'
       },
       render: function() {
-        var data, p, selectTopicName, _i, _len, _ref;
-        selectTopicName = this.model.getNotificationTopicName();
-        this.snsNotiDropdown = new snsDropdown({
-          selection: selectTopicName
-        });
-        this.snsNotiDropdown.on('change', this.model.setNotificationTopic, this.model);
-        this.addSubView(this.snsNotiDropdown);
+        var data, p, _i, _len, _ref;
+        this.createSnsNotiDropdown(this.model.getNotificationTopicName());
         data = this.model.toJSON();
         _ref = data.policies;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -13700,11 +13951,29 @@ function program4(depth0,data) {
           p.alarmData.metricName = metricMap[p.alarmData.metricName];
           p.adjustmentType = adjustMap[p.adjustmentType];
         }
-        data.term_policy_brief = data.terminationPolicies.join(" > ");
+        data.term_policy_brief = this.getTerminationPoliciesText(data.terminationPolicies);
         data.can_add_policy = data.policies.length < 25;
         this.$el.html(template(data));
         this.processNotiTopic(null, true);
         return data.name;
+      },
+      getTerminationPoliciesText: function(policies) {
+        return _.map(policies, function(p) {
+          return p;
+        }).join(" > ");
+      },
+      createSnsNotiDropdown: function(selection) {
+        var params;
+        params = selection ? {
+          selection: selection
+        } : {};
+        this.snsNotiDropdown = new snsDropdown(params);
+        this.snsNotiDropdown.on('change', this.model.setNotificationTopic, this.model);
+        this.addSubView(this.snsNotiDropdown);
+        return this.snsNotiDropdown;
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
       },
       wheatherHasNoti: function() {
         var n, _ref;
@@ -13721,7 +13990,7 @@ function program4(depth0,data) {
           this.$('#sns-placeholder').html(this.snsNotiDropdown.render(true).el);
           return this.$('.sns-group').show();
         } else if (originHasNoti && !hasNoti) {
-          this.snsNotiDropdown = new snsDropdown();
+          this.createSnsNotiDropdown();
           this.model.removeTopic();
           return this.$('.sns-group').hide();
         }
@@ -13795,9 +14064,6 @@ function program4(depth0,data) {
       },
       constantCheck: function(val) {
         val = +val;
-        if (val < 1) {
-          return sprintf(lang.PARSLEY.VALUE_MUST_BE_GREATERTHAN_VAR, 1);
-        }
         if (val > 65534) {
           return sprintf(lang.PARSLEY.VALUE_MUST_BE_LESSTHAN_VAR, 65534);
         }
@@ -13828,18 +14094,20 @@ function program4(depth0,data) {
           } else {
             data.push({
               name: policy,
-              checked: true
+              checked: true,
+              text: policy
             });
             checked[policy] = true;
           }
         }
-        _ref1 = [lang.PROP.ASG_TERMINATION_POLICY_OLDEST, lang.PROP.ASG_TERMINATION_POLICY_NEWEST, lang.PROP.ASG_TERMINATION_POLICY_OLDEST_LAUNCH, lang.PROP.ASG_TERMINATION_POLICY_CLOSEST];
+        _ref1 = ['OldestInstance', 'NewestInstance', 'OldestLaunchConfiguration', 'ClosestToNextInstanceHour'];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           p = _ref1[_j];
           if (!checked[p]) {
             data.push({
               name: p,
-              checked: false
+              checked: false,
+              text: p
             });
           }
         }
@@ -13873,14 +14141,14 @@ function program4(depth0,data) {
           var $this;
           $this = $(this);
           if ($this.closest("li").hasClass("enabled")) {
-            data.push($this.text());
+            data.push($this.data('name'));
           }
           return null;
         });
         if ($("#property-asg-term-def").is(":checked")) {
           data.push("Default");
         }
-        $(".termination-policy-brief").text(data.join(" > "));
+        $(".termination-policy-brief").text(this.getTerminationPoliciesText(data));
         return this.model.setTerminatePolicy(data);
       },
       delScalingPolicy: function(event) {
@@ -13962,7 +14230,7 @@ function program4(depth0,data) {
           width: '480px',
           compact: true,
           confirm: {
-            text: 'Done'
+            text: lang.PROP.LBL_DONE
           }
         };
         modalPlus = new modalplus(options);
@@ -14198,6 +14466,7 @@ function program4(depth0,data) {
         data = {
           uid: uid,
           name: asg_comp.get('name'),
+          description: asg_comp.get('description'),
           minSize: asg_comp.get('minSize'),
           maxSize: asg_comp.get('maxSize'),
           capacity: asg_comp.get('capacity'),
@@ -14224,6 +14493,7 @@ function program4(depth0,data) {
           this.set('cooldown', asg_data.DefaultCooldown);
           this.set('healCheckType', asg_data.HealthCheckType);
           this.set('healthCheckGracePeriod', asg_data.HealthCheckGracePeriod);
+          this.set('notiTopicName', this.getNotificationTopicName());
           this.handlePolicy(asg_comp, asg_data);
           this.handleNotify(asg_comp, asg_data);
         } else {
@@ -14498,7 +14768,13 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_NAME", {hash:{},data:data}))
     + "</dt>\r\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.awsResName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      <dt>"
+    + "</dd>\r\n      ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n    </dl>\r\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n    <dl class=\"dl-vertical\">\r\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_ARN", {hash:{},data:data}))
     + "</dt>\r\n      <dd class=\"click-select tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_TIP_CLICK_TO_SELECT", {hash:{},data:data}))
@@ -14509,18 +14785,50 @@ function program1(depth0,data) {
     + "</dt>\r\n      <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, (depth0 && depth0.createTime), {hash:{},data:data}))
     + "</dd>\r\n\r\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n  </div>\r\n  ";
   return buffer;
   }
 function program2(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\r\n      <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\r\n      ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n    <section class=\"property-control-group\">\r\n      <label class=\"left\" for=\"property-asg-name\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</label>\r\n      <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_REQUIRED", {hash:{},data:data}))
+    + "</span>\r\n      <input class=\"input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" id=\"property-asg-name\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n    </section>\r\n    <section class=\"property-control-group\">\r\n      <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n      <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n    </section>\r\n    ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
   
   return "\r\n    </dl>\r\n    ";
   }
 
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n      <dt>"
@@ -14555,7 +14863,7 @@ function program4(depth0,data) {
   return buffer;
   }
 
-function program6(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n  <div class=\"property-control-group\">\r\n    <p class=\"property-info tac\">Auto Scaling Group "
@@ -14564,7 +14872,7 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n  <div class=\"option-group-head expand\">"
@@ -14590,19 +14898,19 @@ function program8(depth0,data) {
     + "</span>\r\n    </section>\r\n\r\n    <section class=\"property-control-group clearfix\">\r\n      <label clas=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_HEALTH_CHECK_TYPE", {hash:{},data:data}))
     + "</label>\r\n      <div class=\"asg-radio-group\">\r\n        <div class=\"radio\">\r\n          <input id=\"property-asg-ec2\" type=\"radio\" value=\"ec2\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"property-asg-hc-option\" />\r\n          <label for=\"property-asg-ec2\"></label>\r\n        </div>\r\n        <label for=\"property-asg-ec2\">EC2</label>\r\n      </div>\r\n      <div ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\r\n        <div class=\"radio\">\r\n          <input id=\"property-asg-elb\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.has_elb), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"elb\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " name=\"property-asg-hc-option\" />\r\n          <label for=\"property-asg-elb\"></label>\r\n        </div>\r\n        <label for=\"property-asg-elb\">ELB</label>\r\n        <p id=\"property-asg-elb-warn\" class=\"hide property-info\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEC2HealthCheck), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_ELB_WARN", {hash:{},data:data}))
@@ -14615,13 +14923,13 @@ function program8(depth0,data) {
     + "</span>\r\n    </section>\r\n\r\n  </div>\r\n  ";
   return buffer;
   }
-function program9(depth0,data) {
+function program13(depth0,data) {
   
   
   return "checked=\"true\"";
   }
 
-function program11(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "";
   buffer += "data-tooltip=\""
@@ -14630,25 +14938,25 @@ function program11(depth0,data) {
   return buffer;
   }
 
-function program13(depth0,data) {
+function program17(depth0,data) {
   
   
   return "class=\"asg-radio-group\"";
   }
 
-function program15(depth0,data) {
+function program19(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program17(depth0,data) {
+function program21(depth0,data) {
   
   
   return " style=\"display: block\"";
   }
 
-function program19(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    <div class=\"option-group-head\">"
@@ -14656,23 +14964,23 @@ function program19(depth0,data) {
     + " <span class=\"property-head-num-wrap\">("
     + escapeExpression(((stack1 = (depth0 && depth0.instance_count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span></div>\r\n    <div class=\"option-group\">\r\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_groups), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_groups), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n    </div>\r\n  ";
   return buffer;
   }
-function program20(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n      <div class=\"property-group-head\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\r\n      <ul class=\"property-list\">\r\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instances), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n      </ul>\r\n      ";
   return buffer;
   }
-function program21(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n          <li><i class=\"status status-"
@@ -14685,7 +14993,7 @@ function program21(depth0,data) {
   return buffer;
   }
 
-function program23(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n      <section class=\"property-control-group pos-r\">\r\n        <h5>"
@@ -14693,12 +15001,12 @@ function program23(depth0,data) {
     + "</h5>\r\n        <p class=\"termination-policy-brief\">"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.term_policy_brief), {hash:{},data:data}))
     + "</p>\r\n      </section>\r\n      <ul id=\"property-asg-policies\" class=\"property-list\">\r\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n      </ul>\r\n    ";
   return buffer;
   }
-function program24(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n          <li class=\"pos-r\" data-uid=\""
@@ -14708,12 +15016,12 @@ function program24(depth0,data) {
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\r\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.arn), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.arn), {hash:{},inverse:self.program(31, program31, data),fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n          </li>\r\n\r\n        ";
   return buffer;
   }
-function program25(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n            <div class=\"click-select tooltip\" data-tooltip=\""
@@ -14724,7 +15032,7 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program31(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n            <span class=\"asg-p-metric asg-p-tag\" title=\""
@@ -14760,7 +15068,7 @@ function program27(depth0,data) {
   return buffer;
   }
 
-function program29(depth0,data) {
+function program33(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n      <section class=\"property-control-group pos-r property-term-p\">\r\n        <h5>"
@@ -14784,10 +15092,10 @@ function program29(depth0,data) {
     + "\"></i>\r\n            <i class=\"icon-remove icon-del tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_POLICY_TLT_REMOVE", {hash:{},data:data}))
     + "\"></i>\r\n          </div>\r\n        </li>\r\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.policies), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n      </ul>\r\n      <div class=\"property-control-group tac\">\r\n        <button class=\"btn btn-blue ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_add_policy), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" id=\"property-asg-policy-add\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_TIP_YOU_CAN_ONLY_ADD_25_SCALING_POLICIES", {hash:{},data:data}))
@@ -14796,7 +15104,7 @@ function program29(depth0,data) {
     + "</button>\r\n      </div>\r\n    ";
   return buffer;
   }
-function program30(depth0,data) {
+function program34(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <li class=\"pos-r\" data-uid=\""
@@ -14842,125 +15150,129 @@ function program30(depth0,data) {
   return buffer;
   }
 
-function program32(depth0,data) {
+function program36(depth0,data) {
   
   
   return "disabled tooltip";
   }
 
-function program34(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\r\n      <div class=\"property-asg-notification-wrap property-control-group\">\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(46, program46, data),fn:self.program(35, program35, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n      </div>\r\n\r\n    ";
-  return buffer;
-  }
-function program35(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\r\n        <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
-    + "</label>\r\n        <section>\r\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[1]), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[2]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[3]), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n          ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(44, program44, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        </section>\r\n        ";
-  return buffer;
-  }
-function program36(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
-  return buffer;
-  }
-
 function program38(depth0,data) {
   
-  var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
-    + "</p>";
+  var buffer = "", stack1;
+  buffer += "\r\n      <dl class=\"dl-vertical\">\r\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.sendNotify), {hash:{},inverse:self.program(50, program50, data),fn:self.program(39, program39, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SNS_TOPIC", {hash:{},data:data}))
+    + "</dt>\r\n        <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.notiTopicName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\r\n      </dl>\r\n\r\n    ";
   return buffer;
   }
-
+function program39(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n        <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
+    + "</dt>\r\n          ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[0]), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n          ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[1]), {hash:{},inverse:self.noop,fn:self.program(42, program42, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n          ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[2]), {hash:{},inverse:self.noop,fn:self.program(44, program44, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n          ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[3]), {hash:{},inverse:self.noop,fn:self.program(46, program46, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n          ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notifies)),stack1 == null || stack1 === false ? stack1 : stack1[4]), {hash:{},inverse:self.noop,fn:self.program(48, program48, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n        ";
+  return buffer;
+  }
 function program40(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
-    + "</p>";
+  buffer += "<dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
+    + "</dd>";
   return buffer;
   }
 
 function program42(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
-    + "</p>";
+  buffer += "<dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
+    + "</dd>";
   return buffer;
   }
 
 function program44(depth0,data) {
   
   var buffer = "";
-  buffer += "<p>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
-    + "</p>";
+  buffer += "<dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + "</dd>";
   return buffer;
   }
 
 function program46(depth0,data) {
   
   var buffer = "";
-  buffer += "\r\n        <p class=\"property-info tac\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_MSG_NO_NOTIFICATION_WARN", {hash:{},data:data}))
-    + "</p>\r\n        ";
+  buffer += "<dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
+    + "</dd>";
   return buffer;
   }
 
 function program48(depth0,data) {
   
+  var buffer = "";
+  buffer += "<dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
+    + "</dd>";
+  return buffer;
+  }
+
+function program50(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n        <dd class=\"property-info tac\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_MSG_NO_NOTIFICATION_WARN", {hash:{},data:data}))
+    + "</dd>\r\n        ";
+  return buffer;
+  }
+
+function program52(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\r\n      <div class=\"property-control-group property-asg-notification-wrap\">\r\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SEND_NOTIFICATION", {hash:{},data:data}))
     + "</p>\r\n        <div><div class=\"checkbox\">\r\n          <input id=\"property-asg-sns1\" type=\"checkbox\" data-key=\"instanceLaunch\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunch), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n          <label for=\"property-asg-sns1\"></label>\r\n        </div>\r\n        <label for=\"property-asg-sns1\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\r\n\r\n        <div><div class=\"checkbox\">\r\n          <input id=\"property-asg-sns2\" type=\"checkbox\" data-key=\"instanceLaunchError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceLaunchError), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n          <label for=\"property-asg-sns2\"></label>\r\n        </div>\r\n        <label for=\"property-asg-sns2\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_LAUNCH", {hash:{},data:data}))
     + "</label></div>\r\n\r\n        <div><div class=\"checkbox\">\r\n          <input id=\"property-asg-sns3\" type=\"checkbox\" data-key=\"instanceTerminate\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminate), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n          <label for=\"property-asg-sns3\"></label>\r\n        </div>\r\n        <label for=\"property-asg-sns3\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_SUCCESS_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\r\n\r\n        <div><div class=\"checkbox\">\r\n          <input id=\"property-asg-sns4\" type=\"checkbox\" data-key=\"instanceTerminateError\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.instanceTerminateError), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n          <label for=\"property-asg-sns4\"></label>\r\n        </div>\r\n        <label for=\"property-asg-sns4\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_FAILED_INSTANCES_TERMINATE", {hash:{},data:data}))
     + "</label></div>\r\n\r\n        <div><div class=\"checkbox\">\r\n          <input id=\"property-asg-sns5\" type=\"checkbox\" data-key=\"test\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notification)),stack1 == null || stack1 === false ? stack1 : stack1.test), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\r\n          <label for=\"property-asg-sns5\"></label>\r\n        </div>\r\n        <label for=\"property-asg-sns5\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_VALIDATE_SNS", {hash:{},data:data}))
@@ -14969,30 +15281,30 @@ function program48(depth0,data) {
     + "</label>\r\n        <div id=\"sns-placeholder\"></div>\r\n      </div>\r\n    ";
   return buffer;
   }
-function program49(depth0,data) {
+function program53(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-  buffer += "<article class=\"property-app\">\r\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+  buffer += "<article class=\"property-app\" data-bind=\"true\">\r\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_POLICY", {hash:{},data:data}))
     + "</div>\r\n  <div class=\"option-group\">\r\n\r\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(29, program29, data),fn:self.program(23, program23, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(33, program33, data),fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n\r\n  </div>\r\n\r\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ASG_LBL_NOTIFICATION", {hash:{},data:data}))
     + "</div>\r\n  <div class=\"option-group\" id=\"property-asg-sns\">\r\n\r\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(48, program48, data),fn:self.program(34, program34, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(52, program52, data),fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n  </div>\r\n\r\n</article>";
   return buffer;
@@ -15018,9 +15330,9 @@ function program49(depth0,data) {
       "PercentChangeInCapacity": lang.PROP.ASG_ADD_POLICY_ADJUSTMENT_PERCENT
     };
     adjustdefault = {
-      "ChangeInCapacity": "eg. -1",
-      "ExactCapacity": "eg. 5",
-      "PercentChangeInCapacity": "eg. -30"
+      "ChangeInCapacity": lang.PROP.EG_MINUS_1,
+      "ExactCapacity": lang.PROP.EG_5,
+      "PercentChangeInCapacity": lang.PROP.EG_MINUS_30
     };
     adjustTooltip = {
       "ChangeInCapacity": lang.PROP.ASG_ADJUST_TOOLTIP_CHANGE,
@@ -15047,7 +15359,21 @@ function program49(depth0,data) {
         "change #property-asg-healthcheck": "setHealthCheckGrace",
         "click #property-asg-policy-add": "addScalingPolicy",
         "click #property-asg-policies .icon-edit": "editScalingPolicy",
-        "click #property-asg-policies .icon-del": "delScalingPolicy"
+        "click #property-asg-policies .icon-del": "delScalingPolicy",
+        'change #property-res-desc': 'onChangeDescription',
+        "change #property-asg-name": "setASGName"
+      },
+      onChangeDescription: function(event) {
+        return this.model.setDesc($(event.currentTarget).val());
+      },
+      setASGName: function(event) {
+        var name, target;
+        target = $(event.currentTarget);
+        name = target.val();
+        if (MC.aws.aws.checkResName(this.model.get('uid'), target, "ASG")) {
+          this.model.setName(name);
+          return this.setTitle(name);
+        }
       },
       setASGCoolDown: function(event) {
         var $target;
@@ -15077,18 +15403,20 @@ function program49(depth0,data) {
           } else {
             data.push({
               name: policy,
-              checked: true
+              checked: true,
+              text: policy
             });
             checked[policy] = true;
           }
         }
-        _ref1 = [lang.PROP.ASG_TERMINATION_POLICY_OLDEST, lang.PROP.ASG_TERMINATION_POLICY_NEWEST, lang.PROP.ASG_TERMINATION_POLICY_OLDEST_LAUNCH, lang.PROP.ASG_TERMINATION_POLICY_CLOSEST];
+        _ref1 = ['OldestInstance', 'NewestInstance', 'OldestLaunchConfiguration', 'ClosestToNextInstanceHour'];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           p = _ref1[_j];
           if (!checked[p]) {
             data.push({
               name: p,
-              checked: false
+              checked: false,
+              text: p
             });
           }
         }
@@ -15122,14 +15450,14 @@ function program49(depth0,data) {
           var $this;
           $this = $(this);
           if ($this.closest("li").hasClass("enabled")) {
-            data.push($this.text());
+            data.push($this.data('name'));
           }
           return null;
         });
         if ($("#property-asg-term-def").is(":checked")) {
           data.push("Default");
         }
-        $(".termination-policy-brief").text(data.join(" > "));
+        $(".termination-policy-brief").text(this.getTerminationPoliciesText(data));
         return this.model.setTerminatePolicy(data);
       },
       delScalingPolicy: function(event) {
@@ -15454,13 +15782,18 @@ function program49(depth0,data) {
             p.adjustmentType = adjustMap[p.adjustmentType];
             p.isNew = !p.appId;
           }
-          data.term_policy_brief = data.terminationPolicies.join(" > ");
+          data.term_policy_brief = this.getTerminationPoliciesText(data.terminationPolicies);
           data.can_add_policy = data.policies.length < 25;
         }
         console.debug(data);
         this.$el.html(template(data));
         this.processNotiTopic(null, true);
         return data.name;
+      },
+      getTerminationPoliciesText: function(policies) {
+        return _.map(policies, function(p) {
+          return p;
+        }).join(" > ");
       },
       wheatherHasNoti: function() {
         var n, _ref;
@@ -15490,39 +15823,41 @@ function program49(depth0,data) {
         }
       },
       setSizeGroup: function(event) {
-        var $capacity, $max, $min;
+        var $capacity, $max, $min, that;
+        that = this;
         $min = this.$el.find('#property-asg-min');
         $max = this.$el.find('#property-asg-max');
         $capacity = this.$el.find('#property-asg-capacity');
         $min.parsley('custom', function(val) {
-          if (+val < 1) {
-            return lang.PARSLEY.ASG_SIZE_MUST_BE_EQUAL_OR_GREATER_THAN_1;
-          }
           if (+val > +$max.val()) {
             return lang.PARSLEY.MINIMUM_SIZE_MUST_BE_LESSTHAN_MAXIMUM_SIZE;
           }
+          return that.constantCheck(val);
         });
         $max.parsley('custom', function(val) {
-          if (+val < 1) {
-            return lang.PARSLEY.ASG_SIZE_MUST_BE_EQUAL_OR_GREATER_THAN_1;
-          }
           if (+val < +$min.val()) {
             return lang.PARSLEY.MINIMUM_SIZE_MUST_BE_LESSTHAN_MAXIMUM_SIZE;
           }
+          return that.constantCheck(val);
         });
         $capacity.parsley('custom', function(val) {
-          if (+val < 1) {
-            return lang.PARSLEY.DESIRED_CAPACITY_EQUAL_OR_GREATER_1;
-          }
           if (+val < +$min.val() || +val > +$max.val()) {
             return lang.PARSLEY.DESIRED_CAPACITY_IN_ALLOW_SCOPE;
           }
+          return that.constantCheck(val);
         });
         if ($(event.currentTarget).parsley('validateForm')) {
           this.model.setASGMin($min.val());
           this.model.setASGMax($max.val());
           return this.model.setASGDesireCapacity($capacity.val());
         }
+      },
+      constantCheck: function(val) {
+        val = +val;
+        if (val > 65534) {
+          return sprintf(lang.PARSLEY.VALUE_MUST_BE_LESSTHAN_VAR, 65534);
+        }
+        return null;
       }
     });
     return new ASGAppEditView();
@@ -15653,36 +15988,49 @@ function program11(depth0,data) {
   buffer += "\r\n\r\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(21, program21, data),fn:self.program(18, program18, data),data:data});
+  buffer += "\r\n\r\n        <section class=\"property-control-group clearfix\">\r\n            <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
+    + "</label>\r\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n\r\n        <div id =\"lvia-container\"></div>\r\n\r\n        <section class=\"property-control-group\">\r\n            <div class=\"checkbox\">\r\n                <input id=\"property-dbinstance-version-update\" type=\"checkbox\" ";
+  buffer += "</div>\r\n        </section>\r\n\r\n        <section class=\"property-control-group\" >\r\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DATABASE_NAME", {hash:{},data:data}))
+    + "</label>\r\n            <span class=\"required-input right\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
+    + "</span>\r\n            <input class=\"input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n        </section>\r\n\r\n        <section class=\"property-control-group\" data-bind=\"true\">\r\n          <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n          <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n        </section>\r\n\r\n        <div id =\"lvia-container\"></div>\r\n\r\n        <section class=\"property-control-group\">\r\n            <div class=\"checkbox\">\r\n                <input id=\"property-dbinstance-version-update\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.autoMinorVersionUpgrade), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-dbinstance-version-update\">\r\n                <label for=\"property-dbinstance-version-update\"></label>\r\n            </div>\r\n            <label for=\"property-dbinstance-version-update\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_AUTO_MINOR_VERSION_UPDATE", {hash:{},data:data}))
     + "</label>\r\n        </section>\r\n\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        ";
-  stack1 = helpers.ifLogic.call(depth0, (depth0 && depth0.isRestoreDB), "and", (depth0 && depth0.isSqlserver), {hash:{},inverse:self.program(32, program32, data),fn:self.program(30, program30, data),data:data});
+  stack1 = helpers.ifLogic.call(depth0, (depth0 && depth0.isRestoreDB), "and", (depth0 && depth0.isSqlserver), {hash:{},inverse:self.program(29, program29, data),fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    </div>\r\n\r\n    <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DATABASE_CONFIG", {hash:{},data:data}))
     + "</div>\r\n    <div class=\"option-group\">\r\n\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(60, program60, data),fn:self.program(53, program53, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(58, program58, data),fn:self.program(51, program51, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        <div class=\"property-control-group clearfix property-dbinstance-optiongroup\"></div>\r\n\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(67, program67, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(65, program65, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    </div>\r\n\r\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideAZConfig), {hash:{},inverse:self.noop,fn:self.program(74, program74, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideAZConfig), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    ";
   return buffer;
@@ -15719,36 +16067,11 @@ function program16(depth0,data) {
 
 function program18(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\r\n        <section class=\"property-control-group clearfix\">\r\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
-    + "</label>\r\n            <div>"
-    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\r\n        </section>\r\n        ";
-  return buffer;
-  }
-function program19(depth0,data) {
-  
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PENDING_APPLY", {hash:{},data:data}));
   }
 
-function program21(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\r\n        <section class=\"property-control-group\" >\r\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <span class=\"required-input right\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
-    + "</span>\r\n            <input class=\"input\" type=\"text\" value=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n        </section>\r\n        ";
-  return buffer;
-  }
-
-function program23(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group\">\r\n            <label>"
@@ -15758,22 +16081,22 @@ function program23(depth0,data) {
     + "</span>\r\n            <div class=\"ranged-number-input\">\r\n                <label for=\"property-dbinstance-storage\"></label>\r\n                <input id=\"property-dbinstance-storage\" type=\"text\" class=\"input parsley-validated property-input-left tooltip\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.allocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" name=\"property-dbinstance-storage\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-type=\"number\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\r\n                <label for=\"property-dbinstance-storage\" class=\"property-label-right\">GB</label>\r\n            </div>\r\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        </section>\r\n        ";
   return buffer;
   }
-function program24(depth0,data) {
+function program21(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program25(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "";
   buffer += "disabled data-tooltip=\""
@@ -15782,16 +16105,16 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originAllocatedStorage), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originAllocatedStorage), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n            ";
   return buffer;
   }
-function program28(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                <label>"
@@ -15801,30 +16124,39 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program27(depth0,data) {
   
   
   return "\r\n        ";
   }
 
-function program32(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n        <section class=\"property-control-group\">\r\n            <div class=\"checkbox\">\r\n                <input id=\"property-dbinstance-iops-check\" class=\"tooltip\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
+  buffer += "\r\n        <section class=\"property-control-group\">\r\n            <label class=\"left\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_STORAGE_TYPE", {hash:{},data:data}))
+    + "</label>\r\n            <div class=\"selectbox\" id=\"property-dbinstance-storage-type\">\r\n                <div class=\"selection\"></div>\r\n                <ul class=\"dropdown\" tabindex=\"-1\">\r\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "gp2", {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  buffer += "\" data-id=\"gp2\">General Purpose (SSD)</li>\r\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "io1", {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-iops-check\">\r\n                <label for=\"property-dbinstance-iops-check\"></label>\r\n            </div>\r\n            <label for=\"property-dbinstance-iops-check\" class=\"property-dbinstance-iops-check-tooltip tooltip\" data-tooltip=\"dsaasd\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_USE_PROVISIONED_IOPS", {hash:{},data:data}))
-    + "</label>\r\n        </section>\r\n        <section class=\"property-control-group property-dbinstance-iops-value-section ";
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " data-id=\"io1\">Provisioned IOPS (SSD)</li>\r\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "standard", {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\"standard\">Magnetic</li>\r\n                </ul>\r\n            </div>\r\n        </section>\r\n        <section class=\"property-control-group property-dbinstance-iops-value-section ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\r\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PROVISIONED_IOPS", {hash:{},data:data}))
     + "</label>\r\n            <div class=\"ranged-number-input\">\r\n                <input class=\"input\" id=\"property-dbinstance-iops-value\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -15833,33 +16165,34 @@ function program32(depth0,data) {
     + "</label>\r\n        </section>\r\n        ";
   return buffer;
   }
-function program33(depth0,data) {
-  
-  var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
-  }
-function program34(depth0,data) {
+function program30(depth0,data) {
   
   
-  return "disabled=\"disabled\"";
+  return "selected";
   }
 
-function program36(depth0,data) {
+function program32(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program37(depth0,data) {
+
+function program34(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program35(depth0,data) {
   
   
   return "disabled";
   }
 
-function program39(depth0,data) {
+function program37(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <div class=\"property-info property-info-iops-adjust-tip ";
@@ -15874,26 +16207,26 @@ function program39(depth0,data) {
   return buffer;
   }
 
-function program41(depth0,data) {
+function program39(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(44, program44, data),fn:self.program(42, program42, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(42, program42, data),fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        <section class=\"property-control-group\" >\r\n            <label class=\"left\" for=\"property-dbinstance-master-password\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_MASTER_PASSWORD", {hash:{},data:data}))
     + "</label>\r\n            <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\r\n            <input class=\"input tooltip\" data-tooltip=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(48, program48, data),fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(46, program46, data),fn:self.program(44, program44, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" type=\"password\" placeholder=\"****\" id=\"property-dbinstance-master-password\" value=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(51, program51, data),fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.password), "****", {hash:{},inverse:self.program(49, program49, data),fn:self.program(44, program44, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-type=\"ascii\" data-ignore=\"true\" data-required=\"true\"/>\r\n        </section>\r\n        ";
   return buffer;
   }
-function program42(depth0,data) {
+function program40(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group clearfix\">\r\n            <label>"
@@ -15904,7 +16237,7 @@ function program42(depth0,data) {
   return buffer;
   }
 
-function program44(depth0,data) {
+function program42(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group\" >\r\n            <label class=\"left\" for=\"property-dbinstance-master-username\" >"
@@ -15917,73 +16250,73 @@ function program44(depth0,data) {
   return buffer;
   }
 
-function program46(depth0,data) {
+function program44(depth0,data) {
   
   var buffer = "";
   return buffer;
   }
 
-function program48(depth0,data) {
+function program46(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.password), {hash:{},inverse:self.noop,fn:self.program(49, program49, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.password), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program49(depth0,data) {
+function program47(depth0,data) {
   
   
   return "Default Password: 12345678";
   }
 
-function program51(depth0,data) {
+function program49(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.password)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program53(depth0,data) {
+function program51(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group clearfix\">\r\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dbName), {hash:{},inverse:self.noop,fn:self.program(52, program52, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n            <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PORT", {hash:{},data:data}))
     + "</label>\r\n            <div>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(58, program58, data),fn:self.program(56, program56, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.program(56, program56, data),fn:self.program(54, program54, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\r\n        </section>\r\n        ";
   return buffer;
   }
-function program54(depth0,data) {
+function program52(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DATABASE_NAME", {hash:{},data:data}))
     + "</label>\r\n            <div>"
     + escapeExpression(((stack1 = (depth0 && depth0.dbName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>";
   return buffer;
   }
 
-function program56(depth0,data) {
+function program54(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.Endpoint)),stack1 == null || stack1 === false ? stack1 : stack1.Port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program58(depth0,data) {
+function program56(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NOT_READY", {hash:{},data:data}));
   }
 
-function program60(depth0,data) {
+function program58(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(59, program59, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        <section class=\"property-control-group\" >\r\n            <label class=\"left\" for=\"property-dbinstance-database-port\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DATABASE_PORT", {hash:{},data:data}))
@@ -15992,25 +16325,25 @@ function program60(depth0,data) {
     + "\" data-ignore=\"true\" data-type=\"number\" data-required=\"true\" data-min=\"1150\" data-max=\"65535\"/>\r\n        </section>\r\n        ";
   return buffer;
   }
+function program59(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(60, program60, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n        ";
+  return buffer;
+  }
+function program60(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(63, program63, data),fn:self.program(61, program61, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n        ";
+  return buffer;
+  }
 function program61(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(62, program62, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        ";
-  return buffer;
-  }
-function program62(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(65, program65, data),fn:self.program(63, program63, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n        ";
-  return buffer;
-  }
-function program63(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group\" >\r\n            <label class=\"left\" for=\"property-dbinstance-database-name\" >"
@@ -16021,29 +16354,29 @@ function program63(depth0,data) {
   return buffer;
   }
 
-function program65(depth0,data) {
+function program63(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMysql), {hash:{},inverse:self.noop,fn:self.program(63, program63, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMysql), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        ";
   return buffer;
   }
 
-function program67(depth0,data) {
+function program65(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(68, program68, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(66, program66, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOracle), {hash:{},inverse:self.noop,fn:self.program(70, program70, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isOracle), {hash:{},inverse:self.noop,fn:self.program(68, program68, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        ";
   return buffer;
   }
-function program68(depth0,data) {
+function program66(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n        <section class=\"property-control-group\">\r\n            <label class=\"left\">"
@@ -16052,22 +16385,22 @@ function program68(depth0,data) {
   return buffer;
   }
 
-function program70(depth0,data) {
+function program68(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group\">\r\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_CHARACTER_SET_NAME", {hash:{},data:data}))
     + "</label>\r\n            <div class=\"selectbox combo-dd\" id=\"property-dbinstance-charset-select\">\r\n                <div class=\"selection\"></div>\r\n                <div class=\"dropdown\">\r\n                    <div class=\"scroll-wrap scrollbar-auto-hide clearfix\">\r\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n                        <div class=\"scroll-content\">\r\n                            <ul>\r\n                                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.oracleCharset), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.oracleCharset), {hash:{},inverse:self.noop,fn:self.program(69, program69, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n                            </ul>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </section>\r\n        ";
   return buffer;
   }
-function program71(depth0,data) {
+function program69(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                                <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.charset)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -16076,24 +16409,19 @@ function program71(depth0,data) {
     + "</li>\r\n                                ";
   return buffer;
   }
-function program72(depth0,data) {
-  
-  
-  return "selected";
-  }
 
-function program74(depth0,data) {
+function program71(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n\r\n    <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NETWORK_AZ_DEPLOYMENT", {hash:{},data:data}))
     + "</div>\r\n    <div class=\"option-group\">\r\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(75, program75, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        <div id=\"property-dbinstance-mutil-az\"></div>\r\n\r\n    </div>\r\n\r\n    ";
   return buffer;
   }
-function program75(depth0,data) {
+function program72(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group\">\r\n            <div class=\"checkbox\">\r\n                <input id=\"property-dbinstance-public-access-check\" type=\"checkbox\" ";
@@ -16105,25 +16433,25 @@ function program75(depth0,data) {
   return buffer;
   }
 
-function program77(depth0,data) {
+function program74(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    <div class=\"option-group-head ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(78, program78, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(75, program75, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACKUP_OPTION", {hash:{},data:data}))
     + "</div>\r\n    <div class=\"option-group\">\r\n\r\n        <section class=\"property-control-group tooltip\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.program(82, program82, data),fn:self.program(80, program80, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.program(79, program79, data),fn:self.program(77, program77, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\r\n\r\n            <div class=\"checkbox\">\r\n                <input id=\"property-dbinstance-auto-backup-check\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupRetentionPeriod), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-dbinstance-auto-backup-check\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(85, program85, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasSlave), {hash:{},inverse:self.noop,fn:self.program(82, program82, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\r\n                <label for=\"property-dbinstance-auto-backup-check\"></label>\r\n            </div>\r\n            <label for=\"property-dbinstance-auto-backup-check\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_ENABLE_AUTOMATIC_BACKUP", {hash:{},data:data}))
@@ -16135,19 +16463,19 @@ function program77(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" >\r\n                <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACKUP_RETENTION_PERIOD", {hash:{},data:data}))
-    + "</label>\r\n                <input class=\"input shorter-input\" title=\"hours\" value=\""
+    + "</label>\r\n                <input class=\"input shorter-input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.backupRetentionPeriod)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" id=\"property-dbinstance-backup-period\" type=\"text\" data-type=\"digits\" data-min=\"1\" data-max=\"35\" data-ignore=\"true\">\r\n                <label class=\"property-label-right\" for=\"property-dbinstance-backup-period\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACK_RETANTION_PERIOD_DAY", {hash:{},data:data}))
     + "</label>\r\n            </section>\r\n\r\n            <section id=\"property-dbinstance-backup-window-select\" class=\"property-control-group\">\r\n                <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACKUP_WINDOW", {hash:{},data:data}))
     + "</label>\r\n                <div class=\"property-dbinstance-radio-group\">\r\n                    <div class=\"radio\">\r\n                        <input id=\"property-dbinstance-backup-radio-no\" name=\"property-dbinstance-backup-radio\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"no\">\r\n                        <label for=\"property-dbinstance-backup-radio-no\"></label>\r\n                    </div>\r\n                    <label for=\"property-dbinstance-backup-radio-no\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NO_PREFERENCE", {hash:{},data:data}))
     + "</label>\r\n                </div>\r\n                <div class=\"property-dbinstance-radio-group\">\r\n                    <div class=\"radio\">\r\n                        <input id=\"property-dbinstance-backup-radio-window\" name=\"property-dbinstance-backup-radio\" type=\"radio\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.backupWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"window\">\r\n                        <label for=\"property-dbinstance-backup-radio-window\"></label>\r\n                    </div>\r\n                    <label for=\"property-dbinstance-backup-radio-window\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_SELECT_WINDOW", {hash:{},data:data}))
@@ -16161,29 +16489,29 @@ function program77(depth0,data) {
     + "\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\r\n                    <label>UTC</label>\r\n                </section>\r\n                <section class=\"property-control-group\">\r\n                    <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DURATION", {hash:{},data:data}))
     + "</label>\r\n                    <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-backup-window-duration\">\r\n                        <div class=\"selection\"></div>\r\n                        <ul class=\"dropdown\">\r\n                            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.backupDurations), {hash:{},inverse:self.noop,fn:self.program(89, program89, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.backupDurations), {hash:{},inverse:self.noop,fn:self.program(86, program86, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n                        </ul>\r\n                    </div>\r\n                    <label for=\"property-dbinstance-maintenance-window-duration\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACKUP_DURATION_HOUR", {hash:{},data:data}))
     + "</label>\r\n                </section>\r\n            </section>\r\n\r\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originBackupWindow), {hash:{},inverse:self.noop,fn:self.program(91, program91, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originBackupWindow), {hash:{},inverse:self.noop,fn:self.program(88, program88, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n\r\n\r\n        </div>\r\n    </div>\r\n\r\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(93, program93, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(90, program90, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(98, program98, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(95, program95, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    ";
   return buffer;
   }
-function program78(depth0,data) {
+function program75(depth0,data) {
   
   
   return "expand";
   }
 
-function program80(depth0,data) {
+function program77(depth0,data) {
   
   var buffer = "";
   buffer += "data-tooltip=\""
@@ -16192,36 +16520,36 @@ function program80(depth0,data) {
   return buffer;
   }
 
-function program82(depth0,data) {
+function program79(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(83, program83, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableBackupForOldMySQL), {hash:{},inverse:self.noop,fn:self.program(80, program80, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program83(depth0,data) {
+function program80(depth0,data) {
   
   
   return "data-tooltip=\"DB Backups not supported on a read replica running a mysql version before 5.6\"";
   }
 
-function program85(depth0,data) {
+function program82(depth0,data) {
   
   
   return "disabled checked";
   }
 
-function program87(depth0,data) {
+function program84(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program89(depth0,data) {
+function program86(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                            <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -16231,7 +16559,7 @@ function program89(depth0,data) {
   return buffer;
   }
 
-function program91(depth0,data) {
+function program88(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n            <section class=\"property-control-group\">\r\n                <label>"
@@ -16241,7 +16569,7 @@ function program91(depth0,data) {
   return buffer;
   }
 
-function program93(depth0,data) {
+function program90(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    <div class=\"option-group-head\">"
@@ -16249,12 +16577,12 @@ function program93(depth0,data) {
     + "</div>\r\n    <div class=\"option-group\">\r\n\r\n        <section id=\"property-dbinstance-maintenance-window-select\" class=\"property-control-group\">\r\n            <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_MAINTENANCE_WINDOW", {hash:{},data:data}))
     + "</label>\r\n            <div class=\"property-dbinstance-radio-group\">\r\n                <div class=\"radio\">\r\n                    <input id=\"property-dbinstance-maintenance-radio-no\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"no\">\r\n                    <label for=\"property-dbinstance-maintenance-radio-no\"></label>\r\n                </div>\r\n                <label for=\"property-dbinstance-maintenance-radio-no\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NO_PREFERENCE", {hash:{},data:data}))
     + "</label>\r\n            </div>\r\n            <div class=\"property-dbinstance-radio-group\">\r\n                <div class=\"radio\">\r\n                    <input id=\"property-dbinstance-maintenance-radio-window\" name=\"property-dbinstance-maintenance-radio\" type=\"radio\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(87, program87, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.maintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(84, program84, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"window\">\r\n                    <label for=\"property-dbinstance-maintenance-radio-window\"></label>\r\n                </div>\r\n                <label for=\"property-dbinstance-maintenance-radio-window\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_SELECT_WINDOW", {hash:{},data:data}))
@@ -16286,21 +16614,21 @@ function program93(depth0,data) {
     + "\" data-required-rollback=\"true\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9:]*$\"/>\r\n                <label>UTC</label>\r\n            </section>\r\n            <section class=\"property-control-group\" >\r\n                <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DURATION", {hash:{},data:data}))
     + "</label>\r\n                <div class=\"selectbox shorter-dropdown\" id=\"property-dbinstance-maintenance-window-duration\">\r\n                    <div class=\"selection\"></div>\r\n                    <ul class=\"dropdown\" tabindex=\"-1\">\r\n                        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.maintenanceDurations), {hash:{},inverse:self.noop,fn:self.program(94, program94, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.maintenanceDurations), {hash:{},inverse:self.noop,fn:self.program(91, program91, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n                    </ul>\r\n                </div>\r\n                <label for=\"property-dbinstance-maintenance-window-duration\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_BACKUP_DURATION_HOUR", {hash:{},data:data}))
     + "</label>\r\n            </section>\r\n\r\n        </section>\r\n\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(96, program96, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.originMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(93, program93, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n    </div>\r\n    ";
   return buffer;
   }
-function program94(depth0,data) {
+function program91(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                        <li class=\"item ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(72, program72, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -16310,7 +16638,7 @@ function program94(depth0,data) {
   return buffer;
   }
 
-function program96(depth0,data) {
+function program93(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group\">\r\n            <label>"
@@ -16321,25 +16649,25 @@ function program96(depth0,data) {
   return buffer;
   }
 
-function program98(depth0,data) {
+function program95(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(100, program100, data),fn:self.program(99, program99, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.program(97, program97, data),fn:self.program(96, program96, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n    ";
   return buffer;
   }
-function program99(depth0,data) {
+function program96(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n\r\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(102, program102, data),fn:self.program(100, program100, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(99, program99, data),fn:self.program(97, program97, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    ";
   return buffer;
   }
-function program100(depth0,data) {
+function program97(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n    <div class=\"option-group-head\" id=\"sg-head\">"
@@ -16348,7 +16676,7 @@ function program100(depth0,data) {
   return buffer;
   }
 
-function program102(depth0,data) {
+function program99(depth0,data) {
   
   
   return "\r\n    ";
@@ -16363,7 +16691,7 @@ function program102(depth0,data) {
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isPromoted), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n\r\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(77, program77, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRestoreDB), {hash:{},inverse:self.noop,fn:self.program(74, program74, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n</article>";
   return buffer;
@@ -16418,34 +16746,64 @@ function program6(depth0,data) {
 function program8(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n        <section class=\"property-control-group\">\r\n            <div class=\"checkbox\">\r\n                <input id=\"property-dbinstance-iops-check\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  buffer += "\r\n        <section class=\"property-control-group\">\r\n            <label class=\"left\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_STORAGE_TYPE", {hash:{},data:data}))
+    + "</label>\r\n            <div class=\"selectbox\" id=\"property-dbinstance-storage-type\">\r\n                <div class=\"selection\"></div>\r\n                <ul class=\"dropdown\" tabindex=\"-1\">\r\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "gp2", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " value=\"None\" name=\"property-dbinstance-iops-check\">\r\n                <label for=\"property-dbinstance-iops-check\"></label>\r\n            </div>\r\n            <label for=\"property-dbinstance-iops-check\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_USE_PROVISIONED_IOPS", {hash:{},data:data}))
-    + "</label>\r\n        </section>\r\n        ";
+  buffer += "\" data-id=\"gp2\">General Purpose (SSD)</li>\r\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "io1", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.iops), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " data-id=\"io1\">Provisioned IOPS (SSD)</li>\r\n                    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.storageType), "standard", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\"standard\">Magnetic</li>\r\n                </ul>\r\n            </div>\r\n        </section>\r\n        ";
   return buffer;
   }
+function program9(depth0,data) {
+  
+  
+  return "selected";
+  }
 
-function program10(depth0,data) {
+function program11(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isSqlserver), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program12(depth0,data) {
+  
+  
+  return "hide";
+  }
+
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n\r\n        <div class=\"property-control-group clearfix\">\r\n            ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.program(14, program14, data),fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.program(18, program18, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n        </div>\r\n\r\n    ";
   return buffer;
   }
-function program11(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n            ";
   return buffer;
   }
-function program12(depth0,data) {
+function program16(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                    <label>"
@@ -16456,16 +16814,16 @@ function program12(depth0,data) {
   return buffer;
   }
 
-function program14(depth0,data) {
+function program18(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n            ";
   return buffer;
   }
-function program15(depth0,data) {
+function program19(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n                <label>"
@@ -16476,16 +16834,16 @@ function program15(depth0,data) {
   return buffer;
   }
 
-function program17(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n\r\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azNotEnough), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.azNotEnough), {hash:{},inverse:self.program(24, program24, data),fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    ";
   return buffer;
   }
-function program18(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "";
   buffer += "\r\n        <section class=\"property-control-group\">\r\n            <div class=\"property-info\">"
@@ -16494,21 +16852,16 @@ function program18(depth0,data) {
   return buffer;
   }
 
-function program20(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\r\n        <section class=\"property-control-group property-dbinstance-preferred-az ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.multiAz), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\r\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PREFERRED_ZONE", {hash:{},data:data}))
     + "</label>\r\n            <div class=\"selectbox\" id=\"property-dbinstance-preferred-az\"></div>\r\n        </section>\r\n        ";
   return buffer;
-  }
-function program21(depth0,data) {
-  
-  
-  return "hide";
   }
 
   buffer += "<article class=\"property-dbinstance\">\r\n    <div class=\"option-group-head expand\">"
@@ -16517,12 +16870,16 @@ function program21(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sourceDbName), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n        <section class=\"property-control-group\" data-bind=\"true\">\r\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DATABASE_NAME", {hash:{},data:data}))
     + "</label>\r\n            <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\r\n            <input class=\"input\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n        </section>\r\n\r\n        <section class=\"property-control-group\">\r\n            <label class=\"left\">"
+    + "\" id=\"property-dbinstance-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n        </section>\r\n\r\n        <section class=\"property-control-group\" data-bind=\"true\">\r\n          <label class=\"left\" for=\"property-res-desc\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\r\n          <textarea id=\"property-res-desc\" data-type=\"ascii\" data-ignore=\"true\" class=\"input\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\r\n        </section>\r\n\r\n        <section class=\"property-control-group\">\r\n            <label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_CLASS", {hash:{},data:data}))
     + "</label>\r\n            <div class=\"selectbox selectbox-mega\" id=\"property-dbinstance-class-select\">\r\n                <div class=\"selection\"></div>\r\n                <ul class=\"dropdown\">\r\n                    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.classes), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -16545,7 +16902,7 @@ function program21(depth0,data) {
   buffer += " value=\"None\" name=\"property-dbinstance-public-access-check\">\r\n                <label for=\"property-dbinstance-public-access-check\"></label>\r\n            </div>\r\n            <label for=\"property-dbinstance-public-access-check\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PUBLIC_ACCESS", {hash:{},data:data}))
     + "</label>\r\n        </section>\r\n\r\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(17, program17, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(21, program21, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n    </div>\r\n\r\n</article>";
   return buffer;
@@ -16934,8 +17291,11 @@ function program3(depth0,data) {
 
 function program5(depth0,data) {
   
-  
-  return "data-tooltip=\"SQL Server Mirroring(Multi-AZ) is controlled by Option Group. To make sure this DB instance has mirroring, please edit its Option Group.\"";
+  var buffer = "";
+  buffer += "data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_SQLSERVER_MIRROR_TIP", {hash:{},data:data}))
+    + "\"";
+  return buffer;
   }
 
 function program7(depth0,data) {
@@ -17031,7 +17391,9 @@ function program18(depth0,data) {
   buffer += " name=\"property-dbinstance-mutil-az-check\">\n        <label for=\"property-dbinstance-mutil-az-check\"></label>\n    </div>\n    <label for=\"property-dbinstance-mutil-az-check\" class=\"tooltip\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableMutilAZForMirror), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">Multi-AZ Deployment</label>\n</section>\n\n";
+  buffer += ">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_MUTIL_AZ_DEPLOY", {hash:{},data:data}))
+    + "</label>\n</section>\n\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(14, program14, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;
@@ -17055,7 +17417,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PROMOTE_CONFIRM_CONTENT_3", {hash:{},data:data}))
     + "</li>\n        <li>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PROMOTE_CONFIRM_CONTENT_4", {hash:{},data:data}))
-    + "</li>\n    </ul>\n    <h5 class=\"modal-text-major\">Note</h5>\n    <p>The promotion process takes a few minutes to complete. When you promote a read replica, replication is stopped and the read replica is rebooted. When the reboot is complete, the read replica is available as a Single-AZ DB instance.</p>\n    <a href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\" target=\"_blank\">Read AWS Document</a>\n</section>";
+    + "</li>\n    </ul>\n    <h5 class=\"modal-text-major\">Note</h5>\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RDS_PROMOTE_REPLICA_WARNING", {hash:{},data:data}))
+    + "</p>\n    <a href=\"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RDS_READ_AWS_DOC", {hash:{},data:data}))
+    + "</a>\n</section>";
   return buffer;
   };
 TEMPLATE.modalPromoteConfirm=Handlebars.template(__TEMPLATE__);
@@ -17064,23 +17430,32 @@ TEMPLATE.modalPromoteConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
   
-  
-  return "\n        <div class=\"modal-db-instance-restore-no-restore\">There is no availabe backup to use yet. Please try later.</div>\n    ";
+  var buffer = "";
+  buffer += "\n        <div class=\"modal-db-instance-restore-no-restore\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RDS_NO_BACKUP_TIP", {hash:{},data:data}))
+    + "</div>\n    ";
+  return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <h5 class=\"modal-text-major\">You are creating a new DB Instance from a source DB Instance at a specified time. This new DB Instance will have the default DB Security Group and DB Parameter Groups.</h5>\n\n        <div class=\"modal-db-instance-restore-option\">\n            <label class=\"title\">Use Latest Restorable Time</label>\n            <input id=\"modal-db-instance-restore-radio-latest\" type=\"radio\" value=\"latest\" name=\"modal-db-instance-restore-radio\" ";
+  buffer += "\n        <h5 class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RDS_RESTORE_DB_TIP", {hash:{},data:data}))
+    + "</h5>\n\n        <div class=\"modal-db-instance-restore-option\">\n            <label class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RDS_RESTORE_USE_LASTEST_TIME", {hash:{},data:data}))
+    + "</label>\n            <input id=\"modal-db-instance-restore-radio-latest\" type=\"radio\" value=\"latest\" name=\"modal-db-instance-restore-radio\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.custom), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n            <label for=\"modal-db-instance-restore-radio-latest\">"
     + escapeExpression(((stack1 = (depth0 && depth0.lastest)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</label>\n        </div>\n\n        <div class=\"modal-db-instance-restore-option\">\n            <label class=\"title\">Use Custom Restore Time</label>\n            <input id=\"modal-db-instance-restore-radio-custom\" type=\"radio\" value=\"custom\" name=\"modal-db-instance-restore-radio\" ";
+    + "</label>\n        </div>\n\n        <div class=\"modal-db-instance-restore-option\">\n            <label class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RDS_RESTORE_USE_CUSTOM_TIME", {hash:{},data:data}))
+    + "</label>\n            <input id=\"modal-db-instance-restore-radio-custom\" type=\"radio\" value=\"custom\" name=\"modal-db-instance-restore-radio\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.custom), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n            <div class=\"datetimepicker\">\n                <input class=\"input datepicker\" type=\"text\" >\n                <input class=\"input timepicker hour\" value=\"\" data-ignore=\"true\" maxlength=\"2\" data-required=\"true\" data-type=\"number\" type=\"text\" >\n                <label>:</label>\n                <input class=\"input timepicker minute\" value=\"\" data-ignore=\"true\" maxlength=\"2\" data-required=\"true\" data-type=\"number\" type=\"text\" >\n                <label>:</label>\n                <input class=\"input timepicker second\" value=\"\" data-ignore=\"true\" maxlength=\"2\" data-required=\"true\" data-type=\"number\" type=\"text\" >\n                <label>UTC "
@@ -17115,10 +17490,11 @@ return TEMPLATE; });
     DBInstanceView = PropertyView.extend({
       events: {
         'change #property-dbinstance-name': 'changeInstanceName',
+        'change #property-res-desc': 'onChangeDesc',
         'change #property-dbinstance-mutil-az-check': 'changeMutilAZ',
         'change #property-dbinstance-storage': 'changeAllocatedStorage',
         'keyup #property-dbinstance-storage': 'inputAllocatedStorage',
-        'change #property-dbinstance-iops-check': 'changeProvisionedIOPSCheck',
+        'OPTION_CHANGE #property-dbinstance-storage-type': 'changeStorageType',
         'change #property-dbinstance-iops-value': 'changeProvisionedIOPS',
         'change #property-dbinstance-master-username': 'changeUserName',
         'change #property-dbinstance-master-password': 'changePassWord',
@@ -17154,10 +17530,10 @@ return TEMPLATE; });
           return App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
         } else {
           return modal = new Modal({
-            title: "Confirm to promote Read Replica",
+            title: lang.IDE.TITLE_CONFIRM_PROMOTE_READ_REPLICA,
             template: template_component.modalPromoteConfirm({}),
             confirm: {
-              text: "Confirm"
+              text: lang.PROP.DB_CONFIRM_PROMOTE
             },
             disableClose: true,
             onConfirm: function() {
@@ -17168,10 +17544,13 @@ return TEMPLATE; });
           });
         }
       },
-      openRestoreConfigModal: function() {
-        var currentTime, customDay, customDayStr, customMonth, customMonthStr, customYear, customYearStr, dbRestoreTime, lastestDay, lastestMonth, lastestRestoreTime, lastestYear, modal, noRestore, penddingObj, sourceDbAppModel, sourceDbModel, that, timezone, _getCurrentSelectedTime, _setDefaultSelectedTime;
+      openRestoreConfigModal: function(defaultRes) {
+        var currentTime, customDay, customDayStr, customMonth, customMonthStr, customYear, customYearStr, dateLang, dbRestoreTime, lastestDay, lastestMonth, lastestRestoreTime, lastestYear, modal, noRestore, penddingObj, sourceDbAppModel, sourceDbModel, that, timezone, _getCurrentSelectedTime, _setDefaultSelectedTime;
+        if (!(defaultRes && defaultRes.type === constant.RESTYPE.DBINSTANCE)) {
+          defaultRes = this.resModel;
+        }
         that = this;
-        sourceDbModel = this.resModel.getSourceDBForRestore();
+        sourceDbModel = defaultRes.getSourceDBForRestore();
         sourceDbAppModel = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(sourceDbModel.get('appId'));
         if (sourceDbAppModel) {
           penddingObj = sourceDbAppModel.get('PendingModifiedValues');
@@ -17184,7 +17563,7 @@ return TEMPLATE; });
         }
         if (noRestore) {
           modal = new Modal({
-            title: "Restore to point in time config",
+            title: lang.IDE.TITLE_RESTORE_TO_POINT_IN_TIME_CONFIG,
             template: template_component.modalRestoreConfirm({
               noRestore: noRestore
             }),
@@ -17198,15 +17577,15 @@ return TEMPLATE; });
             disableConfirm: true,
             width: "580",
             onCancel: function() {
-              return that.resModel.remove();
+              return defaultRes.remove();
             },
             onClose: function() {
-              return that.resModel.remove();
+              return defaultRes.remove();
             }
           });
         } else {
           lastestRestoreTime = new Date(sourceDbAppModel.get('LatestRestorableTime'));
-          dbRestoreTime = this.resModel.get('dbRestoreTime');
+          dbRestoreTime = defaultRes.get('dbRestoreTime');
           if (dbRestoreTime) {
             currentTime = new Date(dbRestoreTime);
           } else {
@@ -17258,7 +17637,7 @@ return TEMPLATE; });
             return $('.modal-db-instance-restore-config .timepicker.second').val(second);
           };
           modal = new Modal({
-            title: "Restore to point in time config",
+            title: lang.IDE.TITLE_RESTORE_TO_POINT_IN_TIME_CONFIG,
             template: template_component.modalRestoreConfirm({
               lastest: lastestRestoreTime.toString(),
               custom: !dbRestoreTime,
@@ -17266,7 +17645,7 @@ return TEMPLATE; });
               noRestore: noRestore
             }),
             confirm: {
-              text: "Restore"
+              text: lang.PROP.RDS_RESTORE
             },
             disableClose: true,
             width: "580",
@@ -17275,25 +17654,29 @@ return TEMPLATE; });
               isCustomTime = $('#modal-db-instance-restore-radio-custom')[0].checked;
               if (isCustomTime) {
                 selectedDate = _getCurrentSelectedTime();
-                that.resModel.set('dbRestoreTime', selectedDate.toISOString());
+                defaultRes.set('dbRestoreTime', selectedDate.toISOString());
               } else {
-                that.resModel.set('dbRestoreTime', '');
+                defaultRes.set('dbRestoreTime', '');
               }
-              that.resModel.isRestored = true;
+              defaultRes.isRestored = true;
               return modal.close();
             },
             onCancel: function() {
-              if (!that.resModel.isRestored) {
-                return that.resModel.remove();
+              if (!defaultRes.isRestored) {
+                return defaultRes.remove();
               }
             },
             onClose: function() {
-              if (!that.resModel.isRestored) {
-                return that.resModel.remove();
+              if (!defaultRes.isRestored) {
+                return defaultRes.remove();
               }
             }
           });
           _setDefaultSelectedTime();
+          dateLang = 'en';
+          if (language === 'zh-cn') {
+            dateLang = 'ch';
+          }
           $('.modal-db-instance-restore-config .datepicker').datetimepicker({
             timepicker: false,
             defaultDate: "" + customMonth + "/" + customDay + "/" + customYear,
@@ -17302,6 +17685,7 @@ return TEMPLATE; });
             format: 'm/d/Y',
             formatDate: 'm/d/Y',
             value: "" + customMonthStr + "/" + customDayStr + "/" + customYearStr,
+            lang: dateLang,
             onSelectDate: function() {
               var selectedDate;
               selectedDate = _getCurrentSelectedTime();
@@ -17352,7 +17736,7 @@ return TEMPLATE; });
         }
         that = this;
         diff = function(oldComp, newComp) {
-          var comp, differ;
+          var comp, differ, keys;
           comp = that.resModel.serialize();
           differ = new ResDiff({
             old: {
@@ -17360,6 +17744,12 @@ return TEMPLATE; });
             },
             "new": comp
           });
+          if (differ.modifiedComps && _.keys(differ.addedComps).length === 0 && _.keys(differ.removedComps).length === 0) {
+            keys = _.keys(differ.modifiedComps);
+            if (keys.length === 1 && keys[0] === 'name') {
+              return false;
+            }
+          }
           return differ.getChangeInfo().hasResChange;
         };
         if (e) {
@@ -17676,9 +18066,9 @@ return TEMPLATE; });
           });
         }
         if (this.resModel.isSqlserver()) {
-          attr.iopsInfo = 'Requires a fixed ratio of 10 IOPS / GB storage';
+          attr.iopsInfo = lang.PROP.DBINSTANCE_STORAGE_REQUIRE_10_RATIO;
         } else {
-          attr.iopsInfo = 'Supports IOPS / GB ratios between 3 and 10';
+          attr.iopsInfo = lang.PROP.DBINSTANCE_STORAGE_IOPS_3_10_RATIO;
         }
         this.$el.html(template(attr));
         checkChange = this.checkChange.bind(this);
@@ -17721,7 +18111,7 @@ return TEMPLATE; });
         });
         attr.name;
         if (this.resModel.getSourceDBForRestore() && !this.resModel.isRestored) {
-          return this.openRestoreConfigModal();
+          return this.openRestoreConfigModal(this.resModel);
         }
       },
       bindParsley: function() {
@@ -17874,7 +18264,7 @@ return TEMPLATE; });
         return null;
       },
       renderLVIA: function() {
-        var attr, azUsedMap, connAry, data, disableMutilAZForMirror, engine, lvi, multiAZCapable, sgData, spec, subnetGroupModel, usedAZCount;
+        var attr, azUsedMap, connAry, data, disableMutilAZForMirror, engine, lvi, minAZCount, multiAZCapable, sgData, spec, subnetGroupModel, usedAZCount, _ref;
         spec = this.resModel.getSpecifications();
         lvi = this.resModel.getLVIA(spec);
         data = {
@@ -17915,7 +18305,12 @@ return TEMPLATE; });
           return null;
         });
         usedAZCount = _.size(azUsedMap);
-        if (usedAZCount < 2) {
+        if ((_ref = Design.instance().region()) === 'cn-north-1') {
+          minAZCount = 1;
+        } else {
+          minAZCount = 2;
+        }
+        if (usedAZCount < minAZCount) {
           sgData.azNotEnough = true;
         }
         if (multiAZCapable) {
@@ -17990,6 +18385,9 @@ return TEMPLATE; });
         }
         return null;
       },
+      onChangeDesc: function(event) {
+        return this.resModel.setDesc($(event.currentTarget).val());
+      },
       changeMutilAZ: function(event) {
         var $item, $select, value;
         value = event.target.checked;
@@ -18039,26 +18437,48 @@ return TEMPLATE; });
         }
       },
       _disableIOPSCheck: function(isDisable) {
-        var checked, checkedDom;
-        checkedDom = $('#property-dbinstance-iops-check')[0];
-        if (checkedDom) {
-          if (isDisable) {
-            $('#property-dbinstance-iops-check').attr('disabled', 'disabled');
-            $('.property-dbinstance-iops-value-section').hide();
-            $('#property-dbinstance-iops-value').val('');
-            this.resModel.setIops(0);
-            return checkedDom.checked = false;
+        var _check, _checked, _hide, _switch;
+        _check = function(id) {
+          var $selectedDom;
+          $('#property-dbinstance-storage-type').find('.item').removeClass('selected');
+          $selectedDom = $('#property-dbinstance-storage-type').find('.item[data-id="' + id + '"]');
+          $selectedDom.addClass('selected');
+          return $('#property-dbinstance-storage-type').find('.selection').text($selectedDom.text());
+        };
+        _switch = function(flag) {
+          if (flag) {
+            _check('standard');
+            return $('.property-dbinstance-iops-value-section').hide();
           } else {
-            $('#property-dbinstance-iops-check').removeAttr('disabled');
-            checked = checkedDom.checked;
-            if (checked) {
-              $('.property-dbinstance-iops-value-section').show();
-              return checkedDom.checked = true;
-            } else {
-              $('.property-dbinstance-iops-value-section').hide();
-              return checkedDom.checked = false;
-            }
+            return _check('io1');
           }
+        };
+        _hide = function(flag) {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          if (flag) {
+            $dom.hide();
+            if (_checked()) {
+              return _switch(true);
+            }
+          } else {
+            return $dom.show();
+          }
+        };
+        _checked = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          return $dom.hasClass('selected');
+        };
+        if (isDisable) {
+          if (_checked()) {
+            _switch(true);
+          }
+          _hide(true);
+          $('#property-dbinstance-iops-value').val('');
+          return this.resModel.setIops(0);
+        } else {
+          return _hide(false);
         }
       },
       _getIOPSRange: function(storage) {
@@ -18107,19 +18527,29 @@ return TEMPLATE; });
         value = Number(target.val());
         return that.updateIOPSCheckStatus(value);
       },
-      changeProvisionedIOPSCheck: function(event) {
-        var defaultIOPS, fillValue, iopsRange, originValue, storage, that, value;
+      changeStorageType: function() {
+        var defaultIOPS, fillValue, iopsRange, originValue, storage, that, value, _checked, _value;
         that = this;
-        value = event.target.checked;
+        _checked = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          return $dom.hasClass('selected');
+        };
+        _value = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item.selected');
+          return $dom.attr('data-id');
+        };
+        value = _checked();
         fillValue = $('#property-dbinstance-storage').val();
         originValue = this.resModel.get('allocatedStorage');
         storage = Number(fillValue || originValue);
         iopsRange = this._getIOPSRange(storage);
         if (this.resModel.master() && !this.isAppEdit) {
           if (value) {
-            return this.resModel.setIops(this.resModel.master().get('iops'));
+            this.resModel.setIops(this.resModel.master().get('iops'));
           } else {
-            return this.resModel.setIops(0);
+            this.resModel.setIops(0);
           }
         } else {
           if (value) {
@@ -18128,20 +18558,26 @@ return TEMPLATE; });
               defaultIOPS = this._getDefaultIOPS(storage);
               if (defaultIOPS) {
                 $('#property-dbinstance-iops-value').val(defaultIOPS);
-                return that.changeProvisionedIOPS();
+                that.changeProvisionedIOPS();
               }
             }
           } else {
             $('.property-dbinstance-iops-value-section').hide();
             $('#property-dbinstance-iops-value').val('');
-            return this.resModel.setIops(0);
+            this.resModel.setIops(0);
           }
         }
+        return this.resModel.set('storageType', _value());
       },
       changeProvisionedIOPS: function(event) {
-        var fillValue, iops, originValue, storage, target, that, value;
+        var fillValue, iops, originValue, storage, target, that, value, _checked;
         that = this;
-        if ($('#property-dbinstance-iops-check')[0].checked) {
+        _checked = function() {
+          var $dom;
+          $dom = $('#property-dbinstance-storage-type').find('.item[data-id="io1"]');
+          return $dom.hasClass('selected');
+        };
+        if (_checked()) {
           target = $('#property-dbinstance-iops-value');
           value = target.val();
           iops = Number(value);
@@ -18504,13 +18940,22 @@ function program36(depth0,data) {
 function program38(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "<span class=\"highlight-status\">(Pending)=>["
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.StorageType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "]</span>";
+  return buffer;
+  }
+
+function program40(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.ReadReplicaDBInstanceIdentifiers), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.ReadReplicaDBInstanceIdentifiers), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
   return buffer;
   }
-function program39(depth0,data) {
+function program41(depth0,data) {
   
   var buffer = "";
   buffer += "\n                    <dt>"
@@ -18521,7 +18966,7 @@ function program39(depth0,data) {
   return buffer;
   }
 
-function program41(depth0,data) {
+function program43(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18532,38 +18977,38 @@ function program41(depth0,data) {
   return buffer;
   }
 
-function program43(depth0,data) {
+function program45(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NAME", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DATABASE_NAME", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>";
   return buffer;
   }
 
-function program45(depth0,data) {
+function program47(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_OG", {hash:{},data:data}))
     + "</dt>\n                <dd>";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.optionGroups), {hash:{},inverse:self.noop,fn:self.program(46, program46, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.optionGroups), {hash:{},inverse:self.noop,fn:self.program(48, program48, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </dd>\n            ";
   return buffer;
   }
-function program46(depth0,data) {
+function program48(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDefault), {hash:{},inverse:self.program(49, program49, data),fn:self.program(47, program47, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDefault), {hash:{},inverse:self.program(51, program51, data),fn:self.program(49, program49, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                ";
   return buffer;
   }
-function program47(depth0,data) {
+function program49(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        "
@@ -18576,7 +19021,7 @@ function program47(depth0,data) {
   return buffer;
   }
 
-function program49(depth0,data) {
+function program51(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        <a class=\"db-og-in-app\">"
@@ -18589,18 +19034,18 @@ function program49(depth0,data) {
   return buffer;
   }
 
-function program51(depth0,data) {
+function program53(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PG", {hash:{},data:data}))
     + "</dt>\n                <dd>\n                    ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.DBParameterGroups), {hash:{},inverse:self.noop,fn:self.program(52, program52, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.DBParameterGroups), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </dd>\n            ";
   return buffer;
   }
-function program52(depth0,data) {
+function program54(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        "
@@ -18613,16 +19058,16 @@ function program52(depth0,data) {
   return buffer;
   }
 
-function program54(depth0,data) {
+function program56(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "(";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets), {hash:{},inverse:self.noop,fn:self.program(57, program57, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ")";
   return buffer;
   }
-function program55(depth0,data) {
+function program57(depth0,data) {
   
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.SubnetIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -18630,7 +19075,7 @@ function program55(depth0,data) {
   return buffer;
   }
 
-function program57(depth0,data) {
+function program59(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18641,7 +19086,7 @@ function program57(depth0,data) {
   return buffer;
   }
 
-function program59(depth0,data) {
+function program61(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18652,19 +19097,19 @@ function program59(depth0,data) {
   return buffer;
   }
 
-function program61(depth0,data) {
+function program63(depth0,data) {
   
   
   return "true";
   }
 
-function program63(depth0,data) {
+function program65(depth0,data) {
   
   
   return "false";
   }
 
-function program65(depth0,data) {
+function program67(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "Enabled ("
@@ -18673,7 +19118,7 @@ function program65(depth0,data) {
   return buffer;
   }
 
-function program67(depth0,data) {
+function program69(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18684,7 +19129,7 @@ function program67(depth0,data) {
   return buffer;
   }
 
-function program69(depth0,data) {
+function program71(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <dt>"
@@ -18706,6 +19151,14 @@ function program69(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
+    + "</dd>\n            <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n            <dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
+    + "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENDPOINT", {hash:{},data:data}))
     + "</dt>\n            <dd>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.Endpoint), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
@@ -18753,19 +19206,25 @@ function program69(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.AllocatedStorage), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_STORAGE_TYPE", {hash:{},data:data}))
+    + "</dt>\n            <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.StorageType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.StorageType), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_USERNAME", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.MasterUsername)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ReadReplicaDBInstanceIdentifiers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ReadReplicaDBInstanceIdentifiers)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(40, program40, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ReadReplicaSourceDBInstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ReadReplicaSourceDBInstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(43, program43, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </dl>\n    </div>\n\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_DBCONFIG", {hash:{},data:data}))
     + "</div>\n    <div class=\"option-group\">\n        <dl class=\"dl-vertical\">\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.DBName), {hash:{},inverse:self.noop,fn:self.program(43, program43, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.DBName), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PORT", {hash:{},data:data}))
@@ -18775,10 +19234,10 @@ function program69(depth0,data) {
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.Port), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.optionGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(45, program45, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.optionGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(47, program47, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.DBParameterGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(51, program51, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.DBParameterGroups)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(53, program53, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n        </dl>\n    </div>\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_NETWORK_AVAILABILITY", {hash:{},data:data}))
@@ -18787,18 +19246,18 @@ function program69(depth0,data) {
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.DBSubnetGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n                ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(54, program54, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.DBSubnetGroup)),stack1 == null || stack1 === false ? stack1 : stack1.Subnets)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(56, program56, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(57, program57, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.AvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(59, program59, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(59, program59, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.SecondaryAvailabilityZone), {hash:{},inverse:self.noop,fn:self.program(61, program61, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PUBLIC_ACCESS", {hash:{},data:data}))
     + "</dt>\n            <dd>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PubliclyAccessible), {hash:{},inverse:self.program(63, program63, data),fn:self.program(61, program61, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PubliclyAccessible), {hash:{},inverse:self.program(65, program65, data),fn:self.program(63, program63, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_LICENSE_MODEL", {hash:{},data:data}))
@@ -18809,17 +19268,17 @@ function program69(depth0,data) {
     + "</div>\n    <div class=\"option-group\">\n        <dl class=\"dl-vertical\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_AUTOBACKUP", {hash:{},data:data}))
     + "</dt>\n            <dd>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.BackupRetentionPeriod), {hash:{},inverse:self.program(32, program32, data),fn:self.program(65, program65, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.BackupRetentionPeriod), {hash:{},inverse:self.program(32, program32, data),fn:self.program(67, program67, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_LAST_RESTORE", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, (depth0 && depth0.LatestRestorableTime), {hash:{},data:data}))
     + "</dd>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredBackupWindow), {hash:{},inverse:self.noop,fn:self.program(67, program67, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredBackupWindow), {hash:{},inverse:self.noop,fn:self.program(69, program69, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(69, program69, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </dl>\n    </div>\n\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))
@@ -18951,7 +19410,7 @@ TEMPLATE.list_empty=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('workspaces/awseditor/property/dbinstance/app_view',['../base/view', './template/app', 'og_manage_app', 'constant', 'toolbar_modal', 'ApiRequest', 'JsonExporter'], function(PropertyView, template, ogManageApp, constant, toolbar_modal, ApiRequest, JsonExporter) {
+  define('workspaces/awseditor/property/dbinstance/app_view',['../base/view', './template/app', 'og_manage_app', 'constant', 'toolbar_modal', 'ApiRequest', 'JsonExporter', "i18n!/nls/lang.js"], function(PropertyView, template, ogManageApp, constant, toolbar_modal, ApiRequest, JsonExporter, lang) {
     var CGWAppView;
     CGWAppView = PropertyView.extend({
       events: {
@@ -18978,6 +19437,8 @@ return TEMPLATE; });
             uid: (ogComp != null ? ogComp.id : void 0) || ''
           });
         });
+        data.description = this.resModel.get("description");
+        data.name = this.resModel.get('name');
         this.$el.html(template.appView(data));
         return this.resModel.get('name');
       },
@@ -19125,7 +19586,7 @@ return TEMPLATE; });
         that = this;
         appId = this.resModel.get('appId');
         options = {
-          title: "Log & Event: " + appId,
+          title: sprintf(lang.IDE.TITLE_LOG_AND_EVENT, appId),
           classList: 'syslog-dbinstance',
           context: that,
           noCheckbox: true,
@@ -19134,12 +19595,12 @@ return TEMPLATE; });
             {
               icon: 'unknown',
               type: 'log',
-              name: 'Log',
+              name: lang.IDE.LBL_LOG,
               active: true
             }, {
               icon: 'unknown',
               type: 'event',
-              name: 'Event'
+              name: lang.IDE.LBL_EVENT
             }
           ]
         };
@@ -19153,25 +19614,25 @@ return TEMPLATE; });
         return [
           {
             sortable: true,
-            name: 'Name'
+            name: lang.PROP.LBL_NAME
           }, {
             sortable: true,
             rowType: 'datetime',
-            name: 'Last Written',
+            name: lang.IDE.LBL_LAST_WRITTEN,
             width: "28%"
           }, {
             sortable: true,
             rowType: 'number',
             width: "10%",
-            name: 'Size(B)'
+            name: lang.IDE.LBL_SIZE_B
           }, {
             sortable: false,
             width: "10%",
-            name: 'View'
+            name: lang.PROP.LBL_VIEW
           }, {
             sortable: false,
             width: "10%",
-            name: 'Download'
+            name: lang.PROP.LBL_DOWNLOAD
           }
         ];
       },
@@ -19180,15 +19641,15 @@ return TEMPLATE; });
           {
             sortable: true,
             rowType: 'datetime',
-            name: 'Time',
+            name: lang.IDE.LBL_TIME,
             width: "28%"
           }, {
             sortable: true,
             width: "20%",
-            name: 'Source'
+            name: lang.PROP.LBL_SOURCE
           }, {
             sortable: false,
-            name: 'System Notes'
+            name: lang.IDE.LBL_SYSTEM_NOTES
           }
         ];
       }
@@ -19275,25 +19736,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  
-  return "disabled";
-  }
-
-function program3(depth0,data) {
-  
   var buffer = "", stack1;
   buffer += "\r\n<div class='option-group-category'>"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\r\n<dl class=\"dl-vertical sbg-list\">\r\n";
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</dl> \r\n";
+  buffer += "</dl>\r\n";
   return buffer;
   }
-function program4(depth0,data) {
+function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "             \r\n    <dd>"
+  buffer += "\r\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\r\n    <dt>("
     + escapeExpression(((stack1 = (depth0 && depth0.cidr)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -19309,10 +19764,7 @@ function program4(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\r\n    <input class=\"input\"  type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-subnet-name\" data-ignore=\"true\" data-required-rollback=\"true\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " />\r\n  </section>\r\n\r\n\r\n  <section class=\"property-control-group\" data-bind=\"true\">\r\n    <label class=\"left\" for=\"property-dbinstance-name\" >"
+    + "\" id=\"property-subnet-name\" data-ignore=\"true\" data-required-rollback=\"true\"/>\r\n  </section>\r\n\r\n\r\n  <section class=\"property-control-group\" data-bind=\"true\">\r\n    <label class=\"left\" for=\"property-dbinstance-name\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_GROUP_DESCRIPTION", {hash:{},data:data}))
     + "</label>\r\n    <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
@@ -19323,7 +19775,7 @@ function program4(depth0,data) {
     + "<span class=\"property-head-num-wrap\">("
     + escapeExpression(((stack1 = (depth0 && depth0.sbCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span>\r\n<button class=\"icon-edit tooltip add-rule\" data-tooltip=\"Edit subnet group\"></button></div>\r\n\r\n";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.azSb), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.azSb), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n\r\n\r\n</article>";
   return buffer;
@@ -19340,7 +19792,7 @@ function program4(depth0,data) {
       setName: function(e) {
         var $target;
         $target = $(e.currentTarget);
-        if ($target.parsley('validate')) {
+        if ($target.parsley('validate') && MC.aws.aws.checkResName(this.model.get('id'), $target, "Subnet Group")) {
           return this.model.set('name', $target.val());
         }
       },
@@ -19418,6 +19870,10 @@ function program2(depth0,data) {
   buffer += "<article class=\"property-app property-subnet-group\">\n    <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_TIT_DETAIL", {hash:{},data:data}))
     + "</div>\n    <div class=\"option-group\">\n        <dl class=\"dl-vertical\">\n            <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
+    + "</dt>\n            <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_SUBNET_GROUP_NAME", {hash:{},data:data}))
     + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.DBSubnetGroupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -19449,8 +19905,9 @@ return TEMPLATE; });
         data = this.appModel.toJSON();
         data.azSb = this.getAzSb();
         data.sbCount = ((_ref = this.appModel.get('Subnets')) != null ? _ref.length : void 0) || 0;
+        data.name = this.model.get('name');
         this.$el.html(template.app(data));
-        return this.model.get('name');
+        return data.name;
       },
       getAzSb: function() {
         var azSb, sbAppResources;
@@ -19584,13 +20041,12 @@ return TEMPLATE; });
         this.$el.find(".property-second-panel").show().animate({
           left: "0%"
         }, 200);
-        return this.$el.find(".property-first-panel").animate({
+        this.$el.find(".property-first-panel").animate({
           left: "-30%"
         }, 200, (function(_this) {
-          return function() {
-            return _this.$el.find(".property-first-panel").hide();
-          };
+          return function() {};
         })(this));
+        return this.$el.find(".property-first-panel").hide();
       },
       immShowSecondPanel: function(type, id) {
         this.$el.find(".HideSecondPanel").data("tooltip", "Back to " + this.$el.find(".property-title").text());
@@ -19777,7 +20233,7 @@ return TEMPLATE; });
         this.refresh();
       },
       showStateEditor: function(jqueryEvent, uid) {
-        var allCompData, comp, compData, design, _ref;
+        var allCompData, comp, compData, design, resId, _ref;
         if ((jqueryEvent != null ? jqueryEvent.type : void 0) === "SHOW_STATEEDITOR" && this.__showingState) {
           return false;
         }
@@ -19805,7 +20261,10 @@ return TEMPLATE; });
         }
         allCompData = design.serialize().component;
         compData = allCompData[uid];
-        stateeditor.loadModule(allCompData, uid);
+        if (comp && comp.id.indexOf('i-') === 0) {
+          resId = comp.id;
+        }
+        stateeditor.loadModule(allCompData, uid, resId);
         this.forceShow();
       }
     });
@@ -19853,7 +20312,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\n  <button class=\"selection tooltip\" data-tooltip=\"SecurityGroup Line Style\"></button>\n  <ul class=\"dropdown\">\n    <li class='item' data-id=\"0\"><span class=\"icon-straight\">"
+  buffer += "<div class=\"selectbox btn-toolbar toolbar-line-style seperator\">\n  <button class=\"selection tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SG_LINE_STYLE", {hash:{},data:data}))
+    + "\"></button>\n  <ul class=\"dropdown\">\n    <li class='item' data-id=\"0\"><span class=\"icon-straight\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_LINESTYLE_STRAIGHT", {hash:{},data:data}))
     + "</span></li>\n    <li class='item' data-id=\"1\"><span class=\"icon-elbow\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_LINESTYLE_ELBOW", {hash:{},data:data}))
@@ -19960,6 +20421,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "</span></button>\n<button class=\"btn-toolbar tooltip icon-terminate seperator\" data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_TERMINATE_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-forget-app seperator\" data-tooltip=\"";
+  stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_FORGET_APP", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
     + "'></button>";
@@ -20028,7 +20492,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\"Reload States\" data-disabled=\"Initiating…\"  data-tooltip=\"Instantly rerun all states in this app.\">"
+  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
+    + "\" data-disabled=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.INITIATING", {hash:{},data:data}))
+    + "…\"  data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.INSTANTLY_RERUN_ALL_STATES_IN_THIS_APP", {hash:{},data:data}))
+    + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
     + "</button>";
   return buffer;
@@ -20138,28 +20608,6 @@ TEMPLATE.modal.cancelUpdate=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
-
-
-  buffer += "<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IMPORT_SUCCESSFULLY_WELL_DONE", (depth0 && depth0.name), {hash:{},data:data}))
-    + "</p>\n<p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.NAME_IMPORTED_APP", {hash:{},data:data}))
-    + "</p>\n<div class=\"modal-control-group\">\n    <label for=\"ImportSaveAppName\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_NAME", {hash:{},data:data}))
-    + "</label>\n    <input id=\"ImportSaveAppName\" class=\"input\" value=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"string\" autofocus>\n</div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n    <label for=\"\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_USAGE", {hash:{},data:data}))
-    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">Monitor and report external resource change of this app</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\"If resource has been changed outside VisualOps, an email notification will be sent to you.\" style=\"color:#148BE6;vertical-align:-3px;\"></i>\n</section>\n\n<p>Now you can easily manage the resources and lifecycle of the app within VisualOps.</p>";
-  return buffer;
-  };
-TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
@@ -20228,7 +20676,7 @@ return TEMPLATE; });
     } else {
       API_HOST = location.hostname;
     }
-    API_URL = "https://api." + API_HOST + "/v1/apps/";
+    API_URL = window.location.protocol + "//api." + API_HOST + "/v1/apps/";
     return Backbone.View.extend({
       events: {
         "click .icon-save": "saveStack",
@@ -20278,7 +20726,9 @@ return TEMPLATE; });
         this.setElement(this.parent.$el.find(".OEPanelTop").html(tpl));
         that = this;
         setTimeout(function() {
-          return that.updateTbBtns();
+          if (!that.workspace.isRemoved()) {
+            return that.updateTbBtns();
+          }
         }, 1000);
         this.updateZoomButtons();
       },
@@ -20346,22 +20796,30 @@ return TEMPLATE; });
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
             return notification("info", sprintf(lang.NOTIFY.ERR_SAVE_SUCCESS, newJson.name));
-          }, function() {
+          }, function(err) {
+            var message;
             self.__saving = false;
             $(evt.currentTarget).removeAttr("disabled");
-            return notification("error", sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name));
+            if (err.error === 252) {
+              message = lang.NOTIFY.ERR_SAVE_FAILED_NAME;
+            } else {
+              message = sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name);
+            }
+            return notification("error", message);
           });
         });
       },
       deleteStack: function() {
-        return appAction.deleteStack(this.workspace.opsModel.cid, this.workspace.design.get("name"));
+        return appAction.deleteStack(this.workspace.opsModel.cid, this.workspace.opsModel.get("name"));
       },
       createStack: function() {
         return App.createOps(this.workspace.opsModel.get("region"));
       },
       duplicateStack: function() {
         var newOps;
-        newOps = App.model.createStackByJson(this.workspace.design.serialize());
+        newOps = App.model.createStackByJson(this.workspace.design.serialize({
+          duplicateStack: true
+        }));
         App.openOps(newOps);
       },
       zoomIn: function() {
@@ -20389,7 +20847,7 @@ return TEMPLATE; });
       exportPNG: function() {
         var design, modal, name;
         modal = new Modal({
-          title: "Export PNG",
+          title: lang.IDE.TITLE_EXPORT_PNG,
           template: OpsEditorTpl["export"].PNG(),
           width: "470",
           disableFooter: true,
@@ -20541,30 +20999,57 @@ return TEMPLATE; });
         });
       },
       runStack: function(event) {
-        var appNameDom, checkAppNameRepeat, cost, self, that;
+        var that;
         that = this;
         if ($(event.currentTarget).attr('disabled')) {
           return false;
         }
-        this.modal = new Modal({
-          title: lang.IDE.RUN_STACK_MODAL_TITLE,
-          template: MC.template.modalRunStack,
-          disableClose: true,
-          width: '450px',
-          confirm: {
-            text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
-            disabled: true
-          }
+        return appAction.showPayment().then(function(result) {
+          var paymentModal, paymentUpdate;
+          paymentUpdate = result.result;
+          paymentModal = result.modal;
+          return that.__runStack(paymentUpdate, paymentModal);
         });
+      },
+      __runStack: function(paymentUpdate, paymentModal) {
+        var appNameDom, checkAppNameRepeat, cost, costString, paymentState, self, that, _ref;
+        that = this;
+        paymentState = App.user.get('paymentState');
+        if (paymentModal) {
+          this.modal = paymentModal;
+          this.modal.setTitle(lang.IDE.RUN_STACK_MODAL_TITLE).setWidth('665px').setContent(MC.template.modalRunStack({
+            paymentState: paymentState,
+            paymentUpdate: paymentUpdate
+          })).compact().find('.modal-footer').show();
+        } else {
+          this.modal = new Modal({
+            title: lang.IDE.RUN_STACK_MODAL_TITLE,
+            template: MC.template.modalRunStack({
+              paymentState: paymentState
+            }),
+            disableClose: true,
+            width: '665px',
+            compact: true,
+            confirm: {
+              text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
+              disabled: true
+            }
+          });
+        }
         this.renderKpDropdown(this.modal);
         cost = Design.instance().getCost();
-        this.modal.tpl.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
-        this.modal.tpl.find("#label-total-fee").find('b').text("$" + cost.totalFee);
+        this.modal.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
+        costString = "$" + cost.totalFee;
+        if ((_ref = Design.instance().region()) === 'cn-north-1') {
+          costString = "￥" + cost.totalFee;
+        }
+        this.modal.find("#label-total-fee").find('b').text(costString);
+        this.modal.find("#label-visualops-fee").find('b').text("$" + cost.visualOpsFee);
         TA.loadModule('stack').then((function(_this) {
           return function() {
-            var _ref;
+            var _ref1;
             _this.modal.resize();
-            return (_ref = _this.modal) != null ? _ref.toggleConfirm(false) : void 0;
+            return (_ref1 = _this.modal) != null ? _ref1.toggleConfirm(false) : void 0;
           };
         })(this));
         appNameDom = this.modal.tpl.find('#app-name');
@@ -20602,15 +21087,13 @@ return TEMPLATE; });
             });
           };
         })(this));
-        App.user.on('change:credential', function() {
-          console.log('We got it.');
+        this.modal.listenTo(App.user, 'change:credential', function() {
           if (App.user.hasCredential() && that.modal.isOpen()) {
             return that.modal.find(".modal-confirm").text(lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN);
           }
         });
         return this.modal.on('close', function() {
-          console.log('We gave up.');
-          return App.user.off('change:credential');
+          return that.modal.stopListening(App.user);
         });
       },
       appToStack: function() {
@@ -20633,7 +21116,7 @@ return TEMPLATE; });
               appToStackModal.close();
               newJson.name = stack.get("name");
               return stack.save(newJson).then(function() {
-                notification("info", sprintf(lang.NOTIFY.INFO_HDL_SUCCESS, lang.IDE.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
+                notification("info", sprintf(lang.NOTIFY.INFO_HDL_SUCCESS, lang.TOOLBAR.TOOLBAR_HANDLE_SAVE_STACK, newJson.name));
                 return App.openOps(stack, true);
               }, function() {
                 return notification('error', sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name));
@@ -20795,7 +21278,7 @@ return TEMPLATE; });
         return checkDB.promise;
       },
       applyAppEdit: function() {
-        var components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
+        var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
         that = this;
         oldJson = this.workspace.opsModel.getJsonData();
         newJson = this.workspace.design.serialize({
@@ -20819,12 +21302,11 @@ return TEMPLATE; });
             return dbInstanceList.push(e.resource.DBInstanceIdentifier);
           }
         });
+        DBInstances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().get("region"));
         this.updateModal = new Modal({
           title: lang.IDE.HEAD_INFO_LOADING,
           template: MC.template.loadingSpiner,
           disableClose: true,
-          hasScroll: true,
-          maxHeight: "450px",
           cancel: "Close"
         });
         this.updateModal.tpl.find(".modal-footer").hide();
@@ -20835,7 +21317,7 @@ return TEMPLATE; });
           }
         });
         return this.checkDBinstance(oldDBInstanceList).then(function(DBInstances) {
-          var $diffTree, notAvailableDB, removeList, removeListNotReady;
+          var $diffTree, cost, currency, notAvailableDB, removeList, removeListNotReady;
           notAvailableDB = DBInstances.filter(function(e) {
             var _ref;
             return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(dbInstanceList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
@@ -20862,6 +21344,7 @@ return TEMPLATE; });
             return e.attributes.DBInstanceStatus !== "available";
           });
           that.updateModal.tpl.children().css('width', "450px").find(".modal-footer").show();
+          that.updateModal.find(".modal-wrapper-fix").width(665).find('.modal-body').css('padding', 0);
           that.updateModal.setContent(MC.template.updateApp({
             isRunning: that.workspace.opsModel.testState(OpsModel.State.Running),
             notReadyDB: removeListNotReady,
@@ -20870,6 +21353,10 @@ return TEMPLATE; });
           that.updateModal.tpl.find(".modal-header").find("h3").text(lang.IDE.UPDATE_APP_MODAL_TITLE);
           that.updateModal.tpl.find('.modal-confirm').prop("disabled", true).text((App.user.hasCredential() ? lang.IDE.UPDATE_APP_CONFIRM_BTN : lang.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL));
           that.updateModal.resize();
+          cost = Design.instance().getCost();
+          currency = Design.instance().getCurrency();
+          that.updateModal.find("#label-total-fee").find('b').text("" + (currency + cost.totalFee));
+          that.updateModal.find("#label-visualops-fee").find('b').text("" + (currency + cost.visualOpsFee));
           window.setTimeout(function() {
             return that.updateModal.resize();
           }, 100);
@@ -20922,11 +21409,11 @@ return TEMPLATE; });
           if (!instancesNoUserData) {
             $switcher.removeClass('on');
             confirmModal = new Modal({
-              title: "Confirm to Enable VisualOps",
+              title: lang.IDE.TITLE_CONFIRM_TO_ENABLE_VISUALOPS,
               width: "420px",
               template: OpsEditorTpl.confirm.enableState(),
               confirm: {
-                text: "Enable VisualOps"
+                text: lang.IDE.ENABLE_VISUALOPS
               },
               onConfirm: function() {
                 agent.enabled = true;
@@ -20953,7 +21440,7 @@ return TEMPLATE; });
         if (!this.workspace.cancelEditMode()) {
           self = this;
           modal = new Modal({
-            title: "Changes not applied",
+            title: lang.IDE.TITLE_CHANGE_NOT_APPLIED,
             template: OpsEditorTpl.modal.cancelUpdate(),
             width: "400",
             confirm: {
@@ -20967,6 +21454,9 @@ return TEMPLATE; });
           });
         }
         return false;
+      },
+      xxxxxx: function() {
+        return this.setElement(this.parent.$el.find(".OEPanelTop").html(OpsEditorTpl.toolbar.BtnActionPng()));
       }
     });
   });
@@ -20990,6 +21480,28 @@ function program3(depth0,data) {
   
   
   return "disableRds";
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<li class=\"tooltip resource-item vgw\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VGW", {hash:{},data:data}))
+    + "' data-type=\"VGW\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VGW", {hash:{},data:data}))
+    + "</li>";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<li class=\"tooltip resource-item cgw\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_CGW", {hash:{},data:data}))
+    + "' data-type=\"CGW\">"
+    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_CGW", {hash:{},data:data}))
+    + "</li>";
+  return buffer;
   }
 
   buffer += "<button class=\"tooltip sidebar-hider icon-caret-left HideOEPanelLeft\" data-tooltip='"
@@ -21105,15 +21617,13 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_IGW", {hash:{},data:data}))
     + "' data-type=\"IGW\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_IGW", {hash:{},data:data}))
-    + "</li>\n\n      <li class=\"tooltip resource-item vgw\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_VGW", {hash:{},data:data}))
-    + "' data-type=\"VGW\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_VGW", {hash:{},data:data}))
-    + "</li>\n\n      <li class=\"tooltip resource-item cgw\" data-tooltip='"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_CGW", {hash:{},data:data}))
-    + "' data-type=\"CGW\">"
-    + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_CGW", {hash:{},data:data}))
-    + "</li>\n\n      <li class=\"tooltip resource-item eni\" data-tooltip='"
+    + "</li>\n\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasVGW), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasCGW), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n      <li class=\"tooltip resource-item eni\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_DRAG_NEW_ENI", {hash:{},data:data}))
     + "' data-type=\"ENI\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_NEW_ENI", {hash:{},data:data}))
@@ -21382,7 +21892,7 @@ function program1(depth0,data) {
   }
 
   buffer += "<div class=\"bubble-head\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.ID), {hash:{},data:data}))
     + "</div>\n<dl class=\"bubble-content dl-horizontal\">";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -21410,21 +21920,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_ALL_PLATFORMS", {hash:{},data:data}))
     + "</li>\n        <li class=\"item\" data-id=\"amazonlinux\"> <span class=\"icon-ami-os amz-linux\">Amazon Linux</span> </li>\n        <li class=\"item\" data-id=\"centos\"> <span class=\"icon-ami-os centos\">Cent OS</span> </li>\n        <li class=\"item\" data-id=\"debian\"> <span class=\"icon-ami-os debian\">Debian</span> </li>\n        <li class=\"item\" data-id=\"fedora\"> <span class=\"icon-ami-os fedora\">Fedora</span> </li>\n        <li class=\"item\" data-id=\"gentoo\"> <span class=\"icon-ami-os gentoo\">Gentoo</span> </li>\n        <li class=\"item\" data-id=\"opensuse\"><span class=\"icon-ami-os opensuse\">OpenSUSE</span> </li>\n        <li class=\"item\" data-id=\"ubuntu\"> <span class=\"icon-ami-os ubuntu\">Ubuntu</span> </li>\n        <li class=\"item\" data-id=\"redhat\"> <span class=\"icon-ami-os redhat\">Red Hat</span> </li>\n        <li class=\"item\" data-id=\"windows\"><span class=\"icon-ami-os windows\">Windows</span> </li>\n        <li class=\"item\" data-id=\"otherlinux\"> <span class=\"icon-ami-os linux-other\">Other Linux</span> </li>\n      </ul>\n    </div>\n\n    <div class=\"ami-option-group\">\n      <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_VISIBILITY", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-type\">\n        <button type=\"button\" class=\"btn active\">"
+    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-type\">\n        <button type=\"button\" class=\"btn active\" data-radio=\"Public\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_PUBLIC", {hash:{},data:data}))
-    + "</button>\n        <button type=\"button\" class=\"btn\">"
+    + "</button>\n        <button type=\"button\" class=\"btn\" data-radio=\"Private\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_PRIVATE", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n\n    <div class=\"ami-option-group\">\n      <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_ARCHITECTURE", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-32bit-64bit\">\n        <button type=\"button\" class=\"btn active\">"
+    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-32bit-64bit\">\n        <button type=\"button\" class=\"btn active\" data-radio=\"32bit\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_32_BIT", {hash:{},data:data}))
-    + "</button>\n        <button type=\"button\" class=\"btn\">"
+    + "</button>\n        <button type=\"button\" class=\"btn\" data-radio=\"64bit\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_64_BIT", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n\n    <div class=\"ami-option-group\">\n      <h5>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_ROOT_DEVICE_TYPE", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-EBS-Instance\">\n        <button type=\"button\" class=\"btn active\">"
+    + "</h5>\n      <div class=\"ami-option-wrap\" id=\"filter-ami-EBS-Instance\">\n        <button type=\"button\" class=\"btn active\" data-radio=\"EBS\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_EBS", {hash:{},data:data}))
-    + "</button>\n        <button type=\"button\" class=\"btn\">"
+    + "</button>\n        <button type=\"button\" class=\"btn\" data-radio=\"Instance Store\">"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_INSTANCE_STORE", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n\n    <div id=\"btn-search-ami\" class=\"btn btn-blue\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "AMI_LBL_SEARCHING", {hash:{},data:data}))
@@ -21563,7 +22073,7 @@ return TEMPLATE; });
         });
       },
       doSearch: function(pageNum, perPage) {
-        var architecture, isPublic, name, perPageNum, platform, returnPage, rootDeviceType, self, visibility;
+        var amiId, amiRes, architecture, isPublic, name, perPageNum, platform, reg_ami, returnPage, rootDeviceType, self, visibility;
         pageNum = pageNum || 1;
         this.renderAmiLoading();
         name = $("#community-ami-input").val();
@@ -21578,7 +22088,11 @@ return TEMPLATE; });
           isPublic = null;
         }
         if ($('#filter-ami-32bit-64bit').find('.active').length === 1) {
-          architecture = radiobuttons.data($('#filter-ami-32bit-64bit'));
+          if (radiobuttons.data($('#filter-ami-32bit-64bit')).slice(0, 2) === '32') {
+            architecture = '32-bit';
+          } else {
+            architecture = '64-bit';
+          }
         } else if ($('#filter-ami-32bit-64bit').find('.active').length === 2) {
           architecture = null;
         }
@@ -21590,30 +22104,57 @@ return TEMPLATE; });
         perPageNum = parseInt(perPage || 50, 10);
         returnPage = parseInt(pageNum, 10);
         self = this;
-        return ApiRequest("aws_public", {
-          region_name: this.region,
-          filters: {
-            ami: {
-              name: name,
-              platform: platform,
-              isPublic: isPublic,
-              architecture: architecture,
-              rootDeviceType: rootDeviceType,
-              perPageNum: perPageNum,
-              returnPage: returnPage
+        reg_ami = /ami-[a-zA-Z0-9]{8}$/;
+        amiId = name.trim();
+        if (amiId && reg_ami.test(amiId)) {
+          amiRes = CloudResources("AWS.EC2.AMI", self.region);
+          return amiRes.fetchAmis([amiId]).then(function() {
+            var amiData, result, _ref;
+            amiData = amiRes.where({
+              id: amiId
+            });
+            result = {
+              "ami": {
+                "curPageNum": 1,
+                "result": {},
+                "totalNum": 0,
+                "totalPageNum": 1
+              }
+            };
+            if (amiData.length > 0) {
+              result.ami.result[amiId] = amiData[0].toJSON();
+              result.ami.totalNum = 1;
             }
-          }
-        }).then(function(result) {
-          var _ref;
-          result = self.addFavStar(result);
-          self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
-          return self.communityAmiRender(result);
-        }, function(result) {
-          notification('error', lang.NOTIFY.UNABLE_TO_LOAD_COMMUNITY_AMIS);
-          return self.communityAmiRender({
-            ami: []
+            result = self.addFavStar(result);
+            self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
+            return self.communityAmiRender(result);
           });
-        });
+        } else {
+          return ApiRequest("aws_public", {
+            region_name: this.region,
+            filters: {
+              ami: {
+                name: name,
+                platform: platform,
+                isPublic: isPublic,
+                architecture: architecture,
+                rootDeviceType: rootDeviceType,
+                perPageNum: perPageNum,
+                returnPage: returnPage
+              }
+            }
+          }).then(function(result) {
+            var _ref;
+            result = self.addFavStar(result);
+            self.communityAmiData = ((_ref = result.ami) != null ? _ref.result : void 0) || {};
+            return self.communityAmiRender(result);
+          }, function(result) {
+            notification('error', lang.NOTIFY.UNABLE_TO_LOAD_COMMUNITY_AMIS);
+            return self.communityAmiRender({
+              ami: []
+            });
+          });
+        }
       },
       searchPrev: function() {
         var page;
@@ -21664,6 +22205,9 @@ return TEMPLATE; });
         if (itemEnd > total) {
           itemEnd = total;
         }
+        if (itemEnd === 0) {
+          itemBegin = 0;
+        }
         $('.page-tip').text(sprintf(lang.IDE.AMI_LBL_PAGEINFO, itemBegin, itemEnd, total));
         pagination = $('.pagination');
         if (max_page === 0) {
@@ -21706,7 +22250,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "../template/TplLeftPanel", "constant", 'dhcp', 'snapshotManager', 'rds_snapshot', 'sslcert_manage', 'sns_manage', 'kp_manage', 'rds_pg', 'rds_snapshot', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', "backbone", 'UI.radiobuttons', "UI.nanoscroller", "UI.dnd"], function(CloudResources, Design, LeftPanelTpl, constant, dhcpManager, EbsSnapshotManager, RdsSnapshotManager, sslCertManager, snsManager, keypairManager, rdsPgManager, rdsSnapshot, AmiBrowser, lang, ApiRequest) {
+  define('workspaces/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "../template/TplLeftPanel", "constant", 'dhcp', 'snapshotManager', 'rds_snapshot', 'sslcert_manage', 'sns_manage', 'kp_manage', 'rds_pg', 'rds_snapshot', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', 'OpsModel', "backbone", 'UI.radiobuttons', "UI.nanoscroller", "UI.dnd"], function(CloudResources, Design, LeftPanelTpl, constant, dhcpManager, EbsSnapshotManager, RdsSnapshotManager, sslCertManager, snsManager, keypairManager, rdsPgManager, rdsSnapshot, AmiBrowser, lang, ApiRequest, OpsModel) {
     var LcItemView, __resizeAccdTO;
     __resizeAccdTO = null;
     $(window).on("resize", function() {
@@ -21752,7 +22296,7 @@ return TEMPLATE; });
       return LeftPanelTpl.resourcePanelBubble(ss.toJSON());
     };
     MC.template.resPanelSnapshot = function(data) {
-      var ss;
+      var newData, ss;
       if (!data.region || !data.id) {
         return;
       }
@@ -21760,7 +22304,13 @@ return TEMPLATE; });
       if (!ss) {
         return;
       }
-      return LeftPanelTpl.resourcePanelBubble(ss.toJSON());
+      newData = {};
+      _.each(ss.toJSON(), function(value, key) {
+        var newKey;
+        newKey = lang.IDE["DASH_BUB_" + key.toUpperCase()] || key;
+        return newData[newKey] = value;
+      });
+      return LeftPanelTpl.resourcePanelBubble(newData);
     };
     LcItemView = Backbone.View.extend({
       tagName: 'li',
@@ -21820,8 +22370,15 @@ return TEMPLATE; });
         return this.render();
       },
       render: function() {
+        var hasCGW, hasVGW;
+        hasVGW = hasCGW = true;
+        if (Design.instance().region() === 'cn-north-1') {
+          hasVGW = hasCGW = false;
+        }
         this.$el.html(LeftPanelTpl.panel({
-          rdsDisabled: this.workspace.isRdsDisabled()
+          rdsDisabled: this.workspace.isRdsDisabled(),
+          hasVGW: hasVGW,
+          hasCGW: hasCGW
         }));
         this.$el.toggleClass("hidden", this.__leftPanelHidden || false);
         this.recalcAccordion();
@@ -22031,7 +22588,7 @@ return TEMPLATE; });
         return this.$el.find(".resource-list-ami").html(html).parent().nanoScroller("reset");
       },
       updateDisableItems: function(resModel) {
-        var $ul, RESTYPE, az, design, disabled, subnet, tooltip, _i, _len, _ref;
+        var $ul, RESTYPE, az, design, disabled, minAZCount, subnet, tooltip, _i, _len, _ref, _ref1;
         if (!this.workspace.isAwake()) {
           return;
         }
@@ -22048,9 +22605,14 @@ return TEMPLATE; });
           az[subnet.parent().get("name")] = true;
         }
         this.sbg = this.$el.find(".resource-item.subnetgroup");
-        if (_.keys(az).length < 2) {
+        if ((_ref1 = Design.instance().region()) === 'cn-north-1') {
+          minAZCount = 1;
+        } else {
+          minAZCount = 2;
+        }
+        if (_.keys(az).length < minAZCount) {
           disabled = true;
-          tooltip = "To create subnet group, there must to be subnets from at least 2 different availability zones on canvas.";
+          tooltip = sprintf(lang.IDE.RES_TIP_DRAG_CREATE_SUBNET_GROUP, minAZCount);
           this.sbg.toggleClass("disabled", true).attr("data-tooltip");
         } else {
           disabled = false;
@@ -22257,10 +22819,12 @@ TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  return "Last saved: <span class=\"stack-save-time\">-<span>";
+  buffer += escapeExpression(helpers.i18n.call(depth0, "IDE.LAST_SAVED", {hash:{},data:data}))
+    + " <span class=\"stack-save-time\">-<span>";
+  return buffer;
   };
 TEMPLATE.lastSaved=Handlebars.template(__TEMPLATE__);
 
@@ -22284,17 +22848,17 @@ TEMPLATE.state=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+  var escapeExpression=this.escapeExpression;
 
 
-  return "Validate";
+  return escapeExpression(helpers.i18n.call(depth0, "IDE.LBL_VALIDATE", {hash:{},data:data}));
   };
 TEMPLATE.ta=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
 (function() {
-  define('workspaces/awseditor/subviews/Statusbar',["OpsModel", "Design", "../template/TplStatusbar", "constant", "backbone", "event", "state_status"], function(OpsModel, Design, template, constant, Backbone, ide_event, stateStatus) {
+  define('workspaces/awseditor/subviews/Statusbar',["OpsModel", "Design", "../template/TplStatusbar", "constant", "backbone", "event", "state_status", "i18n!/nls/lang.js"], function(OpsModel, Design, template, constant, Backbone, ide_event, stateStatus, lang) {
     var itemView, items;
     items = [
       {
@@ -22353,8 +22917,8 @@ return TEMPLATE; });
         click: function(event) {
           var btnDom, currentText;
           btnDom = $(event.currentTarget);
-          currentText = 'Validate';
-          btnDom.text('Validating...');
+          currentText = lang.IDE.LBL_VALIDATE;
+          btnDom.text(lang.IDE.VALIDATING_3DOT);
           return setTimeout(function() {
             MC.ta.validAll();
             btnDom.text(currentText);
@@ -22885,7 +23449,7 @@ return TEMPLATE; });
         }, CanvasView.prototype.events);
       },
       recreateStructure: function() {
-        this.svg.clear().add([this.svg.group().classes("layer_vpc"), this.svg.group().classes("layer_az"), this.svg.group().classes("layer_subnet"), this.svg.group().classes("layer_asg"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_sgline"), this.svg.group().classes("layer_node")]);
+        this.svg.clear().add([this.svg.group().classes("layer_vpc"), this.svg.group().classes("layer_az"), this.svg.group().classes("layer_subnet"), this.svg.group().classes("layer_asg"), this.svg.group().classes("layer_line"), this.svg.group().classes("layer_sgline"), this.svg.group().classes("layer_lc"), this.svg.group().classes("layer_node")]);
       },
       appendVpc: function(svgEl) {
         return this.__appendSvg(svgEl, ".layer_vpc");
@@ -23203,7 +23767,7 @@ return TEMPLATE; });
         return result;
       },
       getCost: function(stopped) {
-        var c, comp, cost, costList, currency, priceMap, totalFee, uid, _i, _len, _ref, _ref1;
+        var c, comp, cost, costList, currency, e, priceMap, totalFee, uid, _i, _len, _ref, _ref1;
         costList = [];
         totalFee = 0;
         priceMap = App.model.getPriceData(this.region());
@@ -23216,7 +23780,13 @@ return TEMPLATE; });
               continue;
             }
             if (comp.getCost) {
-              cost = comp.getCost(priceMap, currency);
+              cost = null;
+              try {
+                cost = comp.getCost(priceMap, currency);
+              } catch (_error) {
+                e = _error;
+                console.error("Error occured when calc-ing price:", e);
+              }
               if (!cost) {
                 continue;
               }
@@ -23238,6 +23808,14 @@ return TEMPLATE; });
           costList: costList,
           totalFee: Math.round(totalFee * 100) / 100
         };
+      },
+      getCurrency: function() {
+        var currency, _ref;
+        currency = "$";
+        if ((_ref = Design.instance().region()) === "cn-north-1") {
+          currency = "￥";
+        }
+        return currency;
       }
     });
     return AwsDesign;
@@ -23364,6 +23942,16 @@ return TEMPLATE; });
         return this.design && this.design.isModified();
       };
 
+      StackEditor.prototype.fetchJsonData = function() {
+        var opsModel;
+        opsModel = this.opsModel;
+        return opsModel.fetchJsonData().then(function() {
+          if (!opsModel.isPersisted() && !opsModel.get("__________itsshitdontsave")) {
+            return opsModel.save();
+          }
+        });
+      };
+
       return StackEditor;
 
     })(CoreEditor);
@@ -23373,10 +23961,41 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
+  define('workspaces/awseditor/AwsViewApp',["CoreEditorViewApp", "./subviews/ResourcePanel", "./subviews/PropertyPanel", "./subviews/Toolbar", "./subviews/Statusbar", "./canvas/CanvasViewAws", "event"], function(CoreEditorViewApp, ResourcePanel, PropertyPanel, Toolbar, Statusbar, CanvasView, ide_event) {
+    return CoreEditorViewApp.extend({
+      constructor: function(options) {
+        _.extend(options, {
+          TopPanel: Toolbar,
+          RightPanel: PropertyPanel,
+          LeftPanel: ResourcePanel,
+          BottomPanel: Statusbar,
+          CanvasView: CanvasView
+        });
+        return CoreEditorViewApp.apply(this, arguments);
+      },
+      showProperty: function() {
+        ide_event.trigger(ide_event.FORCE_OPEN_PROPERTY);
+      },
+      onItemSelected: function(type, id) {
+        ide_event.trigger(ide_event.OPEN_PROPERTY, type, id);
+      },
+      showStateEditor: function() {
+        var com;
+        com = this.workspace.getSelectedComponent();
+        if (com) {
+          ide_event.trigger(ide_event.SHOW_STATE_EDITOR, com.id);
+        }
+      }
+    });
+  });
+
+}).call(this);
+
+(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('workspaces/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsEditorStack", "OpsModel", "CloudResources", "constant"], function(CoreEditorApp, StackEditor, OpsModel, CloudResources, constant) {
+  define('workspaces/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./model/DesignAws", "./AwsEditorStack", "OpsModel", "CloudResources", "constant"], function(CoreEditorApp, AppView, DesignAws, StackEditor, OpsModel, CloudResources, constant) {
     var AppEditor;
     AppEditor = (function(_super) {
       __extends(AppEditor, _super);
@@ -23384,6 +24003,10 @@ return TEMPLATE; });
       function AppEditor() {
         return AppEditor.__super__.constructor.apply(this, arguments);
       }
+
+      AppEditor.prototype.viewClass = AppView;
+
+      AppEditor.prototype.designClass = DesignAws;
 
       AppEditor.prototype.fetchAdditionalData = function() {
         var region, self, stateModule;
@@ -23411,6 +24034,8 @@ return TEMPLATE; });
       AppEditor.prototype.fetchAmiData = StackEditor.prototype.fetchAmiData;
 
       AppEditor.prototype.fetchRdsData = StackEditor.prototype.fetchRdsData;
+
+      AppEditor.prototype.isRdsDisabled = StackEditor.prototype.isRdsDisabled;
 
       return AppEditor;
 
@@ -23529,7 +24154,7 @@ return TEMPLATE; });
         }
         maxEniCount = instance.getMaxEniCount();
         if (instance.connections("EniAttachment").length + 1 >= maxEniCount) {
-          return sprintf(lang.IDE.CVS_WARN_EXCEED_ENI_LIMIT, instance.get("name"), instance.get("instanceType"), maxEniCount);
+          return sprintf(lang.CANVAS.CVS_WARN_EXCEED_ENI_LIMIT, instance.get("name"), instance.get("instanceType"), maxEniCount);
         }
         if (instance.getEmbedEni().get("assoPublicIp") === true) {
           return {
@@ -24266,6 +24891,7 @@ return TEMPLATE; });
           type: this.type,
           uid: this.id,
           name: name,
+          description: this.get("description") || "",
           index: 0,
           number: this.get("count"),
           serverGroupUid: this.id,
@@ -24346,7 +24972,7 @@ return TEMPLATE; });
             return kp.get('name');
           }
         } else {
-          return this.get('keyName') || 'No Key Pair';
+          return this.get('keyName') || lang.PROP.INSTANCE_NO_KP;
         }
       },
       isDefaultKey: function() {
@@ -24431,7 +25057,7 @@ return TEMPLATE; });
         data = App.model.getOsFamilyConfig(region);
         try {
           data = data[ami.osFamily] || data[constant.OS_TYPE_MAPPING[ami.osType]];
-          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance store'];
+          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance_store'];
           data = data[ami.architecture];
           data = data[ami.virtualizationType || "paravirtual"];
         } catch (_error) {
@@ -24442,7 +25068,7 @@ return TEMPLATE; });
         return data || [];
       },
       getEffectiveId: function(instance_id) {
-        var asg, data, design, index, instance, member, obj, resource_list, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+        var asg, data, design, index, insAndEniAry, instance, member, obj, resource_list, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
         design = Design.instance();
         if (design.component(instance_id)) {
           return {
@@ -24450,18 +25076,19 @@ return TEMPLATE; });
             mid: null
           };
         }
-        _ref = this.allObjects();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          instance = _ref[_i];
+        insAndEniAry = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
+        insAndEniAry = insAndEniAry.concat(Design.modelClassForType(constant.RESTYPE.ENI).allObjects());
+        for (_i = 0, _len = insAndEniAry.length; _i < _len; _i++) {
+          instance = insAndEniAry[_i];
           if (instance.get("appId") === instance_id) {
             return {
               uid: instance.id,
               mid: "" + instance.id + "_0"
             };
           } else if (instance.groupMembers) {
-            _ref1 = instance.groupMembers();
-            for (index = _j = 0, _len1 = _ref1.length; _j < _len1; index = ++_j) {
-              member = _ref1[index];
+            _ref = instance.groupMembers();
+            for (index = _j = 0, _len1 = _ref.length; _j < _len1; index = ++_j) {
+              member = _ref[index];
               if (member && member.appId === instance_id) {
                 return {
                   uid: instance.id,
@@ -24472,17 +25099,17 @@ return TEMPLATE; });
           }
         }
         resource_list = CloudResources(constant.RESTYPE.ASG, Design.instance().region());
-        _ref2 = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          asg = _ref2[_k];
-          data = (_ref3 = resource_list.get(asg.get('appId'))) != null ? _ref3.toJSON() : void 0;
+        _ref1 = Design.modelClassForType(constant.RESTYPE.ASG).allObjects();
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          asg = _ref1[_k];
+          data = (_ref2 = resource_list.get(asg.get('appId'))) != null ? _ref2.toJSON() : void 0;
           if (!data || !data.Instances) {
             continue;
           }
           data = data.Instances;
-          _ref4 = data.member || data;
-          for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
-            obj = _ref4[_l];
+          _ref3 = data.member || data;
+          for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+            obj = _ref3[_l];
             if (obj === instance_id || obj.InstanceId === instance_id) {
               return {
                 uid: asg.getLc().id,
@@ -24538,6 +25165,7 @@ return TEMPLATE; });
         attr = {
           id: data.uid,
           name: data.serverGroupName || data.name,
+          description: data.description || "",
           appId: data.resource.InstanceId,
           count: data.number,
           imageId: data.resource.ImageId,
@@ -24744,20 +25372,25 @@ return TEMPLATE; });
         return this.__groupMembers;
       },
       updateName: function() {
-        var attachment, instance, name;
-        instance = this.__embedInstance;
-        if (instance) {
-          name = "eni0";
-        } else {
-          attachment = this.connections("EniAttachment")[0];
-          if (attachment) {
-            name = "eni" + attachment.get("index");
-          } else {
-            name = "eni";
-          }
+        this.trigger("change:name");
+        return this.trigger("change");
+      },
+      get: function(attr) {
+        if (attr === "name") {
+          return this.getName();
         }
-        this.set("name", name);
-        return null;
+        return this.attributes[attr];
+      },
+      getName: function() {
+        var attachment;
+        if (this.__embedInstance) {
+          return "eni0";
+        }
+        attachment = this.connections("EniAttachment")[0];
+        if (attachment) {
+          return "eni" + attachment.get("index");
+        }
+        return "eni";
       },
       isReparentable: function(newParent) {
         var check;
@@ -24853,7 +25486,7 @@ return TEMPLATE; });
           obj = {
             hasEip: ip.hasEip,
             autoAssign: ip.autoAssign,
-            editable: !(isServergroup || ip.fixedIpInApp),
+            editable: !(isServergroup || (ip.fixedIpInApp && ip.ip !== "x.x.x.x")),
             prefix: prefixSuffixAry[0]
           };
           if (obj.autoAssign || isServergroup) {
@@ -25064,15 +25697,17 @@ return TEMPLATE; });
         }
         return null;
       },
-      onParentChanged: function() {
+      onParentChanged: function(oldParent) {
         var idx, ipObj, _i, _len, _ref, _results;
-        _ref = this.get("ips");
-        _results = [];
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          ipObj = _ref[idx];
-          _results.push(this.setIp(idx, null, true, ipObj.hasEip));
+        if (oldParent) {
+          _ref = this.get("ips");
+          _results = [];
+          for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+            ipObj = _ref[idx];
+            _results.push(this.setIp(idx, null, true, ipObj.hasEip));
+          }
+          return _results;
         }
-        return _results;
       },
       generateJSON: function(index, servergroupOption, eniIndex) {
         var autoAssign, az, component, eip, eniName, hasEip, idx, instanceId, ipObj, ips, memberData, parent, resources, securitygroups, sgTarget, subnetId, vpcId, _i, _len, _ref;
@@ -25101,7 +25736,7 @@ return TEMPLATE; });
           } else {
             autoAssign = ipObj.autoAssign;
           }
-          if (ipObj.fixedIpInApp) {
+          if (ipObj.fixedIpInApp && ipObj.ip.indexOf('x') === -1) {
             autoAssign = false;
           }
           ips.push({
@@ -25158,12 +25793,13 @@ return TEMPLATE; });
           uid: memberData.id,
           type: this.type,
           name: eniName,
+          description: this.get("description") || "",
           serverGroupUid: this.id,
           serverGroupName: this.get("name"),
           number: servergroupOption.number || 1,
           resource: {
             SourceDestCheck: this.get("sourceDestCheck"),
-            Description: this.get("description"),
+            Description: "",
             NetworkInterfaceId: memberData.appId,
             AvailabilityZone: az.createRef(),
             VpcId: parent.getVpcRef(),
@@ -25340,7 +25976,7 @@ return TEMPLATE; });
         attr = {
           id: data.uid,
           appId: data.resource.NetworkInterfaceId,
-          description: data.resource.Description,
+          description: data.description || "",
           sourceDestCheck: data.resource.SourceDestCheck,
           assoPublicIp: data.resource.AssociatePublicIpAddress,
           attachmentId: attachment ? attachment.AttachmentId : "",
@@ -25368,7 +26004,6 @@ return TEMPLATE; });
           attr.ips.push(ipObj);
         }
         if (embed) {
-          attr.name = "eni0";
           option = {
             instance: instance
           };
@@ -25704,9 +26339,10 @@ return TEMPLATE; });
         return null;
       },
       generateJSON: function(index, serverGroupOption) {
-        var appId, instanceId, member, owner, uid;
+        var appId, instanceId, member, owner, uid, volumeName;
         console.assert(!serverGroupOption || serverGroupOption.instanceId !== void 0, "Invalid serverGroupOption");
         this.ensureEnoughMember();
+        volumeName = (serverGroupOption.instanceName || "") + this.get("name");
         appId = "";
         if (index > 0) {
           member = this.groupMembers()[index - 1];
@@ -25721,7 +26357,7 @@ return TEMPLATE; });
         return {
           uid: uid,
           type: this.type,
-          name: this.get("name"),
+          name: volumeName,
           serverGroupUid: this.id,
           serverGroupName: this.get("name"),
           index: index,
@@ -25775,6 +26411,9 @@ return TEMPLATE; });
           instance = attachment && attachment.InstanceId ? resolve(MC.extractID(attachment.InstanceId)) : null;
         } else {
           console.error("deserialize failed");
+          return null;
+        }
+        if (!instance || instance.getAmiRootDeviceName() === attachment.Device) {
           return null;
         }
         attr = {
@@ -25957,7 +26596,13 @@ return TEMPLATE; });
             Default: this.isDefault(),
             EntrySet: ruleSet,
             NetworkAclId: this.get("appId"),
-            VpcId: vpc.createRef("VpcId")
+            VpcId: vpc.createRef("VpcId"),
+            Tags: [
+              {
+                Key: "visops_default",
+                Value: this.isDefault() ? "true" : "false"
+              }
+            ]
           }
         };
         _ref = this.get("rules");
@@ -26014,6 +26659,7 @@ return TEMPLATE; });
         _ref = data.resource.AssociationSet || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           asso = _ref[_i];
+          asso.NetworkAclAssociationId = "";
           subnet = resolve(MC.extractID(asso.SubnetId));
           if (!subnet) {
             continue;
@@ -26247,6 +26893,16 @@ return TEMPLATE; });
         }
         return true;
       },
+      setName: function(name) {
+        var expand, _i, _len, _ref;
+        ComplexResModel.prototype.setName.call(this, name);
+        _ref = this.get("expandedList");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          expand = _ref[_i];
+          expand.trigger('change:name');
+        }
+        return null;
+      },
       setLc: function(lc) {
         if (this.getLc() || !lc) {
           return;
@@ -26402,6 +27058,7 @@ return TEMPLATE; });
         component = {
           uid: this.id,
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           resource: {
             AvailabilityZones: azs,
@@ -26431,6 +27088,7 @@ return TEMPLATE; });
         asg = new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.AutoScalingGroupARN,
           parent: resolve(MC.extractID(layout_data.groupUId)),
           cooldown: String(data.resource.DefaultCooldown),
@@ -26477,7 +27135,7 @@ return TEMPLATE; });
           };
         }
         if (this.children().length > 0) {
-          return sprintf(lang.IDE.CVS_CFM_DEL_GROUP, this.get("name"));
+          return sprintf(lang.CANVAS.CVS_CFM_DEL_GROUP, this.get("name"));
         }
         return true;
       },
@@ -26591,6 +27249,7 @@ return TEMPLATE; });
         var component;
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -26611,6 +27270,7 @@ return TEMPLATE; });
         return new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.CustomerGatewayId,
           bgpAsn: data.resource.BgpAsn,
           ip: data.resource.IpAddress,
@@ -27726,7 +28386,13 @@ return TEMPLATE; });
             GroupDescription: this.get("description"),
             VpcId: this.getVpcRef(),
             IpPermissions: [],
-            IpPermissionsEgress: []
+            IpPermissionsEgress: [],
+            Tags: [
+              {
+                Key: "visops_default",
+                Value: this.isDefault() ? "true" : "false"
+              }
+            ]
           }
         };
         return {
@@ -28242,7 +28908,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/model/ElbModel',["Design", "constant", "ResourceModel", "ComplexResModel", "./SgModel", "./SslCertModel", "./connection/SgAsso", "i18n!/nls/lang.js", "./connection/ElbAsso"], function(Design, constant, ResourceModel, ComplexResModel, SgModel, SslCertModel, SgAsso, lang) {
+  define('workspaces/awseditor/model/ElbModel',["Design", "constant", "ResourceModel", "ComplexResModel", "./SgModel", "./SslCertModel", "./connection/SgAsso", "i18n!/nls/lang.js", "CloudResources", "./connection/ElbAsso"], function(Design, constant, ResourceModel, ComplexResModel, SgModel, SslCertModel, SgAsso, lang, CloudResources) {
     var Model;
     Model = ComplexResModel.extend({
       defaults: function() {
@@ -28352,8 +29018,10 @@ return TEMPLATE; });
         return null;
       },
       setSSLCert: function(idx, sslCertId) {
-        var listeners, sslCertData;
+        var listeners, region, sslCertCol, sslCertData;
         if (idx >= 0) {
+          region = Design.instance().region();
+          sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
           listeners = this.get("listeners");
           sslCertData = sslCertCol.get(sslCertId);
           return listeners[idx].sslCert = SslCertModel.createNew(sslCertData);
@@ -28501,6 +29169,7 @@ return TEMPLATE; });
           type: this.type,
           uid: this.id,
           name: this.get("name"),
+          description: this.get("description") || "",
           resource: {
             AvailabilityZones: [],
             Subnets: subnets,
@@ -28558,6 +29227,7 @@ return TEMPLATE; });
         attr = {
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.DNSName,
           parent: resolve(layout_data.groupUId),
           internal: data.resource.Scheme === 'internal',
@@ -28825,6 +29495,7 @@ return TEMPLATE; });
           type: this.type,
           uid: this.id,
           name: this.get("name"),
+          description: this.get("description") || "",
           state: this.get("state"),
           resource: {
             UserData: this.get("userData"),
@@ -28858,6 +29529,7 @@ return TEMPLATE; });
         attr = {
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           state: data.state,
           appId: data.resource.LaunchConfigurationARN,
           imageId: data.resource.ImageId,
@@ -28879,34 +29551,36 @@ return TEMPLATE; });
         return null;
       },
       deserialize: function(data, layout_data, resolve) {
-        var KP, SgAsso, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1;
+        var KP, SgAsso, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1, _ref2;
         model = resolve(data.uid);
         rd = model.getAmiRootDevice();
         _ref = data.resource.BlockDeviceMapping || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           volume = _ref[_i];
-          if (rd && volume.DeviceName === rd.DeviceName) {
+          if ((rd && volume.DeviceName === rd.DeviceName) || (!rd && ((_ref1 = volume.DeviceName) === '/dev/xvda' || _ref1 === '/dev/sda1'))) {
             model.set("rdSize", volume.Ebs.VolumeSize);
             model.set("rdIops", volume.Ebs.Iops);
             model.set("rdType", volume.Ebs.VolumeType);
           } else {
-            _attr = {
-              name: volume.DeviceName,
-              snapshotId: volume.Ebs.SnapshotId,
-              volumeSize: volume.Ebs.VolumeSize,
-              volumeType: volume.Ebs.VolumeType,
-              iops: volume.Ebs.Iops,
-              owner: model
-            };
-            new VolumeModel(_attr, {
-              noNeedGenName: true
-            });
+            if (volume.Ebs) {
+              _attr = {
+                name: volume.DeviceName,
+                snapshotId: volume.Ebs.SnapshotId,
+                volumeSize: volume.Ebs.VolumeSize,
+                volumeType: volume.Ebs.VolumeType,
+                iops: volume.Ebs.Iops,
+                owner: model
+              };
+              new VolumeModel(_attr, {
+                noNeedGenName: true
+              });
+            }
           }
         }
         SgAsso = Design.modelClassForType("SgAsso");
-        _ref1 = data.resource.SecurityGroups || [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          sg = _ref1[_j];
+        _ref2 = data.resource.SecurityGroups || [];
+        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+          sg = _ref2[_j];
           new SgAsso(model, resolve(MC.extractID(sg)));
         }
         KP = resolve(MC.extractID(data.resource.KeyName));
@@ -29065,10 +29739,83 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/model/connection/Route',["constant", "ConnectionModel"], function(constant, ConnectionModel) {
-    var C;
+  define('workspaces/awseditor/model/connection/Route',["constant", "ConnectionModel", "ComplexResModel", "Design"], function(constant, ConnectionModel, ComplexResModel, Design) {
+    var C, VpcRouteTarget;
+    VpcRouteTarget = ComplexResModel.extend({
+      type: "ExternalVpcRouteTarget",
+      defaults: {
+        targetId: "",
+        targetType: ""
+      },
+
+      /*
+      This model is initialized by a something like:
+      {
+        GatewayId              : ""
+        InstanceId             : ""
+        NetworkInterfaceId     : ""
+        VpcPeeringConnectionId : ""
+      }
+      If either of above attributes is reference, make sure the referencing
+      component has already been created ( a.k.a can be retrieve by Design.instance().component() )
+       */
+      constructor: function(attr) {
+        var i, id, internalVpcRouteTarget, realAttr, vrt, _i, _j, _len, _len1, _ref, _ref1;
+        if (!(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId || attr.VpcPeeringConnectionId)) {
+          console.error("Invalid attributes for creating Route Target");
+          return;
+        }
+        id = MC.extractID(attr.GatewayId || attr.InstanceId || attr.NetworkInterfaceId);
+        if (id) {
+          internalVpcRouteTarget = Design.instance().component(id);
+          if (internalVpcRouteTarget) {
+            return internalVpcRouteTarget;
+          }
+        }
+        _ref = ["GatewayId", "InstanceId", "NetworkInterfaceId", "VpcPeeringConnectionId"];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          i = _ref[_i];
+          if (attr[i]) {
+            realAttr = {
+              name: attr[i],
+              targetId: attr[i],
+              targetType: i
+            };
+            break;
+          }
+        }
+        if (realAttr) {
+          _ref1 = VpcRouteTarget.allObjects();
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            vrt = _ref1[_j];
+            if (vrt.get("targetId") === realAttr.targetId && vrt.get("targetType") === realAttr.targetType) {
+              return vrt;
+            }
+          }
+          return ComplexResModel.call(this, realAttr);
+        }
+      }
+    });
     C = ConnectionModel.extend({
       type: "RTB_Route",
+      isVisual: function() {
+        return !this.getTarget("ExternalVpcRouteTarget");
+      },
+      constructor: function(p1Comp, p2Comp, attr, option) {
+        var eniComp, rtbComp;
+        if (p1Comp.type === constant.RESTYPE.ENI) {
+          eniComp = p1Comp;
+          rtbComp = p2Comp;
+        } else if (p2Comp.type === constant.RESTYPE.ENI) {
+          eniComp = p2Comp;
+          rtbComp = p1Comp;
+        }
+        if (eniComp && eniComp.embedInstance()) {
+          p1Comp = eniComp.embedInstance();
+          p2Comp = rtbComp;
+        }
+        return ConnectionModel.call(this, p1Comp, p2Comp, attr, option);
+      },
       defaults: function() {
         return {
           routes: []
@@ -29077,13 +29824,16 @@ return TEMPLATE; });
       initialize: function(attr, option) {
         var igw;
         igw = this.getTarget(constant.RESTYPE.IGW);
-        if (igw && !attr.routes) {
+        if (igw && option && option.createByUser) {
           this.get("routes").push("0.0.0.0/0");
         }
         return null;
       },
       addRoute: function(route) {
         var idx, routes;
+        if (!route) {
+          return;
+        }
         routes = this.get("routes");
         idx = _.indexOf(routes, route);
         if (idx !== -1) {
@@ -29095,6 +29845,9 @@ return TEMPLATE; });
       },
       removeRoute: function(route) {
         var idx, routes;
+        if (!route) {
+          return;
+        }
         routes = this.get("routes");
         idx = _.indexOf(routes, route);
         if (idx !== -1) {
@@ -29135,6 +29888,9 @@ return TEMPLATE; });
             break;
           case TYPE.INSTANCE:
             r_temp.NetworkInterfaceId = otherTarget.getEmbedEni().createRef("NetworkInterfaceId");
+            break;
+          case "ExternalVpcRouteTarget":
+            r_temp[otherTarget.get("targetType")] = otherTarget.get("targetId");
         }
         _ref = this.get("routes");
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -29183,6 +29939,15 @@ return TEMPLATE; });
             name: "rtb-tgt",
             type: constant.RESTYPE.RT
           }
+        }, {
+          port1: {
+            name: "",
+            type: constant.RESTYPE.RT
+          },
+          port2: {
+            name: "",
+            type: "ExternalVpcRouteTarget"
+          }
         }
       ]
     }, {
@@ -29197,7 +29962,8 @@ return TEMPLATE; });
           return false;
         }
         return true;
-      }
+      },
+      VpcRouteTarget: VpcRouteTarget
     });
     return C;
   });
@@ -29310,12 +30076,14 @@ return TEMPLATE; });
       },
       addRoute: function(targetId, r, propagating) {
         var component, connection;
-        component = Design.instance().component(targetId);
-        if (!component) {
-          return;
+        if (_.isString(targetId)) {
+          component = Design.instance().component(targetId);
+        } else {
+          component = new Route.VpcRouteTarget(targetId);
         }
-        if (component.type === constant.RESTYPE.ENI && component.embedInstance()) {
-          component = component.embedInstance();
+        if (!component || !component.id) {
+          console.warn("Ignoring adding route:", targetId, r);
+          return;
         }
         connection = new Route(this, component);
         connection.addRoute(r);
@@ -29328,6 +30096,7 @@ return TEMPLATE; });
         var component;
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -29342,6 +30111,12 @@ return TEMPLATE; });
                 InstanceId: "",
                 NetworkInterfaceId: "",
                 GatewayId: "local"
+              }
+            ],
+            Tags: [
+              {
+                Key: "visops_default",
+                Value: this.get("main") ? "true" : "false"
               }
             ]
           }
@@ -29389,6 +30164,7 @@ return TEMPLATE; });
           id: data.uid,
           appId: data.resource.RouteTableId,
           name: data.name,
+          description: data.description || "",
           main: !!asso_main,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
@@ -29407,7 +30183,7 @@ return TEMPLATE; });
         return null;
       },
       postDeserialize: function(data, layout_data) {
-        var design, i, id, propagateMap, r, ref, routes, rtb, _i, _j, _len, _len1, _ref, _ref1;
+        var design, propagateMap, r, ref, routes, rtb, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         design = Design.instance();
         rtb = design.component(data.uid);
         _ref = data.resource.AssociationSet || [];
@@ -29426,16 +30202,14 @@ return TEMPLATE; });
           _ref1 = data.resource.PropagatingVgwSet || [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             ref = _ref1[_j];
-            propagateMap[MC.extractID(ref)] = true;
+            propagateMap[ref] = true;
           }
-          i = 0;
-          while (i < routes.length) {
-            r = routes[i];
-            if (r.GatewayId !== "local") {
-              id = MC.extractID(r.GatewayId || r.InstanceId || r.NetworkInterfaceId);
-              rtb.addRoute(id, r.DestinationCidrBlock, propagateMap[id]);
+          for (_k = 0, _len2 = routes.length; _k < _len2; _k++) {
+            r = routes[_k];
+            if (r.GatewayId === "local") {
+              continue;
             }
-            ++i;
+            rtb.addRoute(r, r.DestinationCidrBlock, propagateMap[r.GatewayId]);
           }
         }
         return null;
@@ -29654,6 +30428,7 @@ return TEMPLATE; });
         var component;
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -29834,6 +30609,7 @@ return TEMPLATE; });
         new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.SubnetId,
           cidr: data.resource.CidrBlock,
           x: layout_data.coordinate[0],
@@ -29906,6 +30682,7 @@ return TEMPLATE; });
     Model = GroupModel.extend({
       type: constant.RESTYPE.VPC,
       defaults: {
+        description: "",
         dnsSupport: true,
         dnsHostnames: false,
         tenancy: "default",
@@ -29988,6 +30765,7 @@ return TEMPLATE; });
         }
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -30014,6 +30792,7 @@ return TEMPLATE; });
         new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           appId: data.resource.VpcId,
           cidr: data.resource.CidrBlock,
           dnsHostnames: data.resource.EnableDnsHostnames,
@@ -30081,7 +30860,7 @@ return TEMPLATE; });
         }
         if (cannotDel) {
           return {
-            error: lang.IDE.CVS_CFM_DEL_IGW
+            error: lang.CANVAS.CVS_CFM_DEL_IGW
           };
         }
         return true;
@@ -30112,7 +30891,7 @@ return TEMPLATE; });
         if (Model.allObjects().length > 0) {
           return;
         }
-        notification('info', lang.IDE.CVS_CFM_ADD_IGW_MSG);
+        notification('info', lang.CANVAS.CVS_CFM_ADD_IGW_MSG);
         vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
         new Model({
           x: -1,
@@ -30127,7 +30906,7 @@ return TEMPLATE; });
           id: data.uid,
           name: data.name,
           appId: data.resource.InternetGatewayId,
-          parent: resolve(layout_data.groupUId),
+          parent: resolve(MC.extractID(data.resource.AttachmentSet[0].VpcId)),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });
@@ -30174,7 +30953,7 @@ return TEMPLATE; });
           id: data.uid,
           name: data.name,
           appId: data.resource.VpnGatewayId,
-          parent: resolve(layout_data.groupUId),
+          parent: resolve(MC.extractID(data.resource.Attachments[0].VpcId)),
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
         });
@@ -30596,7 +31375,7 @@ return TEMPLATE; });
     });
     Model = GroupModel.extend({
       type: constant.RESTYPE.DBSBG,
-      newNameTmpl: "subnet-group",
+      newNameTmpl: "subnetgroup",
       defaults: {
         x: 2,
         y: 2,
@@ -30605,7 +31384,7 @@ return TEMPLATE; });
         createdBy: ""
       },
       constructor: function(attr, option) {
-        var az, design, subnet, _i, _len, _ref;
+        var az, design, minAZCount, subnet, _i, _len, _ref, _ref1;
         if (option && option.createByUser) {
           design = Design.instance();
           az = {};
@@ -30614,7 +31393,12 @@ return TEMPLATE; });
             subnet = _ref[_i];
             az[subnet.parent().get("name")] = true;
           }
-          if (_.keys(az).length < 2) {
+          if ((_ref1 = Design.instance().region()) === 'cn-north-1') {
+            minAZCount = 1;
+          } else {
+            minAZCount = 2;
+          }
+          if (_.keys(az).length < minAZCount) {
             return this;
           }
         }
@@ -30816,7 +31600,8 @@ return TEMPLATE; });
         pgName: '',
         applyImmediately: false,
         dbRestoreTime: '',
-        isRestored: false
+        isRestored: false,
+        storageType: "standard"
       },
       type: constant.RESTYPE.DBINSTANCE,
       newNameTmpl: "db",
@@ -31037,6 +31822,9 @@ return TEMPLATE; });
             snapshotId: "",
             multiAz: !!attr.multiAz
           }));
+          if (attr.iops && Number(attr.iops) > 0) {
+            this.set('storageType', 'io1');
+          }
           this.setDefaultOptionGroup();
           this.setDefaultParameterGroup();
         }
@@ -31497,10 +32285,10 @@ return TEMPLATE; });
         var allRestoreDB, dbNameAry, result;
         if (this.slaves(true).length > 0) {
           if (!this.get("appId")) {
-            result = sprintf(lang.IDE.CVS_CFM_DEL_NONEXISTENT_DBINSTANCE, this.get("name"));
+            result = sprintf(lang.CANVAS.CVS_CFM_DEL_NONEXISTENT_DBINSTANCE, this.get("name"));
             result = "<div class='modal-text-major'>" + result + "</div>";
           } else {
-            result = sprintf(lang.IDE.CVS_CFM_DEL_EXISTENT_DBINSTANCE, this.get("name"));
+            result = sprintf(lang.CANVAS.CVS_CFM_DEL_EXISTENT_DBINSTANCE, this.get("name"));
             result = "<div class='modal-text-major'>" + result + "</div>";
           }
           return result;
@@ -31511,7 +32299,7 @@ return TEMPLATE; });
           _.each(allRestoreDB, function(dbModel) {
             return dbNameAry.push("<span class='resource-tag'>" + (dbModel.get('name')) + "</span>");
           });
-          result = sprintf(lang.ide.CVS_CFM_DEL_RELATED_RESTORE_DBINSTANCE, this.get("name"), dbNameAry.join(', '));
+          result = sprintf(lang.CANVAS.CVS_CFM_DEL_RELATED_RESTORE_DBINSTANCE, this.get("name"), dbNameAry.join(', '));
           result = "<div class='modal-text-major'>" + result + "</div>";
           return result;
         }
@@ -31556,6 +32344,7 @@ return TEMPLATE; });
         }
         component = {
           name: this.get("name"),
+          description: this.get("description") || "",
           type: this.type,
           uid: this.id,
           resource: {
@@ -31601,7 +32390,8 @@ return TEMPLATE; });
             ReadReplicaSourceDBInstanceIdentifier: (master != null ? master.createRef('DBInstanceIdentifier') : void 0) || '',
             SourceDBInstanceIdentifierForPoint: ((_ref1 = this.getSourceDBForRestore()) != null ? _ref1.createRef('DBInstanceIdentifier') : void 0) || '',
             UseLatestRestorableTime: useLatestRestorableTime,
-            RestoreTime: restoreTime
+            RestoreTime: restoreTime,
+            StorageType: this.get('storageType')
           }
         };
         return {
@@ -31637,12 +32427,21 @@ return TEMPLATE; });
         });
       },
       deserialize: function(data, layout_data, resolve) {
-        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, that, _i, _len, _ref, _ref1, _ref2, _ref3;
+        var SgAsso, model, ogComp, ogName, ogUid, resource, sg, storageType, that, _i, _len, _ref, _ref1, _ref2, _ref3;
         that = this;
         resource = data.resource;
+        storageType = resource.StorageType;
+        if (!storageType) {
+          if (resource.Iops && Number(resource.Iops) > 0) {
+            storageType = 'io1';
+          } else {
+            storageType = 'standard';
+          }
+        }
         model = new Model({
           id: data.uid,
           name: data.name,
+          description: data.description || "",
           createdBy: resource.CreatedBy,
           appId: resource.DBInstanceIdentifier,
           instanceId: resource.DBInstanceIdentifier,
@@ -31670,6 +32469,7 @@ return TEMPLATE; });
           accessible: resource.PubliclyAccessible,
           pgName: (_ref1 = resource.DBParameterGroups) != null ? _ref1.DBParameterGroupName : void 0,
           applyImmediately: resource.ApplyImmediately,
+          storageType: storageType,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1],
           parent: resolve(layout_data.groupUId)
@@ -33146,6 +33946,12 @@ return TEMPLATE; });
           name: this.host.get("name"),
           items: this.models || []
         });
+      },
+      selectItem: function(evt) {
+        this.canvas.deselectItem(true);
+        this.$el.find(".selected").removeClass("selected");
+        this.canvas.triggerSelected(constant.RESTYPE.ENI, $(evt.currentTarget).addClass("selected").attr("data-id"));
+        return false;
       }
     });
   });
@@ -33298,7 +34104,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/awseditor/canvas/CeInstance',["CanvasElement", "constant", "CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "event"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, ide_event) {
+  define('workspaces/awseditor/canvas/CeInstance',["CanvasElement", "constant", "CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "event", "UI.notification"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, ide_event) {
     return CanvasElement.extend({
 
       /* env:dev                                            env:dev:end */
@@ -33534,6 +34340,10 @@ return TEMPLATE; });
             return CanvasElement.createResource(type, attr, option);
           case constant.RESTYPE.ASG:
           case "ExpandedAsg":
+            if (option.cloneSource) {
+              notification('error', lang.CANVAS.LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL);
+              return;
+            }
             TYPE_LC = constant.RESTYPE.LC;
             return CanvasElement.getClassByType(TYPE_LC).createResource(TYPE_LC, attr, option);
           case constant.RESTYPE.AZ:
@@ -33705,6 +34515,32 @@ return TEMPLATE; });
         "mousedown .volume-image": "showVolume",
         "click .volume-image": "suppressEvent",
         "click .server-number-group": "suppressEvent"
+      },
+      hover: function(evt) {
+        var $asg, $lc, $lcLayer, asgPos;
+        $lc = $(evt.currentTarget);
+        $asg = $lc.parent();
+        asgPos = $asg[0].instance.transform();
+        if (!CanvasManager.hasClass($asg, "AWS-AutoScaling-Group") && !CanvasManager.hasClass($asg, "ExpandedAsg")) {
+          return;
+        }
+        $lcLayer = this.canvas.getLayer("layer_lc");
+        $lcLayer.attr({
+          "transform": "translate(" + asgPos.x + " " + asgPos.y + ")",
+          "data-id": $asg.attr("data-id")
+        });
+        $lcLayer.append($lc);
+      },
+      hoverOut: function(evt) {
+        var $layer, $lc, id;
+        $lc = $(evt.currentTarget);
+        $layer = $lc.parent();
+        if (!CanvasManager.hasClass($layer, "layer_lc")) {
+          return;
+        }
+        id = $layer.attr("data-id");
+        $layer.attr("data-id", "");
+        this.canvas.getItem(id).$el.children().eq(0).after($lc[0]);
       },
       suppressEvent: function() {
         return false;
@@ -34294,6 +35130,7 @@ return TEMPLATE; });
         ]);
         if (this.model.get('engine') === constant.DB_ENGINE.MYSQL) {
           svgEl.add(svg.use("port_diamond").attr({
+            "class": "port",
             'data-name': 'replica'
           }), 0);
           if (this.model.master()) {
@@ -34319,7 +35156,7 @@ return TEMPLATE; });
         return svgEl;
       },
       render: function() {
-        var $r, appData, backup, m, penddingObj, tip, _ref, _ref1, _ref2;
+        var $r, appData, backup, m, penddingObj, tip, _ref, _ref1;
         m = this.model;
         CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children(".type-image"), this.typeIcon(), "href");
@@ -34329,27 +35166,27 @@ return TEMPLATE; });
           $r = this.$el.children(".dbreplicate");
           appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
           if (appData) {
-            backup = ((_ref = appData.get('BackupRetentionPeriod')) !== 0 && _ref !== '0');
+            backup = "" + appData.get('BackupRetentionPeriod') !== "0";
           }
           if (m.slaves().length < 5) {
             CanvasManager.removeClass($r, "disabled");
             if (m.autobackup()) {
-              tip = "Drag to create a read replica.";
+              tip = lang.IDE.RES_TIP_DRAG_TO_DUPLICATE;
               if (m.category() === 'replica' && m.master() && m.master().master()) {
                 CanvasManager.toggle($r, false);
               } else {
                 CanvasManager.toggle($r, true);
                 if (m.get('appId') && !backup) {
-                  tip = "Please wait Automatic Backup to be enabled to create read replica.";
+                  tip = lang.IDE.RES_TIP_PLEASE_WAIT_AUTOBACKUP_ENABLE_TO_CREATE_REPLICA;
                   CanvasManager.addClass($r, "disabled");
                 }
               }
             } else {
-              tip = "Drag to create a read replica.";
+              tip = lang.IDE.RES_TIP_DRAG_TO_DUPLICATE;
               CanvasManager.toggle($r, false);
             }
           } else {
-            tip = "Cannot create more read replica.";
+            tip = lang.IDE.RES_TIP_CANT_CREATE_MORE_REPLICA;
             CanvasManager.toggle($r, true);
             CanvasManager.addClass($r, "disabled");
           }
@@ -34360,11 +35197,11 @@ return TEMPLATE; });
         }
         $r = this.$el.children(".dbrestore");
         CanvasManager.toggle($r, !!m.get("appId"));
-        CanvasManager.update($r, 'Drag to restore to point in time', "tooltip");
+        CanvasManager.update($r, lang.IDE.RES_TIP_DRAG_TO_RESTORE, "tooltip");
         appData = CloudResources(m.type, m.design().region()).get(m.get("appId"));
         if (appData) {
           penddingObj = appData.get('PendingModifiedValues');
-          if (((_ref1 = appData.get('BackupRetentionPeriod')) === 0 || _ref1 === '0') || (penddingObj && ((_ref2 = penddingObj.BackupRetentionPeriod) === 0 || _ref2 === '0'))) {
+          if (((_ref = appData.get('BackupRetentionPeriod')) === 0 || _ref === '0') || (penddingObj && ((_ref1 = penddingObj.BackupRetentionPeriod) === 0 || _ref1 === '0'))) {
             CanvasManager.toggle($r, false);
           }
         }
@@ -34481,7 +35318,7 @@ return TEMPLATE; });
           sb = _ref[_i];
           tt.push(sb.get("name"));
         }
-        CanvasManager.update(this.$el.children(".tooltip"), tt.join(", ") || lang.IDE.CVS_NO_SUBNET_ASSIGNED_TO_SG, "tooltip");
+        CanvasManager.update(this.$el.children(".tooltip"), tt.join(", ") || lang.CANVAS.CVS_NO_SUBNET_ASSIGNED_TO_SG, "tooltip");
       },
       doDestroyModel: function() {
         this.hoverOut();

@@ -97,12 +97,6 @@
     Design.debug.autoLayout = function() {
       return App.workspaces.getAwakeSpace().view.canvas.autoLayout();
     };
-    Design.debug.getDataFromLocal = function(app_id) {
-      return JSON.parse(localStorage.getItem("get_resource/" + app_id));
-    };
-    Design.debug.setDataToLocal = function(data) {
-      return localStorage.setItem("get_resource/" + data.app_json.id, JSON.stringify(data));
-    };
     window.d = function() {
       return Design.instance();
     };

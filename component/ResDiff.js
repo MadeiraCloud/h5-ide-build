@@ -10,7 +10,6 @@
         option.filterAttrMap = {
           '*.type': true,
           '*.uid': true,
-          '*.name': true,
           '*.index': true,
           '*.number': true,
           '*.serverGroupUid': true,
@@ -26,6 +25,7 @@
           '*.resource.GroupDescription': true,
           '*.resource.ListenerDescriptions.n.Listener.SSLCertificateId': true,
           '*.resource.Attachment.AttachmentId': true,
+          'DBINSTANCE.resource.DBName': true,
           'DBINSTANCE.resource.AvailabilityZone': true,
           'DBINSTANCE.resource.Endpoint.Address': true,
           'DBINSTANCE.resource.ApplyImmediately': true,
@@ -34,13 +34,16 @@
           'DBINSTANCE.resource.UseLatestRestorableTime': true,
           'ASG.resource.AutoScalingGroupARN': true,
           'ASG.resource.PolicyARN': true,
+          '*.resource.Tags': true,
           '*.resource.adminPass': true,
-          '*.resource.key_name': true
+          '*.resource.key_name': true,
+          '*.resource.bootable': true
         };
       }
       if (!option.noDiffArrayAttrMap) {
         option.noDiffArrayAttrMap = {
-          '*.state': true
+          '*.state': true,
+          '*.resource.TerminationPolicies': true
         };
       }
       option.filterResMap = {};
@@ -251,10 +254,15 @@ define('component/resdiff/resDiffTpl',['handlebars'], function(Handlebars){ var 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  return "<p>Resources of this App have been changed externally. This has been synced to your App. The diagram may be re-generated to reflect the change(s).</p>\n<h5>What have been changed:</h5>\n<div class=\"scroll-wrap scroll-wrap-res-diff\" style=\"max-height: 350px;\">\n	<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n	<article class=\"content_wrap scroll-content\"></article>\n</div>";
+  buffer += "<div class=\"modal-res-diff\">\n	<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RESOURCES_APP_CHANGED", {hash:{},data:data}))
+    + "</p>\n	<h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.WHAT_HAVE_BEEN_CHANGED", {hash:{},data:data}))
+    + "</h5>\n	<div class=\"scroll-wrap scroll-wrap-res-diff\" style=\"max-height: 350px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<article class=\"content_wrap scroll-content\"></article>\n	</div>\n</div>";
+  return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 
@@ -584,7 +592,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('ResDiff',['UI.modalplus', 'DiffTree', 'component/resdiff/resDiffTpl', 'component/resdiff/prepare', 'constant'], function(modalplus, DiffTree, template, Prepare, constant) {
+  define('ResDiff',['UI.modalplus', 'DiffTree', 'component/resdiff/resDiffTpl', 'component/resdiff/prepare', 'constant', 'i18n!/nls/lang.js'], function(modalplus, DiffTree, template, Prepare, constant, lang) {
     return Backbone.View.extend({
       className: 'res_diff_tree',
       tagName: 'section',
@@ -618,12 +626,12 @@ return TEMPLATE; });
         return $target.toggleClass('closed');
       },
       render: function() {
-        var $containerDom, okText, options, that;
+        var okText, options, that;
         that = this;
-        okText = 'OK, got it';
+        okText = lang.PROP.APP_DIFF_CHANGE_CONFIRM;
         options = {
-          template: this.el,
-          title: 'App Changes',
+          template: template.frame(),
+          title: lang.IDE.TITLE_APP_CHANGES,
           disableClose: true,
           hideClose: true,
           confirm: {
@@ -658,9 +666,8 @@ return TEMPLATE; });
           }
           return that.modal.close();
         }, this);
-        this.$el.html(template.frame());
-        $containerDom = this.$('article');
-        this._genResGroup($containerDom);
+        this.modal.tpl.find('article').html(this.$el);
+        this._genResGroup(this.$el);
         return this.modal.resize();
       },
       _genDiffInfo: function(oldComps, newComps) {
@@ -705,19 +712,19 @@ return TEMPLATE; });
         that = this;
         groupData = [
           {
-            title: 'New Resource',
+            title: lang.TOOLBAR.POP_DIFF_NEW_RES,
             diffComps: that.addedComps,
             closed: true,
             type: 'added',
             needDiff: false
           }, {
-            title: 'Removed Resource',
+            title: lang.TOOLBAR.POP_DIFF_REMOVED_RES,
             diffComps: that.removedComps,
             closed: true,
             type: 'removed',
             needDiff: false
           }, {
-            title: 'Modified Resource',
+            title: lang.TOOLBAR.POP_DIFF_MODIFY_RES,
             diffComps: that.modifiedComps,
             closed: false,
             type: 'modified',

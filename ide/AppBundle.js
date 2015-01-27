@@ -103,11 +103,9 @@
       this.collection.user_state.find().fetch();
       this.collection.user_state.find().observeChanges({
         added: function(idx, dag) {
-          console.log("user_state changes", idx, dag);
           return self.trigger("userStateChange", idx, dag);
         },
         changed: function(idx, dag) {
-          console.log("user_state changes", idx, dag);
           return self.trigger("userStateChange", idx, dag);
         }
       });
@@ -246,22 +244,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<nav id=\"header\">\r\n  <!-- <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "<nav id=\"header\">\r\n  <section class=\"voquota tooltip\" data-tooltip=\"<span>3600 free instance hours used up <br>\r\nYou are in limited status now</span>\" data-tooltip-type=\"html\">\r\n      <div class=\"payment-exclamation\">!</div>\r\n  </section>\r\n  <a id=\"support\" class=\"icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
-    + "</a> -->\r\n\r\n  <section class=\"dropdown\" >\r\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\r\n      <i class=\"icon-notification\"></i>\r\n      <span id=\"NotificationCounter\"></span>\r\n    </div>\r\n\r\n    <div class=\"dropdown-menu\">\r\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\r\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n        <ul class=\"scroll-content\"></ul>\r\n\r\n        <div class=\"notification-empty\">\r\n          <div class=\"title\">"
+    + "</a>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"HeaderNotification\" class=\"js-toggle-dropdown\">\r\n      <i class=\"icon-notification\"></i>\r\n      <span id=\"NotificationCounter\"></span>\r\n    </div>\r\n\r\n    <div class=\"dropdown-menu\">\r\n      <div id=\"notification-panel-wrapper\" class=\"scroll-wrap\">\r\n        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n        <ul class=\"scroll-content\"></ul>\r\n\r\n        <div class=\"notification-empty\">\r\n          <div class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_BLANK_NOTIFICATION", {hash:{},data:data}))
     + "</div>\r\n          <div class=\"description\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_BLANK_NOTIFICATION_DESC", {hash:{},data:data}))
     + "</div>\r\n        </div>\r\n      </div>\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section class=\"dropdown\">\r\n    <div id=\"HeaderUser\" class=\"js-toggle-dropdown\">\r\n      <span class=\"truncate left\" style=\"max-width:100px;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.user_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\r\n      <i class=\"icon-caret-down\"></i>\r\n    </div>\r\n\r\n    <ul class=\"dropdown-menu\">\r\n      <li id=\"HeaderShortcuts\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
-    + "</li>\r\n<!--       <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_KEY_SHORT", {hash:{},data:data}))
+    + "</li>\r\n      <li><a class=\"dis-blk\" href=\"http://docs.visualops.io\" target=\"_blank\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_DOC", {hash:{},data:data}))
     + "</a></li>\r\n      <li id=\"HeaderSettings\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
-    + "</li> -->\r\n      <li id=\"HeaderLogout\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_SETTING", {hash:{},data:data}))
+    + "</li>\r\n      <li id=\"HeaderBilling\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_BILLING", {hash:{},data:data}))
+    + "</li>\r\n      <li id=\"HeaderLogout\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_MENUITEM_LOGOUT", {hash:{},data:data}))
     + "</li>\r\n    </ul>\r\n  </section>\r\n</nav>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
@@ -295,7 +295,23 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n      <dt class=\"accountEmailRO\">"
+    + "</dd>\r\n    </dl>\r\n\r\n    <dl class=\"dl-horizontal\">\r\n      <dt class=\"accountFullNameRO\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
+    + "</dt><dd class=\"accountFullNameRO\"> <span class=\"fullNameText\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = (depth0 && depth0.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " </span> <button class=\"icon-edit link-style tooltip\" data-tooltip='"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
+    + "' id=\"AccountFullName\"></button></dd>\r\n    </dl>\r\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap\">\r\n      <dl class=\"dl-horizontal\">\r\n          <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
+    + "</dt>\r\n          <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\r\n          <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
+    + "</dt>\r\n          <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\r\n      </dl>\r\n      <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\r\n      <div class=\"accountPwdBtns\">\r\n          <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
+    + "</button>\r\n          <span id=\"AccountCancelFullName\" class=\"link-style\">"
+    + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
+    + "</span>\r\n      </div>\r\n    </div>\r\n\r\n    <dl class=\"dl-horizontal\">\r\n      <dt class=\"accountEmailRO\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
     + "</dt><dd class=\"accountEmailRO\"><span>"
     + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -441,13 +457,20 @@ function program3(depth0,data) {
         "click #AccountEmail": "showEmail",
         "click #AccountCancelEmail": "hideEmail",
         "click #AccountUpdateEmail": "changeEmail",
+        "click #AccountCancelFullName": "hideFullName",
         "change #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn",
-        "keyup  #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn"
+        "keyup  #AccountNewEmail, #AccountEmailPwd": "updateEmailBtn",
+        "click #AccountUpdateFullName": "changeFullName",
+        "change #AccountFirstName, #AccountLastName": "updateFullNameBtn",
+        "keyup #AccountFirstName, #AccountLastName": "updateFullNameBtn",
+        'click #AccountFullName': "showFullName"
       },
       initialize: function(options) {
         var attributes, tab;
         attributes = {
           username: App.user.get("username"),
+          firstName: App.user.get("firstName") || "",
+          lastName: App.user.get("lastName") || "",
           email: App.user.get("email"),
           account: App.user.get("account"),
           awsAccessKey: App.user.get("awsAccessKey"),
@@ -542,12 +565,13 @@ function program3(depth0,data) {
           if (err.error === 2) {
             that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
           } else {
-            that.modal.$('#AccountInfo').text(lang.NOTIFY.SETTINGS_UPDATE_PWD_FAILURE);
+            that.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_UPDATE_PWD_FAILURE);
           }
           return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
         });
       },
       showEmail: function() {
+        this.hideFullName();
         $(".accountEmailRO").hide();
         $("#AccountEmailWrap").show();
         $("#AccountNewEmail").focus();
@@ -558,6 +582,19 @@ function program3(depth0,data) {
         $("#AccountNewEmail, #AccountEmailPwd").val("");
         $("#AccountEmailInfo").empty();
       },
+      showFullName: function() {
+        this.hideEmail();
+        $(".accountFullNameRO").hide();
+        $("#AccountFullNameWrap").show();
+        $("#AccountFirstName").val(App.user.get("firstName") || "").focus();
+        $("#AccountLastName").val(App.user.get("lastName") || "");
+      },
+      hideFullName: function() {
+        $(".accountFullNameRO").show();
+        $("#AccountFullNameWrap").hide();
+        $("#AccountFirstName, #AccountLastName").val("");
+        return $("#AccountUpdateFullName").attr("disabled", false);
+      },
       updateEmailBtn: function() {
         var new_pwd, old_pwd;
         old_pwd = $("#AccountNewEmail").val() || "";
@@ -566,6 +603,36 @@ function program3(depth0,data) {
           $("#AccountUpdateEmail").removeAttr("disabled");
         } else {
           $("#AccountUpdateEmail").attr("disabled", "disabled");
+        }
+      },
+      updateFullNameBtn: function() {
+        var first_name, last_name;
+        first_name = $("#AccountFirstName").val() || "";
+        last_name = $("#AccountLastName").val() || "";
+        if (first_name.length && last_name.length) {
+          $("#AccountUpdateFullName").removeAttr("disabled");
+        } else {
+          $("#AccountUpdateFullName").attr("disabled", "disabled");
+        }
+      },
+      changeFullName: function() {
+        var first_name, last_name, that;
+        that = this;
+        first_name = $("#AccountFirstName").val() || "";
+        last_name = $("#AccountLastName").val() || "";
+        if (first_name && last_name) {
+          $("#AccountUpdateFullName").attr("disabled", true);
+          return App.user.changeName(first_name, last_name).then(function(result) {
+            that.hideFullName();
+            $(".fullNameText").text(first_name + " " + last_name);
+            if (result) {
+              return notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
+            }
+          }, function(err) {
+            notification("error", lang.NOTIFY.UPDATED_FULLNAME_FAIL);
+            $("#AccountUpdateFullName").attr("disabled", false);
+            return console.error("Change Full name Failed due to ->", err);
+          });
         }
       },
       changeEmail: function() {
@@ -788,20 +855,321 @@ function program3(depth0,data) {
 
 }).call(this);
 
+define('ide/subviews/BillingDialogTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var stack1;
+  return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  }
+
+function program3(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "NO_CARD", {hash:{},data:data}));
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th class=\"sortable desc-sort\" data-row-type=\"datetime\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DATE", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "AMOUNT", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "STATUS", {hash:{},data:data}))
+    + "</th>\n                        <th data-row-type=\"string\" style=\"width:25%;\">"
+    + escapeExpression(helpers.i18n.call(depth0, "ACTION", {hash:{},data:data}))
+    + "</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                    <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                    <div class=\"scroll-content\">\n                        <table class=\"table\">\n                            <thead>\n                            <tr>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                                <th style=\"width: 25%\">\n                                    <div class=\"th-inner\"></div>\n                                </th>\n                            </tr>\n                            </thead>\n                            <tbody class=\"t-m-content\">\n                            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                                <tr class=\"item\" data-id=\""
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n                                    <td>"
+    + escapeExpression(helpers.formatTime.call(depth0, (depth0 && depth0.updated_at), "yyyy-MM-d", {hash:{},data:data}))
+    + "</td>\n                                    <td>$ "
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.ending_balance), (depth0 && depth0.total_balance), {hash:{},data:data}))
+    + "</td>\n                                    <td>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n                                    <td>\n                                        <a class=\"payment-receipt link-blue\" href=\"#\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_VIEW_RECEIPT", {hash:{},data:data}))
+    + "</a></td>\n                                </tr>\n                            ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "PAYMENT_PAID", {hash:{},data:data}));
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<span class=\"link-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_FAILED", {hash:{},data:data}))
+    + "</span>";
+  return buffer;
+  }
+
+function program11(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                    <div class=\"full-space\">\n                        "
+    + escapeExpression(helpers.i18n.call(depth0, "NO_BILLING_EVENT", {hash:{},data:data}))
+    + "\n                    </div>\n                ";
+  return buffer;
+  }
+
+  buffer += "<div id=\"billing-status\">\n    <nav id=\"PaymentNav\">\n        <span data-target=\"PaymentBillingTab\" class=\"selected\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
+    + "</span>\n        <span data-target=\"UsageTab\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_USAGE_TAB", {hash:{},data:data}))
+    + "</span>\n    </nav>\n    <div class=\"tabContent\" id=\"PaymentBody\">\n        <section id=\"PaymentBillingTab\">\n            <p class=\"warning-red\"></p>\n            <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "CREDIT_CARD_INFORMATION", {hash:{},data:data}))
+    + "</h5>\n            <div class=\"clearfix\">\n                <div class=\"left clearfix\">\n                    <div class=\"payment-credit-middle left\">\n\n                    </div>\n                    <div class=\"left\">\n                        <p class=\"payment-number\">";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.card), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</p>\n                        <p class=\"payment-username\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.first_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p>\n                    </div>\n                </div>\n                <div class=\"right\">\n                    <a class=\"btn btn-blue update-payment\" href=\""
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">"
+    + escapeExpression(helpers.i18n.call(depth0, "UPDATE_BILLING_INFORMATION", {hash:{},data:data}))
+    + "<i class=\"icon-right\"></i></a>\n                </div>\n            </div>\n            <h5>"
+    + escapeExpression(helpers.i18n.call(depth0, "BILLING_HISTORY", {hash:{},data:data}))
+    + " <span class=\"payment-next-billing\">"
+    + escapeExpression(helpers.i18n.call(depth0, "NEXT_BILLING_ON", {hash:{},data:data}))
+    + " "
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.billingEnd), "yyyy-MM-d", {hash:{},data:data}))
+    + "</span></h5>\n            <div class=\"table-head-fix\">\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasPaymentHistory), {hash:{},inverse:self.program(11, program11, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </div>\n        </section>\n        <section id=\"UsageTab\" class=\"hide\">\n            <p class=\"warning-red\"></p>\n            <h5 class=\"billing_usage_title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_CURRENT_USAGE", {hash:{},data:data}))
+    + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.last_billing_time), "yyyy-MM-d", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_CURRENT_USAGE_SPAN", {hash:{},data:data}))
+    + "</h5>\n            <div class=\"usage-wrapper\">\n                <div class=\"used-points\">\n                    <div class=\"usage-number\">\n                        "
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.current_quota)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\n                    </div>\n                    <span>"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_INSTANT_HOUR", {hash:{},data:data}))
+    + "</span>\n                </div>\n            </div>\n            <p class=\"renew-points\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_RENEW_FREE_INFO", ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.max_quota), ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.renewRemainDays), {hash:{},data:data}))
+    + "</p>\n        </section>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.billingTemplate=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
 (function() {
-  define('ide/subviews/HeaderView',["./HeaderTpl", "./SettingsDialog", 'backbone', "UI.selectbox"], function(tmpl, SettingsDialog) {
+  define('ide/subviews/BillingDialog',["./BillingDialogTpl", 'i18n!/nls/lang.js', "ApiRequest", "UI.modalplus", "ApiRequestR", "backbone"], function(BillingDialogTpl, lang, ApiRequest, Modal, ApiRequestR) {
+    var BillingDialog;
+    BillingDialog = Backbone.View.extend({
+      events: {
+        "click #PaymentNav span": "switchTab",
+        'click #PaymentBody a.payment-receipt': "viewPaymentReceipt",
+        'click .update-payment': "_bindPaymentEvent"
+      },
+      initialize: function(modal) {
+        var paymentState, that;
+        that = this;
+        paymentState = App.user.get("paymentState");
+        if (modal) {
+          this.modal = modal;
+          this.modal.setWidth("650px").setTitle(lang.IDE.PAYMENT_SETTING_TITLE).setContent(MC.template.loadingSpiner).find('.modal-confirm').hide();
+        } else {
+          this.modal = new Modal({
+            title: lang.IDE.PAYMENT_SETTING_TITLE,
+            width: "650px",
+            template: MC.template.loadingSpiner,
+            disableClose: true,
+            confirm: {
+              hide: true
+            }
+          });
+        }
+        this.getPaymentHistory().then(function(paymentHistory) {
+          var billable_quota, hasPaymentHistory, paymentUpdate, tempArray;
+          console.log(paymentHistory);
+          paymentUpdate = {
+            url: App.user.get("paymentUrl"),
+            card: App.user.get("creditCard"),
+            billingEnd: App.user.get("billingEnd"),
+            current_quota: App.user.get("voQuotaCurrent"),
+            max_quota: App.user.get("voQuotaPerMonth"),
+            renewRemainDays: Math.round((App.user.get("renewDate") - (new Date())) / (1000 * 60 * 60 * 24)),
+            last_billing_time: App.user.get("billingStart") || new Date()
+          };
+          billable_quota = App.user.get("voQuotaCurrent") - App.user.get("voQuotaPerMonth");
+          paymentUpdate.billable_quota = billable_quota > 0 ? billable_quota : 0;
+          that.modal.find(".modal-body").css('padding', "0");
+          hasPaymentHistory = (_.keys(paymentHistory)).length;
+          tempArray = [];
+          _.each(paymentHistory, function(e) {
+            e.ending_balance = e.ending_balance_in_cents / 100;
+            e.total_balance = e.total_in_cents / 100;
+            e.start_balance = e.starting_balance_in_cents / 100;
+            return tempArray.push(e);
+          });
+          tempArray.reverse();
+          paymentHistory = tempArray;
+          that.paymentHistory = tempArray;
+          that.paymentUpdate = _.clone(paymentUpdate);
+          that.modal.setContent(BillingDialogTpl.billingTemplate({
+            paymentUpdate: paymentUpdate,
+            paymentHistory: paymentHistory,
+            hasPaymentHistory: hasPaymentHistory
+          }));
+          if (!App.user.get("creditCard")) {
+            that.modal.find("#PaymentBillingTab").html(MC.template.paymentSubscribe({
+              url: App.user.get("paymentUrl"),
+              freePointsPerMonth: App.user.get("voQuotaPerMonth"),
+              shouldPay: App.user.shouldPay()
+            }));
+            that.modal.listenTo(App.user, "paymentUpdate", function() {
+              that.initialize(that.modal);
+              return that.modal.stopListening();
+            });
+          }
+          return that.updateUsage();
+        }, function() {
+          var _ref;
+          notification('error', "Error while getting user payment info, please try again later.");
+          return (_ref = that.modal) != null ? _ref.close() : void 0;
+        });
+        this.listenTo(App.user, "paymentUpdate", function() {
+          return that.updateUsage();
+        });
+        return this.setElement(this.modal.tpl);
+      },
+      getPaymentHistory: function() {
+        var historyDefer;
+        historyDefer = new Q.defer();
+        if (!App.user.get("creditCard")) {
+          historyDefer.resolve({});
+        } else {
+          ApiRequestR("payment_statement").then(function(paymentHistory) {
+            return historyDefer.resolve(paymentHistory);
+          }, function(err) {
+            return historyDefer.reject(err);
+          });
+        }
+        return historyDefer.promise;
+      },
+      switchTab: function(event) {
+        var target;
+        target = $(event.currentTarget);
+        console.log("Switching Tabs");
+        this.modal.find("#PaymentNav").find("span").removeClass("selected");
+        this.modal.find(".tabContent > section").addClass("hide");
+        $("#" + target.addClass("selected").data('target')).removeClass("hide");
+        return this.updateUsage();
+      },
+      _bindPaymentEvent: function(event) {
+        var that;
+        that = this;
+        event.preventDefault();
+        window.open($(event.currentTarget).attr("href"), "");
+        this.modal.listenTo(App.user, 'change:paymentState', function() {
+          var paymentState;
+          paymentState = App.user.get('paymentState');
+          if (that.modal.isClosed) {
+            return false;
+          }
+          if (paymentState === 'active') {
+            return that._renderBillingDialog(that.modal);
+          }
+        });
+        this.modal.on('close', function() {
+          return that.modal.stopListening(App.user);
+        });
+        return false;
+      },
+      _renderBillingDialog: function(modal) {
+        return new BillingDialog(modal);
+      },
+      updateUsage: function() {
+        var current_quota, shouldPay;
+        if (this.modal.isClosed) {
+          return false;
+        }
+        shouldPay = App.user.shouldPay();
+        this.modal.$(".usage-block").toggleClass("error", shouldPay);
+        this.modal.$(".used-points").toggleClass("error", shouldPay);
+        current_quota = App.user.get("voQuotaCurrent");
+        this.modal.find(".payment-number").text(App.user.get("creditCard") || "No Card");
+        this.modal.find(".payment-username").text("" + (App.user.get("cardFirstName")) + " " + (App.user.get("cardLastName")));
+        this.modal.find(".used-points .usage-number").text(current_quota);
+        if (App.user.shouldPay()) {
+          return this.modal.find(".warning-red").not(".no-change").show().html(sprintf(lang.IDE.PAYMENT_PROVIDE_UPDATE_CREDITCARD, App.user.get("paymentUrl"), (App.user.get("creditCard") ? "Update" : "Provide")));
+        } else if (App.user.isUnpaid()) {
+          return this.modal.find(".warning-red").not(".no-change").show().html(sprintf(lang.IDE.PAYMENT_UNPAID_BUT_IN_FREE_QUOTA, App.user.get("paymentUrl")));
+        } else {
+          return this.modal.find(".warning-red").not(".no-change").hide();
+        }
+      },
+      viewPaymentReceipt: function(event) {
+        var $target, cssToInsert, id, makeNewWindow, paymentHistory;
+        $target = $(event.currentTarget);
+        id = $target.parent().parent().data("id");
+        paymentHistory = this.paymentHistory[id];
+        cssToInsert = ".billing_statement_section {\n    display: block;\n    position: relative;\n}\n.billing_statement_section h2 {\n    display: block;\n    background: #E6E6E6;\n    font-size: 16px;\n    padding: 10px;\n    font-weight: bold;\n    margin-bottom: 0;\n    border-bottom: 1px solid #727272;\n}\n.billing_statement_section_content {\n    display: block;\n    position: relative;\n    padding-top: 10px;\n}\ntable {\n    border-collapse: collapse;\n    width: 100%;\n}\ntable, td, th {\n    border: 1px solid #333;\n    padding: 7px;\n    text-align: left;\n    font-size: 14px;\n}\ntable thead {\n    background: #dedede;\n}\ntable tr.billing_statement_listing_tfoot {\n    font-weight: bold;\n    text-align: right;\n}\n#billing_statement {\n    width: 800px;\n    margin: 20px auto;\n    padding-bottom: 50px;\n}\n.billing_statement_section .billing_statement_section_content h3 {\n    font-size: 14px;\n    position: relative;\n    margin: 10px 0;\n    font-weight: bold;\n    margin-bottom: 14px;\n    background: #F3F3F3;\n    padding: 5px;\n}\ndiv#billing_statement_account_information_section {\n    width: 49%;\n    float: left;\n}\ndiv#billing_statement_summary_section {\n    width: 49%;\n    float: right;\n}\ndiv#billing_statement_detail_section {\n    clear: both;\n    padding-top: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_label {\n    font-weight: bold;\n    font-size: 16px;\n    width: 44%;\n    display: inline-block;\n    text-align: right;\n}\n.billing_statement_section_content> div {\n    margin-bottom: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_value {\n    text-align: right;\n    float: right;\n    color: #666;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_paid {\n    float: right;\n    font-size: 30px;\n    color: #50B816;\n    margin-top: 10px;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_unpaid {\n    float: right;\n    font-size: 30px;\n    color: #C70000;\n    margin-top: 10px;\n}\nbody {font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;}";
+        makeNewWindow = function() {
+          var content, headTag, newWindow, styleTag;
+          newWindow = window.open("", "");
+          newWindow.focus();
+          content = paymentHistory.html;
+          newWindow.document.write(content);
+          headTag = newWindow.document.head || newWindow.document.getElementsByTagName('head')[0];
+          styleTag = document.createElement('style');
+          styleTag.type = 'text/css';
+          if (styleTag.styleSheet) {
+            styleTag.styleSheet.cssText = cssToInsert;
+          } else {
+            styleTag.appendChild(document.createTextNode(cssToInsert));
+          }
+          headTag.appendChild(styleTag);
+          return newWindow.document.close();
+        };
+        return makeNewWindow();
+      }
+    });
+    return BillingDialog;
+  });
+
+}).call(this);
+
+(function() {
+  define('ide/subviews/HeaderView',["./HeaderTpl", "./SettingsDialog", './BillingDialog', 'i18n!/nls/lang.js', 'backbone', "UI.selectbox"], function(tmpl, SettingsDialog, BillingDialog, lang) {
     var HeaderView;
     HeaderView = Backbone.View.extend({
       events: {
         'click #HeaderLogout': 'logout',
         'click #HeaderSettings': 'settings',
         'click #HeaderShortcuts': 'shortcuts',
+        'click #HeaderBilling': 'billingSettings',
+        'click .voquota': "billingSettings",
         'DROPDOWN_CLOSE #HeaderNotification': 'dropdownClosed'
       },
       initialize: function() {
         this.listenTo(App.user, "change", this.update);
         this.listenTo(App.model, "change:notification", this.updateNotification);
         this.setElement($(tmpl(App.user.toJSON())).prependTo("#wrapper"));
+        this.update();
       },
       logout: function() {
         return App.logout();
@@ -813,7 +1181,13 @@ function program3(depth0,data) {
         return new SettingsDialog();
       },
       update: function() {
-        return $("#HeaderUser").data("tooltip", App.user.get("email")).children("span").text(App.user.get("username"));
+        var $quota;
+        $quota = $("#header").children(".voquota");
+        if (App.user.shouldPay()) {
+          return $quota.addClass("show");
+        } else {
+          return $quota.removeClass("show");
+        }
       },
       setAlertCount: function(count) {
         return $('#NotificationCounter').text(count || "");
@@ -821,7 +1195,11 @@ function program3(depth0,data) {
       updateNotification: function() {
         var html, i, notification, unread_num, _i, _len;
         console.log("Notification Updated, Websocket isReady:", App.WS.isReady());
-        notification = App.model.get("notification");
+        notification = _.map(App.model.get("notification"), function(n) {
+          return _.extend({}, n, {
+            operation: lang.TOOLBAR[n.operation.toUpperCase()] || n.operation
+          });
+        });
         html = "";
         unread_num = 0;
         for (_i = 0, _len = notification.length; _i < _len; _i++) {
@@ -841,6 +1219,9 @@ function program3(depth0,data) {
         this.setAlertCount();
         App.model.markNotificationRead();
         return null;
+      },
+      billingSettings: function() {
+        return new BillingDialog();
       }
     });
     return HeaderView;
@@ -923,7 +1304,8 @@ function program3(depth0,data) {
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('ide/subviews/WelcomeDialog',["./WelcomeTpl", "UI.modalplus", 'i18n!/nls/lang.js', "backbone"], function(WelcomeTpl, Modal, lang) {
-    var WelcomeDialog;
+    var SingletonWelcome, WelcomeDialog;
+    SingletonWelcome = null;
     WelcomeDialog = Backbone.View.extend({
       events: {
         "click #WelcomeSkip": "skip",
@@ -932,6 +1314,13 @@ function program3(depth0,data) {
         "click #WelcomeClose": "close",
         "click #CredSetupSubmit": "submitCred",
         "keyup #CredSetupAccount, #CredSetupAccessKey, #CredSetupSecretKey": "updateSubmitBtn"
+      },
+      constructor: function() {
+        if (SingletonWelcome) {
+          return SingletonWelcome;
+        }
+        SingletonWelcome = this;
+        return Backbone.View.apply(this, arguments);
       },
       initialize: function(options) {
         var attributes, title;
@@ -991,6 +1380,7 @@ function program3(depth0,data) {
         }
       },
       close: function() {
+        SingletonWelcome = null;
         return this.modal.close();
       },
       updateSubmitBtn: function() {
@@ -1413,6 +1803,89 @@ TEMPLATE.forceTerminateApp=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
+define('ide/subviews/FullnameTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"complete-fullname\">\r\n    <div class=\"control-group fullname\">\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-firstname\" class=\"account-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
+    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
+    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n    </div>\r\n    <p class=\"information\">"
+    + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
+    + "</p>\r\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
+(function() {
+  define('ide/subviews/FullnameSetup',["./FullnameTpl", "UI.modalplus", 'i18n!/nls/lang.js', 'ApiRequest', "backbone"], function(FullnameTpl, Modal, lang, ApiRequest) {
+    return Backbone.View.extend({
+      events: {
+        "click #submitFullName": "submit",
+        "change #complete-firstname": "changeInput",
+        "change #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput",
+        "keyup #complete-lastname": "changeInput"
+      },
+      initialize: function() {
+        this.modal = new Modal({
+          title: lang.IDE.COMPLETE_YOUR_PROFILE,
+          template: FullnameTpl(),
+          width: "600",
+          disableClose: true,
+          hideClose: true,
+          cancel: {
+            hide: true
+          },
+          confirm: {
+            disabled: true
+          }
+        });
+        this.modal.on('confirm', this.submit.bind(this));
+        return this.setElement(this.modal.tpl);
+      },
+      changeInput: function() {
+        var $firstNameInput, $lastNameInput, confirmBtn;
+        confirmBtn = this.modal.find(".modal-confirm");
+        $firstNameInput = this.modal.find("#complete-firstname");
+        $lastNameInput = this.modal.find("#complete-lastname");
+        if (!!$firstNameInput.val() && !!$lastNameInput.val()) {
+          return confirmBtn.attr("disabled", false);
+        } else {
+          return confirmBtn.attr("disabled", true);
+        }
+      },
+      submit: function() {
+        var firstname, lastname, that;
+        that = this;
+        firstname = that.modal.$("#complete-firstname").val();
+        lastname = that.modal.$("#complete-lastname").val();
+        if (!(firstname && lastname)) {
+          return false;
+        }
+        this.modal.find(".modal-confirm").attr('disabled', true);
+        this.modal.setContent(MC.template.loadingSpiner());
+        return ApiRequest("account_update_account", {
+          attributes: {
+            first_name: firstname,
+            last_name: lastname
+          }
+        }).then(function() {
+          App.user.set("firstName", firstname);
+          App.user.set("lastName", lastname);
+          this.modal.close();
+          return notification("info", lang.IDE.PROFILE_UPDATED_SUCCESSFULLY);
+        }, function() {
+          this.modal.close();
+          return notification('error', lang.IDE.PROFILE_UPDATED_FAILED);
+        });
+      }
+    });
+  });
+
+}).call(this);
+
 
 /*
 ----------------------------
@@ -1421,7 +1894,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, lang, CloudResources, constant, modalPlus) {
+  define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subviews/HeaderView", "./subviews/WelcomeDialog", "./subviews/SettingsDialog", "./subviews/Navigation", "./subviews/AppTpl", "./subviews/FullnameSetup", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus'], function(Backbone, SessionDialog, HeaderView, WelcomeDialog, SettingsDialog, Navigation, AppTpl, FullnameSetup, lang, CloudResources, constant, modalPlus) {
     return Backbone.View.extend({
       el: $("body")[0],
       events: {
@@ -1496,6 +1969,8 @@ return TEMPLATE; });
       toggleWelcome: function() {
         if (App.user.isFirstVisit()) {
           new WelcomeDialog();
+        } else if (App.user.fullnameNotSet()) {
+          new FullnameSetup();
         }
       },
       askForAwsCredential: function() {
@@ -1538,6 +2013,9 @@ return TEMPLATE; });
             return notification(sprintf(lang.NOTIFY.ERROR_FAILED_TERMINATE, name, error));
           });
         });
+      },
+      notifyUnpay: function() {
+        notification("error", "Failed to charge your account. Please update your billing info.");
       }
     });
   });
@@ -1555,11 +2033,15 @@ return TEMPLATE; });
 
 (function() {
   define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", "backbone"], function(ApiRequest, constant, CloudResources, ThumbUtil) {
-    var KnownOpsModelClass, OpsModel, OpsModelState, OpsModelStateDesc, __detailExtend;
+    var KnownOpsModelClass, OpsModel, OpsModelLastestVersion, OpsModelState, OpsModelStateDesc, OpsModelType, __detailExtend;
     KnownOpsModelClass = {};
     __detailExtend = Backbone.Model.extend;
 
     /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        env:dev:end */
+    OpsModelType = {
+      OpenStack: "OpenstackOps",
+      Amazon: "AwsOps"
+    };
     OpsModelState = {
       UnRun: 0,
       Running: 1,
@@ -1573,6 +2055,7 @@ return TEMPLATE; });
       Saving: 9
     };
     OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
+    OpsModelLastestVersion = "2014-11-11";
     OpsModel = Backbone.Model.extend({
       type: "GenericOps",
       defaults: function() {
@@ -1582,25 +2065,24 @@ return TEMPLATE; });
           state: OpsModelState.UnRun,
           stoppable: true,
           name: "",
-          cloudType: "",
+          version: OpsModelLastestVersion,
           provider: ""
         };
       },
       constructor: function(attr, opts) {
-        var Model, cloudType, type;
+        var Model, provider;
         attr = attr || {};
         opts = opts || {};
         if (this.type === "GenericOps") {
           if (opts.jsonData) {
-            cloudType = opts.jsonData.cloud_type;
+            provider = opts.jsonData.provider;
           }
-          cloudType = cloudType || attr.cloudType || "aws";
-          type = cloudType.replace(/[a-z]/, function(w) {
-            return w.toUpperCase();
-          }) + "Ops";
-          console.assert(KnownOpsModelClass[type], "Cannot find specific OpsModel for cloudType: " + cloudType);
-          Model = KnownOpsModelClass[type];
-          return new Model(attr, opts);
+          attr.provider = provider || attr.provider || "aws::global";
+          console.assert(KnownOpsModelClass[attr.provider], "Cannot find specific OpsModel for provider '" + attr.provider + "'");
+          Model = KnownOpsModelClass[attr.provider];
+          if (Model) {
+            return new Model(attr, opts);
+          }
         }
         Backbone.Model.apply(this, arguments);
       },
@@ -1638,6 +2120,9 @@ return TEMPLATE; });
       },
       isImported: function() {
         return !!this.attributes.importMsrId;
+      },
+      isPMRestricted: function() {
+        return this.get("version") >= "2014-11-11" && this.isApp();
       },
       testState: function(state) {
         return this.attributes.state === state;
@@ -1735,7 +2220,7 @@ return TEMPLATE; });
         if (!this.isImported()) {
           return;
         }
-        return CloudResources("OpsResource", this.getMsrId()).init(this.get("region")).fetchForceDedup().then(function() {
+        return CloudResources("OpsResource", this.getMsrId()).init(this.get("region"), this.get("provider")).fetchForceDedup().then(function() {
           return self.__onFjdImported();
         });
       },
@@ -1821,7 +2306,10 @@ return TEMPLATE; });
           json.layout.size = [240, 240];
         }
         if ((json.version || "").split("-").length < 3) {
-          json.version = "2013-09-13";
+          json.version = OpsModelLastestVersion;
+        }
+        if (!json.provider && this.get("provider")) {
+          json.provider = this.get("provider");
         }
         this.__jsonData = json;
         if (this.attributes.name !== json.name) {
@@ -1860,19 +2348,19 @@ return TEMPLATE; });
           var attr;
           attr = {
             name: newJson.name,
+            version: newJson.version,
             updateTime: +(new Date()),
-            stoppable: newJson.property.stoppable,
+            stoppable: res.property.stoppable,
             state: OpsModelState.UnRun
           };
           if (!self.get("id")) {
-            attr.id = res;
-            newJson.id = res;
+            attr.id = res.id;
           }
           if (thumbnail) {
-            ThumbUtil.save(self.id || attr.id, thumbnail);
+            ThumbUtil.save(self.get("id") || attr.id, thumbnail);
           }
           self.set(attr);
-          self.__jsonData = newJson;
+          self.__jsonData = res;
           self.trigger("jsonDataSaved", self);
           if (attr.id) {
             self.collection.__triggerUpdate(self);
@@ -1919,9 +2407,9 @@ return TEMPLATE; });
             state: OpsModelState.Initializing,
             progress: 0,
             region: region,
-            cloudType: toRunJson.cloud_type,
             provider: toRunJson.provider,
             usage: toRunJson.usage,
+            version: toRunJson.version,
             updateTime: +(new Date()),
             stoppable: toRunJson.property.stoppable,
             resource_diff: false
@@ -1939,7 +2427,6 @@ return TEMPLATE; });
         attr = $.extend(true, {}, this.attributes, {
           name: name,
           updateTime: +(new Date()),
-          cloudType: this.get("cloudType"),
           provider: this.get("provider")
         });
         collection = this.collection;
@@ -2251,9 +2738,9 @@ return TEMPLATE; });
           region: this.get("region"),
           platform: "ec2-vpc",
           state: "Enabled",
-          version: "2014-02-17",
+          version: this.get("version"),
+          resource_diff: true,
           component: {},
-          cloud_type: this.get("cloudType"),
           provider: this.get("provider"),
           layout: {
             size: [240, 240]
@@ -2275,13 +2762,19 @@ return TEMPLATE; });
       }
     }, {
       extend: function(protoProps, staticProps) {
-        var subClass;
+        var provider, subClass, _i, _len, _ref;
         subClass = __detailExtend.call(this, protoProps, staticProps);
-        KnownOpsModelClass[protoProps.type] = subClass;
+        _ref = staticProps.supportedProviders;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          provider = _ref[_i];
+          KnownOpsModelClass[provider] = subClass;
+        }
         return subClass;
       }
     });
+    OpsModel.Type = OpsModelType;
     OpsModel.State = OpsModelState;
+    OpsModel.LatestVersion = OpsModelLastestVersion;
     return OpsModel;
   });
 
@@ -2437,16 +2930,9 @@ return TEMPLATE; });
 
 (function() {
   define('ide/submodels/OpsModelOs',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
-    var AwsOpsModel;
-    AwsOpsModel = OpsModel.extend({
-      type: "OpenstackOps",
-      initialize: function(attr, options) {
-        OpsModel.prototype.initialize.call(this, attr, options);
-        this.attributes.cloudType = "openstack";
-        if (!this.get("provider")) {
-          this.attributes.provider = options.jsonData.provider ? options.jsonData.provider : App.user.get("default_provider");
-        }
-      },
+    var OsOpsModel;
+    OsOpsModel = OpsModel.extend({
+      type: OpsModel.Type.OpenStack,
       getMsrId: function() {
         var comp, msrId, uid, _ref;
         msrId = OpsModel.prototype.getMsrId.call(this);
@@ -2544,8 +3030,10 @@ return TEMPLATE; });
         }
         this.__jsonData = json;
       }
+    }, {
+      supportedProviders: ["os::awcloud_bj"]
     });
-    return AwsOpsModel;
+    return OsOpsModel;
   });
 
 }).call(this);
@@ -2563,14 +3051,7 @@ return TEMPLATE; });
   define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant", "CloudResources"], function(OpsModel, ApiRequest, constant, CloudResources) {
     var AwsOpsModel;
     AwsOpsModel = OpsModel.extend({
-      type: "AwsOps",
-      initialize: function(attr, opts) {
-        OpsModel.prototype.initialize.apply(this, arguments);
-        this.attributes.cloudType = "aws";
-        if (!this.get("provider")) {
-          this.attributes.provider = "global";
-        }
-      },
+      type: OpsModel.Type.Amazon,
       getMsrId: function() {
         var comp, msrId, uid, _ref;
         msrId = OpsModel.prototype.getMsrId.call(this);
@@ -2763,6 +3244,8 @@ return TEMPLATE; });
         }
         this.__jsonData = json;
       }
+    }, {
+      supportedProviders: ["aws::global", "aws::china"]
     });
     return AwsOpsModel;
   });
@@ -2779,7 +3262,7 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil) {
+  define('ide/ApplicationModel',["./submodels/OpsCollection", "OpsModel", "ApiRequest", "ApiRequestOs", "backbone", "constant", "ThumbnailUtil", "i18n!/nls/lang.js", "./submodels/OpsModelOs", "./submodels/OpsModelAws"], function(OpsCollection, OpsModel, ApiRequest, ApiRequestOs, Backbone, constant, ThumbUtil, lang) {
     return Backbone.Model.extend({
       defaults: function() {
         return {
@@ -2806,23 +3289,19 @@ return TEMPLATE; });
       getOpsModelById: function(opsId) {
         return this.attributes.appList.get(opsId) || this.attributes.stackList.get(opsId);
       },
-      clearImportOps: function() {
-        return this.attributes.appList.remove(this.attributes.appList.find(function(m) {
-          return m.isImported();
-        }));
-      },
-      createImportOps: function(region, vpcId) {
+      createImportOps: function(region, provider, msrId) {
         var m;
         m = this.attributes.appList.findWhere({
-          importMsrId: vpcId
+          importMsrId: msrId
         });
         if (m) {
           return m;
         }
         m = new OpsModel({
-          name: "ImportedVpc",
-          importMsrId: vpcId,
+          name: "ImportedApp",
+          importMsrId: msrId,
           region: region,
+          provider: provider,
           state: OpsModel.State.Running
         });
         this.attributes.appList.add(m);
@@ -2836,17 +3315,13 @@ return TEMPLATE; });
         this.attributes.stackList.add(m);
         return m;
       },
-      createStack: function(region, cloudType, provider) {
+      createStack: function(region, provider) {
         var m;
-        if (cloudType == null) {
-          cloudType = "aws";
-        }
         if (provider == null) {
-          provider = "amazon";
+          provider = "aws::global";
         }
         m = new OpsModel({
           region: region,
-          cloudType: cloudType,
           provider: provider
         }, {
           initJsonData: true
@@ -2854,14 +3329,19 @@ return TEMPLATE; });
         this.attributes.stackList.add(m);
         return m;
       },
-      createStackByJson: function(json) {
+      createStackByJson: function(json, updateLayout) {
         var m;
+        if (updateLayout == null) {
+          updateLayout = false;
+        }
         if (!this.attributes.stackList.isNameAvailable(json.name)) {
           json.name = this.stackList().getNewName(json.name);
         }
         m = new OpsModel({
           name: json.name,
-          region: json.region
+          region: json.region,
+          autoLayout: updateLayout,
+          __________itsshitdontsave: updateLayout
         }, {
           jsonData: json
         });
@@ -2958,7 +3438,6 @@ return TEMPLATE; });
             }
             instanceTypeConfig[typeInfo.typeName] = typeInfo;
           }
-          return;
         }
       },
       __parseOsData: function(res) {
@@ -3031,7 +3510,7 @@ return TEMPLATE; });
             region: ops.region,
             usage: ops.usage,
             name: ops.name,
-            cloudType: ops.cloud_type,
+            version: ops.version,
             provider: ops.provider,
             state: OpsModel.State[ops.state] || OpsModel.State.UnRun,
             stoppable: !(ops.property && ops.property.stoppable === false)
@@ -3154,9 +3633,9 @@ return TEMPLATE; });
             if (!isNaN(time_begin) && !isNaN(time_end) && time_end >= time_begin) {
               duration = time_end - time_begin;
               if (duration < 60) {
-                request.duration = "Took " + duration + " sec.";
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
               } else {
-                request.duration = "Took " + (Math.round(duration / 60)) + " min.";
+                request.duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
               }
             }
           }
@@ -3211,16 +3690,27 @@ return TEMPLATE; });
  */
 
 (function() {
-  define('ide/User',["ApiRequest", "backbone"], function(ApiRequest) {
-    var UserState;
+  define('ide/User',["ApiRequest", "ApiRequestR", "backbone"], function(ApiRequest, ApiRequestR) {
+    var Model, PaymentState, UserState;
     UserState = {
       NotFirstTime: 2
     };
-    return Backbone.Model.extend({
+    PaymentState = {
+      NoInfo: "",
+      Pastdue: "pastdue",
+      Unpaid: "unpaid",
+      Active: "active"
+    };
+    Model = Backbone.Model.extend({
+      defaults: {
+        paymentState: "",
+        voQuotaPerMonth: 1000,
+        voQuotaCurrent: 0
+      },
       initialize: function() {
         this.set({
           usercode: $.cookie("usercode"),
-          username: MC.base64Decode($.cookie("usercode")),
+          username: Base64.decode($.cookie("usercode")),
           session: $.cookie("session_id")
         });
       },
@@ -3230,22 +3720,58 @@ return TEMPLATE; });
       isFirstVisit: function() {
         return !(UserState.NotFirstTime & this.get("state"));
       },
+      fullnameNotSet: function() {
+        return !this.get("firstName") || !this.get("lastName");
+      },
+      isUnpaid: function() {
+        return this.get("paymentState") === PaymentState.Unpaid;
+      },
+      shouldPay: function() {
+        return (this.get("voQuotaCurrent") >= this.get("voQuotaPerMonth")) && (!this.get("creditCard") || this.isUnpaid());
+      },
+      getBillingOverview: function() {
+        var ov;
+        ov = {
+          quotaTotal: this.get("voQuotaPerMonth"),
+          quotaCurrent: this.get("voQuotaCurrent"),
+          billingStart: this.get("billingStart"),
+          billingEnd: this.get("billingEnd"),
+          billingRemain: Math.round((this.get("billingEnd") - new Date()) / 24 / 3600000)
+        };
+        ov.quotaRemain = Math.max(ov.quotaTotal - ov.quotaCurrent, 0);
+        ov.billingRemain = Math.min(ov.billingRemain, 31);
+        ov.billingRemain = Math.max(ov.billingRemain, 0);
+        ov.quotaPercent = Math.round(Math.min(ov.quotaCurrent, ov.quotaTotal) / Math.max(ov.quotaCurrent, ov.quotaTotal) * 100);
+        return ov;
+      },
       userInfoAccuired: function(result) {
-        var idx, res, t, _i, _len, _ref;
+        var idx, paymentInfo, res, selfPage, t, _i, _len, _ref;
+        paymentInfo = result.payment || {};
+        selfPage = paymentInfo.self_page || {};
         res = {
-          email: MC.base64Decode(result.email),
+          email: Base64.decode(result.email),
           repo: result.mod_repo,
           tag: result.mod_tag,
           state: parseInt(result.state, 10),
           intercomHash: result.intercom_secret,
           account: result.account_id,
+          firstName: Base64.decode(result.first_name || ""),
+          lastName: Base64.decode(result.last_name || ""),
+          cardFirstName: Base64.decode(selfPage.first_name || ""),
+          cardLastName: Base64.decode(selfPage.last_name || ""),
+          voQuotaCurrent: paymentInfo.current_quota || 0,
+          voQuotaPerMonth: paymentInfo.max_quota || 3600,
+          has_card: !!paymentInfo.has_card,
+          paymentUrl: selfPage.url,
+          creditCard: selfPage.card,
+          billingEnd: new Date(selfPage.current_period_ends_at || new Date()),
+          billingStart: new Date(selfPage.current_period_started_at || new Date()),
+          renewDate: paymentInfo.next_reset_time ? new Date(paymentInfo.next_reset_time * 1000) : new Date(),
+          paymentState: paymentInfo.state || "",
           awsAccessKey: result.access_key,
           awsSecretKey: result.secret_key,
           tokens: result.tokens || [],
-          defaultToken: "",
-          paymentState: result.payment_state || "unpay",
-          default_provider: result.default_provider,
-          default_region: result.default_region
+          defaultToken: ""
         };
         if (result.account_id === "demo_account") {
           res.account = res.awsAccessKey = res.awsSecretKey = "";
@@ -3263,8 +3789,52 @@ return TEMPLATE; });
         if (this.isFirstVisit()) {
           ApiRequest("account_update_account", {
             attributes: {
-              state: this.get("state") | UserState.NotFirstTime
+              state: "" + (this.get("state") | UserState.NotFirstTime)
             }
+          });
+        }
+      },
+      onWsUserStateChange: function(changes) {
+        var attr, changed, key, paymentInfo, that, toChange, value;
+        console.log(changes);
+        that = this;
+        paymentInfo = changes.payment;
+        if (!changes) {
+          return;
+        }
+        attr = {
+          current_quota: "voQuotaCurrent",
+          max_quota: "voQuotaPerMonth",
+          has_card: "creditCard",
+          state: "paymentState"
+        };
+        changed = !!changes.time_update;
+        toChange = {};
+        for (key in attr) {
+          value = attr[key];
+          if (paymentInfo != null ? paymentInfo.hasOwnProperty(key) : void 0) {
+            changed = true;
+            toChange[value] = paymentInfo[key];
+          }
+        }
+        if (changed) {
+          this.set(toChange);
+        }
+        if (paymentInfo != null ? paymentInfo.next_reset_time : void 0) {
+          App.user.set("renewDate", new Date(paymentInfo.next_reset_time * 1000));
+        }
+        if (App.user.get("firstName") && App.user.get("lastName")) {
+          ApiRequestR("payment_self").then(function(result) {
+            paymentInfo = {
+              creditCard: result.card,
+              billingEnd: new Date(result.current_period_ends_at || null),
+              billingStart: new Date(result.current_period_started_at || null),
+              paymentUrl: result.url,
+              cardFirstName: result.card ? Base64.decode(result.first_name || "") : void 0,
+              cardLastName: result.card ? Base64.decode(result.last_name || "") : void 0
+            };
+            that.set(paymentInfo);
+            return that.trigger("paymentUpdate");
           });
         }
       },
@@ -3373,15 +3943,31 @@ return TEMPLATE; });
           return self.set("email", email);
         });
       },
+      changeName: function(firstName, lastName) {
+        var defer, self;
+        self = this;
+        defer = new Q.defer();
+        if (firstName === self.get("firstName") && lastName === self.get("lastName")) {
+          defer.resolve();
+        }
+        ApiRequest("account_update_account", {
+          attributes: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }).then(function(res) {
+          self.userInfoAccuired(res);
+          return defer.resolve(res);
+        }, function(err) {
+          return defer.reject(err);
+        });
+        return defer.promise;
+      },
       validateCredential: function(accessKey, secretKey) {
-        var d;
-        ApiRequest("account_validate_credential", {
+        return ApiRequest("account_validate_credential", {
           access_key: accessKey,
           secret_key: secretKey
         });
-        d = Q.defer();
-        d.resolve();
-        return d.promise;
       },
       changeCredential: function(account, accessKey, secretKey, force) {
         var self;
@@ -3487,12 +4073,14 @@ return TEMPLATE; });
         });
       }
     });
+    Model.PaymentState = PaymentState;
+    return Model;
   });
 
 }).call(this);
 
 (function() {
-  define('ide/subviews/WorkspaceView',["backbone", "jquerysort"], function() {
+  define('ide/subviews/WorkspaceView',['i18n!/nls/lang.js', "backbone", "jquerysort"], function(lang) {
     return Backbone.View.extend({
       el: $("#tabbar-wrapper")[0],
       events: {
@@ -3549,7 +4137,7 @@ return TEMPLATE; });
         $parent = fixed ? $("#ws-fixed-tabs") : $("#ws-tabs");
         tpl = "<li class='" + data.klass + "' id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
         if (data.closable) {
-          tpl += '<i class="icon-close" title="Close Tab"></i>';
+          tpl += '<i class="icon-close" title="' + lang.TOOLBAR.TIT_CLOSE_TAB + '"></i>';
         }
         $tgt = $parent.children().eq(index);
         if ($tgt.length) {
@@ -3752,6 +4340,17 @@ return TEMPLATE; });
         return workspace;
       };
 
+      WorkspaceManager.prototype.removeAllSpaces = function(filter) {
+        var space, _i, _len, _ref;
+        _ref = this.__spaces.slice(0);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          space = _ref[_i];
+          if (!space.isFixed() && (!filter || filter(space))) {
+            this.remove(space, true);
+          }
+        }
+      };
+
       WorkspaceManager.prototype.find = function(attribute) {
         return _.find(this.__spaces, function(space) {
           return space.isWorkingOn(attribute);
@@ -3816,19 +4415,18 @@ return TEMPLATE; });
     };
     VisualOps.prototype.__createWebsocket = function() {
       this.WS = new Websocket();
-      this.WS.on("Disconnected", (function(_this) {
-        return function() {
-          return _this.acquireSession();
-        };
-      })(this));
-      this.WS.on("StatusChanged", (function(_this) {
-        return function(isConnected) {
-          console.info("Websocket Status changed, isConnected:", isConnected);
-          if (_this.__view) {
-            return _this.__view.toggleWSStatus(isConnected);
-          }
-        };
-      })(this));
+      this.WS.on("Disconnected", function() {
+        return App.acquireSession();
+      });
+      this.WS.on("StatusChanged", function(isConnected) {
+        console.info("Websocket Status changed, isConnected:", isConnected);
+        if (App.__view) {
+          return App.__view.toggleWSStatus(isConnected);
+        }
+      });
+      this.WS.on("userStateChange", function(idx, dag) {
+        return App.user.onWsUserStateChange(dag);
+      });
     };
     VisualOps.prototype.__createUser = function() {
       this.user = new User();
@@ -3887,16 +4485,19 @@ return TEMPLATE; });
       return this.__view.terminateApp(id);
     };
     VisualOps.prototype.discardAwsCache = function() {
-      App.model.clearImportOps();
       return CloudResources.invalidate();
     };
-    VisualOps.prototype.importJson = function(json) {
+    VisualOps.prototype.importJson = function(json, updateLayout) {
       var result;
-      result = JsonExporter.importJson(json);
-      if (_.isString(result)) {
-        return result;
+      if (_.isString(json)) {
+        result = JsonExporter.importJson(json);
+        if (_.isString(result)) {
+          return result;
+        }
+      } else {
+        result = json;
       }
-      return this.openOps(this.model.createStackByJson(result));
+      return this.openOps(this.model.createStackByJson(result, updateLayout));
     };
     VisualOps.prototype.openOps = function(opsModel, refresh) {
       var editor;
@@ -3925,14 +4526,14 @@ return TEMPLATE; });
       editor.activate();
       return editor;
     };
-    VisualOps.prototype.createOps = function(region, cloudType, provider) {
+    VisualOps.prototype.createOps = function(region, provider) {
       var editor;
       if (!region) {
         return;
       }
-      editor = new OpsEditor(this.model.createStack(region, cloudType, provider));
+      editor = new OpsEditor(this.model.createStack(region, provider));
       editor.activate();
-      return editor;
+      editor;
     };
     return VisualOps;
   });

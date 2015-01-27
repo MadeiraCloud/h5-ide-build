@@ -75,6 +75,34 @@ TEMPLATE.modal.confirmRemoveApp=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<p class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.IMPORT_SUCCESSFULLY_WELL_DONE", (depth0 && depth0.name), {hash:{},data:data}))
+    + "</p>\n<p class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.NAME_IMPORTED_APP", {hash:{},data:data}))
+    + "</p>\n<div class=\"modal-control-group\">\n    <label for=\"ImportSaveAppName\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_NAME", {hash:{},data:data}))
+    + "</label>\n    <input id=\"ImportSaveAppName\" class=\"input\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"string\" autofocus>\n</div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n    <label for=\"\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_USAGE", {hash:{},data:data}))
+    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.MONITOR_REPORT_EXTERNAL_RESOURCE", {hash:{},data:data}))
+    + "</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.IF_RESOURCE_CHANGED_EMAIL_SENT", {hash:{},data:data}))
+    + "\" style=\"color:#148BE6;vertical-align:-3px;\"></i>\n</section>\n\n<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.YOU_CAN_MANAGE_RESOURCES_LIFECYCLE", {hash:{},data:data}))
+    + "</p>";
+  return buffer;
+  };
+TEMPLATE.modal.confirmImport=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
@@ -607,7 +635,7 @@ return TEMPLATE; });
         }
       },
       type: function() {
-        return Design.TYPE.Vpc;
+        return this.__opsModel.type;
       },
       region: function() {
         return this.attributes.region;
@@ -648,6 +676,9 @@ return TEMPLATE; });
         }
       },
       component: function(uid) {
+        if (!uid) {
+          return null;
+        }
         return this.__componentMap[uid];
       },
       componentsOfType: function(type) {
@@ -767,9 +798,20 @@ return TEMPLATE; });
         data.layout.size = data.canvasSize;
         delete data.canvasSize;
         data.property = this.attributes.property || {};
-        data.version = "2014-02-17";
         data.state = this.__opsModel.getStateDesc() || "Enabled";
         data.id = this.__opsModel.get("id");
+
+        /*
+         * NOTICE!
+         * Git blame shows the following line of code is written by me, but it's not.
+         * It's the production of a branch merge.
+         * This obscure/ridicious if statement can't be deleted until every app launched before
+         * 2014-11-11 is terminated, because of some kind of weird feature and weird solution.
+         * Anyway, the if statement should never ever exist!!
+         */
+        if (options && options.toStack || this.modeIsStack()) {
+          data.version = OpsModel.LatestVersion;
+        }
         if (currentDesignObj) {
           currentDesignObj.use();
         }
@@ -1356,6 +1398,9 @@ return TEMPLATE; });
         this.set("name", name);
         return null;
       },
+      setDesc: function(description) {
+        return this.set("description", description);
+      },
       remove: function() {
         var cns, l;
         this.markAsRemoved();
@@ -1906,7 +1951,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('CoreEditorView',["workspaces/coreeditor/TplOpsEditor", "UI.modalplus", "event", "backbone", "UI.selectbox"], function(OpsEditorTpl, Modal, ide_event) {
+  define('CoreEditorView',["workspaces/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "backbone", "UI.selectbox", "backbone", "UI.selectbox"], function(OpsEditorTpl, Modal, lang) {
 
     /* Monitor keypress */
     $(window).on('keydown', function(evt) {
@@ -2005,21 +2050,31 @@ return TEMPLATE; });
       },
       template: OpsEditorTpl.frame,
       constructor: function(options) {
-        var opt;
         _.extend(this, options);
         this.setElement($(this.template()).appendTo("#main").attr("data-ws", this.workspace.id).show()[0]);
+      },
+      __initialize: function() {
+        var opt;
         opt = {
           workspace: this.workspace,
           parent: this
         };
-        this.toolbar = new (options.TopPanel || Backbone.View)(opt);
-        this.propertyPanel = new (options.RightPanel || Backbone.View)(opt);
-        this.resourcePanel = new (options.LeftPanel || Backbone.View)(opt);
-        this.statusbar = new (options.BottomPanel || Backbone.View)(opt);
-        this.canvas = new options.CanvasView(opt);
+        this.toolbar = new (this.TopPanel || Backbone.View)(opt);
+        this.propertyPanel = new (this.RightPanel || Backbone.View)(opt);
+        this.resourcePanel = new (this.LeftPanel || Backbone.View)(opt);
+        this.statusbar = new (this.BottomPanel || Backbone.View)(opt);
+        this.canvas = new this.CanvasView(opt);
         this.listenTo(this.canvas, "itemSelected", this.onItemSelected);
         this.listenTo(this.canvas, "doubleclick", this.onCanvasDoubleClick);
         this.initialize();
+        if (this.workspace.opsModel.get("__________itsshitdontsave")) {
+          this.propertyPanel.$el.remove();
+          this.statusbar.$el.remove();
+          this.$el.find(".canvas-view").css("pointer-events", "none");
+          this.canvas.updateSize();
+          this.toolbar.xxxxxx();
+          this.resourcePanel.$el.addClass("force-hidden");
+        }
       },
       onItemSelected: function(type, id) {},
       showProperty: function() {},
@@ -2122,11 +2177,11 @@ return TEMPLATE; });
         name = this.workspace.design.get('name');
         self = this;
         modal = new Modal({
-          title: "Confirm to close " + name,
+          title: sprintf(lang.IDE.TITLE_CONFIRM_TO_CLOSE, name),
           width: "420",
           template: OpsEditorTpl.modal.onClose(name),
           confirm: {
-            text: "Close Tab",
+            text: lang.TOOLBAR.TIT_CLOSE_TAB,
             color: "red"
           },
           onConfirm: function() {
@@ -2175,7 +2230,7 @@ return TEMPLATE; });
         var modal, self;
         self = this;
         modal = new Modal({
-          title: "Confirm to remove the app " + name + "?",
+          title: sprintf(lang.IDE.TITLE_CONFIRM_TO_REMOVE_APP, name),
           template: OpsEditorTpl.modal.confirmRemoveApp(),
           confirm: {
             text: lang.IDE.POP_CONFIRM_TO_REMOVE,
@@ -2327,6 +2382,7 @@ return TEMPLATE; });
       };
 
       OpsEditorBase.prototype.additionalDataLoaded = function() {
+        var e;
         if (this.isRemoved()) {
           return;
         }
@@ -2336,7 +2392,14 @@ return TEMPLATE; });
           this.view = null;
         }
         if (this.isAwake() && !this.__inited) {
-          this.__initEditor();
+          try {
+            this.__initEditor();
+          } catch (_error) {
+            e = _error;
+            console.error(e);
+            notification("error", "Failed to open the stack/app, please contact our support team.");
+            this.remove();
+          }
         }
       };
 
@@ -2389,6 +2452,7 @@ return TEMPLATE; });
         this.view = new this.viewClass({
           workspace: this
         });
+        this.view.__initialize();
         this.initEditor();
         if (!this.opsModel.getThumbnail()) {
           this.saveThumbnail();
@@ -2396,7 +2460,11 @@ return TEMPLATE; });
         this.opsModel.__setJsonData(this.design.serialize());
       };
 
-      OpsEditorBase.prototype.initEditor = function() {};
+      OpsEditorBase.prototype.initEditor = function() {
+        if (this.opsModel.get("autoLayout")) {
+          this.view.canvas.autoLayout();
+        }
+      };
 
       OpsEditorBase.prototype.saveThumbnail = function() {
         if (this.opsModel.isPersisted()) {
@@ -2409,7 +2477,7 @@ return TEMPLATE; });
       };
 
       OpsEditorBase.prototype.isRemovable = function() {
-        if (!this.__inited || !this.isModified()) {
+        if (!this.__inited || !this.isModified() || this.opsModel.get("__________itsshitdontsave")) {
           return true;
         }
         this.view.showCloseConfirm();
@@ -2425,7 +2493,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('CanvasManager',["constant"], function(constant) {
+  define('CanvasManager',['CloudResources', 'constant', 'i18n!/nls/lang.js'], function(CloudResources, constant, lang) {
     var CanvasManager;
     CanvasManager = {
       hasClass: function(elements, klass) {
@@ -2507,12 +2575,20 @@ return TEMPLATE; });
         if (node.length) {
           node = node[0];
         }
+        if (targetModel && targetModel.type === constant.RESTYPE.ENI) {
+          if (!targetModel.connections("EniAttachment").length) {
+            $(node).hide();
+            return;
+          } else {
+            $(node).show();
+          }
+        }
         toggle = targetModel.hasPrimaryEip();
         if (toggle) {
-          tootipStr = 'Detach Elastic IP from primary IP';
+          tootipStr = lang.CANVAS.DETACH_ELASTIC_IP_FROM_PRIMARY_IP;
           imgUrl = 'ide/icon/icn-eipon.png';
         } else {
-          tootipStr = 'Associate Elastic IP to primary IP';
+          tootipStr = lang.CANVAS.ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP;
           imgUrl = 'ide/icon/icn-eipoff.png';
         }
         if (targetModel.design().modeIsApp()) {
@@ -2642,13 +2718,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<svg style=\"display:none;\" id=\"svgDefs\"><defs>\r\n  <path d=\"M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z\" id=\"port_diamond\"></path>\r\n  <path d=\"M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z\" id=\"port_right\"></path>\r\n  <path d=\"M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z\" id=\"port_left\"></path>\r\n  <path d=\"M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z\" id=\"port_top\"></path>\r\n  <path d=\"M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z\" id=\"port_bottom\"></path>\r\n  <path d=\"M0 74h90v11a5 5 0 0 1 -5 5h-80a5 5 0 0 1 -5 -5z\" id=\"label_path\" data-readonly=\"true\"></path>\r\n\r\n  <g id=\"asg_frame\">\r\n    <rect class=\"group-asg\" rx=\"5\" ry=\"5\" height=\"129\" x=\"1\" y=\"1\" width=\"129\"></rect>\r\n    <path d=\"M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z\" class=\"asg-title\"></path>\r\n  </g>\r\n  <text id=\"asg_prompt\">\r\n    <tspan x=\"25\" y=\"47\">"
+  buffer += "<svg style=\"display:none;\" id=\"svgDefs\"><defs>\r\n  <path d=\"M-5 0.5l5.5 -5.5l5.5 5.5 l-5.5 5.5z\" id=\"port_diamond\"></path>\r\n  <path d=\"M8 0.5l-6 -5.5l-2 0 l0 11 l2 0z\" id=\"port_right\"></path>\r\n  <path d=\"M-8 0.5l6 -5.5l2 0 l0 11 l-2 0z\" id=\"port_left\"></path>\r\n  <path d=\"M0.5 0l5.5 0l0 -2l-5.5 -6l-5.5 6l0 2z\" id=\"port_top\"></path>\r\n  <path d=\"M0.5 0l5.5 0l0 2l-5.5 6l-5.5 -6l0 -2z\" id=\"port_bottom\"></path>\r\n  <path d=\"M0 74h90v11a5 5 0 0 1 -5 5h-80a5 5 0 0 1 -5 -5z\" id=\"label_path\" data-readonly=\"true\"></path>\r\n\r\n  <g id=\"asg_frame\">\r\n    <rect class=\"group-asg\" rx=\"5\" ry=\"5\" height=\"129\" x=\"1\" y=\"1\" width=\"129\"></rect>\r\n    <path d=\"M0 21l0 -16a5 5 0 0 1 5 -5l121 0a5 5 0 0 1 5 5l0 16z\" class=\"asg-title\"></path>\r\n  </g>\r\n  <text id=\"asg_prompt\">\r\n    <tspan x=\"66\" y=\"47\">"
     + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_1", {hash:{},data:data}))
-    + "</tspan>\r\n    <tspan x=\"20\" y=\"67\">"
+    + "</tspan>\r\n    <tspan x=\"66\" y=\"67\">"
     + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_2", {hash:{},data:data}))
-    + "</tspan>\r\n    <tspan x=\"30\" y=\"87\">"
+    + "</tspan>\r\n    <tspan x=\"66\" y=\"87\">"
     + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_3", {hash:{},data:data}))
-    + "</tspan>\r\n    <tspan x=\"30\" y=\"107\">"
+    + "</tspan>\r\n    <tspan x=\"66\" y=\"107\">"
     + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_4", {hash:{},data:data}))
     + "</tspan>\r\n  </text>\r\n\r\n  <g id=\"asg_dragger\">\r\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\r\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\r\n  </g>\r\n\r\n  <g id=\"clone_indicator\" data-readonly=\"true\">\r\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\r\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\r\n  </g>\r\n\r\n  <g id=\"replica_dragger\">\r\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\r\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\r\n  </g>\r\n\r\n  <g id=\"restore_dragger\">\r\n    <rect x=\"34\" y=\"0\" width=\"22\" height=\"22\" rx=\"3\" class=\"restore-bg\"/>\r\n    <path d=\"M53.131,0C30.902,0,12.832,17.806,12.287,39.976H0l18.393,20.5l18.391-20.5H22.506C23.045,23.468,36.545,10.25,53.131,10.25  c16.93,0,30.652,13.767,30.652,30.75S70.061,71.75,53.131,71.75c-6.789,0-13.059-2.218-18.137-5.966l-7.029,7.521  C34.904,78.751,43.639,82,53.131,82C75.703,82,94,63.645,94,41S75.703,0,53.131,0z M49.498,19v23.45l15.027,15.024l4.949-4.949  L56.5,39.55V19H49.498z\" transform=\"scale(0.17) translate(215,28) rotate(0 822.5 296)\" stroke-width=\"0\" style=\"position: relative;\" />\r\n  </g>\r\n\r\n  <g id=\"sbg_info\" data-readonly=\"true\">\r\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\r\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\r\n  </g>\r\n\r\n  <g id=\"os_router\" data-readonly=\"true\">\r\n    <circle cx=\"40\" cy=\"40\" r=\"30\" fill=\"#D8DAF6\" stroke=\"#6A71BF\" stroke-width=\"1.5\"></circle>\r\n    <path d=\"M51.92 42.05l8.08 .03c1.1 0 2 -.88 2 -2 0 -1.1 -.9 -2 -2 -2l-7.82 -.03 2.3 -2.28c.78 -.78 .8 -2.04 0 -2.83 -.77 -.8 -2.04 -.8 -2.82 0L46 38.55c-.45 .43 -.65 1.02 -.6 1.6 -.05 .55 .14 1.14 .58 1.58l5.62 5.67c.78 .8 2.05 .8 2.84 .02 .8 -.78 .78 -2.05 0 -2.83l-2.52 -2.55zM28.07 37.95H20c-1.1 0 -2 .88 -2 2 0 1.1 .9 2 2 2h7.83l-2.3 2.28c-.77 .8 -.78 2.05 0 2.84 .8 .78 2.06 .77 2.84 0L34 41.4c.45 -.44 .65 -1.02 .6 -1.6 .05 -.56 -.15 -1.15 -.6 -1.6L28.38 32.6c-.78 -.8 -2.05 -.8 -2.83 -.02 -.8 .8 -.78 2.05 0 2.84l2.53 2.53zM38.12 24.54v8.07c0 1.1 .9 2 2 2s2 -.9 2 -2V24.8l2.3 2.3c.77 .77 2.04 .78 2.82 0 .78 -.8 .78 -2.06 0 -2.84L41.6 18.6c-.45 -.44 -1.03 -.64 -1.6 -.6 -.57 -.04 -1.15 .16 -1.6 .6l-5.64 5.64c-.78 .78 -.78 2.05 0 2.83 .78 .8 2.05 .78 2.83 0l2.52 -2.53zM41.88 55.46V47.4c0 -1.1 -.9 -2 -2 -2s-2 .9 -2 2v7.82l-2.3 -2.3c-.77 -.77 -2.04 -.78 -2.82 0 -.78 .8 -.78 2.06 0 2.84l5.65 5.65c.45 .44 1.03 .64 1.6 .6 .57 .04 1.15 -.16 1.6 -.6l5.64 -5.64c.78 -.78 .78 -2.05 0 -2.83 -.78 -.8 -2.05 -.78 -2.83 0l-2.52 2.53z\" fill=\"#6a71bf\"/>\r\n  </g>\r\n\r\n  <g id=\"os_pool\" data-readonly=\"true\">\r\n    <rect x=\"16\" y=\"16\" width=\"48\" height=\"48\" rx=\"6\" ry=\"6\" fill=\"#F8C775\" stroke=\"#F5A623\" stroke-width=\"2\"></rect>\r\n    <rect x=\"42\" y=\"42\" width=\"16\" height=\"16\" rx=\"2\" ry=\"2\" stroke-width=\"2\" stroke=\"#efaf47\" fill=\"none\"></rect>\r\n    <path d=\"M38 44c0-1.1-.9-2-2-2H24c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V44zm0-20c0-1.1-.9-2-2-2H24c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V24zm20 0c0-1.1-.9-2-2-2H44c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V24z\" fill=\"#f0b046\"/>\r\n  </g>\r\n\r\n  <path id=\"os_listener\" data-readonly=\"data-readonly\" d=\"M61.47 62.46c-.16.03-.3.04-.47.04-1.66 0-3-1.35-3-3v-18c0-9.94-8.06-18-18-18s-18 8.05-18 18v18c0 1.65-1.35 3-3 3-.16 0-.32 0-.47-.04-.17.03-.36.04-.54.04h-2c-2.2 0-4-1.8-4-4v-6c0-2.2 1.8-4 4-4v-7c0-13.26 10.75-24 24-24 13.26 0 24 10.74 24 24v7c2.22 0 4 1.8 4 4v6c0 2.2-1.8 4-4 4h-2c-.17 0-.36 0-.53-.04z\" fill=\"#f8c775\" stroke-width=\"2\" stroke=\"#f6a623\"/>\r\n\r\n  <g id=\"os_port\" data-readonly=\"data-readonly\">\r\n    <rect x=\"20\" y=\"22\" width=\"48\" height=\"32\" rx=\"2\" ry=\"2\" fill=\"#F1F6EC\" stroke=\"#a2c29c\" stroke-width=\"2\"></rect>\r\n    <path d=\"M50 53h12v6H50v-6zm-23 0h12v6H27v-6zM14 26h-3c-.55 0-1-.45-1-1v-2c0-.56.45-1 1-1h6c.55 0 1 .45 1 1v31c0 .55-.45 1-1 1h-2c-.56 0-1-.44-1-1V26z\" fill=\"#a2c29c\"/>\r\n  </g>\r\n\r\n  <g id=\"os_server\" data-readonly=\"data-readonly\">\r\n    <rect x=\"5\" y=\"5\" width=\"70\" height=\"70\" rx=\"12\" ry=\"12\" fill=\"#F0F3F8\" stroke=\"#4a90e2\" stroke-width=\"2\"></rect>\r\n    <path d=\"M5 44.5h70\" stroke=\"#4a90e2\" stroke-width=\"1\" fill=\"none\"/>\r\n  </g>\r\n\r\n</defs></svg>";
   return buffer;
@@ -3374,6 +3450,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       appendNode: function(svgEl) {
         return this.__appendSvg(svgEl, ".layer_node");
+      },
+      getLayer: function(layerName) {
+        return $(this.svg.node).children("." + layerName);
       },
       switchMode: function(mode) {
         console.assert("stack app appedit".indexOf(mode) >= 0);
@@ -4525,7 +4604,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('workspaces/coreeditor/CanvasViewConnect',["Design", "CanvasView", "CanvasManager", "CanvasElement", "i18n!/nls/lang.js"], function(Design, CanvasView, CanvasManager, CanvasElement, lang) {
+  define('workspaces/coreeditor/CanvasViewConnect',["CanvasView", "Design", "CanvasManager", "CanvasElement", "i18n!/nls/lang.js", "UI.modalplus"], function(CanvasView, Design, CanvasManager, CanvasElement, lang, Modal) {
     var CanvasViewProto, cancelConnect, detectDrag, startDrag, __drawLineMove, __drawLineUp;
     CanvasViewProto = CanvasView.prototype;
     cancelConnect = function(evt) {
@@ -4723,7 +4802,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         self = this;
         modal = new Modal({
           title: res.title,
-          width: "420",
+          width: "450",
           template: res.template,
           confirm: {
             text: res.action,
@@ -5934,7 +6013,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "workspaces/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang) {
+  define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "workspaces/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "AppAction"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang, AppAction) {
     return StackView.extend({
       initialize: function() {
         StackView.prototype.initialize.apply(this, arguments);
@@ -5958,7 +6037,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         var modal, self;
         self = this;
         modal = new Modal({
-          title: "App Imported",
+          title: lang.TOOLBAR.APP_IMPORTED,
           template: OpsEditorTpl.modal.confirmImport({
             name: this.workspace.opsModel.get("name")
           }),
@@ -6023,20 +6102,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         switch (opsModel.get("state")) {
           case OpsModel.State.Starting:
-            text = "Starting your app...";
+            text = lang.IDE.STARTING_YOUR_APP;
             break;
           case OpsModel.State.Stopping:
-            text = "Stopping your app...";
+            text = lang.IDE.STOPPING_YOUR_APP;
             break;
           case OpsModel.State.Terminating:
-            text = "Terminating your app..";
+            text = lang.IDE.TERMINATING_YOUR_APP;
             break;
           case OpsModel.State.Updating:
-            text = "Applying changes to your app...";
+            text = lang.IDE.APPLYING_CHANGES_TO_YOUR_APP;
             break;
           default:
             console.warn("Unknown opsmodel state when showing loading in AppEditor,", opsModel);
-            text = "Processing your request...";
+            text = lang.IDE.PROCESSING_YOUR_REQUEST;
         }
         this.__progress = 0;
         this.$el.append(OpsEditorTpl.appProcessing(text));
@@ -6065,6 +6144,39 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           loading: loading
         })).appendTo(this.$el).find("#processDoneBtn").click(function() {
           return self.$el.find(".ops-process").remove();
+        });
+      },
+      showUnpayUI: function() {
+        this.statusbar.remove();
+        this.propertyPanel.remove();
+        this.toolbar.remove();
+        this.canvas.updateSize();
+        AppAction.showPayment($("<div class='ops-apppm-wrapper'></div>").appendTo(this.$el)[0]);
+        notification("error", "Your account is limited now.");
+      },
+      listenToPayment: function() {
+        var self;
+        self = this;
+        return this.workspace.listenTo(App.user, "paymentUpdate", function() {
+          if (!$(".ops-apppm-wrapper").size()) {
+            if (App.user.shouldPay()) {
+              return self.showUnpayUI();
+            }
+          } else {
+            if (!App.user.shouldPay()) {
+              return self.reopenApp();
+            }
+          }
+        });
+      },
+      reopenApp: function() {
+        var appId, index;
+        appId = this.workspace.opsModel.get("id");
+        index = this.workspace.index();
+        this.workspace.remove();
+        return _.defer(function() {
+          App.openOps(appId).setIndex(index);
+          return notification("info", "User payment status change detected, reloading app resource.");
         });
       }
     });
@@ -6129,7 +6241,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.view.confirmImport();
           return;
         }
-        this.diff();
+        if (App.user.shouldPay() && this.opsModel.isPMRestricted()) {
+          this.view.showUnpayUI();
+        } else {
+          this.diff();
+        }
+        this.view.listenToPayment();
       };
 
       AppEditor.prototype.diff = function() {
@@ -6168,7 +6285,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           e = _error;
           console.error(e);
         }
-        return this.opsModel.saveApp(newJson);
+        return this.opsModel.saveApp(this.design.serialize());
       };
 
       AppEditor.prototype.reloadAppData = function() {
@@ -6938,8 +7055,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               }
             ];
           }
-          x = start.itemRect.x + 20;
-          y = end.itemRect.y + 20;
+          x = start.itemRect.x2 + 20;
+          y = end.itemRect.y2 + 20;
           return [
             {
               x: x,
