@@ -122,12 +122,12 @@ TEMPLATE.slide_import=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"upload-kp-component drop-zone\">\n    <p class=\"upload-stuff\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "LBL_DROP", (depth0 && depth0.type), {hash:{},data:data}))
-    + "\n        <label for=\"modal-import\" class=\"select-file-link\">"
+  buffer += "<div class=\"upload-kp-component drop-zone\">\n    <p class=\"upload-stuff\">\n        Drop "
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ",\n        <label for=\"modal-import\" class=\"select-file-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_SELECT_A_FILE", {hash:{},data:data}))
     + "</label>\n        <span class=\"display-empty\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.KP_OR_PASTE_KEY_CONTENT", {hash:{},data:data}))
@@ -1225,12 +1225,12 @@ return TEMPLATE; });
             {
               icon: 'new-stack',
               type: 'create',
-              name: lang.PROP.CREATE_SNAPSHOT
+              name: 'Create Snapshot'
             }, {
               icon: 'del',
               type: 'delete',
               disabled: true,
-              name: lang.PROP.LBL_DUPLICATE
+              name: 'Delete'
             }, {
               icon: 'refresh',
               type: 'refresh',
@@ -1241,21 +1241,21 @@ return TEMPLATE; });
             {
               sortable: true,
               width: "20%",
-              name: lang.PROP.LBL_NAME
+              name: 'Name'
             }, {
               sortable: true,
               rowType: 'number',
               width: "10%",
-              name: lang.PROP.LBL_CAPACITY
+              name: 'Capicity'
             }, {
               sortable: true,
               rowType: 'datetime',
               width: "40%",
-              name: lang.PROP.LBL_STATUS
+              name: 'Status'
             }, {
               sortable: false,
               width: "auto",
-              name: lang.PROP.LBL_DESC
+              name: 'Description'
             }
           ]
         };

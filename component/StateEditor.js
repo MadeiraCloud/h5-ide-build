@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/stateeditor/model',['MC', 'constant', 'CloudResources', "Design", "ApiRequest", "OpsModel", 'backbone', 'jquery', 'underscore'], function(MC, constant, CloudResources, Design, ApiRequest, OpsModel) {
+  define('component/stateeditor/model',['MC', 'constant', 'state_model', 'CloudResources', "Design", "ApiRequest", 'backbone', 'jquery', 'underscore'], function(MC, constant, state_model, CloudResources, Design, ApiRequest) {
     var StateEditorModel;
     StateEditorModel = Backbone.Model.extend({
       defaults: {
@@ -17,9 +17,9 @@
         if (!(resModel && resModel.serialize)) {
           return;
         }
-        resId = options.resId || resModel.get('appId');
+        resId = resModel.get('appId');
+        compData = resModel.serialize().component;
         allCompData = Design.instance().serialize().component;
-        compData = allCompData[resUID];
         that.set({
           resModel: resModel,
           resId: resId,
@@ -477,7 +477,7 @@
         return newParaValue;
       },
       replaceParaUIDToName: function(paraValue) {
-        var allCompData, currentCompUID, newParaValue, refMatchAry, refRegex, that, uidRegex;
+        var allCompData, cloudType, currentCompUID, newParaValue, refMatchAry, refRegex, that, uidRegex;
         that = this;
         currentCompUID = that.get('compData').uid;
         allCompData = that.get('allCompData');
@@ -485,19 +485,8 @@
         uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/;
         refMatchAry = paraValue.match(refRegex);
         newParaValue = paraValue;
-        if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          _.each(refMatchAry, function(refMatchStr) {
-            var newRefStr, resUID, uidMatchAry, uidToNameRefMap;
-            uidMatchAry = refMatchStr.match(uidRegex);
-            resUID = uidMatchAry[0];
-            uidToNameRefMap = that.get('uidToNameRefMap');
-            newRefStr = uidToNameRefMap[refMatchStr];
-            if (!newRefStr) {
-              newRefStr = refMatchStr.replace(resUID, 'unknown');
-            }
-            return newParaValue = newParaValue.replace(refMatchStr, newRefStr);
-          });
-        } else {
+        cloudType = Design.instance().get('cloud_type');
+        if (cloudType === 'aws') {
           _.each(refMatchAry, function(refMatchStr) {
             var compData, newRefStr, resName, resUID, uidMatchAry;
             uidMatchAry = refMatchStr.match(uidRegex);
@@ -517,30 +506,30 @@
             newParaValue = newParaValue.replace(refMatchStr, newRefStr);
             return null;
           });
+        } else {
+          _.each(refMatchAry, function(refMatchStr) {
+            var newRefStr, resUID, uidMatchAry, uidToNameRefMap;
+            uidMatchAry = refMatchStr.match(uidRegex);
+            resUID = uidMatchAry[0];
+            uidToNameRefMap = that.get('uidToNameRefMap');
+            newRefStr = uidToNameRefMap[refMatchStr];
+            if (!newRefStr) {
+              newRefStr = refMatchStr.replace(resUID, 'unknown');
+            }
+            return newParaValue = newParaValue.replace(refMatchStr, newRefStr);
+          });
         }
         return newParaValue;
       },
       replaceParaNameToUID: function(paraValue) {
-        var allCompData, newParaValue, refMatchAry, refRegex, that;
+        var allCompData, cloudType, newParaValue, refMatchAry, refRegex, that;
         that = this;
         allCompData = that.get('allCompData');
         refRegex = constant.REGEXP.stateEditorOriginReference;
         refMatchAry = paraValue.match(refRegex);
         newParaValue = paraValue;
-        if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          _.each(refMatchAry, function(refMatchStr) {
-            var nameToUIDRefMap, newUIDStr, resName;
-            resName = refMatchStr.replace('@{', '').split('.')[0];
-            if (resName !== 'self') {
-              nameToUIDRefMap = that.get('nameToUIDRefMap');
-              newUIDStr = nameToUIDRefMap[refMatchStr];
-              if (newUIDStr) {
-                newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
-              }
-            }
-            return null;
-          });
-        } else {
+        cloudType = Design.instance().get('cloud_type');
+        if (cloudType === 'aws') {
           _.each(refMatchAry, function(refMatchStr) {
             var newUIDStr, resName, resUID;
             resName = refMatchStr.replace('@{', '').split('.')[0];
@@ -548,6 +537,19 @@
               resUID = that.getUIDByResName(resName);
               if (resUID) {
                 newUIDStr = refMatchStr.replace(resName, resUID);
+                newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
+              }
+            }
+            return null;
+          });
+        } else {
+          _.each(refMatchAry, function(refMatchStr) {
+            var nameToUIDRefMap, newUIDStr, resName;
+            resName = refMatchStr.replace('@{', '').split('.')[0];
+            if (resName !== 'self') {
+              nameToUIDRefMap = that.get('nameToUIDRefMap');
+              newUIDStr = nameToUIDRefMap[refMatchStr];
+              if (newUIDStr) {
                 newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
               }
             }
@@ -579,8 +581,9 @@
         return resultUID;
       },
       getResState: function(resId) {
-        var resModel, resState, _ref;
-        if (Design.instance().type() === OpsModel.Type.Amazon) {
+        var cloudType, resModel, resState, _ref;
+        cloudType = Design.instance().get('cloud_type');
+        if (cloudType === 'aws') {
           resModel = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region()).get(resId);
           resState = 'unknown';
           if (resModel) {
@@ -1412,13 +1415,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_VIEW", {hash:{},data:data}));
+  return "View";
   }
 
 function program3(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_EDIT", {hash:{},data:data}));
+  return "Edit";
   }
 
 function program5(depth0,data) {
@@ -3047,7 +3050,7 @@ return Markdown;
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequest', 'ApiRequestOs', 'OpsModel', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest, ApiRequestOs, OpsModel) {
+  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'instance_model', 'component/stateeditor/lib/markdown', 'ApiRequestOs', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, instance_model, Markdown, ApiRequest) {
     var StateClipboard, StateEditorView, id, tpl;
     StateClipboard = [];
     for (id in template) {
@@ -3149,12 +3152,12 @@ return Markdown;
       __renderEmpty: function(type) {
         var tip, tipSet;
         tipSet = {
-          disalbed: lang.IDE.STATE_TIP_VP_DISABLED,
-          "void": lang.IDE.STATE_TIP_NO_SE,
-          group: lang.IDE.STATE_TIP_GROUP,
-          "default": lang.IDE.STATE_TIP_DEFAULT,
-          group_in_app: lang.IDE.STATE_TIP_GROUP_IN_APP,
-          is_windows: lang.IDE.STATE_TIP_IS_WINDOWS
+          disalbed: 'Instance State is disabled.',
+          "void": "Edit Instance State by selecting.",
+          group: 'View states and log by selecting individual instance.',
+          "default": 'No state editor here.',
+          group_in_app: 'View states and log by selecting individual instance.',
+          is_windows: 'Editing state is only available for Linux platform.'
         };
         tip = type && tipSet[type] || tipSet["default"];
         this.$el.html($.trim(template.stateEmptyTpl({
@@ -3166,7 +3169,7 @@ return Markdown;
       renderStateCount: function() {
         var count;
         count = this.$stateList.find('.state-item').length;
-        return $('#OpsEditor').find('.sidebar-title a.state .state-count').text(count);
+        return $('#btn-switch-state b').text("(" + count + ")");
       },
       __renderState: function() {
         var $aceAutocompleteTip, $logPanel, $logPanelRefresh, $logPanelToggle, $logSysBtn, $stateItemList, currentAppState, docMouseDownFunc, onPasteGistData, stateObj, that, _ref, _ref1;
@@ -3378,8 +3381,8 @@ return Markdown;
               currentTarget: lastDictInput
             }, true);
           });
-          $lastArrayInputListAry = $stateItemList.find('.parameter-item.array .parameter-value').toArray();
-          $lastStateInputListAry = $stateItemList.find('.parameter-item.state .parameter-value').toArray();
+          $lastArrayInputListAry = $stateItemList.find('.parameter-item.array .parameter-value:last').toArray();
+          $lastStateInputListAry = $stateItemList.find('.parameter-item.state .parameter-value:last').toArray();
           $lastInputListAry = $lastArrayInputListAry.concat($lastStateInputListAry);
           return _.each($lastInputListAry, function(lastInput) {
             return that.onArrayInputChange({
@@ -4223,7 +4226,7 @@ return Markdown;
                 }
                 if (paraModelType === 'line' || paraModelType === 'text') {
                   renderParaValue = that.model.replaceParaUIDToName(renderParaValue);
-                  if (renderParaValue && renderParaValue.indexOf('@{unknown') !== -1) {
+                  if (renderParaValue && renderParaValue.indexOf('unknown') !== -1) {
                     renderObj.err_list.push('reference');
                   }
                 }
@@ -4232,7 +4235,7 @@ return Markdown;
                 if (_.isArray(paraValue)) {
                   _.each(paraValue, function(paraValueObj) {
                     paraValueObj.value = that.model.replaceParaUIDToName(paraValueObj.value);
-                    if (paraValueObj.value && paraValueObj.value.indexOf('@{unknown') !== -1) {
+                    if (paraValueObj.value && paraValueObj.value.indexOf('unknown') !== -1) {
                       renderObj.err_list.push('reference');
                     }
                     renderParaValue.push({
@@ -4244,7 +4247,7 @@ return Markdown;
                 } else if (_.isObject(paraValue)) {
                   _.each(paraValue, function(paraValueStr, paraKey) {
                     paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
-                    if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
+                    if (paraValueStr && paraValueStr.indexOf('unknown') !== -1) {
                       renderObj.err_list.push('reference');
                     }
                     renderParaValue.push({
@@ -4276,7 +4279,7 @@ return Markdown;
                   } else {
                     paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
                   }
-                  if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
+                  if (paraValueStr && paraValueStr.indexOf('unknown') !== -1) {
                     renderObj.err_list.push('reference');
                   }
                   renderParaValue.push(paraValueStr);
@@ -4535,7 +4538,8 @@ return Markdown;
             singleLine: editorSingleLine,
             enableTab: enableTab,
             useSoftTabs: false,
-            tabSize: 4
+            tabSize: 4,
+            lineHeight: 90
           });
           editRow = editSession.getLength();
           editColumn = editSession.getLine(editRow - 1).length;
@@ -4677,13 +4681,7 @@ return Markdown;
             return editor.setReadOnly(true);
           }
         };
-        if ($editorElem.hasClass('command-value') || $editorElem.hasClass('text-code-editor')) {
-          return _initEditor();
-        } else {
-          return setTimeout(function() {
-            return _initEditor();
-          }, 0);
-        }
+        return _initEditor();
       },
       highlightParaDesc: function(paraName) {
         var $paraNameSpan, err, paraNameSpan, paraParagraph, scrollToPos, that;
@@ -5777,23 +5775,14 @@ return Markdown;
         return $stateLogItem.toggleClass('view');
       },
       openSysLogModal: function() {
-        var region, reqApi, serverId, that;
+        var region, serverId, that;
         that = this;
         serverId = that.currentResId;
         region = Design.instance().region();
-        if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          reqApi = "os_server_GetConsoleOutput";
-          ApiRequestOs(reqApi, {
-            region: region,
-            server_id: serverId
-          }).then(this.refreshSysLog, this.refreshSysLog);
-        } else {
-          reqApi = "ins_GetConsoleOutput";
-          ApiRequest(reqApi, {
-            region_name: region,
-            instance_id: serverId
-          }).then(this.refreshSysLog, this.refreshSysLog);
-        }
+        ApiRequest("os_server_GetConsoleOutput", {
+          region: region,
+          server_id: serverId
+        }).then(this.refreshSysLog, this.refreshSysLog);
         modal(MC.template.modalInstanceSysLog({
           instance_id: serverId,
           log_content: ''
@@ -5801,25 +5790,18 @@ return Markdown;
         return false;
       },
       refreshSysLog: function(result) {
-        var $contentElem, logContent, output, _ref;
+        var $contentElem, logContent;
         $('#modal-instance-sys-log .instance-sys-log-loading').hide();
-        if (result) {
-          output = (_ref = result.GetConsoleOutputResponse) != null ? _ref.output : void 0;
-          if (Design.instance().type() === OpsModel.Type.OpenStack) {
-            output = result.output;
-          }
-          if (output) {
-            logContent = Base64.decode(output);
-            $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
-            $contentElem.html(MC.template.convertBreaklines({
-              content: logContent
-            }));
-            $contentElem.show();
-            modal.position();
-            return;
-          }
+        if (result && result.output) {
+          logContent = result.output;
+          $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
+          $contentElem.html(MC.template.convertBreaklines({
+            content: logContent
+          }));
+          $contentElem.show();
+        } else {
+          $('#modal-instance-sys-log .instance-sys-log-info').show();
         }
-        $('#modal-instance-sys-log .instance-sys-log-info').show();
         return modal.position();
       },
       onStateLogDetailBtnClick: function(event) {
@@ -26493,12 +26475,15 @@ define("component/stateeditor/lib/ace", function(){});
   define('StateEditor',['event', 'StateEditorView', 'component/stateeditor/model', 'component/stateeditor/lib/ace', 'UI.modal', 'jquerysort'], function(ide_event, View, Model) {
     var loadModule, unLoadModule;
     loadModule = function(allCompData, uid, resId, force) {
-      var compData, model, view;
+      var compData, model, resModel, view;
       compData = allCompData[uid];
+      resModel = Design.instance().component(uid);
       if (compData) {
         model = new Model({
-          resUID: uid,
-          resId: resId
+          compData: compData,
+          resModel: resModel,
+          resId: resId,
+          allCompData: allCompData
         });
       } else {
         model = new Backbone.Model();

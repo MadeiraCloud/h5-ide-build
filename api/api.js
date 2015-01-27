@@ -75,6 +75,7 @@
       OperationFailure: -6,
       Network404: -404,
       Network500: -500,
+      InvalidSession: 19,
       ChangeCredConfirm: 325,
       InvalidCred: 326,
       GlobalErrorInit: 100,
@@ -174,10 +175,6 @@
     Handlers = {
       AwsHandlers: AwsHandlers
     };
-    Handlers[Errors.GlobalErrorSession] = function(error) {
-      App.acquireSession();
-      throw error;
-    };
     AwsHandlers[401] = function(error) {
       App.askForAwsCredential();
       throw error;
@@ -189,7 +186,7 @@
 
 define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
-		'session_login'           : { type:'forge', url:'/session/',	method:'login',	params:['username', 'password', 'option']   },
+		'session_login'           : { type:'forge', url:'/session/',	method:'login',	params:['username', 'password']   },
 		'session_logout'          : { type:'forge', url:'/session/',	method:'logout',	params:['username', 'session_id']   },
 		'session_set_credential'  : { type:'forge', url:'/session/',	method:'set_credential',	params:['username', 'session_id', 'access_key', 'secret_key', 'account_id']   },
 		'app_create'              : { type:'forge', url:'/app/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
@@ -223,7 +220,6 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'resource_get_resource'   : { type:'forge', url:'/resource/',	method:'get_resource',	params:['username', 'session_id', 'region_name', 'provider', 'res_id', 'resource']   },
 		'resource_check_change'   : { type:'forge', url:'/resource/',	method:'check_change',	params:['username', 'session_id', 'region_name', 'app_id']   },
 		'resource_generate_json'  : { type:'forge', url:'/resource/',	method:'generate_json',	params:['username', 'session_id', 'app_id']   },
-		'resource_region_resource' : { type:'forge', url:'/resource/',	method:'region_resource',	params:['username', 'session_id']   },
 		'stack_create'            : { type:'forge', url:'/stack/',	method:'create',	params:['username', 'session_id', 'region_name', 'spec']   },
 		'stack_remove'            : { type:'forge', url:'/stack/',	method:'remove',	params:['username', 'session_id', 'region_name', 'stack_id', 'stack_name']   },
 		'stack_save'              : { type:'forge', url:'/stack/',	method:'save',	params:['username', 'session_id', 'region_name', 'spec']   },
@@ -234,7 +230,6 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'stack_info'              : { type:'forge', url:'/stack/',	method:'info',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
 		'stack_list'              : { type:'forge', url:'/stack/',	method:'list',	params:['username', 'session_id', 'region_name', 'stack_ids']   },
 		'stack_export_cloudformation' : { type:'forge', url:'/stack/',	method:'export_cloudformation',	params:['username', 'session_id', 'region_name', 'stack']   },
-		'stack_import_cloudformation' : { type:'forge', url:'/stack/',	method:'import_cloudformation',	params:['username', 'session_id', 'region_name', 'cf_template', 'parameters']   },
 		'stack_verify'            : { type:'forge', url:'/stack/',	method:'verify',	params:['username', 'session_id', 'spec']   },
 		'stackstore_fetch_stackstore' : { type:'forge', url:'/stackstore/',	method:'fetch_stackstore',	params:['sub_path']   },
 		'state_module'            : { type:'forge', url:'/state/',	method:'module',	params:['username', 'session_id', 'mod_repo', 'mod_tag']   },
@@ -244,21 +239,23 @@ define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 		'token_update'            : { type:'forge', url:'/token/',	method:'update',	params:['username', 'session_id', 'token', 'new_token_name']   },
 		'token_remove'            : { type:'forge', url:'/token/',	method:'remove',	params:['username', 'session_id', 'token', 'token_name']   },
 		'token_list'              : { type:'forge', url:'/token/',	method:'list',	params:['username', 'session_id', 'token_names']   },
-		'account_register'        : { type:'forge', url:'/account/',	method:'register',	params:['username', 'password', 'email', 'attributes']   },
+		'account_register'        : { type:'forge', url:'/account/',	method:'register',	params:['username', 'password', 'email']   },
 		'account_update_account'  : { type:'forge', url:'/account/',	method:'update_account',	params:['username', 'session_id', 'attributes']   },
 		'account_reset_password'  : { type:'forge', url:'/account/',	method:'reset_password',	params:['username']   },
 		'account_update_password' : { type:'forge', url:'/account/',	method:'update_password',	params:['key', 'new_pwd']   },
 		'account_check_repeat'    : { type:'forge', url:'/account/',	method:'check_repeat',	params:['username', 'email']   },
 		'account_check_validation' : { type:'forge', url:'/account/',	method:'check_validation',	params:['key', 'operation_flag']   },
 		'account_reset_key'       : { type:'forge', url:'/account/',	method:'reset_key',	params:['username', 'session_id', 'flag']   },
+		'account_del_account'     : { type:'forge', url:'/account/',	method:'del_account',	params:['username', 'email', 'password', 'force_delete']   },
 		'account_is_invitated'    : { type:'forge', url:'/account/',	method:'is_invitated',	params:['username', 'session_id']   },
 		'account_apply_trial'     : { type:'forge', url:'/account/',	method:'apply_trial',	params:['username', 'session_id', 'message']   },
 		'account_set_credential'  : { type:'forge', url:'/account/',	method:'set_credential',	params:['username', 'session_id', 'access_key', 'secret_key', 'account_id', 'force_update']   },
 		'account_validate_credential' : { type:'forge', url:'/account/',	method:'validate_credential',	params:['username', 'session_id', 'access_key', 'secret_key']   },
+		'account_get_userinfo'    : { type:'forge', url:'/account/',	method:'get_userinfo',	params:['username']   },
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -285,7 +282,7 @@ define('api/define/aws/autoscaling',['ApiRequestDefs'], function( ApiRequestDefs
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -301,7 +298,7 @@ define('api/define/aws/aws',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -318,7 +315,7 @@ define('api/define/aws/cloudwatch',['ApiRequestDefs'], function( ApiRequestDefs 
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -396,7 +393,7 @@ define('api/define/aws/ec2',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -412,7 +409,7 @@ define('api/define/aws/elb',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -428,7 +425,7 @@ define('api/define/aws/iam',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -453,7 +450,7 @@ define('api/define/aws/opsworks',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -491,7 +488,7 @@ define('api/define/aws/rds',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -505,7 +502,7 @@ define('api/define/aws/sdb',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -527,7 +524,7 @@ define('api/define/aws/sns',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -554,7 +551,7 @@ define('api/define/aws/vpc',['ApiRequestDefs'], function( ApiRequestDefs ){
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 
@@ -746,13 +743,13 @@ define('api/define/openstack/glance',['ApiRequestDefs'], function( ApiRequestDef
 define('api/define/openstack/os',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
 		'os_endpoint'      : { type:'openstack', url:'/os/',	method:'endpoint',	params:['username', 'session_id', 'cloud_type', 'provider']   },
-		'os_v2_auth'       : { type:'openstack', url:'/os/',	method:'v2_auth',	params:['username', 'session_id', 'os_username', 'os_user_id', 'os_password', 'project_id', 'tenant_name']   },
+		'os_v2_auth'       : { type:'openstack', url:'/os/',	method:'v2_auth',	params:['username', 'session_id', 'os_username', 'os_user_id', 'os_password', 'tenant_id', 'tenant_name']   },
 		'os_os'            : { type:'openstack', url:'/os/',	method:'os',	params:['username', 'session_id', 'provider', 'regions', 'fields']   },
 		'os_quota'         : { type:'openstack', url:'/os/',	method:'quota',	params:['username', 'session_id', 'provider', 'regions', 'services']   },
 	}
 
 	for ( var i in Apis ) {
-		/* env:dev                                                                                       nv:dev:end */
+		/* env:dev                                                                                           nv:dev:end */
 		ApiRequestDefs.Defs[ i ] = Apis[ i ];
 	}
 

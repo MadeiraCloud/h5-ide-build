@@ -348,15 +348,12 @@ TEMPLATE.terminateAppConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n        <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.FORGET_VISUALOPS_CANT", {hash:{},data:data}))
-    + "</div></div>\n    ";
-  return buffer;
+  
+  return "\n        <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">This app is created by Visualops with state, do not support forget currently</div></div>\n    ";
   }
 
 function program3(depth0,data) {
@@ -375,9 +372,7 @@ function program4(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
-    + "</b>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.FORGET_CONFIRM_INSTRUCTION", {hash:{},data:data}))
-    + "</p>\n            <p>"
+    + "</b>Forget it will not make your service unavailable. but Visualops will stop ensure your state in all instances.</p>\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
     + "</p>\n            <div><input class=\"input\" style=\"width:390px;\" id=\"appNameConfirmIpt\"/></div>\n        ";
   return buffer;
@@ -385,11 +380,8 @@ function program4(depth0,data) {
 
 function program6(depth0,data) {
   
-  var buffer = "";
-  buffer += "\n            <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.FORGET_APP_CONFIRM", {hash:{},data:data}))
-    + "</div></div>\n        ";
-  return buffer;
+  
+  return "\n            <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">Only remove app info from Visualops, all resources in the app will not be deleted. <br/>Do you confirm to forget app?</div></div>\n        ";
   }
 
   buffer += "<div class=\"confirm-padding\">\n    ";
@@ -404,15 +396,10 @@ TEMPLATE.forgetAppConfirm=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<section class=\"disconnected-msg\">\n    <div>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CONNECTION_LOST_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\n    <div>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CHANGES_MAY_NOT_BE_SAVED", {hash:{},data:data}))
-    + "</div>\n</section>";
-  return buffer;
+  return "<section class=\"disconnected-msg\">\n    <div>Connection lost. Attempting to reconnect…</div>\n    <div>Changes made now may not be saved.</div>\n</section>";
   };
 TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 
@@ -448,13 +435,13 @@ return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('AppAction',["backbone", "component/appactions/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui', 'OpsModel'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus, ApiRequest, AwsKp, OsKp, TA, OpsModel) {
+  define('AppAction',["backbone", "component/appactions/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus, ApiRequest, AwsKp, OsKp, TA) {
     var AppAction;
     AppAction = Backbone.View.extend({
       runStack: function(event, workspace) {
-        var appNameDom, checkAppNameRepeat, cloudType, cost, currency, self, that;
+        var appNameDom, checkAppNameRepeat, cloudType, cost, self, that;
         this.workspace = workspace;
-        cloudType = this.workspace.opsModel.type;
+        cloudType = this.workspace.opsModel.get('cloudType');
         that = this;
         if ($(event.currentTarget).attr('disabled')) {
           return false;
@@ -469,15 +456,14 @@ return TEMPLATE; });
             disabled: true
           }
         });
-        if (cloudType === OpsModel.Type.OpenStack) {
+        if (cloudType === 'openstack') {
           this.modal.find(".estimate").hide();
           this.modal.resize();
         }
         this.renderKpDropdown(this.modal, cloudType);
         cost = Design.instance().getCost();
         this.modal.tpl.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
-        currency = Design.instance().getCurrency();
-        this.modal.tpl.find("#label-total-fee").find('b').text("" + (currency + cost.totalFee));
+        this.modal.tpl.find("#label-total-fee").find('b').text("$" + cost.totalFee);
         TA.loadModule('stack').then((function(_this) {
           return function() {
             var _ref;
@@ -531,7 +517,7 @@ return TEMPLATE; });
       },
       renderKpDropdown: function(modal, cloudType) {
         var KeypairModel, defaultKp, hideKpError, keyPairDropdown, osKeypair;
-        if (cloudType === OpsModel.Type.OpenStack) {
+        if (cloudType === 'openstack') {
           if (!OsKp.prototype.hasResourceWithDefaultKp()) {
             return false;
           }
@@ -574,7 +560,7 @@ return TEMPLATE; });
       },
       defaultKpIsSet: function(cloudType) {
         var defaultKP, kpModal;
-        if (cloudType === OpsModel.Type.OpenStack) {
+        if (cloudType === 'openstack') {
           if (OsKp.prototype.hasResourceWithDefaultKp() && OsKp.prototype.defaultKpNotSet()) {
             this.showError('kp', lang.IDE.RUN_STACK_MODAL_KP_WARNNING);
             return false;
@@ -682,9 +668,9 @@ return TEMPLATE; });
       checkBeforeStart: function(app) {
         var cloudType, comp, defer;
         comp = null;
-        cloudType = app.type;
+        cloudType = app.get("cloudType");
         defer = new Q.defer();
-        if (cloudType === OpsModel.Type.OpenStack) {
+        if (cloudType === "openstack") {
           console.log("CloudType is OpenStack");
           defer.resolve({});
         } else {
@@ -695,7 +681,7 @@ return TEMPLATE; });
             return comp = ds[0].component;
           }).then(function() {
             var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
-            name = App.model.appList().get(app.get("id")).get("name");
+            name = App.model.appList().get(id).get("name");
             hasEC2Instance = !!(_.filter(comp, function(e) {
               return e.type === constant.RESTYPE.INSTANCE;
             })).length;
@@ -733,8 +719,8 @@ return TEMPLATE; });
       },
       checkBeforeStop: function(app) {
         var cloudType, defer, resourceList;
-        cloudType = app.type;
-        if (cloudType === OpsModel.Type.OpenStack) {
+        cloudType = app.get('cloudType');
+        if (cloudType === "openstack") {
           console.log("CloudType is OpenStack");
           defer = new Q.defer();
           defer.resolve();
@@ -749,7 +735,7 @@ return TEMPLATE; });
         app = App.model.appList().get(id);
         name = app.get("name");
         that = this;
-        cloudType = app.type;
+        cloudType = app.get('cloudType');
         isProduction = app.get('usage') === "production";
         appName = app.get('name');
         stopModal = new modalPlus({
@@ -777,7 +763,7 @@ return TEMPLATE; });
             notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
             return false;
           }
-          if (cloudType === OpsModel.Type.OpenStack) {
+          if (cloudType === 'openstack') {
             stopModal.tpl.find(".modal-footer").show();
             stopModal.tpl.find('.modal-body').css('padding', "0").html(AppTpl.stopAppConfirm({
               isProduction: isProduction,
@@ -813,8 +799,7 @@ return TEMPLATE; });
                 amiRes.each(function(e) {
                   var _ref;
                   if ((_ref = e.id, __indexOf.call(toFetchArray, _ref) >= 0) && e.get("rootDeviceType") === 'instance-store') {
-                    hasInstanceStore = true;
-                    return null;
+                    return hasInstanceStore = true;
                   }
                 });
                 hasEC2Instance = (_ref = _.filter(comp, function(e) {
@@ -888,8 +873,8 @@ return TEMPLATE; });
           },
           disableClose: true
         });
-        cloudType = app.type;
-        if (cloudType === OpsModel.Type.OpenStack) {
+        cloudType = app.get('cloudType');
+        if (cloudType === 'openstack') {
           this.__terminateApp(id, null, terminateConfirm);
           return false;
         }
@@ -912,10 +897,10 @@ return TEMPLATE; });
         app = App.model.appList().get(id);
         name = app.get("name");
         production = app.get("usage") === 'production';
-        cloudType = app.type;
+        cloudType = app.get('cloudType');
         fetchJsonData = function() {
           var defer;
-          if (cloudType === OpsModel.Type.OpenStack) {
+          if (cloudType === 'openstack') {
             defer = new Q.defer();
             defer.resolve();
             return defer.promise;
@@ -925,7 +910,7 @@ return TEMPLATE; });
         };
         return fetchJsonData().then(function() {
           var comp, dbInstanceName, hasDBInstance, notReadyDB;
-          if (cloudType === OpsModel.Type.OpenStack) {
+          if (cloudType === 'openstack') {
             hasDBInstance = null;
             notReadyDB = [];
           } else {
@@ -982,10 +967,10 @@ return TEMPLATE; });
         name = app.get("name");
         production = app.get("usage") === 'production';
         forgetConfirm = new modalPlus({
-          title: lang.IDE.TITLE_CONFIRM_TO_FORGET,
+          title: "Confirm to Forget App",
           template: AppTpl.loading(),
           confirm: {
-            text: lang.TOOLBAR.BTN_FORGET_CONFIRM,
+            text: "Forget",
             color: "red",
             disabled: production
           },
@@ -1031,56 +1016,13 @@ return TEMPLATE; });
           });
           forgetConfirm.on("confirm", function() {
             forgetConfirm.close();
-            app.terminate(true, false).fail(function(err) {
+            app.terminate(true).fail(function(err) {
               var error;
               error = err.awsError ? err.error + "." + err.awsError : err.error;
               return notification("Fail to forget your app \"" + name + "\". (ErrorCode: " + error + ")");
             });
           });
         });
-      },
-      showPayment: function(elem) {
-        var paymentModal, paymentState, result, showPaymentDefer, updateDom;
-        showPaymentDefer = Q.defer();
-        paymentState = App.user.get("paymentState");
-        if (!App.user.shouldPay()) {
-          showPaymentDefer.resolve({});
-        } else {
-          result = {
-            first_name: App.user.get("firstName"),
-            last_name: App.user.get("lastName"),
-            url: App.user.get("paymentUrl"),
-            card: App.user.get("creditCard")
-          };
-          updateDom = MC.template.paymentUpdate(result);
-          if (elem) {
-            $(elem).html(updateDom);
-            $(elem).trigger('paymentRendered');
-          } else {
-            paymentModal = new modalPlus({
-              title: lang.IDE.PAYMENT_INVALID_BILLING,
-              template: updateDom,
-              disableClose: true,
-              confirm: {
-                text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
-                disabled: true
-              }
-            });
-            paymentModal.find('.modal-footer').hide();
-            paymentModal.listenTo(App.user, "paymentUpdate", function() {
-              if (paymentModal.isClosed) {
-                return false;
-              }
-              if (!App.user.shouldPay()) {
-                return showPaymentDefer.resolve({
-                  result: result,
-                  modal: paymentModal
-                });
-              }
-            });
-          }
-        }
-        return showPaymentDefer.promise;
       }
     });
     return new AppAction();

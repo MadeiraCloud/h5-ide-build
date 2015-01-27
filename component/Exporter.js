@@ -905,7 +905,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       }
       if (!blob) {
         return {
-          data: "data:text/plain;," + j,
+          data: "data://text/plain;," + j,
           name: name
         };
       }
@@ -941,7 +941,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       ua = window.navigator.userAgent;
       if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
         $(aTag).attr({
-          href: "data:text/plain;," + j,
+          href: "data://text/plain;," + j,
           target: "_blank"
         });
       } else {

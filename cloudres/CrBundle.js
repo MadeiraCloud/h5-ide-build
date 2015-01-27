@@ -202,7 +202,7 @@
         return this.__lastFetchError;
       },
       fetch: function() {
-        var self;
+        var self, _ref;
         if (!this.isLastFetchFailed() && this.__fetchPromise) {
           return this.__fetchPromise;
         }
@@ -210,7 +210,7 @@
         this.__ready = false;
         this.__lastFetchError = null;
         self = this;
-        this.__fetchPromise = this.doFetch().then(function(data) {
+        this.__fetchPromise = (_ref = this.doFetch()) != null ? typeof _ref.then === "function" ? _ref.then(function(data) {
           var d, e, _i, _len;
           if (!self.__selfParseData) {
             try {
@@ -248,7 +248,7 @@
           self.__ready = true;
           self.trigger("update");
           throw error;
-        });
+        }) : void 0 : void 0;
         return this.__fetchPromise;
       },
       fetchForce: function() {
@@ -372,7 +372,7 @@
         return this.category;
       },
 
-      /* env:dev                                                                                                                                                                                                                                                                                                            env:dev:end */
+      /* env:dev                                                                                                                                                                                                                                                                                                                     env:dev:end */
       where: function(option, first) {
         var hasOtherAttr, key, res;
         if (option.category && option.category === this.category) {
@@ -588,7 +588,7 @@
     /* This Connection is used to fetch all the resource of an vpc */
     return CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: "OpsResource",
       init: function(region, provider) {
         this.__region = region;
@@ -619,6 +619,8 @@
         CloudResources.clearWhere((function(m) {
           return m.RES_TAG === self.category;
         }), this.__region);
+
+        /* env:dev                                                                                                                                                                                                                                                              env:dev:end */
         console.assert(this.__region && this.__provider, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
         return ApiRequest("resource_get_resource", {
           region_name: this.__region,
@@ -627,6 +629,8 @@
         });
       },
       parseFetchData: function(data) {
+
+        /* env:dev                                                                                                                                                                       env:dev:end */
         var app_json, cln, d, extraAttr, type;
         app_json = data.app_json;
         delete data.app_json;
@@ -735,7 +739,7 @@
   define('cloudres/aws/CrModelKeypair',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       defaults: {
         keyName: "",
         keyData: "",
@@ -770,7 +774,6 @@
             throw McError(ApiRequest.Errors.InvalidAwsReturn, "Keypair created but aws returns invalid data.");
           }
           self.set('keyName', keyName);
-          self.set('id', keyName);
           console.log("Created keypair resource", self);
           return self;
         });
@@ -790,7 +793,7 @@
   define('cloudres/aws/CrModelSslcert',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
     return CrModel.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       taggable: false,
       defaults: {
         Path: "",
@@ -805,8 +808,7 @@
         return ApiRequest("iam_UpdateServerCertificate", {
           servercer_name: this.get("Name"),
           new_servercer_name: newAttr.Name,
-          new_path: newAttr.Path,
-          region_name: Design.instance().region()
+          new_path: newAttr.Path
         }).then(function(res) {
           var newArn, oldArn;
           oldArn = self.get('Arn');
@@ -824,8 +826,7 @@
           cert_body: this.get("CertificateBody"),
           private_key: this.get("PrivateKey"),
           cert_chain: this.get("CertificateChain"),
-          path: this.get("Path"),
-          region_name: Design.instance().region()
+          path: this.get("Path")
         }).then(function(res) {
           var e;
           self.attributes.CertificateChain = "";
@@ -849,8 +850,7 @@
       },
       doDestroy: function() {
         return ApiRequest("iam_DeleteServerCertificate", {
-          servercer_name: this.get("Name"),
-          region_name: Design.instance().region()
+          servercer_name: this.get("Name")
         });
       }
     });
@@ -1118,7 +1118,7 @@
     /* Dhcp */
     CrCollection.extend({
 
-      /* env:dev                                                env:dev:end */
+      /* env:dev                                                  env:dev:end */
       type: constant.RESTYPE.DHCP,
       model: CrDhcpModel,
       doFetch: function() {
@@ -1143,7 +1143,7 @@
     /* Keypair */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.KP,
       model: CrKeypairModel,
       doFetch: function() {
@@ -1168,13 +1168,11 @@
     /* Ssl cert */
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
-        return ApiRequest("iam_ListServerCertificates", {
-          region_name: this.region()
-        });
+        return ApiRequest("iam_ListServerCertificates");
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1191,12 +1189,16 @@
         }
         return res;
       }
+    }, {
+      category: function() {
+        return "";
+      }
     });
 
     /* Sns Topic */
     CrCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: constant.RESTYPE.TOPIC,
       model: CrTopicModel,
       constructor: function() {
@@ -1255,7 +1257,7 @@
     /* Sns Subscription */
     CrCollection.extend({
 
-      /* env:dev                                                        env:dev:end */
+      /* env:dev                                                          env:dev:end */
       type: constant.RESTYPE.SUBSCRIPTION,
       model: CrSubscriptionModel,
       doFetch: function() {
@@ -1280,7 +1282,7 @@
     /* Snapshot */
     return CrCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       type: constant.RESTYPE.SNAP,
       model: CrSnapshotModel,
       initialize: function() {
@@ -2462,15 +2464,11 @@
         _ref1 = ((_ref = ami.blockDeviceMapping) != null ? _ref.item : void 0) || [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           item = _ref1[_j];
-          if (item.ebs && !ami.imageSize && ami.rootDeviceName.indexOf(item.deviceName) !== -1) {
-            ami.imageSize = Number(item.ebs.volumeSize);
-          }
           bdm[item.deviceName] = item.ebs || {};
         }
         ami.osType = getOSType(ami);
         ami.osFamily = getOSFamily(ami);
         ami.blockDeviceMapping = bdm;
-        ami.isPublic = ami.isPublic.toString();
         ms.push(ami.id);
       }
       return ms;
@@ -2479,7 +2477,7 @@
     /* This Collection is used to fetch generic ami */
     CrCollection.extend({
 
-      /* env:dev                                               env:dev:end */
+      /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.AMI,
       __selfParseData: true,
       initialize: function() {
@@ -2619,7 +2617,7 @@
     });
     SpecificAmiCollection = CrCollection.extend({
 
-      /* env:dev                                                       env:dev:end */
+      /* env:dev                                                         env:dev:end */
       type: "SpecificAmiCollection",
       initialize: function() {
         this.__models = [];
@@ -2644,7 +2642,7 @@
     /* This Collection is used to fetch quickstart ami */
     SpecificAmiCollection.extend({
 
-      /* env:dev                                                         env:dev:end */
+      /* env:dev                                                           env:dev:end */
       type: "QuickStartAmi",
       doFetch: function() {
         return ApiRequest("aws_quickstart", {
@@ -2652,11 +2650,14 @@
         });
       },
       parseFetchData: function(data) {
-        var ami, amiIds, id, savedAmis;
+        var ami, amiIds, id, savedAmis, _ref;
         savedAmis = [];
         amiIds = [];
         for (id in data) {
           ami = data[id];
+          if (ami.architecture === 'i386' || (ami.name.indexOf('by VisualOps') === -1 && ((_ref = ami.osType) !== 'windows' && _ref !== 'suse'))) {
+            continue;
+          }
           ami.id = id;
           savedAmis.push(ami);
           amiIds.push(id);
@@ -2669,7 +2670,7 @@
     /* This Collection is used to fetch my ami */
     SpecificAmiCollection.extend({
 
-      /* env:dev                                                 env:dev:end */
+      /* env:dev                                                   env:dev:end */
       type: "MyAmi",
       doFetch: function() {
         var self, selfParam1, selfParam2;
@@ -2739,7 +2740,7 @@
     /* This Collection is used to fetch favorite ami */
     return SpecificAmiCollection.extend({
 
-      /* env:dev                                                  env:dev:end */
+      /* env:dev                                                    env:dev:end */
       type: "FavoriteAmi",
       doFetch: function() {
         return ApiRequest("favorite_info", {
@@ -2774,7 +2775,6 @@
           return d.promise;
         }
         return ApiRequest("favorite_remove", {
-          region_name: self.region(),
           resource_ids: [id]
         }).then(function() {
           idx = self.__models.indexOf(id);
@@ -2794,7 +2794,6 @@
         }
         self = this;
         return ApiRequest("favorite_add", {
-          region_name: self.region(),
           resource: {
             id: imageId,
             provider: 'AWS',
@@ -3646,7 +3645,7 @@
   define('cloudres/openstack/CrClnImage',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
     CrCollection.extend({
 
-      /* env:dev                                                   env:dev:end */
+      /* env:dev                                                     env:dev:end */
       type: constant.RESTYPE.OSIMAGE,
       doFetch: function() {
         return ApiRequest("os_image_List", {
@@ -3669,19 +3668,13 @@
     });
     return CrCollection.extend({
 
-      /* env:dev                                                    env:dev:end */
+      /* env:dev                                                      env:dev:end */
       type: constant.RESTYPE.OSFLAVOR,
       doFetch: function() {
-        var region;
-        region = this.region();
-        return ApiRequest("os_flavor_List", {
-          region: region
-        }).then(function(res) {
-          return ApiRequest("os_flavor_Info", {
-            region: region,
-            ids: _.pluck(res.flavors, "id")
-          });
-        });
+        var tempDefer;
+        tempDefer = Q.defer();
+        tempDefer.resolve();
+        return tempDefer.promise;
       },
       parseFetchData: function(res) {
         return _.values(res);

@@ -1144,8 +1144,8 @@
           lcRes.LaunchConfigurationARN = aws_lc.id;
           lcRes.LaunchConfigurationName = aws_lc.Name;
           lcRes.InstanceMonitoring = aws_lc.InstanceMonitoring.Enabled;
-          if (aws_lc.UserData && (typeof Base64 !== "undefined" && Base64 !== null ? Base64.decode : void 0)) {
-            lcRes.UserData = Base64.decode(aws_lc.UserData);
+          if (aws_lc.UserData && atob) {
+            lcRes.UserData = atob(aws_lc.UserData);
           }
           sg = [];
           _.each(aws_lc.SecurityGroups, function(e, key) {

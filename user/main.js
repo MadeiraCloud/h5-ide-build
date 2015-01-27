@@ -1,5 +1,5 @@
 (function() {
-  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
+  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, base64Decode, base64Encode, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, userRoute, validPassword, xhr;
 
   (function() {
     var MC_DOMAIN, hosts, location;
@@ -35,17 +35,23 @@
 
   xhr = null;
 
+  base64Encode = function(string) {
+    return window.btoa(unescape(encodeURIComponent(string)));
+  };
+
+  base64Decode = function(string) {
+    return decodeURIComponent(escape(window.atob(string)));
+  };
+
   checkAllCookie = function() {
     return !!($.cookie('usercode') && $.cookie('session_id'));
   };
 
   langType = function() {
-    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || (navigator.language && navigator.language.toLowerCase() === "zh-cn" ? "zh-cn" : "en-us");
+    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + "lang\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || "en-us";
   };
 
   deepth = 'RESET';
-
-  timezone = (new Date().getTimezoneOffset()) / -60;
 
   userRoute = function(routes) {
     var hashArray, pathArray, _name;
@@ -131,16 +137,6 @@
         return console.log(error, "error");
       }
     }).done(function() {
-      var templates;
-      templates = $("[type='text/x-language-template']");
-      if (templates.size()) {
-        templates.each(function(index, element) {
-          var template;
-          element = $(element);
-          template = Handlebars.compile(element.html());
-          return $("#" + element.data('target')).html(template(window.langsrc));
-        });
-      }
       return cb();
     });
   };
@@ -262,18 +258,8 @@
             $(".error-msg").hide();
             $(".control-group").removeClass('error');
             submitBtn.attr('disabled', true).val(langsrc.RESET.reset_waiting);
-            return ajaxLogin([
-              $user.val(), $password.val(), {
-                timezone: timezone
-              }
-            ], function(statusCode) {
-              if (statusCode === 100) {
-                $('#error-msg-1').hide();
-                $('#error-msg-3').show().text(langsrc.SERVICE.ERROR_CODE_100_MESSAGE);
-              } else {
-                $('#error-msg-1').show();
-                $('#error-msg-3').hide();
-              }
+            return ajaxLogin([$user.val(), $password.val()], function(statusCode) {
+              $('#error-msg-1').show();
               return submitBtn.attr('disabled', false).val(langsrc.LOGIN['login-btn']);
             });
           } else {
@@ -293,7 +279,7 @@
         });
       },
       'register': function(pathArray, hashArray) {
-        var $email, $firstName, $form, $lastName, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkFullname, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
+        var $email, $form, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
         deepth = 'REGISTER';
         if (hashArray[0] === 'success') {
           render("#success-template");
@@ -309,27 +295,12 @@
         $(".title-link a").attr("href", "/login/" + getSearch());
         $form = $("#register-form");
         $form.find('input').eq(0).focus();
-        $firstName = $("#register-firstname");
-        $lastName = $("#register-lastname");
         $username = $('#register-username');
         $email = $('#register-email');
         $password = $('#register-password');
         usernameTimeout = void 0;
         emailTimeout = void 0;
         $('#register-btn').attr('disabled', false);
-        checkFullname = function(e, cb) {
-          var firstName, lastName, status;
-          status = $("#fullname-verification-status");
-          firstName = $firstName.val();
-          lastName = $lastName.val();
-          if (firstName.trim() === "" || lastName.trim() === "") {
-            status.removeClass("verification-status").addClass('error-status').text(langsrc.REGISTER.firstname_and_lastname_required);
-            return false;
-          } else {
-            status.removeClass('verification-status').removeClass('error-status').text("");
-            return true;
-          }
-        };
         checkUsername = function(e, cb) {
           var status, username;
           username = $username.val();
@@ -494,12 +465,6 @@
             return a;
           });
         });
-        $firstName.on('keyup blur change', function() {
-          return checkFullname();
-        });
-        $lastName.on('keyup blur change', function() {
-          return checkFullname();
-        });
         $email.on('keyup blur change', function(e) {
           return checkEmail(e, function(a) {
             if (!a) {
@@ -517,17 +482,16 @@
           });
         });
         return $form.on('submit', function(e) {
-          var emailResult, fullnameResult, passwordResult, userResult;
+          var emailResult, passwordResult, userResult;
           e.preventDefault();
           $('.error-msg').removeAttr('style');
           if ($username.next().hasClass('error-status') || $email.next().hasClass('error-status')) {
             return false;
           }
-          fullnameResult = checkFullname();
           userResult = checkUsername();
           emailResult = checkEmail();
           passwordResult = checkPassword();
-          if (!(userResult && emailResult && passwordResult && fullnameResult)) {
+          if (!(userResult && emailResult && passwordResult)) {
             return false;
           }
           $('#register-btn').attr('disabled', true).val(langsrc.REGISTER.reginster_waiting);
@@ -547,13 +511,7 @@
                   return false;
                 }
                 if (usernameAvl && emailAvl && passwordAvl) {
-                  return ajaxRegister([
-                    $username.val(), $password.val(), $email.val(), {
-                      first_name: $firstName.val(),
-                      last_name: $lastName.val(),
-                      timezone: timezone
-                    }
-                  ], function(statusCode) {
+                  return ajaxRegister([$username.val(), $password.val(), $email.val()], function(statusCode) {
                     resetRegForm(true);
                     $("#register-status").show().text(langsrc.SERVICE['ERROR_CODE_' + statusCode + '_MESSAGE']);
                     return false;
