@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/stateeditor/model',['MC', 'constant', 'state_model', 'CloudResources', "Design", "ApiRequest", 'backbone', 'jquery', 'underscore'], function(MC, constant, state_model, CloudResources, Design, ApiRequest) {
+  define('component/stateeditor/model',['MC', 'constant', 'CloudResources', "Design", "ApiRequest", 'backbone', 'jquery', 'underscore'], function(MC, constant, CloudResources, Design, ApiRequest) {
     var StateEditorModel;
     StateEditorModel = Backbone.Model.extend({
       defaults: {
@@ -3050,7 +3050,7 @@ return Markdown;
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'instance_model', 'component/stateeditor/lib/markdown', 'ApiRequestOs', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, instance_model, Markdown, ApiRequest) {
+  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequestOs', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest) {
     var StateClipboard, StateEditorView, id, tpl;
     StateClipboard = [];
     for (id in template) {

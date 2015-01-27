@@ -190,7 +190,7 @@
               return $('#reset-form').on('submit', function(e) {
                 e.preventDefault();
                 if (validPassword()) {
-                  $("#reset-password").attr('disabled', true).val(langsrc.LOGIN.RESET.reset_waiting);
+                  $("#reset-password").attr('disabled', true).val(langsrc.RESET.reset_waiting);
                   ajaxChangePassword(hashArray, $("#reset-pw").val());
                 }
                 return false;
@@ -226,7 +226,7 @@
             $('#reset-pw-email').off('keyup');
             $("#reset-btn").attr('disabled', true);
             $("#reset-pw-email").attr('disabled', true);
-            $('#reset-btn').val(window.langsrc.LOGIN.RESET.reset_waiting);
+            $('#reset-btn').val(window.langsrc.RESET.reset_waiting);
             sendEmail($("#reset-pw-email").val());
             return false;
           });
@@ -257,7 +257,7 @@
           if ($user.val() && $password.val()) {
             $(".error-msg").hide();
             $(".control-group").removeClass('error');
-            submitBtn.attr('disabled', true).val(langsrc.LOGIN.RESET.reset_waiting);
+            submitBtn.attr('disabled', true).val(langsrc.RESET.reset_waiting);
             return ajaxLogin([$user.val(), $password.val()], function(statusCode) {
               $('#error-msg-1').show();
               return submitBtn.attr('disabled', false).val(langsrc.LOGIN['login-btn']);

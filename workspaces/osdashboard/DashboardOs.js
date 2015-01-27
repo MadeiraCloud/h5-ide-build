@@ -12,7 +12,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
     + "</button>\n\n  <button id=\"ImportStack\" class=\"btn btn-primary icon-import\" data-analytics-plus=\"import_json\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_IMPORT_JSON", {hash:{},data:data}))
-    + "</button>\n\n  <button class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
+    + "</button>\n\n  <button id=\"VisualizeApp\" class=\"btn btn-blue icon-visualize\" data-analytics-plus=\"visualize_vpc\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_APP", {hash:{},data:data}))
     + "\n  </button>\n\n</header>\n\n<div class=\"dash-body nano\"> <div class=\"nano-content\">\n\n  <section class=\"dash-ops-list-wrapper\">\n    <nav>\n      <button class=\"on stack ops-list-switcher\"><span class=\"count\"></span> <small>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}))
@@ -538,10 +538,117 @@ TEMPLATE.resource_OSLISTENER=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
+define('workspaces/osdashboard/ImportAppTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\r\n<div class=\"unmanaged-vpc-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_LOADING_APP_FAILED", {hash:{},data:data}))
+    + "\r\n	<button class=\"btn btn-blue\" id=\"VisualizeReload\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_POP_BTN_RETRY", {hash:{},data:data}))
+    + "</button>\r\n</div>\r\n<div class=\"loading-spinner hide\"></div>\r\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n	";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.ready), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  
+  return "<div class=\"loading-spinner\"></div>";
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n		";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.program(10, program10, data),fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n	";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<section>\r\n			<header class=\"region-header\"><span class=\"region-name\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span><span class=\"vpc-count\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.apps)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span></header>\r\n\r\n			<ul class=\"region-group clearfix\" data-region=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\r\n				";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n			</ul>\r\n		</sectio\r\n		";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n				<li class=\"visualize-vpc\">\r\n					<h5>"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</h5>\r\n					<ol class=\"tac\">\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.subnet)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_SUBNETS", {hash:{},data:data}))
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.router)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_OSROUTER", {hash:{},data:data}))
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.server)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_OSSERVER", {hash:{},data:data}))
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.fip)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_OSFIP", {hash:{},data:data}))
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.listener)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_OSLISTENER", {hash:{},data:data}))
+    + "</span></li>\r\n						<li class=\"visualize-res\"><div class=\"vis-res-num\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.pool)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div><span class=\"vis-res-name\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_OSPOOL", {hash:{},data:data}))
+    + "</span></li>\r\n					</ol>\r\n					<button class=\"btn btn-blue visualize-vpc-btn\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_TO_IMPORT", {hash:{},data:data}))
+    + "</button>\r\n				</li>\r\n				";
+  return buffer;
+  }
+
+function program10(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<div class=\"unmanaged-vpc-empty\">"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_NO_APP_TO_IMPORT", {hash:{},data:data}))
+    + "</div>";
+  return buffer;
+  }
+
+  buffer += "<div class=\"scroll-wrap scrollbar-auto-hide\" style=\"height:500px;\">\r\n	<div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n	<div id=\"VisualizeVpcDialog\" class=\"scroll-content\">\r\n";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.fail), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n\r\n	</div>\r\n</div>";
+  return buffer;
+  }; return Handlebars.template(TEMPLATE); });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('workspaces/osdashboard/DashboardView',['./DashboardTpl', './DashboardTplData', "constant", "i18n!/nls/lang.js", "CloudResources", "UI.modalplus", 'AppAction', "backbone", "UI.tooltip", "UI.table", "UI.bubble", "UI.scrollbar", "UI.nanoscroller"], function(Template, TemplateData, constant, lang, CloudResources, Modal, appAction) {
+  define('workspaces/osdashboard/DashboardView',['./DashboardTpl', './DashboardTplData', "./ImportAppTpl", "constant", "i18n!/nls/lang.js", "CloudResources", "UI.modalplus", 'AppAction', "backbone", "UI.tooltip", "UI.table", "UI.bubble", "UI.scrollbar", "UI.nanoscroller"], function(Template, TemplateData, ImportAppTpl, constant, lang, CloudResources, Modal, appAction) {
     return Backbone.View.extend({
       events: {
         'click #OsReloadResource': 'reloadResource',
@@ -555,13 +662,12 @@ return TEMPLATE; });
         'click .dash-ops-list .terminate-app': 'terminateApp',
         'click .resource-tab': 'switchResource',
         "click #ImportStack": "importStack",
-        "click #VisualizeApp": "visualizeApp"
+        "click #VisualizeApp": "importApp"
       },
       resourcesTab: 'OSSERVER',
       initialize: function() {
         var self;
         this.opsListTab = "stack";
-        this.region = App.user.get("default_region");
         this.lastUpdate = +(new Date());
         this.setElement($(Template.frame()).eq(0).appendTo("#main"));
         this.updateOpsList();
@@ -585,7 +691,7 @@ return TEMPLATE; });
         var d, _ref;
         d = {
           id: data.id,
-          data: (_ref = this.model.getOsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0
+          data: (_ref = this.model.getOsResDataById(constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0
         };
         d.data = d.data.system_metadata;
         _.each(d.data, function(e, key) {
@@ -637,7 +743,7 @@ return TEMPLATE; });
       },
       updateAppProgress: function(model) {
         var $li;
-        if (model.get("region") === this.region && this.regionOpsTab === "app") {
+        if (model.get("region") === this.model.region && this.regionOpsTab === "app") {
           console.log("Dashboard Updated due to app progress changes.");
           $li = $el.find(".dash-ops-list").children("[data-id='" + model.id + "']");
           if (!$li.length) {
@@ -690,7 +796,7 @@ return TEMPLATE; });
             return dom.find('.count-usage').text("-");
           });
         }
-        resourceCount = this.model.getResourcesCount(this.region);
+        resourceCount = this.model.getResourcesCount();
         for (r in resourceCount) {
           count = resourceCount[r];
           child = $nav.children("." + r);
@@ -713,10 +819,10 @@ return TEMPLATE; });
           return;
         }
         type = constant.RESTYPE[this.resourcesTab];
-        if (!this.model.isOsResReady(this.region, type)) {
+        if (!this.model.isOsResReady(type)) {
           tpl = '<div class="dashboard-loading"><div class="loading-spinner"></div></div>';
         } else {
-          tpl = TemplateData["resource_" + this.resourcesTab](this.model.getOsResData(this.region, type));
+          tpl = TemplateData["resource_" + this.resourcesTab](this.model.getOsResData(type));
         }
         return $(".resource-list-body").html(tpl);
       },
@@ -724,10 +830,7 @@ return TEMPLATE; });
         return App.openOps($(event.currentTarget).attr("data-id"));
       },
       createStack: function(event) {
-        var provider, region;
-        region = App.user.get("default_region");
-        provider = App.user.get("default_provider");
-        return App.createOps(region, "openstack", provider);
+        return App.createOps(this.model.region, "openstack", this.model.provider);
       },
       markUpdated: function() {
         this.lastUpdate = +(new Date());
@@ -819,7 +922,50 @@ return TEMPLATE; });
         });
         return null;
       },
-      visualizeApp: function() {}
+      importApp: function() {
+        var self;
+        self = this;
+        if (!this.visModal) {
+          this.visModal = new Modal({
+            title: lang.IDE.DASH_IMPORT_APP,
+            width: "770",
+            template: ImportAppTpl({}),
+            disableFooter: true,
+            compact: true,
+            onClose: function() {
+              self.visModal = null;
+            }
+          });
+          this.visModal.tpl.on("click", "#VisualizeReload", function() {
+            self.importApp();
+            self.visModal.tpl.find(".unmanaged-vpc-empty").hide();
+            self.visModal.tpl.find(".loading-spinner").show();
+            return false;
+          });
+          this.visModal.tpl.on("click", ".visualize-vpc-btn", function(event) {
+            return self.doImportApp(event);
+          });
+        }
+        this.model.importApp().then(function(data) {
+          return self.visModal.tpl.find(".modal-body").html(ImportAppTpl({
+            ready: true,
+            data: data
+          }));
+        }, function() {
+          return self.visModal.tpl.find(".modal-body").html(ImportAppTpl({
+            fail: true
+          }));
+        });
+      },
+      doImportApp: function(evt) {
+        var $tgt, id, region;
+        $tgt = $(evt.currentTarget);
+        id = $tgt.attr("data-id");
+        region = $tgt.closest("ul").attr("data-region");
+        this.visModal.close();
+        App.openOps(App.model.createImportOps(region, "openstack", this.model.provider, id));
+        return false;
+      }
     });
   });
 
@@ -834,18 +980,25 @@ return TEMPLATE; });
       Dashboard Model
      */
     return Backbone.Model.extend({
+      defaults: {
+        region: "",
+        provider: ""
+      },
       initialize: function() {
-        var region;
-        region = App.user.get("default_region");
-        this.listenTo(CloudResources(constant.RESTYPE.OSSERVER, region), "update", this.onRegionResChanged(['OSSERVER', 'FIP']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSPORT, region), "update", this.onRegionResChanged(['FIP']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSVOL, region), "update", this.onRegionResChanged(['OSVOL', 'OSSNAP']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSSNAP, region), "update", this.onRegionResChanged(['OSSNAP']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSFIP, region), "update", this.onRegionResChanged(['OSFIP']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSRT, region), "update", this.onRegionResChanged(['OSRT']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSPOOL, region), "update", this.onRegionResChanged(['OSPOOL', 'OSLISTENER']));
-        this.listenTo(CloudResources(constant.RESTYPE.OSLISTENER, region), "update", this.onRegionResChanged(['OSLISTENER']));
-        return this.listenTo(CloudResources(constant.RESTYPE.OSNETWORK, region), "update", this.onRegionResChanged(['OSRT']));
+        var R, r;
+        r = this.region = App.user.get("default_region");
+        this.provider = App.user.get("default_provider");
+        R = constant.RESTYPE;
+        r = this.region;
+        this.listenTo(CloudResources(R.OSSERVER, r), "update", this.onRegionResChanged(['OSSERVER', 'FIP']));
+        this.listenTo(CloudResources(R.OSPORT, r), "update", this.onRegionResChanged(['FIP']));
+        this.listenTo(CloudResources(R.OSVOL, r), "update", this.onRegionResChanged(['OSVOL', 'OSSNAP']));
+        this.listenTo(CloudResources(R.OSSNAP, r), "update", this.onRegionResChanged(['OSSNAP']));
+        this.listenTo(CloudResources(R.OSFIP, r), "update", this.onRegionResChanged(['OSFIP']));
+        this.listenTo(CloudResources(R.OSRT, r), "update", this.onRegionResChanged(['OSRT']));
+        this.listenTo(CloudResources(R.OSPOOL, r), "update", this.onRegionResChanged(['OSPOOL', 'OSLISTENER']));
+        this.listenTo(CloudResources(R.OSLISTENER, r), "update", this.onRegionResChanged(['OSLISTENER']));
+        return this.listenTo(CloudResources(R.OSNETWORK, r), "update", this.onRegionResChanged(['OSRT']));
       },
       onRegionResChanged: function(type) {
         return function() {
@@ -854,66 +1007,65 @@ return TEMPLATE; });
       },
 
       /* Cloud Resources */
-      fetchOsResources: function(region) {
-        if (region == null) {
-          region = 'beijing';
-        }
-        region = App.user.get("default_region");
-        CloudResources(constant.RESTYPE.OSSERVER, region).fetch();
-        CloudResources(constant.RESTYPE.OSPORT, region).fetch();
-        CloudResources(constant.RESTYPE.OSVOL, region).fetch();
-        CloudResources(constant.RESTYPE.OSSNAP, region).fetch();
-        CloudResources(constant.RESTYPE.OSFIP, region).fetch();
-        CloudResources(constant.RESTYPE.OSRT, region).fetch();
-        CloudResources(constant.RESTYPE.OSPOOL, region).fetch();
-        CloudResources(constant.RESTYPE.OSLISTENER, region).fetch();
-        CloudResources(constant.RESTYPE.OSNETWORK, region).fetch();
+      fetchOsResources: function() {
+        CloudResources(constant.RESTYPE.OSSERVER, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSPORT, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSVOL, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSSNAP, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSFIP, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSRT, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSPOOL, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSLISTENER, this.region).fetch();
+        CloudResources(constant.RESTYPE.OSNETWORK, this.region).fetch();
       },
-      isOsResReady: function(region, type) {
+      isOsResReady: function(type) {
+        var res;
+        res = CloudResources(type, this.region).isReady();
         switch (type) {
           case constant.RESTYPE.OSLISTENER:
-            return CloudResources(type, region).isReady() && CloudResources(constant.RESTYPE.OSPOOL, region).isReady();
+            res = res && CloudResources(constant.RESTYPE.OSPOOL, this.region).isReady();
+            break;
           case constant.RESTYPE.OSPOOL:
-            return CloudResources(type, region).isReady() && CloudResources(constant.RESTYPE.OSLISTENER, region).isReady();
-          default:
-            return CloudResources(type, region).isReady();
+            res = res && CloudResources(constant.RESTYPE.OSLISTENER, this.region).isReady();
         }
+        return res;
       },
-      getOsResData: function(region, type) {
-        var availableImageDistro, data, extNetworks, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      getOsResData: function(type) {
+        var availableImageDistro, data, extNetworks, region;
+        region = this.region;
         availableImageDistro = ["centos", "debian", "fedora", "gentoo", "opensuse", "redhat", "suse", "ubuntu", "windows", "cirros"];
         data = {
-          servers: _.map((_ref = CloudResources(constant.RESTYPE.OSSERVER, region)) != null ? _ref.toJSON() : void 0, function(e) {
-            var _ref1;
-            if (_ref1 = e.system_metadata.image_os_distro, __indexOf.call(availableImageDistro, _ref1) < 0) {
+          servers: _.map(CloudResources(constant.RESTYPE.OSSERVER, region).toJSON(), function(e) {
+            var _ref;
+            if (_ref = e.system_metadata.image_os_distro, __indexOf.call(availableImageDistro, _ref) < 0) {
               e.system_metadata.image_os_distro = "unknown";
             }
             return e;
           }),
-          volumes: (_ref1 = CloudResources(constant.RESTYPE.OSVOL, region)) != null ? _ref1.toJSON() : void 0,
-          snaps: (_ref2 = CloudResources(constant.RESTYPE.OSSNAP, region)) != null ? _ref2.toJSON() : void 0,
-          fips: (_ref3 = CloudResources(constant.RESTYPE.OSFIP, region)) != null ? _ref3.toJSON() : void 0,
-          rts: (_ref4 = CloudResources(constant.RESTYPE.OSRT, region)) != null ? _ref4.toJSON() : void 0,
-          elbs: (_ref5 = CloudResources(constant.RESTYPE.OSLISTENER, region)) != null ? _ref5.toJSON() : void 0
+          volumes: CloudResources(constant.RESTYPE.OSVOL, region).toJSON(),
+          snaps: CloudResources(constant.RESTYPE.OSSNAP, region).toJSON(),
+          fips: CloudResources(constant.RESTYPE.OSFIP, region).toJSON(),
+          rts: CloudResources(constant.RESTYPE.OSRT, region).toJSON(),
+          elbs: CloudResources(constant.RESTYPE.OSLISTENER, region).toJSON()
         };
         _.each(data.fips, function(fip) {
-          var port, portId, server, _ref6, _ref7, _ref8, _ref9;
+          var port, portId, server, _ref, _ref1, _ref2, _ref3;
           portId = fip.port_id;
-          port = (_ref6 = CloudResources(constant.RESTYPE.OSPORT, region)) != null ? (_ref7 = _ref6.get(portId)) != null ? _ref7.toJSON() : void 0 : void 0;
+          port = (_ref = CloudResources(constant.RESTYPE.OSPORT, region)) != null ? (_ref1 = _ref.get(portId)) != null ? _ref1.toJSON() : void 0 : void 0;
           if (port) {
-            server = (_ref8 = CloudResources(constant.RESTYPE.OSSERVER, region)) != null ? (_ref9 = _ref8.get(port.device_id)) != null ? _ref9.toJSON() : void 0 : void 0;
+            server = (_ref2 = CloudResources(constant.RESTYPE.OSSERVER, region)) != null ? (_ref3 = _ref2.get(port.device_id)) != null ? _ref3.toJSON() : void 0 : void 0;
           }
           fip.serverName = server != null ? server.name : void 0;
           return fip.portName = port != null ? port.name : void 0;
         });
         _.each(data.snaps, function(snap) {
-          var volume, _ref6, _ref7;
-          volume = (_ref6 = CloudResources(constant.RESTYPE.OSVOL, region)) != null ? (_ref7 = _ref6.get(snap.volume_id)) != null ? _ref7.toJSON() : void 0 : void 0;
+          var volume, _ref, _ref1;
+          volume = (_ref = CloudResources(constant.RESTYPE.OSVOL, region)) != null ? (_ref1 = _ref.get(snap.volume_id)) != null ? _ref1.toJSON() : void 0 : void 0;
           return snap.volumeName = volume != null ? volume.name : void 0;
         });
         _.each(data.elbs, function(listener) {
-          var pool, _ref6, _ref7;
-          pool = (_ref6 = CloudResources(constant.RESTYPE.OSPOOL, region)) != null ? (_ref7 = _ref6.get(listener.pool_id)) != null ? _ref7.toJSON() : void 0 : void 0;
+          var pool, _ref, _ref1;
+          pool = (_ref = CloudResources(constant.RESTYPE.OSPOOL, region)) != null ? (_ref1 = _ref.get(listener.pool_id)) != null ? _ref1.toJSON() : void 0 : void 0;
           return listener.poolName = pool != null ? pool.name : void 0;
         });
         extNetworks = _.map(CloudResources(constant.RESTYPE.OSNETWORK, region).getExtNetworks(), function(m) {
@@ -934,13 +1086,13 @@ return TEMPLATE; });
         });
         return data;
       },
-      getOsResDataById: function(region, type, id) {
-        return CloudResources(type, region).get(id);
+      getOsResDataById: function(type, id) {
+        return CloudResources(type, this.region).get(id);
       },
-      getResourcesCount: function(region) {
+      getResourcesCount: function() {
         var collection, d, data, filter, key, type;
         filter = {
-          category: region
+          category: this.region
         };
         data = {
           servers: "OSSERVER",
@@ -953,7 +1105,7 @@ return TEMPLATE; });
         d = {};
         for (key in data) {
           type = data[key];
-          collection = CloudResources(constant.RESTYPE[type], region);
+          collection = CloudResources(constant.RESTYPE[type], this.region);
           if (collection.isReady()) {
             d[key] = collection.where(filter).length;
           } else {
@@ -961,6 +1113,40 @@ return TEMPLATE; });
           }
         }
         return d;
+      },
+      importApp: function() {
+        var self;
+        self = this;
+        return ApiRequest("resource_region_resource").then(function(data) {
+          var d, emptyArr, key, networkId, region, value, _ref;
+          d = [];
+          emptyArr = [];
+          _ref = data.openstack[self.provider] || {};
+          for (key in _ref) {
+            value = _ref[key];
+            region = {
+              name: constant.REGION_LABEL[key],
+              region: key,
+              apps: []
+            };
+            for (networkId in value) {
+              data = value[networkId];
+              region.apps.push({
+                id: networkId,
+                subnet: (data[constant.RESTYPE.OSSUBNET] || emptyArr).length,
+                router: (data[constant.RESTYPE.OSRT] || emptyArr).length,
+                server: (data[constant.RESTYPE.OSSERVER] || emptyArr).length,
+                fip: (data[constant.RESTYPE.OSFIP] || emptyArr).length,
+                listener: (data[constant.RESTYPE.OSLISTENER] || emptyArr).length,
+                pool: (data[constant.RESTYPE.OSPOOL] || emptyArr).length
+              });
+            }
+            if (region.apps.length) {
+              d.push(region);
+            }
+          }
+          return d;
+        });
       }
     });
   });

@@ -2783,11 +2783,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is a connection of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ", working as load balancer.\n</div>";
+    + ", working as load balancer.\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3400,24 +3400,24 @@ function program1(depth0,data) {
 
   buffer += "<h1 class=\"title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h1>\n<section class=\"group required\">\n    <label class=\"name\">Name</label>\n    <input data-id=\"hm-name\" data-target=\"name\" class=\"selection string\" value=\""
+    + "</h1>\r\n<section class=\"group required\">\r\n    <label class=\"name\">Name</label>\r\n    <input data-id=\"hm-name\" data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n<section class=\"group required\">\n    <label class=\"name\">Type</label>\n    <select class=\"selection option\" value=\""
+    + "\"/>\r\n</section>\r\n<section class=\"group required\">\r\n    <label class=\"name\">Type</label>\r\n    <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"type\" data-id=\"hm-method\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n        <option value='PING'>PING</option>\n        <option value='HTTP'>HTTP</option>\n        <option value='HTTPS'>HTTPS</option>\n        <option value='TCP'>TCP</option>\n    </select>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Delay</label>\n    <input data-id=\"hm-delay\" data-target=\"delay\" class=\"selection string\" value=\""
+  buffer += ">\r\n        <option value='PING'>PING</option>\r\n        <option value='HTTP'>HTTP</option>\r\n        <option value='HTTPS'>HTTPS</option>\r\n        <option value='TCP'>TCP</option>\r\n    </select>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Delay</label>\r\n    <input data-id=\"hm-delay\" data-target=\"delay\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.delay)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Timeout</label>\n    <input data-id=\"hm-timeout\" data-target=\"timeout\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Timeout</label>\r\n    <input data-id=\"hm-timeout\" data-target=\"timeout\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.timeout)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Max Retries</label>\n    <input data-id=\"hm-maxretries\" data-target=\"maxRetries\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Max Retries</label>\r\n    <input data-id=\"hm-maxretries\" data-target=\"maxRetries\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.maxRetries)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">URL Path</label>\n    <input data-id=\"hm-urlpath\" data-target=\"urlPath\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">URL Path</label>\r\n    <input data-id=\"hm-urlpath\" data-target=\"urlPath\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.urlPath)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Expected Codes</label>\n    <input data-id=\"hm-expectedcodes\" data-target=\"expectedCodes\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Expected Codes</label>\r\n    <input data-id=\"hm-expectedcodes\" data-target=\"expectedCodes\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.expectedCodes)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>";
+    + "\"/>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/property/oshm/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -3428,42 +3428,42 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <dt>URL Path</dt><dd>"
+  buffer += "\r\n        <dt>URL Path</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.url_path)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    ";
+    + "</dd>\r\n    ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <dt>Expected Codes</dt><dd>"
+  buffer += "\r\n        <dt>Expected Codes</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.expected_codes)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd></dl>\n    ";
+    + "</dd></dl>\r\n    ";
   return buffer;
   }
 
   buffer += "<h1 class=\"title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h1>\n<section class=\"group\">\n    <dl class=\"dl-vertical\">\n        <dt>Name</dt><dd>"
+    + "</h1>\r\n<section class=\"group\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Name</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>ID</dt><dd>"
+    + "</dd>\r\n        <dt>ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Type</dt><dd>"
+    + "</dd>\r\n        <dt>Type</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Delay</dt><dd>"
+    + "</dd>\r\n        <dt>Delay</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.delay)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Timeout</dt><dd>"
+    + "</dd>\r\n        <dt>Timeout</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.timeout)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Max Retries</dt><dd>"
+    + "</dd>\r\n        <dt>Max Retries</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.max_retries)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    ";
+    + "</dd>\r\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.url_path), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.expected_codes), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</section>";
+  buffer += "\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -4076,11 +4076,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is a connection of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".\n</div>";
+    + ".\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -4110,11 +4110,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is an association of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is an association of "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".\n</div>";
+    + ".\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -7402,7 +7402,7 @@ return TEMPLATE; });
           name: data.resource.name,
           appId: data.resource.id,
           nat: data.resource.nat,
-          extNetworkId: data.resource.external_gateway_info.network_id || "",
+          extNetworkId: (data.resource.external_gateway_info || {}).network_id || "",
           publicip: data.resource.public_ip,
           x: layout_data.coordinate[0],
           y: layout_data.coordinate[1]
@@ -8713,7 +8713,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeListener',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       type: constant.RESTYPE.OSLISTENER,
       parentType: [constant.RESTYPE.OSSUBNET],
       defaultSize: [8, 8],
@@ -9086,7 +9086,229 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('workspaces/oseditor/EditorOs',["OpsEditor", "./OsEditorStack", "./OsEditorApp", "./model/OsModelFloatIp", "./model/OsModelHealthMonitor", "./model/OsModelListener", "./model/OsModelNetwork", "./model/OsModelElb", "./model/OsModelPool", "./model/OsModelPort", "./model/OsModelRt", "./model/OsModelKeypair", "./model/OsModelServer", "./model/OsModelSg", "./model/OsModelSgRule", "./model/OsModelSubnet", "./model/OsModelVolume", "./model/connection/OsFloatIpUsage", "./model/connection/OsListenerAsso", "./model/connection/OsPoolMembership", "./model/connection/OsPortUsage", "./model/connection/OsRouterAsso", "./model/connection/OsSgAsso", "./model/connection/OsVolumeUsage", "./model/seVisitors/AppToStack", "./canvas/CeNetwork", "./canvas/CeSubnet", "./canvas/CeRt", "./canvas/CePool", "./canvas/CeListener", "./canvas/CeElb", "./canvas/CeServer", "./canvas/CePort", "./canvas/CeOsLine"], function(OpsEditor, StackEditor, AppEditor) {
+  define('workspaces/oseditor/canvas/CanvasViewOsLayout',["./CanvasViewOs", "CanvasViewLayout", "constant"], function(OsCanvasView, CanvasViewLayoutHelpers, constant) {
+    var ArrangeForRtGroup, ArrangeForSubnetGroup, ArrangeForSvg, AutoLayoutConfig, GroupMForSubnet, SortForSvg, SubnetPosCache;
+    SubnetPosCache = null;
+    GroupMForSubnet = function(children) {
+      var ch, elbChildren, group, i, idx, pool, poolGroup, portGroup, serverGroup, subnetChildren, v, vip, vipGroup, _i, _j, _k, _l, _len, _len1, _len2, _len3;
+      group = CanvasViewLayoutHelpers.DefaultGroupMethod.call(this, children);
+      subnetChildren = [];
+      serverGroup = portGroup = vipGroup = poolGroup = [];
+      for (_i = 0, _len = group.length; _i < _len; _i++) {
+        ch = group[_i];
+        if (ch.type === "OS::Nova::Server_group") {
+          subnetChildren.push(ch);
+        } else if (ch.type === "OS::Neutron::Port_group") {
+          portGroup = ch.children;
+        } else if (ch.type === "OS::Neutron::VIP_group") {
+          vipGroup = ch.children;
+        } else if (ch.type === "OS::Neutron::Pool_group") {
+          poolGroup = ch.children;
+        }
+      }
+      elbChildren = [];
+      for (_j = 0, _len1 = poolGroup.length; _j < _len1; _j++) {
+        pool = poolGroup[_j];
+        vip = pool.component.connectionTargets("OsListenerAsso")[0];
+        idx = -1;
+        for (i = _k = 0, _len2 = vipGroup.length; _k < _len2; i = ++_k) {
+          v = vipGroup[i];
+          if (v.component === vip) {
+            idx = i;
+            break;
+          }
+        }
+        if (idx >= 0) {
+          vipGroup.splice(idx, 1);
+          elbChildren.push({
+            type: "ELB_pair",
+            children: [pool, v]
+          });
+        } else {
+          elbChildren.push(pool);
+        }
+      }
+      for (_l = 0, _len3 = vipGroup.length; _l < _len3; _l++) {
+        vip = vipGroup[_l];
+        elbChildren.push(vip);
+      }
+      if (elbChildren.length) {
+        subnetChildren.push({
+          type: "ELB_group",
+          children: elbChildren
+        });
+      }
+      if (portGroup.length) {
+        subnetChildren.push({
+          type: "OS::Neutron::Port_group",
+          children: portGroup
+        });
+      }
+      return subnetChildren;
+    };
+    SortForSvg = function(children) {
+      var ch, newChs, _i, _len;
+      newChs = [];
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        ch = children[_i];
+        if (ch.type === "OS::Neutron::Router") {
+          newChs.push(ch);
+        } else {
+          newChs.unshift(ch);
+        }
+      }
+      return newChs;
+    };
+    ArrangeForSvg = function(children) {
+      var ch, newChs, _i, _len;
+      newChs = [];
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        ch = children[_i];
+        if (ch.type === "OS::Neutron::Router_group") {
+          newChs.unshift(ch);
+        } else {
+          newChs.push(ch);
+        }
+      }
+      return CanvasViewLayoutHelpers.DefaultArrangeMethod.call(this, newChs);
+    };
+    ArrangeForSubnetGroup = function(children) {
+      var ch, ch2, idx, x1, x2, y1, y2, _i, _j, _len, _len1;
+      children.sort(function(a, b) {
+        return b.children.length - a.children.length;
+      });
+      SubnetPosCache = {};
+      x1 = -2;
+      x2 = -2;
+      y1 = 0;
+      y2 = 0;
+      ch2 = [];
+      for (idx = _i = 0, _len = children.length; _i < _len; idx = ++_i) {
+        ch = children[idx];
+        if (idx % 2 === 0) {
+          ch.y = 0;
+          ch.x = x1 + 2;
+          x1 = ch.x + ch.width;
+          if (ch.height > y1) {
+            y1 = ch.height;
+          }
+        } else {
+          ch2.push(ch);
+          ch.x = x2 + 2;
+          x2 = ch.x + ch.width;
+          if (ch.height > y2) {
+            y2 = ch.height;
+          }
+        }
+      }
+      for (_j = 0, _len1 = ch2.length; _j < _len1; _j++) {
+        ch = ch2[_j];
+        SubnetPosCache[ch.component.id] = ch.y = y1 + 2;
+      }
+      SubnetPosCache.y = y1 + 2;
+      return {
+        width: Math.max(x1, x2),
+        height: y1 + 2 + y2
+      };
+    };
+    ArrangeForRtGroup = function(children) {
+      var firstLine, rt, subnet, x1, x2, _i, _j, _len, _len1, _ref;
+      x1 = -2;
+      x2 = -2;
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        rt = children[_i];
+        firstLine = false;
+        _ref = rt.component.connectionTargets("OsRouterAsso");
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          subnet = _ref[_j];
+          if (!SubnetPosCache[subnet.id]) {
+            firstLine = true;
+            break;
+          }
+        }
+        if (firstLine) {
+          x1 += 2;
+          rt.x = x1;
+          x1 += 8;
+          rt.y = 0;
+        } else {
+          x2 += 2;
+          rt.x = x2;
+          x2 += 8;
+          rt.y = SubnetPosCache.y;
+        }
+      }
+      return {
+        width: Math.max(x1, x2),
+        height: SubnetPosCache.y + 8
+      };
+    };
+    AutoLayoutConfig = OsCanvasView.prototype.autoLayoutConfig = {
+      "SVG": {
+        sortMethod: SortForSvg,
+        arrangeMethod: ArrangeForSvg,
+        space: 6
+      },
+      "OS::Neutron::Network": {
+        space: 4,
+        margin: 3,
+        width: 60,
+        height: 60
+      },
+      "OS::Neutron::Router_group": {
+        arrangeMethod: ArrangeForRtGroup,
+        space: 4
+      },
+      "OS::Neutron::Router": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::Subnet_group": {
+        arrangeMethod: ArrangeForSubnetGroup,
+        space: 2
+      },
+      "OS::Neutron::Subnet": {
+        groupMethod: GroupMForSubnet,
+        arrangeMethod: "ArrangeVertical",
+        space: 2,
+        margin: 2,
+        width: 8,
+        height: 8
+      },
+      "OS::Nova::Server_group": {
+        space: 2
+      },
+      "OS::Nova::Server": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::Port": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::VIP": {
+        width: 8,
+        height: 8
+      },
+      "OS::Neutron::Pool": {
+        width: 8,
+        height: 8
+      },
+      "ELB_group": {
+        arrangeMethod: "ArrangeBinPack",
+        space: 2
+      },
+      'ELB_pair': {
+        space: 2
+      }
+    };
+    return null;
+  });
+
+}).call(this);
+
+(function() {
+  define('workspaces/oseditor/EditorOs',["OpsEditor", "./OsEditorStack", "./OsEditorApp", "./model/OsModelFloatIp", "./model/OsModelHealthMonitor", "./model/OsModelListener", "./model/OsModelNetwork", "./model/OsModelElb", "./model/OsModelPool", "./model/OsModelPort", "./model/OsModelRt", "./model/OsModelKeypair", "./model/OsModelServer", "./model/OsModelSg", "./model/OsModelSgRule", "./model/OsModelSubnet", "./model/OsModelVolume", "./model/connection/OsFloatIpUsage", "./model/connection/OsListenerAsso", "./model/connection/OsPoolMembership", "./model/connection/OsPortUsage", "./model/connection/OsRouterAsso", "./model/connection/OsSgAsso", "./model/connection/OsVolumeUsage", "./model/seVisitors/AppToStack", "./canvas/CeNetwork", "./canvas/CeSubnet", "./canvas/CeRt", "./canvas/CePool", "./canvas/CeListener", "./canvas/CeElb", "./canvas/CeServer", "./canvas/CePort", "./canvas/CeOsLine", "./canvas/CanvasViewOs", "./canvas/CanvasViewOsLayout"], function(OpsEditor, StackEditor, AppEditor) {
     var OsEditor;
     OsEditor = function(opsModel) {
       if (opsModel.isStack()) {
