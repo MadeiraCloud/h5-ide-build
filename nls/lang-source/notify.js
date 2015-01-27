@@ -250,7 +250,7 @@
         zh: ""
       },
       FAILED_TO_LOAD_AWS_DATA: {
-        en: "Failed to load aws data, please retry.",
+        en: "Failed to load openstack data, please retry.",
         zh: ""
       },
       READ_REPLICA_MUST_BE_DROPPED_IN_THE_SAME_SBG: {

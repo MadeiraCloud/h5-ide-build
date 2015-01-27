@@ -854,7 +854,7 @@ define({
         "FAIL_TO_UPDATE_TOKEN": "Fail to update token, please retry.",
         "FAIL_TO_DELETE_TOKEN": "Fail to delete token, please retry.",
         "FAILED_TO_LOAD_DATA": "Failed to load data, please retry.",
-        "FAILED_TO_LOAD_AWS_DATA": "Failed to load aws data, please retry.",
+        "FAILED_TO_LOAD_AWS_DATA": "Failed to load openstack data, please retry.",
         "READ_REPLICA_MUST_BE_DROPPED_IN_THE_SAME_SBG": "Read replica must be dropped in the same subnet group with source DB instance.",
         "CANNOT_CREATE_MORE_READ_REPLICA": "Cannot create more read replica.",
         "CANNOT_CREATE_SBG_DUE_TO_INSUFFICIENT_SUBNETS": "Cannot create subnet group due to insufficient subnets.",
