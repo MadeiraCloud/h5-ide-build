@@ -1870,7 +1870,7 @@ define({
         "LC_DELETE_CUSTUME_KEY_PAIR_CONFIRM": "<p class='modal-text-major'>您确定要删除 %s 吗?</p><p class='modal-text-minor'>使用此密钥对的资源将自动改为使用默认密钥对</p>",
         "MISSING_RESOURCE_UNAVAILABLE": "资源不可用",
         "RTB_ALLOW_PROPAGATION": "允许传播",
-        "RTB_REMOVE_VPC_PEER_ROUTE": "当前不支持，<button>删除该路由</button>",
+        "RTB_REMOVE_VPC_PEER_ROUTE": "当前不支持，<a>删除该路由</a>",
         "RTB_CIDR_BLOCK_REQUIRED": "CIDR 块为必填",
         "RTB_CIDR_BLOCK_REQUIRED_DESC": "请为此路由提供一个 IP 段",
         "RTB_CIDR_BLOCK_INVALID": "%s 不是有效的 CIDR 块",

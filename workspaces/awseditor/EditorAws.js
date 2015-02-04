@@ -9202,34 +9202,66 @@ function program10(depth0,data) {
 function program12(depth0,data,depth1) {
   
   var buffer = "", stack1;
-  buffer += "\n			<li><table class=\"table-no-style\">\n			  <tr class=\"route-target\">\n			    <td class=\"route-label\">"
+  buffer += "\n			<li class=\"";
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.isStack), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n			  ";
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.isStack), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			  <table class=\"table-no-style\">\n			  <tr class=\"route-target\">\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_TARGET", {hash:{},data:data}))
     + "</td>\n			    <td class=\"route-target-resource\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n			  </tr>\n\n			  <tr>\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
     + "</td>\n			    <td class=\"route-destination-input\">\n			    	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.program(16, program16, data),fn:self.program(13, program13, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.program(22, program22, data),fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n				    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVgw), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isVgw), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			    </td>\n			  </tr>\n			</table>\n			";
-  stack1 = helpers['if'].call(depth0, (depth1 && depth1.isStack), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</li>\n			";
+  buffer += "\n			    </td>\n			  </tr>\n			</table>\n			</li>\n			";
   return buffer;
   }
 function program13(depth0,data) {
   
+  var stack1;
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "ExternalVpcRouteTarget", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program14(depth0,data) {
+  
+  
+  return "have-vpc-peer-route";
+  }
+
+function program16(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "ExternalVpcRouteTarget", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  }
+function program17(depth0,data) {
+  
+  var buffer = "";
+  buffer += "<div class=\"remove-vpc-peer-route\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RTB_REMOVE_VPC_PEER_ROUTE", {hash:{},data:data}))
+    + "</div>";
+  return buffer;
+  }
+
+function program19(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n							";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.noop,fn:self.programWithDepth(14, program14, data, depth0),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.noop,fn:self.programWithDepth(20, program20, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n						";
   return buffer;
   }
-function program14(depth0,data,depth1) {
+function program20(depth0,data,depth1) {
   
   var buffer = "", stack1;
   buffer += " <div class=\"route-readonly\" data-ref=\""
@@ -9240,18 +9272,18 @@ function program14(depth0,data,depth1) {
   return buffer;
   }
 
-function program16(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n			    	<div class=\"multi-input\" data-ref=\""
     + escapeExpression(((stack1 = (depth0 && depth0.ref)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n							";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.program(19, program19, data),fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cidr_set), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				    </div>\n				    ";
   return buffer;
   }
-function program17(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "";
   buffer += "\n							<div class=\"multi-ipt-row\">\n			          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n			          <span class=\"ipt-wrapper\"><input class=\"ip-main-input input\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" data-type=\"cidr\" data-trigger=\"change\" placeholder=\"eg. 0.0.0.0/0\" value=\""
@@ -9260,19 +9292,19 @@ function program17(depth0,data) {
   return buffer;
   }
 
-function program19(depth0,data) {
+function program25(depth0,data) {
   
   
   return "\n							<div class=\"multi-ipt-row\">\n			          <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n			          <span class=\"ipt-wrapper\"><input class=\"input tooltip\" data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" placeholder=\"eg. 0.0.0.0/0\" data-empty-remove=\"true\" type=\"text\"></span>\n			        </div>\n				      ";
   }
 
-function program21(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n				    <div class=\"property-control-group\">\n							<div class=\"checkbox\">\n								<input id=\"propagate_"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"checkbox\" class=\"propagation\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProp), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isProp), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n								<label for=\"propagate_"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -9283,26 +9315,10 @@ function program21(depth0,data) {
     + "</label>\n						</div>\n						";
   return buffer;
   }
-function program22(depth0,data) {
+function program28(depth0,data) {
   
   
   return "checked=\"true\"";
-  }
-
-function program24(depth0,data) {
-  
-  var stack1;
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "ExternalVpcRouteTarget", {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
-  }
-function program25(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<div class=\"remove-vpc-peer-route\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.RTB_REMOVE_VPC_PEER_ROUTE", {hash:{},data:data}))
-    + "</div>";
-  return buffer;
   }
 
   buffer += "<article>\n";
@@ -9326,7 +9342,7 @@ function program25(depth0,data) {
         "keypress .ipt-wrapper .input": 'onPressCIDR',
         "blur .ipt-wrapper .input": 'onBlurCIDR',
         'change #property-res-desc': 'onChangeDescription',
-        'click .remove-vpc-peer-route button': 'onRemoveVPCPeerRoute'
+        'click .remove-vpc-peer-route a': 'onRemoveVPCPeerRoute'
       },
       render: function() {
         this.$el.html(template(this.model.attributes));

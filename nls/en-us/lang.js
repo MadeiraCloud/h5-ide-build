@@ -1870,7 +1870,7 @@ define({
         "LC_DELETE_CUSTUME_KEY_PAIR_CONFIRM": "<p class='modal-text-major'>Are you sure to delete %s?</p><p class='modal-text-minor'>Resources using this key pair will change automatically to use DefaultKP.</p>",
         "MISSING_RESOURCE_UNAVAILABLE": "Resource Unavailable",
         "RTB_ALLOW_PROPAGATION": "Allow Propagation",
-        "RTB_REMOVE_VPC_PEER_ROUTE": "Currently not supported. <button>Remove this route.</button>",
+        "RTB_REMOVE_VPC_PEER_ROUTE": "Currently not supported. <a>Remove this route.</a>",
         "RTB_CIDR_BLOCK_REQUIRED": "CIDR Block is required",
         "RTB_CIDR_BLOCK_REQUIRED_DESC": "Please provide a IP ranges for this route.",
         "RTB_CIDR_BLOCK_INVALID": "%s is not a valid form of CIDR Block",
