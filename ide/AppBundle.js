@@ -3077,11 +3077,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
     VisualOps.prototype.__createUser = function() {
       this.user = new User();
-      this.user.on("SessionUpdated", (function(_this) {
-        return function() {
-          return _this.WS.reconnect();
-        };
-      })(this));
     };
     VisualOps.prototype.acquireSession = function() {
       return this.view.showSessionDialog();
