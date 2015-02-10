@@ -9422,7 +9422,10 @@ function program28(depth0,data) {
             return inputElem.focus();
           });
           return modal.find("#cidr-removed").on("click", function() {
-            Design.instance().component(dataRef).remove();
+            var _ref1;
+            if ((_ref1 = Design.instance().component(dataRef)) != null) {
+              _ref1.remove();
+            }
             that.disabledAllOperabilityArea(false);
             return modal.close();
           });

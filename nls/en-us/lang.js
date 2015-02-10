@@ -951,7 +951,7 @@ define({
         "SETTINGS_MEMBER_LABEL_NO_USER": "There is no user",
         "SETTINGS_MEMBER_LABEL_DEFAULT_WORKSPACE_TIP1": "You are the only member in your default workspace",
         "SETTINGS_MEMBER_LABEL_DEFAULT_WORKSPACE_TIP2": "To invite member and collaborate with other user",
-        "SETTINGS_MEMBER_LABEL_CREATE_WORKSPACE": "create a new workspace",
+        "SETTINGS_MEMBER_LABEL_CREATE_WORKSPACE": "please create a new workspace",
         "SETTINGS_MEMBER_LABEL_REMOVE_CONFIRM": "Do you confirm to delete selected %s user(s)?",
         "ADD_CLOUD_CREDENTIAL": "Add Cloud Credential",
         "UPDATE_CLOUD_CREDENTIAL": "Update Cloud Credential",

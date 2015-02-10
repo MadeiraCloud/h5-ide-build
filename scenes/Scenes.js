@@ -1530,7 +1530,7 @@ return TEMPLATE; });
         this.renderLoading();
         return this.model.destroy().then(function() {
           that.remove();
-          return that.settingsView.backToSettings();
+          return that.settingsView.backToDefaultProject();
         }, function() {
           that.render();
           return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_REMOVE);
@@ -1567,7 +1567,7 @@ return TEMPLATE; });
         that = this;
         return that.model.leave().then(function() {
           that.remove();
-          return that.settingsView.backToSettings();
+          return that.settingsView.backToDefaultProject();
         }, function() {
           that.render();
           return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_LEAVE);
@@ -2702,9 +2702,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_DEFAULT_WORKSPACE_TIP1", {hash:{},data:data}))
     + ".</div>\n<div>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_DEFAULT_WORKSPACE_TIP2", {hash:{},data:data}))
-    + ", <a href=\"\">"
+    + ", "
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_CREATE_WORKSPACE", {hash:{},data:data}))
-    + "</a>.</div>";
+    + ".</div>";
   return buffer;
   };
 TEMPLATE.defaultProject=Handlebars.template(__TEMPLATE__);
@@ -3768,6 +3768,14 @@ function program1(depth0,data) {
       backToSettings: function() {
         this.navigate();
         return this.renderSettings();
+      },
+      backToDefaultProject: function() {
+        var privateProject;
+        this.modal.close();
+        privateProject = App.model.getPrivateProject();
+        return Router.navigate("/workspace/" + privateProject.id, {
+          trigger: true
+        });
       },
       renderProject: function(project, tab) {
         var projectId, _ref;
