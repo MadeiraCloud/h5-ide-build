@@ -173,9 +173,9 @@
           isAWSAMI = false;
         }
         if (isAWSAMI) {
-          imageObj = CloudResources(constant.RESTYPE.AMI, Design.instance().region()).get(imageId);
+          imageObj = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, Design.instance().region()).get(imageId);
         } else {
-          imageObj = CloudResources(constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
+          imageObj = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
         }
         osPlatform = null;
         osPlatformDistro = null;
@@ -581,14 +581,14 @@
       getResState: function(resId) {
         var resModel, resState, _ref;
         if (Design.instance().type() === OpsModel.Type.Amazon) {
-          resModel = CloudResources(constant.RESTYPE.INSTANCE, Design.instance().region()).get(resId);
+          resModel = CloudResources(Design.instance().credentialId(), constant.RESTYPE.INSTANCE, Design.instance().region()).get(resId);
           resState = 'unknown';
           if (resModel) {
             resState = (_ref = resModel.get('instanceState')) != null ? _ref.name : void 0;
           }
           return this.set('resState', resState);
         } else {
-          resModel = CloudResources(constant.RESTYPE.OSSERVER, Design.instance().region()).get(resId);
+          resModel = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSSERVER, Design.instance().region()).get(resId);
           resState = 'unknown';
           if (resModel) {
             resState = resModel.get('status');
@@ -698,7 +698,7 @@
             asgName = compObj.resource.AutoScalingGroupName;
             lsgUID = MC.extractID(compObj.resource.LaunchConfigurationName);
             if (lsgUID === originCompUID) {
-              $.each(CloudResources(constant.RESTYPE.ASG, Design.instance().region()).toJSON(), function(idx, resObj) {
+              $.each(CloudResources(Design.instance().credentialId(), constant.RESTYPE.ASG, Design.instance().region()).toJSON(), function(idx, resObj) {
                 if (resObj && resObj.AutoScalingGroupName && resObj.Instances) {
                   if (resObj.AutoScalingGroupName === asgName) {
                     return $.each(resObj.Instances, function(idx, instanceObj) {
@@ -1389,16 +1389,12 @@ TEMPLATE.stateLogInstanceItemTpl=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div id=\"modal-state-log-detail\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_DETAIL_MOD_TIT", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<textarea class=\"state-log-detail-content\" readonly=\"readonly\">"
+  buffer += "<textarea class=\"state-log-detail-content\" readonly=\"readonly\">"
     + escapeExpression(((stack1 = (depth0 && depth0.content)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</textarea>\n	</div>\n	<div class=\"modal-footer\">\n		<button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "STATE_LOG_DETAIL_MOD_CLOSE_BTN", {hash:{},data:data}))
-    + "</button>\n	</div>\n</div>";
+    + "</textarea>";
   return buffer;
   };
 TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
@@ -1407,41 +1403,10 @@ TEMPLATE.stateLogDetailModal=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+  
 
-function program1(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_VIEW", {hash:{},data:data}));
-  }
 
-function program3(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_EDIT", {hash:{},data:data}));
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = "";
-  buffer += "<button id=\"modal-state-text-expand-save\" class=\"btn btn-blue\">"
-    + escapeExpression(helpers.i18n.call(depth0, "STATE_TEXT_EXPAND_MODAL_SAVE_BTN", {hash:{},data:data}))
-    + "</button>";
-  return buffer;
-  }
-
-  buffer += "<div id=\"modal-state-text-expand\" style=\"width: 900px;\">\n	<div class=\"modal-header\"><h3>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " "
-    + escapeExpression(((stack1 = (depth0 && depth0.cmd_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " > "
-    + escapeExpression(((stack1 = (depth0 && depth0.para_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h3><i class=\"modal-close\">&times;</i> </div>\n	<div class=\"modal-body\">\n		<div class=\"editable-area text-code-editor text\"></div>\n	</div>\n	<div class=\"modal-footer\">\n		";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.read_only), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n</div>";
-  return buffer;
+  return "<div class=\"editable-area text-code-editor text\"></div>";
   };
 TEMPLATE.stateTextExpandModal=Handlebars.template(__TEMPLATE__);
 
@@ -3047,7 +3012,7 @@ return Markdown;
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequest', 'ApiRequestOs', 'OpsModel', 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest, ApiRequestOs, OpsModel) {
+  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequest', 'ApiRequestOs', 'OpsModel', "UI.modalplus", 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest, ApiRequestOs, OpsModel, modalPlus) {
     var StateClipboard, StateEditorView, id, tpl;
     StateClipboard = [];
     for (id in template) {
@@ -5786,22 +5751,30 @@ return Markdown;
           ApiRequestOs(reqApi, {
             region: region,
             server_id: serverId
-          }).then(this.refreshSysLog, this.refreshSysLog);
+          }).then(_.bind(this.refreshSysLog, this), _.bind(this.refreshSysLog, this));
         } else {
           reqApi = "ins_GetConsoleOutput";
           ApiRequest(reqApi, {
+            key_id: Design.instance().credentialId(),
             region_name: region,
             instance_id: serverId
-          }).then(this.refreshSysLog, this.refreshSysLog);
+          }).then(_.bind(this.refreshSysLog, this), _.bind(this.refreshSysLog, this));
         }
-        modal(MC.template.modalInstanceSysLog({
-          instance_id: serverId,
-          log_content: ''
-        }, true));
+        this.sysLogModal = new modalPlus({
+          template: MC.template.modalInstanceSysLog({
+            log_content: ''
+          }),
+          width: 900,
+          title: lang.IDE.SYSTEM_LOG + serverId,
+          confirm: {
+            hide: true
+          }
+        }).tpl.attr("id", "modal-instance-sys-log");
         return false;
       },
       refreshSysLog: function(result) {
-        var $contentElem, logContent, output, _ref;
+        var $contentElem, logContent, output, that, _ref;
+        that = this;
         $('#modal-instance-sys-log .instance-sys-log-loading').hide();
         if (result) {
           output = (_ref = result.GetConsoleOutputResponse) != null ? _ref.output : void 0;
@@ -5815,15 +5788,15 @@ return Markdown;
               content: logContent
             }));
             $contentElem.show();
-            modal.position();
+            that.sysLogModal.resize();
             return;
           }
         }
         $('#modal-instance-sys-log .instance-sys-log-info').show();
-        return modal.position();
+        return this.sysLogModal.resize();
       },
       onStateLogDetailBtnClick: function(event) {
-        var $logDetailBtn, $logItem, stateId, stateLogObj, that;
+        var $logDetailBtn, $logItem, modal, stateId, stateLogObj, that;
         that = this;
         $logDetailBtn = $(event.currentTarget);
         $logItem = $logDetailBtn.parents('.state-log-item');
@@ -5831,10 +5804,19 @@ return Markdown;
         if (stateId) {
           stateLogObj = that.stateIdLogContentMap[stateId];
           if (stateLogObj) {
-            return modal($.trim(template.stateLogDetailModal({
-              number: stateLogObj.number,
-              content: stateLogObj.content
-            })), true);
+            modal = new modalPlus({
+              title: lang.IDE.STATE_LOG_DETAIL_MOD_TIT,
+              template: template.stateLogDetailModal({
+                number: stateLogObj.number,
+                content: stateLogObj.content
+              }),
+              width: 900,
+              confirm: {
+                hide: true
+              }
+            });
+            modal.tpl.attr("id", "modal-state-log-detail");
+            return modal.resize();
           }
         }
       },
@@ -5866,14 +5848,24 @@ return Markdown;
         }
       },
       openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
-        var $codeArea, codeEditor, textContent, that;
+        var $codeArea, codeEditor, modal, textContent, that;
         that = this;
         textContent = originEditor.getValue();
-        modal($.trim(template.stateTextExpandModal({
-          cmd_name: cmdName,
-          para_name: paraName,
-          read_only: that.readOnlyMode
-        })), false);
+        modal = new modalPlus({
+          title: "" + (that.readOnlyMode ? lang.IDE.STATE_TEXT_VIEW : lang.IDE.STATE_TEXT_EDIT) + " " + cmdName + " " + paraName,
+          template: template.stateTextExpandModal(),
+          width: 900,
+          disableFooter: that.readOnlyMode,
+          confirm: {
+            text: !that.readOnlyMode ? {
+              text: lang.IDE.STATE_TEXT_EXPAND_MODAL_SAVE_BTN
+            } : void 0
+          },
+          cancel: {
+            hide: true
+          }
+        });
+        modal.tpl.attr("id", "modal-state-text-expand");
         $('#modal-state-text-expand').data('origin-editor', originEditor);
         $codeArea = $('#modal-state-text-expand .editable-area');
         that.initCodeEditor($codeArea[0], {

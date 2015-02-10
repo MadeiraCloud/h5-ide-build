@@ -477,7 +477,7 @@ return TEMPLATE; });
       constructor: function(options) {
         var option, selection;
         this.resModel = options != null ? options.resModel : void 0;
-        this.collection = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DHCP, Design.instance().region());
         this.listenTo(this.collection, 'change', this.render);
         this.listenTo(this.collection, 'update', this.render);
         this.listenTo(this.collection, 'change', function() {
@@ -502,6 +502,9 @@ return TEMPLATE; });
         this.dropdown.on('filter', this.filter, this);
         return this;
       },
+      initialize: function(options) {
+        return _.extend(this, options);
+      },
       remove: function() {
         this.isRemoved = true;
         return Backbone.View.prototype.remove.call(this);
@@ -520,7 +523,7 @@ return TEMPLATE; });
         return this.renderDropdown();
       },
       show: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           return this.render();
         } else {
           return this.renderNoCredential();
@@ -621,7 +624,7 @@ return TEMPLATE; });
       },
       renderManager: function() {
         var currentRegion, initManager, _ref, _ref1;
-        if (!App.user.hasCredential()) {
+        if (!Design.instance().credential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
           }
@@ -1213,15 +1216,11 @@ return TEMPLATE; });
       },
       initialize: function(options) {
         var that;
-        if (!options) {
-          options = {};
-        }
-        this.model = options.model;
-        this.resModel = options.resModel;
-        this.collection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
+        _.extend(this, options);
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.KP, Design.instance().get("region"));
         this.initModal();
         this.modal.render();
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           that = this;
           this.collection.fetch().then(function() {
             return that.renderKeys();
@@ -1602,7 +1601,7 @@ return TEMPLATE; });
     regions = {};
     return Backbone.View.extend({
       showCredential: function() {
-        return App.showSettings(App.showSettings.TAB.Credential);
+        return Design.instance().project().showCredential();
       },
       filter: function(keyword) {
         var hitKeys;
@@ -1664,8 +1663,10 @@ return TEMPLATE; });
         return this.dropdown.on('filter', this.filter, this);
       },
       initialize: function(options) {
+        var credentialId;
         this.resModel = options ? options.resModel : null;
-        this.collection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
+        credentialId = Design.instance().credentialId();
+        this.collection = CloudResources(credentialId, constant.RESTYPE.KP, Design.instance().get("region"));
         this.listenTo(this.collection, 'update', this.renderKeys);
         this.listenTo(this.collection, 'change', this.renderKeys);
         if (!this.resModel) {
@@ -1675,7 +1676,7 @@ return TEMPLATE; });
       },
       show: function() {
         var def;
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           def = null;
           if (!regions[Design.instance().get("region")] && this.collection.isReady()) {
             regions[Design.instance().get("region")] = true;
@@ -2029,8 +2030,8 @@ return TEMPLATE; });
       initCol: function() {
         var region;
         region = Design.instance().region();
-        this.subCol = CloudResources(constant.RESTYPE.SUBSCRIPTION, region);
-        this.topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
+        this.subCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.SUBSCRIPTION, region);
+        this.topicCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.TOPIC, region);
         this.topicCol.on('update', this.processCol, this);
         return this.subCol.on('update', this.processSubUpdate, this);
       },
@@ -2157,7 +2158,7 @@ return TEMPLATE; });
         }) : void 0;
       },
       fetch: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.topicCol.fetch();
           return this.subCol.fetch();
         }
@@ -2279,7 +2280,7 @@ return TEMPLATE; });
       },
       render: function() {
         this.modal.render();
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.processCol();
         } else {
           this.modal.render('nocredential');
@@ -2469,7 +2470,7 @@ return TEMPLATE; });
         };
       },
       show: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.topicCol.fetch();
           this.subCol.fetch();
           return this.processCol();
@@ -2492,8 +2493,8 @@ return TEMPLATE; });
       initCol: function() {
         var region;
         region = Design.instance().region();
-        this.subCol = CloudResources(constant.RESTYPE.SUBSCRIPTION, region);
-        this.topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
+        this.subCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.SUBSCRIPTION, region);
+        this.topicCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.TOPIC, region);
         this.listenTo(this.topicCol, 'update', this.processCol);
         this.listenTo(this.topicCol, 'change', this.processCol);
         return this.listenTo(this.subCol, 'update', this.processCol);
@@ -2518,7 +2519,7 @@ return TEMPLATE; });
         }
         this.initCol();
         this.initDropdown();
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.topicCol.fetch();
           return this.subCol.fetch();
         }
@@ -2595,7 +2596,7 @@ return TEMPLATE; });
         return this.dropdown.render('nocredential').toggleControls(false);
       },
       show: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.topicCol.fetch();
           this.subCol.fetch();
           if (!this.dropdown.$('.item').length) {
@@ -2880,7 +2881,7 @@ return TEMPLATE; });
     regionsMark = {};
     snapshotRes = Backbone.View.extend({
       constructor: function() {
-        this.collection = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.SNAP, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onChange.bind(this));
         this.listenTo(this.collection, 'change', this.onChange.bind(this));
         return this;
@@ -2902,7 +2903,7 @@ return TEMPLATE; });
           filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
-        this.volumes = CloudResources(constant.RESTYPE.VOL, Design.instance().region());
+        this.volumes = CloudResources(Design.instance().credentialId(), constant.RESTYPE.VOL, Design.instance().region());
         selection = lang.PROP.VOLUME_SNAPSHOT_SELECT;
         this.dropdown.setSelection(selection);
         this.dropdown.on('open', this.openDropdown, this);
@@ -3012,7 +3013,7 @@ return TEMPLATE; });
         })(this));
         this.manager.on('checked', this.processDuplicate, this);
         this.manager.render();
-        if (!App.user.hasCredential()) {
+        if (!Design.instance().credential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
           }
@@ -3997,7 +3998,7 @@ return TEMPLATE; });
         if (model) {
           this.resModel = model;
         }
-        this.collection = CloudResources(constant.RESTYPE.DBPG, Design.instance().region());
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBPG, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onUpdate.bind(this));
         this.listenTo(this.collection, 'change', this.onUpdate.bind(this));
         this.listenTo(this.collection, 'remove', this.onRemove.bind(this));
@@ -4046,7 +4047,7 @@ return TEMPLATE; });
         })(this));
         this.manager.on('checked', this.processReset, this);
         this.manager.render();
-        if (!App.user.hasCredential()) {
+        if (!Design.instance().credential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
           }
@@ -4155,7 +4156,7 @@ return TEMPLATE; });
           },
           'create': function(tpl) {
             var that;
-            this.families = CloudResources(constant.RESTYPE.DBENGINE, Design.instance().get("region"));
+            this.families = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBENGINE, Design.instance().get("region"));
             that = this;
             return this.families.fetch().then(function() {
               var data, families;
@@ -4533,7 +4534,7 @@ return TEMPLATE; });
         return this.dropdown;
       },
       initDropdown: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           return this.renderDefault();
         } else {
           return this.renderNoCredential();
@@ -4582,7 +4583,7 @@ return TEMPLATE; });
         }
         modelData = this.resModel.attributes;
         regionName = Design.instance().region();
-        engineCol = CloudResources(constant.RESTYPE.DBENGINE, regionName);
+        engineCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBENGINE, regionName);
         if (engineCol) {
           defaultInfo = engineCol.getDefaultByNameVersion(regionName, modelData.engine, modelData.engineVersion);
           targetFamily = defaultInfo.family;
@@ -4973,7 +4974,7 @@ return TEMPLATE; });
     regionsMark = {};
     snapshotRes = Backbone.View.extend({
       constructor: function() {
-        this.collection = CloudResources(constant.RESTYPE.DBSNAP, Design.instance().region());
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBSNAP, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onChange.bind(this));
         this.listenTo(this.collection, 'change', this.onChange.bind(this));
         return this;
@@ -4995,7 +4996,7 @@ return TEMPLATE; });
           filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_VOLUME
         };
         this.dropdown = new combo_dropdown(option);
-        this.instances = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region());
+        this.instances = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBINSTANCE, Design.instance().region());
         selection = lang.PROP.INSTANCE_SNAPSHOT_SELECT;
         this.dropdown.setSelection(selection);
         this.dropdown.on('open', this.openDropdown, this);
@@ -5112,7 +5113,7 @@ return TEMPLATE; });
         })(this));
         this.manager.on('checked', this.processDuplicate, this);
         this.manager.render();
-        if (!App.user.hasCredential()) {
+        if (!Design.instance().credential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
           }
@@ -5271,7 +5272,7 @@ return TEMPLATE; });
         this.switchAction('processing');
         newName = this.manager.$el.find('#property-snapshot-name').val();
         afterDuplicate = this.afterDuplicate.bind(this);
-        accountNumber = App.user.attributes.account;
+        accountNumber = Design.instance().credential().get("awsAccount");
         if (!/^\d+$/.test(accountNumber.split('-').join(''))) {
           notification('error', lang.PROP.DB_SNAPSHOT_ACCOUNT_NUMBER_INVALID);
           return false;
@@ -5609,8 +5610,8 @@ return TEMPLATE; });
       initCol: function() {
         var region;
         region = Design.instance().region();
-        this.sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
-        if (App.user.hasCredential()) {
+        this.sslCertCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.IAM, region);
+        if (Design.instance().credential()) {
           this.sslCertCol.fetch();
         }
         this.sslCertCol.on('update', this.processCol, this);
@@ -5828,7 +5829,7 @@ return TEMPLATE; });
       },
       render: function() {
         this.modal.render();
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.processCol();
         } else {
           this.modal.render('nocredential');
@@ -5915,7 +5916,7 @@ return TEMPLATE; });
         };
       },
       show: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.sslCertCol.fetch();
           return this.processCol();
         } else {
@@ -5939,7 +5940,7 @@ return TEMPLATE; });
       initCol: function() {
         var region;
         region = Design.instance().region();
-        this.sslCertCol = CloudResources(constant.RESTYPE.IAM, region);
+        this.sslCertCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.IAM, region);
         return this.sslCertCol.on('update', this.processCol, this);
       },
       initDropdown: function() {
@@ -6028,7 +6029,7 @@ return TEMPLATE; });
         return this.dropdown.render('nocredential').toggleControls(false);
       },
       show: function() {
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           this.sslCertCol.fetch();
           return this.processCol();
         } else {
@@ -6742,7 +6743,7 @@ return TEMPLATE; });
           return false;
         }
         appId = this.ogModel.get('appId');
-        appData = (_ref = CloudResources(constant.RESTYPE.DBOG, Design.instance().region()).get(appId)) != null ? _ref.toJSON() : void 0;
+        appData = (_ref = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBOG, Design.instance().region()).get(appId)) != null ? _ref.toJSON() : void 0;
         if (!appData) {
           return false;
         }
@@ -6780,7 +6781,7 @@ return TEMPLATE; });
         this.dropdown = option.dropdown;
         this.isCreate = option.isCreate;
         this.dbInstance = option.dbInstance;
-        optionCol = CloudResources(constant.RESTYPE.DBENGINE, Design.instance().region());
+        optionCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBENGINE, Design.instance().region());
         engineOptions = optionCol.getOptionGroupsByEngine(Design.instance().region(), option.engine);
         if (engineOptions) {
           this.ogOptions = engineOptions[option.version];
@@ -7213,7 +7214,7 @@ return TEMPLATE; });
       initialize: function(options) {
         var appId, _ref;
         appId = this.model.get('appId');
-        this.appData = (_ref = CloudResources(constant.RESTYPE.DBOG, Design.instance().region()).get(appId)) != null ? _ref.toJSON() : void 0;
+        this.appData = (_ref = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBOG, Design.instance().region()).get(appId)) != null ? _ref.toJSON() : void 0;
         if (!this.appData) {
           return false;
         }
@@ -7272,7 +7273,7 @@ return TEMPLATE; });
         var customOGAry, defaultOG, defaultOGAry, engineCol, ogComps, regionName, that;
         that = this;
         regionName = Design.instance().region();
-        engineCol = CloudResources(constant.RESTYPE.DBENGINE, regionName);
+        engineCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBENGINE, regionName);
         ogComps = Design.modelClassForType(constant.RESTYPE.DBOG).allObjects();
         defaultOGAry = [];
         defaultOG = engineCol.getDefaultByNameVersion(regionName, this.engine, this.engineVersion);
@@ -7468,9 +7469,7 @@ function program11(depth0,data) {
   return buffer;
   }
 
-  buffer += "<header class=\"modal-header sg-rule-create-h\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATE_SECURITY_GROUP_RULE", {hash:{},data:data}))
-    + "</h3><i class=\"btn-modal-close\">&times;</i></header>\n\n\n<article class=\"modal-body\" id=\"sg-rule-create-modal\" data-bind=\"true\">\n  <section class=\"sg-rule-create-add-wrap\">\n\n    <section class=\"sg-node-wrap clearfix\">\n      <label>"
+  buffer += "<article class=\"modal-body\" id=\"sg-rule-create-modal\" data-bind=\"true\">\n  <section class=\"sg-rule-create-add-wrap\">\n    <section class=\"sg-node-wrap clearfix\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ALLOW", {hash:{},data:data}))
     + "</label>\n\n      ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.owner)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(5, program5, data),fn:self.program(1, program1, data),data:data});
@@ -7508,7 +7507,7 @@ function program11(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
-  define('component/awscomps/SGRulePopupView',['./SGRulePppTpl', 'i18n!/nls/lang.js', "Design", "event"], function(template, lang, Design, ide_event) {
+  define('component/awscomps/SGRulePopupView',['./SGRulePppTpl', 'i18n!/nls/lang.js', "Design", "event", "UI.modalplus"], function(template, lang, Design, ide_event, modalPlus) {
     var SGRulePopupView;
     SGRulePopupView = Backbone.View.extend({
       events: {
@@ -7520,7 +7519,15 @@ function program11(depth0,data) {
         "click .btn-modal-close": 'onModalClose'
       },
       render: function() {
-        modal(template(this.model.attributes), true);
+        this.modal = new modalPlus({
+          title: lang.PROP.CREATE_SECURITY_GROUP_RULE,
+          disableClose: true,
+          disableFooter: true,
+          width: 530
+        });
+        this.modal.find(".modal-body").replaceWith(template(this.model.attributes)).end().find(".modal-header").css({
+          background: "#232526"
+        });
         this.setElement($('#sg-rule-create-modal').closest('#modal-wrap'));
         this.updateSidebar();
         return null;
@@ -7548,11 +7555,11 @@ function program11(depth0,data) {
           info = sprintf(lang.PROP.MSG_SG_CREATE_MULTI, ruleCount, out_target, in_target, out_target, action, in_target);
         }
         $("#sg-rule-create-msg").text(info);
-        this.$el.find('#modal-box').toggleClass('done', true);
+        this.$el.find('.modal-box').toggleClass('done', true);
         return this.updateSidebar();
       },
       readdRule: function() {
-        return this.$el.find('#modal-box').toggleClass('done', false);
+        return this.$el.find('.modal-box').toggleClass('done', false);
       },
       deleteRule: function(event) {
         var $count, $li, $parent, c, data;
@@ -7607,7 +7614,7 @@ function program11(depth0,data) {
         }
         $sidebar = $("#sgRuleCreateSidebar").html(MC.template.groupedSgRuleList(this.model.attributes));
         $("#sgRuleCreateCount").text("(" + ruleCount + ")");
-        $modal = this.$el.find('#modal-box');
+        $modal = this.$el.find('.modal-box');
         $sidebar = $sidebar.closest(".sg-rule-create-sidebar");
         isShown = $sidebar.hasClass("shown");
         if (ruleCount === 0) {
@@ -7632,7 +7639,7 @@ function program11(depth0,data) {
       },
       onModalClose: function() {
         var comp, lineId;
-        modal.close();
+        this.modal.close();
         lineId = this.model.get("lineId");
         comp = Design.instance().component(lineId);
         if (comp) {

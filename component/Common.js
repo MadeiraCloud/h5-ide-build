@@ -105,7 +105,8 @@ Refer to kpView.coffee
         return false;
       },
       __showCredential: function() {
-        return App.showSettings(App.showSettings.TAB.Credential);
+        var _ref;
+        return (_ref = Design.instance()) != null ? _ref.project().showCredential() : void 0;
       },
       __filter: function(event) {
         return this.trigger('filter', event.currentTarget.value);
@@ -492,7 +493,8 @@ Refer to kpView.coffee
         return null;
       },
       __showCredential: function() {
-        return App.showSettings(App.showSettings.TAB.Credential);
+        var _ref;
+        return (_ref = Design.instance()) != null ? _ref.project().showCredential() : void 0;
       },
       __sort: function() {
         return this.$('.tr-detail').remove();

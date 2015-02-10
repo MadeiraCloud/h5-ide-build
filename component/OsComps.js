@@ -177,7 +177,7 @@ return TEMPLATE; });
       initialize: function(resModel, selectTemplate) {
         this.template = selectTemplate;
         this.resModel = resModel;
-        this.collection = CloudResources(constant.RESTYPE.OSKP, Design.instance().region());
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSKP, Design.instance().region());
         this.listenTo(this.collection, 'update', this.updateOption.bind(this));
         return this;
       },
@@ -368,7 +368,7 @@ return TEMPLATE; });
         }
         this.initModal();
         this.modal.render();
-        if (App.user.hasCredential()) {
+        if (Design.instance().credential()) {
           that = this;
           this.collection.fetch().then(function() {
             return that.renderKeys();
@@ -881,7 +881,7 @@ return TEMPLATE; });
     regionsMark = {};
     return Backbone.View.extend({
       constructor: function() {
-        this.collection = CloudResources(constant.RESTYPE.OSSNAP, Design.instance().region());
+        this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSSNAP, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onChange.bind(this));
         this.listenTo(this.collection, 'change', this.onChange.bind(this));
         return this;
@@ -900,7 +900,7 @@ return TEMPLATE; });
       bindVolumeSelection: function() {
         var that;
         that = this;
-        this.volumes = CloudResources(constant.RESTYPE.OSVOL, Design.instance().region());
+        this.volumes = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSVOL, Design.instance().region());
         this.manager.$el.on('select_change', "#snapshot-volume-choose", function() {
           return that.selectSnapshot();
         });
@@ -1011,7 +1011,7 @@ return TEMPLATE; });
         })(this));
         this.manager.on('checked', this.processDuplicate, this);
         this.manager.render();
-        if (!App.user.hasCredential()) {
+        if (!Design.instance().credential()) {
           if ((_ref = this.manager) != null) {
             _ref.render('nocredential');
           }

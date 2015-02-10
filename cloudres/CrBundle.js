@@ -53,6 +53,16 @@
           throw err;
         });
       },
+      sendRequest: function(api, params) {
+        params = params || {};
+        if (params.key_id === void 0) {
+          params.key_id = this.getCollection().credential();
+        }
+        if (params.region_name === void 0 && this.getCollection().region()) {
+          params.region_name = this.getCollection().region();
+        }
+        return ApiRequest(api, params);
+      },
 
       /*
       dosave    : ()->
@@ -68,8 +78,7 @@
           return;
         }
         self = this;
-        return ApiRequest("ec2_CreateTags", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("ec2_CreateTags", {
           resource_ids: [this.get("id")],
           tags: [
             {
@@ -82,8 +91,7 @@
         });
       }
     }, {
-
-      /* env:dev                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     env:dev:end */
+      extend: window.__detailExtend || Backbone.Model.extend
     });
   });
 
@@ -360,7 +368,7 @@
         return res;
       },
       destroy: function() {
-        return this.trigger("destroy", this.id);
+        return this.trigger("destroy", this.credential(), this.id);
       },
       create: function(attributes) {
         var m;
@@ -370,6 +378,19 @@
       },
       region: function() {
         return this.category;
+      },
+      credential: function() {
+        return this.__credential;
+      },
+      sendRequest: function(api, params) {
+        params = params || {};
+        if (params.key_id === void 0) {
+          params.key_id = this.credential();
+        }
+        if (params.region_name === void 0 && this.region()) {
+          params.region_name = this.region();
+        }
+        return ApiRequest(api, params);
       },
 
       /* env:dev                                                                                                                                                                                                                                                                                                            env:dev:end */
@@ -529,50 +550,65 @@
   define('CloudResources',["cloudres/CrCollection"], function(CrCollection) {
 
     /*
+      credentialId : a string used to identified which credential to be use.
       resourceType : a string used to identified a class of resource
       category     : a string used to group a set of resources. It might be a region id, or app id.
      */
     var CachedCollections, CloudResources, onCollectionDestroy;
     CachedCollections = {};
-    onCollectionDestroy = function(id) {
-      console.info("CloudResource collection is destroyed:", CachedCollections[id]);
-      return delete CachedCollections[id];
-    };
-    CloudResources = function(resourceType, category) {
-      var Collection, c, cid;
+    CloudResources = function(credentialId, resourceType, category) {
+      var Collection, c, cid, credCached;
+      console.assert(credentialId, "Crendential is needed to create a CloudResource");
+      console.assert(resourceType, "Resource Type is neede to create a CloudResource");
       Collection = CrCollection.getClassByType(resourceType);
       if (!Collection) {
+        console.error("Can't find Cloud Resource Collection for type:", resourceType);
         return null;
       }
       category = Collection.category(category);
       cid = resourceType + "_" + category;
-      c = CachedCollections[cid];
+      credCached = CachedCollections[credentialId] || (CachedCollections[credentialId] = {});
+      c = credCached[cid];
       if (!c) {
-        c = new Collection();
+        c = credCached[cid] = new Collection();
         c.id = cid;
         c.category = category;
-        CachedCollections[cid] = c;
+        c.__credential = credentialId;
         c.on("destroy", onCollectionDestroy);
       }
       return c;
     };
+    onCollectionDestroy = function(credential, id) {
+      console.info("CloudResource collection is destroyed:", CachedCollections[id]);
+      delete CachedCollections[credential][id];
+    };
     CloudResources.invalidate = function() {
-      return Q.all(_.values(CachedCollections).map(function(cln) {
+      var cln, clns, cred, credCached, id;
+      clns = [];
+      for (cred in CachedCollections) {
+        credCached = CachedCollections[cred];
+        for (id in credCached) {
+          cln = credCached[id];
+          clns.push(cln);
+        }
+      }
+      return Q.all(clns.map(function(cln) {
         return cln.fetchForce();
       }));
     };
-    CloudResources.clearWhere = function(detect, category) {
-      var Collection, cln, find, id, realCate;
-      if (_.isFunction(detect)) {
-        find = "filter";
-      } else {
-        find = "where";
-      }
-      for (id in CachedCollections) {
-        cln = CachedCollections[id];
+    CloudResources.collectionOfCredential = function(credentialId) {
+      return CachedCollections[credentialId];
+    };
+    CloudResources.clearWhere = function(credentialId, category, detect) {
+      var Collection, cln, find, id, realCate, _ref;
+      find = _.isFunction(detect) ? "filter" : "where";
+      _ref = CachedCollections[credentialId] || [];
+      for (id in _ref) {
+        cln = _ref[id];
         Collection = CrCollection.getClassByType(cln.type);
         realCate = Collection.category(category);
         if (cln.category === realCate) {
+          console.log("Removing CloudResources:", cln[find](detect));
           cln.remove(cln[find](detect));
         }
       }
@@ -583,16 +619,24 @@
 }).call(this);
 
 (function() {
-  define('cloudres/CrOpsResource',["ApiRequest", "./CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
+  define('cloudres/CrOpsResource',["./CrCollection", "constant", "CloudResources", "ApiRequest"], function(CrCollection, constant, CloudResources, ApiRequest) {
 
     /* This Connection is used to fetch all the resource of an vpc */
     return CrCollection.extend({
 
       /* env:dev                                               env:dev:end */
       type: "OpsResource",
-      init: function(region, provider) {
-        this.__region = region;
-        this.__provider = provider;
+
+      /*
+      {
+        region   : ""
+        project  : null
+      }
+       */
+      init: function(attr) {
+        this.__region = attr.region;
+        this.__projectId = attr.project;
+        this.__provider = attr.provider;
         return this;
       },
       fetchForceDedup: function() {
@@ -616,13 +660,14 @@
       doFetch: function() {
         var self;
         self = this;
-        CloudResources.clearWhere((function(m) {
+        CloudResources.clearWhere(this.credential(), this.__region, (function(m) {
           return m.RES_TAG === self.category;
-        }), this.__region);
-        console.assert(this.__region && this.__provider, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
+        }));
+        console.assert(this.__region && this.__projectId && this.__provider, "CrOpsCollection's region is not set before fetching data. Need to call init() first");
         return ApiRequest("resource_get_resource", {
           region_name: this.__region,
           provider: this.__provider,
+          project_id: this.__projectId,
           res_id: this.category
         });
       },
@@ -635,7 +680,7 @@
         };
         for (type in data) {
           d = data[type];
-          cln = CloudResources(type, this.__region);
+          cln = CloudResources(this.credential(), type, this.__region);
           if (!cln) {
             console.warn("Cannot find cloud resource collection for type:", type);
             continue;
@@ -704,8 +749,7 @@
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("dhcp_CreateDhcpOptions", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("dhcp_CreateDhcpOptions", {
           dhcp_configs: this.toAwsAttr()
         }).then(function(res) {
           var e, id;
@@ -721,8 +765,7 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("dhcp_DeleteDhcpOptions", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("dhcp_DeleteDhcpOptions", {
           dhcp_id: this.get("id")
         });
       }
@@ -748,14 +791,12 @@
         var promise, self;
         self = this;
         if (this.get("keyData")) {
-          promise = ApiRequest("kp_ImportKeyPair", {
-            region_name: this.getCollection().region(),
+          promise = this.sendRequest("kp_ImportKeyPair", {
             key_name: this.get("keyName"),
             key_data: this.get("keyData")
           });
         } else {
-          promise = ApiRequest("kp_CreateKeyPair", {
-            region_name: this.getCollection().region(),
+          promise = this.sendRequest("kp_CreateKeyPair", {
             key_name: this.get("keyName")
           });
         }
@@ -776,8 +817,7 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("kp_DeleteKeyPair", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("kp_DeleteKeyPair", {
           key_name: this.get("id")
         });
       }
@@ -802,11 +842,10 @@
       doUpdate: function(newAttr) {
         var self;
         self = this;
-        return ApiRequest("iam_UpdateServerCertificate", {
+        return this.sendRequest("iam_UpdateServerCertificate", {
           servercer_name: this.get("Name"),
           new_servercer_name: newAttr.Name,
-          new_path: newAttr.Path,
-          region_name: Design.instance().region()
+          new_path: newAttr.Path
         }).then(function(res) {
           var newArn, oldArn;
           oldArn = self.get('Arn');
@@ -819,13 +858,12 @@
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("iam_UploadServerCertificate", {
+        return this.sendRequest("iam_UploadServerCertificate", {
           servercer_name: this.get("Name"),
           cert_body: this.get("CertificateBody"),
           private_key: this.get("PrivateKey"),
           cert_chain: this.get("CertificateChain"),
-          path: this.get("Path"),
-          region_name: Design.instance().region()
+          path: this.get("Path")
         }).then(function(res) {
           var e;
           self.attributes.CertificateChain = "";
@@ -848,9 +886,8 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("iam_DeleteServerCertificate", {
-          servercer_name: this.get("Name"),
-          region_name: Design.instance().region()
+        return this.sendRequest("iam_DeleteServerCertificate", {
+          servercer_name: this.get("Name")
         });
       }
     });
@@ -871,8 +908,7 @@
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("sns_CreateTopic", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("sns_CreateTopic", {
           topic_name: this.get("Name")
         }).then(function(res) {
           var e, id;
@@ -886,8 +922,7 @@
           console.log("Created topic resource", self);
           if (self.get("DisplayName")) {
             setTimeout(function() {
-              return ApiRequest("sns_SetTopicAttributes", {
-                region_name: self.getCollection().region(),
+              return self.sendRequest("sns_SetTopicAttributes", {
                 topic_arn: id,
                 attr_name: "DisplayName",
                 attr_value: self.get("DisplayName")
@@ -900,8 +935,7 @@
       doUpdate: function(displayName) {
         var self;
         self = this;
-        return ApiRequest("sns_SetTopicAttributes", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("sns_SetTopicAttributes", {
           topic_arn: this.get("id"),
           attr_name: "DisplayName",
           attr_value: displayName
@@ -911,8 +945,7 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("sns_DeleteTopic", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("sns_DeleteTopic", {
           topic_arn: this.get("id")
         });
       }
@@ -954,8 +987,7 @@
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("sns_Subscribe", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("sns_Subscribe", {
           topic_arn: this.get("TopicArn"),
           protocol: this.get("Protocol"),
           endpoint: this.get("Endpoint")
@@ -982,8 +1014,7 @@
       doDestroy: function() {
         var defer;
         if (this.isRemovable()) {
-          return ApiRequest("sns_Unsubscribe", {
-            region_name: this.getCollection().region(),
+          return this.sendRequest("sns_Unsubscribe", {
             sub_arn: this.get("SubscriptionArn")
           });
         }
@@ -1025,8 +1056,7 @@
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("ebs_CreateSnapshot", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("ebs_CreateSnapshot", {
           volume_id: this.get("volumeId"),
           description: this.get("description")
         }).then(function(res) {
@@ -1059,8 +1089,7 @@
       copyTo: function(destRegion, newName, description) {
         var self;
         self = this;
-        return ApiRequest("ebs_CopySnapshot", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("ebs_CopySnapshot", {
           snapshot_id: this.get("id"),
           dst_region_name: destRegion,
           description: description
@@ -1070,7 +1099,7 @@
           if (!id) {
             throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot copied but aws returns invalid data.");
           }
-          thatCln = CloudResources(self.collection.type, destRegion);
+          thatCln = CloudResources(self.collection.credential(), self.collection.type, destRegion);
           clones = self.toJSON();
           clones.name = newName;
           clones.description = description;
@@ -1083,16 +1112,14 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("ebs_DeleteSnapshot", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("ebs_DeleteSnapshot", {
           snapshot_id: this.get("id")
         });
       },
       tagResource: function() {
         var self;
         self = this;
-        return ApiRequest("ec2_CreateTags", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("ec2_CreateTags", {
           resource_ids: [this.get("id")],
           tags: [
             {
@@ -1113,7 +1140,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "ApiRequest", "constant", "./CrModelDhcp", "./CrModelKeypair", "./CrModelSslcert", "./CrModelTopic", "./CrModelSubscription", "./CrModelSnapshot"], function(CrCollection, CloudResources, ApiRequest, constant, CrDhcpModel, CrKeypairModel, CrSslcertModel, CrTopicModel, CrSubscriptionModel, CrSnapshotModel) {
+  define('cloudres/aws/CrClnSharedRes',["../CrCollection", "CloudResources", "constant", "./CrModelDhcp", "./CrModelKeypair", "./CrModelSslcert", "./CrModelTopic", "./CrModelSubscription", "./CrModelSnapshot"], function(CrCollection, CloudResources, constant, CrDhcpModel, CrKeypairModel, CrSslcertModel, CrTopicModel, CrSubscriptionModel, CrSnapshotModel) {
 
     /* Dhcp */
     CrCollection.extend({
@@ -1122,9 +1149,7 @@
       type: constant.RESTYPE.DHCP,
       model: CrDhcpModel,
       doFetch: function() {
-        return ApiRequest("dhcp_DescribeDhcpOptions", {
-          region_name: this.region()
-        });
+        return this.sendRequest("dhcp_DescribeDhcpOptions");
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1147,9 +1172,7 @@
       type: constant.RESTYPE.KP,
       model: CrKeypairModel,
       doFetch: function() {
-        return ApiRequest("kp_DescribeKeyPairs", {
-          region_name: this.region()
-        });
+        return this.sendRequest("kp_DescribeKeyPairs");
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1172,9 +1195,7 @@
       type: constant.RESTYPE.IAM,
       model: CrSslcertModel,
       doFetch: function() {
-        return ApiRequest("iam_ListServerCertificates", {
-          region_name: this.region()
-        });
+        return this.sendRequest("iam_ListServerCertificates");
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1204,9 +1225,7 @@
         return CrCollection.apply(this, arguments);
       },
       doFetch: function() {
-        return ApiRequest("sns_ListTopics", {
-          region_name: this.region()
-        });
+        return this.sendRequest("sns_ListTopics");
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1259,9 +1278,7 @@
       type: constant.RESTYPE.SUBSCRIPTION,
       model: CrSubscriptionModel,
       doFetch: function() {
-        return ApiRequest("sns_ListSubscriptions", {
-          region_name: this.region()
-        });
+        return this.sendRequest("sns_ListSubscriptions");
       },
       trAwsXml: function(res) {
         var _ref;
@@ -1287,8 +1304,7 @@
         this.__pollingStatus = _.bind(this.__pollingStatus, this);
       },
       doFetch: function() {
-        return ApiRequest("ebs_DescribeSnapshots", {
-          region_name: this.region(),
+        return this.sendRequest("ebs_DescribeSnapshots", {
           owners: ["self"]
         });
       },
@@ -1325,8 +1341,7 @@
       __pollingStatus: function() {
         var self;
         self = this;
-        return ApiRequest("ebs_DescribeSnapshots", {
-          region_name: this.region(),
+        return this.sendRequest("ebs_DescribeSnapshots", {
           owners: ["self"],
           filters: [
             {
@@ -1372,7 +1387,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrCommonCollection',["ApiRequest", "../CrCollection", "../CrModel", "constant"], function(ApiRequest, CrCollection, CrModel, constant) {
+  define('cloudres/aws/CrCommonCollection',["../CrCollection", "../CrModel", "constant"], function(CrCollection, CrModel, constant) {
     var CrCommonCollection, EmptyArr;
     EmptyArr = [];
     CrCommonCollection = CrCollection.extend({
@@ -1427,7 +1442,7 @@
         param = {};
         param[this.type] = {};
         self = this;
-        return ApiRequest("aws_resource", {
+        return this.sendRequest("aws_resource", {
           region_name: null,
           resources: param,
           addition: "all",
@@ -1478,18 +1493,19 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrModelElb',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
+  define('cloudres/aws/CrModelElb',["../CrModel"], function(CrModel) {
     return CrModel.extend({
 
       /* env:dev                                          env:dev:end */
       initialize: function() {
         var self;
         self = this;
-        ApiRequest("elb_DescribeInstanceHealth", {
-          region_name: this.get("category"),
-          elb_name: this.get("Name")
-        }).then(function(data) {
-          return self.onInsHealthData(data);
+        _.defer(function() {
+          return self.sendRequest("elb_DescribeInstanceHealth", {
+            elb_name: self.get("Name")
+          }).then(function(data) {
+            return self.onInsHealthData(data);
+          });
         });
       },
       onInsHealthData: function(data) {
@@ -1514,7 +1530,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "ApiRequest", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, ApiRequest, constant, CloudResources) {
+  define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, constant, CloudResources) {
 
     /* Elb */
     CrCommonCollection.extend({
@@ -1925,8 +1941,10 @@
 
       /* env:dev                                                    env:dev:end */
       initialize: function() {
+        var self;
+        self = this;
         this.listenTo(this, "add", function(m) {
-          return CloudResources(constant.RESTYPE.AMI, m.attributes.category).fetchAmi(m.attributes.imageId);
+          return CloudResources(self.credential(), constant.RESTYPE.AMI, m.attributes.category).fetchAmi(m.attributes.imageId);
         });
       },
       type: constant.RESTYPE.INSTANCE,
@@ -2255,9 +2273,7 @@
       type: constant.RESTYPE.ENI,
       AwsResponseType: "DescribeNetworkInterfacesResponse",
       doFetch: function() {
-        return ApiRequest("eni_DescribeNetworkInterfaces", {
-          region_name: this.region()
-        });
+        return this.sendRequest("eni_DescribeNetworkInterfaces");
       },
       trAwsXml: function(data) {
         var _ref;
@@ -2294,9 +2310,7 @@
       /* env:dev                                                  env:dev:end */
       type: constant.RESTYPE.SUBNET,
       doFetch: function() {
-        return ApiRequest("subnet_DescribeSubnets", {
-          region_name: this.region()
-        });
+        return this.sendRequest("subnet_DescribeSubnets");
       },
       trAwsXml: function(data) {
         var _ref;
@@ -2324,9 +2338,7 @@
       type: constant.RESTYPE.SG,
       AwsResponseType: "DescribeSecurityGroupsResponse",
       doFetch: function() {
-        return ApiRequest("sg_DescribeSecurityGroups", {
-          region_name: this.region()
-        });
+        return this.sendRequest("sg_DescribeSecurityGroups");
       },
       trAwsXml: function(data) {
         var _ref;
@@ -2578,8 +2590,7 @@
           return d.promise;
         }
         self = this;
-        return ApiRequest("ami_DescribeImages", {
-          region_name: this.region(),
+        return this.sendRequest("ami_DescribeImages", {
           ami_ids: toFetch
         }).then(function(res) {
           var _ref;
@@ -2627,7 +2638,7 @@
       getModels: function() {
         var col, id, ms, _i, _len, _ref;
         ms = [];
-        col = CloudResources(constant.RESTYPE.AMI, this.region());
+        col = CloudResources(this.credential(), constant.RESTYPE.AMI, this.region());
         _ref = this.__models;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           id = _ref[_i];
@@ -2647,9 +2658,7 @@
       /* env:dev                                                         env:dev:end */
       type: "QuickStartAmi",
       doFetch: function() {
-        return ApiRequest("aws_quickstart", {
-          region_name: this.region()
-        });
+        return this.sendRequest("aws_quickstart");
       },
       parseFetchData: function(data) {
         var ami, amiIds, id, savedAmis;
@@ -2661,7 +2670,7 @@
           savedAmis.push(ami);
           amiIds.push(id);
         }
-        CloudResources(constant.RESTYPE.AMI, this.region()).add(savedAmis);
+        CloudResources(this.credential(), constant.RESTYPE.AMI, this.region()).add(savedAmis);
         this.__models = amiIds;
       }
     });
@@ -2674,7 +2683,6 @@
       doFetch: function() {
         var self, selfParam1, selfParam2;
         selfParam1 = {
-          region_name: this.region(),
           executable_by: ["self"],
           filters: [
             {
@@ -2684,11 +2692,10 @@
           ]
         };
         selfParam2 = {
-          region_name: this.region(),
           owners: ["self"]
         };
         self = this;
-        return Q.allSettled([ApiRequest("ami_DescribeImages", selfParam1), ApiRequest("ami_DescribeImages", selfParam2)]).spread(function(d1, d2) {
+        return Q.allSettled([this.sendRequest("ami_DescribeImages", selfParam1), this.sendRequest("ami_DescribeImages", selfParam2)]).spread(function(d1, d2) {
           var _ref, _ref1;
           d1 = ((_ref = d1.value.DescribeImagesResponse.imagesSet) != null ? _ref.item : void 0) || [];
           d2 = ((_ref1 = d2.value.DescribeImagesResponse.imagesSet) != null ? _ref1.item : void 0) || [];
@@ -2714,7 +2721,7 @@
       },
       onFetch: function(amiArray) {
         this.__models = fixDescribeImages(amiArray);
-        CloudResources(constant.RESTYPE.AMI, this.region()).add(amiArray);
+        CloudResources(this.credential(), constant.RESTYPE.AMI, this.region()).add(amiArray);
       },
       parseFetchData: function(data) {
         var ami, amiIds, e, savedAmis, _i, _len;
@@ -2731,7 +2738,7 @@
             e = _error;
           }
         }
-        CloudResources(constant.RESTYPE.AMI, this.region()).add(savedAmis);
+        CloudResources(this.credential(), constant.RESTYPE.AMI, this.region()).add(savedAmis);
         this.__models = amiIds;
       }
     });
@@ -2742,8 +2749,7 @@
       /* env:dev                                                  env:dev:end */
       type: "FavoriteAmi",
       doFetch: function() {
-        return ApiRequest("favorite_info", {
-          region_name: this.region(),
+        return this.sendRequest("favorite_info", {
           provider: "AWS",
           service: "EC2",
           resource: "AMI"
@@ -2761,7 +2767,7 @@
           savedAmis.push(ami);
           favAmiId.push(ami.id);
         }
-        CloudResources(constant.RESTYPE.AMI, this.region()).add(savedAmis);
+        CloudResources(this.credential(), constant.RESTYPE.AMI, this.region()).add(savedAmis);
         this.__models = favAmiId;
       },
       unfav: function(id) {
@@ -2773,8 +2779,7 @@
           d.resolve();
           return d.promise;
         }
-        return ApiRequest("favorite_remove", {
-          region_name: self.region(),
+        return this.sendRequest("favorite_remove", {
           resource_ids: [id]
         }).then(function() {
           idx = self.__models.indexOf(id);
@@ -2793,8 +2798,7 @@
           imageId = ami.id;
         }
         self = this;
-        return ApiRequest("favorite_add", {
-          region_name: self.region(),
+        return this.sendRequest("favorite_add", {
           resource: {
             id: imageId,
             provider: 'AWS',
@@ -2804,7 +2808,7 @@
         }).then(function() {
           self.__models.push(imageId);
           if (ami) {
-            CloudResources(constant.RESTYPE.AMI, self.region()).add(ami, {
+            CloudResources(self.credential(), constant.RESTYPE.AMI, self.region()).add(ami, {
               add: true,
               merge: true,
               remove: false
@@ -2834,8 +2838,7 @@
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("rds_snap_CreateDBSnapshot", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("rds_snap_CreateDBSnapshot", {
           source_id: this.get("DBInstanceIdentifier"),
           snapshot_id: this.get("DBSnapshotIdentifier")
         }).then(function(res) {
@@ -2874,10 +2877,9 @@
         this.__polling = null;
       },
       __pollingStatus: function() {
-        var self, _ref;
+        var self;
         self = this;
-        return ApiRequest("rds_snap_DescribeDBSnapshots", {
-          region_name: ((_ref = this.getCollection()) != null ? _ref.region() : void 0) || Design.instance().region(),
+        return this.sendRequest("rds_snap_DescribeDBSnapshots", {
           snapshot_id: this.get("DBSnapshotIdentifier")
         }).then(function(res) {
           self.__polling = null;
@@ -2905,8 +2907,8 @@
       copyTo: function(destRegion, newName, description) {
         var self, source_id;
         self = this;
-        source_id = "arn:aws:rds:" + (this.collection.region()) + ":" + (App.user.attributes.account.split('-').join("")) + ":snapshot:" + (this.get('id'));
-        return ApiRequest("rds_snap_CopyDBSnapshot", {
+        source_id = "arn:aws:rds:" + (this.collection.region()) + ":" + (Design.instance().credential().get("awsAccount").split('-').join("")) + ":snapshot:" + (this.get('id'));
+        return this.sendRequest("rds_snap_CopyDBSnapshot", {
           region_name: destRegion,
           source_id: source_id,
           target_id: newName
@@ -2917,7 +2919,7 @@
           if (!newSnapshot.DBSnapshotIdentifier) {
             throw McError(ApiRequest.Errors.InvalidAwsReturn, "Snapshot copied but aws returns invalid data.");
           }
-          thatCln = CloudResources(self.collection.type, destRegion);
+          thatCln = CloudResources(self.collection.credential(), self.collection.type, destRegion);
           clones = newSnapshot;
           clones.id = newSnapshot.DBSnapshotIdentifier;
           clones.name = newName;
@@ -2929,8 +2931,7 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("rds_snap_DeleteDBSnapshot", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("rds_snap_DeleteDBSnapshot", {
           snapshot_id: this.get("id")
         });
       }
@@ -2951,7 +2952,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrModelRdsPGroup',["../CrModel", "CloudResources", "ApiRequest", "constant"], function(CrModel, CloudResources, ApiRequest, constant) {
+  define('cloudres/aws/CrModelRdsPGroup',["../CrModel", "CloudResources", "constant"], function(CrModel, CloudResources, constant) {
     return CrModel.extend({
 
       /* env:dev                                                   env:dev:end */
@@ -2960,13 +2961,12 @@
         return (this.get("DBParameterGroupName") || "").indexOf("default.") === 0;
       },
       getParameters: function() {
-        return CloudResources(constant.RESTYPE.DBPARAM, this.id).init(this);
+        return CloudResources(this.collection.credential(), constant.RESTYPE.DBPARAM, this.id).init(this);
       },
       doCreate: function() {
         var self;
         self = this;
-        return ApiRequest("rds_pg_CreateDBParameterGroup", {
-          region_name: this.getCollection().region(),
+        return this.sendRequest("rds_pg_CreateDBParameterGroup", {
           param_group: this.get("DBParameterGroupName"),
           param_group_family: this.get("DBParameterGroupFamily"),
           description: this.get("Description")
@@ -2976,16 +2976,14 @@
         });
       },
       doDestroy: function() {
-        return ApiRequest("rds_pg_DeleteDBParameterGroup", {
-          region_name: this.collection.region(),
+        return this.sendRequest("rds_pg_DeleteDBParameterGroup", {
           param_group: this.id
         });
       },
       resetParams: function() {
         var self;
         self = this;
-        return ApiRequest("rds_pg_ResetDBParameterGroup", {
-          region_name: this.collection.region(),
+        return this.sendRequest("rds_pg_ResetDBParameterGroup", {
           param_group: this.id,
           reset_all: true
         }).then(function() {
@@ -3012,14 +3010,13 @@
         }
         requests = [];
         params = {
-          region_name: this.collection.region(),
           param_group: this.id,
           parameters: []
         };
         i = 0;
         while (i < pArray.length) {
           params.parameters = pArray.slice(i, i + 20);
-          requests.push(ApiRequest("rds_pg_ModifyDBParameterGroup", params));
+          requests.push(this.sendRequest("rds_pg_ModifyDBParameterGroup", params));
           i += 20;
         }
         self = this;
@@ -3038,7 +3035,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrClnRds',["ApiRequest", "../CrCollection", "constant", "CloudResources", "./CrModelRdsSnapshot", "./CrModelRdsInstance", "./CrModelRdsPGroup"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsSnapshotModel, CrRdsDbInstanceModel, CrRdsPGroupModel) {
+  define('cloudres/aws/CrClnRds',["../CrCollection", "constant", "./CrModelRdsSnapshot", "./CrModelRdsInstance", "./CrModelRdsPGroup"], function(CrCollection, constant, CrRdsSnapshotModel, CrRdsDbInstanceModel, CrRdsPGroupModel) {
 
     /* Engine */
     CrCollection.extend({
@@ -3090,9 +3087,7 @@
         var regionName, self;
         self = this;
         regionName = this.region();
-        return ApiRequest("rds_DescribeDBEngineVersions", {
-          region_name: regionName
-        }).then(function(data) {
+        return this.sendRequest("rds_DescribeDBEngineVersions").then(function(data) {
           var d, dict, e, engines, jobs, _i, _len;
           self.optionGroupData[regionName] = {};
           self.engineDict[regionName] = {};
@@ -3127,7 +3122,7 @@
             }
           }
           jobs = _.keys(engines).map(function(engineName) {
-            return ApiRequest("rds_og_DescribeOptionGroupOptions", {
+            return self.sendRequest("rds_og_DescribeOptionGroupOptions", {
               region_name: regionName,
               engine_name: engineName
             }).then(function(data) {
@@ -3185,9 +3180,7 @@
       /* env:dev                                                         env:dev:end */
       type: constant.RESTYPE.DBSBG,
       doFetch: function() {
-        return ApiRequest("rds_subgrp_DescribeDBSubnetGroups", {
-          region_name: this.region()
-        });
+        return this.sendRequest("rds_subgrp_DescribeDBSubnetGroups");
       },
       parseFetchData: function(data) {
         var i, _i, _len, _ref, _ref1;
@@ -3218,9 +3211,7 @@
       /* env:dev                                                         env:dev:end */
       type: constant.RESTYPE.DBOG,
       doFetch: function() {
-        return ApiRequest("rds_og_DescribeOptionGroups", {
-          region_name: this.region()
-        });
+        return this.sendRequest("rds_og_DescribeOptionGroups");
       },
       parseFetchData: function(data) {
         var i, _i, _len, _ref;
@@ -3251,9 +3242,7 @@
       type: constant.RESTYPE.DBINSTANCE,
       model: CrRdsDbInstanceModel,
       doFetch: function() {
-        return ApiRequest("rds_ins_DescribeDBInstances", {
-          region_name: this.region()
-        });
+        return this.sendRequest("rds_ins_DescribeDBInstances");
       },
       parseFetchData: function(data) {
         var i, _i, _len, _ref, _ref1, _ref2, _ref3;
@@ -3315,9 +3304,7 @@
       type: constant.RESTYPE.DBSNAP,
       model: CrRdsSnapshotModel,
       doFetch: function() {
-        return ApiRequest("rds_snap_DescribeDBSnapshots", {
-          region_name: this.region()
-        });
+        return this.sendRequest("rds_snap_DescribeDBSnapshots");
       },
       parseFetchData: function(data) {
         var i, _i, _len, _ref;
@@ -3340,9 +3327,7 @@
       type: constant.RESTYPE.DBPG,
       model: CrRdsPGroupModel,
       doFetch: function() {
-        return ApiRequest("rds_pg_DescribeDBParameterGroups", {
-          region_name: this.region()
-        });
+        return this.sendRequest("rds_pg_DescribeDBParameterGroups");
       },
       parseFetchData: function(data) {
         var i, _i, _len, _ref;
@@ -3364,7 +3349,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('cloudres/aws/CrModelRdsParameter',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+  define('cloudres/aws/CrModelRdsParameter',["../CrModel", "CloudResources"], function(CrModel, CloudResources) {
     return CrModel.extend({
 
       /* env:dev                                              env:dev:end */
@@ -3424,7 +3409,7 @@
 }).call(this);
 
 (function() {
-  define('cloudres/aws/CrClnRdsParam',["ApiRequest", "../CrCollection", "constant", "CloudResources", "./CrModelRdsParameter"], function(ApiRequest, CrCollection, constant, CloudResources, CrRdsParamModel) {
+  define('cloudres/aws/CrClnRdsParam',["../CrCollection", "constant", "./CrModelRdsParameter"], function(CrCollection, constant, CrRdsParamModel) {
 
     /*
       This kind of collection can only be obtained by CrModelRdsPGroup.getParameters()
@@ -3452,8 +3437,7 @@
       doFetch: function(marker) {
         var self;
         self = this;
-        return ApiRequest("rds_pg_DescribeDBParameters", {
-          region_name: this.region(),
+        return this.sendRequest("rds_pg_DescribeDBParameters", {
           param_group: this.category,
           marker: marker
         }).then(function(data) {
@@ -4052,13 +4036,6 @@
 
 (function() {
   define('cloudres/CrBundle',["CloudResources", "./CrOpsResource", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam", "./openstack/CrClnSharedRes", "./openstack/CrClnImage", "./openstack/CrClnNetwork", "./openstack/CrClnCommonRes"], function(CloudResources) {
-
-    /* env:dev                                                             env:dev:end */
-
-    /* env:debug */
-    require(["./cloudres/aws/CloudImportVpc"], function() {});
-
-    /* env:debug:end */
     return CloudResources;
   });
 

@@ -1,5 +1,5 @@
 (function() {
-  define(["event", "./diff", "./view", "./JsonDiffLib", "./jqUi"], function(ide_event, tplDiff, tplView, jsond) {
+  define(["event", "./diff", "./view", "./JsonDiffLib", "UI.modalplus", "./jqUi"], function(ide_event, tplDiff, tplView, jsond, modalPlus) {
     var applyViewFilter, componentData, selectedComponetUid, showChangesOnly, updateViewDialog;
     componentData = null;
     selectedComponetUid = ".";
@@ -96,7 +96,7 @@
         }
       }
       selectOptions = "<option value='.'>All</option><option value='selected' selected='selected'>Selected Component</option><option value='.'>----------</option>";
-      selectedComponetUid = ((_ref = App.workspaces.getAwakeSpace().getSelectedComponent()) != null ? _ref.id : void 0) || ".";
+      selectedComponetUid = ((_ref = debug.selectedComp()) != null ? _ref.id : void 0) || ".";
       _ref1 = typeArr.sort();
       for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
         type = _ref1[_i];
@@ -108,17 +108,23 @@
     };
     return {
       showDiffDialog: function(json1, json2) {
-        modal(tplDiff());
-        $("#modal-box").css({
+        var modal;
+        modal = new modalPlus({
+          title: "JSON Diff",
+          compact: true,
+          template: tplDiff()
+        });
+        modal.tpl.css({
           width: "98%",
           height: "98%",
           top: "1%",
           left: "1%"
         });
+        modal.setWidth("100%");
         $("#diffTextarea1").val(JSON.stringify(json1));
         $("#diffTextarea2").val(JSON.stringify(json2));
         jsond.compare(json1, json2, "CanvasData", $("#jsondiffContainer")[0]);
-        $("#modal-box").on("click", "ul", function(e) {
+        modal.tpl.on("click", "ul", function(e) {
           if (e.target.tagName && e.target.tagName.toUpperCase() === "UL") {
             $(e.target).toggleClass("closed");
           }
@@ -180,20 +186,25 @@
         return null;
       },
       showViewDialog: function(canvas_data) {
-        var h, updateTO, w;
+        var modal, updateTO;
         if ($("#jsonViewer").length) {
           $("#diffWrap").hide();
           $("#jsonViewer .modal-header").dblclick();
           return null;
         }
-        $(tplView()).appendTo("body").resizable().draggable({
-          handle: ".modal-header"
+        modal = new modalPlus({
+          title: "Data View",
+          template: tplView(),
+          width: "100%",
+          disableFooter: true,
+          compact: true
         });
-        w = localStorage.getItem("debug/jsonViewW");
-        h = localStorage.getItem("debug/jsonViewH");
-        if (w && h) {
-          $("#jsonViewer").width(w).height(h);
-        }
+        modal.tpl.attr("id", "jsonViewer").css({
+          width: "98%",
+          height: "98%",
+          top: "1%",
+          left: "1%"
+        });
         updateViewDialog(canvas_data);
         $("#jsonViewer").on("click", "ul", function(e) {
           if (e.target.tagName && e.target.tagName.toUpperCase() === "UL") {
@@ -203,11 +214,11 @@
         });
         $("#jsonViewer").on("dblclick", ".modal-header", function() {
           var $wrap;
-          $wrap = $("#diffWrap");
+          $wrap = modal.$(".modal-body");
           if ($wrap.is(":hidden")) {
             $("#jsonViewer").css({
-              "height": $("#jsonViewer").attr("data-height") || "70%",
-              "width": $("#jsonViewer").attr("data-width") || "50%",
+              "height": $("#jsonViewer").attr("data-height") || "98%",
+              "width": $("#jsonViewer").attr("data-width") || "98%",
               "min-width": "540px"
             });
             $wrap.show();
@@ -222,12 +233,6 @@
             });
             $wrap.hide();
           }
-          return null;
-        });
-        $("#jsonViewer").on("click", ".modal-close", function() {
-          localStorage.setItem("debug/jsonViewW", $("#jsonViewer").width());
-          localStorage.setItem("debug/jsonViewH", $("#jsonViewer").height());
-          $("#jsonViewer").remove();
           return null;
         });
         $("#diffRefresh").on("click", function() {

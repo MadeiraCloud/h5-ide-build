@@ -209,7 +209,7 @@
           return null;
         });
         if (amiAry.length) {
-          cr = CloudResources(constant.RESTYPE.AMI, MC.canvas_data.region);
+          cr = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, MC.canvas_data.region);
           failure = function() {
             return callback(null);
           };
@@ -286,7 +286,7 @@
         return null;
       });
       tipInfoAry = [];
-      amiCollection = CloudResources(constant.RESTYPE.AMI, MC.canvas_data.region);
+      amiCollection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, MC.canvas_data.region);
       _.each(amiAry, function(amiId) {
         var instanceUIDAry;
         if (!amiCollection.get(amiId)) {
@@ -785,7 +785,7 @@
         callback(null);
         return;
       }
-      dhcpCol = CloudResources(constant.RESTYPE.DHCP, Design.instance().region());
+      dhcpCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DHCP, Design.instance().region());
       dhcpCol.fetchForce().fin(function() {
         if (dhcpCol.get(dhcpId)) {
           return callback(null);
@@ -1256,7 +1256,7 @@
           return haveCert = true;
         });
         if (haveCert) {
-          sslCertCol = CloudResources(constant.RESTYPE.IAM);
+          sslCertCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.IAM, Design.instance().region());
           return sslCertCol.fetchForce().then(function(result) {
             var sslCertAry;
             sslCertAry = sslCertCol.toJSON();
@@ -1749,7 +1749,7 @@
         return;
       }
       region = Design.instance().region();
-      topicCol = CloudResources(constant.RESTYPE.TOPIC, region);
+      topicCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.TOPIC, region);
       result = [];
       return topicCol.fetchForce().fin(function() {
         var obj, ta, _k, _len2;
@@ -2070,7 +2070,7 @@
           return null;
         });
         if (stackCGWIP && stackCGWName && stackCGWUID && !stackCGWId) {
-          cr = CloudResources(constant.RESTYPE.CGW, Design.instance().region());
+          cr = CloudResources(Design.instance().credentialId(), constant.RESTYPE.CGW, Design.instance().region());
           failure = function() {
             return callback(null);
           };
@@ -3010,7 +3010,7 @@ This file use for validate component about state.
         });
         snaphostAry = _.keys(snaphostMap);
         if (snaphostAry.length) {
-          cr = CloudResources(constant.RESTYPE.SNAP, Design.instance().region());
+          cr = CloudResources(Design.instance().credentialId(), constant.RESTYPE.SNAP, Design.instance().region());
           failure = function() {
             return callback(null);
           };
@@ -3114,7 +3114,7 @@ This file use for validate component about state.
       return Helper.message.notice(null, i18n.NOTICE_KEYPAIR_LONE_LIVE);
     };
     isKeyPairExistInAws = function(callback) {
-      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, kpCollection, needValidate, region, results, session, username, _i, _len;
+      var allInstances, allLcs, errors, i, instanceLike, invalid, keyName, kpCollection, needValidate, region, results, _i, _len;
       allInstances = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
       allLcs = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
       instanceLike = allInstances.concat(allLcs);
@@ -3135,10 +3135,8 @@ This file use for validate component about state.
       if (!needValidate.length) {
         return callback(null);
       } else {
-        username = $.cookie("usercode");
-        session = $.cookie("session_id");
         region = Design.instance().region();
-        kpCollection = CloudResources(constant.RESTYPE.KP, Design.instance().get("region"));
+        kpCollection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.KP, Design.instance().get("region"));
         return kpCollection.fetchForce().then(function(col) {
           var kpList;
           kpList = col.toJSON();
@@ -3330,7 +3328,7 @@ This file use for validate component about state.
         return null;
       }
       if (appId) {
-        appData = CloudResources(constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(appId);
+        appData = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBINSTANCE, Design.instance().region()).get(appId);
         backupWindow = backupWindow || appData.get('PreferredBackupWindow');
         maintenanceWindow = maintenanceWindow || appData.get('PreferredMaintenanceWindow');
       }
@@ -3434,7 +3432,7 @@ This file use for validate component about state.
         if (customOGModels.length) {
           region = Design.instance().get('region');
           regionName = constant.REGION_SHORT_LABEL[region];
-          ogModels = CloudResources(constant.RESTYPE.DBOG, region);
+          ogModels = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBOG, region);
           return ogModels.fetchForce().then(function(ogCol) {
             var customOgAry;
             customOgAry = ogCol.filter(function(model) {
@@ -3464,7 +3462,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/aws/rds/sbg',['constant', 'MC', 'Design', 'TaHelper', 'CloudResources'], function(constant, MC, Design, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/aws/rds/sbg',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
     var i18n, isSbgHasSbin2Az;
     i18n = Helper.i18n.short();
     isSbgHasSbin2Az = function(uid) {
@@ -3495,7 +3493,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/os/osport',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/os/osport',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
     var i18n, isPortConnectwithServer;
     i18n = Helper.i18n.short();
     isPortConnectwithServer = function(uid) {
@@ -3517,7 +3515,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/os/ossubnet',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/os/ossubnet',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
     var i18n, isSubnetCIDRConflict, subnetHasPortShouldConncectedOut, __isSbConnectOut;
     i18n = Helper.i18n.short();
     __isSbConnectOut = function(sb) {
@@ -3600,7 +3598,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/os/osrouter',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/os/osrouter',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
     var i18n, rtMustConnecteToOneSubnet;
     i18n = Helper.i18n.short();
     rtMustConnecteToOneSubnet = function(uid) {
@@ -3619,7 +3617,7 @@ This file use for validate component about state.
 }).call(this);
 
 (function() {
-  define('component/trustedadvisor/validation/os/ospool',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
+  define('component/trustedadvisor/validation/os/ospool',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, MC, lang, Helper) {
     var i18n, isMemberBelongsConnectedSubnet, isPoolConnectedwithListener;
     i18n = Helper.i18n.short();
     isPoolConnectedwithListener = function(uid) {
@@ -3686,7 +3684,7 @@ This file use for validate component about state.
     var i18n, isResExtendQuotaLimit;
     i18n = Helper.i18n.short();
     isResExtendQuotaLimit = function() {
-      var existMap, getNewCount, limitMap, newMap, provider, quotaMap, region, typeShortMap, validAry;
+      var credentialId, existMap, getNewCount, limitMap, newMap, provider, quotaMap, region, typeShortMap, validAry;
       region = Design.instance().region();
       provider = App.user.get("default_provider");
       quotaMap = App.model.getOpenstackQuotas(provider);
@@ -3699,8 +3697,9 @@ This file use for validate component about state.
       existMap = {};
       newMap = {};
       limitMap = {};
+      credentialId = Design.instance().credentialId();
       _.each([constant.RESTYPE.OSPORT, constant.RESTYPE.OSFIP, constant.RESTYPE.OSRT, constant.RESTYPE.OSSG, constant.RESTYPE.OSSUBNET], function(type) {
-        typeShortMap[type] = existMap[type] = CloudResources(type, region).length;
+        typeShortMap[type] = existMap[type] = CloudResources(credentialId, type, region).length;
         return newMap[type] = getNewCount(type);
       });
       limitMap[constant.RESTYPE.OSPORT] = quotaMap['Neutron::port'];

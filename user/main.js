@@ -1,5 +1,5 @@
 (function() {
-  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
+  var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkInviteKey, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, gotoRef, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
 
   (function() {
     var MC_DOMAIN, hosts, location;
@@ -79,11 +79,11 @@
         params: option.data || {}
       }),
       success: function(res) {
-        return option.success(res.result[1], res.result[0]);
+        return typeof option.success === "function" ? option.success(res.result[1], res.result[0]) : void 0;
       },
       error: function(xhr, status, error) {
         if (status !== 'abort') {
-          return option.error(status, -1);
+          return typeof option.error === "function" ? option.error(status, -1) : void 0;
         }
       }
     });
@@ -95,7 +95,7 @@
   });
 
   loadPageVar = function(sVar) {
-    return decodeURI(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURI(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+    return decodeURI(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURI(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) + location.hash;
   };
 
   getRef = function() {
@@ -106,6 +106,12 @@
     } else {
       return "/";
     }
+  };
+
+  gotoRef = function() {
+    var ref;
+    ref = location.pathname + location.hash;
+    return location.href = "/login?ref=" + ref;
   };
 
   getSearch = function() {
@@ -180,6 +186,29 @@
       $("header").after("<div id='unsupported-browser'><p>" + langsrc.LOGIN.browser_not_support_1 + "</p> <p>" + langsrc.LOGIN.browser_not_support_2 + "<a href='https://www.google.com/intl/en/chrome/browser/' target='_blank'>Chrome</a>, <a href='http://www.mozilla.org/en-US/firefox/all/' target='_blank'>Firefox</a> or <a href='http://windows.microsoft.com/en-us/internet-explorer/download-ie' target='_blank'>IE</a>" + langsrc.LOGIN.browser_not_support_3 + "</p></div>");
     }
     return userRoute({
+      "invite": function(pathArray, hashArray) {
+        var hashTarget;
+        if (!checkAllCookie()) {
+          gotoRef();
+          return;
+        }
+        deepth = 'INVITE';
+        hashTarget = hashArray[0];
+        if (hashTarget !== 'member') {
+          return;
+        }
+        return checkInviteKey(hashArray[1]).then(function(result) {
+          var projectId;
+          if (result.result[0] !== 0) {
+            return render('#expire-template');
+          } else {
+            projectId = atob(hashArray[1]).split('&')[0];
+            return location.href = "/workspace/" + projectId;
+          }
+        }, function() {
+          return render('#expire-template');
+        });
+      },
       "reset": function(pathArray, hashArray) {
         var hashTarget;
         deepth = 'RESET';
@@ -615,6 +644,14 @@
         handleNetError(status);
         return false;
       }
+    });
+  };
+
+  checkInviteKey = function(key) {
+    return api({
+      url: '/project/',
+      method: 'check_invitation',
+      data: [$.cookie('session_id'), key]
     });
   };
 

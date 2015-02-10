@@ -803,6 +803,9 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
       return defer.promise;
     };
     saveThumbnail = function(id, $svg_element, size) {
+      if (!$svg_element) {
+        return;
+      }
       if (typeof $svg_element === "string") {
         saveThumbnailFinish({
           id: id,
@@ -815,7 +818,6 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
           onFinish: saveThumbnailFinish
         });
       }
-      return null;
     };
     getThumbnail = function(id) {
       return localStorage.getItem("tn/" + id);

@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(["CloudResources", "cloudres/CrCollection", "constant", "ApiRequest", "DiffTree"], function(CloudResources, CrCollection, constant, ApiRequest, DiffTree) {
+  define(["CloudResources", "cloudres/CrCollection", "constant", "DiffTree"], function(CloudResources, CrCollection, constant, DiffTree) {
     var AWS_ID, CREATE_REF, ConverterData, Converters, TAG_NAME, UID, convertResToJson, processServerGroup, __createRequestParam;
     CREATE_REF = function(compOrUid, attr) {
       if (!compOrUid) {

@@ -3,43 +3,15 @@ define('component/appactions/template',['handlebars'], function(Handlebars){ var
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
+  buffer += "<div class=\"modal-center-align-helper\">\n    <div class=\"modal-text-major\">"
     + escapeExpression(((stack1 = (depth0 && depth0.msg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn modal-close btn-red\" id=\"confirmRmStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
-    + "</button>\n    <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
+    + "</div>\n</div>";
   return buffer;
   };
 TEMPLATE.removeStackConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
-
-
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-control-group\">\n            <label class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_DUPLICATE_STACK", {hash:{},data:data}))
-    + "</label>\n            <input id=\"confirmDupStackIpt\" class=\"input\" type=\"text\" value=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.newName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n        </div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-red\" id=\"confirmDupStack\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DUPLICATE_STACK", {hash:{},data:data}))
-    + "</button>\n    <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
-  return buffer;
-  };
-TEMPLATE.dupStackConfirm=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -417,27 +389,166 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 
 
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<header class=\"modal-header\" style=\"width:390px;\"><h3>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE", {hash:{},data:data}))
-    + "</h3><i class=\"modal-close\">&times;</i></header>\n<div class=\"modal-body modal-text-wraper\" style=\"width:390px;\">\n    <div class=\"modal-center-align-helper\">\n        <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_FORCE_TERMINATE_CONTENT", (depth0 && depth0.name), {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn modal-close btn-red\" id=\"forceTerminateApp\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_DELETE_STACK", {hash:{},data:data}))
-    + "</button>\n    <button class=\"btn modal-close btn-silver\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BTN_CANCEL", {hash:{},data:data}))
-    + "</button>\n</div>";
-  return buffer;
-  };
-TEMPLATE.forceTerminateApp=Handlebars.template(__TEMPLATE__);
-
-
 return TEMPLATE; });
+(function() {
+  define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalplus', 'i18n!/nls/lang.js', 'backbone'], function(constant, ApiRequest, Credential, Modal, lang) {
+    var credentialFormView, credentialLoadingTips;
+    credentialLoadingTips = {
+      add: lang.IDE.SETTINGS_CRED_ADDING,
+      update: lang.IDE.SETTINGS_CRED_UPDATING,
+      remove: lang.IDE.SETTINGS_CRED_REMOVING
+    };
+    credentialFormView = Backbone.View.extend({
+      events: {
+        'keyup input': 'updateSubmitBtn',
+        'paste input': 'deferUpdateSubmitBtn'
+      },
+      initialize: function(options) {
+        return _.extend(this, options);
+      },
+      render: function() {
+        var confirmText, data, title;
+        if (this.credential) {
+          data = this.credential.toJSON();
+          title = lang.IDE.UPDATE_CLOUD_CREDENTIAL;
+          confirmText = lang.IDE.HEAD_BTN_UPDATE;
+        } else {
+          data = {};
+          title = lang.IDE.ADD_CLOUD_CREDENTIAL;
+          confirmText = lang.IDE.CFM_BTN_ADD;
+        }
+        this.$el.html(MC.template.credentialForm(data));
+        this.modal = new Modal({
+          title: title,
+          template: this.el,
+          confirm: {
+            text: confirmText,
+            disabled: true
+          }
+        });
+        this.modal.on('confirm', function() {
+          if (this.credential) {
+            this.updateCredential();
+          } else {
+            this.addCredential();
+          }
+          return this.trigger('confirm');
+        }, this);
+        return this;
+      },
+      loading: function() {
+        var action;
+        this.$('#CredSetupWrap').hide();
+        action = this.credential ? 'Update' : 'Add';
+        this.$el.append(MC.template.credentialLoading({
+          tip: credentialLoadingTips[action]
+        }));
+        return this.modal.toggleFooter(false);
+      },
+      loadingEnd: function() {
+        this.$('.loading-zone').remove();
+        this.$('#CredSetupWrap').show();
+        return this.modal.toggleFooter(true);
+      },
+      remove: function() {
+        var _ref;
+        if ((_ref = this.modal) != null) {
+          _ref.close();
+        }
+        return Backbone.View.prototype.remove.apply(this, arguments);
+      },
+      deferUpdateSubmitBtn: function(e) {
+        return _.defer(_.bind(this.updateSubmitBtn, this, e));
+      },
+      updateSubmitBtn: function() {
+        var d;
+        d = this.getData();
+        if (d.alias.length && d.awsAccount.length && d.awsAccessKey.length && d.awsSecretKey.length) {
+          this.modal.toggleConfirm(false);
+        } else {
+          this.modal.toggleConfirm(true);
+        }
+      },
+      addCredential: function() {
+        var credential, credentialData, data, provider, that;
+        that = this;
+        data = this.getData();
+        provider = constant.PROVIDER.AWSGLOBAL;
+        credential = this.model.credentials().findWhere({
+          provider: provider
+        });
+        if (credential) {
+          credential.set(data, {
+            silent: true
+          });
+        } else {
+          credentialData = {
+            alias: data.alias,
+            account_id: data.awsAccount,
+            access_key: data.awsAccessKey,
+            secret_key: data.awsSecretKey
+          };
+          credentialData.provider = data.provider || constant.PROVIDER.AWSGLOBAL;
+          credential = new Credential(credentialData, {
+            project: this.model
+          });
+        }
+        this.loading();
+        return credential.save().then(function() {
+          return that.remove();
+        }, function(error) {
+          var msg;
+          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
+            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
+          } else {
+            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
+          }
+          that.loadingEnd();
+          return that.showModalError(msg);
+        });
+      },
+      updateCredential: function() {
+        var newData, that;
+        that = this;
+        if (!this.credential) {
+          return false;
+        }
+        this.loading();
+        newData = this.getData();
+        return this.credential.save(newData).then(function() {
+          return that.remove();
+        }, function(error) {
+          var msg;
+          that.loadingEnd();
+          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
+            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
+          } else if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
+            that.showUpdateConfirmModel(credential, newData);
+          } else {
+            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
+          }
+          return msg && that.showModalError(msg);
+        });
+      },
+      showModalError: function(message) {
+        return this.$el.find('.cred-setup-msg').text(message);
+      },
+      getData: function() {
+        var that;
+        that = this;
+        return {
+          alias: that.$('#CredSetupAlias').val(),
+          awsAccount: that.$('#CredSetupAccount').val(),
+          awsAccessKey: that.$('#CredSetupAccessKey').val(),
+          awsSecretKey: that.$('#CredSetupSecretKey').val()
+        };
+      }
+    });
+    return credentialFormView;
+  });
+
+}).call(this);
+
 
 /*
 ----------------------------
@@ -448,41 +559,87 @@ return TEMPLATE; });
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('AppAction',["backbone", "component/appactions/template", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui', 'OpsModel'], function(Backbone, AppTpl, lang, CloudResources, constant, modalPlus, ApiRequest, AwsKp, OsKp, TA, OpsModel) {
-    var AppAction;
-    AppAction = Backbone.View.extend({
-      runStack: function(event, workspace) {
-        var appNameDom, checkAppNameRepeat, cloudType, cost, currency, self, that;
-        this.workspace = workspace;
+  define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil", 'i18n!/nls/lang.js', 'CloudResources', 'constant', 'UI.modalplus', 'ApiRequest', 'kp_dropdown', 'OsKp', 'TaGui', 'OpsModel', "credentialFormView"], function(Backbone, AppTpl, Thumbnail, lang, CloudResources, constant, modalPlus, ApiRequest, AwsKp, OsKp, TA, OpsModel, CredentialFormView) {
+    return Backbone.View.extend({
+      initialize: function(options) {
+        return _.extend(this, options);
+      },
+      credentialId: function() {
+        if (Design.instance()) {
+          return Design.instance().credentialId();
+        } else {
+          return this.model.project().credIdOfProvider(this.model.get("provider"));
+        }
+      },
+      saveStack: function(dom, self) {
+        var newJson, workspace;
+        workspace = this.workspace;
+        $(dom).attr("disabled", "disabled");
+        self.__saving = true;
+        newJson = workspace.design.serialize();
+        return Thumbnail.generate((self.parent || self).getSvgElement())["catch"](function() {
+          return null;
+        }).then(function(thumbnail) {
+          workspace.opsModel.save(newJson, thumbnail).then(function() {});
+          self.__saving = false;
+          $(dom).removeAttr("disabled");
+          return notification("info", sprintf(lang.NOTIFY.ERR_SAVE_SUCCESS, newJson.name));
+        }, function(err) {
+          var message;
+          self.__saving = false;
+          $(dom).removeAttr("disabled");
+          if (err.error === 252) {
+            message = lang.NOTIFY.ERR_SAVE_FAILED_NAME;
+          } else {
+            message = sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name);
+          }
+          return notification("error", message);
+        });
+      },
+      runStack: function(paymentUpdate, paymentModal) {
+        var appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, that, _ref;
         cloudType = this.workspace.opsModel.type;
         that = this;
-        if ($(event.currentTarget).attr('disabled')) {
-          return false;
+        paymentState = App.user.get('paymentState');
+        if (paymentModal) {
+          this.modal = paymentModal;
+          this.modal.setTitle(lang.IDE.RUN_STACK_MODAL_TITLE).setWidth('665px').setContent(MC.template.modalRunStack({
+            paymentState: paymentState,
+            paymentUpdate: paymentUpdate
+          })).compact().find('.modal-footer').show();
+        } else {
+          this.modal = new modalPlus({
+            title: lang.IDE.RUN_STACK_MODAL_TITLE,
+            template: MC.template.modalRunStack({
+              paymentState: paymentState
+            }),
+            disableClose: true,
+            width: '665px',
+            compact: true,
+            confirm: {
+              text: !Design.instance().project().isDemoMode() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
+              disabled: true
+            }
+          });
+          this.renderKpDropdown(this.modal, cloudType);
         }
-        this.modal = new modalPlus({
-          title: lang.IDE.RUN_STACK_MODAL_TITLE,
-          template: MC.template.modalRunStack,
-          disableClose: true,
-          width: '450px',
-          confirm: {
-            text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
-            disabled: true
-          }
-        });
         if (cloudType === OpsModel.Type.OpenStack) {
           this.modal.find(".estimate").hide();
           this.modal.resize();
         }
-        this.renderKpDropdown(this.modal, cloudType);
         cost = Design.instance().getCost();
-        this.modal.tpl.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
-        currency = Design.instance().getCurrency();
-        this.modal.tpl.find("#label-total-fee").find('b').text("" + (currency + cost.totalFee));
+        this.modal.find('.modal-input-value').val(this.workspace.opsModel.get("name"));
+        costString = "$" + cost.totalFee;
+        if ((_ref = Design.instance().region()) === 'cn-north-1') {
+          costString = "￥" + cost.totalFee;
+        }
+        this.modal.find("#label-total-fee").find('b').text(costString);
+        this.modal.find("#label-visualops-fee").find('b').text("$" + cost.visualOpsFee);
         TA.loadModule('stack').then((function(_this) {
           return function() {
-            var _ref;
+            var _ref1;
             _this.modal.resize();
-            return (_ref = _this.modal) != null ? _ref.toggleConfirm(false) : void 0;
+            return (_ref1 = _this.modal) != null ? _ref1.toggleConfirm(false) : void 0;
           };
         })(this));
         appNameDom = this.modal.tpl.find('#app-name');
@@ -495,8 +652,14 @@ return TEMPLATE; });
           return function() {
             var appNameRepeated;
             _this.hideError();
-            if (!App.user.hasCredential()) {
-              App.showSettings(App.showSettings.TAB.Credential);
+            if (Design.instance().project().isDemoMode()) {
+              if (Design.instance().project().amIAdmin()) {
+                new CredentialFormView({
+                  model: Design.instance().project()
+                }).render();
+              } else {
+                self.modal.find(".modal-body .members-only").show();
+              }
               return false;
             }
             appNameRepeated = _this.checkAppNameRepeat(appNameDom.val());
@@ -511,7 +674,7 @@ return TEMPLATE; });
             _this.json.name = appNameDom.val();
             return _this.workspace.opsModel.run(_this.json, appNameDom.val()).then(function(ops) {
               self.modal.close();
-              return App.openOps(ops);
+              return App.loadUrl(ops.url());
             }, function(err) {
               var error;
               self.modal.close();
@@ -520,13 +683,13 @@ return TEMPLATE; });
             });
           };
         })(this));
-        App.user.on('change:credential', function() {
-          if (App.user.hasCredential() && that.modal.isOpen()) {
+        this.modal.listenTo(Design.instance().project(), 'change:credential', function() {
+          if (Design.instance().credential() && that.modal.isOpen()) {
             return that.modal.find(".modal-confirm").text(lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN);
           }
         });
         return this.modal.on('close', function() {
-          return App.user.off('change:credential');
+          return that.modal.stopListening(App.user);
         });
       },
       renderKpDropdown: function(modal, cloudType) {
@@ -594,7 +757,7 @@ return TEMPLATE; });
         return true;
       },
       checkAppNameRepeat: function(nameVal) {
-        if (App.model.appList().findWhere({
+        if (this.workspace.opsModel.project().apps().findWhere({
           name: nameVal
         })) {
           this.showError('appname', lang.PROP.MSG_WARN_REPEATED_APP_NAME);
@@ -611,13 +774,25 @@ return TEMPLATE; });
         return $("#runtime-error-" + id).text(msg).show();
       },
       deleteStack: function(id, name) {
-        name = name || App.model.stackList().get(id).get("name");
-        modal(AppTpl.removeStackConfirm({
-          msg: sprintf(lang.TOOLBAR.POP_BODY_DELETE_STACK, name)
-        }));
-        $("#confirmRmStack").on("click", function() {
+        var modal, self, workspace, _ref;
+        workspace = this.workspace;
+        name = name || ((_ref = this.workspace) != null ? _ref.opsModel.project().stacks().get(id).get("name") : void 0) || this.model.get("name");
+        self = this;
+        modal = new modalPlus({
+          title: lang.TOOLBAR.TIP_DELETE_STACK,
+          width: 390,
+          confirm: {
+            text: lang.TOOLBAR.POP_BTN_DELETE_STACK,
+            color: "red"
+          },
+          template: AppTpl.removeStackConfirm({
+            msg: sprintf(lang.TOOLBAR.POP_BODY_DELETE_STACK, name)
+          })
+        });
+        return modal.on("confirm", function() {
           var opsModel, p;
-          opsModel = App.model.stackList().get(id);
+          modal.close();
+          opsModel = self.model || workspace.opsModel.project().stacks().get(id);
           p = opsModel.remove();
           if (opsModel.isPersisted()) {
             return p.then(function() {
@@ -629,20 +804,22 @@ return TEMPLATE; });
         });
       },
       duplicateStack: function(id) {
-        var opsModel;
-        opsModel = App.model.stackList().get(id);
+        var opsModel, workspace;
+        workspace = this.workspace;
+        opsModel = this.model || workspace.opsModel.project().stacks().get(id);
         if (!opsModel) {
           return;
         }
         opsModel.fetchJsonData().then(function() {
-          return App.openOps(App.model.createStackByJson(opsModel.getJsonData()));
+          return App.loadUrl((opsModel.project() || workspace.opsModel.project()).createStackByJson(opsModel.getJsonData()).url());
         }, function() {
           return notification("error", lang.NOTIFY.ERROR_CANT_DUPLICATE);
         });
       },
       startApp: function(id) {
-        var app, startAppModal;
-        app = App.model.appList().get(id);
+        var app, startAppModal, workspace;
+        workspace = this.workspace;
+        app = this.model || workspace.opsModel.project().apps().get(id);
         startAppModal = new modalPlus({
           template: AppTpl.loading(),
           title: lang.TOOLBAR.TIP_START_APP,
@@ -671,7 +848,7 @@ return TEMPLATE; });
           }));
           startAppModal.on('confirm', function() {
             startAppModal.close();
-            App.model.appList().get(id).start().fail(function(err) {
+            workspace.opsModel.project().apps().get(id).start().fail(function(err) {
               var error;
               error = err.awsError ? err.error + "." + err.awsError : err.error;
               notification('error', sprintf(lang.NOTIFY.ERROR_FAILED_START, name, error));
@@ -680,7 +857,9 @@ return TEMPLATE; });
         });
       },
       checkBeforeStart: function(app) {
-        var cloudType, comp, defer;
+        var cloudType, comp, defer, self, workspace;
+        self = this;
+        workspace = this.workspace;
         comp = null;
         cloudType = app.type;
         defer = new Q.defer();
@@ -689,13 +868,14 @@ return TEMPLATE; });
           defer.resolve({});
         } else {
           ApiRequest("app_info", {
+            key_id: this.credentialId(),
             region_name: app.get("region"),
             app_ids: [app.get("id")]
           }).then(function(ds) {
             return comp = ds[0].component;
           }).then(function() {
             var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
-            name = App.model.appList().get(app.get("id")).get("name");
+            name = workspace.opsModel.project().apps().get(app.get("id")).get("name");
             hasEC2Instance = !!(_.filter(comp, function(e) {
               return e.type === constant.RESTYPE.INSTANCE;
             })).length;
@@ -708,7 +888,7 @@ return TEMPLATE; });
             dbInstance = _.filter(comp, function(e) {
               return e.type === constant.RESTYPE.DBINSTANCE;
             });
-            snapshots = CloudResources(constant.RESTYPE.DBSNAP, app.get("region"));
+            snapshots = CloudResources(self.credentialId(), constant.RESTYPE.DBSNAP, app.get("region"));
             awsError = null;
             return snapshots.fetchForce().fail(function(error) {
               return awsError = error.awsError;
@@ -740,13 +920,13 @@ return TEMPLATE; });
           defer.resolve();
           return defer.promise;
         } else {
-          resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
+          resourceList = CloudResources(this.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
           return resourceList.fetchForce();
         }
       },
       stopApp: function(id) {
         var app, appName, awsError, cloudType, isProduction, name, stopModal, that;
-        app = App.model.appList().get(id);
+        app = this.model || this.workspace.opsModel.project().apps().get(id);
         name = app.get("name");
         that = this;
         cloudType = app.type;
@@ -771,7 +951,7 @@ return TEMPLATE; });
           }
         })["finally"](function() {
           var resourceList;
-          resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
+          resourceList = CloudResources(that.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
           if (awsError && awsError !== 403) {
             stopModal.close();
             notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
@@ -806,7 +986,7 @@ return TEMPLATE; });
                 }
               }
               toFetchArray = _.keys(toFetch);
-              amiRes = CloudResources(constant.RESTYPE.AMI, app.get("region"));
+              amiRes = CloudResources(that.credentialId(), constant.RESTYPE.AMI, app.get("region"));
               return amiRes.fetchAmis(_.keys(toFetch)).then(function() {
                 var dbInstanceName, hasAsg, hasDBInstance, hasEC2Instance, hasInstanceStore, hasNotReadyDB, _ref, _ref1;
                 hasInstanceStore = false;
@@ -875,7 +1055,7 @@ return TEMPLATE; });
       terminateApp: function(id) {
         var app, cloudType, name, production, resourceList, self, terminateConfirm;
         self = this;
-        app = App.model.appList().get(id);
+        app = this.model || this.workspace.opsModel.project().apps().get(id);
         name = app.get("name");
         production = app.get("usage") === 'production';
         terminateConfirm = new modalPlus({
@@ -894,7 +1074,7 @@ return TEMPLATE; });
           return false;
         }
         terminateConfirm.tpl.find('.modal-footer').hide();
-        resourceList = CloudResources(constant.RESTYPE.DBINSTANCE, app.get("region"));
+        resourceList = CloudResources(self.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
         return resourceList.fetchForce().then(function(result) {
           return self.__terminateApp(id, resourceList, terminateConfirm);
         }).fail(function(error) {
@@ -909,7 +1089,7 @@ return TEMPLATE; });
       },
       __terminateApp: function(id, resourceList, terminateConfirm) {
         var app, cloudType, fetchJsonData, name, production;
-        app = App.model.appList().get(id);
+        app = this.model || this.workspace.opsModel.project().apps().get(id);
         name = app.get("name");
         production = app.get("usage") === 'production';
         cloudType = app.type;
@@ -978,7 +1158,7 @@ return TEMPLATE; });
       forgetApp: function(id) {
         var app, forgetConfirm, name, production, self;
         self = this;
-        app = App.model.appList().get(id);
+        app = this.workspace.opsModel.project().apps().get(id);
         name = app.get("name");
         production = app.get("usage") === 'production';
         forgetConfirm = new modalPlus({
@@ -996,7 +1176,7 @@ return TEMPLATE; });
       },
       __forgetApp: function(id, forgetConfirm) {
         var app, comp, hasState, name, production, uid, _ref, _ref1;
-        app = App.model.appList().get(id);
+        app = this.workspace.opsModel.project().apps().get(id);
         name = app.get("name");
         production = app.get("usage") === 'production';
         hasState = false;
@@ -1039,11 +1219,11 @@ return TEMPLATE; });
           });
         });
       },
-      showPayment: function(elem) {
+      showPayment: function(elem, opsModel) {
         var paymentModal, paymentState, result, showPaymentDefer, updateDom;
         showPaymentDefer = Q.defer();
         paymentState = App.user.get("paymentState");
-        if (!App.user.shouldPay()) {
+        if (!opsModel.project().shouldPay()) {
           showPaymentDefer.resolve({});
         } else {
           result = {
@@ -1062,7 +1242,7 @@ return TEMPLATE; });
               template: updateDom,
               disableClose: true,
               confirm: {
-                text: App.user.hasCredential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
+                text: Design.instance().credential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
                 disabled: true
               }
             });
@@ -1071,7 +1251,7 @@ return TEMPLATE; });
               if (paymentModal.isClosed) {
                 return false;
               }
-              if (!App.user.shouldPay()) {
+              if (!opsModel.project().shouldPay()) {
                 return showPaymentDefer.resolve({
                   result: result,
                   modal: paymentModal
@@ -1083,7 +1263,6 @@ return TEMPLATE; });
         return showPaymentDefer.promise;
       }
     });
-    return new AppAction();
   });
 
 }).call(this);

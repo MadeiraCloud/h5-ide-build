@@ -11266,8 +11266,7 @@ define('backbone',['underscore', 'jquery'], function(){
 
     // Simple proxy to `Backbone.history` to save a fragment into the history.
     navigate: function(fragment, options) {
-      Backbone.history.navigate(fragment, options);
-      return this;
+      return Backbone.history.navigate(fragment, options);
     },
 
     // Bind all defined routes to `Backbone.history`. We have to reverse the
@@ -11480,6 +11479,13 @@ define('backbone',['underscore', 'jquery'], function(){
       if (!options || options === true) options = {trigger: options};
       fragment = this.getFragment(fragment || '');
       if (this.fragment === fragment) return;
+
+      // If we don't have a handler for a url. Return false without changing the url.
+      var handler = _.find(this.handlers, function(handler) { return handler.route.test(fragment); });
+      if ( !handler ) {
+        return false;
+      }
+
       this.fragment = fragment;
       var url = this.root + fragment;
 
@@ -11504,7 +11510,10 @@ define('backbone',['underscore', 'jquery'], function(){
       } else {
         return this.location.assign(url);
       }
-      if (options.trigger) this.loadUrl(fragment);
+      if (options.trigger) {
+        handler.callback(fragment);
+      }
+      return true;
     },
 
     // Update the hash location, either replacing the current entry, or adding
@@ -14770,15 +14779,15 @@ if (LocalCollection._compileSelector = function(a) {
     if (c.moved)
         throw new Error("_diffQueryUnordered called with a moved observer!");
     _.each(b, function(b) {
-        if (_.has(a, b._id)) {
-            var d = a[b._id];
+        if (_.has(a, b._id.valueOf())) {
+            var d = a[b._id.valueOf()];
             c.changed && !EJSON.equals(d, b) && c.changed(b._id, LocalCollection._makeChangedFields(b, d))
         } else {
             var e = EJSON.clone(b);
             delete e._id, c.added && c.added(b._id, e)
         }
     }), c.removed && _.each(a, function(a) {
-        _.has(b, a._id) || c.removed(a._id)
+        _.has(b, a._id.valueOf()) || c.removed(a._id)
     })
 }, LocalCollection._diffQueryOrderedChanges = function(a, b, c) {
     var d = {};
