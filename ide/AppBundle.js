@@ -1192,7 +1192,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/submodels/ProjectLog',["constant", "backbone"], function(constant) {
+  define('ProjectLog',["constant", "backbone"], function(constant) {
     var AuditType, ProjectLog, auditFilter, historyFilter;
     ProjectLog = Backbone.Model.extend({
       comparator: function(m1, m2) {
@@ -1586,7 +1586,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('Project',["ApiRequest", "ide/submodels/ProjectLog", "ide/submodels/OpsCollection", "OpsModel", "Credential", "ApiRequestR", "constant", "backbone"], function(ApiRequest, ProjectLog, OpsCollection, OpsModel, Credential, ApiRequestR, constant) {
+  define('Project',["ApiRequest", "ProjectLog", "ide/submodels/OpsCollection", "OpsModel", "Credential", "ApiRequestR", "constant", "backbone"], function(ApiRequest, ProjectLog, OpsCollection, OpsModel, Credential, ApiRequestR, constant) {
 
     /*
      * One-time initializer to observe the websocket. Since the websocket is not
