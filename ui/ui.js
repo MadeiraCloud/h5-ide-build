@@ -19365,7 +19365,7 @@ define('UI.select2',["jquery"], function() {
         }
     };
 
-}(jQuery));
+});
 
 
 define("ui/ui", function(){});
