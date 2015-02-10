@@ -2667,12 +2667,17 @@ function program57(depth0,data) {
       },
       getPassword: function(key_data) {
         return ApiRequest("ins_GetPasswordData", {
-          region: Design.instance().region(),
+          region_name: Design.instance().region(),
           instance_id: this.get("instanceId"),
           key_id: Design.instance().credentialId(),
           key_data: key_data || void 0
         }).then(function(data) {
-          return data.GetPasswordDataResponse.passwordData;
+          var ns;
+          ns = "";
+          if (data["ns0:GetPasswordDataResponse"]) {
+            ns = "ns0:";
+          }
+          return data[ns + "GetPasswordDataResponse"][ns + "passwordData"];
         });
       },
       getEni: function() {

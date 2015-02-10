@@ -970,6 +970,7 @@ define({
         "WAIT_FOR_ADMIN_FINISH_CREDENTIAL": "只有工作空间的管理员有权限设置证书, 你可以等您的管理员设置好以后再继续。",
         "PROVIDE_CRED_TO_VISUALIZE": "提供云证书以将已有 VPC 导入为 App",
         "PAYMENT_INSTANCE_ID": "实例 ID",
+        "CANT_DELETE_WORKSPACE": "我们没能在您的工作空间绑定的信用卡上成功扣款。此工作空间现处于受限模式。请更新您的账单信息。一旦工作空间恢复正常模式, 您就可以删除此工作空间。",
         "STATE_TIP_DELETE_STATE": "删除 State",
         "STATE_TIP_SELECT_STATE": "选择 State",
         "STATE_TIP_DESCRIPTION": "帮助",

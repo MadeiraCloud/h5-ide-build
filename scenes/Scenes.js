@@ -1201,25 +1201,45 @@ function program3(depth0,data) {
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMember), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMember), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n";
   return buffer;
   }
 function program4(depth0,data) {
   
-  var buffer = "";
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.failedToPay), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "DELETE_WORKSPACE_WILL_FORGOT_APPS", {hash:{},data:data}))
     + "</p>\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IMPORT_JSON_BEFORE_DELETE_WORKSPACE", {hash:{},data:data}))
-    + "</p>\n    <button class=\"btn btn-red icon-delete\" id=\"delete-project\">"
+    + "</p>\n    <button class=\"btn btn-red icon-delete\" id=\"delete-project\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.failedToPay), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">"
     + escapeExpression(helpers.i18n.call(depth0, "DELETE_WORKSPACE", {hash:{},data:data}))
     + "</button>\n    ";
   return buffer;
   }
+function program5(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <p class=\"warning-red\">"
+    + escapeExpression(helpers.i18n.call(depth0, "CANT_DELETE_WORKSPACE", {hash:{},data:data}))
+    + "</p>\n    ";
+  return buffer;
+  }
 
-function program6(depth0,data) {
+function program7(depth0,data) {
+  
+  
+  return "disabled=\"disabled\"";
+  }
+
+function program9(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <p>"
@@ -1265,6 +1285,7 @@ return TEMPLATE; });
         data.isAdmin = this.model.amIAdmin();
         data.isMember = this.model.amIMeber();
         data.isObserver = this.model.amIObserver();
+        data.failedToPay = this.model.get("billingState") === "failed";
         if (this.model.isPrivate() || this.model.amIAdmin()) {
           data.displayDelete = true;
         } else {
