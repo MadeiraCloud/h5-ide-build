@@ -368,7 +368,7 @@ return TEMPLATE; });
         }
         this.initModal();
         this.modal.render();
-        if (Design.instance().credential()) {
+        if (Design.instance().credential() && !Design.instance().credential().isDemo()) {
           that = this;
           this.collection.fetch().then(function() {
             return that.renderKeys();
@@ -999,7 +999,7 @@ return TEMPLATE; });
         return this.manager.$el.find('[data-action="duplicate"]').prop('disabled', false);
       },
       renderManager: function() {
-        var _ref;
+        var _ref, _ref1;
         this.manager = new toolbar_modal(this.getModalOptions());
         this.manager.on('refresh', this.refresh, this);
         this.manager.on("slidedown", this.renderSlides, this);
@@ -1011,9 +1011,9 @@ return TEMPLATE; });
         })(this));
         this.manager.on('checked', this.processDuplicate, this);
         this.manager.render();
-        if (!Design.instance().credential()) {
-          if ((_ref = this.manager) != null) {
-            _ref.render('nocredential');
+        if ((_ref = Design.instance().credential()) != null ? _ref.isDemo() : void 0) {
+          if ((_ref1 = this.manager) != null) {
+            _ref1.render('nocredential');
           }
           return false;
         }

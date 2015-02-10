@@ -1053,30 +1053,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <a data-id=\"billing\">"
+  buffer += "\r\n        <a data-id=\"billing\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
-    + "</a>\n        <a data-id=\"credential\">"
+    + "</a>\r\n        <a data-id=\"credential\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROVIDER_CREDENTIAL", {hash:{},data:data}))
-    + "</a>\n        ";
+    + "</a>\r\n        ";
   return buffer;
   }
 
-  buffer += "<nav id=\"settings-nav\">\n    <a class=\"back-settings\">&lt; "
+  buffer += "<nav id=\"settings-nav\">\r\n    <a class=\"back-settings\">&lt; "
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
-    + "</a>\n    <section class=\"function-list\">\n        <header class=\"settings-nav-project-title\">"
+    + "</a>\r\n    <section class=\"function-list\">\r\n        <header class=\"settings-nav-project-title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</header>\n        <a data-id=\"basicsettings\">"
+    + "</header>\r\n        <a data-id=\"basicsettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "BASIC_SETTINGS", {hash:{},data:data}))
-    + "</a>\n        <a data-id=\"member\">"
+    + "</a>\r\n        <a data-id=\"member\">"
     + escapeExpression(helpers.i18n.call(depth0, "MEMBER", {hash:{},data:data}))
-    + "</a>\n        <a data-id=\"usagereport\">"
+    + "</a>\r\n        <a data-id=\"usagereport\">"
     + escapeExpression(helpers.i18n.call(depth0, "USAGE_REPORT", {hash:{},data:data}))
-    + "</a>\n        ";
+    + "</a>\r\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.admin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <a data-id=\"accesstoken\">"
+  buffer += "\r\n        <a data-id=\"accesstoken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</a>\n    </section>\n</nav>\n<section class=\"setting-content\">\n    <header class=\"project-title\"><span id=\"title-project-name\"></span><span id=\"title-tab-name\"></span></header>\n    <article class=\"project-subview\"></article>\n</section>";
+    + "</a>\r\n    </section>\r\n</nav>\r\n<section class=\"setting-content\">\r\n    <header class=\"project-title\"><span id=\"title-project-name\"></span><span id=\"title-tab-name\"></span></header>\r\n    <article class=\"project-subview\"></article>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('scenes/settings/template/TplBasicSettings',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -1101,14 +1101,20 @@ function program2(depth0,data) {
 
 function program4(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "DELETE_WORKSPACE", {hash:{},data:data}));
+  var buffer = "";
+  buffer += "\n<dl class=\"settings-item project-item\">\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "DELETE_WORKSPACE", {hash:{},data:data}))
+    + "</dt>\n    <dd class=\"delete-project-zone\">\n    </dd>\n</dl>\n";
+  return buffer;
   }
 
 function program6(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "LEAVE_WORKSPACE", {hash:{},data:data}));
+  var buffer = "";
+  buffer += "\n<dl class=\"settings-item project-item\">\n    <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "LEAVE_WORKSPACE", {hash:{},data:data}))
+    + "</dt>\n    <dd class=\"leave-project-zone\">\n    </dd>\n</dl>\n";
+  return buffer;
   }
 
   buffer += "<dl class=\"settings-item project-name-zone project-item\">\n    <dt>"
@@ -1124,10 +1130,12 @@ function program6(depth0,data) {
     + "</a>\n            </div>\n            <div class=\"loading-spinner\" style=\"display: none;\"></div>\n        </div>\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </dd>\n</dl>\n\n<dl class=\"settings-item project-item\">\n    <dt>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayDelete), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  buffer += "\n    </dd>\n</dl>\n\n";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</dt>\n    <dd class=\"leave-project-zone\">\n    </dd>\n</dl>";
+  buffer += "\n\n";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0['private']), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;
   };
 TEMPLATE.basicSettings=Handlebars.template(__TEMPLATE__);
@@ -1145,7 +1153,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "TYPE_THE_WORKSPACE_NAME_TO_CONFIRM", {hash:{},data:data}))
     + "</p>\n<div class=\"confirm-action\">\n    <input type=\"text\" class=\"input\" id=\"confirm-project-name\"/>\n    <button class=\"btn btn-red\" id=\"do-delete-project\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "CONFIRM_TO_DELETE", {hash:{},data:data}))
-    + "</button>\n    <a class=\"cancel-confirm\">Cancel</a>\n</div>";
+    + "</button>\n    <a class=\"cancel-delete-confirm\">Cancel</a>\n</div>";
   return buffer;
   };
 TEMPLATE.confirmToDelete=Handlebars.template(__TEMPLATE__);
@@ -1163,7 +1171,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "ARE_YOU_SURE_YOU_WANT_TO_LEAVE_THIS_WORKSPACE", {hash:{},data:data}))
     + "</p>\n<div class=\"confirm-action\">\n    <button class=\"btn btn-red\" id=\"do-leave-project\">"
     + escapeExpression(helpers.i18n.call(depth0, "CONFIRM_TO_LEAVE", {hash:{},data:data}))
-    + "</button>\n    <a class=\"cancel-confirm\">Cancel</a>\n</div>";
+    + "</button>\n    <a class=\"cancel-leave-confirm\">Cancel</a>\n</div>";
   return buffer;
   };
 TEMPLATE.confirmToLeave=Handlebars.template(__TEMPLATE__);
@@ -1190,7 +1198,7 @@ function program1(depth0,data) {
   var buffer = "";
   buffer += "\n<p>"
     + escapeExpression(helpers.i18n.call(depth0, "FREE_WORKSPACE_CAN_NOT_DELETE", {hash:{},data:data}))
-    + "</p>\n\n";
+    + "</p>\n";
   return buffer;
   }
 
@@ -1198,33 +1206,21 @@ function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMember), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  return buffer;
-  }
-function program4(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.failedToPay), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.failedToPay), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "DELETE_WORKSPACE_WILL_FORGOT_APPS", {hash:{},data:data}))
     + "</p>\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IMPORT_JSON_BEFORE_DELETE_WORKSPACE", {hash:{},data:data}))
     + "</p>\n    <button class=\"btn btn-red icon-delete\" id=\"delete-project\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.failedToPay), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.failedToPay), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(helpers.i18n.call(depth0, "DELETE_WORKSPACE", {hash:{},data:data}))
-    + "</button>\n    ";
+    + "</button>\n";
   return buffer;
   }
-function program5(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <p class=\"warning-red\">"
@@ -1233,50 +1229,193 @@ function program5(depth0,data) {
   return buffer;
   }
 
-function program7(depth0,data) {
+function program6(depth0,data) {
   
   
   return "disabled=\"disabled\"";
-  }
-
-function program9(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "LEAVING_WORKSPACE_WILL_NOT_ACCESS", {hash:{},data:data}))
-    + "</p>\n    <button class=\"btn btn-red icon-delete\" id=\"leave-project\">"
-    + escapeExpression(helpers.i18n.call(depth0, "LEAVE_WORKSPACE", {hash:{},data:data}))
-    + "</button>\n    ";
-  return buffer;
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0['private']), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
-TEMPLATE.leaveOrDelete=Handlebars.template(__TEMPLATE__);
+TEMPLATE.delete=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<p>"
+    + escapeExpression(helpers.i18n.call(depth0, "LEAVING_WORKSPACE_WILL_NOT_ACCESS", {hash:{},data:data}))
+    + "</p>\n<button class=\"btn btn-red icon-delete\" id=\"leave-project\">"
+    + escapeExpression(helpers.i18n.call(depth0, "LEAVE_WORKSPACE", {hash:{},data:data}))
+    + "</button>\n<!-- <div class=\"level-error-tip hide\">"
+    + escapeExpression(helpers.i18n.call(depth0, "LEAVING_WORKSPACE_WILL_ONLY_ONE_ADMIN", {hash:{},data:data}))
+    + "</div> -->";
+  return buffer;
+  };
+TEMPLATE.leave=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
 (function() {
-  define('scenes/settings/views/BasicSettingsView',['i18n!/nls/lang.js', '../template/TplBasicSettings', 'UI.modalplus', 'UI.notification', 'backbone'], function(lang, TplBasicSettings, Modal) {
+  define('scenes/settings/models/MemberCollection',['ApiRequest', 'backbone', 'crypto'], function(ApiRequest) {
+    var MemberCollection, MemberModel;
+    MemberModel = Backbone.Model.extend({
+      defaults: {
+        id: '',
+        avatar: '',
+        username: '',
+        email: '',
+        role: '',
+        state: '',
+        me: false,
+        _username: '',
+        _email: '',
+        projectId: ''
+      },
+      updateRole: function(newRole) {
+        var that;
+        that = this;
+        return ApiRequest('project_update_role', {
+          project_id: this.get('projectId'),
+          member_id: this.id,
+          new_role: newRole
+        }).then(function() {
+          return that.set('role', newRole);
+        });
+      },
+      cancelInvite: function() {
+        var that;
+        that = this;
+        return ApiRequest('project_cancel_invitation', {
+          project_id: this.get('projectId'),
+          member_id: this.id
+        }).then(function() {
+          var _ref;
+          return (_ref = that.collection) != null ? _ref.remove(that) : void 0;
+        });
+      },
+      isAdmin: function() {
+        return this.get('role') === 'admin';
+      },
+      isOnlyAdmin: function() {
+        var adminAry, data, that;
+        that = this;
+        data = that.collection.toJSON();
+        adminAry = [];
+        _.each(data, function(member) {
+          if (member.role === 'admin' && member.state === 'normal') {
+            adminAry.push(member.username);
+          }
+          return null;
+        });
+        if (adminAry.length === 1 && adminAry[0] === this.get('username')) {
+          return true;
+        }
+        return false;
+      }
+    });
+    MemberCollection = Backbone.Collection.extend({
+      constructor: function(attr) {
+        Backbone.Collection.apply(this);
+        return this.projectId = attr.projectId;
+      },
+      model: MemberModel,
+      projectId: '',
+      limit: 10,
+      fetch: function() {
+        var that;
+        that = this;
+        return ApiRequest('project_list_member', {
+          project_id: that.projectId
+        }).then(function(data) {
+          var members, models;
+          that.limit = data[0];
+          members = data[1];
+          models = _.map(members, function(member) {
+            var avatar, currentUserName, email, userName;
+            userName = Base64.decode(member.username);
+            currentUserName = App.user.get('username');
+            email = Base64.decode(member.email);
+            avatar = CryptoJS.MD5(email.trim().toLowerCase()).toString();
+            return new that.model({
+              id: member.id,
+              avatar: "https://www.gravatar.com/avatar/" + avatar,
+              username: userName,
+              email: email,
+              role: member.role,
+              state: member.state,
+              me: userName === currentUserName,
+              _username: member.username,
+              _email: member.email,
+              projectId: that.projectId
+            });
+          });
+          return that.reset(models);
+        });
+      },
+      removeMember: function(memIds) {
+        var that;
+        that = this;
+        return ApiRequest('project_remove_members', {
+          project_id: this.projectId,
+          member_ids: memIds
+        }).then(function() {
+          return that.remove(memIds);
+        });
+      },
+      inviteMember: function(email) {
+        var that;
+        that = this;
+        return ApiRequest('project_invite', {
+          project_id: this.projectId,
+          member_email: email,
+          member_role: 'collaborator'
+        }).then(function() {
+          return that.push(new that.model());
+        });
+      },
+      getCurrentMember: function() {
+        return this.findWhere({
+          username: App.user.get('username')
+        });
+      },
+      isLimitInvite: function() {
+        return this.models.length >= this.limit;
+      }
+    });
+    return MemberCollection;
+  });
+
+}).call(this);
+
+(function() {
+  define('scenes/settings/views/BasicSettingsView',['i18n!/nls/lang.js', '../template/TplBasicSettings', 'UI.modalplus', '../models/MemberCollection', 'UI.notification', 'backbone'], function(lang, TplBasicSettings, Modal, MemberCollection) {
     return Backbone.View.extend({
       events: {
         'click .edit-button': 'edit',
         'click .cancel-button': 'cancelEdit',
         'click #update-name': 'updateName',
-        'click #delete-project': 'confirmLeaveDelete',
-        'click #leave-project': 'confirmLeaveDelete',
+        'click #delete-project': 'confirmDelete',
+        'click #leave-project': 'confirmLeave',
         'keyup #project-name': 'checkName',
         'keyup #confirm-project-name': 'confirmProjectName',
         'paste #confirm-project-name': 'deferConfirmProjectName',
         'click #do-delete-project': 'doDelete',
         'click #do-leave-project': 'doLeave',
-        'click .cancel-confirm': 'cancelConfirm'
+        'click .cancel-leave-confirm': 'cancelLeaveConfirm',
+        'click .cancel-delete-confirm': 'cancelDeleteConfirm'
       },
       className: 'basic-settings',
       initialize: function(options) {
         _.extend(this, options);
+        this.memberCol = new MemberCollection({
+          projectId: this.model.id
+        });
         return this.listenTo(this.model, 'change:name', this.changeNameOnView);
       },
       getRenderData: function() {
@@ -1286,11 +1425,6 @@ return TEMPLATE; });
         data.isMember = this.model.amIMeber();
         data.isObserver = this.model.amIObserver();
         data.failedToPay = this.model.get("billingState") === "failed";
-        if (this.model.isPrivate() || this.model.amIAdmin()) {
-          data.displayDelete = true;
-        } else {
-          data.displayDelete = false;
-        }
         return data;
       },
       render: function() {
@@ -1298,6 +1432,9 @@ return TEMPLATE; });
         data = this.getRenderData();
         this.$el.html(TplBasicSettings.basicSettings(data));
         this.renderLeaveZone(data);
+        if (data.isAdmin) {
+          this.renderDeleteZone(data);
+        }
         return this;
       },
       renderLeaveZone: function(data, confirm) {
@@ -1309,15 +1446,27 @@ return TEMPLATE; });
           confirm = false;
         }
         if (confirm) {
-          if (data.isAdmin) {
-            tpl = TplBasicSettings.confirmToDelete;
-          } else {
-            tpl = TplBasicSettings.confirmToLeave;
-          }
+          tpl = TplBasicSettings.confirmToLeave;
         } else {
-          tpl = TplBasicSettings.leaveOrDelete;
+          tpl = TplBasicSettings.leave;
         }
         this.$('.leave-project-zone').html(tpl(data));
+        return this;
+      },
+      renderDeleteZone: function(data, confirm) {
+        var tpl;
+        if (data == null) {
+          data = this.getRenderData();
+        }
+        if (confirm == null) {
+          confirm = false;
+        }
+        if (confirm) {
+          tpl = TplBasicSettings.confirmToDelete;
+        } else {
+          tpl = TplBasicSettings["delete"];
+        }
+        this.$('.delete-project-zone').html(tpl(data));
         return this;
       },
       renderLoading: function() {
@@ -1390,8 +1539,33 @@ return TEMPLATE; });
       doLeave: function() {
         var that;
         that = this;
-        this.renderLoading();
-        return this.model.leave().then(function() {
+        that.renderLoading();
+        if (!that.model.amIAdmin()) {
+          return that.toLeave();
+        } else {
+          return that.memberCol.fetch().then(function() {
+            var currentMember;
+            currentMember = that.memberCol.getCurrentMember();
+            if (currentMember.isAdmin()) {
+              if (!currentMember.isOnlyAdmin()) {
+                return that.toLeave();
+              } else {
+                that.render();
+                return notification('error', lang.IDE.LEAVING_WORKSPACE_WILL_ONLY_ONE_ADMIN);
+              }
+            } else {
+              return that.toLeave();
+            }
+          }).fail(function(data) {
+            that.render();
+            return notification('error', data.result || data.msg);
+          });
+        }
+      },
+      toLeave: function() {
+        var that;
+        that = this;
+        return that.model.leave().then(function() {
           that.remove();
           return that.settingsView.backToSettings();
         }, function() {
@@ -1399,11 +1573,17 @@ return TEMPLATE; });
           return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_LEAVE);
         });
       },
-      confirmLeaveDelete: function() {
+      confirmLeave: function() {
         return this.renderLeaveZone(null, true);
       },
-      cancelConfirm: function() {
+      cancelLeaveConfirm: function() {
         return this.renderLeaveZone();
+      },
+      confirmDelete: function() {
+        return this.renderDeleteZone(null, true);
+      },
+      cancelDeleteConfirm: function() {
+        return this.renderDeleteZone();
       }
     });
   });
@@ -1424,26 +1604,26 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<section>\n    <div id=\"TokenManager\">\n        <p class=\"clearfix\">\n            ";
+  buffer += "<section>\r\n    <div id=\"TokenManager\">\r\n        <p class=\"clearfix\">\r\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            "
+  buffer += "\r\n            "
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
     + "<a href=\"http://docs.visualops.io/app_management/reload_states.html\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\n        <section class=\"token-table\">\n            <header class=\"clearfix\">\n                <span class=\"tokenName\">"
+    + "</a> </p>\r\n        <section class=\"token-table\">\r\n            <header class=\"clearfix\">\r\n                <span class=\"tokenName\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\n                <span class=\"tokenToken\">"
+    + "</span>\r\n                <span class=\"tokenToken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\n            </header>\n            <div class=\"scroll-wrap\">\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</span>\r\n            </header>\r\n            <div class=\"scroll-wrap\">\r\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n                <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\n            </div>\n        </section>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n        <h3 id=\"TokenRmTit\"></h3>\n        <p>"
+    + "\"></ul>\r\n            </div>\r\n        </section>\r\n    </div>\r\n    <div id=\"TokenRmConfirm\" class=\"hide\">\r\n        <h3 id=\"TokenRmTit\"></h3>\r\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
-    + "</p>\n        <div class=\"cred-btn-wrap clearfix\">\n            <button class=\"right btn btn-modal-close btn-silver\" id=\"TokenRmCancel\">"
+    + "</p>\r\n        <div class=\"cred-btn-wrap clearfix\">\r\n            <button class=\"right btn btn-modal-close btn-silver\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\n            <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + "</button>\r\n            <button id=\"TokenRemove\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n\n</section>";
+    + "</button>\r\n        </div>\r\n    </div>\r\n\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -1707,11 +1887,11 @@ function program13(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n        <dl class=\"billing-history settings-item\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "BILLING_HISTORY", {hash:{},data:data}))
-    + " <span class=\"payment-next-billing\">"
+    + "</dt> <span class=\"payment-next-billing\">"
     + escapeExpression(helpers.i18n.call(depth0, "NEXT_BILLING_ON", {hash:{},data:data}))
     + " "
     + escapeExpression(helpers.formatTime.call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.nextPeriod), "yyyy-MM-d", {hash:{},data:data}))
-    + "</span></dt>\n            <div class=\"table-head-fix\">\n                ";
+    + "</span>\n            <dd class=\"table-head-fix\">\n                ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentHistory)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(20, program20, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </div>\n    ";
@@ -1731,7 +1911,7 @@ function program14(depth0,data) {
     + "</th>\n                        </tr>\n                        </thead>\n                    </table>\n                    <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <table class=\"table\">\n                                <thead>\n                                <tr>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                </tr>\n                                </thead>\n                                <tbody class=\"t-m-content\">\n                                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                ";
+  buffer += "\n                                </tbody>\n                            </table>\n                        </div>\n                    </dd>\n                ";
   return buffer;
   }
 function program15(depth0,data) {
@@ -2335,50 +2515,37 @@ function program1(depth0,data,depth1) {
   buffer += "\n            ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "observer", {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </span>\n        <div class=\"selectbox memlist-edit-mode memtype\">\n            <div class=\"selection\">\n                ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "admin", {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "observer", {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n            <ul class=\"dropdown\">\n                <li data-id=\"admin\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "admin", {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "admin", {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n                    <div class=\"name\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ADMIN", {hash:{},data:data}))
     + "</div>\n                    <div class=\"desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ADMIN_DESC", {hash:{},data:data}))
     + "</div>\n                </li>\n                <li data-id=\"collaborator\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n                    <div class=\"name\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_COLLABORATOR", {hash:{},data:data}))
     + "</div>\n                    <div class=\"desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_COLLABORATOR_DESC", {hash:{},data:data}))
-    + "</div>\n                </li>\n                <li data-id=\"observer\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "observer", {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n                    <div class=\"name\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_OBSERVER", {hash:{},data:data}))
-    + "</div>\n                    <div class=\"desc\">"
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_OBSERVER_DESC", {hash:{},data:data}))
     + "</div>\n                </li>\n            </ul>\n        </div>\n    </td>\n    <td class=\"memlist-status ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "normal", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "normal", {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </td>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth1 && depth1.admin), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.admin), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</tr>\n";
   return buffer;
@@ -2429,60 +2596,45 @@ function program9(depth0,data) {
 function program11(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_OBSERVER", {hash:{},data:data}));
+  return "selected";
   }
 
 function program13(depth0,data) {
   
   
-  return "selected";
+  return "memlist-pending";
   }
 
 function program15(depth0,data) {
   
   
-  return "memlist-pending";
+  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ACTIVE", {hash:{},data:data}));
   }
 
 function program17(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ACTIVE", {hash:{},data:data}));
+  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_PENDING", {hash:{},data:data}));
   }
 
 function program19(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_PENDING", {hash:{},data:data}));
-  }
-
-function program21(depth0,data) {
-  
   var buffer = "", stack1;
   buffer += "\n    <td>";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n    <td>\n        <button class=\"btn btn-blue memlist-edit-mode done\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_DONE", {hash:{},data:data}))
-    + "</button>\n        ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.me), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </td>\n    ";
+    + "</button>\n        <button class=\"icon-edit memlist-view-mode edit\"></button>\n    </td>\n    ";
   return buffer;
   }
-function program22(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "";
   buffer += "<button class=\"btn btn-red cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_CANCEL_INVITE", {hash:{},data:data}))
     + "</button>";
   return buffer;
-  }
-
-function program24(depth0,data) {
-  
-  
-  return "<button class=\"icon-edit memlist-view-mode edit\"></button>";
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.memlist), {hash:{},inverse:self.noop,fn:self.programWithDepth(1, program1, data, depth0),data:data});
@@ -2559,119 +2711,6 @@ TEMPLATE.defaultProject=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('scenes/settings/models/MemberCollection',['ApiRequest', 'backbone', 'crypto'], function(ApiRequest) {
-    var MemberCollection, MemberModel;
-    MemberModel = Backbone.Model.extend({
-      defaults: {
-        id: '',
-        avatar: '',
-        username: '',
-        email: '',
-        role: '',
-        state: '',
-        me: false,
-        _username: '',
-        _email: '',
-        projectId: ''
-      },
-      updateRole: function(newRole) {
-        var that;
-        that = this;
-        return ApiRequest('project_update_role', {
-          project_id: this.get('projectId'),
-          member_id: this.id,
-          new_role: newRole
-        }).then(function() {
-          return that.set('role', newRole);
-        });
-      },
-      cancelInvite: function() {
-        var that;
-        that = this;
-        return ApiRequest('project_cancel_invitation', {
-          project_id: this.get('projectId'),
-          member_id: this.id
-        }).then(function() {
-          var _ref;
-          return (_ref = that.collection) != null ? _ref.remove(that) : void 0;
-        });
-      }
-    });
-    MemberCollection = Backbone.Collection.extend({
-      constructor: function(attr) {
-        Backbone.Collection.apply(this);
-        return this.projectId = attr.projectId;
-      },
-      model: MemberModel,
-      projectId: '',
-      limit: 10,
-      fetch: function() {
-        var that;
-        that = this;
-        return ApiRequest('project_list_member', {
-          project_id: that.projectId
-        }).then(function(data) {
-          var members, models;
-          that.limit = data[0];
-          members = data[1];
-          models = _.map(members, function(member) {
-            var avatar, currentUserName, email, userName;
-            userName = Base64.decode(member.username);
-            currentUserName = App.user.get('username');
-            email = Base64.decode(member.email);
-            avatar = CryptoJS.MD5(email.trim().toLowerCase()).toString();
-            return new that.model({
-              id: member.id,
-              avatar: "https://www.gravatar.com/avatar/" + avatar,
-              username: userName,
-              email: email,
-              role: member.role,
-              state: member.state,
-              me: userName === currentUserName,
-              _username: member.username,
-              _email: member.email,
-              projectId: that.projectId
-            });
-          });
-          return that.reset(models);
-        });
-      },
-      removeMember: function(memIds) {
-        var that;
-        that = this;
-        return ApiRequest('project_remove_members', {
-          project_id: this.projectId,
-          member_ids: memIds
-        }).then(function() {
-          return that.remove(memIds);
-        });
-      },
-      inviteMember: function(email) {
-        var that;
-        that = this;
-        return ApiRequest('project_invite', {
-          project_id: this.projectId,
-          member_email: email,
-          member_role: 'collaborator'
-        }).then(function() {
-          return that.push(new that.model());
-        });
-      },
-      getCurrentMember: function() {
-        return this.findWhere({
-          username: App.user.get('username')
-        });
-      },
-      isLimitInvite: function() {
-        return this.models.length >= this.limit;
-      }
-    });
-    return MemberCollection;
-  });
-
-}).call(this);
-
 (function() {
   define('scenes/settings/views/MemberView',['backbone', '../template/TplMember', 'i18n!/nls/lang.js', 'UI.bubblepopup', 'ApiRequest', '../models/MemberCollection', 'UI.selectbox', 'UI.parsley', 'UI.errortip', 'UI.table', 'MC.validate'], function(Backbone, TplMember, lang, bubblePopup, ApiRequest, MemberCollection) {
     return Backbone.View.extend({
@@ -2792,7 +2831,7 @@ return TEMPLATE; });
         currentUserName = App.user.get('username');
         return this.memberCol.fetch().then(function() {
           var _ref;
-          that.isAdmin = ((_ref = that.memberCol.getCurrentMember()) != null ? _ref.get('role') : void 0) === 'admin';
+          that.isAdmin = (_ref = that.memberCol.getCurrentMember()) != null ? _ref.isAdmin() : void 0;
           return data = that.memberCol.toJSON();
         }).fail(function(data) {
           notification('error', data.result || data.msg);
@@ -2888,17 +2927,23 @@ return TEMPLATE; });
         return $memItem.addClass('edit');
       },
       doneModify: function(event) {
-        var $done, $memItem, memId, memberModel, newRole, originTxt, that;
+        var $done, $memItem, currentMember, memId, memberModel, newRole, originTxt, that;
         that = this;
         $done = $(event.currentTarget);
         if ($done.prop('disabled') === false) {
           $memItem = $(event.currentTarget).parents('.memlist-item');
           memId = $memItem.data('id');
           newRole = $memItem.find('.memtype li.selected').data('id');
+          memberModel = that.memberCol.get(memId);
+          currentMember = that.memberCol.getCurrentMember();
+          if (memberModel === currentMember && currentMember.isAdmin() && newRole === 'collaborator' && currentMember.isOnlyAdmin()) {
+            notification('error', lang.IDE.SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN);
+            $memItem.removeClass('edit');
+            return;
+          }
           originTxt = $done.text();
           $done.prop('disabled', true);
           $done.text("" + originTxt + "...");
-          memberModel = that.memberCol.get(memId);
           return memberModel.updateRole(newRole).then(function() {
             return that.loadMemList(function() {
               $done.text(originTxt);
@@ -3576,36 +3621,36 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <a data-id=\""
+  buffer += "\r\n        <a data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a>\n        ";
+    + "</a>\r\n        ";
   return buffer;
   }
 
-  buffer += "<nav id=\"settings-nav\">\n    <section>\n        <header>"
+  buffer += "<nav id=\"settings-nav\">\r\n    <section>\r\n        <header>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_SETTING", {hash:{},data:data}))
-    + "</header>\n        <a class=\"active\">"
+    + "</header>\r\n        <a class=\"active\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</a>\n    </section>\n    <section class=\"project-list\">\n        <header>"
+    + "</a>\r\n    </section>\r\n    <section class=\"project-list\">\r\n        <header>"
     + escapeExpression(helpers.i18n.call(depth0, "MANAGE_WORKSPACE", {hash:{},data:data}))
-    + "</header>\n        ";
+    + "</header>\r\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.projects), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </section>\n</nav>\n<section class=\"setting-content\">\n    <header>"
+  buffer += "\r\n    </section>\r\n</nav>\r\n<section class=\"setting-content\">\r\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</header>\n    <dl class=\"settings-item\">\n        <dt class=\"avatar\"><img src=\""
+    + "</header>\r\n    <dl class=\"settings-item\">\r\n        <dt class=\"avatar\"><img src=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.gravatar)),stack1 == null || stack1 === false ? stack1 : stack1.image)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></dt>\n        <dd class=\"change-photo\">\n            <a id=\"change-photo\" href=\""
+    + "\"></dt>\r\n        <dd class=\"change-photo\">\r\n            <a id=\"change-photo\" href=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.gravatar)),stack1 == null || stack1 === false ? stack1 : stack1.profile)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "CHANGE_PHOTO", {hash:{},data:data}))
-    + "</a>\n        </dd>\n    </dl>\n    <dl class=\"settings-item\">\n        <dt>"
+    + "</a>\r\n        </dd>\r\n    </dl>\r\n    <dl class=\"settings-item\">\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n\n    <dl class=\"settings-item accountFullNameRO\">\n        <dt>"
+    + "</dd>\r\n    </dl>\r\n\r\n    <dl class=\"settings-item accountFullNameRO\">\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
     + "</dt><dd> <span class=\"fullNameText\">"
     + escapeExpression(((stack1 = (depth0 && depth0.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3613,39 +3658,39 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " </span> <button class=\"icon-edit link-style tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
-    + "' id=\"AccountFullName\"></button></dd>\n    </dl>\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap settings-item\">\n        <dl>\n            <dt>"
+    + "' id=\"AccountFullName\"></button></dd>\r\n    </dl>\r\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap settings-item\">\r\n        <dl>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\n            <dt>"
+    + "</dt>\r\n            <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\n        </dl>\n        <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\n        <div class=\"edit-actions\">\n            <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
+    + "</dt>\r\n            <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\r\n        </dl>\r\n        <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\r\n        <div class=\"edit-actions\">\r\n            <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\n            <span id=\"AccountCancelFullName\" class=\"cancel-button\">"
+    + "</button>\r\n            <span id=\"AccountCancelFullName\" class=\"cancel-button\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\n        </div>\n    </div>\n\n    <dl class=\"settings-item accountEmailRO\">\n        <dt>"
+    + "</span>\r\n        </div>\r\n    </div>\r\n\r\n    <dl class=\"settings-item accountEmailRO\">\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
-    + "</dt>\n        <dd>"
+    + "</dt>\r\n        <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\n            <button class=\"icon-edit link-style tooltip\" data-tooltip='"
+    + "\r\n            <button class=\"icon-edit link-style tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "' id=\"AccountEmail\"></button>\n        </dd>\n    </dl>\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap settings-item\">\n        <dl>\n            <dt>"
+    + "' id=\"AccountEmail\"></button>\r\n        </dd>\r\n    </dl>\r\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap settings-item\">\r\n        <dl>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\n\n            <dt>"
+    + "</dt>\r\n            <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\r\n\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\n        </dl>\n\n      <div id=\"AccountEmailInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"edit-actions\">\n          <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
+    + "</dt>\r\n            <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\r\n        </dl>\r\n\r\n      <div id=\"AccountEmailInfo\" class=\"empty-hide\"></div>\r\n\r\n      <div class=\"edit-actions\">\r\n          <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\n          <span id=\"AccountCancelEmail\" class=\"cancel-button\">"
+    + "</button>\r\n          <span id=\"AccountCancelEmail\" class=\"cancel-button\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\n      </div>\n    </div>\n\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + "</span>\r\n      </div>\r\n    </div>\r\n\r\n    <button id=\"AccountPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
-    + "</button>\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap settings-item\">\n\n        <dl>\n            <dt>"
+    + "</button>\r\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap settings-item\">\r\n\r\n        <dl>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n            <dt>"
+    + "</dt>\r\n            <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\r\n\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n        </dl>\n\n        <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n        <div class=\"edit-actions\">\n            <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + "</dt>\r\n            <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\r\n        </dl>\r\n\r\n        <div id=\"AccountInfo\" class=\"empty-hide\"></div>\r\n\r\n        <div class=\"edit-actions\">\r\n            <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\n        <span id=\"AccountCancelPwd\" class=\"cancel-button\">"
+    + "</button>\r\n        <span id=\"AccountCancelPwd\" class=\"cancel-button\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\n        </div>\n    </div>\n</section>";
+    + "</span>\r\n        </div>\r\n    </div>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -4071,113 +4116,113 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\n\n  <div class=\"icon-close-circle\"></div>\n\n  <section>\n    <h3 class=\"title\">"
+  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\r\n\r\n  <div class=\"icon-close-circle\"></div>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STACK_APP_OP", {hash:{},data:data}))
-    + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</h3>\r\n    <ul>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_KEY", {hash:{},data:data}))
-    + "</span> </div>\n        <div class=\"shortcut-desc\">"
+    + "</span> </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_STAT_KEY", {hash:{},data:data}))
-    + "</span> </div>\n        <div class=\"shortcut-desc\">"
+    + "</span> </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_STAT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n          <span class=\"shortcut pc\">"
+    + "</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n          <span class=\"shortcut pc\">"
+    + "</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + S</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + S</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SAVE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SAVE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + "
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + "
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n          <span class=\"shortcut pc\">"
+    + "</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">← ↑ → ↓</span> </div>\n        <div class=\"shortcut-desc\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">← ↑ → ↓</span> </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NUDGE_ITEM_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n  <section>\n    <h3 class=\"title\">"
+    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STATE_GEN", {hash:{},data:data}))
-    + "</h3>\n    <ul class=\"keys\">\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">↑ ↓</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</h3>\r\n    <ul class=\"keys\">\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">↑ ↓</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_FOCUS_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_EXPAND_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_EXPAND_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COLLAPSE_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COLLAPSE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NEXT_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NEXT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PREV_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PREV_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + E</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + E</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CONTENT_EDITOR_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CONTENT_EDITOR_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + I</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + I</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_INFO_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_INFO_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + L</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + L</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_LOG_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_LOG_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n  <section>\n    <h3 class=\"title\">"
+    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STATE_EDIT", {hash:{},data:data}))
-    + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + A</span>\n          <span class=\"shortcut pc\">"
+    + "</h3>\r\n    <ul>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + A</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ALL_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ALL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + D</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + D</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DESELECT_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DESELECT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Enter</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Enter</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CREATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CREATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Delete</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Delete</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + ↑</span>\n          <span class=\"shortcut mac\">⌘ + ↓</span>\n          <span class=\"shortcut pc\">Ctrl + ↑</span>\n          <span class=\"shortcut pc\">Ctrl + ↓</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + ↑</span>\r\n          <span class=\"shortcut mac\">⌘ + ↓</span>\r\n          <span class=\"shortcut pc\">Ctrl + ↑</span>\r\n          <span class=\"shortcut pc\">Ctrl + ↓</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_MOVE_FOCUS_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + C</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + C</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COPY_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COPY_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + V</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + V</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PASTE_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PASTE_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Z</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Z</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_UNDO_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_UNDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Y</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Y</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n</div> </div>";
+    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n</div> </div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {

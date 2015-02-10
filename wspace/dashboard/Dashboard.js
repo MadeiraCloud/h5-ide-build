@@ -2738,7 +2738,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, CredentialFormView) {
+  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ide/submodels/ProjectLog", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, CredentialFormView) {
     Handlebars.registerHelper("awsAmiIcon", function(credentialId, amiId, region) {
       var ami;
       ami = CloudResources(credentialId, constant.RESTYPE.AMI, region).get(amiId);
@@ -2810,8 +2810,12 @@ return TEMPLATE; });
         this.listenTo(this.model.scene.project, "update:credential", function() {
           return self.updateDemoView();
         });
+        this.listenTo(this.model.scene.project, "change:credential", function() {
+          return self.updateDemoView();
+        });
         this.listenTo(App.WS, "visualizeUpdate", this.onVisualizeUpdated);
         this.credentialId = this.model.scene.project.credIdOfProvider(constant.PROVIDER.AWSGLOBAL);
+        this.credentialAccount = this.model.scene.project.credOfProvider(constant.PROVIDER.AWSGLOBAL).get("awsAccount");
         this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
         this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
@@ -2871,11 +2875,17 @@ return TEMPLATE; });
         });
       },
       updateDemoView: function() {
+        var newCredentialAccount;
         if (!this.model.scene.project.isDemoMode()) {
           this.$el.find("#dashboard-data-wrap").removeClass("demo");
-          this.$el.find("#VisualizeVPC").removeAttr("disabled");
+          this.$el.find("#VisualizeVPC").removeAttr("disabled").removeClass("tooltip");
+          newCredentialAccount = this.model.scene.project.credOfProvider(constant.PROVIDER.AWSGLOBAL).get("awsAccount");
+          if (this.credentialAccount !== newCredentialAccount) {
+            this.reloadResource();
+            this.credentialAccount = newCredentialAccount;
+          }
         } else {
-          this.$el.find("#VisualizeVPC").attr("disabled", "disabled");
+          this.$el.find("#VisualizeVPC").attr("disabled", "disabled").addClass("tooltip");
           this.$el.find("#dashboard-data-wrap").toggleClass("demo", true);
         }
       },
