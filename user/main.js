@@ -159,10 +159,10 @@
     return langsrc[deepth][str];
   };
 
-  render = function(tempName) {
+  render = function(tempName, data) {
     var template;
     template = Handlebars.compile($(tempName).html());
-    return $("#main-body").html(template());
+    return $("#main-body").html(template(data));
   };
 
   init = function() {
@@ -198,12 +198,17 @@
           return;
         }
         return checkInviteKey(hashArray[1]).then(function(result) {
-          var projectId;
-          if (result.result[0] !== 0) {
-            return render('#expire-template');
-          } else {
+          var projectId, retCode;
+          retCode = result.result[0];
+          if (retCode === 0) {
             projectId = atob(hashArray[1]).split('&')[0];
             return location.href = "/workspace/" + projectId;
+          } else if (retCode === 120) {
+            return render('#expire-template', {
+              other_user: true
+            });
+          } else {
+            return render('#expire-template');
           }
         }, function() {
           return render('#expire-template');

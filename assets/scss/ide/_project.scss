@@ -88,7 +88,7 @@
 
 }
 
-.new-project-modal {
+.new-project-modal, .update-payment-wrap {
   .new-project-name {
       margin-left: 5px;
       width: 350px;
@@ -285,8 +285,8 @@
 
   li > a {
     display : block;
-    padding : 0 16px;
-    width   : 132px;
+    padding : 0 30px 0 16px;
+    width   : 118px;
   }
 
   li > a + a {
@@ -314,7 +314,7 @@
   }
 
   li.padding {
-    padding : 0 20px;
+    padding : 0 16px;
   }
 }
 

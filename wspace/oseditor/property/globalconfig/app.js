@@ -6,38 +6,38 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\n            <dd>"
+  buffer += "\r\n            <dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ENABLED", {hash:{},data:data}))
-    + "</dd>\n        ";
+    + "</dd>\r\n        ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\n            <dd>"
+  buffer += "\r\n            <dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DISABLED", {hash:{},data:data}))
-    + "</dd>\n        ";
+    + "</dd>\r\n        ";
   return buffer;
   }
 
-  buffer += "<section class=\"group\">\n    <dl class=\"dl-horizontal\">\n        <dt>Platform</dt><dd>"
+  buffer += "<section class=\"group\">\r\n    <dl class=\"dl-horizontal\">\r\n        <dt>Platform</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.platform), {hash:{},data:data}))
-    + "</dd>\n        <dt>Region</dt><dd>"
+    + "</dd>\r\n        <dt>Region</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.region), {hash:{},data:data}))
-    + "</dd>\n        <dt>App ID</dt><dd>"
+    + "</dd>\r\n        <dt>App ID</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
-    + "</dd>\n        <dt>Usage</dt><dd>"
+    + "</dd>\r\n        <dt>Usage</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.usage), {hash:{},data:data}))
-    + "</dd>\n    </dl>\n</section>\n\n<section class=\"group\">\n    <dl class=\"dl-vertical\">\n        <dt>Description</dt><dd>"
+    + "</dd>\r\n    </dl>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Description</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
-    + "</dd>\n        <dt>Instance State</dt><dd>"
+    + "</dd>\r\n        <dt>Instance State</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.agent)),stack1 == null || stack1 === false ? stack1 : stack1.enabled), {hash:{},data:data}))
-    + "</dd>\n        <!-- <dt>"
+    + "</dd>\r\n        <!-- <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF_VIEW", {hash:{},data:data}))
-    + "</dt>\n        ";
+    + "</dt>\r\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.resource_diff), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " -->\n    </dl>\n</section>";
+  buffer += " -->\r\n    </dl>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });

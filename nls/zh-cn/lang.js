@@ -649,7 +649,8 @@ define({
         "PROC_ERR_INFO": "错误详情",
         "PROC_CLOSE_TAB": "关闭",
         "COMBO_DROPDOWN_DEMO_AWS_ACCOUNT": "您正在使用测试账号。",
-        "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL": "提供 AWS 证书来管理密钥对。",
+        "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL": "提供 AWS 证书来管理资源。",
+        "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL_WITH_TYPE": "提供 AWS 证书来管理%s。",
         "PAYMENT_PAYMENT_NEEDED": "升级账户",
         "PAYMENT_INVALID_BILLING": "您的账单信息无效。",
         "PAYMENT_LOADING": "加载中...",
@@ -926,6 +927,7 @@ define({
         "SETTINGS_MEMBER_LABEL_INVITE_CONFIRM": "邀请成员",
         "SETTINGS_MEMBER_LABEL_LIMIT": "该工作空间已经达到 %s 个成员的标准上限，如果你想要邀请更多协作成员，请联系：",
         "SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN": "你是该工作空间唯一的管理员，角色不可更改。",
+        "SETTING_MEMBER_LABEL_NO_USER": "未找到用户 “%s”",
         "WORKSPACE_DEMO_TIP": "当前工作空间处于测试模式，您需要设置证书才能运行 Stack 和导入已有资源。",
         "CREDENTIAL_LINKED_TO_THIS_WORKSPACE": "连接到此工作空间的证书：",
         "PARENTHESES_DEMO": "测试模式",
@@ -973,6 +975,7 @@ define({
         "PROVIDE_CRED_TO_VISUALIZE": "提供云证书以将已有 VPC 导入为 App",
         "PAYMENT_INSTANCE_ID": "实例 ID",
         "CANT_DELETE_WORKSPACE": "我们没能在您的工作空间绑定的信用卡上成功扣款。此工作空间现处于受限模式。请更新您的账单信息。一旦工作空间恢复正常模式, 您就可以删除此工作空间。",
+        "SETTING_INVALID_EMAIL": "此电子邮件无效, 请输入有效的电子邮件。",
         "STATE_TIP_DELETE_STATE": "删除 State",
         "STATE_TIP_SELECT_STATE": "选择 State",
         "STATE_TIP_DESCRIPTION": "帮助",
@@ -1152,6 +1155,7 @@ define({
     },
     "INVITE": {
         "invitiation_expired": "抱歉，邀请链接无效或已经过期。",
+        "invitiation_for_other": "抱歉，该邀请链接可能是发给其他用户的。",
         "go_to_visualops_ide": "点此进入 VisualOps"
     },
     "NOTIFY": {
@@ -1237,7 +1241,8 @@ define({
         "UPDATED_FULLNAME_SUCCESS": "全名更新成功",
         "UPDATED_FULLNAME_FAIL": "全名更新失败，请稍后重试。",
         "LOAD_SAMPLE_FAIL": "无法加载指定的模板，请稍后重试。",
-        "PARSE_SAMPLE_FAIL": "指定的模板格式不正确，无法加载。"
+        "PARSE_SAMPLE_FAIL": "指定的模板格式不正确，无法加载。",
+        "INFO_PROJECT_REMOVED": "You no longer have access to the workspace '%s'."
     },
     "PARSLEY": {
         "THIS_VALUE_IS_REQUIRED": "此字段必填。",
@@ -2162,7 +2167,15 @@ define({
         "EG_5": "例如：5",
         "EG_MINUS_30": "例如：-30",
         "REMOVE_ROUTE": "删除路由",
-        "REMOVE_SUBNET": "删除子网"
+        "REMOVE_SUBNET": "删除子网",
+        "RESOURCE_NAME_KEYPAIR": "密钥对",
+        "RESOURCE_NAME_PARAMETER_GROUP": "数据库参数组",
+        "RESOURCE_NAME_RDS_SNAPSHOT": "数据库快照",
+        "RESOURCE_NAME_SNAPSHOT": "快照",
+        "RESOURCE_NAME_SNS": " SNS 订阅",
+        "RESOURCE_NAME_SSL": "SSL",
+        "RESOURCE_NAME_DHCP": "DHCP",
+        "RESOURCE_NAME_OPTION_GROUP": " RDS 选项组"
     },
     "SERVICE": {
         "NETWORK_ERROR": "服务暂时不可用, 请稍后重试",

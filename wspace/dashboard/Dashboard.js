@@ -622,21 +622,22 @@ return TEMPLATE; });
         }
       },
       onRegionChange: function() {
-        var currentRegion, self;
+        var credId, currentRegion, self;
         if (!this.hasKpParam) {
           return;
         }
+        credId = this.project.credIdOfProvider("aws::global");
         currentRegion = $("#import-cf-region").find(".selected").attr("data-id");
         if (!this.regionForceFetchMap[currentRegion]) {
           this.regionForceFetchMap[currentRegion] = true;
-          CloudResources(constant.RESTYPE.KP, currentRegion).fetchForce();
+          CloudResources(credId, constant.RESTYPE.KP, currentRegion).fetchForce();
         }
         self = this;
         $("#import-cf-form .loader").show();
-        CloudResources(constant.RESTYPE.KP, currentRegion).fetch().then(function() {
+        CloudResources(credId, constant.RESTYPE.KP, currentRegion).fetch().then(function() {
           var $inputs, $ipt, param, _i, _len, _ref;
           $("#import-cf-form .loader").hide();
-          self.currentRegionKps = CloudResources(constant.RESTYPE.KP, currentRegion).pluck("id");
+          self.currentRegionKps = CloudResources(credId, constant.RESTYPE.KP, currentRegion).pluck("id");
           $inputs = $("#import-cf-params").children();
           _ref = self.parameters;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -771,7 +772,7 @@ return TEMPLATE; });
         return !error;
       },
       doImport: function() {
-        var region, self;
+        var credId, region, self;
         if (!this.checkCFParameter()) {
           return;
         }
@@ -781,12 +782,13 @@ return TEMPLATE; });
         $("#import-cf-form").hide();
         this.modal.resize();
         region = $("#import-cf-region").find(".selected").attr("data-id");
-        return CloudResources(constant.RESTYPE.AZ, region).fetch().then(function() {
+        credId = this.project.credIdOfProvider("aws::global");
+        return CloudResources(credId, constant.RESTYPE.AZ, region).fetch().then(function() {
           return ApiRequest("stack_import_cloudformation", {
             region_name: $("#import-cf-region").find(".selected").attr("data-id"),
             cf_template: self.cfJson,
             parameters: {
-              az: _.pluck(CloudResources(constant.RESTYPE.AZ, region).where({
+              az: _.pluck(CloudResources(credId, constant.RESTYPE.AZ, region).where({
                 category: region
               }), "id")
             }
@@ -796,7 +798,7 @@ return TEMPLATE; });
             if (self.filename) {
               data.name = self.filename;
             }
-            return App.importJson(data, true);
+            return App.loadUrl(self.project.createStackByJson(data, true).url());
           }, function() {
             self.modal.close();
             notification('error', sprintf(lang.IDE.POP_IMPORT_CFM_ERROR));
@@ -3069,9 +3071,7 @@ return TEMPLATE; });
         var id;
         event.preventDefault();
         id = $(event.currentTarget).closest("li").attr("data-id");
-        (new AppAction({
-          model: this.model.scene.project.getOpsModel(id)
-        })).duplicateStack();
+        App.loadUrl(this.model.scene.project.stacks().get(id).duplicate().url());
         return false;
       },
       startApp: function(event) {

@@ -322,6 +322,7 @@ return TEMPLATE; });
         return {
           title: "Manage Key Pairs in " + regionName,
           slideable: _.bind(that.denySlide, that),
+          resourceName: lang.PROP.RESOURCE_NAME_KEYPAIR,
           context: that,
           buttons: [
             {
@@ -927,7 +928,8 @@ return TEMPLATE; });
       renderRegionDropdown: function() {
         var option, selection;
         option = {
-          filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_REGION
+          filterPlaceHolder: lang.PROP.SNAPSHOT_FILTER_REGION,
+          resourceName: lang.PROP.RESOURCE_NAME_SNAPSHOT
         };
         this.regionsDropdown = new combo_dropdown(option);
         this.regions = _.keys(constant.REGION_LABEL);
@@ -1220,6 +1222,7 @@ return TEMPLATE; });
         return {
           title: "Manage Snapshots in " + regionName,
           slideable: true,
+          resourceName: lang.PROP.RESOURCE_NAME_SNAPSHOT,
           context: that,
           buttons: [
             {

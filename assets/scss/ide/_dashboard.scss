@@ -983,16 +983,23 @@ article.dashboard-content {
     }
 }
 
-#region-switch-stack, #region-switch-app{
-  height: 40px;
-  padding: 5px 20px;
-  color: #bfc0cb;
-  font-size: 16px;
-  padding-right: 5px;
-  .dash-region-navigation.open &{
+#region-switch-stack, #region-switch-app {
+  height        : 40px;
+  padding       : 5px 20px;
+  color         : #bfc0cb;
+  font-size     : 16px;
+  padding-right : 5px;
+  cursor        : pointer;
+
+  &:hover {
+    background: rgba(0,0,0,0.03);
+  }
+
+  .dash-region-navigation.open & {
     background: #ddd;
     color: #686968;
   }
+
 }
 
 .dash-region-navigation{
@@ -1015,7 +1022,6 @@ article.dashboard-content {
       position    : relative;
       text-align  : center;
       background  : #F3F3F3;
-      cursor      : pointer;
       font-size   : 21px;
       color       : #666;
       background  : image-url("ide/global-region-app-stack-m.png") 10px top no-repeat;

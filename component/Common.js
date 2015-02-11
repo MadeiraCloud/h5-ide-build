@@ -62,14 +62,32 @@ TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <a class=\"show-credential\">"
+    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL_WITH_TYPE", (depth0 && depth0.resourceName), {hash:{},data:data}))
+    + "</a>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <a class=\"show-credential\">"
+    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL", {hash:{},data:data}))
+    + "</a>\n    ";
+  return buffer;
+  }
 
   buffer += "<div class=\"no-credential tac\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.COMBO_DROPDOWN_DEMO_AWS_ACCOUNT", {hash:{},data:data}))
-    + "</p>\n    <a class=\"show-credential\">"
-    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL", {hash:{},data:data}))
-    + "</a>\n</div>";
+    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_DEMO_AWS_ACCOUNT", {hash:{},data:data}))
+    + "</p>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.resourceName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
   return buffer;
   };
 TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
@@ -126,11 +144,12 @@ Refer to kpView.coffee
         return this.trigger('change', name, data);
       },
       initialize: function(options) {
-        this.$el.html(template.frame(options));
+        this.options = options;
+        this.$el.html(template.frame(this.options));
         return this;
       },
       render: function(tpl) {
-        this.$('.combo-dd-content').html(template[tpl] && template[tpl]() || tpl);
+        this.$('.combo-dd-content').html(template[tpl] && template[tpl](this.options) || tpl);
         return this;
       },
       setSelection: function(dom) {
@@ -415,28 +434,12 @@ TEMPLATE.loading=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"kp-no-credential tac\">\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.COMBO_DROPDOWN_DEMO_AWS_ACCOUNT", {hash:{},data:data}))
-    + "</p>\n    <a class=\"show-credential\">"
-    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL", {hash:{},data:data}))
-    + "</a>\n</div>";
-  return buffer;
-  };
-TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
   buffer += "<tr class=\"table tr-detail\">\n    <td colspan=\""
     + escapeExpression(((stack1 = (depth0 && depth0.columnCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n    </td>\n</tr>";
+    + "\"></td>\n</tr>";
   return buffer;
   };
 TEMPLATE.tr_detail=Handlebars.template(__TEMPLATE__);
@@ -445,14 +448,32 @@ TEMPLATE.tr_detail=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <a class=\"show-credential\">"
+    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL_WITH_TYPE", (depth0 && depth0.resourceName), {hash:{},data:data}))
+    + "</a>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <a class=\"show-credential\">"
+    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL", {hash:{},data:data}))
+    + "</a>\n    ";
+  return buffer;
+  }
 
   buffer += "<div class=\"no-credential tac\">\n    <p>"
     + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_DEMO_AWS_ACCOUNT", {hash:{},data:data}))
-    + "</p>\n    <a class=\"show-credential\">"
-    + escapeExpression(helpers.i18n.call(depth0, "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL", {hash:{},data:data}))
-    + "</a>\n</div>";
+    + "</p>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.resourceName), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
   return buffer;
   };
 TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
@@ -692,7 +713,7 @@ Refer to kpView.coffee
         this.$el.html(template.frame(this.options));
         if (_.isString(refresh)) {
           tpl = refresh;
-          this.$('.content-wrap').html(template[tpl] && template[tpl]() || tpl);
+          this.$('.content-wrap').html(template[tpl] && template[tpl](this.options) || tpl);
         } else {
           this.renderLoading();
         }

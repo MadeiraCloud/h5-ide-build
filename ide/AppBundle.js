@@ -31,7 +31,9 @@
         user: new Meteor.Collection("user", opts),
         imports: new Meteor.Collection("imports", opts),
         request: new Meteor.Collection("request", opts),
-        status: new Meteor.Collection("status", opts)
+        status: new Meteor.Collection("status", opts),
+        app: new Meteor.Collection("app", opts),
+        stack: new Meteor.Collection("stack", opts)
       };
       Deps.autorun((function(_this) {
         return function() {
@@ -96,7 +98,7 @@
           if ((_ref = self.projects[projectId]) != null) {
             _ref.ready = true;
           }
-        }), this.connection.subscribe("status", usercode, session, projectId)
+        }), this.connection.subscribe("status", usercode, session, projectId), this.connection.subscribe("stack", usercode, session, projectId), this.connection.subscribe("app", usercode, session, projectId)
       ];
     };
     Websocket.prototype.unsubscribe = function(projectId) {
@@ -155,15 +157,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\n    <div class=\"confirmSession\">\n        <div class=\"modal-text-major\">\n            <p>"
+  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\r\n    <div class=\"confirmSession\">\r\n        <div class=\"modal-text-major\">\r\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\n            <p>"
+    + "</p>\r\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\n        </div>\n        <div class=\"modal-text-minor\">"
+    + "</p>\r\n        </div>\r\n        <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\n    </div>\n    <div class=\"reconnectSession\" style=\"display:none;\">\n        <div class=\"modal-text-major\">"
+    + "</div>\r\n    </div>\r\n    <div class=\"reconnectSession\" style=\"display:none;\">\r\n        <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\n        <div class=\"modal-input\">\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n        </div>\n    </div>\n</section>";
+    + "</div>\r\n        <div class=\"modal-input\">\r\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n        </div>\r\n    </div>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -291,13 +293,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
+  buffer += "<div class=\"complete-fullname\">\r\n    <div class=\"control-group fullname\">\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-firstname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
+    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n    </div>\r\n    <p class=\"information\">"
     + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
-    + "</p>\n</div>";
+    + "</p>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -544,7 +546,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.__setJsonData(options.jsonData);
         }
 
-        /* env:dev                                                                                                                        env:dev:end */
+        /* env:dev                                                                                                                          env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -664,23 +666,36 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         };
       },
       fetchJsonData: function() {
-        return this.__fdjLocalInit(this) || this.__fjdImport(this) || this.__fjdStack(this) || this.__fjdApp(this);
+        return this.__fjdImport(this) || this.__fdjLocalInit(this) || this.__fjdStack(this) || this.__fjdApp(this);
       },
       __fdjLocalInit: function() {
-        var d;
+        var d, self;
         if (this.isPersisted()) {
           return;
-        }
-        if (!this.__jsonData) {
-          this.__setJsonData(this.__defaultJson());
         }
         if (this.get("__________itsshitdontsave")) {
           d = Q.defer();
           d.resolve(this);
           return d.promise;
-        } else {
-          return this.save();
         }
+        if (this.get("duplicateTarget")) {
+          self = this;
+          return ApiRequest("stack_save_as", {
+            region_name: this.get("region"),
+            stack_id: this.get("duplicateTarget"),
+            new_name: this.collection.getNewName()
+          }).then(function(json) {
+            self.__setJsonData(json);
+            return self.set({
+              id: json.id,
+              duplicateTarget: void 0
+            });
+          });
+        }
+        if (!this.__jsonData) {
+          this.__setJsonData(this.__defaultJson());
+        }
+        return this.save();
       },
       __fjdImport: function(self) {
         if (!this.isImported()) {
@@ -741,7 +756,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           };
         }
         if (!json.agent.module || !json.agent.module.repo) {
-          json.module = {
+          json.agent.module = {
             repo: App.user.get("repo"),
             tag: App.user.get("tag")
           };
@@ -873,27 +888,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           }));
         });
       },
-      duplicate: function(name) {
-        var attr, collection, thumbnail;
+      duplicate: function() {
         if (this.isApp()) {
           return;
         }
-        collection = this.collection;
-        thumbnail = ThumbUtil.fetch(this.get("id"));
-        attr = $.extend(true, {}, this.attributes, {
-          name: name || collection.getNewName(),
-          updateTime: +(new Date()),
-          provider: this.get("provider")
-        });
-        return ApiRequest("stack_save_as", {
-          region_name: this.get("region"),
-          stack_id: this.get("id"),
-          new_name: attr.name
-        }).then(function(id) {
-          ThumbUtil.save(id, thumbnail);
-          attr.id = id;
-          return collection.add(new OpsModel(attr));
-        });
+        return this.collection.add(new OpsModel({
+          duplicateTarget: this.get("id"),
+          provider: this.get("provider"),
+          region: this.get("region")
+        }));
       },
       stop: function() {
         var self;
@@ -901,8 +904,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return this.__returnErrorPromise();
         }
         self = this;
-        this.set("state", OpsModelState.Stopping);
         this.attributes.progress = 0;
+        this.set("state", OpsModelState.Stopping);
         return ApiRequest("app_stop", {
           region_name: this.get("region"),
           key_id: this.credentialId(),
@@ -920,8 +923,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return this.__returnErrorPromise();
         }
         self = this;
-        this.set("state", OpsModelState.Starting);
         this.attributes.progress = 0;
+        this.set("state", OpsModelState.Starting);
         return ApiRequest("app_start", {
           region_name: this.get("region"),
           key_id: this.credentialId(),
@@ -942,8 +945,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return this.__returnErrorPromise();
         }
         oldState = this.get("state");
-        this.set("state", OpsModelState.Terminating);
         this.attributes.progress = 0;
+        this.set("state", OpsModelState.Terminating);
         self = this;
         options = $.extend({
           region_name: this.get("region"),
@@ -1090,6 +1093,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             toState = completed ? OpsModelState.Destroyed : OpsModelState.Stopped;
             break;
           case constant.OPS_CODE_NAME.UPDATE:
+          case constant.OPS_CODE_NAME.STATE_UPDATE:
             if (!this.__updateAppDefer) {
               return console.warn("UpdateAppDefer is null when setStatusWithWSEvent with `update` event.");
             }
@@ -1598,14 +1602,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       OneTimeWsInit = function() {};
       App.WS.collection.project.find().observe({
         changed: function(newDocument, oldDocument) {
-          return App.model.projects().get(newDocument.id).updateWithWsData(newDocument);
+          var _ref;
+          return (_ref = App.model.projects().get(newDocument.id)) != null ? _ref.updateWithWsData(newDocument) : void 0;
         },
         removed: function(oldDocument) {
+          var _ref;
           if (!oldDocument) {
             return;
           }
           console.info("Project has been removed", oldDocument);
-          App.model.projects().get(oldDocument.id).cleanup();
+          if ((_ref = App.model.projects().get(oldDocument.id)) != null) {
+            _ref.cleanup();
+          }
         }
       });
       App.WS.collection.history.find().observe({
@@ -1842,33 +1850,43 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return res;
         });
       },
-      destroy: function(options) {
+      destroy: function() {
         var self;
         self = this;
+        this.__manualDestroy = true;
         return ApiRequest("project_remove", {
           project_id: this.id
         }).then(function(res) {
-          self.cleanup(options);
+          self.cleanup();
           return res;
+        }, function(err) {
+          self.__manualDestroy = false;
+          throw err;
         });
       },
-      cleanup: function(options) {
+      cleanup: function() {
         if (this.__isRemoved) {
           return;
         }
         this.__isRemoved = true;
-        this.trigger("destroy", this, this.collection, options);
+        this.trigger("destroy", this, this.collection, {
+          manualAction: !!this.__manualDestroy
+        });
         App.WS.unsubscribe(this.id);
       },
       leave: function() {
         var that;
         that = this;
+        this.__manualDestroy = true;
         return ApiRequest("project_remove_members", {
           project_id: this.id,
           member_ids: [App.user.id]
         }).then(function(res) {
           that.cleanup();
           return res;
+        }, function(err) {
+          self.__manualDestroy = false;
+          throw err;
         });
       },
       createStack: function(region, provider) {
@@ -2084,7 +2102,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         _ref = this.get("projects").models;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           p = _ref[_i];
-          ops = p.getOpsMOdel(opsModelId);
+          ops = p.getOpsModel(opsModelId);
           if (ops) {
             return ops;
           }

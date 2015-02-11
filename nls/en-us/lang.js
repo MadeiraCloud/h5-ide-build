@@ -649,7 +649,8 @@ define({
         "PROC_ERR_INFO": "Error Details",
         "PROC_CLOSE_TAB": "Close",
         "COMBO_DROPDOWN_DEMO_AWS_ACCOUNT": "You are using a demo AWS account",
-        "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL": "Provide AWS Credential <br/> to manage key pairs",
+        "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL": "Provide AWS Credential <br/> to manage resources.",
+        "COMBO_DROPDOWN_PRIVIDE_AWS_CREDENTIAL_WITH_TYPE": "Provide AWS Credential <br/> to manage %s",
         "PAYMENT_PAYMENT_NEEDED": "Upgrade your account",
         "PAYMENT_INVALID_BILLING": "Your Billing Information is Invalid",
         "PAYMENT_LOADING": "Loading...",
@@ -903,7 +904,7 @@ define({
         "BASIC_SETTINGS": "Basic Settings",
         "MEMBER": "Member",
         "USAGE_REPORT": "Usage Report",
-        "PROVIDER_CREDENTIAL": "Provider Credential",
+        "PROVIDER_CREDENTIAL": "Cloud Access Credential",
         "LEAVE": "Leave",
         "DELETE_WORKSPACE_WILL_FORGOT_APPS": "Once the workspace is deleted, all stacks will be removed and all apps will be forgotten (Resources will be left as they are).",
         "IMPORT_JSON_BEFORE_DELETE_WORKSPACE": "You can export stacks to JSON before deleting the workspace.",
@@ -926,12 +927,13 @@ define({
         "SETTINGS_MEMBER_LABEL_INVITE_CONFIRM": "Invite Member",
         "SETTINGS_MEMBER_LABEL_LIMIT": "Your workspace has reached the standard limit of %s. If you'd like invite more member to collaborate, contact us at",
         "SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN": "You are the only admin in this workspace. Cannot change your role to member.",
+        "SETTING_MEMBER_LABEL_NO_USER": "There is no user \"%s\"",
         "WORKSPACE_DEMO_TIP": "This workspace is currently in Demo mode. Set up your own cloud credential to run stack into live resources, or import existing infrastructures.",
-        "CREDENTIAL_LINKED_TO_THIS_WORKSPACE": "Following clouder provider credential is linked to this workspace:",
+        "CREDENTIAL_LINKED_TO_THIS_WORKSPACE": "Following Cloud Access Credential is linked to this workspace:",
         "PARENTHESES_DEMO": "(Demo)",
         "DEMO_CREDENTIAL_TIP": "This is a demo credential for designing stack only.",
         "DEMO_CREDENTIAL_ERROR_NOTE": "Note: Some stack you build in demo mode may report error due to resource inconsistency between different cloud accounts.",
-        "SET_UP_PROVIDER_CREDENTIAL": "Set up Provider Credential",
+        "SET_UP_PROVIDER_CREDENTIAL": "Set up Cloud Access Credential",
         "CREDENTIAL_ALIAS": "Credential Alias",
         "CREDENTIAL_AUTHORIZE_NOTE": "Note: This credential must be linked to an account has at least read access to AWS EC2 resources, otherwise there will be issues using VisualOps.",
         "ARE_YOU_SURE_YOU_WANT_TO_REMOVE_XXX": "Are you sure you want to remove %s.",
@@ -951,7 +953,7 @@ define({
         "SETTINGS_MEMBER_LABEL_NO_USER": "There is no user",
         "SETTINGS_MEMBER_LABEL_DEFAULT_WORKSPACE_TIP1": "You are the only member in your default workspace",
         "SETTINGS_MEMBER_LABEL_DEFAULT_WORKSPACE_TIP2": "To invite member and collaborate with other user",
-        "SETTINGS_MEMBER_LABEL_CREATE_WORKSPACE": "please create a new workspace",
+        "SETTINGS_MEMBER_LABEL_CREATE_WORKSPACE": "create a new workspace",
         "SETTINGS_MEMBER_LABEL_REMOVE_CONFIRM": "Do you confirm to delete selected %s user(s)?",
         "ADD_CLOUD_CREDENTIAL": "Add Cloud Credential",
         "UPDATE_CLOUD_CREDENTIAL": "Update Cloud Credential",
@@ -973,6 +975,7 @@ define({
         "PROVIDE_CRED_TO_VISUALIZE": "Provide cloud credential to import existing VPC as app.",
         "PAYMENT_INSTANCE_ID": "Instance ID",
         "CANT_DELETE_WORKSPACE": "We were unable to charge the workspace's credit card. This workspace is in limited status now. Please update your billing information. Once the workspace is back in normal, you may delete it.",
+        "SETTING_INVALID_EMAIL": "This email is invalid. Please enter a valid email.",
         "STATE_TIP_DELETE_STATE": "Delete State",
         "STATE_TIP_SELECT_STATE": "Select State",
         "STATE_TIP_DESCRIPTION": "Help",
@@ -1151,7 +1154,8 @@ define({
         "page_404_desc": "Sorry for the inconvenience. Why not try to <a href=\"http://www.visualops.io/\">visit our homepage</a>?"
     },
     "INVITE": {
-        "invitiation_expired": "Oops. The invitation link is invalid or has expired.",
+        "invitiation_expired": "Oops, the invitation link is invalid or has expired.",
+        "invitiation_for_other": "Oops, it seems the invitation is for another user.",
         "go_to_visualops_ide": "Go to VisualOps IDE"
     },
     "NOTIFY": {
@@ -1237,7 +1241,8 @@ define({
         "UPDATED_FULLNAME_SUCCESS": "Full name Updated successfully",
         "UPDATED_FULLNAME_FAIL": "Fail to update full name. Please try again later.",
         "LOAD_SAMPLE_FAIL": "Fail to load the requested sample stack. Please try again later.",
-        "PARSE_SAMPLE_FAIL": "The sample stack is malformed. Please contact us for further support."
+        "PARSE_SAMPLE_FAIL": "The sample stack is malformed. Please contact us for further support.",
+        "INFO_PROJECT_REMOVED": "You no longer have access to the workspace '%s'."
     },
     "PARSLEY": {
         "THIS_VALUE_IS_REQUIRED": "This value is required.",
@@ -2162,7 +2167,15 @@ define({
         "EG_5": "eg. 5",
         "EG_MINUS_30": "eg. -30",
         "REMOVE_ROUTE": "Remove Route",
-        "REMOVE_SUBNET": "Remove Subnet"
+        "REMOVE_SUBNET": "Remove Subnet",
+        "RESOURCE_NAME_KEYPAIR": "keypair",
+        "RESOURCE_NAME_PARAMETER_GROUP": "RDS Parameter Group",
+        "RESOURCE_NAME_RDS_SNAPSHOT": "RDS Snapshot",
+        "RESOURCE_NAME_SNAPSHOT": "Snapshot",
+        "RESOURCE_NAME_SNS": "SNS Subscription",
+        "RESOURCE_NAME_SSL": "SSL",
+        "RESOURCE_NAME_DHCP": "DHCP",
+        "RESOURCE_NAME_OPTION_GROUP": "RDS Option Group"
     },
     "SERVICE": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",
