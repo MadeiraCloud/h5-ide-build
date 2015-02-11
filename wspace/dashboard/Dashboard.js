@@ -2738,7 +2738,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ide/submodels/ProjectLog", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, CredentialFormView) {
+  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, CredentialFormView) {
     Handlebars.registerHelper("awsAmiIcon", function(credentialId, amiId, region) {
       var ami;
       ami = CloudResources(credentialId, constant.RESTYPE.AMI, region).get(amiId);

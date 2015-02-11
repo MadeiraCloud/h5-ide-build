@@ -15,25 +15,25 @@ function program3(depth0,data) {
   return "Stack";
   }
 
-  buffer += "<section class=\"group required\">\r\n    <label class=\"name\">";
+  buffer += "<section class=\"group required\">\n    <label class=\"name\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " Name</label>\r\n    <input data-target=\"name\" class=\"selection string\" value=\""
+  buffer += " Name</label>\n    <input data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <label class=\"name\">";
+    + "\"/>\n</section>\n\n<section class=\"group\">\n    <label class=\"name\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " Description</label>\r\n    <input data-target=\"description\" class=\"selection string\" value=\""
+  buffer += " Description</label>\n    <input data-target=\"description\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <dl class=\"dl-horizontal\">\r\n        <dt>Platform</dt><dd>"
+    + "\"/>\n</section>\n\n<section class=\"group\">\n    <dl class=\"dl-horizontal\">\n        <dt>Platform</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.platform)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>Region</dt><dd>"
+    + "</dd>\n        <dt>Region</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n        <dt>";
+    + "</dd>\n        <dt>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\r\n    </dl>\r\n</section>";
+    + "</dd>\n    </dl>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
