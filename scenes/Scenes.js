@@ -3184,7 +3184,7 @@ function program5(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += escapeExpression(((stack1 = (depth0 && depth0.provider)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+  buffer += escapeExpression(((stack1 = (depth0 && depth0.providerName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "PARENTHESES_DEMO", {hash:{},data:data}));
   return buffer;
@@ -3369,8 +3369,8 @@ return TEMPLATE; });
           var json;
           json = c.toJSON();
           json.isAdmin = data.isAdmin;
-          json.provider = constant.PROVIDER_NAME[json.provider];
-          json.name = json.alias || json.provider;
+          json.providerName = constant.PROVIDER_NAME[json.provider];
+          json.name = json.alias || json.providerName;
           json.needed = applist.some(function(app) {
             return (app != null ? app.get('provider') : void 0) === json.provider;
           });
