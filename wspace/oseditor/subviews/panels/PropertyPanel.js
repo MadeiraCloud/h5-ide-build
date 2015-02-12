@@ -22,7 +22,7 @@
         if (this.viewClass == null) {
           this.viewClass = OsPropertyView.getClass(this.mode, 'default');
         }
-        return this.validationClass = ValidationBase.getClass(this.type);
+        this.validationClass = ValidationBase.getClass(this.type);
       },
       resourceInexist: function() {
         if (this.mode === 'stack') {

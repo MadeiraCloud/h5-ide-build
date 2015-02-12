@@ -6,7 +6,7 @@
         'click .property-btn-get-system-log': 'openSysLogModal'
       },
       initialize: function() {
-        return this.sgListView = new SgListView({
+        this.sgListView = new SgListView({
           panel: this.panel,
           targetModel: this.model.embedPort()
         });

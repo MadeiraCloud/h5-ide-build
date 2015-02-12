@@ -8981,13 +8981,13 @@ function program20(depth0,data) {
         }
         now_main_rtb = Design.modelClassForType(constant.RESTYPE.RT).getMainRouteTable();
         if (aws_rt_is_main && now_main_rtb.id !== component.id) {
-          return this.set('main', 'Yes (Set as No after applying updates)');
+          this.set('main', 'Yes (Set as No after applying updates)');
         } else if (aws_rt_is_main && now_main_rtb.id === component.id) {
-          return this.set('main', 'Yes');
+          this.set('main', 'Yes');
         } else if (!aws_rt_is_main && now_main_rtb.id === component.id) {
-          return this.set('main', 'No (Set as Yes after applying updates)');
+          this.set('main', 'No (Set as Yes after applying updates)');
         } else {
-          return this.set('main', 'No');
+          this.set('main', 'No');
         }
       },
       setPropagation: function(propagate) {
@@ -17543,9 +17543,9 @@ return TEMPLATE; });
         that = this;
         if (this.isPromoted()) {
           this.unsetPromote();
-          return App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+          App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
         } else {
-          return modal = new Modal({
+          modal = new Modal({
             title: lang.IDE.TITLE_CONFIRM_PROMOTE_READ_REPLICA,
             template: template_component.modalPromoteConfirm({}),
             confirm: {
@@ -20061,9 +20061,7 @@ return TEMPLATE; });
         }, 200);
         this.$el.find(".property-first-panel").animate({
           left: "-30%"
-        }, 200, (function(_this) {
-          return function() {};
-        })(this));
+        }, 200, function() {});
         return this.$el.find(".property-first-panel").hide();
       },
       immShowSecondPanel: function(type, id) {
@@ -20664,7 +20662,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-  buffer += "<p class=\"modal-text-minor\">"
+  buffer += "<p class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_INTRO_1", {hash:{},data:data}))
     + "</p>\n<p class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_INTRO_2", {hash:{},data:data}))
@@ -20941,7 +20939,7 @@ return TEMPLATE; });
         $target.toggleClass('disabled').html($target.attr('data-disabled'));
         app_id = Design.instance().get('id');
         data = {
-          'encoded_user': App.user.get('usercode'),
+          'user': this.workspace.opsModel.project().get("id"),
           'token': this.workspace.opsModel.project().get('defaultToken')
         };
         return $.ajax({
@@ -22039,7 +22037,7 @@ return TEMPLATE; });
         favIds = _.pluck(_.pluck(favAmis, "attributes"), "id");
         _.each(dumpObj, function(e, k) {
           if (__indexOf.call(favIds, k) >= 0) {
-            return e.faved = true;
+            e.faved = true;
           }
         });
         result.ami.result = dumpObj;
@@ -22168,7 +22166,7 @@ return TEMPLATE; });
       _.each(ss.toJSON(), function(value, key) {
         var newKey;
         newKey = lang.IDE["DASH_BUB_" + key.toUpperCase()] || key;
-        return newData[newKey] = value;
+        newData[newKey] = value;
       });
       return LeftPanelTpl.resourcePanelBubble(newData);
     };
@@ -22664,7 +22662,7 @@ return TEMPLATE; });
           eventPrefix: type === constant.RESTYPE.VOL ? "addVol_" : "addItem_",
           onDragStart: function(data) {
             if (type === constant.RESTYPE.AZ) {
-              return data.shadow.children(".res-name").text($tgt.data("option")["name"]);
+              return data.shadow.children(".res-name").text($tgt.data("option").name);
             } else if (type === constant.RESTYPE.ASG) {
               return data.shadow.text("ASG");
             }
@@ -24718,7 +24716,7 @@ return TEMPLATE; });
         data = App.model.getOsFamilyConfig(region);
         try {
           data = data[ami.osFamily] || data[constant.OS_TYPE_MAPPING[ami.osType]];
-          data = ami.rootDeviceType === "ebs" ? data.ebs : data['instance_store'];
+          data = ami.rootDeviceType === "ebs" ? data.ebs : data.instance_store;
           data = data[ami.architecture];
           data = data[ami.virtualizationType || "paravirtual"];
         } catch (_error) {
@@ -28656,7 +28654,7 @@ return TEMPLATE; });
           sslCertCol = CloudResources(this.design().credentialId(), constant.RESTYPE.IAM, this.design().region());
           listeners = this.get("listeners");
           sslCertData = sslCertCol.get(sslCertId);
-          return listeners[idx].sslCert = SslCertModel.createNew(sslCertData);
+          listeners[idx].sslCert = SslCertModel.createNew(sslCertData);
         }
       },
       removeSSLCert: function(idx) {
@@ -31336,8 +31334,8 @@ return TEMPLATE; });
             needSync[k] = v;
           }
         }
-        if (needSync['iops']) {
-          delete needSync['iops'];
+        if (needSync.iops) {
+          delete needSync.iops;
         }
         return this.set(needSync);
       },

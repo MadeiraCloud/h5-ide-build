@@ -5,7 +5,7 @@
         PropertyPanel.prototype.initialize.call(this, options);
         this.type = 'globalconfig';
         this.model = this.appModel = Design.instance();
-        return this.viewClass = OsPropertyView.getClass(this.mode, this.type);
+        this.viewClass = OsPropertyView.getClass(this.mode, this.type);
       }
     });
   });

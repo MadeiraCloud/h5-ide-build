@@ -8,7 +8,7 @@
         "select_item_remove .item-list": "removeItem"
       },
       initialize: function() {
-        return this.selectTpl = {
+        this.selectTpl = {
           button: function() {
             return template.addButton();
           },

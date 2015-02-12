@@ -309,7 +309,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         "click #submitFullName": "submit",
         "change #complete-firstname": "changeInput",
         "change #complete-lastname": "changeInput",
-        "keyup #complete-lastname": "changeInput",
+        "keyup #complete-firstname": "changeInput",
         "keyup #complete-lastname": "changeInput"
       },
       initialize: function() {
@@ -514,7 +514,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           provider: "",
           region: "",
           description: "",
-          revision: 0,
           usage: "",
           unlimited: false,
           importMsrId: void 0,
@@ -653,7 +652,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           usage: this.get("usage"),
           provider: this.get("provider"),
           version: this.get("version"),
-          revision: this.get("revision"),
+          time_update: this.get("updateTime"),
           description: this.get("description"),
           property: {
             stoppable: this.get("stoppable")
@@ -802,10 +801,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.set({
           name: json.name || this.get("name"),
           version: json.version || OpsModelLastestVersion,
-          revision: json.revision || 0,
           stoppable: stoppable,
           description: json.description,
-          usage: json.usage
+          usage: json.usage,
+          updateTime: json.time_update
         });
         return this;
       },
@@ -834,7 +833,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           self.__setJsonData(res);
           self.set({
             state: OpsModelState.UnRun,
-            updateTime: +(new Date()),
             id: res.id
           });
           ThumbUtil.save(res.id, thumbnail);
@@ -910,8 +908,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           region_name: this.get("region"),
           key_id: this.credentialId(),
           app_id: this.get("id"),
-          app_name: this.get("name"),
-          key_id: this.credentialId()
+          app_name: this.get("name")
         }).fail(function(err) {
           self.set("state", OpsModelState.Running);
           throw err;
@@ -929,8 +926,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           region_name: this.get("region"),
           key_id: this.credentialId(),
           app_id: this.get("id"),
-          app_name: this.get("name"),
-          key_id: this.credentialId()
+          app_name: this.get("name")
         }).fail(function(err) {
           self.set("state", OpsModelState.Stopped);
           throw err;
@@ -942,6 +938,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           force = false;
         }
         if (!this.isApp()) {
+          return this.__returnErrorPromise();
+        }
+        if (this.get("state") !== OpsModelState.Stopped || this.get("state") !== OpsModelState.Running) {
           return this.__returnErrorPromise();
         }
         oldState = this.get("state");
@@ -969,13 +968,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (!this.isApp()) {
           return this.__returnErrorPromise();
         }
+        if (this.get("state") !== OpsModelState.Stopped || this.get("state") !== OpsModelState.Running) {
+          return this.__returnErrorPromise();
+        }
         if (this.__updateAppDefer) {
           console.error("The app is already updating!");
           return this.__updateAppDefer.promise;
         }
         oldState = this.get("state");
-        this.set("state", OpsModelState.Updating);
         this.attributes.progress = 0;
+        this.set("state", OpsModelState.Updating);
         this.__updateAppDefer = Q.defer();
         self = this;
         ApiRequest("app_update", {
@@ -1013,7 +1015,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       syncAppJson: function(newJson) {
         var oldState, self;
-        if (!this.isApp()) {
+        if (!this.isApp() || this.get("state") !== OpsModelState.Stopped || this.get("state") !== OpsModelState.Running) {
           return this.__returnErrorPromise();
         }
         if (this.__saveAppDefer) {
@@ -1021,10 +1023,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return this.__saveAppDefer.promise;
         }
         oldState = this.get("state");
-        this.set("state", OpsModelState.Saving);
         this.attributes.progress = 0;
+        this.set("state", OpsModelState.Saving);
         this.__saveAppDefer = Q.defer();
         self = this;
+        newJson.time_update = this.get("updateTime");
         ApiRequest("app_save_info", {
           spec: newJson,
           key_id: self.credentialId()
@@ -1147,7 +1150,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       __returnErrorPromise: function() {
         var d;
         d = Q.defer();
-        d.resolve(McError(ApiRequest.Errors.InvalidMethodCall, "The method is not supported by this model."));
+        d.resolve(McError(ApiRequest.Errors.InvalidMethodCall, "Currently, the specific action can not be performed on the stack/app."));
         return d.promise;
       },
       __defaultJson: function() {
@@ -1840,7 +1843,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       updateName: function(name) {
         var model;
         model = this;
-        return ApiRequest("project_save", {
+        return ApiRequest("project_rename", {
           project_id: this.id,
           spec: {
             name: name
@@ -2553,7 +2556,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     })();
     _.extend(Scene.prototype, Backbone.Events);
     Scene.SetDefaultScene = function(s) {
-      return DefaultSceneClass = s;
+      DefaultSceneClass = s;
     };
     Scene.DefaultScene = function() {
       return DefaultSceneClass;
@@ -3072,12 +3075,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }, function(err) {
         if (err.error < 0) {
           if (err.error === ApiRequest.Errors.Network500) {
-            return window.location = "/500";
+            window.location = "/500";
           } else {
-            return window.location.reload();
+            window.location.reload();
           }
         } else {
-          return App.logout();
+          App.logout();
         }
       });
     };

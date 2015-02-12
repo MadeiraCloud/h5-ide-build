@@ -6,7 +6,7 @@
       },
       initialize: function() {
         this.memConn = this.model.connections('OsPoolMembership');
-        return this.hmlistView = this.reg(new HmlistView({
+        this.hmlistView = this.reg(new HmlistView({
           targetModel: this.model
         }));
       },

@@ -280,12 +280,12 @@
         if (!tagSet) {
           return {};
         }
-        if (tagSet['Created by'] && tagSet['app'] && tagSet['app-id'] && tagSet['name'] && tagSet['Name']) {
+        if (tagSet['Created by'] && tagSet.app && tagSet['app-id'] && tagSet.name && tagSet.Name) {
           visopsTag = jQuery.extend(true, {}, tagSet);
-          visopsTag['isOwner'] = App.user.get('username') === tagSet['Created by'];
-        } else if (tagSet['visualops'] && tagSet['Name']) {
+          visopsTag.isOwner = App.user.get('username') === tagSet['Created by'];
+        } else if (tagSet.visualops && tagSet.Name) {
           visopsTag = {};
-          visualops = tagSet['visualops'];
+          visualops = tagSet.visualops;
           if (visualops.indexOf('app-name=') === 0 && visualops.indexOf('app-id=') > 0 && visualops.indexOf('created-by=') > 0) {
             _ref = visualops.split(' ');
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -293,7 +293,7 @@
               data = item.split('=');
               switch (data[0]) {
                 case 'app-name':
-                  visopsTag['app'] = data[1];
+                  visopsTag.app = data[1];
                   break;
                 case 'app-id':
                   visopsTag['app-id'] = data[1];
@@ -304,10 +304,10 @@
               null;
             }
           }
-          visopsTag['name'] = tagSet['Name'];
-          if (visopsTag['Created by'] && visopsTag['app'] && visopsTag['app-id'] && visopsTag['name']) {
-            visopsTag['Name'] = visopsTag['app'] + '-' + visopsTag['name'];
-            visopsTag['isOwner'] = App.user.get('username') === visopsTag['Created by'];
+          visopsTag.name = tagSet.Name;
+          if (visopsTag['Created by'] && visopsTag.app && visopsTag['app-id'] && visopsTag.name) {
+            visopsTag.Name = visopsTag.app + '-' + visopsTag.name;
+            visopsTag.isOwner = App.user.get('username') === visopsTag['Created by'];
           }
         }
         return visopsTag;
@@ -2405,7 +2405,7 @@
 
 (function() {
   define('cloudres/aws/CrClnAmi',["ApiRequest", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
-    var INVALID_AMI_ID, MALFORM_AMI_ID, OS_TYPE_LIST, SQL_STANDARD_PATTERN, SQL_WEB_PATTERN, SpecificAmiCollection, fixDescribeImages, getOSFamily, getOSType;
+    var INVALID_AMI_ID, MALFORM_AMI_ID, OS_TYPE_LIST, SQL_STANDARD_PATTERN, SQL_WEB_PATTERN, SpecificAmiCollection, UserFavAmis, fixDescribeImages, getOSFamily, getOSType;
     OS_TYPE_LIST = ['centos', 'redhat', 'rhel', 'ubuntu', 'debian', 'fedora', 'gentoo', 'opensuse', 'suse', 'amazon', 'amzn'];
     SQL_WEB_PATTERN = /sql.*?web.*?/i;
     SQL_STANDARD_PATTERN = /sql.*?standard.*?/i;
@@ -2494,34 +2494,46 @@
       /* env:dev                                                 env:dev:end */
       type: constant.RESTYPE.AMI,
       __selfParseData: true,
+      localStorageKey: function() {
+        return "ivla/" + this.credential() + "_" + this.region();
+      },
       initialize: function() {
-        var id, invalidAmi, _i, _len, _ref;
-        invalidAmi = localStorage.getItem("invalidAmi/" + this.region());
         this.__markedIds = {};
-        if (invalidAmi) {
-          _ref = invalidAmi.split(",");
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            id = _ref[_i];
-            this.__markedIds[id] = true;
-          }
-        }
       },
       doFetch: function() {
         var d;
-        localStorage.setItem("invalidAmi/" + this.region(), "");
+        if (localStorage.getItem(this.localStorageKey())) {
+          localStorage.setItem(this.localStorageKey(), "");
+        }
         this.__markedIds = {};
         d = Q.defer();
         d.resolve([]);
         this.trigger("update");
         return d.promise;
       },
+      initWithCache: function() {
+        var id, _i, _len, _ref, _results;
+        if (this.__markedIdInited) {
+          return;
+        }
+        this.__markedIdInited = true;
+        _ref = (localStorage.getItem(this.localStorageKey()) || "").split(",");
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          id = _ref[_i];
+          _results.push(this.__markedIds[id] = true);
+        }
+        return _results;
+      },
       markId: function(amiId, invalid) {
         this.__markedIds[amiId] = invalid;
       },
       isIdMarked: function(amiId) {
+        this.initWithCache();
         return this.__markedIds.hasOwnProperty(amiId);
       },
       isInvalidAmiId: function(amiId) {
+        this.initWithCache();
         return this.__markedIds[amiId];
       },
       getOSFamily: function(amiId) {
@@ -2537,7 +2549,9 @@
             amis.push(amiId);
           }
         }
-        return localStorage.setItem("invalidAmi/" + this.region(), amis.join(","));
+        if (amis.length) {
+          localStorage.setItem(this.localStorageKey(), amis.join(","));
+        }
       },
       fetchAmi: function(ami) {
         var self;
@@ -2620,10 +2634,10 @@
           console.info("The requested Ami '" + invalidId + "' is invalid, retrying to fetch");
           toFetch.splice(toFetch.indexOf(invalidId), 1);
           self.markId(invalidId, true);
-          __markedIds = this.__markedIds;
-          this.__markedIds = {};
+          __markedIds = self.__markedIds;
+          self.__markedIds = {};
           p = self.fetchAmis(toFetch);
-          this.__markedIds = __markedIds;
+          self.__markedIds = __markedIds;
           return p;
         });
       }
@@ -2742,6 +2756,7 @@
         this.__models = amiIds;
       }
     });
+    UserFavAmis = {};
 
     /* This Collection is used to fetch favorite ami */
     return SpecificAmiCollection.extend({
@@ -2749,71 +2764,86 @@
       /* env:dev                                                    env:dev:end */
       type: "FavoriteAmi",
       doFetch: function() {
-        return this.sendRequest("favorite_info", {
-          provider: "AWS",
-          service: "EC2",
-          resource: "AMI"
+        var d, p, region, self;
+        region = this.region();
+        if (UserFavAmis[region]) {
+          d = Q.defer();
+          d.resolve();
+          p = d.promise;
+        } else {
+          p = ApiRequest("favorite_info", {
+            region_name: region,
+            provider: "AWS",
+            service: "EC2",
+            resource: "AMI"
+          }).then(function(res) {
+            UserFavAmis[region] = res || [];
+          });
+        }
+        self = this;
+        return p.then(function() {
+          return CloudResources(self.credential(), constant.RESTYPE.AMI, self.region()).fetchAmis(UserFavAmis[region]);
         });
       },
-      parseFetchData: function(data) {
-        var ami, favAmiId, savedAmis, _i, _len;
-        savedAmis = [];
-        favAmiId = [];
-        for (_i = 0, _len = data.length; _i < _len; _i++) {
-          ami = data[_i];
-          if ($.isEmptyObject(ami.blockDeviceMapping)) {
-            ami.blockDeviceMapping = null;
+      parseFetchData: function(data) {},
+      getModels: function() {
+        var col, id, m, ms, _i, _len, _ref;
+        ms = [];
+        col = CloudResources(this.credential(), constant.RESTYPE.AMI, this.region());
+        _ref = UserFavAmis[this.region()] || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          id = _ref[_i];
+          m = col.get(id);
+          if (m) {
+            ms.push(m);
           }
-          savedAmis.push(ami);
-          favAmiId.push(ami.id);
         }
-        CloudResources(this.credential(), constant.RESTYPE.AMI, this.region()).add(savedAmis);
-        this.__models = favAmiId;
+        return ms;
       },
       unfav: function(id) {
         var d, idx, self;
         self = this;
-        idx = this.__models.indexOf(id);
+        idx = (UserFavAmis[this.region()] || []).indexOf(id);
         if (idx === -1) {
           d = Q.defer();
           d.resolve();
           return d.promise;
         }
-        return this.sendRequest("favorite_remove", {
+        return ApiRequest("favorite_remove", {
+          region_name: this.region(),
           resource_ids: [id]
         }).then(function() {
-          idx = self.__models.indexOf(id);
-          self.__models.splice(idx, 1);
+          var ms;
+          ms = UserFavAmis[self.region()];
+          ms.splice(ms.indexOf(id), 1);
           self.trigger("update");
           return self;
         });
       },
       fav: function(ami) {
         var imageId, self;
-        if (_.isString(ami)) {
-          imageId = ami;
-          ami = "";
-        } else {
-          ami = $.extend({}, ami);
-          imageId = ami.id;
+        if (!ami.id) {
+          return null;
         }
+        imageId = ami.id;
         self = this;
-        return this.sendRequest("favorite_add", {
+        return ApiRequest("favorite_add", {
+          region_name: this.region(),
           resource: {
-            id: imageId,
+            id: ami.id,
             provider: 'AWS',
             'resource': 'AMI',
             service: 'EC2'
           }
         }).then(function() {
-          self.__models.push(imageId);
-          if (ami) {
-            CloudResources(self.credential(), constant.RESTYPE.AMI, self.region()).add(ami, {
-              add: true,
-              merge: true,
-              remove: false
-            });
-          }
+          var ms;
+          ms = UserFavAmis[self.region()] || (UserFavAmis[self.region()] = []);
+          ms.push(ami.id);
+          CloudResources(self.credential(), constant.RESTYPE.AMI, self.region()).add(ami, {
+            add: true,
+            merge: true,
+            remove: false
+          });
           self.trigger("update");
           return self;
         });
@@ -3166,7 +3196,7 @@
           optionData[d.MajorEngineVersion].push(d);
           _.each(self.engineDict[regionName][d.EngineName], function(item, key) {
             if (key.indexOf(d.MajorEngineVersion) === 0) {
-              return item.canCustomOG = true;
+              item.canCustomOG = true;
             }
           });
         }
@@ -3199,7 +3229,7 @@
         this.unifyApi(data, this.type);
         this.camelToPascal(data);
         _.each(data, function(dataItem) {
-          return dataItem.id = dataItem.DBSubnetGroupName;
+          dataItem.id = dataItem.DBSubnetGroupName;
         });
         return data;
       }
@@ -3679,7 +3709,7 @@
   define('cloudres/openstack/CrClnNetwork',["ApiRequestOs", "../CrCollection", "constant", "CloudResources"], function(ApiRequest, CrCollection, constant, CloudResources) {
     return CrCollection.extend({
 
-      /* env:dev                                                     env:dev:end */
+      /* env:dev                                                       env:dev:end */
       type: constant.RESTYPE.OSNETWORK,
       getExtNetworks: function() {
         return this.where({
@@ -3696,8 +3726,8 @@
         _ref = data.networks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           network = _ref[_i];
-          network['physical_network'] = network['provider:physical_network'];
-          network['external'] = network['router:external'];
+          network.physical_network = network['provider:physical_network'];
+          network.external = network['router:external'];
           delete network['provider:physical_network'];
           delete network['router:external'];
         }

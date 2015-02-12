@@ -328,8 +328,9 @@ return TEMPLATE; });
               cvv: $cvv.val()
             }
           }).then(function(project) {
-            modal.close();
-            return App.loadUrl(project.url());
+            return modal.close(function() {
+              return App.loadUrl(project.url());
+            });
           }).fail(function(error) {
             var err, msgObj;
             try {
@@ -1363,7 +1364,7 @@ return TEMPLATE; });
     MemberCollection = Backbone.Collection.extend({
       constructor: function(attr) {
         Backbone.Collection.apply(this);
-        return this.projectId = attr.projectId;
+        this.projectId = attr.projectId;
       },
       model: MemberModel,
       projectId: '',
@@ -2921,7 +2922,7 @@ return TEMPLATE; });
           columns: columns,
           admin: that.isAdmin
         }));
-        return that.memList = that.$el.find('.t-m-content');
+        that.memList = that.$el.find('.t-m-content');
       },
       loadMemList: function(callback) {
         var currentMember, currentUserName, data, that;
@@ -2930,9 +2931,17 @@ return TEMPLATE; });
         currentMember = null;
         currentUserName = App.user.get('username');
         return this.memberCol.fetch().then(function() {
-          var _ref;
-          that.isAdmin = (_ref = that.memberCol.getCurrentMember()) != null ? _ref.isAdmin() : void 0;
-          return data = that.memberCol.toJSON();
+          var currentUsername;
+          currentMember = that.memberCol.getCurrentMember();
+          that.isAdmin = currentMember != null ? currentMember.isAdmin() : void 0;
+          currentUsername = currentMember != null ? currentMember.get('username') : void 0;
+          data = that.memberCol.toJSON();
+          data = _.sortBy(data, function(a, b) {
+            if (currentUsername === a.username) {
+              return false;
+            }
+            return a.state !== 'normal' || a.role !== 'admin';
+          });
         }).fail(function(data) {
           notification('error', data.result || data.msg);
           return that.$el.find('.loading-spinner').addClass('hide');
@@ -3277,25 +3286,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"cred-setup-msg empty-hide\"></div>\n<div>\n    "
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TIT", {hash:{},data:data}))
-    + "\n    <p>\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CRED_UPDATE_CONFIRM_TEXT", {hash:{},data:data}))
-    + "\n    </p>\n</div>";
-  return buffer;
-  };
-TEMPLATE.updateConfirm=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"cred-setup-msg empty-hide\"></div>\n<div class=\"delete-credential-confirm\">\n    "
+  buffer += "<div class=\"cred-setup-msg empty-hide\"></div>\n<div class=\"modal-text-major\">\n    "
     + escapeExpression(helpers.i18n.call(depth0, "ARE_YOU_SURE_YOU_WANT_TO_REMOVE_XXX", (depth0 && depth0.name), {hash:{},data:data}))
-    + "\n    <p>\n       "
+    + "\n    <p class=\"warning-text\">\n       "
     + escapeExpression(helpers.i18n.call(depth0, "REMOVE_CREDENTIAL_CONFIRM_TIPS", {hash:{},data:data}))
     + "\n    </p>\n</div>";
   return buffer;
@@ -3432,23 +3425,6 @@ return TEMPLATE; });
           return that.showModalError(that.removeConfirmView, lang.IDE.SETTINGS_ERR_CRED_REMOVE);
         });
       },
-      showUpdateConfirmModel: function(credential, newData) {
-        var _ref;
-        if ((_ref = this.updateConfirmView) != null) {
-          _ref.close();
-        }
-        this.updateConfirmView = new Modal({
-          title: 'Update Cloud Credential',
-          template: TplCredential.updateConfirm,
-          confirm: {
-            text: 'Confirm to Update',
-            color: 'red'
-          }
-        });
-        return this.updateConfirmView.on('confirm', function() {
-          return this.updateCredential(credential, newData, true);
-        }, this);
-      },
       showRemoveConfirmModel: function(e) {
         var credName, credential, credentialId, _ref;
         credentialId = $(e.currentTarget).data('id');
@@ -3458,12 +3434,13 @@ return TEMPLATE; });
           _ref.close();
         }
         this.removeConfirmView = new Modal({
-          title: 'Delete Cloud Credential',
+          title: lang.IDE.REMOVE_CREDENTIAL_CONFIRM_TITLE,
           template: TplCredential.removeConfirm({
             name: credName
           }),
           confirm: {
-            text: 'Remove Credential'
+            text: lang.IDE.REMOVE_CREDENTIAL_CONFIRM_BTN,
+            color: "red"
           }
         });
         return this.removeConfirmView.on('confirm', function() {
@@ -3554,9 +3531,15 @@ return TEMPLATE; });
         }));
         self.$el.find(".usage-pagination button").prop("disabled", true);
         this.getUsage(dateString).then(function(result) {
-          var date, elem, isDisabled, payment;
+          var date, elem, isDisabled, payment, project_id;
           payment = self.model.get("payment");
           if (!_.isEmpty(result != null ? result.history_usage : void 0)) {
+            project_id = self.model.get("id");
+            _.each(result.history_usage, function(value, key) {
+              delete result.history_usage[key];
+              key = key.replace("-" + project_id, "").replace("RDS-", "");
+              return result.history_usage[key] = value;
+            });
             elem = template.usageTable({
               result: result
             });
@@ -3984,6 +3967,7 @@ function program1(depth0,data) {
         isValidEmail = regExp.test(new_email);
         if (new_email.length && new_pwd.length >= 6 && isValidEmail) {
           $("#AccountUpdateEmail").removeAttr("disabled");
+          $("#SettingErrorInfo").text("");
         } else {
           if (!isValidEmail) {
             $("#SettingErrorInfo").text(lang.IDE.SETTING_INVALID_EMAIL);
@@ -4095,7 +4079,7 @@ function program1(depth0,data) {
 
   define('scenes/Settings',["Scene", "./settings/GenericSettings"], function(Scene, SettingsView) {
     var Settings;
-    return Settings = (function(_super) {
+    Settings = (function(_super) {
       __extends(Settings, _super);
 
       function Settings() {
@@ -4135,6 +4119,7 @@ function program1(depth0,data) {
       return Settings;
 
     })(Scene);
+    return Settings;
   });
 
 }).call(this);
@@ -4150,7 +4135,7 @@ function program1(depth0,data) {
         return this.setElement($("<div class='global-loading'></div>").appendTo("#scenes"));
       }
     });
-    return StackStore = (function(_super) {
+    StackStore = (function(_super) {
       __extends(StackStore, _super);
 
       function StackStore(attr) {
@@ -4225,6 +4210,7 @@ function program1(depth0,data) {
       return StackStore;
 
     })(Scene);
+    return StackStore;
   });
 
 }).call(this);
@@ -4367,7 +4353,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.trigger("close");
       }
     });
-    return Cheatsheet = (function(_super) {
+    Cheatsheet = (function(_super) {
       __extends(Cheatsheet, _super);
 
       function Cheatsheet(attr) {
@@ -4400,6 +4386,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return Cheatsheet;
 
     })(Scene);
+    return Cheatsheet;
   });
 
 }).call(this);

@@ -397,35 +397,24 @@
         attr = this.attributes;
         data = {
           id: this.__opsModel.get("id"),
-          provider: this.__opsModel.get("provider"),
           region: this.__opsModel.get("region"),
-          revision: this.__opsModel.get("revision"),
+          provider: this.__opsModel.get("provider"),
+          time_update: this.__opsModel.get("updateTime"),
+          usage: this.__opsModel.get("usage"),
+          version: OpsModel.LatestVersion,
           property: attr.property || {},
           description: attr.description,
           resource_diff: attr.resource_diff,
           agent: attr.agent,
-          version: OpsModel.LatestVersion,
           name: attr.name,
+          stack_id: attr.stack_id,
           component: component_data,
-          layout: layout_data,
-          stack_id: attr.stack_id
+          layout: layout_data
         };
         _ref1 = this.constructor.__serializeVisitors || [];
         for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
           visitor = _ref1[_k];
           visitor(component_data, layout_data, options);
-        }
-
-        /*
-         * NOTICE!
-         * Git blame shows the following line of code is written by me, but it's not.
-         * It's the production of a branch merge.
-         * This obscure/ridicious if statement can't be deleted until every app launched before
-         * 2014-11-11 is terminated, because of some kind of weird feature and weird solution.
-         * Anyway, the if statement should never ever exist!!
-         */
-        if (options && options.toStack || this.modeIsStack()) {
-          data.version = OpsModel.LatestVersion;
         }
         if (currentDesignObj) {
           currentDesignObj.use();
@@ -911,7 +900,7 @@
     });
     Design.registerModelClass(ResourceModel.prototype.type, ResourceModel);
     _.each(['forEach', 'each', 'map', 'reduce', 'find', 'filter', 'reject', 'every', 'some', 'contains', 'invoke', 'max', 'min', 'size', 'first', 'without', 'isEmpty', 'chain', 'sample'], function(method) {
-      return ResourceModel[method] = function() {
+      ResourceModel[method] = function() {
         var args;
         args = [].slice.call(arguments);
         args.unshift(this.allObjects());
@@ -1864,11 +1853,15 @@ return TEMPLATE; });
           workspace: this.workspace,
           parent: this
         };
+
+        /* jshint -W056 */
         this.toolbar = new (this.TopPanel || Backbone.View)(opt);
         this.propertyPanel = new (this.RightPanel || Backbone.View)(opt);
         this.resourcePanel = new (this.LeftPanel || Backbone.View)(opt);
         this.statusbar = new (this.BottomPanel || Backbone.View)(opt);
         this.canvas = new this.CanvasView(opt);
+
+        /* jshint +W103 */
         this.listenTo(this.canvas, "itemSelected", this.onItemSelected);
         this.listenTo(this.canvas, "doubleclick", this.onCanvasDoubleClick);
         this.initialize();
@@ -5898,7 +5891,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       listenToPayment: function() {
         var self;
         self = this;
-        return this.workspace.listenTo(App.user, "paymentUpdate", function() {
+        return this.workspace.listenTo(this.workspace.scene.project, "change:billingState", function() {
           if (!$(".ops-apppm-wrapper").size()) {
             if (self.workspace.scene.project.shouldPay()) {
               return self.showUnpayUI();
@@ -5911,12 +5904,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         });
       },
       reopenApp: function() {
-        var appId, index;
-        appId = this.workspace.opsModel.get("id");
-        index = this.workspace.index();
+        var appUrl;
+        appUrl = this.workspace.opsModel.url();
         this.workspace.remove();
         return _.defer(function() {
-          App.openOps(appId).setIndex(index);
+          App.loadUrl(appUrl);
           return notification("info", "User payment status change detected, reloading app resource.");
         });
       }
@@ -5960,7 +5952,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.view.confirmImport();
           return;
         }
-        this.diff();
+        if (this.scene.project.shouldPay() && this.opsModel.isPMRestricted()) {
+          this.view.showUnpayUI();
+        } else {
+          this.diff();
+        }
+        this.view.listenToPayment();
       },
       diff: function() {
         var differ, newJson, self;

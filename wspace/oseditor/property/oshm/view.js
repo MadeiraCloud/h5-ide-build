@@ -7,7 +7,7 @@
       initialize: function(options) {
         this.isApp = options.isApp;
         if (this.isApp) {
-          return this.modelData = options.modelData;
+          this.modelData = options.modelData;
         }
       },
       setTitle: function(title) {

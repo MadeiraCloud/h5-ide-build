@@ -94,13 +94,197 @@ TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
+(function() {
+  define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalplus', 'i18n!/nls/lang.js', 'backbone'], function(constant, ApiRequest, Credential, Modal, lang) {
+    var credentialFormView, credentialLoadingTips;
+    credentialLoadingTips = {
+      add: lang.IDE.SETTINGS_CRED_ADDING,
+      update: lang.IDE.SETTINGS_CRED_UPDATING,
+      remove: lang.IDE.SETTINGS_CRED_REMOVING
+    };
+    credentialFormView = Backbone.View.extend({
+      events: {
+        'keyup input': 'updateSubmitBtn',
+        'paste input': 'deferUpdateSubmitBtn'
+      },
+      initialize: function(options) {
+        return _.extend(this, options);
+      },
+      render: function() {
+        var confirmText, data, title;
+        if (this.credential) {
+          data = this.credential.toJSON();
+          title = lang.IDE.UPDATE_CLOUD_CREDENTIAL;
+          confirmText = lang.IDE.HEAD_BTN_UPDATE;
+        } else {
+          data = {};
+          title = lang.IDE.ADD_CLOUD_CREDENTIAL;
+          confirmText = lang.IDE.CFM_BTN_ADD;
+        }
+        this.$el.html(MC.template.credentialForm(data));
+        this.modal = new Modal({
+          title: title,
+          template: this.el,
+          width: 480,
+          confirm: {
+            text: confirmText,
+            disabled: true
+          }
+        });
+        this.modal.on('confirm', function() {
+          if (this.credential) {
+            this.updateCredential();
+          } else {
+            this.addCredential();
+          }
+          return this.trigger('confirm');
+        }, this);
+        return this;
+      },
+      loading: function() {
+        var action;
+        this.$('#CredSetupWrap').hide();
+        action = this.credential ? 'Update' : 'Add';
+        this.$el.append(MC.template.credentialLoading({
+          tip: credentialLoadingTips[action]
+        }));
+        return this.modal.toggleFooter(false);
+      },
+      loadingEnd: function() {
+        this.$('.loading-zone').remove();
+        this.$('#CredSetupWrap').show();
+        return this.modal.toggleFooter(true);
+      },
+      remove: function() {
+        var _ref;
+        if ((_ref = this.modal) != null) {
+          _ref.close();
+        }
+        return Backbone.View.prototype.remove.apply(this, arguments);
+      },
+      deferUpdateSubmitBtn: function(e) {
+        return _.defer(_.bind(this.updateSubmitBtn, this, e));
+      },
+      updateSubmitBtn: function() {
+        var d;
+        d = this.getData();
+        if (d.alias.length && d.awsAccount.length && d.awsAccessKey.length && d.awsSecretKey.length) {
+          this.modal.toggleConfirm(false);
+        } else {
+          this.modal.toggleConfirm(true);
+        }
+      },
+      addCredential: function() {
+        var credential, credentialData, data, provider, that;
+        that = this;
+        data = this.getData();
+        provider = constant.PROVIDER.AWSGLOBAL;
+        credential = this.model.credentials().findWhere({
+          provider: provider
+        });
+        if (credential) {
+          credential.set(data, {
+            silent: true
+          });
+        } else {
+          credentialData = {
+            alias: data.alias,
+            account_id: data.awsAccount,
+            access_key: data.awsAccessKey,
+            secret_key: data.awsSecretKey
+          };
+          credentialData.provider = data.provider || constant.PROVIDER.AWSGLOBAL;
+          credential = new Credential(credentialData, {
+            project: this.model
+          });
+        }
+        this.loading();
+        return credential.save().then(function() {
+          return that.remove();
+        }, function(error) {
+          var msg;
+          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
+            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
+          } else {
+            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
+          }
+          that.loadingEnd();
+          return that.showModalError(msg);
+        });
+      },
+      showUpdateConfirmModel: function() {
+        var _ref;
+        if ((_ref = this.updateConfirmView) != null) {
+          _ref.close();
+        }
+        this.updateConfirmView = new Modal({
+          title: 'Update Cloud Credential',
+          template: MC.template.updateCredentialConfirm,
+          confirm: {
+            text: 'Confirm to Update',
+            color: 'red'
+          }
+        });
+        return this.updateConfirmView.on('confirm', function() {
+          return this.updateCredential(true);
+        }, this);
+      },
+      updateCredential: function(forceUpdate) {
+        var newData, that;
+        if (forceUpdate == null) {
+          forceUpdate = false;
+        }
+        that = this;
+        if (!this.credential) {
+          return false;
+        }
+        this.loading();
+        newData = this.getData();
+        return this.credential.save(newData, forceUpdate, true).then(function() {
+          var _ref;
+          if ((_ref = that.updateConfirmView) != null) {
+            _ref.close();
+          }
+          return that.remove();
+        }, function(error) {
+          var msg;
+          that.loadingEnd();
+          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
+            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
+          } else if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
+            that.showUpdateConfirmModel();
+          } else {
+            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
+          }
+          return msg && that.showModalError(msg);
+        });
+      },
+      showModalError: function(message) {
+        return this.$el.find('.cred-setup-msg').text(message);
+      },
+      getData: function() {
+        var that;
+        that = this;
+        return {
+          alias: that.$('#CredSetupAlias').val(),
+          awsAccount: that.$('#CredSetupAccount').val(),
+          awsAccessKey: that.$('#CredSetupAccessKey').val(),
+          awsSecretKey: that.$('#CredSetupSecretKey').val()
+        };
+      }
+    });
+    return credentialFormView;
+  });
+
+}).call(this);
+
 
 /* Example:
 Refer to kpView.coffee
  */
 
 (function() {
-  define('combo_dropdown',['component/common/comboDropdownTpl', 'backbone', 'jquery'], function(template, Backbone, $) {
+  define('combo_dropdown',['component/common/comboDropdownTpl', 'backbone', 'jquery', "credentialFormView"], function(template, Backbone, $, CredentialFormView) {
     return Backbone.View.extend({
       tagName: 'section',
       events: {
@@ -123,8 +307,9 @@ Refer to kpView.coffee
         return false;
       },
       __showCredential: function() {
-        var _ref;
-        return (_ref = Design.instance()) != null ? _ref.project().showCredential() : void 0;
+        return new CredentialFormView({
+          model: Design.instance().project()
+        }).render();
       },
       __filter: function(event) {
         return this.trigger('filter', event.currentTarget.value);
@@ -486,7 +671,7 @@ Refer to kpView.coffee
  */
 
 (function() {
-  define('toolbar_modal',['component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', 'UI.notification'], function(template, Backbone, $, modalplus) {
+  define('toolbar_modal',['component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', "credentialFormView", 'UI.notification'], function(template, Backbone, $, modalplus, CredentialFormView) {
     return Backbone.View.extend({
       tagName: 'section',
       __slide: null,
@@ -514,8 +699,9 @@ Refer to kpView.coffee
         return null;
       },
       __showCredential: function() {
-        var _ref;
-        return (_ref = Design.instance()) != null ? _ref.project().showCredential() : void 0;
+        return new CredentialFormView({
+          model: Design.instance().project()
+        }).render();
       },
       __sort: function() {
         return this.$('.tr-detail').remove();
@@ -823,165 +1009,6 @@ Refer to kpView.coffee
         return this;
       }
     });
-  });
-
-}).call(this);
-
-(function() {
-  define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalplus', 'i18n!/nls/lang.js', 'backbone'], function(constant, ApiRequest, Credential, Modal, lang) {
-    var credentialFormView, credentialLoadingTips;
-    credentialLoadingTips = {
-      add: lang.IDE.SETTINGS_CRED_ADDING,
-      update: lang.IDE.SETTINGS_CRED_UPDATING,
-      remove: lang.IDE.SETTINGS_CRED_REMOVING
-    };
-    credentialFormView = Backbone.View.extend({
-      events: {
-        'keyup input': 'updateSubmitBtn',
-        'paste input': 'deferUpdateSubmitBtn'
-      },
-      initialize: function(options) {
-        return _.extend(this, options);
-      },
-      render: function() {
-        var confirmText, data, title;
-        if (this.credential) {
-          data = this.credential.toJSON();
-          title = lang.IDE.UPDATE_CLOUD_CREDENTIAL;
-          confirmText = lang.IDE.HEAD_BTN_UPDATE;
-        } else {
-          data = {};
-          title = lang.IDE.ADD_CLOUD_CREDENTIAL;
-          confirmText = lang.IDE.CFM_BTN_ADD;
-        }
-        this.$el.html(MC.template.credentialForm(data));
-        this.modal = new Modal({
-          title: title,
-          template: this.el,
-          confirm: {
-            text: confirmText,
-            disabled: true
-          }
-        });
-        this.modal.on('confirm', function() {
-          if (this.credential) {
-            this.updateCredential();
-          } else {
-            this.addCredential();
-          }
-          return this.trigger('confirm');
-        }, this);
-        return this;
-      },
-      loading: function() {
-        var action;
-        this.$('#CredSetupWrap').hide();
-        action = this.credential ? 'Update' : 'Add';
-        this.$el.append(MC.template.credentialLoading({
-          tip: credentialLoadingTips[action]
-        }));
-        return this.modal.toggleFooter(false);
-      },
-      loadingEnd: function() {
-        this.$('.loading-zone').remove();
-        this.$('#CredSetupWrap').show();
-        return this.modal.toggleFooter(true);
-      },
-      remove: function() {
-        var _ref;
-        if ((_ref = this.modal) != null) {
-          _ref.close();
-        }
-        return Backbone.View.prototype.remove.apply(this, arguments);
-      },
-      deferUpdateSubmitBtn: function(e) {
-        return _.defer(_.bind(this.updateSubmitBtn, this, e));
-      },
-      updateSubmitBtn: function() {
-        var d;
-        d = this.getData();
-        if (d.alias.length && d.awsAccount.length && d.awsAccessKey.length && d.awsSecretKey.length) {
-          this.modal.toggleConfirm(false);
-        } else {
-          this.modal.toggleConfirm(true);
-        }
-      },
-      addCredential: function() {
-        var credential, credentialData, data, provider, that;
-        that = this;
-        data = this.getData();
-        provider = constant.PROVIDER.AWSGLOBAL;
-        credential = this.model.credentials().findWhere({
-          provider: provider
-        });
-        if (credential) {
-          credential.set(data, {
-            silent: true
-          });
-        } else {
-          credentialData = {
-            alias: data.alias,
-            account_id: data.awsAccount,
-            access_key: data.awsAccessKey,
-            secret_key: data.awsSecretKey
-          };
-          credentialData.provider = data.provider || constant.PROVIDER.AWSGLOBAL;
-          credential = new Credential(credentialData, {
-            project: this.model
-          });
-        }
-        this.loading();
-        return credential.save().then(function() {
-          return that.remove();
-        }, function(error) {
-          var msg;
-          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
-            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
-          } else {
-            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
-          }
-          that.loadingEnd();
-          return that.showModalError(msg);
-        });
-      },
-      updateCredential: function() {
-        var newData, that;
-        that = this;
-        if (!this.credential) {
-          return false;
-        }
-        this.loading();
-        newData = this.getData();
-        return this.credential.save(newData).then(function() {
-          return that.remove();
-        }, function(error) {
-          var msg;
-          that.loadingEnd();
-          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
-            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
-          } else if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
-            that.showUpdateConfirmModel(credential, newData);
-          } else {
-            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
-          }
-          return msg && that.showModalError(msg);
-        });
-      },
-      showModalError: function(message) {
-        return this.$el.find('.cred-setup-msg').text(message);
-      },
-      getData: function() {
-        var that;
-        that = this;
-        return {
-          alias: that.$('#CredSetupAlias').val(),
-          awsAccount: that.$('#CredSetupAccount').val(),
-          awsAccessKey: that.$('#CredSetupAccessKey').val(),
-          awsSecretKey: that.$('#CredSetupSecretKey').val()
-        };
-      }
-    });
-    return credentialFormView;
   });
 
 }).call(this);

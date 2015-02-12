@@ -14,7 +14,7 @@
         that = this;
         that.sgModel = options.sgModel;
         that.listView = options.listView;
-        return this.selectTpl = {
+        this.selectTpl = {
           ipValid: function(value) {
             if (MC.validate('cidr', value)) {
               return true;

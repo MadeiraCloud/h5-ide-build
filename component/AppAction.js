@@ -441,7 +441,7 @@ return TEMPLATE; });
         var appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, that, _ref;
         cloudType = this.workspace.opsModel.type;
         that = this;
-        paymentState = App.user.get('paymentState');
+        paymentState = this.workspace.opsModel.project().get("billingState");
         if (paymentModal) {
           this.modal = paymentModal;
           this.modal.setTitle(lang.IDE.RUN_STACK_MODAL_TITLE).setWidth('665px').setContent(MC.template.modalRunStack({
@@ -452,7 +452,8 @@ return TEMPLATE; });
           this.modal = new modalPlus({
             title: lang.IDE.RUN_STACK_MODAL_TITLE,
             template: MC.template.modalRunStack({
-              paymentState: paymentState
+              paymentState: paymentState,
+              paymentUpdate: paymentUpdate
             }),
             disableClose: true,
             width: '665px',
@@ -1061,26 +1062,33 @@ return TEMPLATE; });
         });
       },
       showPayment: function(elem, opsModel) {
-        var paymentModal, paymentState, result, showPaymentDefer, updateDom;
+        var paymentModal, project, project_id, result, showPaymentDefer, url, _ref;
+        if (!opsModel) {
+          opsModel = (_ref = this.workspace) != null ? _ref.opsModel : void 0;
+        }
+        project = (opsModel != null ? opsModel.project() : void 0) || this.project;
+        project_id = project.get("id");
         showPaymentDefer = Q.defer();
-        paymentState = App.user.get("paymentState");
-        if (!opsModel.project().shouldPay()) {
-          showPaymentDefer.resolve({});
+        url = "/settings/" + project_id + "/billing";
+        if (!project.shouldPay()) {
+          showPaymentDefer.resolve({
+            result: {
+              url: url
+            }
+          });
         } else {
           result = {
-            first_name: App.user.get("firstName"),
-            last_name: App.user.get("lastName"),
-            url: App.user.get("paymentUrl"),
-            card: App.user.get("creditCard")
+            isAdmin: project.amIAdmin(),
+            url: url,
+            freePointsPerMonth: 3600
           };
-          updateDom = MC.template.paymentUpdate(result);
           if (elem) {
-            $(elem).html(updateDom);
+            $(elem).html(MC.template.loadingSpinner());
             $(elem).trigger('paymentRendered');
           } else {
             paymentModal = new modalPlus({
-              title: lang.IDE.PAYMENT_INVALID_BILLING,
-              template: updateDom,
+              title: lang.PROP.LBL_LOADING,
+              template: MC.template.loadingSpinner(),
               disableClose: true,
               confirm: {
                 text: Design.instance().credential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
@@ -1088,18 +1096,34 @@ return TEMPLATE; });
               }
             });
             paymentModal.find('.modal-footer').hide();
-            paymentModal.listenTo(App.user, "paymentUpdate", function() {
-              if (paymentModal.isClosed) {
-                return false;
-              }
-              if (!opsModel.project().shouldPay()) {
-                return showPaymentDefer.resolve({
-                  result: result,
-                  modal: paymentModal
-                });
-              }
-            });
           }
+          project.getPaymentState().then(function() {
+            var updateDom, _ref1;
+            if ((_ref1 = project.get("payment")) != null ? _ref1.cardNumber : void 0) {
+              updateDom = MC.template.paymentUpdate(result);
+            } else {
+              updateDom = MC.template.providePayment(result);
+            }
+            if (elem) {
+              $(elem).html(updateDom);
+              return $(elem).trigger('paymentRendered');
+            } else {
+              paymentModal.setContent(updateDom);
+              paymentModal.setTitle(lang.IDE.PAYMENT_INVALID_BILLING);
+              paymentModal.setContent(updateDom);
+              return paymentModal.listenTo(project, "change:billingState", function() {
+                if (paymentModal.isClosed) {
+                  return false;
+                }
+                if (!project.shouldPay()) {
+                  return showPaymentDefer.resolve({
+                    result: result,
+                    modal: paymentModal
+                  });
+                }
+              });
+            }
+          });
         }
         return showPaymentDefer.promise;
       }

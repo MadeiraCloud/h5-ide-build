@@ -16,7 +16,7 @@
         that = this;
         this.targetModel = options.targetModel;
         this.panel = options.panel;
-        return this.selectTpl = {
+        this.selectTpl = {
           button: function() {
             return template.addButton();
           },
@@ -63,7 +63,6 @@
             name: sgName,
             uid: sgUID,
             id: sgModel.id,
-            name: sgModel.get('name'),
             ruleCount: sgModel.get('rules').length,
             memberCount: sgModel.getMemberList().length,
             description: sgModel.get('description')
@@ -132,7 +131,7 @@
         var $target, attr, value;
         $target = $(event.currentTarget);
         attr = $target.data('target');
-        return value = $target.getValue();
+        value = $target.getValue();
       },
       addItem: function(event, value) {
         var $newItem, OSSGModel, oSSGModel, sgUID;

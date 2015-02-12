@@ -661,7 +661,7 @@ return TEMPLATE; });
         that = this;
         dhcpId = data.id;
         dhcpData = this.collection.get(dhcpId).toJSON();
-        detailTpl = template['detail_info'];
+        detailTpl = template.detail_info;
         return this.manager.setDetail($tr, detailTpl(dhcpData));
       },
       getSlides: function() {
@@ -5812,7 +5812,7 @@ return TEMPLATE; });
         sslCertId = data.id;
         sslCertData = this.sslCertCol.get(sslCertId).toJSON();
         sslCertData.Expiration = MC.dateFormat(new Date(sslCertData.Expiration), 'yyyy-MM-dd hh:mm:ss');
-        detailTpl = template['detail_info'];
+        detailTpl = template.detail_info;
         return this.modal.setDetail($tr, detailTpl(sslCertData));
       },
       refresh: function() {
@@ -5900,7 +5900,7 @@ return TEMPLATE; });
             }
             data = {};
             if (checkedAmount === 1) {
-              data.selecteKeyName = checked[0].data['name'];
+              data.selecteKeyName = checked[0].data.name;
             } else {
               data.selectedCount = checkedAmount;
             }

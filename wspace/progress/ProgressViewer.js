@@ -151,7 +151,6 @@ function program5(depth0,data) {
       constructor: function(attr) {
         if (!attr.opsModel) {
           throw new Error("Cannot find opsmodel while openning workspace.");
-          return;
         }
         if (attr.opsModel.testState(OpsModel.State.Saving) || attr.opsModel.testState(OpsModel.State.Terminating)) {
           console.warn("Avoiding opening a saving/terminating OpsModel.");

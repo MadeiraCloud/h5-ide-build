@@ -5,7 +5,7 @@
         'change .selection[data-target]': 'updateAttribute'
       },
       initialize: function() {
-        return this.sgListView = this.reg(new SgListView({
+        this.sgListView = this.reg(new SgListView({
           targetModel: null
         }));
       },

@@ -613,7 +613,7 @@ var saveAs = (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob && 
             continue;
           }
           bbox = ch.getBBox();
-          if (!(bbox.x + bbox.y + bbox.width + bbox.height)) {
+          if ((bbox.x + bbox.y + bbox.width + bbox.height) === 0) {
             continue;
           }
           if (bbox.x < origin.x) {

@@ -7,7 +7,7 @@
         this.hmList = _.map((_ref = this.appModel) != null ? _ref.get('health_monitors') : void 0, function(id) {
           return CloudResources(constant.RESTYPE.OSHM, region).get(id);
         });
-        return this.hmlistView = this.reg(new HmlistView({
+        this.hmlistView = this.reg(new HmlistView({
           targetModel: this.hmList,
           isApp: true
         }));

@@ -66,7 +66,7 @@
       } else {
         platform = "openstack";
       }
-      return ((_ref = this[key]) != null ? _ref[platform] : void 0) || this[key]['aws'];
+      return ((_ref = this[key]) != null ? _ref[platform] : void 0) || this[key].aws;
     }
   });
 
