@@ -3226,9 +3226,9 @@ function program14(depth0,data) {
 function program15(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            <i class=\"icon-caret-down show-button-list\"></i>\n            <ul class=\"dropdown-menu button-list\">\n                <li class=\"update-link\" data-id="
+  buffer += "\n            <i class=\"icon-caret-down show-button-list\"></i>\n            <ul class=\"dropdown-menu button-list\">\n                <li class=\"update-link icon-edit\" data-id="
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "><i class=\"icon-edit\"></i>"
+    + ">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
     + "</li>\n                ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.needed), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
@@ -3239,9 +3239,9 @@ function program15(depth0,data) {
 function program16(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <li class=\"delete-link\" data-id="
+  buffer += "\n                <li class=\"delete-link icon-delete\" data-id="
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "><i class=\"icon-delete\"></i>"
+    + ">"
     + escapeExpression(helpers.i18n.call(depth0, "CFM_BTN_REMOVE", {hash:{},data:data}))
     + "</li>\n                ";
   return buffer;
