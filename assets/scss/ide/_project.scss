@@ -144,13 +144,9 @@
       float: left;
       margin-top: 5px;
   }
-  .new-project-err {
-      background-color: red;
-      color: white;
-      border-radius: 3px;
-      padding: 5px;
-      margin-top: 10px;
-      display: none;
+  .new-project-err,.update-payment-err{
+      display    : none;
+      text-align : left;
   }
   .new-project-info {
     color: #bc7300;

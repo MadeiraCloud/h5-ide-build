@@ -3438,7 +3438,8 @@ article.dashboard-content {
 aside.dashboard-sidebar {
   width: 20vw;
   background: #fff;
-  border-left: 1px #ddd solid; }
+  border-left: 1px #ddd solid;
+  height: 100%; }
   aside.dashboard-sidebar nav {
     overflow: auto;
     background: #eee;
@@ -3463,6 +3464,10 @@ aside.dashboard-sidebar {
     aside.dashboard-sidebar .dashboard-nav-log.selected {
       border-bottom: 2px solid #4a90e2;
       width: 100%; }
+  aside.dashboard-sidebar .dashboard-log-wrap {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%; }
   aside.dashboard-sidebar .dashboard-log .dashboard-log-item {
     padding: 15px 10px;
     cursor: default; }
@@ -3759,6 +3764,13 @@ aside.dashboard-sidebar {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex; }
+  #GlobalView .dashboard-loading {
+    background: #fff;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    position: relative;
+    width: 100%;
+    height: 600px; }
   #GlobalView > li {
     width: 16%;
     margin: 0.4%;
@@ -3918,7 +3930,28 @@ aside.dashboard-sidebar {
 
 #DashboardDemo {
   display: none;
-  margin-top: 15px; }
+  margin: 0 1% 100px 1%; }
+  #DashboardDemo .enter-credential {
+    text-align: center;
+    border: 1px solid #b4d5ed;
+    background-color: #EDF9FF;
+    border-radius: 3px;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    line-height: 1.5em;
+    font-size: 16px; }
+  #DashboardDemo .show-credential {
+    color: #148BE6;
+    cursor: pointer; }
+    #DashboardDemo .show-credential:hover {
+      text-decoration: underline; }
+
+#dashboard-data-wrap.demo #GlobalView, #dashboard-data-wrap.demo #regionResourceNav, #dashboard-data-wrap.demo #RegionResourceData, #dashboard-data-wrap.demo #RegionViewWrap {
+  display: none !important; }
+#dashboard-data-wrap.demo #DashboardDemo {
+  display: block; }
+#dashboard-data-wrap.demo .dash-resource-wrap {
+  margin-bottom: 0; }
 
 /* Styles for Manage KP and Decrypt PW */
 .password-hint::selection {
@@ -10078,13 +10111,9 @@ dl.settings-item {
 .new-project-modal .new-project-support, .update-payment-wrap .new-project-support {
   float: left;
   margin-top: 5px; }
-.new-project-modal .new-project-err, .update-payment-wrap .new-project-err {
-  background-color: red;
-  color: white;
-  border-radius: 3px;
-  padding: 5px;
-  margin-top: 10px;
-  display: none; }
+.new-project-modal .new-project-err, .new-project-modal .update-payment-err, .update-payment-wrap .new-project-err, .update-payment-wrap .update-payment-err {
+  display: none;
+  text-align: left; }
 .new-project-modal .new-project-info, .update-payment-wrap .new-project-info {
   color: #bc7300;
   border-radius: 3px;

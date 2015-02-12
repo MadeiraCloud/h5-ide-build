@@ -412,31 +412,6 @@ return TEMPLATE; });
           return this.model.project().credIdOfProvider(this.model.get("provider"));
         }
       },
-      saveStack: function(dom, self) {
-        var newJson, workspace;
-        workspace = this.workspace;
-        $(dom).attr("disabled", "disabled");
-        self.__saving = true;
-        newJson = workspace.design.serialize();
-        return Thumbnail.generate((self.parent || self).getSvgElement())["catch"](function() {
-          return null;
-        }).then(function(thumbnail) {
-          workspace.opsModel.save(newJson, thumbnail).then(function() {});
-          self.__saving = false;
-          $(dom).removeAttr("disabled");
-          return notification("info", sprintf(lang.NOTIFY.ERR_SAVE_SUCCESS, newJson.name));
-        }, function(err) {
-          var message;
-          self.__saving = false;
-          $(dom).removeAttr("disabled");
-          if (err.error === 252) {
-            message = lang.NOTIFY.ERR_SAVE_FAILED_NAME;
-          } else {
-            message = sprintf(lang.NOTIFY.ERR_SAVE_FAILED, newJson.name);
-          }
-          return notification("error", message);
-        });
-      },
       runStack: function(paymentUpdate, paymentModal) {
         var appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, that, _ref;
         cloudType = this.workspace.opsModel.type;
@@ -622,7 +597,7 @@ return TEMPLATE; });
         self = this;
         modal = new modalPlus({
           title: lang.TOOLBAR.TIP_DELETE_STACK,
-          width: 390,
+          width: 420,
           confirm: {
             text: lang.TOOLBAR.POP_BTN_DELETE_STACK,
             color: "red"

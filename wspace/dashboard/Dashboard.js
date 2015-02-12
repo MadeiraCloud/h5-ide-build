@@ -2792,7 +2792,8 @@ return TEMPLATE; });
         'click .region-resource-list .terminate-app': 'terminateApp',
         "click .show-credential": "showCredential",
         "click .icon-detail": "showResourceDetail",
-        'click .refreshResource': 'reloadResource'
+        'click .refreshResource': 'reloadResource',
+        "click .global-resource-li": "switchGlobalResource"
       },
       initialize: function() {
         var region, self, _i, _len, _ref;
@@ -2954,13 +2955,22 @@ return TEMPLATE; });
           }
         }
       },
+      switchGlobalResource: function(evt) {
+        var $elem, region, type;
+        console.log(evt);
+        $elem = $(evt.currentTarget);
+        region = $elem.data("region");
+        type = $elem.parent().parent().data("type");
+        $(".dash-resource-wrap").find("#region-switch-list").find("li[data-region=" + region + "]").click();
+        return $("#RegionViewWrap").find("nav>div[data-type='" + type + "']").click();
+      },
       updateRegionResources: function() {
         var tpl, type;
+        this.$el.find(".dash-resource-wrap .js-toggle-dropdown span").text(constant.REGION_SHORT_LABEL[this.region] || lang.IDE.DASH_BTN_GLOBAL);
         if (this.region === "global") {
           this.updateGlobalResources();
           return;
         }
-        this.$el.find(".dash-resource-wrap .js-toggle-dropdown span").text(constant.REGION_SHORT_LABEL[this.region] || lang.IDE.DASH_BTN_GLOBAL);
         this.$el.find("#RegionViewWrap").show();
         this.$el.find("#GlobalView").hide();
         this.updateRegionTabCount();
