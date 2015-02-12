@@ -2,7 +2,7 @@
   define(["CanvasElement", "constant", "CanvasManager", "CanvasView", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, CanvasView, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                          env:dev:end */
+      /* env:dev                                            env:dev:end */
       type: constant.RESTYPE.OSSUBNET,
       parentType: [constant.RESTYPE.OSNETWORK],
       defaultSize: [19, 19],

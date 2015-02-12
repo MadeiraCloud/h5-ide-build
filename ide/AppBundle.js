@@ -157,15 +157,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\n    <div class=\"confirmSession\">\n        <div class=\"modal-text-major\">\n            <p>"
+  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\r\n    <div class=\"confirmSession\">\r\n        <div class=\"modal-text-major\">\r\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\n            <p>"
+    + "</p>\r\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\n        </div>\n        <div class=\"modal-text-minor\">"
+    + "</p>\r\n        </div>\r\n        <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\n    </div>\n    <div class=\"reconnectSession\" style=\"display:none;\">\n        <div class=\"modal-text-major\">"
+    + "</div>\r\n    </div>\r\n    <div class=\"reconnectSession\" style=\"display:none;\">\r\n        <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\n        <div class=\"modal-input\">\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n        </div>\n    </div>\n</section>";
+    + "</div>\r\n        <div class=\"modal-input\">\r\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n        </div>\r\n    </div>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -293,13 +293,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
+  buffer += "<div class=\"complete-fullname\">\r\n    <div class=\"control-group fullname\">\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-firstname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
+    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n    </div>\r\n    <p class=\"information\">"
     + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
-    + "</p>\n</div>";
+    + "</p>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -358,10 +358,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }).then(function() {
           App.user.set("firstName", firstname);
           App.user.set("lastName", lastname);
-          this.modal.close();
+          that.modal.close();
           return notification("info", lang.IDE.PROFILE_UPDATED_SUCCESSFULLY);
         }, function() {
-          this.modal.close();
+          that.modal.close();
           return notification('error', lang.IDE.PROFILE_UPDATED_FAILED);
         });
       }
@@ -386,8 +386,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       initialize: function() {
         $(window).on("beforeunload", this.checkUnload);
-        $(window).on('keydown', this.globalKeyEvent);
-        if (!App.user.fullnameNotSet()) {
+        return $(window).on('keydown', this.globalKeyEvent);
+      },
+      init: function() {
+        if (App.user.fullnameNotSet()) {
           new FullnameSetup();
         }
       },
@@ -545,7 +547,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.__setJsonData(options.jsonData);
         }
 
-        /* env:dev                                                                                                                        env:dev:end */
+        /* env:dev                                                                                                                          env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -3071,7 +3073,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         });
       });
       return jobs.then(function() {
-        return App.view.hideGlobalLoading();
+        App.view.hideGlobalLoading();
+        return App.view.init();
       }, function(err) {
         if (err.error < 0) {
           if (err.error === ApiRequest.Errors.Network500) {
