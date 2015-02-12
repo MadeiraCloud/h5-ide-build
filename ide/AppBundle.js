@@ -942,7 +942,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (!this.isApp()) {
           return this.__returnErrorPromise();
         }
-        if (this.get("state") !== OpsModelState.Stopped || this.get("state") !== OpsModelState.Running) {
+        if (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running) {
           return this.__returnErrorPromise();
         }
         oldState = this.get("state");
@@ -970,7 +970,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (!this.isApp()) {
           return this.__returnErrorPromise();
         }
-        if (this.get("state") !== OpsModelState.Stopped || this.get("state") !== OpsModelState.Running) {
+        if (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running) {
           return this.__returnErrorPromise();
         }
         if (this.__updateAppDefer) {
@@ -1017,7 +1017,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       syncAppJson: function(newJson) {
         var oldState, self;
-        if (!this.isApp() || this.get("state") !== OpsModelState.Stopped || this.get("state") !== OpsModelState.Running) {
+        if (!this.isApp() || (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running)) {
           return this.__returnErrorPromise();
         }
         if (this.__saveAppDefer) {
@@ -1234,46 +1234,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         PAYMENT: "Payment",
         CREDENTIAL: "Credential",
         TOKEN: "Token"
-      },
-      ACTION: {
-        CREATE: "Create",
-        UDPATE: "Update",
-        RENAME: "Rename",
-        REMOVE: "Remove",
-        SAVE: "Save",
-        TERMINATE: "Terminate",
-        START: "Start",
-        STOP: "Stop",
-        REBOOT: "Reboot",
-        SAVEAS: "SaveAs",
-        CLONE: "Clone",
-        NOTIFY: "Notify",
-        RENDER: "Render",
-        GETKEY: "GetKey",
-        IMPORT: "Import",
-        RUN: "Run",
-        INVITE: "Invite",
-        ADD: "Add"
-      },
-      ACTION_MAP: {
-        "Create": "created",
-        "Update": "updated",
-        "Rename": "renamed",
-        "Remove": "removed",
-        "Save": "saved",
-        "Terminate": "terminated",
-        "Start": "started",
-        "Stop": "stopped",
-        "Reboot": "rebooted",
-        "SaveAs": "saved as",
-        "Clone": "cloned",
-        "Notify": "notified",
-        "Render": "rendered",
-        "GetKey": "got key",
-        "Import": "imported",
-        "Run": "ran",
-        "Invite": "invited",
-        "Add": "added"
       }
     });
     AuditType = {};

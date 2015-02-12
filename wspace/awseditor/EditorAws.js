@@ -17543,7 +17543,7 @@ return TEMPLATE; });
         that = this;
         if (this.isPromoted()) {
           this.unsetPromote();
-          App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+          that.refreshProperty();
         } else {
           modal = new Modal({
             title: lang.IDE.TITLE_CONFIRM_PROMOTE_READ_REPLICA,
@@ -17554,10 +17554,15 @@ return TEMPLATE; });
             disableClose: true,
             onConfirm: function() {
               that.setPromote();
-              App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+              that.refreshProperty();
               return modal.close();
             }
           });
+        }
+      },
+      refreshProperty: function() {
+        if (this._render) {
+          return this._render();
         }
       },
       openRestoreConfigModal: function(defaultRes) {
@@ -18785,7 +18790,7 @@ return TEMPLATE; });
               newSrcId = dbData.ReadReplicaSourceDBInstanceIdentifier;
               if (oldSrcId !== newSrcId) {
                 currentResModel.set('ReadReplicaSourceDBInstanceIdentifier', newSrcId);
-                App.workspaces.getAwakeSpace().view.propertyPanel.refresh();
+                that.refreshProperty();
               } else {
                 dbStatus = dbData.DBInstanceStatus;
                 if (dbStatus !== 'available') {

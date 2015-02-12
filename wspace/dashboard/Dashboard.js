@@ -144,18 +144,10 @@ function program1(depth0,data) {
     + "\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.avatar), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"info\">\n            <div class=\"event\">\n                <span class=\"name\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n                <span class=\"action\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.action)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n                <span class=\"type\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.targetId), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
+  buffer += "\n        <div class=\"info\">\n            <div class=\"event\">";
+  stack1 = ((stack1 = (depth0 && depth0.event)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                <span class=\"other\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.other)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n            </div>\n            <div class=\"time\">"
+  buffer += "</div>\n            <div class=\"time\">"
     + escapeExpression(((stack1 = (depth0 && depth0.time)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n        </div>\n    </li>\n    ";
   return buffer;
@@ -172,28 +164,6 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "";
-  return buffer;
-  }
-
-function program6(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "<a class=\"target route\" href=\"/workspace/"
-    + escapeExpression(((stack1 = (depth0 && depth0.projectId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "/ops/"
-    + escapeExpression(((stack1 = (depth0 && depth0.targetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.target)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a>";
-  return buffer;
-  }
-
-function program8(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "<span class=\"target\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.target)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>";
   return buffer;
   }
 
@@ -3373,7 +3343,7 @@ return TEMPLATE; });
         }
       },
       renderLog: function(type, empty) {
-        var $container, container, dataAry, models, projectId, renderMap, that;
+        var $container, container, dataAry, models, projectId, that;
         that = this;
         if (type === 'activity') {
           models = this.logCol.history();
@@ -3387,10 +3357,9 @@ return TEMPLATE; });
           $container.html(Template.noActivity());
           return;
         }
-        renderMap = ProjectLog.ACTION_MAP;
         projectId = this.model.scene.project.id;
         dataAry = _.map(models, function(data) {
-          var action, target, targetId;
+          var action, event, eventStr, target, targetId, _name, _target;
           action = data.get('action');
           target = data.get('target');
           type = data.get('type').toLowerCase();
@@ -3398,15 +3367,20 @@ return TEMPLATE; });
           if (!that.model.scene.project.getOpsModel(targetId)) {
             targetId = null;
           }
+          _name = '<span class="name">' + data.get("username") + '</span>';
+          if (targetId) {
+            _target = '<a class="target route" href="/workspace/' + projectId + '/ops/' + targetId + '">' + target + '</a>';
+          } else {
+            _target = '<span class="target">' + target + ' </span>';
+          }
+          eventStr = lang.IDE["DASHBOARD_LOGS_" + (type.toUpperCase()) + "_" + (action.toUpperCase())];
+          if (eventStr) {
+            event = sprintf(eventStr, _name, _target, '');
+          }
           return {
-            name: data.get("username"),
             action_type: (action + '_' + type).toLowerCase(),
-            action: renderMap[action] || action,
-            type: type,
-            target: target,
-            time: MC.intervalDate(new Date(data.get('time'))),
-            projectId: projectId,
-            targetId: targetId
+            event: event || ("" + _name + " " + action + " " + type + " " + _target),
+            time: MC.intervalDate(new Date(data.get('time')))
           };
         });
         if (dataAry.length) {

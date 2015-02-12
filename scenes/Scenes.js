@@ -3628,7 +3628,7 @@ return TEMPLATE; });
       basicsettings: 'Basic Settings',
       accesstoken: 'Access Token',
       billing: 'Billing',
-      member: 'Member',
+      member: 'Team',
       credential: 'Cloud Access Credential',
       usagereport: 'Usage Report'
     };
@@ -3637,8 +3637,11 @@ return TEMPLATE; });
         'click .function-list a': 'loadSub'
       },
       initialize: function(options) {
+        var that;
+        that = this;
         this.settingsView = options.settingsView;
-        return this.listenTo(this.model, 'change:name', this.updateProjectName);
+        this.listenTo(this.model, 'change:name', this.updateProjectName);
+        return this.listenTo(this.model, 'change:myRole', this.refresh, this);
       },
       render: function(tab) {
         if (tab == null) {
@@ -3661,6 +3664,11 @@ return TEMPLATE; });
           this.delegateEvents();
         }
         return this;
+      },
+      refresh: function() {
+        var tab;
+        tab = this.$('.function-list a.active').data('id');
+        return this.settingsView.renderProject(this.model, tab);
       },
       loadSub: function(e) {
         var tab;
