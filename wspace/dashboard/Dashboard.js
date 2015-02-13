@@ -2953,7 +2953,7 @@ return TEMPLATE; });
         return this.$el.find("#RegionResourceData").html(tpl);
       },
       updateRegionAppStack: function(updateType, region) {
-        var attr, data, filter, self, tojson;
+        var attr, data, filter, resources, self, tojson;
         if (updateType == null) {
           updateType = "stack";
         }
@@ -2985,9 +2985,12 @@ return TEMPLATE; });
         tojson = {
           thumbnail: true
         };
-        attr[updateType] = self.model.scene.project[updateType]().filter(filter).map(function(m) {
+        resources = self.model.scene.project[updateType]();
+        resources.comparator = "updateTime";
+        resources.sort();
+        attr[updateType] = resources.filter(filter).map(function(m) {
           return m.toJSON(tojson);
-        });
+        }).reverse();
         attr.region = data;
         attr.projectId = self.model.scene.project.id;
         attr.currentRegion = _.find(data, function(e) {
@@ -3360,10 +3363,10 @@ return TEMPLATE; });
         projectId = this.model.scene.project.id;
         dataAry = _.map(models, function(data) {
           var action, event, eventStr, target, targetId, _name, _target;
-          action = data.get('action');
-          target = data.get('target');
-          type = data.get('type').toLowerCase();
-          targetId = data.get('targetId');
+          action = data.get('action') || '';
+          target = data.get('target') || '';
+          type = (data.get('type') || '').toLowerCase();
+          targetId = data.get('targetId') || '';
           if (!that.model.scene.project.getOpsModel(targetId)) {
             targetId = null;
           }

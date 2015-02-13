@@ -665,7 +665,7 @@ return TEMPLATE; });
           }));
           startAppModal.on('confirm', function() {
             startAppModal.close();
-            workspace.opsModel.project().apps().get(id).start().fail(function(err) {
+            app.start().fail(function(err) {
               var error;
               error = err.awsError ? err.error + "." + err.awsError : err.error;
               notification('error', sprintf(lang.NOTIFY.ERROR_FAILED_START, name, error));
@@ -674,9 +674,8 @@ return TEMPLATE; });
         });
       },
       checkBeforeStart: function(app) {
-        var cloudType, comp, defer, self, workspace;
+        var cloudType, comp, defer, self;
         self = this;
-        workspace = this.workspace;
         comp = null;
         cloudType = app.type;
         defer = new Q.defer();
@@ -691,8 +690,7 @@ return TEMPLATE; });
           }).then(function(ds) {
             return comp = ds[0].component;
           }).then(function() {
-            var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, name, snapshots;
-            name = workspace.opsModel.project().apps().get(app.get("id")).get("name");
+            var awsError, dbInstance, hasASG, hasDBInstance, hasEC2Instance, snapshots;
             hasEC2Instance = !!(_.filter(comp, function(e) {
               return e.type === constant.RESTYPE.INSTANCE;
             })).length;

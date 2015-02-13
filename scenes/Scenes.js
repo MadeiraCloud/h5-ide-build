@@ -246,7 +246,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<section>\n  <p>You have unsaved changes in this project. Switching projects will cause your chages to lose.</p> <p>Do you confirm to switch project anyway?</p>\n  <div class=\"modal-footer\">\n    <button class=\"btn do-switch btn-silver\">Switch and discard changes</button>\n    <button class=\"btn btn-blue modal-close\">Do not switch</button>\n  </div>\n</section>";
+  return "<section>\n  <p class=\"modal-text-major\">You have unsaved changes in current workspace. Switching to another workspace will cause your chages to lose.</p> \n  <p class=\"modal-text-major\">Do you confirm to switch project anyway?</p>\n  <div class=\"modal-footer\">\n    <button class=\"btn do-switch btn-red\">Switch and discard changes</button>\n    <button class=\"btn btn-blue modal-close\">Do not switch</button>\n  </div>\n</section>";
   };
 TEMPLATE.switchConfirm=Handlebars.template(__TEMPLATE__);
 
@@ -1102,8 +1102,8 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</header>\r\n        <a data-id=\"basicsettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "BASIC_SETTINGS", {hash:{},data:data}))
-    + "</a>\r\n        <a data-id=\"member\">"
-    + escapeExpression(helpers.i18n.call(depth0, "MEMBER", {hash:{},data:data}))
+    + "</a>\r\n        <a data-id=\"team\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TEAM", {hash:{},data:data}))
     + "</a>\r\n        <a data-id=\"usagereport\">"
     + escapeExpression(helpers.i18n.call(depth0, "USAGE_REPORT", {hash:{},data:data}))
     + "</a>\r\n        ";
@@ -2394,7 +2394,7 @@ return TEMPLATE; });
 
 }).call(this);
 
-define('scenes/settings/template/TplMember',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+define('scenes/settings/template/TplTeam',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -2816,7 +2816,7 @@ TEMPLATE.defaultProject=Handlebars.template(__TEMPLATE__);
 
 return TEMPLATE; });
 (function() {
-  define('scenes/settings/views/MemberView',['backbone', '../template/TplMember', 'i18n!/nls/lang.js', 'UI.bubblepopup', 'ApiRequest', '../models/MemberCollection', 'UI.selectbox', 'UI.parsley', 'UI.errortip', 'UI.table', 'MC.validate'], function(Backbone, TplMember, lang, bubblePopup, ApiRequest, MemberCollection) {
+  define('scenes/settings/views/TeamView',['backbone', '../template/TplTeam', 'i18n!/nls/lang.js', 'UI.bubblepopup', 'ApiRequest', '../models/MemberCollection', 'UI.selectbox', 'UI.parsley', 'UI.errortip', 'UI.table', 'MC.validate'], function(Backbone, TplTeam, lang, bubblePopup, ApiRequest, MemberCollection) {
     return Backbone.View.extend({
       className: 'member-setting',
       events: {
@@ -2849,12 +2849,12 @@ return TEMPLATE; });
             user_email: mail
           }).then(function(data) {
             if (data) {
-              return $search.html(TplMember.match({
+              return $search.html(TplTeam.match({
                 name: Base64.decode(data.username),
                 mail: Base64.decode(data.email)
               }));
             } else {
-              return $search.html(TplMember.nomatch({
+              return $search.html(TplTeam.nomatch({
                 name: mail
               }));
             }
@@ -2884,9 +2884,9 @@ return TEMPLATE; });
         var isPrivateProject;
         isPrivateProject = this.model.get('private');
         if (isPrivateProject) {
-          this.$el.html(TplMember.defaultProject());
+          this.$el.html(TplTeam.defaultProject());
         } else {
-          this.$el.html(TplMember.loading());
+          this.$el.html(TplTeam.loading());
           this.loadMemList();
         }
         return this;
@@ -2921,7 +2921,7 @@ return TEMPLATE; });
             }
           ]);
         }
-        that.$el.html(TplMember.main({
+        that.$el.html(TplTeam.main({
           limit: that.memberCol.isLimitInvite(),
           number: that.memberCol.limit,
           columns: columns,
@@ -2964,7 +2964,7 @@ return TEMPLATE; });
       renderList: function(data) {
         var that;
         that = this;
-        this.memList.html(TplMember.list({
+        this.memList.html(TplTeam.list({
           admin: that.isAdmin,
           memlist: data
         }));
@@ -3011,7 +3011,7 @@ return TEMPLATE; });
             memId = $(item).data('id');
             return memList.push(memId);
           });
-          return bubblePopup($delete, TplMember.deletePopup({
+          return bubblePopup($delete, TplTeam.deletePopup({
             count: memList.length
           }), {
             '.confirm': function() {
@@ -3619,21 +3619,21 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('scenes/settings/ProjectSettings',['i18n!/nls/lang.js', './template/TplProject', './views/BasicSettingsView', './views/AccessTokenView', './views/BillingView', './views/MemberView', './views/ProviderCredentialView', './views/UsageReportView', 'backbone'], function(lang, TplProject, BasicSettingsView, AccessTokenView, BillingView, MemberView, ProviderCredentialView, UsageReportView) {
+  define('scenes/settings/ProjectSettings',['i18n!/nls/lang.js', './template/TplProject', './views/BasicSettingsView', './views/AccessTokenView', './views/BillingView', './views/TeamView', './views/ProviderCredentialView', './views/UsageReportView', 'backbone'], function(lang, TplProject, BasicSettingsView, AccessTokenView, BillingView, TeamView, ProviderCredentialView, UsageReportView) {
     var subViewMap, subViewNameMap;
     subViewMap = {
       basicsettings: BasicSettingsView,
       accesstoken: AccessTokenView,
       billing: BillingView,
-      member: MemberView,
+      team: TeamView,
       credential: ProviderCredentialView,
       usagereport: UsageReportView
     };
     subViewNameMap = {
       basicsettings: 'Basic Settings',
-      accesstoken: 'Access Token',
+      accesstoken: 'API Token',
       billing: 'Billing',
-      member: 'Team',
+      team: 'Team',
       credential: 'Cloud Access Credential',
       usagereport: 'Usage Report'
     };
@@ -4080,7 +4080,7 @@ function program1(depth0,data) {
         BasicSettings: 'basicsettings',
         AccessToken: 'accesstoken',
         Billing: 'billing',
-        Member: 'member',
+        Team: 'team',
         ProviderCredential: 'credential',
         UsageReport: 'usagereport'
       }
