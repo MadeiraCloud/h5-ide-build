@@ -861,7 +861,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return ApiRequest("stack_remove", {
           region_name: this.get("region"),
           stack_id: this.get("id")
-        }).fail(function() {
+        }).fail(function(e) {
+          if (e.error === ApiRequest.Errors.StackInvalidId) {
+            return;
+          }
           self.set("state", OpsModelState.UnRun);
           return collection.add(self);
         });
@@ -1136,7 +1139,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       destroy: function() {
         return console.info("OpsModel's destroy() doesn't do anything. You probably want to call remove(), stop() or terminate()");
       },
-      __destroy: function() {
+      __destroy: function(options) {
         var msrId;
         if (this.attributes.state === OpsModelState.Destroyed) {
           return;
@@ -1147,7 +1150,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           CloudResources(this.credential(), "OpsResource", msrId).destroy();
         }
         this.attributes.state = OpsModelState.Destroyed;
-        return this.trigger('destroy', this, this.collection);
+        return this.trigger('destroy', this, this.collection, options);
       },
       __returnErrorPromise: function() {
         var d;
@@ -1563,7 +1566,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      */
     var MEMBERROLE, OneTimeWsInit;
     OneTimeWsInit = function() {
-      var handleRequest;
+      var handleRequest, isOpsExist, tenSecCheck;
       OneTimeWsInit = function() {};
       App.WS.collection.project.find().observe({
         changed: function(newDocument, oldDocument) {
@@ -1593,6 +1596,88 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return;
           }
           project.logs().unshift(newDocument);
+        }
+      });
+      isOpsExist = function(col, attr, wsdata) {
+        if (col.get(wsdata.id)) {
+          return 1;
+        }
+        if (!col.findWhere(attr)) {
+          return 0;
+        }
+        return -1;
+      };
+      tenSecCheck = function(col, attr, wsdata, retry) {
+        var res;
+        res = isOpsExist(col, attr, wsdata);
+        if (res === 1) {
+          console.info("The stack is created by us, ignore");
+          return;
+        }
+        if (res === 0) {
+          console.info("The stack is not created by us. add");
+          col.add(new OpsModel(wsdata));
+          return;
+        }
+        if (retry === 5) {
+          console.warn("Theres a stack added event which is ignore after timeout.");
+          return;
+        }
+        console.info("Can't determine, retry in 3 sec.");
+        setTimeout((function() {
+          return tenSecCheck(col, attr, wsdata, retry + 1);
+        }), 2000);
+      };
+      App.WS.collection.stack.find().observe({
+        added: function(newDocument) {
+          var project, wsdata;
+          if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
+            return;
+          }
+          project = App.model.projects().get(newDocument.project_id);
+          if (!project) {
+            console.log("Adding a stack that is not related to any project, ignored.", newDocument);
+            return;
+          }
+          wsdata = project.__parseListRes([newDocument])[0];
+          tenSecCheck(project.stacks(), {
+            name: wsdata.name,
+            provider: wsdata.provider,
+            region: wsdata.region,
+            state: OpsModel.State.Saving
+          }, wsdata, 0);
+        },
+        removed: function(newDocument) {
+          var project, _ref;
+          if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
+            return;
+          }
+          project = App.model.projects().get(newDocument.project_id);
+          if (!project) {
+            console.log("Removing a stack that is not related to any project, ignored.", newDocument);
+            return;
+          }
+          if ((_ref = project.stacks().get(newDocument.id)) != null) {
+            _ref.__destroy({
+              externalAction: true
+            });
+          }
+        }
+      });
+      App.WS.collection.app.find().observe({
+        added: function(newDocument) {
+          var project;
+          if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
+            return;
+          }
+          project = App.model.projects().get(newDocument.project_id);
+          if (!project) {
+            console.log("There's an stack that is not related to any project, ignored.", newDocument);
+            return;
+          }
+          if (!project.apps().get(newDocument.id)) {
+            project.apps().add(new OpsModel(project.__parseListRes([newDocument])[0]));
+          }
         }
       });
       handleRequest = function(req) {

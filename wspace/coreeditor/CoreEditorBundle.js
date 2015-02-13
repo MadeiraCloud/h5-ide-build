@@ -1594,7 +1594,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "</div>\n  <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOSE_CONFIRM", {hash:{},data:data}))
     + "</div>\n</div>\n<div class=\"tar\">\n  <button class=\"btn save btn-blue\">"
-    + escapeExpression(helpers.i18n.call(depth0, "IDE.SAVING_STACK", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "IDE.SAVE_STACK", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn confirm btn-red\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIT_CLOSE_TAB", {hash:{},data:data}))
     + "</button>\n  <button class=\"btn modal-close btn-silver\">"
@@ -1975,7 +1975,8 @@ return TEMPLATE; });
           modal.close();
           return self.workspace.remove();
         });
-        modal.tpl.on("click", ".tar .save", function() {
+        modal.tpl.on("click", ".tar .save", function(evt) {
+          $(evt.currentTarget).prop("disabled", true).text(lang.IDE.SAVING_STACK);
           return self.workspace.saveStack().then(function() {
             modal.close();
             return self.workspace.remove();
@@ -5565,6 +5566,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return this.remove();
         }
       },
+      onOpsModelDestroyed: function(o, c, options) {
+        if (options && options.externalAction) {
+          notification("info", "The stack/app has been removed by other team.");
+        }
+        return this.remove();
+      },
 
       /*
         Internal methods.
@@ -5582,7 +5589,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           throw new Error("Cannot find opsmodel while openning workspace.");
         }
         this.opsModel = attr.opsModel;
-        this.listenTo(this.opsModel, "destroy", this.onOpsModelStateChanged);
+        this.listenTo(this.opsModel, "destroy", this.onOpsModelDestroyed);
         this.listenTo(this.opsModel, "change:state", this.onOpsModelStateChanged);
         this.listenTo(this.opsModel, "change:name", this.updateTab);
         this.listenTo(this.opsModel, "change:id", this.onModelIdChange);
