@@ -5856,11 +5856,7 @@ return Markdown;
           template: template.stateTextExpandModal(),
           width: 900,
           disableFooter: that.readOnlyMode,
-          confirm: {
-            text: !that.readOnlyMode ? {
-              text: lang.IDE.STATE_TEXT_EXPAND_MODAL_SAVE_BTN
-            } : void 0
-          },
+          confirm: !that.readOnlyMode ? lang.IDE.STATE_TEXT_EXPAND_MODAL_SAVE_BTN : void 0,
           cancel: {
             hide: true
           }
