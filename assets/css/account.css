@@ -15,17 +15,17 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff") format("woff"); }
+  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff?v=fe27504d") format("woff"); }
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 700;
-  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff") format("woff"); }
+  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff?v=66c8242c") format("woff"); }
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff") format("woff"); }
+  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff?v=0dfaf006") format("woff"); }
 body {
   font-family: Lato, "Helvetica Neue", "Helvetica", Arial, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   color: #acacc6;
@@ -261,7 +261,7 @@ body {
 
 #body {
   color: #222;
-  background: #000 url("../images/login/bg.jpeg");
+  background: #000 url("../images/login/bg.jpeg?v=5e70e91c");
   background-size: cover; }
 
 a {
@@ -276,7 +276,7 @@ header {
   padding: 10px 0 9px 0; }
 
 #logo-link {
-  background: url("../images/login/logo.svg") center no-repeat;
+  background: url("../images/login/logo.svg?v=cc0eff8d") center no-repeat;
   background-size: 240px auto;
   height: 80px;
   width: 240px;
@@ -526,7 +526,7 @@ footer {
   font-size: 12px; }
 
 #arn {
-  background-image: url("../images/login/arn-dark.png");
+  background-image: url("../images/login/arn-dark.png?v=a9e27585");
   background-size: 261px 85px;
   width: 261px;
   height: 85px;
