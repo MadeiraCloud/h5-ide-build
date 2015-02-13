@@ -252,6 +252,7 @@ return TEMPLATE; });
           if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
             msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
           } else if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
+            that.hideModalError();
             that.showUpdateConfirmModel();
           } else {
             msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
@@ -260,7 +261,10 @@ return TEMPLATE; });
         });
       },
       showModalError: function(message) {
-        return this.$el.find('.cred-setup-msg').text(message);
+        return this.$el.find('.cred-setup-msg').show().text(message);
+      },
+      hideModalError: function() {
+        return this.$el.find('.cred-setup-msg').hide();
       },
       getData: function() {
         var that;

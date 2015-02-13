@@ -2892,7 +2892,7 @@ return TEMPLATE; });
         }
         this.$el.find("#GlobalView").html(dataTemplate.globalResources(data));
         if (this.region === "global") {
-          this.$el.find("#GlobalView").show();
+          this.$el.find("#GlobalView").removeAttr("style");
           this.$el.find("#RegionViewWrap").hide();
         }
       },
@@ -3361,6 +3361,9 @@ return TEMPLATE; });
           return;
         }
         projectId = this.model.scene.project.id;
+        dataAry = _.filter(models, function(data) {
+          return data.get('success');
+        });
         dataAry = _.map(models, function(data) {
           var action, event, eventStr, target, targetId, _name, _target;
           action = data.get('action') || '';

@@ -157,15 +157,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\r\n    <div class=\"confirmSession\">\r\n        <div class=\"modal-text-major\">\r\n            <p>"
+  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\n    <div class=\"confirmSession\">\n        <div class=\"modal-text-major\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\r\n            <p>"
+    + "</p>\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\r\n        </div>\r\n        <div class=\"modal-text-minor\">"
+    + "</p>\n        </div>\n        <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\r\n    </div>\r\n    <div class=\"reconnectSession\" style=\"display:none;\">\r\n        <div class=\"modal-text-major\">"
+    + "</div>\n    </div>\n    <div class=\"reconnectSession\" style=\"display:none;\">\n        <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\r\n        <div class=\"modal-input\">\r\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n        </div>\r\n    </div>\r\n</section>";
+    + "</div>\n        <div class=\"modal-input\">\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n        </div>\n    </div>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -293,13 +293,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"complete-fullname\">\r\n    <div class=\"control-group fullname\">\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-firstname\" class=\"account-label\">"
+  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n    </div>\r\n    <p class=\"information\">"
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
     + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
-    + "</p>\r\n</div>";
+    + "</p>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -547,7 +547,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.__setJsonData(options.jsonData);
         }
 
-        /* env:dev                                                                                                                          env:dev:end */
+        /* env:dev                                                                                                                        env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -1611,19 +1611,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         var res;
         res = isOpsExist(col, attr, wsdata);
         if (res === 1) {
-          console.info("The stack is created by us, ignore");
+          console.log("[WS Add] The ops already exist, ignoring.", wsdata);
           return;
         }
         if (res === 0) {
-          console.info("The stack is not created by us. add");
+          console.log("[WS Add] The ops doesn't exist, add to collection", wsdata, col);
           col.add(new OpsModel(wsdata));
           return;
         }
         if (retry === 5) {
-          console.warn("Theres a stack added event which is ignore after timeout.");
+          console.warn("[WS Add] Fail to determine the ops after 5 reties, ignoring.", wsdata);
           return;
         }
-        console.info("Can't determine, retry in 3 sec.");
+        console.log("[WS Add] Cannot determine the ops, retry in 2 sec.", wsdata);
         setTimeout((function() {
           return tenSecCheck(col, attr, wsdata, retry + 1);
         }), 2000);
@@ -1640,12 +1640,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return;
           }
           wsdata = project.__parseListRes([newDocument])[0];
-          tenSecCheck(project.stacks(), {
-            name: wsdata.name,
-            provider: wsdata.provider,
-            region: wsdata.region,
-            state: OpsModel.State.Saving
-          }, wsdata, 0);
+          setTimeout(function() {
+            return tenSecCheck(project.stacks(), {
+              name: wsdata.name,
+              provider: wsdata.provider,
+              region: wsdata.region,
+              state: OpsModel.State.Saving
+            }, wsdata, 0);
+          }, 1000);
         },
         removed: function(newDocument) {
           var project, _ref;
@@ -1666,18 +1668,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       });
       App.WS.collection.app.find().observe({
         added: function(newDocument) {
-          var project;
+          var project, wsdata;
           if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
             return;
           }
           project = App.model.projects().get(newDocument.project_id);
           if (!project) {
-            console.log("There's an stack that is not related to any project, ignored.", newDocument);
+            console.log("There's an app that is not related to any project, ignored.", newDocument);
             return;
           }
-          if (!project.apps().get(newDocument.id)) {
-            project.apps().add(new OpsModel(project.__parseListRes([newDocument])[0]));
-          }
+          wsdata = project.__parseListRes([newDocument])[0];
+          setTimeout(function() {
+            return tenSecCheck(project.apps(), {
+              name: wsdata.name,
+              provider: wsdata.provider,
+              region: wsdata.region,
+              state: OpsModel.State.Initializing
+            }, wsdata, 0);
+          }, 1000);
         }
       });
       handleRequest = function(req) {
