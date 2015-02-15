@@ -137,7 +137,7 @@ function program5(depth0,data) {
     return Workspace.extend({
       type: "ProgressViewer",
       isWorkingOn: function(data) {
-        return this.opsModel === data.opsModel;
+        return this.opsModel() === data.opsModel;
       },
       tabClass: function() {
         return "icon-app-pending";

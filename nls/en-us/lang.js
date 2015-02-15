@@ -818,7 +818,7 @@ define({
         "SYSTEM_LOG": "System Log:",
         "SYSTEM_LOG_NOT_READY": "System log is not ready yet. Please try in a short while.",
         "PROVIDE_BILLING_INFORMATION": "Provide Billing Information",
-        "WHILE_ENJOYING_PROVIDE_CARD": "While enjoying your free %s instance hours each month, provide billing information in case of running out of quota.",
+        "YOUR_FREE_POINTS_USED_UP": "Your free points are used up. This project is in limited status now. Import VPC, app operation, monitoring and state ensuring are disabled. To make sure your enjoy the full feature of VisualOps, please join the paid plan as soon as possible.",
         "YOUR_ACCOUNT_IN_LIMITED_STATUS": "Your account is in limited status now. <br>Import VPC, app operation, monitoring and state ensuring are disabled.",
         "INSTANCE_HOURS_PER_MONTH": "%s instance hours per month",
         "LALEL_FREE": "Free",

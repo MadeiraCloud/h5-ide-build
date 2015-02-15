@@ -818,7 +818,7 @@ define({
         "SYSTEM_LOG": "系统日志：",
         "SYSTEM_LOG_NOT_READY": "系统日志还没有准备好， 请稍后重试。",
         "PROVIDE_BILLING_INFORMATION": "提供账单信息",
-        "WHILE_ENJOYING_PROVIDE_CARD": "享受您的 %s 个免费实例*时的同时，请提供账单信息以防免费额度用尽。",
+        "YOUR_FREE_POINTS_USED_UP": "您的免费点数已经用尽，此项目已处于受限状态。导入 VPC，App 操作，监控和 state ensuring 功能已被禁用。为确保您能享受 VisualOps 的完整功能，请尽快加入付费计划。",
         "YOUR_ACCOUNT_IN_LIMITED_STATUS": "您的账户已经处于受限状态。 导入 App，App 操作，管理和资源监控已被禁用。",
         "INSTANCE_HOURS_PER_MONTH": "每月 %s 个实例*小时",
         "LALEL_FREE": "免费",

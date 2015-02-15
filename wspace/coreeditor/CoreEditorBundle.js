@@ -6173,7 +6173,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return;
         }
         if (this.opsModel.testState(OpsModel.State.Terminating)) {
-          notification("info", "The app is being processing.");
+          notification("info", "The app is being processed.");
           this.remove();
           return;
         }

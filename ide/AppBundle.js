@@ -1795,7 +1795,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (!req.project_id || req.state === constant.OPS_STATE.PENDING) {
           return;
         }
-        if (req.state === constant.OPS_STATE.DONE && req.code === constant.OPS_CODE_NAME.APP_SAVE) {
+        if (req.state === constant.OPS_STATE.DONE && (req.code === constant.OPS_CODE_NAME.APP_SAVE || req.code === constant.OPS_CODE_NAME.APP_IMPORT)) {
           targetId = req.data;
         } else {
           targetId = req.dag && req.dag.spec ? req.dag.spec.id : req.rid;

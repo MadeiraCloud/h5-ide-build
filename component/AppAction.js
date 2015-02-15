@@ -1064,7 +1064,7 @@ return TEMPLATE; });
               template: MC.template.loadingSpinner(),
               disableClose: true,
               confirm: {
-                text: Design.instance().credential() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
+                text: !project.isDemoMode() ? lang.IDE.RUN_STACK_MODAL_CONFIRM_BTN : lang.IDE.RUN_STACK_MODAL_NEED_CREDENTIAL,
                 disabled: true
               }
             });
@@ -1072,7 +1072,7 @@ return TEMPLATE; });
           }
           project.getPaymentState().then(function() {
             var updateDom, _ref1;
-            if ((_ref1 = project.get("payment")) != null ? _ref1.cardNumber : void 0) {
+            if (((_ref1 = project.get("payment")) != null ? _ref1.cardNumber : void 0) || !project.isPrivate()) {
               updateDom = MC.template.paymentUpdate(result);
             } else {
               updateDom = MC.template.providePayment(result);
