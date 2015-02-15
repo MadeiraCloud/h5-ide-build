@@ -2255,13 +2255,12 @@ return TEMPLATE; });
         return this.fetch();
       },
       credChanged: function() {
-        var _ref, _ref1;
+        var _ref;
         this.topicCol.fetchForce();
-        if ((_ref = this.manager) != null) {
+        if ((_ref = this.modal) != null) {
           _ref.renderLoading();
         }
-        this.manager && this.refresh();
-        return (_ref1 = this.dropdown) != null ? _ref1.render("loading") : void 0;
+        return this.modal && this.refresh();
       },
       doAction: function(action, checked) {
         return this[action] && this[action](this.validate(action), checked);
@@ -7402,11 +7401,12 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('og_dropdown',['constant', 'CloudResources', 'combo_dropdown', 'og_manage', 'component/awscomps/OgTpl', 'i18n!/nls/lang.js'], function(constant, CloudResources, comboDropdown, OgManage, template, lang) {
+  define('og_dropdown',['constant', 'CloudResources', 'combo_dropdown', 'og_manage', 'component/awscomps/OgTpl', 'i18n!/nls/lang.js', "credentialFormView"], function(constant, CloudResources, comboDropdown, OgManage, template, lang, CredentialFormView) {
     return Backbone.View.extend({
       tagName: 'section',
       events: {
-        'click .icon-edit': 'editClicked'
+        'click .icon-edit': 'editClicked',
+        "click .combo-dd-no-data .create-one": "showCredential"
       },
       initDropdown: function() {
         var options;
@@ -7554,6 +7554,11 @@ return TEMPLATE; });
       },
       setSelection: function() {
         return this.dropdown.setSelection.apply(this, arguments);
+      },
+      showCredential: function() {
+        return new CredentialFormView({
+          model: Design.instance().project()
+        }).render();
       }
     });
   });

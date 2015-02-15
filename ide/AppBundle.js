@@ -1626,9 +1626,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * One-time initializer to observe the websocket. Since the websocket is not
      * available during the defination of the class
      */
-    var MEMBERROLE, OneTimeWsInit;
+    var MEMBERROLE, OneTimeWsInit, clearTenSecCheck, tenSecCheckTimer;
+    tenSecCheckTimer = {};
+    clearTenSecCheck = function(id) {
+      if (tenSecCheckTimer[id]) {
+        console.info("tenSecCheckTimer removed:", id);
+        clearTimeout(tenSecCheckTimer[id]);
+        delete tenSecCheckTimer[id];
+      }
+    };
     OneTimeWsInit = function() {
-      var handleRequest, isOpsExist, tenSecCheck;
+      var handleRequest, sheduleTenSecCheck, tenSecCheck;
       OneTimeWsInit = function() {};
       App.WS.collection.project.find().observe({
         changed: function(newDocument, oldDocument) {
@@ -1660,22 +1668,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           project.logs().unshift(newDocument);
         }
       });
-      isOpsExist = function(col, attr, wsdata) {
-        if (col.get(wsdata.id)) {
-          return 1;
-        }
-        if (!col.findWhere(attr)) {
-          return 0;
-        }
-        return -1;
-      };
       tenSecCheck = function(col, attr, wsdata, retry) {
-        var res;
-        res = isOpsExist(col, attr, wsdata);
-        if (res === 1) {
+        delete tenSecCheckTimer[wsdata.id];
+        if (col.get(wsdata.id)) {
           return;
         }
-        if (res === 0) {
+        if (!col.findWhere(attr)) {
           console.log("[WS Add] The ops doesn't exist, add to collection", wsdata, col);
           col.add(new OpsModel(wsdata));
           return;
@@ -1685,9 +1683,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return;
         }
         console.log("[WS Add] Cannot determine the ops, retry in 2 sec.", wsdata);
-        setTimeout((function() {
-          return tenSecCheck(col, attr, wsdata, retry + 1);
-        }), 2000);
+        sheduleTenSecCheck(col, attr, wsdata, retry + 1, 2000);
+      };
+      sheduleTenSecCheck = function(col, attr, wsdata, retry, deplay) {
+        tenSecCheckTimer[wsdata.id] = setTimeout((function() {
+          return tenSecCheck(col, attr, wsdata, retry);
+        }), deplay);
       };
       App.WS.collection.stack.find().observe({
         added: function(newDocument) {
@@ -1701,14 +1702,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return;
           }
           wsdata = project.__parseListRes([newDocument])[0];
-          setTimeout(function() {
-            return tenSecCheck(project.stacks(), {
-              name: wsdata.name,
-              provider: wsdata.provider,
-              region: wsdata.region,
-              state: OpsModel.State.Saving
-            }, wsdata, 0);
-          }, 1000);
+          sheduleTenSecCheck(project.stacks(), {
+            name: wsdata.name,
+            provider: wsdata.provider,
+            region: wsdata.region,
+            state: OpsModel.State.Saving
+          }, wsdata, 0, 1000);
         },
         changed: function(newDocument) {
           var project, _ref;
@@ -1750,14 +1749,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return;
           }
           wsdata = project.__parseListRes([newDocument])[0];
-          setTimeout(function() {
-            return tenSecCheck(project.apps(), {
-              name: wsdata.name,
-              provider: wsdata.provider,
-              region: wsdata.region,
-              state: OpsModel.State.Initializing
-            }, wsdata, 0);
-          }, 1000);
+          sheduleTenSecCheck(project.apps(), {
+            name: wsdata.name,
+            provider: wsdata.provider,
+            region: wsdata.region,
+            state: OpsModel.State.Initializing
+          }, wsdata, 0, 1000);
         },
         changed: function(newDocument) {
           var project, _ref;
@@ -1774,7 +1771,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           }
         },
         removed: function(newDocument) {
-          var project, wsdata, _ref;
+          var project, _ref;
           if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "app")) {
             return;
           }
@@ -1783,7 +1780,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             console.log("There's an app that is not related to any project that is removed. ignored.", newDocument);
             return;
           }
-          wsdata = project.__parseListRes([newDocument])[0];
           return (_ref = project.apps().get(newDocument.id)) != null ? _ref.__destroy() : void 0;
         }
       });
@@ -1908,7 +1904,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.listenTo(this.stacks(), "add", function() {
           return this.trigger("update:stack");
         });
-        this.listenTo(this.stacks(), "remove", function() {
+        this.listenTo(this.stacks(), "remove", function(o) {
+          clearTenSecCheck(o.id);
           return this.trigger("update:stack");
         });
         this.listenTo(this.apps(), "change", function() {
@@ -1920,7 +1917,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.listenTo(this.apps(), "add", function() {
           return this.trigger("update:app");
         });
-        this.listenTo(this.apps(), "remove", function() {
+        this.listenTo(this.apps(), "remove", function(o) {
+          clearTenSecCheck(o.id);
           return this.trigger("update:app");
         });
         App.WS.subscribe(this.id);

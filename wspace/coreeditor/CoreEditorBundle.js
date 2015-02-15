@@ -6172,6 +6172,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.remove();
           return;
         }
+        if (this.opsModel.testState(OpsModel.State.Terminating)) {
+          notification("info", "The app is being processing.");
+          this.remove();
+          return;
+        }
         if (this.opsModel.testState(OpsModel.State.Saving) || this.opsModel.previous("state") === OpsModel.State.Saving) {
           return;
         }

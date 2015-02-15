@@ -20763,6 +20763,9 @@ return TEMPLATE; });
       },
       updateTbBtns: function() {
         var ami, hasState, isAppEdit, opsModel, running, stopped;
+        if (this.workspace.isRemoved()) {
+          return;
+        }
         opsModel = this.workspace.opsModel;
         this.$el.children(".toolbar-line-style").children(".dropdown").children().eq(parseInt(localStorage.getItem("canvas/lineStyle"), 10) || 2).click();
         if (opsModel.isApp()) {
