@@ -20758,6 +20758,7 @@ return TEMPLATE; });
           }
         }, 1000);
         this.updateZoomButtons();
+        this.updateTbBtns();
         this.listenTo(this.workspace.opsModel, "change:state", this.updateTbBtns);
       },
       updateTbBtns: function() {

@@ -6,7 +6,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
     + "</a>\n      <!-- <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button> -->\n      <button class=\"ph-nav-btn user-menu popuptrigger\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
   return buffer;
@@ -159,7 +159,7 @@ function program2(depth0,data) {
   buffer += "<ul class=\"header-popup hp-project-list\">\n  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  <li class=\"create-new-project padding\">Create New Workspace</li>\n</ul>";
+  buffer += "\n  <li class=\"create-new-project padding icon-add\">Create New Workspace</li>\n</ul>";
   return buffer;
   };
 TEMPLATE.projectList=Handlebars.template(__TEMPLATE__);
@@ -2990,7 +2990,7 @@ return TEMPLATE; });
           }
           originTxt = $invite.text();
           $invite.prop('disabled', true);
-          $invite.text("" + originTxt + "...");
+          $invite.text("" + originTxt);
           return this.memberCol.inviteMember(mail).then(function() {
             $mail.val('');
             return that.loadMemList(function() {
@@ -3026,7 +3026,7 @@ return TEMPLATE; });
               var originTxt;
               originTxt = $delete.text();
               $delete.prop('disabled', true);
-              $delete.text("" + originTxt + "...");
+              $delete.text("" + originTxt);
               return that.memberCol.removeMember(memList).then(function() {
                 return that.loadMemList(function() {
                   return $delete.text(originTxt);
@@ -3066,7 +3066,7 @@ return TEMPLATE; });
           }
           originTxt = $done.text();
           $done.prop('disabled', true);
-          $done.text("" + originTxt + "...");
+          $done.text("" + originTxt);
           return memberModel.updateRole(newRole).then(function() {
             return that.loadMemList(function() {
               $done.text(originTxt);
@@ -3090,7 +3090,7 @@ return TEMPLATE; });
           memId = $memItem.data('id');
           originTxt = $cancel.text();
           $cancel.prop('disabled', true);
-          $cancel.text("" + originTxt + "...");
+          $cancel.text("" + originTxt);
           memberModel = that.memberCol.get(memId);
           return memberModel.cancelInvite().then(function() {
             return that.loadMemList(function() {
@@ -4023,7 +4023,9 @@ function program1(depth0,data) {
             that.hideFullName();
             $(".fullNameText").text(first_name + " " + last_name);
             if (result) {
-              return notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
+              notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
+              App.user.set("firstName", first_name);
+              return App.user.set("lastName", last_name);
             }
           }, function(err) {
             notification("error", lang.NOTIFY.UPDATED_FULLNAME_FAIL);

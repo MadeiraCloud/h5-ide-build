@@ -261,7 +261,7 @@ return TEMPLATE; });
         });
       },
       showModalError: function(message) {
-        return this.$el.find('.cred-setup-msg').show().text(message);
+        return this.$el.find('.cred-setup-msg').show().html(message);
       },
       hideModalError: function() {
         return this.$el.find('.cred-setup-msg').hide();

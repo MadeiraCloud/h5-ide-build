@@ -600,7 +600,7 @@
       return CachedCollections[credentialId];
     };
     CloudResources.clearWhere = function(credentialId, category, detect) {
-      var Collection, cln, find, id, realCate, _ref;
+      var Collection, cln, find, id, list, realCate, _ref;
       find = _.isFunction(detect) ? "filter" : "where";
       _ref = CachedCollections[credentialId] || [];
       for (id in _ref) {
@@ -608,8 +608,11 @@
         Collection = CrCollection.getClassByType(cln.type);
         realCate = Collection.category(category);
         if (cln.category === realCate) {
-          console.log("Removing CloudResources:", cln[find](detect));
-          cln.remove(cln[find](detect));
+          list = cln[find](detect);
+          if (list.length) {
+            console.log("Removing CloudResources:", list);
+            cln.remove(cln[find](detect));
+          }
         }
       }
     };
@@ -2572,8 +2575,11 @@
           return self.fetchAmis(f);
         }, 0);
       },
-      fetchAmis: function(amis) {
+      fetchAmis: function(amis, force) {
         var amiId, d, self, toFetch, _i, _len;
+        if (force == null) {
+          force = false;
+        }
         if (!amis) {
           return;
         }
@@ -2584,7 +2590,7 @@
         toFetch = [];
         for (_i = 0, _len = amis.length; _i < _len; _i++) {
           amiId = amis[_i];
-          if (this.get(amiId)) {
+          if (this.get(amiId) && !force) {
             continue;
           }
           if (this.isIdMarked(amiId)) {
@@ -2593,7 +2599,9 @@
             } else {
               console.log("Ami `" + amiId + "` is duplicated. Ignore fetching info.");
             }
-            continue;
+            if (!force) {
+              continue;
+            }
           }
           this.markId(amiId, false);
           toFetch.push(amiId);
@@ -2618,6 +2626,9 @@
             });
           } else {
             self.trigger("update");
+          }
+          if (force) {
+            return res;
           }
           return self.saveInvalidAmiId();
         }, function(err) {

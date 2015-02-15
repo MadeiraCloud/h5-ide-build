@@ -213,23 +213,15 @@
           failure = function() {
             return callback(null);
           };
-          success = function() {
-            var amiId, id, infoObjType, infoTagType, instanceObj, instanceUID, invalids, _i, _j, _k, _len, _len1, _len2, _ref;
-            invalids = [];
-            for (_i = 0, _len = amiAry.length; _i < _len; _i++) {
-              id = amiAry[_i];
-              if (cr.isInvalidAmiId(id)) {
-                invalids.push(id);
-              }
-            }
-            if (!invalids.length) {
-              return callback(null);
-            }
-            for (_j = 0, _len1 = invalids.length; _j < _len1; _j++) {
-              amiId = invalids[_j];
+          success = function(invalidAmiAry) {
+            var amiId, infoObjType, infoTagType, instanceObj, instanceUID, invalids, validIds, _i, _j, _len, _len1, _ref;
+            validIds = _.pluck(invalidAmiAry || [], 'id');
+            invalids = _.difference(amiAry, validIds);
+            for (_i = 0, _len = invalids.length; _i < _len; _i++) {
+              amiId = invalids[_i];
               _ref = instanceAMIMap[amiId] || [];
-              for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
-                instanceUID = _ref[_k];
+              for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+                instanceUID = _ref[_j];
                 instanceObj = MC.canvas_data.component[instanceUID];
                 if (instanceObj.type === constant.RESTYPE.LC) {
                   infoTagType = 'lc';
@@ -252,7 +244,7 @@
               return callback(null);
             }
           };
-          cr.fetchAmis(amiAry).then(success, failure);
+          cr.fetchAmis(amiAry, true).then(success, failure);
         } else {
           return callback(null);
         }

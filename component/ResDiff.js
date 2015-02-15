@@ -592,7 +592,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('ResDiff',['UI.modalplus', 'DiffTree', 'component/resdiff/resDiffTpl', 'component/resdiff/prepare', 'constant', 'i18n!/nls/lang.js'], function(modalplus, DiffTree, template, Prepare, constant, lang) {
+  define('ResDiff',['UI.modalplus', 'DiffTree', 'component/resdiff/resDiffTpl', 'component/resdiff/prepare', 'constant', 'i18n!/nls/lang.js', 'ApiRequest'], function(modalplus, DiffTree, template, Prepare, constant, lang, ApiRequest) {
     return Backbone.View.extend({
       className: 'res_diff_tree',
       tagName: 'section',
@@ -651,10 +651,14 @@ return TEMPLATE; });
             promise = that.callback(true);
             return promise.then(function() {
               return that.modal.close();
-            }, function(error) {
+            }, function(data) {
               $confirmBtn.text(okText);
               $confirmBtn.removeClass('disabled');
-              return notification('error', error.msg);
+              if (data.error === ApiRequest.Errors.AppConflict) {
+                return notification('error', lang.IDE.WARNNING_APP_CHANGE_BY_OTHER_USER);
+              } else {
+                return notification('error', data.msg);
+              }
             });
           } else {
             return that.modal.close();

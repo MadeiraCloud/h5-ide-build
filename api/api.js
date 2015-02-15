@@ -117,6 +117,7 @@
       AppIsStopped: 216,
       AppNotStoppable: 217,
       FavoriteId: 217,
+      AppConflict: 219,
       GuestErrorGuest: 230,
       GuestInvalidId: 231,
       GuestInvalidState: 232,

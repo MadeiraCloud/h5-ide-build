@@ -561,11 +561,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         this.__userTriggerAppProgress = false;
 
-        /* env:dev                                                                                                                        env:dev:end */
+        /* env:dev                                                                                                                                                                                                     env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
-          return console.log("OpsModel's state changed", this, MC.prettyStackTrace());
+          var _ref;
+          return console.log("OpsModel's state changed", [(_ref = this.project()) != null ? _ref.get("name") : void 0, this.get("name"), OpsModelStateDesc[this.get("state")], this, MC.prettyStackTrace()]);
         });
 
         /* env:debug:end */
@@ -1014,8 +1015,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         oldState = this.get("state");
         this.attributes.progress = 0;
-        this.set("state", OpsModelState.Updating);
         this.__userTriggerAppProgress = true;
+        this.set("state", OpsModelState.Updating);
         this.__updateAppDefer = Q.defer();
         self = this;
         ApiRequest("app_update", {
@@ -1067,8 +1068,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         oldState = this.get("state");
         this.attributes.progress = 0;
-        this.set("state", OpsModelState.Saving);
         this.__userTriggerAppProgress = true;
+        this.set("state", OpsModelState.Saving);
         this.__saveAppDefer = Q.defer();
         self = this;
         newJson.time_update = this.get("updateTime");
@@ -1080,6 +1081,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             self.attributes.requestId = res[0];
           }
           self.attributes.importMsrId = void 0;
+          newJson.time_update = res[3];
         }, function(error) {
           self.__userTriggerAppProgress = false;
           return self.__saveAppDefer.reject(error);
@@ -1107,7 +1109,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.__userTriggerAppProgress;
       },
       updateWithWSEvent: function(wsRequest) {
-        var OMS, i, progress, step, toState, toStateIndex, totalSteps, _i, _len, _ref;
+        var OMS, i, progress, step, toState, toStateIndex, totalSteps, _i, _len, _ref, _ref1;
         if (wsRequest.state === constant.OPS_STATE.INPROCESS && this.isProcessing()) {
           step = 0;
           totalSteps = 1;
@@ -1128,7 +1130,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           }
           return;
         }
-        console.info("OpsModel's state changes due to WS event:", this, wsRequest);
+        console.info("OpsModel's state changes due to WS event:", [(_ref1 = this.project()) != null ? _ref1.get("name") : void 0, this.get("name"), this, wsRequest]);
         if (wsRequest.state === constant.OPS_STATE.INPROCESS) {
           toStateIndex = 0;
         } else if (wsRequest.state === constant.OPS_STATE.DONE) {
@@ -1152,38 +1154,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             break;
           case constant.OPS_CODE_NAME.UPDATE:
           case constant.OPS_CODE_NAME.STATE_UPDATE:
-            if (toStateIndex !== 0) {
-              if (!this.__updateAppDefer) {
-                if (this.isLastActionTriggerByUser()) {
-                  console.warn("The update action seems to caused by user, but UpdateAppDefer is null when setStatusWithWSEvent with `update` event.");
-                }
-                return;
-              }
+            if (this.__updateAppDefer) {
               if (toStateIndex === 1) {
                 this.__updateAppDefer.resolve();
-              } else {
-                this.__updateAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
-              }
-              return;
-            }
-            toState = [OMS.Updating];
-            break;
-          case constant.OPS_CODE_NAME.APP_SAVE:
-            if (toStateIndex !== 0) {
-              if (!this.__saveAppDefer) {
-                if (this.isLastActionTriggerByUser()) {
-                  console.warn("The save app action seems to caused by user, but SaveAppDefer is null when setStatusWithWSEvent with `save` event.");
-                }
                 return;
               }
+              if (toStateIndex === 2) {
+                this.__updateAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
+                return;
+              }
+            }
+            toState = [OMS.Updating, OMS.Running, OMS.Stopped];
+            break;
+          case constant.OPS_CODE_NAME.APP_SAVE:
+            if (this.__saveAppDefer) {
               if (toStateIndex === 1) {
                 this.__saveAppDefer.resolve();
-              } else {
-                this.__saveAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
+                return;
               }
-              return;
+              if (toStateIndex === 2) {
+                this.__saveAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
+                return;
+              }
             }
-            toState = [OMS.Saving];
+            toState = [OMS.Saving, OMS.Running, OMS.Stopped];
         }
         toState = toState[toStateIndex];
         if (!this.isProcessing() && this.get("state") !== toState) {

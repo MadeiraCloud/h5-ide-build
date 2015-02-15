@@ -1624,6 +1624,17 @@ TEMPLATE.modal.confirmRemoveApp=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<p class=\"modal-text-major\">This app is being operating by another user. Sorry that you need to close this tab.</p>";
+  };
+TEMPLATE.modal.AECC=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
@@ -5920,6 +5931,38 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           App.loadUrl(appUrl);
           return notification("info", "User payment status change detected, reloading app resource.");
         });
+      },
+      showAEConflictConfirm: function() {
+        var modal, self;
+        if (this.__showingAECC) {
+          return;
+        }
+        this.__showingAECC = true;
+        self = this;
+        return modal = new Modal({
+          title: "App is operated by another user",
+          template: OpsEditorTpl.modal.AECC(),
+          confirm: {
+            text: "Save Current App to Stack"
+          },
+          cancel: {
+            text: "Close Tab",
+            color: "red"
+          },
+          disableClose: true,
+          hideClose: true,
+          onCancel: function() {
+            self.workspace.remove();
+          },
+          onConfirm: function() {
+            var json;
+            json = self.workspace.design.serializeAsStack();
+            json.name += "-" + MC.dateFormat(new Date(), "MMddyyyy");
+            App.loadUrl(self.workspace.scene.project.createStackByJson(json).url());
+            self.workspace.remove();
+            modal.close();
+          }
+        });
       }
     });
   });
@@ -5927,7 +5970,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel", "Design", "CloudResources", "constant", "wspace/coreeditor/EditorDeps"], function(StackEditor, AppView, ResDiff, OpsModel, Design, CloudResources, constant) {
+  define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel", "Design", "CloudResources", "constant", "ApiRequest", "i18n!/nls/lang.js", "wspace/coreeditor/EditorDeps"], function(StackEditor, AppView, ResDiff, OpsModel, Design, CloudResources, constant, ApiRequest, lang) {
     return StackEditor.extend({
       type: "CoreEditorApp",
       viewClass: AppView,
@@ -6079,11 +6122,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         this.__applyingUpdate = false;
         this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
-        msg = err.msg;
-        if (err.result) {
-          msg += "\n" + err.result;
+        if (err.error === ApiRequest.Errors.AppConflict) {
+          msg = lang.NOTIFY.ERR_APP_UPDATE_FAILED_CONFLICT;
+        } else {
+          msg = err.msg;
+          if (err.result) {
+            msg += "\n" + err.result;
+          }
+          msg = msg.replace(/\n/g, "<br />");
         }
-        msg = msg.replace(/\n/g, "<br />");
         this.view.showUpdateStatus(msg);
       },
       __onAppEditDone: function() {
@@ -6124,7 +6171,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         this.updateTab();
         if (this.isAppEditMode()) {
-
+          if (this.opsModel.isLastActionTriggerByUser()) {
+            this.view.toggleProcessing();
+          } else {
+            this.view.showAEConflictConfirm();
+            return;
+          }
         } else {
           if (this.opsModel.isProcessing()) {
             this.view.toggleProcessing();
