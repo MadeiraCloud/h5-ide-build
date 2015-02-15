@@ -1,0 +1,1 @@
+(function(){define(["Design","constant"],function(e,t){var n;return n=e.extend({instancesNoUserData:function(){var n,r;return r=!0,n=e.modelClassForType(t.RESTYPE.OSSERVER).allObjects(),_.each(n,function(e){return r=e.get("userData")?!1:!0,null}),r}}),n})}).call(this);

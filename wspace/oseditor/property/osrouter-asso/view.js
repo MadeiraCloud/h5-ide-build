@@ -1,0 +1,1 @@
+(function(){define(["constant","../OsPropertyView","./template"],function(e,t,n){return t.extend({render:function(){var t,r;return t=this.model.getTarget(e.RESTYPE.OSSUBNET).get("name"),r=this.model.getTarget(e.RESTYPE.OSRT).get("name"),this.$el.html(n({namePort1:t,namePort2:r})),this}},{handleTypes:["OsRouterAsso"],handleModes:["stack","app","appedit"]})})}).call(this);

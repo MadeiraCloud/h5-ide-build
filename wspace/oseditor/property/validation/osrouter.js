@@ -1,0 +1,1 @@
+(function(){define(["constant","./ValidationBase"],function(e,t){return t.extend({},{handleTypes:[e.RESTYPE.OSRT]})})}).call(this);

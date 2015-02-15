@@ -1,0 +1,1 @@
+define(["handlebars"],function(e){var t=function(e,t,n,r,i){return this.compilerInfo=[4,">= 1.0.0"],n=this.merge(n,e.helpers),i=i||{},'<article class="panel-body"></article>\r\n<article class="panel-float hidden"></article>'};return e.template(t)});

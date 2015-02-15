@@ -1,0 +1,1 @@
+(function(){define(["constant","../OsPropertyView","./template"],function(e,t,n){return t.extend({render:function(){return this.$el.html(n(this.getRenderData())),this}},{handleTypes:[e.RESTYPE.OSNETWORK],handleModes:["stack","app","appedit"]})})}).call(this);
