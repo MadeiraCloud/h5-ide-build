@@ -86,7 +86,9 @@ function program11(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "IMPORT_FORM_STACK_JSON", {hash:{},data:data}))
     + "</li>\n          <li class='import-stack' data-type=\"cf\" data-analytics-plus=\"import_cf\">"
     + escapeExpression(helpers.i18n.call(depth0, "IMPORT_FORM_CLOUDFORMATION", {hash:{},data:data}))
-    + "</li>\n        </ul> </div>\n      </div>\n\n      <button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize tooltip\" data-analytics-plus=\"visualize_vpc\" data-tooltip=\""
+    + "</li>\n        </ul> </div>\n      </div>\n\n      <button id=\"VisualizeVPC\" class=\"btn btn-blue icon-visualize tooltip\" data-analytics-plus=\"visualize_vpc\" title=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROVIDE_CRED_TO_VISUALIZE", {hash:{},data:data}))
+    + "\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROVIDE_CRED_TO_VISUALIZE", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
@@ -1058,7 +1060,9 @@ function program4(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div>\n                <div class=\"region-resource-info truncate\">\n                    <div class=\"loading-spinner loading-spinner-small\"></div>"
+    + "%;\"></div>\n                <div class=\"region-resource-info truncate\" title=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n                    <div class=\"loading-spinner loading-spinner-small\"></div>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " - "
     + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1088,7 +1092,9 @@ function program7(depth0,data) {
   buffer += "\n                    <span class=\"";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(19, program19, data),fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " truncate\">"
+  buffer += " truncate\" title=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n                </div>\n                ";
   return buffer;
@@ -2769,6 +2775,8 @@ return TEMPLATE; });
         var region, self, _i, _len, _ref;
         this.resourcesTab = "INSTANCE";
         this.region = "global";
+        this.appsRegion = "global";
+        this.stacksRegion = "global";
         this.setElement($(Template.main({
           providers: this.model.supportedProviders(),
           id: this.model.scene.project.get("id"),
@@ -2779,16 +2787,16 @@ return TEMPLATE; });
         this.logCol.on('change add', this.updateLog, this);
         this.render();
         this.listenTo(this.model.scene.project, "update:stack", function() {
-          return self.updateRegionAppStack("stacks", "global");
+          return self.updateRegionAppStack("stacks");
         });
         this.listenTo(this.model.scene.project, "update:app", function() {
-          return self.updateRegionAppStack("apps", "global");
+          return self.updateRegionAppStack("apps");
         });
         this.listenTo(this.model.scene.project, "change:stack", function() {
-          return self.updateRegionAppStack("stacks", "global");
+          return self.updateRegionAppStack("stacks");
         });
         this.listenTo(this.model.scene.project, "change:app", function() {
-          return self.updateRegionAppStack("apps", "global");
+          return self.updateRegionAppStack("apps");
         });
         this.listenTo(this.model.scene.project, "update:credential", function() {
           return self.updateDemoView();
@@ -2868,14 +2876,14 @@ return TEMPLATE; });
         var newCredentialAccount;
         if (!this.model.scene.project.isDemoMode()) {
           this.$el.find("#dashboard-data-wrap").removeClass("demo");
-          this.$el.find("#VisualizeVPC").removeAttr("disabled").removeClass("tooltip");
+          this.$el.find("#VisualizeVPC").removeAttr("disabled").removeClass("tooltip").removeAttr("title");
           newCredentialAccount = this.model.scene.project.credOfProvider(constant.PROVIDER.AWSGLOBAL).get("awsAccount");
           if (this.credentialAccount !== newCredentialAccount) {
             this.reloadResource();
             this.credentialAccount = newCredentialAccount;
           }
         } else {
-          this.$el.find("#VisualizeVPC").attr("disabled", "disabled").addClass("tooltip");
+          this.$el.find("#VisualizeVPC").attr("disabled", "disabled").addClass("tooltip").attr("title", lang.IDE.PROVIDE_CRED_TO_VISUALIZE);
           this.$el.find("#dashboard-data-wrap").toggleClass("demo", true);
         }
       },
@@ -2918,6 +2926,7 @@ return TEMPLATE; });
           }
           updateType = $(evt.currentTarget).parents(".dash-region-navigation").data("type");
           if (updateType === "stacks" || updateType === "apps") {
+            this[updateType + "Region"] = region;
             return this.updateRegionAppStack(updateType, region);
           } else if (updateType === "resource") {
             this.region = region;
@@ -2959,6 +2968,9 @@ return TEMPLATE; });
         }
         if (updateType !== "stacks" && updateType !== "apps") {
           return false;
+        }
+        if (!region) {
+          region = this[updateType + "Region"];
         }
         self = this;
         attr = {

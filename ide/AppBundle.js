@@ -8,7 +8,7 @@
 
 (function() {
   define('ide/Websocket',["Meteor", "backbone", "event", "MC"], function(Meteor, Backbone, ide_event) {
-    var WEBSOCKET_URL, Websocket, singleton;
+    var WEBSOCKET_URL, Websocket, singleton, subMap;
     singleton = null;
     WEBSOCKET_URL = "" + MC.API_HOST + "/ws/";
     Meteor._debug = function() {
@@ -25,16 +25,22 @@
       opts = {
         connection: this.connection
       };
+      this.__sessionExpire = false;
       this.collection = {
-        project: new Meteor.Collection("project", opts),
-        history: new Meteor.Collection("project_history", opts),
         user: new Meteor.Collection("user", opts),
         imports: new Meteor.Collection("imports", opts),
+        project: new Meteor.Collection("project", opts),
+        history: new Meteor.Collection("project_history", opts),
         request: new Meteor.Collection("request", opts),
         status: new Meteor.Collection("status", opts),
         app: new Meteor.Collection("app", opts),
         stack: new Meteor.Collection("stack", opts)
       };
+      this.collection.user.find().observe({
+        removed: function(e) {
+          return App.WS.onUserSubError(e);
+        }
+      });
       Deps.autorun((function(_this) {
         return function() {
           return _this.statusChanged();
@@ -49,20 +55,21 @@
           }
         };
       })(this), 5000);
-      this.appWideSubscripe();
+      this.__appWideSubscripe();
       return this;
     };
-    Websocket.prototype.isReady = function(projectId) {
-      var _ref;
-      return (_ref = this.projects[projectId]) != null ? _ref.ready : void 0;
-    };
     Websocket.prototype.onUserSubError = function(e) {
-      console.log(e);
+      console.log("[Websocket Error]", e);
+      if (this.__sessionExpire) {
+        return;
+      }
+      this.__sessionExpire = true;
+      this.connection._stream.disconnect();
       this.trigger("Disconnected");
     };
     Websocket.prototype.statusChanged = function() {
       var status;
-      status = this.connection.status().connected;
+      status = this.connection.status().connected || this.__sessionExpire;
       if (status) {
         this.shouldNotify = true;
       }
@@ -71,7 +78,7 @@
       }
       return this.trigger("StatusChanged", status);
     };
-    Websocket.prototype.appWideSubscripe = function() {
+    Websocket.prototype.__appWideSubscripe = function() {
       this.connection.subscribe("user", App.user.get("usercode"), App.user.get("session"), {
         onReady: function() {},
         onError: function(e) {
@@ -79,6 +86,17 @@
         }
       });
       return this.connection.subscribe("imports", App.user.get("usercode"), App.user.get("session"));
+    };
+    subMap = {
+      project: 0,
+      history: 1,
+      request: 2,
+      stack: 3,
+      app: 4,
+      status: 5
+    };
+    Websocket.prototype.isSubReady = function(projectId, subscription) {
+      return this.projects[projectId][subMap[subscription]].ready();
     };
     Websocket.prototype.subscribe = function(projectId) {
       var self, session, usercode;
@@ -89,16 +107,11 @@
       session = App.user.get("session");
       usercode = App.user.get("usercode");
       this.projects[projectId] = [
-        this.connection.subscribe("history", usercode, session, projectId), this.connection.subscribe("project", usercode, session, projectId, {
+        this.connection.subscribe("project", usercode, session, projectId, {
           onError: function(e) {
             return self.onError(e, projectId);
           }
-        }), this.connection.subscribe("request", usercode, session, projectId, function() {
-          var _ref;
-          if ((_ref = self.projects[projectId]) != null) {
-            _ref.ready = true;
-          }
-        }), this.connection.subscribe("status", usercode, session, projectId), this.connection.subscribe("stack", usercode, session, projectId), this.connection.subscribe("app", usercode, session, projectId)
+        }), this.connection.subscribe("history", usercode, session, projectId), this.connection.subscribe("request", usercode, session, projectId), this.connection.subscribe("stack", usercode, session, projectId), this.connection.subscribe("app", usercode, session, projectId), this.connection.subscribe("status", usercode, session, projectId)
       ];
     };
     Websocket.prototype.unsubscribe = function(projectId) {
@@ -157,15 +170,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\r\n    <div class=\"confirmSession\">\r\n        <div class=\"modal-text-major\">\r\n            <p>"
+  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\n    <div class=\"confirmSession\">\n        <div class=\"modal-text-major\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\r\n            <p>"
+    + "</p>\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\r\n        </div>\r\n        <div class=\"modal-text-minor\">"
+    + "</p>\n        </div>\n        <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\r\n    </div>\r\n    <div class=\"reconnectSession\" style=\"display:none;\">\r\n        <div class=\"modal-text-major\">"
+    + "</div>\n    </div>\n    <div class=\"reconnectSession\" style=\"display:none;\">\n        <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\r\n        <div class=\"modal-input\">\r\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n        </div>\r\n    </div>\r\n</section>";
+    + "</div>\n        <div class=\"modal-input\">\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n        </div>\n    </div>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -293,13 +306,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"complete-fullname\">\r\n    <div class=\"control-group fullname\">\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-firstname\" class=\"account-label\">"
+  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n    </div>\r\n    <p class=\"information\">"
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
     + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
-    + "</p>\r\n</div>";
+    + "</p>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -546,8 +559,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (options && options.jsonData) {
           this.__setJsonData(options.jsonData);
         }
+        this.__userTriggerAppProgress = false;
 
-        /* env:dev                                                                                                                          env:dev:end */
+        /* env:dev                                                                                                                        env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -590,7 +604,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return (this.credential() || {}).id;
       },
       isStack: function() {
-        return this.attributes.state === OpsModelState.UnRun || this.attributes.state === OpsModelState.Saving;
+        if (this.attributes.state === OpsModelState.UnRun) {
+          return true;
+        }
+        if (this.attributes.state === OpsModelState.Saving) {
+          return (this.get("id") || "").indexOf("app-") === -1;
+        }
+        return false;
       },
       isApp: function() {
         return !this.isStack();
@@ -852,6 +872,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         self = this;
         collection = this.collection;
+        this.__userTriggerAppProgress = true;
         this.__destroy();
         if (!this.isPersisted()) {
           d = Q.defer();
@@ -865,6 +886,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (e.error === ApiRequest.Errors.StackInvalidId) {
             return;
           }
+          self.__userTriggerAppProgress = false;
           self.set("state", OpsModelState.UnRun);
           return collection.add(self);
         });
@@ -909,12 +931,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         self = this;
         this.attributes.progress = 0;
         this.set("state", OpsModelState.Stopping);
+        this.__userTriggerAppProgress = true;
         return ApiRequest("app_stop", {
           region_name: this.get("region"),
           key_id: this.credentialId(),
           app_id: this.get("id"),
           app_name: this.get("name")
         }).fail(function(err) {
+          self.__userTriggerAppProgress = false;
           self.set("state", OpsModelState.Running);
           throw err;
         });
@@ -927,12 +951,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         self = this;
         this.attributes.progress = 0;
         this.set("state", OpsModelState.Starting);
+        this.__userTriggerAppProgress = true;
         return ApiRequest("app_start", {
           region_name: this.get("region"),
           key_id: this.credentialId(),
           app_id: this.get("id"),
           app_name: this.get("name")
         }).fail(function(err) {
+          self.__userTriggerAppProgress = false;
           self.set("state", OpsModelState.Stopped);
           throw err;
         });
@@ -948,10 +974,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running) {
           return this.__returnErrorPromise();
         }
+        self = this;
         oldState = this.get("state");
         this.attributes.progress = 0;
         this.set("state", OpsModelState.Terminating);
-        self = this;
+        this.__userTriggerAppProgress = true;
         options = $.extend({
           region_name: this.get("region"),
           app_id: this.get("id"),
@@ -964,6 +991,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             self.__destroy();
           }
         }, function(err) {
+          self.__userTriggerAppProgress = false;
           self.set("state", oldState);
           throw err;
         });
@@ -976,13 +1004,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running) {
           return this.__returnErrorPromise();
         }
-        if (this.__updateAppDefer) {
+        if (this.testState(OpsModelState.Updating)) {
           console.error("The app is already updating!");
-          return this.__updateAppDefer.promise;
+          if (this.__updateAppDefer) {
+            return this.__updateAppDefer.promise;
+          } else {
+            return this.__returnErrorPromise();
+          }
         }
         oldState = this.get("state");
         this.attributes.progress = 0;
         this.set("state", OpsModelState.Updating);
+        this.__userTriggerAppProgress = true;
         this.__updateAppDefer = Q.defer();
         self = this;
         ApiRequest("app_update", {
@@ -992,6 +1025,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           fast_update: fastUpdate,
           key_id: this.credentialId()
         }).fail(function(error) {
+          self.__userTriggerAppProgress = false;
           return self.__updateAppDefer.reject(error);
         });
         errorHandler = function(error) {
@@ -1023,13 +1057,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (!this.isApp() || (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running)) {
           return this.__returnErrorPromise();
         }
-        if (this.__saveAppDefer) {
+        if (this.testState(OpsModelState.Saving)) {
           console.error("The app is already saving!");
-          return this.__saveAppDefer.promise;
+          if (this.__saveAppDefer) {
+            return this.__saveAppDefer.promise;
+          } else {
+            return this.__returnErrorPromise();
+          }
         }
         oldState = this.get("state");
         this.attributes.progress = 0;
         this.set("state", OpsModelState.Saving);
+        this.__userTriggerAppProgress = true;
         this.__saveAppDefer = Q.defer();
         self = this;
         newJson.time_update = this.get("updateTime");
@@ -1042,6 +1081,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           }
           self.attributes.importMsrId = void 0;
         }, function(error) {
+          self.__userTriggerAppProgress = false;
           return self.__saveAppDefer.reject(error);
         });
         return this.__saveAppDefer.promise.then(function() {
@@ -1063,9 +1103,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         state = this.attributes.state;
         return state === OpsModelState.Initializing || state === OpsModelState.Stopping || state === OpsModelState.Updating || state === OpsModelState.Terminating || state === OpsModelState.Starting || state === OpsModelState.Saving;
       },
+      isLastActionTriggerByUser: function() {
+        return this.__userTriggerAppProgress;
+      },
       updateWithWSEvent: function(wsRequest) {
-        var completed, i, progress, step, toState, totalSteps, _i, _len, _ref;
-        if (wsRequest.state === constant.OPS_STATE.INPROCESS) {
+        var OMS, i, progress, step, toState, toStateIndex, totalSteps, _i, _len, _ref;
+        if (wsRequest.state === constant.OPS_STATE.INPROCESS && this.isProcessing()) {
           step = 0;
           totalSteps = 1;
           if (wsRequest.dag && wsRequest.dag.step) {
@@ -1086,43 +1129,67 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return;
         }
         console.info("OpsModel's state changes due to WS event:", this, wsRequest);
-        completed = wsRequest.state === constant.OPS_STATE.DONE;
+        if (wsRequest.state === constant.OPS_STATE.INPROCESS) {
+          toStateIndex = 0;
+        } else if (wsRequest.state === constant.OPS_STATE.DONE) {
+          toStateIndex = 1;
+        } else {
+          toStateIndex = 2;
+        }
+        OMS = OpsModelState;
         switch (wsRequest.code) {
           case constant.OPS_CODE_NAME.LAUNCH:
-            toState = completed ? OpsModelState.Running : OpsModelState.Destroyed;
+            toState = [OMS.Initializing, OMS.Running, OMS.Destroyed];
             break;
           case constant.OPS_CODE_NAME.STOP:
-            toState = completed ? OpsModelState.Stopped : OpsModelState.Running;
+            toState = [OMS.Stopping, OMS.Stopped, OMS.Running];
             break;
           case constant.OPS_CODE_NAME.START:
-            toState = completed ? OpsModelState.Running : OpsModelState.Stopped;
+            toState = [OMS.Starting, OMS.Running, OMS.Stopped];
             break;
           case constant.OPS_CODE_NAME.TERMINATE:
-            toState = completed ? OpsModelState.Destroyed : OpsModelState.Stopped;
+            toState = [OMS.Terminating, OMS.Destroyed, OMS.Stopped];
             break;
           case constant.OPS_CODE_NAME.UPDATE:
           case constant.OPS_CODE_NAME.STATE_UPDATE:
-            if (!this.__updateAppDefer) {
-              return console.warn("UpdateAppDefer is null when setStatusWithWSEvent with `update` event.");
+            if (toStateIndex !== 0) {
+              if (!this.__updateAppDefer) {
+                if (this.isLastActionTriggerByUser()) {
+                  console.warn("The update action seems to caused by user, but UpdateAppDefer is null when setStatusWithWSEvent with `update` event.");
+                }
+                return;
+              }
+              if (toStateIndex === 1) {
+                this.__updateAppDefer.resolve();
+              } else {
+                this.__updateAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
+              }
+              return;
             }
-            if (completed) {
-              this.__updateAppDefer.resolve();
-            } else {
-              this.__updateAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
-            }
-            return;
+            toState = [OMS.Updating];
+            break;
           case constant.OPS_CODE_NAME.APP_SAVE:
-            if (!this.__saveAppDefer) {
-              return console.warn("SaveAppDefer is null when setStatusWithWSEvent with `save` event.");
+            if (toStateIndex !== 0) {
+              if (!this.__saveAppDefer) {
+                if (this.isLastActionTriggerByUser()) {
+                  console.warn("The save app action seems to caused by user, but SaveAppDefer is null when setStatusWithWSEvent with `save` event.");
+                }
+                return;
+              }
+              if (toStateIndex === 1) {
+                this.__saveAppDefer.resolve();
+              } else {
+                this.__saveAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
+              }
+              return;
             }
-            if (completed) {
-              this.__saveAppDefer.resolve();
-            } else {
-              this.__saveAppDefer.reject(McError(ApiRequest.Errors.OperationFailure, wsRequest.data));
-            }
-            return;
+            toState = [OMS.Saving];
         }
-        this.attributes.opsActionError = completed ? "" : wsRequest.data;
+        toState = toState[toStateIndex];
+        if (!this.isProcessing() && this.get("state") !== toState) {
+          this.__userTriggerAppProgress = false;
+        }
+        this.attributes.opsActionError = toStateIndex === 2 ? wsRequest.data : "";
         if (toState === OpsModelState.Destroyed) {
           this.__destroy();
         } else if (toState) {
@@ -1139,7 +1206,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       destroy: function() {
         return console.info("OpsModel's destroy() doesn't do anything. You probably want to call remove(), stop() or terminate()");
       },
-      __destroy: function(options) {
+      __destroy: function() {
         var msrId;
         if (this.attributes.state === OpsModelState.Destroyed) {
           return;
@@ -1150,7 +1217,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           CloudResources(this.credential(), "OpsResource", msrId).destroy();
         }
         this.attributes.state = OpsModelState.Destroyed;
-        return this.trigger('destroy', this, this.collection, options);
+        return this.trigger('destroy', this, this.collection);
       },
       __returnErrorPromise: function() {
         var d;
@@ -1611,7 +1678,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         var res;
         res = isOpsExist(col, attr, wsdata);
         if (res === 1) {
-          console.log("[WS Add] The ops already exist, ignoring.", wsdata);
           return;
         }
         if (res === 0) {
@@ -1631,7 +1697,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       App.WS.collection.stack.find().observe({
         added: function(newDocument) {
           var project, wsdata;
-          if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "stack")) {
             return;
           }
           project = App.model.projects().get(newDocument.project_id);
@@ -1649,9 +1715,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }, wsdata, 0);
           }, 1000);
         },
+        changed: function(newDocument) {
+          var project, _ref;
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "stack")) {
+            return;
+          }
+          project = App.model.projects().get(newDocument.project_id);
+          if (!project) {
+            console.log("Changing a stack that is not related to any project, ignored.", newDocument);
+          }
+          if ((_ref = project.stacks().get(newDocument.id)) != null) {
+            _ref.set("name", newDocument.name);
+          }
+        },
         removed: function(newDocument) {
           var project, _ref;
-          if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "stack")) {
             return;
           }
           project = App.model.projects().get(newDocument.project_id);
@@ -1660,16 +1739,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return;
           }
           if ((_ref = project.stacks().get(newDocument.id)) != null) {
-            _ref.__destroy({
-              externalAction: true
-            });
+            _ref.__destroy();
           }
         }
       });
       App.WS.collection.app.find().observe({
         added: function(newDocument) {
           var project, wsdata;
-          if (!newDocument || !App.WS.isReady(newDocument.project_id)) {
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "app")) {
             return;
           }
           project = App.model.projects().get(newDocument.project_id);
@@ -1686,6 +1763,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               state: OpsModel.State.Initializing
             }, wsdata, 0);
           }, 1000);
+        },
+        changed: function(newDocument) {
+          var project, _ref;
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "app")) {
+            return;
+          }
+          project = App.model.projects().get(newDocument.project_id);
+          if (!project) {
+            console.log("There's an app that is not related to any project that is changed, ignored.", newDocument);
+            return;
+          }
+          if ((_ref = project.apps().get(newDocument.id)) != null) {
+            _ref.set("name", newDocument.name);
+          }
+        },
+        removed: function(newDocument) {
+          var project, wsdata, _ref;
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id)) {
+            return;
+          }
+          project = App.model.projects().get(newDocument.project_id);
+          if (!project) {
+            console.log("There's an app that is not related to any project that is removed. ignored.", newDocument);
+            return;
+          }
+          wsdata = project.__parseListRes([newDocument])[0];
+          return (_ref = project.apps().get(newDocument.id)) != null ? _ref.__destroy() : void 0;
         }
       });
       handleRequest = function(req) {
@@ -1702,7 +1806,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         /*
          * Update the corresponding opsmodel.
          */
-        if (!App.WS.isReady(req.project_id) && req.state !== constant.OPS_STATE.INPROCESS) {
+        if (!App.WS.isSubReady(req.project_id, "request")) {
           return;
         }
         TGT = App.model.projects().get(req.project_id);
@@ -2026,7 +2130,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             nextPeriod: result.next_assessment_at,
             paymentState: result.state
           };
-          formattedResult.renewDays = (Math.round((new Date(formattedResult.nextPeriod) - new Date()) / (24 * 3600 * 100))) / 10;
+          formattedResult.renewDays = Math.round((new Date(formattedResult.nextPeriod) - new Date()) / (24 * 3600 * 1000));
           formattedResult.isDefault = that.isPrivate();
           formattedResult.failToCharge = that.shouldPay();
           that.set("payment", formattedResult);
