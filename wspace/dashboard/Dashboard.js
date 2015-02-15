@@ -1057,7 +1057,7 @@ function program3(depth0,data,depth1) {
     + "/ops/"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(7, program7, data),fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </a></li>\n        ";
   return buffer;
@@ -1065,10 +1065,7 @@ function program3(depth0,data,depth1) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <div class=\"thumbnail app-thumbnail\"></div>\n                <div class=\"region-resource-progess-wrap\"><div class=\"region-resource-progess";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" style=\"width:"
+  buffer += "\n                <div class=\"thumbnail app-thumbnail\"></div>\n                <div class=\"region-resource-progess-wrap\"><div class=\"region-resource-progess\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "%;\"></div></div>\n                <div class=\"region-resource-info truncate\" title=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1079,28 +1076,23 @@ function program4(depth0,data) {
     + "...\n                </div>\n            ";
   return buffer;
   }
-function program5(depth0,data) {
-  
-  
-  return " hide";
-  }
 
-function program7(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                <div class=\"thumbnail app-thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    <i class=\"icon-terminate terminate-app\"></i>\n                    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    <span class=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(19, program19, data),fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(18, program18, data),fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " truncate\" title=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1109,7 +1101,7 @@ function program7(depth0,data) {
     + "</span>\n                </div>\n                ";
   return buffer;
   }
-function program8(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<i class=\"icon-app-type-"
@@ -1118,46 +1110,46 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program9(depth0,data) {
   
   
   return "class=\"hide\"";
   }
 
-function program12(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    ";
   return buffer;
   }
-function program13(depth0,data) {
+function program12(depth0,data) {
   
   
   return "<i class=\"icon-stop stop-app\"></i>";
   }
 
-function program15(depth0,data) {
+function program14(depth0,data) {
   
   
   return "<i class=\"icon-play start-app\"></i>";
   }
 
-function program17(depth0,data) {
+function program16(depth0,data) {
   
   
   return "running";
   }
 
-function program19(depth0,data) {
+function program18(depth0,data) {
   
   
   return "stopped";
   }
 
-function program21(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "";
   buffer += "\n            <div class=\"blank-widget\"><div>"
@@ -1178,7 +1170,7 @@ function program21(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </ul>\n    </nav>\n\n    <ul id=\"region-resource-app-wrap\" class=\"region-resource-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(21, program21, data),fn:self.programWithDepth(3, program3, data, depth0),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(20, program20, data),fn:self.programWithDepth(3, program3, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>";
   return buffer;
@@ -2724,7 +2716,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, CredentialFormView) {
+  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "Credential", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, Credential, CredentialFormView) {
     Handlebars.registerHelper("awsAmiIcon", function(credentialId, amiId, region) {
       var ami;
       ami = CloudResources(credentialId, constant.RESTYPE.AMI, region).get(amiId);
@@ -2770,7 +2762,7 @@ return TEMPLATE; });
         "click .global-resource-li": "switchGlobalResource"
       },
       initialize: function() {
-        var region, self, _i, _len, _ref;
+        var credentialId, region, self, _i, _len, _ref;
         this.resourcesTab = "INSTANCE";
         this.region = "global";
         this.appsRegion = "global";
@@ -2802,22 +2794,28 @@ return TEMPLATE; });
         this.listenTo(this.model.scene.project, "change:credential", function() {
           return self.updateDemoView();
         });
+        this.listenTo(this.model.scene.project.apps(), "change:progress", function(ops) {
+          return self.updateAppStackProgress(ops);
+        });
+        this.listenTo(this.model.scene.project.stacks(), "change:progress", function(ops) {
+          return self.updateAppStackProgress(ops);
+        });
         this.listenTo(App.WS, "visualizeUpdate", this.onVisualizeUpdated);
-        this.credentialId = this.model.scene.project.credIdOfProvider(constant.PROVIDER.AWSGLOBAL);
-        this.credentialAccount = this.model.scene.project.credOfProvider(constant.PROVIDER.AWSGLOBAL).get("awsAccount");
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.ELB), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.VPN), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.VPC), "update", this.onRegionResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.ASG), "update", this.onRegionResChanged);
-        this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.CW), "update", this.onRegionResChanged);
+        credentialId = this.model.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
+        this.credentialAccount = this.model.scene.project.credOfProvider(Credential.PROVIDER.AWSGLOBAL).get("awsAccount");
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.ELB), "update", this.onGlobalResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.VPN), "update", this.onGlobalResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.VPC), "update", this.onRegionResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.ASG), "update", this.onRegionResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.CW), "update", this.onRegionResChanged);
         _ref = constant.REGION_KEYS;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           region = _ref[_i];
-          this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.SUBSCRIPTION, region), "update", this.onRegionResChanged);
-          this.listenTo(CloudResources(this.credentialId, constant.RESTYPE.DBINSTANCE, region), "update", this.onGlobalResChanged);
+          this.listenTo(CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region), "update", this.onRegionResChanged);
+          this.listenTo(CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, region), "update", this.onGlobalResChanged);
         }
         MC.template.dashboardBubble = _.bind(this.dashboardBubble, this);
         MC.template.dashboardBubbleSub = _.bind(this.dashboardBubbleSub, this);
@@ -2875,7 +2873,7 @@ return TEMPLATE; });
         if (!this.model.scene.project.isDemoMode()) {
           this.$el.find("#dashboard-data-wrap").removeClass("demo");
           this.$el.find("#VisualizeVPC").removeAttr("disabled").removeClass("tooltip").removeAttr("title");
-          newCredentialAccount = this.model.scene.project.credOfProvider(constant.PROVIDER.AWSGLOBAL).get("awsAccount");
+          newCredentialAccount = this.model.scene.project.credOfProvider(Credential.PROVIDER.AWSGLOBAL).get("awsAccount");
           if (this.credentialAccount !== newCredentialAccount) {
             this.reloadResource();
             this.credentialAccount = newCredentialAccount;
@@ -2958,6 +2956,9 @@ return TEMPLATE; });
           tpl = dataTemplate["resource" + this.resourcesTab](this.model.getAwsResData(this.region, type));
         }
         return this.$el.find("#RegionResourceData").html(tpl);
+      },
+      updateAppStackProgress: function(ops) {
+        $("#region-resource-app-wrap, #region-resource-stack-wrap").children("li[data-id='" + ops.id + "']").find(".region-resource-progess").css("width", ops.get("progress") + "%");
       },
       updateRegionAppStack: function(updateType, region) {
         var attr, data, filter, resources, self, tojson;
@@ -3411,7 +3412,7 @@ return TEMPLATE; });
 }).call(this);
 
 (function() {
-  define('wspace/dashboard/Dashboard',["Workspace", "./DashboardView", 'i18n!/nls/lang.js', "CloudResources", "constant", "ApiRequest"], function(Workspace, DashboardView, lang, CloudResources, constant, ApiRequest) {
+  define('wspace/dashboard/Dashboard',["Workspace", "./DashboardView", 'i18n!/nls/lang.js', "CloudResources", "constant", "ApiRequest", "Credential"], function(Workspace, DashboardView, lang, CloudResources, constant, ApiRequest, Credential) {
     return Workspace.extend({
       type: "Dashboard",
       isFixed: function() {
@@ -3430,7 +3431,6 @@ return TEMPLATE; });
         this.view = new DashboardView({
           model: this
         });
-        this.credentialId = this.scene.project.credentials().toJSON()[0].id;
         this.listenTo(this.scene.project, "change:myRole", function() {
           return this.view.render();
         });
@@ -3442,39 +3442,39 @@ return TEMPLATE; });
         return attr.type === "Dashboard";
       },
       fetchAwsResources: function(region) {
-        var self;
-        this.credentialId = this.scene.project.credentials().toJSON()[0].id;
+        var credentialId, self;
+        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
         self = this;
         if (!region) {
-          CloudResources(this.credentialId, constant.RESTYPE.INSTANCE).fetch();
-          CloudResources(this.credentialId, constant.RESTYPE.EIP).fetch();
-          CloudResources(this.credentialId, constant.RESTYPE.VOL).fetch();
-          CloudResources(this.credentialId, constant.RESTYPE.ELB).fetch();
-          CloudResources(this.credentialId, constant.RESTYPE.VPN).fetch();
+          CloudResources(credentialId, constant.RESTYPE.INSTANCE).fetch();
+          CloudResources(credentialId, constant.RESTYPE.EIP).fetch();
+          CloudResources(credentialId, constant.RESTYPE.VOL).fetch();
+          CloudResources(credentialId, constant.RESTYPE.ELB).fetch();
+          CloudResources(credentialId, constant.RESTYPE.VPN).fetch();
           _.each(constant.REGION_KEYS, function(e) {
-            return CloudResources(self.credentialId, constant.RESTYPE.DBINSTANCE, e).fetch();
+            return CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).fetch();
           });
           return;
         }
-        CloudResources(this.credentialId, constant.RESTYPE.SUBSCRIPTION, region).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.VPC).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.DHCP, region).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.ASG).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.CW).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.ENI, region).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.CGW, region).fetch();
-        CloudResources(this.credentialId, constant.RESTYPE.VGW, region).fetch();
+        CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region).fetch();
+        CloudResources(credentialId, constant.RESTYPE.VPC).fetch();
+        CloudResources(credentialId, constant.RESTYPE.DHCP, region).fetch();
+        CloudResources(credentialId, constant.RESTYPE.ASG).fetch();
+        CloudResources(credentialId, constant.RESTYPE.CW).fetch();
+        CloudResources(credentialId, constant.RESTYPE.ENI, region).fetch();
+        CloudResources(credentialId, constant.RESTYPE.CGW, region).fetch();
+        CloudResources(credentialId, constant.RESTYPE.VGW, region).fetch();
       },
       isAwsResReady: function(region, type) {
-        var datasource, e, globalReady, i, _i, _j, _len, _len1, _ref;
-        this.credentialId = this.scene.project.credentials().toJSON()[0].id;
+        var credentialId, datasource, e, globalReady, i, _i, _j, _len, _len1, _ref;
+        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
         if (!region) {
           globalReady = true;
-          datasource = [CloudResources(this.credentialId, constant.RESTYPE.INSTANCE), CloudResources(this.credentialId, constant.RESTYPE.EIP), CloudResources(this.credentialId, constant.RESTYPE.VOL), CloudResources(this.credentialId, constant.RESTYPE.ELB), CloudResources(this.credentialId, constant.RESTYPE.VPN)];
+          datasource = [CloudResources(credentialId, constant.RESTYPE.INSTANCE), CloudResources(credentialId, constant.RESTYPE.EIP), CloudResources(credentialId, constant.RESTYPE.VOL), CloudResources(credentialId, constant.RESTYPE.ELB), CloudResources(credentialId, constant.RESTYPE.VPN)];
           _ref = constant.REGION_KEYS;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             e = _ref[_i];
-            if (!CloudResources(this.credentialId, constant.RESTYPE.DBINSTANCE, e).isReady()) {
+            if (!CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).isReady()) {
               globalReady = false;
             }
           }
@@ -3488,22 +3488,22 @@ return TEMPLATE; });
         }
         switch (type) {
           case constant.RESTYPE.SUBSCRIPTION:
-            return CloudResources(this.credentialId, type, region).isReady();
+            return CloudResources(credentialId, type, region).isReady();
           case constant.RESTYPE.VPC:
-            return CloudResources(this.credentialId, type).isReady() && CloudResources(this.credentialId, constant.RESTYPE.DHCP, region).isReady();
+            return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.DHCP, region).isReady();
           case constant.RESTYPE.INSTANCE:
-            return CloudResources(this.credentialId, type).isReady() && CloudResources(this.credentialId, constant.RESTYPE.EIP, region).isReady();
+            return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.EIP, region).isReady();
           case constant.RESTYPE.VPN:
-            return CloudResources(this.credentialId, type).isReady() && CloudResources(this.credentialId, constant.RESTYPE.VGW, region).isReady() && CloudResources(this.credentialId, constant.RESTYPE.CGW, region).isReady();
+            return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.VGW, region).isReady() && CloudResources(credentialId, constant.RESTYPE.CGW, region).isReady();
           case constant.RESTYPE.DBINSTANCE:
-            return CloudResources(this.credentialId, type, region).isReady();
+            return CloudResources(credentialId, type, region).isReady();
           default:
-            return CloudResources(this.credentialId, type).isReady();
+            return CloudResources(credentialId, type).isReady();
         }
       },
       getAwsResData: function(region, type) {
-        var DBInstances, DBInstancesCount, data, e, filter, _i, _len, _ref;
-        this.credentialId = this.scene.project.credentials().toJSON()[0].id;
+        var DBInstances, DBInstancesCount, credentialId, data, e, filter, _i, _len, _ref;
+        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
         if (!region) {
           filter = function(m) {
             if (m.attributes.instanceState) {
@@ -3519,7 +3519,7 @@ return TEMPLATE; });
             e = _ref[_i];
             data = {
               region: e,
-              data: CloudResources(this.credentialId, constant.RESTYPE.DBINSTANCE, e).models || [],
+              data: CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).models || [],
               regionName: constant.REGION_SHORT_LABEL[e],
               regionArea: constant.REGION_LABEL[e]
             };
@@ -3528,34 +3528,34 @@ return TEMPLATE; });
           }
           DBInstances.totalCount = DBInstancesCount;
           return {
-            instances: CloudResources(this.credentialId, constant.RESTYPE.INSTANCE).groupByCategory(void 0, filter),
-            eips: CloudResources(this.credentialId, constant.RESTYPE.EIP).groupByCategory(),
-            volumes: CloudResources(this.credentialId, constant.RESTYPE.VOL).groupByCategory(),
-            elbs: CloudResources(this.credentialId, constant.RESTYPE.ELB).groupByCategory(),
-            vpns: CloudResources(this.credentialId, constant.RESTYPE.VPN).groupByCategory(),
+            instances: CloudResources(credentialId, constant.RESTYPE.INSTANCE).groupByCategory(void 0, filter),
+            eips: CloudResources(credentialId, constant.RESTYPE.EIP).groupByCategory(),
+            volumes: CloudResources(credentialId, constant.RESTYPE.VOL).groupByCategory(),
+            elbs: CloudResources(credentialId, constant.RESTYPE.ELB).groupByCategory(),
+            vpns: CloudResources(credentialId, constant.RESTYPE.VPN).groupByCategory(),
             rds: DBInstances
           };
         }
         if (type === constant.RESTYPE.SUBSCRIPTION) {
-          return CloudResources(this.credentialId, type, region).models;
+          return CloudResources(credentialId, type, region).models;
         } else {
-          return CloudResources(this.credentialId, type, region).where({
+          return CloudResources(credentialId, type, region).where({
             category: region
           });
         }
       },
       getAwsResDataById: function(region, type, id) {
-        return CloudResources(this.credentialId, type, region).get(id);
+        return CloudResources(this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL), type, region).get(id);
       },
       getResourceData: function(region, type, id) {
-        return CloudResources(this.credentialId, type, region).get(id);
+        return CloudResources(this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL), type, region).get(id);
       },
       clearVisualizeData: function() {
         this.set("visualizeData", []);
         this.__visRequest = null;
       },
       getResourcesCount: function(region) {
-        var collection, d, data, filter, key, rdsCollection, type;
+        var collection, credentialId, d, data, filter, key, rdsCollection, type;
         filter = {
           category: region
         };
@@ -3570,22 +3570,23 @@ return TEMPLATE; });
           cloudwatches: "CW"
         };
         d = {};
+        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
         for (key in data) {
           type = data[key];
-          collection = CloudResources(this.credentialId, constant.RESTYPE[type]);
+          collection = CloudResources(credentialId, constant.RESTYPE[type]);
           if (collection.isReady()) {
             d[key] = collection.where(filter).length;
           } else {
             d[key] = "";
           }
         }
-        rdsCollection = CloudResources(this.credentialId, constant.RESTYPE.DBINSTANCE, region);
+        rdsCollection = CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, region);
         if (rdsCollection.isReady()) {
           d.rds = rdsCollection.models.length;
         } else {
           d.rds = "";
         }
-        collection = CloudResources(this.credentialId, constant.RESTYPE.SUBSCRIPTION, region);
+        collection = CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region);
         if (collection.isReady()) {
           d.snss = collection.models.length;
         } else {

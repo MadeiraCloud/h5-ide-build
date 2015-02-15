@@ -1450,7 +1450,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 (function() {
   define('Credential',["ApiRequest", "backbone"], function(ApiRequest) {
-    var Credential, PROVIDER, __maskString;
+    var Credential, PROVIDER, PROVIDER_NAME, __maskString;
     __maskString = function(text) {
       if (text.length > 6) {
         return (new Array(text.length - 6)).join("*") + text.substr(-6);
@@ -1467,6 +1467,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     PROVIDER = {
       AWSGLOBAL: "aws::global",
       AWSCHINA: "aws::china"
+    };
+    PROVIDER_NAME = {
+      "aws::global": "AWS Global",
+      "aws::china": "AWS China"
     };
     Credential = Backbone.Model.extend({
 
@@ -1607,6 +1611,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           awsAccessKey: __maskString(this.attributes.awsAccessKey),
           awsSecretKey: __maskString(this.attributes.awsSecretKey)
         });
+      },
+      getProviderName: function() {
+        return PROVIDER_NAME[this.get("provider")];
       }
     }, {
       PROVIDER: PROVIDER
@@ -1911,9 +1918,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.listenTo(this.apps(), "change", function() {
           return this.trigger("change:app");
         });
-        this.listenTo(this.apps(), "change:progress", function() {
-          return this.trigger("change:app");
-        });
         this.listenTo(this.apps(), "add", function() {
           return this.trigger("update:app");
         });
@@ -1988,7 +1992,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       isDemoMode: function(provider) {
         var cred;
         if (provider == null) {
-          provider = constant.PROVIDER.AWSGLOBAL;
+          provider = Credential.PROVIDER.AWSGLOBAL;
         }
         cred = this.credentials().findWhere({
           provider: provider

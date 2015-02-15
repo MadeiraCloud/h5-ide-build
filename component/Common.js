@@ -178,7 +178,7 @@ return TEMPLATE; });
         var credential, credentialData, data, provider, that;
         that = this;
         data = this.getData();
-        provider = constant.PROVIDER.AWSGLOBAL;
+        provider = Credential.PROVIDER.AWSGLOBAL;
         credential = this.model.credentials().findWhere({
           provider: provider
         });
@@ -193,7 +193,7 @@ return TEMPLATE; });
             access_key: data.awsAccessKey,
             secret_key: data.awsSecretKey
           };
-          credentialData.provider = data.provider || constant.PROVIDER.AWSGLOBAL;
+          credentialData.provider = data.provider || Credential.PROVIDER.AWSGLOBAL;
           credential = new Credential(credentialData, {
             project: this.model
           });

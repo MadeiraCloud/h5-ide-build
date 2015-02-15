@@ -3382,7 +3382,7 @@ return TEMPLATE; });
           var json;
           json = c.toJSON();
           json.isAdmin = data.isAdmin;
-          json.providerName = constant.PROVIDER_NAME[json.provider];
+          json.providerName = c.getProviderName();
           json.name = json.alias || json.providerName;
           json.needed = applist.some(function(app) {
             return (app != null ? app.get('provider') : void 0) === json.provider;
@@ -3435,7 +3435,7 @@ return TEMPLATE; });
           return (_ref = that.removeConfirmView) != null ? _ref.close() : void 0;
         }, function(error) {
           var credName;
-          credName = constant.PROVIDER_NAME[credential.get('provider')];
+          credName = credential.getProviderName();
           that.stopModalLoading(that.removeConfirmView, TplCredential.removeConfirm({
             name: credName
           }));
@@ -3446,7 +3446,7 @@ return TEMPLATE; });
         var credName, credential, credentialId, _ref;
         credentialId = $(e.currentTarget).data('id');
         credential = this.getCredentialById(credentialId);
-        credName = constant.PROVIDER_NAME[credential.get('provider')];
+        credName = credential.getProviderName();
         if ((_ref = this.removeConfirmView) != null) {
           _ref.close();
         }
