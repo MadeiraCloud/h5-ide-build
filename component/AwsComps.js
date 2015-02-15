@@ -482,7 +482,17 @@ return TEMPLATE; });
         this.listenTo(this.collection, 'update', function() {
           return this.renderManager();
         });
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this;
+      },
+      credChanged: function() {
+        var _ref;
+        this.collection.fetchForce();
+        if ((_ref = this.manager) != null) {
+          _ref.renderLoading();
+        }
+        return this.manager && this.refreshManager();
       },
       remove: function() {
         this.isRemoved = true;
@@ -803,6 +813,8 @@ return TEMPLATE; });
         this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DHCP, Design.instance().region());
         this.listenTo(this.collection, 'change', this.render);
         this.listenTo(this.collection, 'update', this.render);
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         option = {
           manageBtnValue: lang.PROP.VPC_MANAGE_DHCP,
           filterPlaceHolder: lang.PROP.VPC_FILTER_DHCP,
@@ -822,6 +834,17 @@ return TEMPLATE; });
       },
       initialize: function(options) {
         return _.extend(this, options);
+      },
+      credChanged: function() {
+        var _ref;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        return this.collection.fetchForce().then((function(_this) {
+          return function() {
+            return _this.render();
+          };
+        })(this));
       },
       remove: function() {
         this.isRemoved = true;
@@ -1263,7 +1286,14 @@ return TEMPLATE; });
         } else {
           this.modal.render('nocredential');
         }
-        return this.collection.on('update', this.renderKeys, this);
+        this.collection.on('update', this.renderKeys, this);
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        return this.listenTo(Design.instance().credential(), "change", this.credChanged);
+      },
+      credChanged: function() {
+        this.collection.fetchForce();
+        this.modal.renderLoading();
+        return this.modal && this.refresh();
       },
       renderKeys: function() {
         var data;
@@ -1446,6 +1476,10 @@ return TEMPLATE; });
         return this.modal.cancel();
       },
       refresh: function() {
+        var _ref;
+        if ((_ref = this.modal) != null) {
+          _ref.render("loading");
+        }
         return this.collection.fetchForce().then((function(_this) {
           return function() {
             return _this.renderKeys();
@@ -1705,10 +1739,23 @@ return TEMPLATE; });
         this.collection = CloudResources(credentialId, constant.RESTYPE.KP, Design.instance().get("region"));
         this.listenTo(this.collection, 'update', this.renderKeys);
         this.listenTo(this.collection, 'change', this.renderKeys);
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         if (!this.resModel) {
           this.__mode = 'runtime';
         }
         return this.initDropdown();
+      },
+      credChanged: function() {
+        var _ref;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        return this.collection.fetchForce().then((function(_this) {
+          return function() {
+            return _this.renderKeys();
+          };
+        })(this));
       },
       show: function() {
         var def;
@@ -2203,7 +2250,18 @@ return TEMPLATE; });
       initialize: function() {
         this.initCol();
         this.initModal();
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this.fetch();
+      },
+      credChanged: function() {
+        var _ref, _ref1;
+        this.topicCol.fetchForce();
+        if ((_ref = this.manager) != null) {
+          _ref.renderLoading();
+        }
+        this.manager && this.refresh();
+        return (_ref1 = this.dropdown) != null ? _ref1.render("loading") : void 0;
       },
       doAction: function(action, checked) {
         return this[action] && this[action](this.validate(action), checked);
@@ -2533,7 +2591,9 @@ return TEMPLATE; });
         this.topicCol = CloudResources(Design.instance().credentialId(), constant.RESTYPE.TOPIC, region);
         this.listenTo(this.topicCol, 'update', this.processCol);
         this.listenTo(this.topicCol, 'change', this.processCol);
-        return this.listenTo(this.subCol, 'update', this.processCol);
+        this.listenTo(this.subCol, 'update', this.processCol);
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        return this.listenTo(Design.instance().credential(), "change", this.credChanged);
       },
       initDropdown: function() {
         var options;
@@ -2580,6 +2640,13 @@ return TEMPLATE; });
         this.dropdown.setSelection(selection);
         this.el = this.dropdown.el;
         return this;
+      },
+      credChanged: function() {
+        var _ref;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        return this.topicCol.fetchForce();
       },
       quickCreate: function() {
         return new snsManage().render().quickCreate();
@@ -2921,7 +2988,18 @@ return TEMPLATE; });
         this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.SNAP, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onChange.bind(this));
         this.listenTo(this.collection, 'change', this.onChange.bind(this));
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this;
+      },
+      credChanged: function() {
+        var _ref, _ref1;
+        this.collection.fetchForce();
+        if ((_ref = this.manager) != null) {
+          _ref.renderLoading();
+        }
+        this.manager && this.refresh();
+        return (_ref1 = this.dropdown) != null ? _ref1.render("loading") : void 0;
       },
       onChange: function() {
         this.initManager();
@@ -4042,7 +4120,20 @@ return TEMPLATE; });
         this.listenTo(this.collection, 'change', this.onUpdate.bind(this));
         this.listenTo(this.collection, 'remove', this.onRemove.bind(this));
         this.listenTo(this.collection, 'add', this.onAdd.bind(this));
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this;
+      },
+      credChanged: function() {
+        var _ref, _ref1;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        if ((_ref1 = this.manager) != null) {
+          _ref1.renderLoading();
+        }
+        this.manager && this.refresh();
+        return this.collection.fetchForce();
       },
       onUpdate: function() {
         this.initManager();
@@ -5018,11 +5109,24 @@ return TEMPLATE; });
         this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.DBSNAP, Design.instance().region());
         this.listenTo(this.collection, 'update', this.onChange.bind(this));
         this.listenTo(this.collection, 'change', this.onChange.bind(this));
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this;
       },
       onChange: function() {
         this.initManager();
         return this.trigger('datachange', this);
+      },
+      credChanged: function() {
+        var _ref, _ref1;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        if ((_ref1 = this.manager) != null) {
+          _ref1.renderLoading();
+        }
+        this.manager && this.refresh();
+        return this.collection.fetchForce();
       },
       remove: function() {
         this.isRemoved = true;
@@ -5721,7 +5825,17 @@ return TEMPLATE; });
       },
       initialize: function() {
         this.initCol();
-        return this.initModal();
+        this.initModal();
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        return this.listenTo(Design.instance().credential(), "change", this.credChanged);
+      },
+      credChanged: function() {
+        var _ref;
+        this.sslCertCol.fetchForce();
+        if ((_ref = this.modal) != null) {
+          _ref.renderLoading();
+        }
+        return this.modal && this.refresh();
       },
       quickCreate: function() {
         return this.modal.triggerSlide('create');
@@ -6003,7 +6117,16 @@ return TEMPLATE; });
       },
       initialize: function() {
         this.initCol();
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this.initDropdown();
+      },
+      credChanged: function() {
+        var _ref;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        return this.sslCertCol.fetchForce();
       },
       quickCreate: function() {
         return new sslCertManage().render().quickCreate();
@@ -7302,6 +7425,8 @@ return TEMPLATE; });
       },
       initialize: function(option) {
         this.initDropdown();
+        this.listenTo(Design.instance().credential(), "update", this.credChanged);
+        this.listenTo(Design.instance().credential(), "change", this.credChanged);
         return this.dbInstance = option.dbInstance;
       },
       render: function(option) {
@@ -7314,6 +7439,13 @@ return TEMPLATE; });
         this.version = option.majorVersion;
         this.refresh();
         return this;
+      },
+      credChanged: function() {
+        var _ref;
+        if ((_ref = this.dropdown) != null) {
+          _ref.render("loading");
+        }
+        return this.refresh();
       },
       refresh: function() {
         var customOGAry, defaultOG, defaultOGAry, engineCol, ogComps, regionName, that;

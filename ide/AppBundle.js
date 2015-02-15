@@ -1167,6 +1167,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             toState = [OMS.Updating, OMS.Running, OMS.Stopped];
             break;
           case constant.OPS_CODE_NAME.APP_SAVE:
+          case constant.OPS_CODE_NAME.APP_IMPORT:
             if (this.__saveAppDefer) {
               if (toStateIndex === 1) {
                 this.__saveAppDefer.resolve();
@@ -1774,7 +1775,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         removed: function(newDocument) {
           var project, wsdata, _ref;
-          if (!newDocument || !App.WS.isSubReady(newDocument.project_id)) {
+          if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "app")) {
             return;
           }
           project = App.model.projects().get(newDocument.project_id);

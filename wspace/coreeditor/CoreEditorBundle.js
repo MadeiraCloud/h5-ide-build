@@ -5766,7 +5766,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 }).call(this);
 
 (function() {
-  define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "AppAction"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang, AppAction) {
+  define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "ApiRequest", "AppAction"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang, ApiRequest, AppAction) {
     return StackView.extend({
       initialize: function() {
         StackView.prototype.initialize.apply(this, arguments);
@@ -5835,8 +5835,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               $("#OEPanelRight").trigger("REFRESH");
               return modal.close();
             }, function(err) {
-              notification("error", err.msg);
-              modal.tpl.find(".modal-confirm").removeAttr("disabled");
+              if (err.error === ApiRequest.Errors.AppAlreadyImported) {
+                notification("error", "The vpc `" + (self.workspace.opsModel.getMsrId()) + "` has alreay been imported by other user.");
+                modal.close();
+                self.workspace.remove();
+              } else {
+                notification("error", msg);
+                modal.tpl.find(".modal-confirm").removeAttr("disabled");
+              }
             });
           }
         });

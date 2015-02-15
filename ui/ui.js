@@ -10322,8 +10322,10 @@ Date.parseFunctions={count:0};Date.parseRegexes=[];Date.formatFunctions={count:0
         this.resize();
         modals.push(this);
         if (modals.length > 1) {
-          modals[modals.length - 1].resize(1);
-          modals[modals.length - 1].animate("slideIn");
+          if (self.option.mode === 'normal') {
+            modals[modals.length - 1].resize(1);
+            modals[modals.length - 1].animate("slideIn");
+          }
           modals[modals.length - 2].animate("fadeOut");
           modals[modals.length - 1].tpl.addClass("bounce");
         } else {
