@@ -878,6 +878,7 @@ define({
         "TERMINATING_YOUR_APP": "Terminating your app...",
         "STOPPING_YOUR_APP": "Stopping your app...",
         "APPLYING_CHANGES_TO_YOUR_APP": "Applying changes to your app...",
+        "REMOVING_YOUR_APP": "Removing your app from our server...",
         "PROCESSING_YOUR_REQUEST": "Processing your request...",
         "YOU_CAN_LATER_UPDATE_PROFILE": "You can later update this information in <em>Settings &gt; Account</em>",
         "LBL_LOG": "Log",

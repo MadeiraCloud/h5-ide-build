@@ -514,9 +514,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       Stopping: 6,
       Terminating: 7,
       Destroyed: 8,
-      Saving: 9
+      Saving: 9,
+      RollingBack: 10,
+      Removing: 11
     };
-    OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving"];
+    OpsModelStateDesc = ["", "Running", "Stopped", "Starting", "Starting", "Updating", "Stopping", "Terminating", "", "Saving", "RollingBack", "Removing"];
     OpsModelLastestVersion = "2014-11-11";
     OpsModel = Backbone.Model.extend({
       type: "GenericOps",
@@ -978,7 +980,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         self = this;
         oldState = this.get("state");
         this.attributes.progress = 0;
-        this.set("state", OpsModelState.Terminating);
+        this.set("state", force ? OpsModelState.Removing : OpsModelState.Terminating);
         this.__userTriggerAppProgress = true;
         options = $.extend({
           region_name: this.get("region"),
@@ -1103,7 +1105,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       isProcessing: function() {
         var state;
         state = this.attributes.state;
-        return state === OpsModelState.Initializing || state === OpsModelState.Stopping || state === OpsModelState.Updating || state === OpsModelState.Terminating || state === OpsModelState.Starting || state === OpsModelState.Saving;
+        return state === OpsModelState.Initializing || state === OpsModelState.Stopping || state === OpsModelState.Updating || state === OpsModelState.Terminating || state === OpsModelState.Starting || state === OpsModelState.Saving || state === OpsModelState.RollingBack || state === OpsModelState.Removing;
       },
       isLastActionTriggerByUser: function() {
         return this.__userTriggerAppProgress;
@@ -1121,6 +1123,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               if (i[1] === "done") {
                 ++step;
               }
+            }
+            if (wsRequest.dag.state === "Rollback") {
+              this.set("state", OpsModelState.RollingBack);
             }
           }
           progress = parseInt(step * 100.0 / totalSteps);
@@ -1778,7 +1783,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           }
         },
         removed: function(newDocument) {
-          var project, _ref;
+          var app, project;
           if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "app")) {
             return;
           }
@@ -1787,7 +1792,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             console.log("There's an app that is not related to any project that is removed. ignored.", newDocument);
             return;
           }
-          return (_ref = project.apps().get(newDocument.id)) != null ? _ref.__destroy() : void 0;
+          app = project.apps().get(newDocument.id);
+          if (app) {
+            if (app.testState(OpsModel.State.RollingBack)) {
+              setTimeout((function() {
+                return app.__destroy();
+              }), 5000);
+            } else {
+              app.__destroy();
+            }
+          }
         }
       });
       handleRequest = function(req) {
@@ -1823,8 +1837,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         TGT.updateWithWSEvent(req);
       };
       App.WS.collection.request.find().observe({
-        added: handleRequest,
-        changed: handleRequest
+        added: function(d) {
+          return setTimeout((function() {
+            return handleRequest(d);
+          }), 1500);
+        },
+        changed: function(d) {
+          return setTimeout((function() {
+            return handleRequest(d);
+          }), 1500);
+        }
       });
     };
     MEMBERROLE = {

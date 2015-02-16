@@ -1026,10 +1026,10 @@ return TEMPLATE; });
           });
           forgetConfirm.on("confirm", function() {
             forgetConfirm.close();
-            app.terminate(true, false).fail(function(err) {
-              var error;
-              error = err.awsError ? err.error + "." + err.awsError : err.error;
-              return notification("Fail to forget your app \"" + name + "\". (ErrorCode: " + error + ")");
+            app.terminate(true, false).then(function() {
+              return notification("info", "Your app \"" + name + "\" has been removed from our database.");
+            }, function(err) {
+              return notification("error", "Failed to remove your app \"" + name + "\" from our database. (ErrorCode: " + err.error + ")");
             });
           });
         });

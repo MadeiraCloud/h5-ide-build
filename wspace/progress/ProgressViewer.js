@@ -67,7 +67,6 @@ function program5(depth0,data) {
           data.title = this.model.getStateDesc() + " your app...";
         }
         this.setElement($(ProgressTpl(data)).appendTo(attr.workspace.scene.spaceParentElement()));
-        this.__progress = 0;
       },
       switchToDone: function() {
         var self;
@@ -91,6 +90,9 @@ function program5(depth0,data) {
               this.done = true;
             }
             break;
+          case OpsModel.State.RollingBack:
+            this.$el.toggleClass("rolling-back", true);
+            break;
           case OpsModel.State.Destroyed:
             if (this.done) {
               this.close();
@@ -105,14 +107,9 @@ function program5(depth0,data) {
         }
       },
       updateProgress: function() {
-        var pp, pro;
-        pp = this.model.get("progress");
+        var pro;
         this.$el.toggleClass("has-progess", true);
-        if (this.__progress > pp) {
-          this.$el.toggleClass("rolling-back", true);
-        }
-        this.__progress = pp;
-        pro = "" + pp + "%";
+        pro = "" + (this.model.get("progress")) + "%";
         this.$el.find(".process-info").text(pro);
         this.$el.find(".bar").css({
           width: pro
@@ -152,10 +149,6 @@ function program5(depth0,data) {
         if (!attr.opsModel) {
           throw new Error("Cannot find opsmodel while openning workspace.");
         }
-        if (attr.opsModel.testState(OpsModel.State.Saving) || attr.opsModel.testState(OpsModel.State.Terminating)) {
-          console.warn("Avoiding opening a saving/terminating OpsModel.");
-          return;
-        }
         Workspace.apply(this, arguments);
       },
       initialize: function() {
@@ -190,8 +183,8 @@ function program5(depth0,data) {
         if (!data.opsModel) {
           return false;
         }
-        if (data.opsModel.testState(OpsModel.State.Saving) || data.opsModel.testState(OpsModel.State.Terminating)) {
-          console.warn("Avoide opening a saving/terminating OpsModel.");
+        if (data.opsModel.testState(OpsModel.State.Saving) || data.opsModel.testState(OpsModel.State.Terminating) || data.opsModel.testState(OpsModel.State.Removing)) {
+          console.warn("Avoide opening a saving/terminating/removing OpsModel.");
           return false;
         }
         return data.opsModel.isApp() && data.opsModel.isProcessing();

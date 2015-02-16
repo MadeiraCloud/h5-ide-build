@@ -5871,6 +5871,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           case OpsModel.State.Updating:
             text = lang.IDE.APPLYING_CHANGES_TO_YOUR_APP;
             break;
+          case OpsModel.State.Removing:
+            text = lang.IDE.REMOVING_YOUR_APP;
+            break;
           default:
             console.warn("Unknown opsmodel state when showing loading in AppEditor,", opsModel);
             text = lang.IDE.PROCESSING_YOUR_REQUEST;
@@ -6169,11 +6172,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           if (!this.opsModel.isLastActionTriggerByUser()) {
             notification("info", "The app has been removed by other team.");
           }
-          this.remove();
-          return;
-        }
-        if (this.opsModel.testState(OpsModel.State.Terminating)) {
-          notification("info", "The app is being processed.");
           this.remove();
           return;
         }

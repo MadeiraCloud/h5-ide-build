@@ -878,6 +878,7 @@ define({
         "TERMINATING_YOUR_APP": "正在终结 App ...",
         "STOPPING_YOUR_APP": "正在停止 App ...",
         "APPLYING_CHANGES_TO_YOUR_APP": "正在应用 App 的修改...",
+        "REMOVING_YOUR_APP": "正在从数据库中删除你的 App...",
         "PROCESSING_YOUR_REQUEST": "正在处理请求 ...",
         "YOU_CAN_LATER_UPDATE_PROFILE": "您可稍后在 <em> 设置 &gt; 账号</em> 里修改此信息。",
         "LBL_LOG": "日志",
