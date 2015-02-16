@@ -899,7 +899,7 @@ define({
         "LBL_PUBLIC_KEY": "公钥",
         "LBL_DROP": "拖拽%s到此，",
         "SAVE_STACK": "保存并关闭",
-        "SAVING_STACK": "正在保存模板...",
+        "SAVING_STACK": "正在保存 Stack...",
         "ACCESS_TOKEN_EDIT_TIP": "编辑",
         "ACCESS_TOKEN_DELETE_TIP": "删除",
         "WORKSPACE": "工作空间",

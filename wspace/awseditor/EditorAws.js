@@ -21168,7 +21168,7 @@ return TEMPLATE; });
         return false;
       },
       terminateApp: function() {
-        this.appAction.terminateApp(this.workspace.opsModel.id);
+        this.appAction.terminateApp(this.workspace.opsModel.id, true);
         return false;
       },
       forgetApp: function() {

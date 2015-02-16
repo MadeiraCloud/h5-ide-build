@@ -5796,7 +5796,7 @@ return Markdown;
         return this.sysLogModal.resize();
       },
       onStateLogDetailBtnClick: function(event) {
-        var $logDetailBtn, $logItem, modal, stateId, stateLogObj, that;
+        var $logDetailBtn, $logItem, stateId, stateLogObj, that;
         that = this;
         $logDetailBtn = $(event.currentTarget);
         $logItem = $logDetailBtn.parents('.state-log-item');
@@ -5804,7 +5804,7 @@ return Markdown;
         if (stateId) {
           stateLogObj = that.stateIdLogContentMap[stateId];
           if (stateLogObj) {
-            modal = new modalPlus({
+            that.logModal = new modalPlus({
               title: lang.IDE.STATE_LOG_DETAIL_MOD_TIT,
               template: template.stateLogDetailModal({
                 number: stateLogObj.number,
@@ -5815,8 +5815,8 @@ return Markdown;
                 hide: true
               }
             });
-            modal.tpl.attr("id", "modal-state-log-detail");
-            return modal.resize();
+            that.logModal.tpl.attr("id", "modal-state-log-detail");
+            return that.logModal.resize();
           }
         }
       },
@@ -5848,10 +5848,10 @@ return Markdown;
         }
       },
       openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
-        var $codeArea, codeEditor, modal, textContent, that;
+        var $codeArea, codeEditor, textContent, that;
         that = this;
         textContent = originEditor.getValue();
-        modal = new modalPlus({
+        that.editorModal = new modalPlus({
           title: "" + (that.readOnlyMode ? lang.IDE.STATE_TEXT_VIEW : lang.IDE.STATE_TEXT_EDIT) + " " + cmdName + " " + paraName,
           template: template.stateTextExpandModal(),
           width: 900,
@@ -5859,9 +5859,10 @@ return Markdown;
           confirm: !that.readOnlyMode ? lang.IDE.STATE_TEXT_EXPAND_MODAL_SAVE_BTN : void 0,
           cancel: {
             hide: true
-          }
+          },
+          disableClose: true
         });
-        modal.tpl.attr("id", "modal-state-text-expand");
+        that.editorModal.tpl.attr("id", "modal-state-text-expand");
         $('#modal-state-text-expand').data('origin-editor', originEditor);
         $codeArea = $('#modal-state-text-expand .editable-area');
         that.initCodeEditor($codeArea[0], {
@@ -5877,7 +5878,7 @@ return Markdown;
           codeEditor.focus();
           codeEditor.clearSelection();
         }
-        return $('#modal-state-text-expand-save').off('click').on('click', function() {
+        return that.editorModal.on('confirm', function() {
           return that.saveStateTextEditorContent();
         });
       },
@@ -5885,7 +5886,9 @@ return Markdown;
         var $codeArea, $paraItem, codeEditor, codeEditorValue, originEditor, that;
         that = this;
         if (that.readOnlyMode) {
-          return modal.close();
+          if (that.editorModal) {
+            return that.editorModal.close();
+          }
         } else {
           originEditor = $('#modal-state-text-expand').data('origin-editor');
           if (originEditor) {
@@ -5906,7 +5909,9 @@ return Markdown;
             }
             originEditor.clearSelection();
             originEditor.focus();
-            return modal.close();
+            if (that.editorModal) {
+              return that.editorModal.close();
+            }
           }
         }
       },

@@ -1979,6 +1979,9 @@ return TEMPLATE; });
           disableFooter: true,
           template: OpsEditorTpl.modal.onClose(name)
         });
+        if (!this.workspace.opsModel.isStack()) {
+          modal.tpl.find(".save.btn").remove();
+        }
         modal.tpl.on("click", ".tar .modal-close", function() {
           return modal.close();
         });

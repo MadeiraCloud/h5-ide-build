@@ -1068,6 +1068,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return this.__returnErrorPromise();
           }
         }
+        if (!newJson.id) {
+          this.set("name", newJson.name);
+        }
         oldState = this.get("state");
         this.attributes.progress = 0;
         this.__userTriggerAppProgress = true;
@@ -1685,7 +1688,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (col.get(wsdata.id)) {
           return;
         }
-        if (!col.findWhere(attr)) {
+        if (_.isFunction(attr)) {
+          if (col.filter(attr).length === 0) {
+            console.log("[WS Add] The ops doesn't exist, add to collection", wsdata, col);
+            col.add(new OpsModel(wsdata));
+            return;
+          }
+        } else if (!col.findWhere(attr)) {
           console.log("[WS Add] The ops doesn't exist, add to collection", wsdata, col);
           col.add(new OpsModel(wsdata));
           return;
@@ -1751,7 +1760,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       });
       App.WS.collection.app.find().observe({
         added: function(newDocument) {
-          var project, wsdata;
+          var project, test, wsdata;
           if (!newDocument || !App.WS.isSubReady(newDocument.project_id, "app")) {
             return;
           }
@@ -1761,12 +1770,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return;
           }
           wsdata = project.__parseListRes([newDocument])[0];
-          sheduleTenSecCheck(project.apps(), {
-            name: wsdata.name,
-            provider: wsdata.provider,
-            region: wsdata.region,
-            state: OpsModel.State.Initializing
-          }, wsdata, 0, 1000);
+          test = function(i) {
+            var attr;
+            attr = i.attributes;
+            if (attr.name !== wsdata.name) {
+              return false;
+            }
+            if (attr.provider !== wsdata.provider) {
+              return false;
+            }
+            if (attr.region !== wsdata.region) {
+              return false;
+            }
+            return attr.state === OpsModel.State.Initializing || attr.state === OpsModel.State.Saving;
+          };
+          sheduleTenSecCheck(project.apps(), test, wsdata, 0, 1000);
         },
         changed: function(newDocument) {
           var project, _ref;
@@ -1837,16 +1855,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         TGT.updateWithWSEvent(req);
       };
       App.WS.collection.request.find().observe({
-        added: function(d) {
-          return setTimeout((function() {
-            return handleRequest(d);
-          }), 1500);
-        },
-        changed: function(d) {
-          return setTimeout((function() {
-            return handleRequest(d);
-          }), 1500);
-        }
+        added: handleRequest,
+        changed: handleRequest
       });
     };
     MEMBERROLE = {

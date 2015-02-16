@@ -867,7 +867,7 @@ return TEMPLATE; });
           });
         });
       },
-      terminateApp: function(id) {
+      terminateApp: function(id, hasJson) {
         var app, cloudType, name, production, resourceList, self, terminateConfirm;
         self = this;
         app = this.model || this.workspace.opsModel.project().apps().get(id);
@@ -885,16 +885,16 @@ return TEMPLATE; });
         });
         cloudType = app.type;
         if (cloudType === OpsModel.Type.OpenStack) {
-          this.__terminateApp(id, null, terminateConfirm);
+          this.__terminateApp(id, null, terminateConfirm, hasJson);
           return false;
         }
         terminateConfirm.tpl.find('.modal-footer').hide();
         resourceList = CloudResources(self.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
-        return resourceList.fetchForce().then(function(result) {
-          return self.__terminateApp(id, resourceList, terminateConfirm);
-        }).fail(function(error) {
+        return resourceList.fetchForce().then(function() {
+          return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
+        }, function(error) {
           if (error.awsError === 403) {
-            return self.__terminateApp(id, resourceList, terminateConfirm);
+            return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
           } else {
             terminateConfirm.close();
             notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
@@ -902,7 +902,7 @@ return TEMPLATE; });
           }
         });
       },
-      __terminateApp: function(id, resourceList, terminateConfirm) {
+      __terminateApp: function(id, resourceList, terminateConfirm, hasJsonData) {
         var app, cloudType, fetchJsonData, name, production;
         app = this.model || this.workspace.opsModel.project().apps().get(id);
         name = app.get("name");
@@ -910,8 +910,11 @@ return TEMPLATE; });
         cloudType = app.type;
         fetchJsonData = function() {
           var defer;
+          defer = new Q.defer();
           if (cloudType === OpsModel.Type.OpenStack) {
-            defer = new Q.defer();
+            defer.resolve();
+            return defer.promise;
+          } else if (hasJsonData) {
             defer.resolve();
             return defer.promise;
           } else {

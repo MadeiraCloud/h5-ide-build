@@ -675,10 +675,6 @@ return TEMPLATE; });
         return !!this.__isRemoved;
       },
       remove: function() {
-        if (this.__isRemoved) {
-          return;
-        }
-        this.__isRemoved = true;
         return this.scene.removeSpace(this, true);
       },
       updateUrl: function() {
@@ -1060,6 +1056,10 @@ return TEMPLATE; });
         if (!force && !workspace.isRemovable()) {
           return;
         }
+        if (workspace.__isRemoved) {
+          return;
+        }
+        workspace.__isRemoved = true;
         id = workspace.id;
         this.view.removeSpace(id);
         delete this.__spacesById[id];

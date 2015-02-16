@@ -10271,6 +10271,7 @@ Date.parseFunctions={count:0};Date.parseRegexes=[];Date.formatFunctions={count:0
       },
       constructor: function(option) {
         var _base, _base1, _ref;
+        $(':focus').blur();
         this.nextOptions = [];
         this.nextCloses = [];
         if (typeof option.cancel === "string") {
