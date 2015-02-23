@@ -1110,30 +1110,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <a data-id=\"billing\">"
+  buffer += "\r\n        <a data-id=\"billing\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_BILLING_TAB", {hash:{},data:data}))
-    + "</a>\n        <a data-id=\"credential\">"
+    + "</a>\r\n        <a data-id=\"credential\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROVIDER_CREDENTIAL", {hash:{},data:data}))
-    + "</a>\n        ";
+    + "</a>\r\n        ";
   return buffer;
   }
 
-  buffer += "<nav id=\"settings-nav\">\n    <a class=\"back-settings\">&lt; "
+  buffer += "<nav id=\"settings-nav\">\r\n    <a class=\"back-settings\">&lt; "
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_BACK", {hash:{},data:data}))
-    + "</a>\n    <section class=\"function-list\">\n        <header class=\"settings-nav-project-title truncate\">"
+    + "</a>\r\n    <section class=\"function-list\">\r\n        <header class=\"settings-nav-project-title truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</header>\n        <a data-id=\"basicsettings\">"
+    + "</header>\r\n        <a data-id=\"basicsettings\">"
     + escapeExpression(helpers.i18n.call(depth0, "BASIC_SETTINGS", {hash:{},data:data}))
-    + "</a>\n        <a data-id=\"team\">"
+    + "</a>\r\n        <a data-id=\"team\">"
     + escapeExpression(helpers.i18n.call(depth0, "TEAM", {hash:{},data:data}))
-    + "</a>\n        <a data-id=\"usagereport\">"
+    + "</a>\r\n        <a data-id=\"usagereport\">"
     + escapeExpression(helpers.i18n.call(depth0, "USAGE_REPORT", {hash:{},data:data}))
-    + "</a>\n        ";
+    + "</a>\r\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.admin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <a data-id=\"accesstoken\">"
+  buffer += "\r\n        <a data-id=\"accesstoken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCESSTOKEN", {hash:{},data:data}))
-    + "</a>\n    </section>\n</nav>\n<section class=\"setting-content\">\n    <header class=\"project-title\">\n        <span id=\"title-project-name\" class=\"truncate\"></span>\n        <span id=\"title-tab-name\"></span>\n    </header>\n    <article class=\"project-subview\"></article>\n</section>";
+    + "</a>\r\n    </section>\r\n</nav>\r\n<section class=\"setting-content\">\r\n    <header class=\"project-title\">\r\n        <span id=\"title-project-name\" class=\"truncate\"></span>\r\n        <span id=\"title-tab-name\"></span>\r\n    </header>\r\n    <article class=\"project-subview\"></article>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('scenes/settings/template/TplBasicSettings',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -1668,26 +1668,26 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<section>\n    <div id=\"TokenManager\">\n        <p class=\"clearfix\">\n            ";
+  buffer += "<section>\r\n    <div id=\"TokenManager\">\r\n        <p class=\"clearfix\">\r\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAdmin), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            "
+  buffer += "\r\n            "
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN", {hash:{},data:data}))
     + "<a href=\"http://docs.visualops.io/app_management/reload_states.html\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_LINK", {hash:{},data:data}))
-    + "</a> </p>\n        <section class=\"token-table\">\n            <header class=\"clearfix\">\n                <span class=\"tokenName\">"
+    + "</a> </p>\r\n        <section class=\"token-table\">\r\n            <header class=\"clearfix\">\r\n                <span class=\"tokenName\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_NAME", {hash:{},data:data}))
-    + "</span>\n                <span class=\"tokenToken\">"
+    + "</span>\r\n                <span class=\"tokenToken\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_TOKENTABLE_TOKEN", {hash:{},data:data}))
-    + "</span>\n            </header>\n            <div class=\"scroll-wrap\">\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
+    + "</span>\r\n            </header>\r\n            <div class=\"scroll-wrap\">\r\n                <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\r\n                <ul id=\"TokenList\" class=\"scroll-content\" data-empty=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_INFO_TOKEN_EMPTY", {hash:{},data:data}))
-    + "\"></ul>\n            </div>\n        </section>\n    </div>\n    <div id=\"TokenRmConfirm\" class=\"hide\">\n        <h3 id=\"TokenRmTit\"></h3>\n        <p>"
+    + "\"></ul>\r\n            </div>\r\n        </section>\r\n    </div>\r\n    <div id=\"TokenRmConfirm\" class=\"hide\">\r\n        <h3 id=\"TokenRmTit\"></h3>\r\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CONFIRM_TOKEN_RM", {hash:{},data:data}))
-    + "</p>\n        <div class=\"cred-btn-wrap clearfix\">\n            <button class=\"right btn btn-modal-close btn-silver\" id=\"TokenRmCancel\">"
+    + "</p>\r\n        <div class=\"cred-btn-wrap clearfix\">\r\n            <button class=\"right btn btn-modal-close btn-silver\" id=\"TokenRmCancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_LABEL_ACCOUNT_CANCEL", {hash:{},data:data}))
-    + "</button>\n            <button id=\"TokenRemove\" class=\"btn btn-red right\">"
+    + "</button>\r\n            <button id=\"TokenRemove\" class=\"btn btn-red right\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_BTN_TOKEN_REMOVE", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n\n</section>";
+    + "</button>\r\n        </div>\r\n    </div>\r\n\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3733,36 +3733,36 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <a class=\"truncate\" data-id=\""
+  buffer += "\r\n        <a class=\"truncate\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a>\n        ";
+    + "</a>\r\n        ";
   return buffer;
   }
 
-  buffer += "<nav id=\"settings-nav\">\n    <section>\n        <header>"
+  buffer += "<nav id=\"settings-nav\">\r\n    <section>\r\n        <header>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_SETTING", {hash:{},data:data}))
-    + "</header>\n        <a class=\"active\">"
+    + "</header>\r\n        <a class=\"active\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</a>\n    </section>\n    <section class=\"project-list\">\n        <header>"
+    + "</a>\r\n    </section>\r\n    <section class=\"project-list\">\r\n        <header>"
     + escapeExpression(helpers.i18n.call(depth0, "MANAGE_WORKSPACE", {hash:{},data:data}))
-    + "</header>\n        ";
+    + "</header>\r\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.projects), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </section>\n</nav>\n<section class=\"setting-content\">\n    <header>"
+  buffer += "\r\n    </section>\r\n</nav>\r\n<section class=\"setting-content\">\r\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT", {hash:{},data:data}))
-    + "</header>\n    <dl class=\"settings-item\">\n        <dt class=\"avatar\"><img src=\""
+    + "</header>\r\n    <dl class=\"settings-item\">\r\n        <dt class=\"avatar\"><img src=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.gravatar)),stack1 == null || stack1 === false ? stack1 : stack1.image)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></dt>\n        <dd class=\"change-photo\">\n            <a id=\"change-photo\" href=\""
+    + "\"></dt>\r\n        <dd class=\"change-photo\">\r\n            <a id=\"change-photo\" href=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.gravatar)),stack1 == null || stack1 === false ? stack1 : stack1.profile)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" target=\"_blank\" >"
     + escapeExpression(helpers.i18n.call(depth0, "CHANGE_PHOTO", {hash:{},data:data}))
-    + "</a>\n        </dd>\n    </dl>\n    <dl class=\"settings-item\">\n        <dt>"
+    + "</a>\r\n        </dd>\r\n    </dl>\r\n    <dl class=\"settings-item\">\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_USERNAME", {hash:{},data:data}))
     + "</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n\n    <dl class=\"settings-item accountFullNameRO\">\n        <dt>"
+    + "</dd>\r\n    </dl>\r\n\r\n    <dl class=\"settings-item accountFullNameRO\">\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
     + "</dt><dd> <span class=\"fullNameText\">"
     + escapeExpression(((stack1 = (depth0 && depth0.firstName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -3770,39 +3770,39 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.lastName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " </span> <button class=\"icon-edit link-style tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_FULLNAME", {hash:{},data:data}))
-    + "' id=\"AccountFullName\"></button></dd>\n    </dl>\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap settings-item\">\n        <dl>\n            <dt>"
+    + "' id=\"AccountFullName\"></button></dd>\r\n    </dl>\r\n    <div id=\"AccountFullNameWrap\" class=\"accountEditWrap settings-item\">\r\n        <dl>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\n            <dt>"
+    + "</dt>\r\n            <dd><input type=\"text\" class=\"input\" id=\"AccountFirstName\"/></dd>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\n        </dl>\n        <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\n        <div class=\"edit-actions\">\n            <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
+    + "</dt>\r\n            <dd><input type=\"text\" class=\"input\" id=\"AccountLastName\"/></dd>\r\n        </dl>\r\n        <div id=\"AccountFullNameInfo\" class=\"empty-hide\"></div>\r\n        <div class=\"edit-actions\">\r\n            <button class=\"btn btn-blue\" id=\"AccountUpdateFullName\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\n            <span id=\"AccountCancelFullName\" class=\"cancel-button\">"
+    + "</button>\r\n            <span id=\"AccountCancelFullName\" class=\"cancel-button\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\n        </div>\n    </div>\n\n    <dl class=\"settings-item accountEmailRO\">\n        <dt>"
+    + "</span>\r\n        </div>\r\n    </div>\r\n\r\n    <dl class=\"settings-item accountEmailRO\">\r\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_ACCOUNT_EMAIL", {hash:{},data:data}))
-    + "</dt>\n        <dd>\n            <span class=\"email-view\">"
+    + "</dt>\r\n        <dd>\r\n            <span class=\"email-view\">"
     + escapeExpression(((stack1 = (depth0 && depth0.email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n            <button class=\"icon-edit link-style tooltip\" data-tooltip='"
+    + "</span>\r\n            <button class=\"icon-edit link-style tooltip\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "' id=\"AccountEmail\"></button>\n        </dd>\n    </dl>\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap settings-item\">\n        <dl>\n            <dt>"
+    + "' id=\"AccountEmail\"></button>\r\n        </dd>\r\n    </dl>\r\n    <div id=\"AccountEmailWrap\" class=\"accountEditWrap settings-item\">\r\n        <dl>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_NEW_EMAIL", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\n\n            <dt>"
+    + "</dt>\r\n            <dd><input type=\"string\" class=\"input\" id=\"AccountNewEmail\" /></dd>\r\n\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\n        </dl>\n\n      <div id=\"SettingErrorInfo\" class=\"empty-hide\"></div>\n\n      <div class=\"edit-actions\">\n          <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
+    + "</dt>\r\n            <dd><input type=\"password\" class=\"input\" id=\"AccountEmailPwd\" /></dd>\r\n        </dl>\r\n\r\n      <div id=\"SettingErrorInfo\" class=\"empty-hide\"></div>\r\n\r\n      <div class=\"edit-actions\">\r\n          <button class=\"btn btn-blue\" id=\"AccountUpdateEmail\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\n          <span id=\"AccountCancelEmail\" class=\"cancel-button\">"
+    + "</button>\r\n          <span id=\"AccountCancelEmail\" class=\"cancel-button\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\n      </div>\n    </div>\n\n    <button id=\"AccountPwd\" class=\"link-style\">"
+    + "</span>\r\n      </div>\r\n    </div>\r\n\r\n    <button id=\"AccountPwd\" class=\"link-style\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CHANGE_PASSWORD", {hash:{},data:data}))
-    + "</button>\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap settings-item\">\n\n        <dl>\n            <dt>"
+    + "</button>\r\n    <div id=\"AccountPwdWrap\" class=\"accountEditWrap settings-item\">\r\n\r\n        <dl>\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_LABEL_CURRENT_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\n\n            <dt>"
+    + "</dt>\r\n            <dd><input type=\"password\" class=\"input\" id=\"AccountCurrentPwd\" /></dd>\r\n\r\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "HAED_LABEL_NEW_PASSWORD", {hash:{},data:data}))
-    + "</dt>\n            <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\n        </dl>\n\n        <div id=\"AccountInfo\" class=\"empty-hide\"></div>\n\n        <div class=\"edit-actions\">\n            <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
+    + "</dt>\r\n            <dd><input type=\"password\" class=\"input\" id=\"AccountNewPwd\" /></dd>\r\n        </dl>\r\n\r\n        <div id=\"AccountInfo\" class=\"empty-hide\"></div>\r\n\r\n        <div class=\"edit-actions\">\r\n            <button class=\"btn btn-blue\" id=\"AccountUpdatePwd\" disabled>"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</button>\n        <span id=\"AccountCancelPwd\" class=\"cancel-button\">"
+    + "</button>\r\n        <span id=\"AccountCancelPwd\" class=\"cancel-button\">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
-    + "</span>\n        </div>\n    </div>\n</section>";
+    + "</span>\r\n        </div>\r\n    </div>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -4248,113 +4248,113 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\n\n  <div class=\"icon-close-circle\"></div>\n\n  <section>\n    <h3 class=\"title\">"
+  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\r\n\r\n  <div class=\"icon-close-circle\"></div>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STACK_APP_OP", {hash:{},data:data}))
-    + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</h3>\r\n    <ul>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_KEY", {hash:{},data:data}))
-    + "</span> </div>\n        <div class=\"shortcut-desc\">"
+    + "</span> </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_STAT_KEY", {hash:{},data:data}))
-    + "</span> </div>\n        <div class=\"shortcut-desc\">"
+    + "</span> </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_STAT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n          <span class=\"shortcut pc\">"
+    + "</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DUPL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n          <span class=\"shortcut pc\">"
+    + "</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + S</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + S</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SAVE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SAVE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + "
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + "
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_KEY_MAC", {hash:{},data:data}))
-    + "</span>\n          <span class=\"shortcut pc\">"
+    + "</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SCRL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">← ↑ → ↓</span> </div>\n        <div class=\"shortcut-desc\">"
+    + "</div>\r\n      </li>\r\n\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">← ↑ → ↓</span> </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NUDGE_ITEM_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n  <section>\n    <h3 class=\"title\">"
+    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STATE_GEN", {hash:{},data:data}))
-    + "</h3>\n    <ul class=\"keys\">\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">↑ ↓</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</h3>\r\n    <ul class=\"keys\">\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">↑ ↓</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_FOCUS_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_EXPAND_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_EXPAND_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COLLAPSE_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COLLAPSE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NEXT_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_NEXT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PREV_KEY", {hash:{},data:data}))
-    + "</span></div>\n        <div class=\"shortcut-desc\">"
+    + "</span></div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PREV_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + E</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + E</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CONTENT_EDITOR_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CONTENT_EDITOR_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + I</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + I</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_INFO_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_INFO_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + L</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + L</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_LOG_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_LOG_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n  <section>\n    <h3 class=\"title\">"
+    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n  <section>\r\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STATE_EDIT", {hash:{},data:data}))
-    + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + A</span>\n          <span class=\"shortcut pc\">"
+    + "</h3>\r\n    <ul>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + A</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ALL_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_SELECT_ALL_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + D</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + D</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DESELECT_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DESELECT_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Enter</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Enter</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CREATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_CREATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Delete</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Delete</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_DEL_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + ↑</span>\n          <span class=\"shortcut mac\">⌘ + ↓</span>\n          <span class=\"shortcut pc\">Ctrl + ↑</span>\n          <span class=\"shortcut pc\">Ctrl + ↓</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + ↑</span>\r\n          <span class=\"shortcut mac\">⌘ + ↓</span>\r\n          <span class=\"shortcut pc\">Ctrl + ↑</span>\r\n          <span class=\"shortcut pc\">Ctrl + ↓</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_MOVE_FOCUS_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + C</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + C</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COPY_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_COPY_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + V</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + V</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PASTE_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PASTE_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Z</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Z</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_UNDO_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_UNDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\">\n          <span class=\"shortcut mac\">⌘ + Y</span>\n          <span class=\"shortcut pc\">"
+    + "</div>\r\n      </li>\r\n      <li class=\"shortcut-item\">\r\n        <div class=\"shortcuts\">\r\n          <span class=\"shortcut mac\">⌘ + Y</span>\r\n          <span class=\"shortcut pc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_KEY_PC", {hash:{},data:data}))
-    + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
+    + "</span>\r\n        </div>\r\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n</div> </div>";
+    + "</div>\r\n      </li>\r\n    </ul>\r\n  </section>\r\n\r\n</div> </div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
