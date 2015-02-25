@@ -2196,7 +2196,7 @@ return TEMPLATE; });
         }
       },
       setLabel: function(canvasItem, labelElement) {
-        var currentLength, e, el, length, maxWidth, text, _i, _len;
+        var currentLength, e, el, ellipsis, length, line, maxWidth, text, tspanAry, x, y, _i, _len;
         text = canvasItem.label();
         maxWidth = canvasItem.labelWidth();
         if (_.isString(labelElement)) {
@@ -2216,19 +2216,40 @@ return TEMPLATE; });
           e = _error;
           currentLength = 0;
         }
-        if (currentLength > maxWidth) {
-          length = text.length - 1;
+        el = labelElement[0];
+        this.removeClass($(el), "tooltip");
+        $(el).data("tooltip", "").attr("data-tooltip", "");
+        tspanAry = [];
+        line = 0;
+        while (currentLength > maxWidth || line === 1) {
+          length = text.length;
           while (true && length > 0) {
-            if (labelElement[0].getSubStringLength(0, length) + 8 <= maxWidth) {
-              text = text.substr(0, length) + "...";
+            if (labelElement[0].getSubStringLength(0, length - 1) <= maxWidth) {
+              if (line === 0) {
+                tspanAry.push("<tspan>" + text.substr(0, length) + "</tspan>");
+                text = text.substr(length);
+              } else {
+                el = labelElement[0];
+                x = parseInt($(el).attr("x"));
+                y = parseInt($(el).attr("y")) + $(el)[0].clientHeight;
+                ellipsis = "";
+                if (text.substr(length).length > 0) {
+                  ellipsis = "...";
+                  this.addClass($(el), "tooltip");
+                  $(el).data("tooltip", canvasItem.label()).attr("data-tooltip", canvasItem.label());
+                }
+                tspanAry.push(("<tspan x='" + x + "' y='" + y + "' >") + text.substr(0, length) + ("" + ellipsis + "</tspan>"));
+              }
               break;
             }
             --length;
           }
+          currentLength -= maxWidth;
+          line++;
         }
         for (_i = 0, _len = labelElement.length; _i < _len; _i++) {
           el = labelElement[_i];
-          $(el).text(text);
+          $(el).html(tspanAry.join("") || text);
         }
       }
     };
