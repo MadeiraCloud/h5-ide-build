@@ -20136,7 +20136,7 @@ return TEMPLATE; });
         return false;
       },
       openPanel: function(type, uid) {
-        var component, design, error, tab_type;
+        var component, design, error, tab_type, _ref;
         if (this.__lastOpenType === type && this.__lastOpenId === uid && this.__showingState) {
           return;
         }
@@ -20161,7 +20161,7 @@ return TEMPLATE; });
         } else if (design.modeIsStack()) {
           tab_type = PropertyBaseModule.TYPE.Stack;
         } else {
-          if (!component || component.get("appId") || component.type === 'ExpandedAsg') {
+          if (!component || component.get("appId") || (component.type === 'ExpandedAsg' && ((_ref = component.get("originalAsg")) != null ? _ref.get("appId") : void 0))) {
             tab_type = PropertyBaseModule.TYPE.AppEdit;
           } else {
             tab_type = PropertyBaseModule.TYPE.Stack;
