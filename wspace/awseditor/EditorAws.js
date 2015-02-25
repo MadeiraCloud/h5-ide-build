@@ -207,9 +207,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     PropertyModule.loadSubPanel = PropertyModule.prototype.loadSubPanel;
     PropertyModule.load = function(componentType, componentUid, tab_type, restore) {
       var loadResult, property;
-      if (componentType === "ExpandedAsg" && tab_type === "Stack") {
-        tab_type = "AppEdit";
-      }
       property = __getProperty(componentType, componentUid, tab_type);
       loadResult = __loadProperty(property, componentType, componentUid, tab_type, restore);
       if (loadResult !== true) {
@@ -20164,7 +20161,7 @@ return TEMPLATE; });
         } else if (design.modeIsStack()) {
           tab_type = PropertyBaseModule.TYPE.Stack;
         } else {
-          if (!component || component.get("appId")) {
+          if (!component || component.get("appId") || component.type === 'ExpandedAsg') {
             tab_type = PropertyBaseModule.TYPE.AppEdit;
           } else {
             tab_type = PropertyBaseModule.TYPE.Stack;
@@ -34352,7 +34349,7 @@ return TEMPLATE; });
         }
         this.ensureLcView();
         m = this.model;
-        CanvasManager.update(this.$el.children(".node-label"), m.get("name"));
+        CanvasManager.setLabel(this, this.$el.children(".node-label"));
         CanvasManager.update(this.$el.children(".ami-image"), this.iconUrl(), "href");
         volumeCount = m.get("volumeList") ? m.get("volumeList").length : 0;
         CanvasManager.update(this.$el.children(".volume-number"), volumeCount);
