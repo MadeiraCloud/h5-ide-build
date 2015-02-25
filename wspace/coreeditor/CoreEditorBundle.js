@@ -2246,6 +2246,9 @@ return TEMPLATE; });
           }
           currentLength -= maxWidth;
           line++;
+          if (line > 1) {
+            break;
+          }
         }
         for (_i = 0, _len = labelElement.length; _i < _len; _i++) {
           el = labelElement[_i];
