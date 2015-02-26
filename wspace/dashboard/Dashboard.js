@@ -2393,7 +2393,7 @@ TEMPLATE.failure=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
@@ -2423,14 +2423,8 @@ function program2(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		<li class=\"visualize-vpc ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"\n			";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n			<h5>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  buffer += "\n		<li class=\"visualize-vpc\">\n			<h5>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.name), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</h5>\n			<ol class=\"tac\">\n				<li class=\"visualize-res\"><div class=\"vis-res-num\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.subnet)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -2457,32 +2451,17 @@ function program3(depth0,data) {
     + "</div><span class=\"vis-res-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_LOAD_BALANCER", {hash:{},data:data}))
     + "</span></li>\n			</ol>\n			<button class=\"btn btn-blue visualize-vpc-btn";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-vpcid=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</button>\n		</li>\n		";
   return buffer;
   }
 function program4(depth0,data) {
-  
-  
-  return " disabled tooltip";
-  }
-
-function program6(depth0,data) {
-  
-  var buffer = "";
-  buffer += " data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "IDE_TIP_VISUALIZE_MORE_THAN_100_ENI", {hash:{},data:data}))
-    + "\"";
-  return buffer;
-  }
-
-function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -2492,31 +2471,31 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program6(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program12(depth0,data) {
+function program8(depth0,data) {
   
   
   return " tooltip disabled";
   }
 
-function program14(depth0,data) {
+function program10(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_ALREADY_IMPORTED", {hash:{},data:data}));
   }
 
-function program16(depth0,data) {
+function program12(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_TO_IMPORT", {hash:{},data:data}));
   }
 
-function program18(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "";
   buffer += "<div class=\"unmanaged-vpc-empty\">"
@@ -2525,7 +2504,7 @@ function program18(depth0,data) {
   return buffer;
   }
 
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(18, program18, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.program(14, program14, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
@@ -2687,7 +2666,6 @@ return TEMPLATE; });
                 elb: resourceMap(resources["AWS|ELB"]),
                 imported: !!resources.project_id
               };
-              obj.disabled = obj.eni.length > 300;
               vpcs.push(obj);
             } catch (_error) {
               e = _error;
