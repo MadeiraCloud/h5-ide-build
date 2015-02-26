@@ -24,28 +24,28 @@ function program5(depth0,data) {
   buffer += "<div class='ops-process ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'>\n  <section class=\"processing-wrap\">\n    <header class=\"processing\">";
+  buffer += "'>\r\n  <section class=\"processing-wrap\">\r\n    <header class=\"processing\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.title), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"process-info\">"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%</span></header>\n    <header class=\"processing rolling-back-content\">"
+    + "%</span></header>\r\n    <header class=\"processing rolling-back-content\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ROLLING_BACK", {hash:{},data:data}))
-    + "</header>\n    <section class=\"loading-spinner\"></section>\n    <section class=\"progress\">\n        <div class=\"bar\" style=\"width:"
+    + "</header>\r\n    <section class=\"loading-spinner\"></section>\r\n    <section class=\"progress\">\r\n        <div class=\"bar\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "%;\"></div>\n    </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
+    + "%;\"></div>\r\n    </section>\r\n  </section>\r\n\r\n  <section class=\"success hide\">\r\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
-    + "</p>\n    <p class=\"sub-title\">"
+    + "</p>\r\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
+    + "</p>\r\n  </section>\r\n\r\n  <section class=\"fail hide error-info-block\">\r\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
-    + "</header>\n    <p class=\"sub-title\">"
+    + "</header>\r\n    <p class=\"sub-title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
+    + "</p>\r\n    <div class=\"result-error-info\">\r\n      <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_ERR_INFO", {hash:{},data:data}))
-    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n    <button class=\"btn btn-silver btn-close-process right\">"
+    + "</p>\r\n      <p class=\"detail\"></p>\r\n    </div>\r\n    <button class=\"btn btn-silver btn-close-process right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
-    + "</button>\n  </section>\n</div>";
+    + "</button>\r\n  </section>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
