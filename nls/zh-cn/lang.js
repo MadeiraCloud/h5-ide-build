@@ -2280,6 +2280,7 @@ define({
         "ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER": "%s <span class='validation-tag tag-elb'>%s</span> 应该依据 %s 的实例侦听协议，允许朝 %s 的进入流量。",
         "ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 关联的子网 <span class='validation-tag tag-subnet'>%s</span>，其掩码必须小于 /27。",
         "ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 的侦听器配置的服务器证书 <span class='validation-tag tag-cert'>%s</span> 不存在。",
+        "ERROR_ELB_NAME_EXCEED_LIMIT": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 的名称超出 %s 个字符的限制。",
         "WARNING_SG_RULE_EXCEED_FIT_NUM": "安全组 <span class='validation-tag tag-sg'>%s</span> 的规则超过了 %s 条，若安全组有太多规则，性能会有所下降。",
         "NOTICE_STACK_USING_ONLY_ONE_SG": "该 Stack 只使用了一个安全组。",
         "WARNING_SG_USING_ALL_PROTOCOL_RULE": "安全组 <span class='validation-tag tag-sg'>%s</span> 允许了 'ALL' 协议。",

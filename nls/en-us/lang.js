@@ -2280,6 +2280,7 @@ define({
         "ERROR_ELB_RULE_INSTANCE_NOT_OUTBOUND_FOR_ELB_LISTENER": "%s <span class='validation-tag tag-elb'>%s</span> should allow inbound traffic towards %s according to %s's Instance Listener Protocol.",
         "ERROR_ELB_ATTACHED_SUBNET_CIDR_SUFFIX_GREATE_27": "Load Balancer <span class='validation-tag tag-elb'>%s</span> has been associated with Subnet <span class='validation-tag tag-subnet'>%s</span>, whose CIDR mask must be smaller than /27.",
         "ERROR_ELB_SSL_CERT_NOT_EXIST_FROM_AWS": "Load Balancer <span class='validation-tag tag-elb'>%s</span>'s Listener is configured with nonexistent Server Certificate <span class='validation-tag tag-cert'>%s</span>.",
+        "ERROR_ELB_NAME_EXCEED_LIMIT": "Load Balancer <span class='validation-tag tag-elb'>%s</span>'s name has exceeded the limit of %s characters.",
         "WARNING_SG_RULE_EXCEED_FIT_NUM": "Security Group <span class='validation-tag tag-sg'>%s</span> has more than %s rules, If a security group has a large number of rules, performance can be degraded.",
         "NOTICE_STACK_USING_ONLY_ONE_SG": "This stack is only using 1 security group.",
         "WARNING_SG_USING_ALL_PROTOCOL_RULE": "Security Group <span class='validation-tag tag-sg'>%s</span> is using 'ALL' protocol traffic.",
