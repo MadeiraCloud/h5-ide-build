@@ -58,8 +58,12 @@
         if (params.key_id === void 0) {
           params.key_id = this.getCollection().credential();
         }
-        if (params.region_name === void 0 && this.getCollection().region()) {
-          params.region_name = this.getCollection().region();
+        if (params.region_name === void 0) {
+          if (this.getCollection().region()) {
+            params.region_name = this.getCollection().region();
+          } else if (this.get("category")) {
+            params.region_name = this.get("category");
+          }
         }
         return ApiRequest(api, params);
       },

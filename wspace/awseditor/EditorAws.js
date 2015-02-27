@@ -32670,7 +32670,7 @@ return TEMPLATE; });
 
 (function() {
   define('wspace/awseditor/canvas/CanvasViewAwsLayout',["./CanvasViewAws", "CanvasViewLayout", "constant"], function(AwsCanvasView, CanvasViewLayoutHelpers, constant) {
-    var ArrangeForAzs, ArrangeForSvg, ArrangeForVpc, AutoLayoutConfig, GroupMForDbSubnet, GroupMForSubnet, SortForVpc, __sortInstance;
+    var ArrangeForAzs, ArrangeForElb, ArrangeForSvg, ArrangeForVpc, AutoLayoutConfig, GroupMForDbSubnet, GroupMForSubnet, SortForVpc, __sortInstance;
     __sortInstance = function(instances) {
       return instances.sort(function(a, b) {
         return b.component.connections("ElbAmiAsso").length - a.component.connections("ElbAmiAsso");
@@ -32866,7 +32866,7 @@ return TEMPLATE; });
         }
         i += 2;
       }
-      y2 = children[0].height + 15;
+      y2 = children[0].height + 5;
       x1 = 0;
       x2 = 0;
       i = 0;
@@ -32899,7 +32899,7 @@ return TEMPLATE; });
       };
     };
     ArrangeForVpc = function(children) {
-      var baseX, baseY, ch, childMap, def, elbBaseY, h, height, subnetGroupBaseX, w, width, _i, _j, _len, _len1;
+      var az, azs, baseX, baseY, ch, childMap, def, elbBaseY, h, height, subnetGroupBaseX, w, width, _i, _j, _k, _len, _len1, _len2, _ref;
       def = AutoLayoutConfig[constant.RESTYPE.VPC];
       childMap = {};
       for (_i = 0, _len = children.length; _i < _len; _i++) {
@@ -32930,6 +32930,17 @@ return TEMPLATE; });
         if (ch.x + ch.width > subnetGroupBaseX) {
           subnetGroupBaseX = ch.x + ch.width + 4;
         }
+        azs = childMap["AWS.EC2.AvailabilityZone_group"];
+        if (azs) {
+          _ref = azs.children;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            az = _ref[_j];
+            if (az.y !== 0) {
+              az.y += ch.height + 6 - 5;
+            }
+          }
+          azs.height += ch.height + 6 - 5;
+        }
       }
       ch = childMap["AWS.RDS.DBSubnetGroup_group"];
       if (ch) {
@@ -32938,8 +32949,8 @@ return TEMPLATE; });
       }
       width = 0;
       height = 0;
-      for (_j = 0, _len1 = children.length; _j < _len1; _j++) {
-        ch = children[_j];
+      for (_k = 0, _len2 = children.length; _k < _len2; _k++) {
+        ch = children[_k];
         w = ch.x + ch.width;
         if (w > width) {
           width = w;
@@ -32966,6 +32977,19 @@ return TEMPLATE; });
         }
       }
       return CanvasViewLayoutHelpers.DefaultArrangeMethod.call(this, newChs);
+    };
+    ArrangeForElb = function(children) {
+      var ch, idx, rowCount, _i, _len;
+      rowCount = Math.ceil(Math.sqrt(children.length / 6));
+      for (idx = _i = 0, _len = children.length; _i < _len; idx = ++_i) {
+        ch = children[idx];
+        ch.x = Math.floor(idx / rowCount) * 22;
+        ch.y = (idx % rowCount) * 11;
+      }
+      return {
+        width: Math.ceil(children.length / rowCount) * 22 - 10,
+        height: rowCount * 11 - 2
+      };
     };
     SortForVpc = function(children) {
 
@@ -33023,7 +33047,8 @@ return TEMPLATE; });
         sticky: true
       },
       "AWS.ELB_group": {
-        space: 11
+        space: 11,
+        arrangeMethod: ArrangeForElb
       },
       "AWS.ELB": {
         width: 9,

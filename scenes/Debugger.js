@@ -118,7 +118,7 @@
         JsonViewer.showViewDialog(Design.instance().serialize());
       },
       designLayout: function() {
-        return App.workspaces.getAwakeSpace().view.canvas.autoLayout();
+        return App.sceneManager.activeScene().getAwakeSpace().view.canvas.autoLayout();
       },
       designSet: function(a, b) {
         var _ref;

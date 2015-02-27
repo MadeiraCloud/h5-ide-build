@@ -760,7 +760,7 @@ return TEMPLATE; });
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define('scenes/ProjectScene',["Scene", "./ProjectView", "./ProjectTpl", "Workspace", "UI.modalplus", "i18n!/nls/lang.js", "UI.notification"], function(Scene, ProjectView, ProjectTpl, Workspace, Modal, lang) {
-    var ProjectScene, SwitchConfirmView;
+    var FIRST_PROJECT_NOT_LOADED, ProjectScene, SwitchConfirmView;
     SwitchConfirmView = Backbone.View.extend({
       events: {
         "click .do-switch": "switch"
@@ -784,6 +784,7 @@ return TEMPLATE; });
         this.modal.close();
       }
     });
+    FIRST_PROJECT_NOT_LOADED = true;
     ProjectScene = (function(_super) {
       __extends(ProjectScene, _super);
 
@@ -834,6 +835,12 @@ return TEMPLATE; });
         this.__spaces = [];
         this.__awakeSpace = null;
         this.__spacesById = {};
+        if (FIRST_PROJECT_NOT_LOADED) {
+          FIRST_PROJECT_NOT_LOADED = false;
+          if (!attr.pid || !App.model.projects().get(attr.pid)) {
+            attr.pid = localStorage.getItem("lastws");
+          }
+        }
         this.project = App.model.projects().get(attr.pid) || App.model.getPrivateProject();
         this.view = new ProjectView({
           scene: this
@@ -856,7 +863,8 @@ return TEMPLATE; });
       ProjectScene.prototype.becomeActive = function() {
         this.view.$el.show();
         this.updateUrl();
-        return this.updateTitle();
+        this.updateTitle();
+        return localStorage.setItem("lastws", this.project.id);
       };
 
       ProjectScene.prototype.isRemovable = function() {
@@ -4248,7 +4256,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\n\n  <div class=\"icon-close-circle\"></div>\n\n  <section>\n    <h3 class=\"title\">"
+  buffer += "<div class=\"cheatsheet\"> <div class=\"cheatsheet-wrap\">\n\n  <section>\n    <h3 class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_TIT_STACK_APP_OP", {hash:{},data:data}))
     + "</h3>\n    <ul>\n      <li class=\"shortcut-item\">\n        <div class=\"shortcuts\"> <span class=\"shortcut\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_PROP_KEY", {hash:{},data:data}))
@@ -4354,7 +4362,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_KEY_PC", {hash:{},data:data}))
     + "</span>\n        </div>\n        <div class=\"shortcut-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "KEY_REDO_STATE_ACTION", {hash:{},data:data}))
-    + "</div>\n      </li>\n    </ul>\n  </section>\n\n</div> </div>";
+    + "</div>\n      </li>\n    </ul>\n  </section>\n\n</div>\n<div class=\"icon-close-circle\"></div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {

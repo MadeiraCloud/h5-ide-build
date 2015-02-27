@@ -5639,10 +5639,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           throw new Error("Cannot find opsmodel while openning workspace.");
         }
         this.opsModel = attr.opsModel;
-        this.listenTo(this.opsModel, "destroy", this.onOpsModelStateChanged);
-        this.listenTo(this.opsModel, "change:state", this.onOpsModelStateChanged);
-        this.listenTo(this.opsModel, "change:name", this.updateTab);
-        this.listenTo(this.opsModel, "change:id", this.onModelIdChange);
         delete attr.opsModel;
         s = this;
         this.opsModel.fetchJsonData().then((function() {
@@ -5650,7 +5646,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }), (function(err) {
           return s.jsonLoadFailed(err);
         }));
-        return Workspace.apply(this, arguments);
+        Workspace.apply(this, arguments);
+        this.listenTo(this.opsModel, "destroy", this.onOpsModelStateChanged);
+        this.listenTo(this.opsModel, "change:state", this.onOpsModelStateChanged);
+        this.listenTo(this.opsModel, "change:name", this.updateTab);
+        this.listenTo(this.opsModel, "change:id", this.onModelIdChange);
       },
       jsonLoadFailed: function(err) {
         if (this.isRemoved()) {
