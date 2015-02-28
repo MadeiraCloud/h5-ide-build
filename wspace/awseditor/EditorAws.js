@@ -26033,7 +26033,7 @@ return TEMPLATE; });
             AvailabilityZone: owner ? owner.getAvailabilityZone().createRef() : "",
             AttachmentSet: {
               InstanceId: instanceId,
-              Device: this.get("name")
+              Device: this.get("device") || this.get("name")
             },
             Encrypted: this.get("encrypted")
           }
@@ -26052,7 +26052,7 @@ return TEMPLATE; });
     }, {
       handleTypes: constant.RESTYPE.VOL,
       deserialize: function(data, layout_data, resolve) {
-        var attachment, attr, instance, m, members, model, _i, _len;
+        var attachment, attr, device, instance, m, members, model, _i, _len;
         if (data.serverGroupUid && data.serverGroupUid !== data.uid) {
           members = resolve(data.serverGroupUid).groupMembers();
           for (_i = 0, _len = members.length; _i < _len; _i++) {
@@ -26071,6 +26071,7 @@ return TEMPLATE; });
         if (data.resource.AttachmentSet) {
           attachment = data.resource.AttachmentSet;
           instance = attachment && attachment.InstanceId ? resolve(MC.extractID(attachment.InstanceId)) : null;
+          device = attachment.Device;
         } else {
           console.error("deserialize failed");
           return null;
@@ -26087,7 +26088,8 @@ return TEMPLATE; });
           volumeType: data.resource.VolumeType,
           iops: data.resource.Iops,
           appId: data.resource.VolumeId,
-          encrypted: data.resource.Encrypted
+          encrypted: data.resource.Encrypted,
+          device: device
         };
         model = new Model(attr, {
           noNeedGenName: true
