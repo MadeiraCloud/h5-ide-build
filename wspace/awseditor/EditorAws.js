@@ -10922,7 +10922,7 @@ function program3(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " -->\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-eni-desc\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
-    + "</label>\n      <input id=\"property-eni-desc\" data-type=\"ascii\" data-ignore=\"true\" data-required-rollback=\"true\" maxlength=\"255\" class=\"input\" value=\""
+    + "</label>\n      <input id=\"property-eni-desc\" data-type=\"ascii\" data-ignore=\"true\" data-required-rollback=\"true\" data-ignore-regexp=\"^[a-zA-Z0-9\\.\\ \\_\\-\\:\\/\\(\\)\\#\\,\\@\\[\\]\\+\\=\\&\\;\\{\\}\\!\\$\\*]*$\" maxlength=\"255\" class=\"input\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" />\n    </section>\n    <section class=\"property-control-group\">\n      <div class=\"checkbox\">\n        <input id=\"property-eni-source-check\" type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.sourceDestCheck), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
