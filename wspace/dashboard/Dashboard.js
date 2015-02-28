@@ -1043,9 +1043,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " <span>"
-    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>";
+    + "</li>";
   return buffer;
   }
 
@@ -1168,9 +1166,7 @@ function program20(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.currentRegion)),stack1 == null || stack1 === false ? stack1 : stack1.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n        </button>\n        <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n            <li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
-    + " <span>"
-    + escapeExpression(((stack1 = (depth0 && depth0.globalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n            ";
+    + "</li>\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </ul>\n    </nav>\n\n    <ul id=\"region-resource-app-wrap\" class=\"region-resource-list\">\n        ";
@@ -1194,9 +1190,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " <span>"
-    + escapeExpression(((stack1 = (depth0 && depth0.count)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>";
+    + "</li>";
   return buffer;
   }
 
@@ -1246,9 +1240,7 @@ function program6(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.currentRegion)),stack1 == null || stack1 === false ? stack1 : stack1.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n        </button>\n\n        <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n            <li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
-    + " <span>"
-    + escapeExpression(((stack1 = (depth0 && depth0.globalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n            ";
+    + "</li>\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </ul>\n    </nav>\n    <ul id=\"region-resource-stack-wrap\" class=\"region-resource-list\">\n        ";
@@ -2967,7 +2959,6 @@ return TEMPLATE; });
           return {
             id: id,
             name: name,
-            count: 0,
             shortName: constant.REGION_SHORT_LABEL[id]
           };
         });
@@ -2989,12 +2980,7 @@ return TEMPLATE; });
         attr[updateType] = resources.filter(filter).map(function(m) {
           return m.toJSON(tojson);
         }).reverse();
-        attr.region = _.map(data, function(obj) {
-          var _ref;
-          obj.count = ((_ref = resources.groupBy("region")[obj.id]) != null ? _ref.length : void 0) || 0;
-          return obj;
-        });
-        attr.globalCount = resources.length;
+        attr.region = data;
         attr.projectId = self.model.scene.project.id;
         attr.currentRegion = _.find(data, function(e) {
           return e.id === region;

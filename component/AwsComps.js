@@ -7708,13 +7708,11 @@ function program11(depth0,data) {
       render: function() {
         this.modal = new modalPlus({
           title: lang.PROP.CREATE_SECURITY_GROUP_RULE,
-          template: template(this.model.attributes),
-          compact: true,
           disableClose: true,
           disableFooter: true,
           width: 530
         });
-        this.modal.find(".modal-header").css({
+        this.modal.find(".modal-body").replaceWith(template(this.model.attributes)).end().find(".modal-header").css({
           background: "#232526"
         });
         this.setElement($('#sg-rule-create-modal').closest('#modal-wrap'));
