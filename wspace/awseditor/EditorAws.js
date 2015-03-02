@@ -31906,7 +31906,9 @@ return TEMPLATE; });
         }
       },
       getSnapshotModel: function(snapshotId) {
-        return CloudResources(this.design().credentialId(), constant.RESTYPE.DBSNAP, this.design().region()).findWhere({
+        var design;
+        design = Design.instance();
+        return CloudResources(design.credentialId(), constant.RESTYPE.DBSNAP, design.region()).findWhere({
           id: snapshotId || this.get('snapshotId')
         });
       },

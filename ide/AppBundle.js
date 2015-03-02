@@ -2516,8 +2516,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           intercomHash: result.intercom_hash,
           firstName: Base64.decode(result.first_name || ""),
           lastName: Base64.decode(result.last_name || ""),
-          repo: "https://github.com/MadeiraCloud/salt.git",
-          tag: "v2014-07-18"
+          repo: result.mod_repo,
+          tag: result.mod_tag
         });
       },
       bootIntercom: function() {
