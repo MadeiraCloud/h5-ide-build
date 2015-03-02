@@ -1285,7 +1285,9 @@ define({
         "UPDATED_FULLNAME_FAIL": "Fail to update full name. Please try again later.",
         "LOAD_SAMPLE_FAIL": "Fail to load the requested sample stack. Please try again later.",
         "PARSE_SAMPLE_FAIL": "The sample stack is malformed. Please contact us for further support.",
-        "INFO_PROJECT_REMOVED": "You no longer have access to the workspace '%s'."
+        "INFO_PROJECT_REMOVED": "You no longer have access to the workspace '%s'.",
+        "SETTINGS_ERR_PROJECT_REMOVE": "Failed to remove the workspace.",
+        "HAVE_ONGOINGREQUEST_DELETE_WORKSPACE": "There is still some ongoing request in this workspace. Try again later."
     },
     "PARSLEY": {
         "THIS_VALUE_IS_REQUIRED": "This value is required.",

@@ -1603,9 +1603,13 @@ return TEMPLATE; });
         return this.model.destroy().then(function() {
           that.remove();
           return that.settingsView.modal.close();
-        }, function() {
-          that.render();
-          return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_REMOVE);
+        }, function(err) {
+          if (err.error === 134) {
+            notification('error', lang.NOTIFY.HAVE_ONGOINGREQUEST_DELETE_WORKSPACE);
+          } else {
+            notification('error', lang.NOTIFY.SETTINGS_ERR_PROJECT_REMOVE);
+          }
+          return that.render();
         });
       },
       doLeave: function() {
@@ -3636,8 +3640,8 @@ return TEMPLATE; });
 
 (function() {
   define('scenes/settings/ProjectSettings',['i18n!/nls/lang.js', './template/TplProject', './views/BasicSettingsView', './views/AccessTokenView', './views/BillingView', './views/TeamView', './views/ProviderCredentialView', './views/UsageReportView', 'backbone'], function(lang, TplProject, BasicSettingsView, AccessTokenView, BillingView, TeamView, ProviderCredentialView, UsageReportView) {
-    var subViewMap, subViewNameMap;
-    subViewMap = {
+    var SubViewMap, SubViewNameMap;
+    SubViewMap = {
       basicsettings: BasicSettingsView,
       accesstoken: AccessTokenView,
       billing: BillingView,
@@ -3645,7 +3649,7 @@ return TEMPLATE; });
       credential: ProviderCredentialView,
       usagereport: UsageReportView
     };
-    subViewNameMap = {
+    SubViewNameMap = {
       basicsettings: 'Basic Settings',
       accesstoken: 'API Token',
       billing: 'Billing',
@@ -3701,7 +3705,7 @@ return TEMPLATE; });
         this.setTitle(tab);
         this.activeTab(tab);
         this.subView && this.subView.remove();
-        this.subView = new subViewMap[tab]({
+        this.subView = new SubViewMap[tab]({
           model: this.model,
           settingsView: this.settingsView
         });
@@ -3710,7 +3714,7 @@ return TEMPLATE; });
       setTitle: function(tab) {
         var projectName, tabName;
         projectName = this.model.get('name');
-        tabName = subViewNameMap[tab];
+        tabName = SubViewNameMap[tab];
         this.$('#title-project-name').text(projectName);
         this.$('#title-tab-name').text(tabName);
         return this;
@@ -3899,7 +3903,6 @@ function program1(depth0,data) {
       },
       renderProject: function(project, tab) {
         var projectId, _ref;
-        console.log("SettingsView");
         if (project && project.currentTarget) {
           projectId = $(project.currentTarget).data('id');
           project = this.projects.get(projectId);

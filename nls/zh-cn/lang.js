@@ -1285,7 +1285,9 @@ define({
         "UPDATED_FULLNAME_FAIL": "全名更新失败，请稍后重试。",
         "LOAD_SAMPLE_FAIL": "无法加载指定的模板，请稍后重试。",
         "PARSE_SAMPLE_FAIL": "指定的模板格式不正确，无法加载。",
-        "INFO_PROJECT_REMOVED": "You no longer have access to the workspace '%s'."
+        "INFO_PROJECT_REMOVED": "您没有访问工作空间 '%s' 的权限.",
+        "SETTINGS_ERR_PROJECT_REMOVE": "删除项目失败。",
+        "HAVE_ONGOINGREQUEST_DELETE_WORKSPACE": "此工作空间有正在进行的请求，请稍后重试。"
     },
     "PARSLEY": {
         "THIS_VALUE_IS_REQUIRED": "此字段必填。",
