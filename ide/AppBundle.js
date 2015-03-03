@@ -1274,6 +1274,171 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
+  define('ide/submodels/Notification',["OpsModel", "constant", "backbone"], function(OpsModel, constant) {
+    var Notification, NotificationCollection, STATEDEF;
+    STATEDEF = {};
+    STATEDEF[constant.OPS_CODE_NAME.LAUNCH] = [OpsModel.State.Initializing, OpsModel.State.Running, OpsModel.State.Destroyed, OpsModel.State.RollingBack];
+    STATEDEF[constant.OPS_CODE_NAME.STOP] = [OpsModel.State.Stopping, OpsModel.State.Stopped, OpsModel.State.Running, OpsModel.State.RollingBack];
+    STATEDEF[constant.OPS_CODE_NAME.START] = [OpsModel.State.Starting, OpsModel.State.Running, OpsModel.State.Stopped, OpsModel.State.RollingBack];
+    STATEDEF[constant.OPS_CODE_NAME.TERMINATE] = [OpsModel.State.Terminating, OpsModel.State.Destroyed, OpsModel.State.Stopped, OpsModel.State.RollingBack];
+    STATEDEF[constant.OPS_CODE_NAME.UPDATE] = STATEDEF[constant.OPS_CODE_NAME.STATE_UPDATE] = [OpsModel.State.Updating, OpsModel.State.Running, OpsModel.State.Stopped, OpsModel.State.RollingBack];
+    Notification = Backbone.Model.extend({
+      "default": {
+        isNew: true,
+        startTime: 0,
+        duration: 0,
+        action: "",
+        state: null,
+        progress: 0,
+        error: ""
+      },
+      constructor: function(app) {
+        Backbone.Model.call(this, {
+          id: app.id
+        });
+        this.__target = app;
+        this.__targetProject = app.project();
+      },
+      target: function() {
+        return this.__target;
+      },
+      targetProject: function() {
+        return this.__targetProject;
+      },
+      remove: function() {
+        this.__target = null;
+        this.stopListening();
+        this.trigger('destroy', this, this.collection);
+      },
+      isNew: function() {
+        return this.get("isNew");
+      },
+      markAsRead: function() {
+        this.attributes.isNew = false;
+      },
+      markAsOld: function() {
+        if (this.get("error")) {
+          this.attributes.isNew = false;
+        } else if (this.isProcessing() || this.isRollingBack()) {
+          return;
+        } else {
+          this.remove();
+        }
+      },
+      updateWithRequest: function(req) {
+        var ab, duration, error, i, progress, state, step, toStateIndex, totalSteps, _i, _len, _ref;
+        console.info("Updating notification", this, req);
+        if (req.time_submit < this.get("startTime")) {
+          console.info("Ingore notification since the req is old", this, req);
+          return;
+        }
+        if (req.username !== App.user.get("usercode")) {
+          console.info("Removing notification since the app has been edited by other user.", this, req);
+          return this.remove();
+        }
+        if (req.time_end && req.time_end > req.time_submit) {
+          duration = req.time_end - req.time_submit;
+        } else {
+          duration = 0;
+        }
+        state = null;
+        error = "";
+        progress = 0;
+        if (req.state === constant.OPS_STATE.INPROCESS) {
+          toStateIndex = 0;
+          step = 0;
+          totalSteps = 1;
+          if (req.dag && req.dag.step) {
+            totalSteps = req.dag.step.length;
+            _ref = req.dag.step;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              i = _ref[_i];
+              if (i[1] === "done") {
+                ++step;
+              }
+            }
+            if (req.dag.state === "Rollback") {
+              toStateIndex = 3;
+            }
+          }
+          progress = parseInt(step * 100.0 / totalSteps);
+        } else if (req.state === constant.OPS_STATE.DONE) {
+          toStateIndex = 1;
+        } else {
+          toStateIndex = 2;
+          error = req.data;
+        }
+        ab = this.attributes;
+        ab.progress = progress;
+        this.set({
+          startTime: req.time_submit,
+          duration: duration,
+          action: req.code,
+          error: error,
+          state: toStateIndex,
+          isNew: (ab.startTime !== req.time_submit) || (ab.duration !== duration) || (ab.action !== req.code) || (ab.error !== error) || (ab.state !== toStateIndex) || ab.isNew
+        });
+      },
+      isProcessing: function() {
+        return this.get("state") === 0;
+      },
+      isRollingBack: function() {
+        return this.get("state") === 4;
+      },
+      isSucceeded: function() {
+        return this.get("state") === 1;
+      },
+      isFailed: function() {
+        return this.get("state") === 2;
+      }
+    });
+    NotificationCollection = Backbone.Collection.extend({
+      model: Notification,
+      comparator: function(m1, m2) {
+        return -(m1.attributes.startTime - m2.attributes.startTime);
+      },
+      initialize: function() {
+        this.on("change:startTime", this.sort, this);
+      },
+      add: function(app, req) {
+        var n;
+        n = new Notification(app);
+        console.info("Added notification for app", n, req);
+        n.updateWithRequest(req);
+        Backbone.Collection.prototype.add.call(this, n);
+        return n;
+      },
+      markAllAsRead: function() {
+        var changed, n, _i, _len, _ref;
+        changed = false;
+        _ref = this.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          n = _ref[_i];
+          if (n.get("isNew")) {
+            changed = true;
+            n.markAsRead();
+          }
+        }
+        if (changed) {
+          this.trigger("change");
+        }
+      }
+    });
+    return NotificationCollection;
+  });
+
+}).call(this);
+
+
+/*
+----------------------------
+  The collection for stack / app
+----------------------------
+
+  This collection will trigger an "update" event when the list ( containing all visible items ) is changed.
+ */
+
+(function() {
   define('ProjectLog',["constant", "backbone"], function(constant) {
     var AuditType, ProjectLog, auditFilter, historyFilter;
     ProjectLog = Backbone.Model.extend({
@@ -2229,7 +2394,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/ApplicationModel',["OpsModel", "Project", "ApiRequest", "ApiRequestOs", "ThumbnailUtil", "constant", "i18n!/nls/lang.js", "backbone"], function(OpsModel, Project, ApiRequest, ApiRequestOs, ThumbnailUtil, constant, lang) {
+  define('ide/ApplicationModel',["OpsModel", "./submodels/Notification", "Project", "ApiRequest", "ApiRequestOs", "ThumbnailUtil", "constant", "i18n!/nls/lang.js", "backbone"], function(OpsModel, Notifications, Project, ApiRequest, ApiRequestOs, ThumbnailUtil, constant, lang) {
     return Backbone.Model.extend({
       getPriceData: function(awsRegion) {
         return (this.__awsdata[awsRegion] || {}).price;
@@ -2251,6 +2416,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       },
       getOpenstackQuotas: function(provider) {
         return this.__osdata[provider].quota;
+      },
+      notifications: function() {
+        return this.get("notifications");
       },
       fetchUserData: function(userCodeList) {
         var d, result, self, toFetch, usercode, userdata, _i, _len;
@@ -2344,6 +2512,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
        */
       defaults: function() {
         return {
+          notifications: new Notifications(),
           projects: new (Backbone.Collection.extend({
             comparator: function(m) {
               if (m.isPrivate()) {
@@ -2359,10 +2528,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         };
       },
       initialize: function() {
+        var self;
         this.__awsdata = {};
         this.__osdata = {};
         this.__stateModuleData = {};
         this.__vousercache = {};
+        self = this;
+        App.WS.collection.request.find().observe({
+          added: function(req) {
+            return self.__handleRequest(req);
+          },
+          changed: function(req) {
+            return self.__handleRequest(req);
+          }
+        });
       },
       fetch: function() {
         var awsData, projectlist, self;
@@ -2476,6 +2655,32 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           self.__stateModuleData[repo + ":" + tag] = d;
           return d;
         });
+      },
+      __handleRequest: function(req) {
+        var app, n, targetId, _ref;
+        if (!req.project_id) {
+          return;
+        }
+        if (req.state === constant.OPS_STATE.PENDING) {
+          return;
+        }
+        if (req.code === constant.OPS_CODE_NAME.APP_SAVE || req.code === constant.OPS_CODE_NAME.APP_IMPORT) {
+          return;
+        }
+        targetId = req.dag && req.dag.spec ? req.dag.spec.id : req.rid;
+        app = ((_ref = this.projects().get(req.project_id)) != null ? _ref.apps().get(targetId) : void 0) || this.notifications().get(targetId);
+        if (!app || !app.id) {
+          return;
+        }
+        n = this.notifications().get(app.id);
+        if (n) {
+          n.updateWithRequest(req);
+        } else if (req.username === App.user.get("usercode")) {
+          n = this.notifications().add(app, req);
+        }
+        if (!App.WS.isSubReady(req.project_id, "request")) {
+          n.markAsOld();
+        }
       }
     });
   });

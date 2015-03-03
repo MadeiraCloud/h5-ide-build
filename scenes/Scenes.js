@@ -8,7 +8,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
-    + "</a>\n      <!-- <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button> -->\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
+    + "</a>\n      <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button>\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -171,6 +171,78 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
+  return "<div class=\"header-popup hp-notify-list\">\n  <ul></ul>\n  <div class=\"hp-notify-list-empty\">No news is good news.</div>\n</div>";
+  };
+TEMPLATE.notifyList=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return " new-item";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += " <p class=\"hp-notify-error\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.error)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</p> ";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += " "
+    + escapeExpression(((stack1 = (depth0 && depth0.duration)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " ";
+  return buffer;
+  }
+
+  buffer += "<li class=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.klass)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isNew), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n  <p>App <a href=\"/workspace/"
+    + escapeExpression(((stack1 = (depth0 && depth0.pid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "/ops/"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"route\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a> "
+    + escapeExpression(((stack1 = (depth0 && depth0.desc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " in workspace <a href=\"/workspace/"
+    + escapeExpression(((stack1 = (depth0 && depth0.pid)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"route\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.pname)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></p>\n\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.error), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  <p class=\"hp-notify-timestamp\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.time)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " <span>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.duration), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</span></p>\n</li>";
+  return buffer;
+  };
+TEMPLATE.notifyListItem=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
   return "<ul class=\"header-popup hp-usermenu\">\n  <li><a class=\"route\" href=\"/cheatsheet\">Keyboard Shortcuts</a></li>\n  <li><a href=\"http://docs.visualops.io\" target=\"_blank\">Documentation</a></li>\n  <li><a class=\"route\" href=\"/settings\">Settings</a></li>\n  <li class=\"logout padding\">Log Out</li>\n</ul>\n<div></div>";
   };
 TEMPLATE.usermenu=Handlebars.template(__TEMPLATE__);
@@ -260,15 +332,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<section>\n  <p class=\"modal-text-major\">You have unsaved changes in current workspace. Switching to another workspace will cause your chages to lose.</p> \n  <p class=\"modal-text-major\">Do you confirm to switch project anyway?</p>\n  <div class=\"modal-footer\">\n    <button class=\"btn do-switch btn-red\">Switch and discard changes</button>\n    <button class=\"btn btn-blue modal-close\">Do not switch</button>\n  </div>\n</section>";
+  return "<section>\n  <p class=\"modal-text-major\">You have unsaved changes in current workspace. Switching to another workspace will cause your chages to lose.</p>\n  <p class=\"modal-text-major\">Do you confirm to switch project anyway?</p>\n  <div class=\"modal-footer\">\n    <button class=\"btn do-switch btn-red\">Switch and discard changes</button>\n    <button class=\"btn btn-blue modal-close\">Do not switch</button>\n  </div>\n</section>";
   };
 TEMPLATE.switchConfirm=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
 (function() {
-  define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "UI.modalplus", "i18n!/nls/lang.js", "constant", "backbone", "jquerysort", "UI.parsley", "UI.errortip", "MC.validate"], function(ApiRequest, ProjectTpl, Modal, lang, constant) {
-    var AssetListPopup, HeaderPopup, ProjectCreation, ProjectListPopup, UserPopup;
+  define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modalplus", "i18n!/nls/lang.js", "constant", "backbone", "jquerysort", "UI.parsley", "UI.errortip", "MC.validate"], function(ApiRequest, ProjectTpl, OpsModel, Modal, lang, constant) {
+    var AssetListPopup, HeaderPopup, NotificationPopup, ProjectCreation, ProjectListPopup, UserPopup;
     ProjectCreation = Backbone.View.extend({
       events: {
         "click .new-project-cancel": "cancel",
@@ -456,9 +528,93 @@ return TEMPLATE; });
         return new ProjectCreation();
       }
     });
+    NotificationPopup = HeaderPopup.extend({
+      initialize: function() {
+        this.listenTo(App.model.notifications(), "change", this.renderPiece);
+        return this.listenTo(App.model.notifications(), "add", this.renderPiece);
+      },
+      pieceTpl: function(m) {
+        var duration, project, target;
+        target = m.target();
+        project = m.targetProject();
+        duration = m.get("duration");
+        if (duration) {
+          if (duration < 60) {
+            duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
+          } else {
+            duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
+          }
+        }
+        return ProjectTpl.notifyListItem({
+          name: target.get("name"),
+          id: target.id,
+          pname: project.get("name"),
+          pid: project.id,
+          time: MC.dateFormat(new Date(m.get("startTime") * 1000), "hh:mm yyyy-MM-dd"),
+          duration: duration,
+          error: m.get("error"),
+          desc: this.getNotifyDesc(m),
+          isNew: m.isNew(),
+          klass: ["processing", "success", "failure", "rollingback"][m.get("state")]
+        });
+      },
+      renderPiece: function(m) {
+        var item, tgt;
+        if (!m) {
+          this.render();
+          return;
+        }
+        tgt = this.$el.find("ul");
+        item = tgt.children("[data-id='" + m.id + "']");
+        if (!item.length) {
+          tgt.prepend(this.pieceTpl(m));
+        } else {
+          item.after(this.pieceTpl(m)).remove();
+        }
+      },
+      render: function() {
+        var m, tpl, _i, _len, _ref;
+        tpl = "";
+        _ref = App.model.notifications().models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          m = _ref[_i];
+          tpl += this.pieceTpl(m);
+        }
+        this.$el.html(ProjectTpl.notifyList());
+        if (tpl) {
+          this.$el.find("ul").html(tpl);
+        }
+      },
+      getNotifyDesc: function(n) {
+        var desc;
+        switch (n.get("action")) {
+          case constant.OPS_CODE_NAME.LAUNCH:
+            desc = ["is launching", "launched successfully", "failed to launch", "is rolling back"];
+            break;
+          case constant.OPS_CODE_NAME.STOP:
+            desc = ["is stopping", "stopped successfully", "failed to stop", "is rolling back"];
+            break;
+          case constant.OPS_CODE_NAME.START:
+            desc = ["is starting", "started successfully", "failed to start", "is rolling back"];
+            break;
+          case constant.OPS_CODE_NAME.TERMINATE:
+            desc = ["is terminating", "terminated successfully", "failed to terminate", "is rolling back"];
+            break;
+          case constant.OPS_CODE_NAME.UPDATE:
+          case constant.OPS_CODE_NAME.STATE_UPDATE:
+            desc = ["is updating", "updated successfully", "failed to update", "is rolling back"];
+        }
+        return desc[n.get("state")];
+      },
+      close: function() {
+        this.stopListening();
+        App.model.notifications().markAllAsRead();
+        return HeaderPopup.prototype.close.call(this);
+      }
+    });
     return Backbone.View.extend({
       initialize: function(attr) {
-        var $header, self;
+        var $header, nfs, self;
         this.scene = attr.scene;
         this.tabsWidth = 0;
         this.setElement($(ProjectTpl.frame()).appendTo("#scenes"));
@@ -483,12 +639,18 @@ return TEMPLATE; });
         $header.on("click", ".popuptrigger", function(evt) {
           return self[$(evt.currentTarget).attr("data-popup")](evt.currentTarget);
         });
-        return $header.on("click", ".icon-support", function() {
+        $header.on("click", ".icon-support", function() {
           if (window.Intercom) {
             window.Intercom('showNewMessage');
             return false;
           }
         });
+        nfs = App.model.notifications();
+        this.listenTo(nfs, "change", this.updateNotify);
+        this.listenTo(nfs, "add", this.updateNotify);
+        this.listenTo(nfs, "remove", this.updateNotify);
+        this.updateNotify();
+        this.listenTo(this.scene, "switchWorkspace", this.updateNotify);
       },
       render: function() {
         this.$el.find(".project-list").text(this.scene.project.get("name"));
@@ -526,7 +688,29 @@ return TEMPLATE; });
       popupUser: function() {
         return new UserPopup();
       },
-      popupNotify: function() {},
+      popupNotify: function() {
+        return new NotificationPopup();
+      },
+      updateNotify: function() {
+        var data, idx, n, unread, ws, _i, _len;
+        unread = App.model.notifications().where({
+          isNew: true
+        });
+        ws = this.scene.getAwakeSpace();
+        data = {
+          opsModel: null
+        };
+        for (idx = _i = 0, _len = unread.length; _i < _len; idx = ++_i) {
+          n = unread[idx];
+          data.opsModel = n.target();
+          if (ws.isWorkingOn(data)) {
+            n.markAsRead();
+            unread.splice(idx, 1);
+            break;
+          }
+        }
+        this.$header.find(".icon-notification").attr("data-count", unread.length || "");
+      },
 
       /* ------------------
        * Workspace Related
@@ -1051,6 +1235,7 @@ return TEMPLATE; });
         } else {
           this.view.hideLoading();
         }
+        this.trigger("switchWorkspace", workspace);
       };
 
       ProjectScene.prototype.removeSpace = function(workspace, force) {

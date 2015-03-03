@@ -5474,7 +5474,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
     CanvasViewProto.hightLightItems = function(items) {
       var canvasSize, filler, h, path, polygons, rects, w;
-      rects = getNonOverlapRects(items);
+      rects = getNonOverlapRects(_.uniq(items));
       polygons = getPolygonsFromRect(rects);
       path = getPathFromPolygons(polygons);
       canvasSize = this.size();
