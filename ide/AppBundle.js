@@ -2678,7 +2678,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         } else if (req.username === App.user.get("usercode")) {
           n = this.notifications().add(app, req);
         }
-        if (!App.WS.isSubReady(req.project_id, "request")) {
+        if (!App.WS.isSubReady(req.project_id, "request") && n) {
           n.markAsOld();
         }
       }

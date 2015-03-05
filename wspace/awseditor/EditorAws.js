@@ -12109,7 +12109,7 @@ function program3(depth0,data) {
             };
           })
         };
-        new modalPlus({
+        this.modal = new modalPlus({
           title: lang.IDE.POP_ACLRULE_TITLE_ADD,
           width: 450,
           template: rulePopupTpl(data),
@@ -12117,7 +12117,8 @@ function program3(depth0,data) {
             text: lang.IDE.POP_ACLRULE_BTN_SAVE
           },
           compact: true
-        }).on("confirm", _.bind(this.saveRule, this)).tpl.attr("id", "modal-acl-rule");
+        });
+        this.modal.on("confirm", _.bind(this.saveRule, this)).tpl.attr("id", "modal-acl-rule");
         $("#acl-add-model-source-select").on("OPTION_CHANGE", this.modalRuleSourceSelected);
         $("#modal-protocol-select").on("OPTION_CHANGE", this.modalRuleProtocolSelected);
         $("#protocol-icmp-main-select").on("OPTION_CHANGE", this.modalRuleICMPSelected);
@@ -12231,7 +12232,7 @@ function program3(depth0,data) {
           protocol: protocol,
           port: port
         });
-        modal.close();
+        this.modal.close();
         return null;
       },
       modalRuleSourceSelected: function(event) {
