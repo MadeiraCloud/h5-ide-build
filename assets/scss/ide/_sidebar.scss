@@ -5,7 +5,7 @@ $dndDuration : .2s;
 
 .resources-dropdown-wrapper {
   position      : absolute;
-  left          : 206px;
+  left          : 244px;
   top           : 39px;
   width         : 364px;
   margin-top    : 1px;
@@ -61,6 +61,7 @@ $dndDuration : .2s;
       width      : 80px;
       color      : #999;
       line-height: 16px;
+      left       : 5px;
     }
   }
 
@@ -175,7 +176,12 @@ $dndDuration : .2s;
     padding-top : 5px;
     height : 90px;
   }
+  &.dockerimage {
+    padding-top : 5px;
+    height : 90px;
+  }
 
+  &.marathon-group{ background-image:image-url("ide/icon/res-mg.png");}
   &.az       { background-image: image-url('ide/icon/res-az.png'); position: relative; }
   &.volume   { background-image: image-url('ide/icon/res-vol.png'); }
   &.eni      { background-image: image-url('ide/icon/res-eni.png'); }
@@ -254,6 +260,31 @@ $dndDuration : .2s;
 
 .resource-icon-dbinstance { background-image : image-url('ide/icon/res-rds.png'); }
 .resource-icon-dbsnapshot { background-image : image-url('ide/icon/res-rdssnap.png'); }
+.resource-icon-docker-image {
+  position         : relative;
+  background-image : none;
+
+  &:before {
+    border        : 2px solid rgb(168, 206, 229);
+    background    : #405bc7;
+    border-radius : 50%;
+    width         : 48px;
+    height        : 48px;
+    content       : "";
+    display       : inline-block;
+    box-sizing    : border-box;
+    margin-top    : 12px;
+  }
+
+  img {
+    width    : 30px;
+    height   : 30px;
+    position : absolute;
+    top      : 21px;
+    left     : 20px;
+  }
+}
+
 
 .ebs-size {
   margin-top  : -1.5em;
@@ -340,6 +371,10 @@ $dndDuration : .2s;
     }
   }
 
+  .resource-icon-docker-image > img {
+    left : 24px;
+  }
+
   &.rtb, &.igw, &.vgw { width:80px; height:80px; }
   &.elb, &.instance, &.eni, &.dbinstance, &.dbsnapshot { width:90px; height:90px; }
 
@@ -356,7 +391,7 @@ $dndDuration : .2s;
     display : none;
   }
 
-  &.az, &.asg,  &.subnet, &.subnetgroup, &.ossubnet {
+  &.az, &.asg,  &.subnet, &.subnetgroup, &.ossubnet, &.marathon-group {
     background-image : none;
     color        : #eee;
     line-height  : 1em;
@@ -397,6 +432,19 @@ $dndDuration : .2s;
       &:before {
         width  : 166px;
         height : 166px;
+      }
+    }
+  }
+
+  &.marathon-group {
+    &:before { border-color: #CFCDDB; }
+    &.dragOver {
+      width  : 220px;
+      height : 157px;
+      color  : #888CAD;
+      &:before {
+        width  : 200px;
+        height : 148px;
       }
     }
   }

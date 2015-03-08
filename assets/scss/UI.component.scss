@@ -1684,6 +1684,7 @@ select.select3.disabled {
 
 /* Multi Input Box */
 .multi-ipt-row {
+	&.template { display: none; }
 	margin-bottom : 5px;
 }
 
@@ -1697,7 +1698,7 @@ select.select3.disabled {
 	overflow : hidden;
 }
 
-.multi-ipt-row .ipt-wrapper input {
+.multi-ipt-row .ipt-wrapper input, .multi-ipt-row .ipt-wrapper select{
 	display : block;
 	width   : 100% !important;
 	-webkit-box-sizing: border-box;
@@ -2516,11 +2517,12 @@ position:relative;
 		background: none;
 	}
 	&::-webkit-scrollbar-thumb {
-		background: rgba(100,100,100,.3);
+		background: transparentize($base-p, .8);
 		border-radius: 8px;
 
 		&:hover {
-			background: rgba(100,100,100,.5);
+			background : transparentize($base-p, .4);
+			width      : 8px;
 		}
 	}
   	&::-webkit-scrollbar-corner {

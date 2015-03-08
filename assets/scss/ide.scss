@@ -724,7 +724,8 @@ a {
 }
 
 .rule-list-row {
-	height : 20px;
+	height    : 20px;
+	font-size : 12px;
 }
 
 .rule-list-row .sg-color, .sg-color-rule-header.sg-color {
@@ -736,6 +737,10 @@ a {
 	width       : 65px;
 	line-height : 20px;
 	height      : 20px;
+
+	&:last-of-type {
+		width: 100px;
+	}
 }
 
 .rule-list-row > .rule-port:empty {
@@ -1290,8 +1295,10 @@ a.action-link:hover {
 	width: 40px !important;
 }
 
-#elb-property-listener-list .elb-property-listener:only-child .elb-property-listener-item-remove {
-	display: none;
+#elb-property-listener-list, #mesos-health-checks-list{
+  .elb-property-listener:only-child .elb-property-listener-item-remove {
+    display: none;
+  }
 }
 
 .elb-property-listener-item-remove {
@@ -2563,6 +2570,25 @@ details[open] + .nutshell {
   font-size: 28px;
 }
 
+#modal-run-mesos {
+	.url-label {
+		width: auto;
+		display: block;
+	}
+	#app-url {
+		width: 404px;
+	}
+	.modal-control-group {
+		padding: 0;
+		margin: 5px 25px;
+	}
+	.mesos-tip {
+		margin: 5px 25px;
+		font-size: 12px;
+	}
+
+}
+
 .validation-tag,
 .resource-tag {
 	font-size     : 12px;
@@ -3798,3 +3824,4 @@ div.modal-text-highlight{
 @import "ide/fullpage_settings";
 @import "ide/project";
 @import "ide/cheatsheet";
+@import "tmp";
