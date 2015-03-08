@@ -22505,14 +22505,14 @@ return TEMPLATE; });
         _.each(json.component, function(comp) {
           return nameMap[comp.name] = comp.uid;
         });
-        if (this.marathonJson.name.indexOf('prod') !== -1) {
-          modelNames1 = ['subne-web-prod-1a', 'subnet--web-4prod-1b'];
-          modelNames2 = ['app-prod-1a-0', 'app-prod-1b-0'];
-          modelNames3 = ['subnet-db-prod-1a', 'subnet-db-prod-10b'];
-        } else {
+        if (this.marathonJson.name.indexOf('qa') !== -1) {
           modelNames1 = ['subne-web-staging-1a', 'subne-web-staging-1b'];
           modelNames2 = ['subnet-qa-1a', 'subnet-qa-1b'];
           modelNames3 = ['subnet-db-qa-1a', 'subnet-db-qa-1b'];
+        } else {
+          modelNames1 = ['subne-web-prod-1a', 'subnet--web-4prod-1b'];
+          modelNames2 = ['app-prod-1a-0', 'app-prod-1b-0'];
+          modelNames3 = ['subnet-db-prod-1a', 'subnet-db-prod-10b'];
         }
         if (event) {
           $container = $(event.currentTarget);
