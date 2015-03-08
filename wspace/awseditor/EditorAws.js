@@ -22463,6 +22463,7 @@ return TEMPLATE; });
       renderMarathonApp: function(data) {
         var $appList, $createPanel, json;
         json = $.extend(true, {}, data);
+        this.marathonJson = json;
         $appList = this.$('.marathon-app-list');
         $createPanel = this.$('.create-marathon-panel');
         $appList.show();
@@ -22498,23 +22499,34 @@ return TEMPLATE; });
         return this.highlightCanvas(e);
       },
       highlightCanvas: function(event) {
-        var $container, json, modelIds, modelNames, models, name, nameMap;
+        var $container, json, modelIds, modelNames1, modelNames2, modelNames3, models, name, nameMap;
         nameMap = {};
         json = Design.instance().serialize();
         _.each(json.component, function(comp) {
           return nameMap[comp.name] = comp.uid;
         });
+        if (this.marathonJson.name.indexOf('prod') !== -1) {
+          modelNames1 = ['subne-web-prod-1a', 'subnet--web-4prod-1b'];
+          modelNames2 = ['app-prod-1a-0', 'app-prod-1b-0'];
+          modelNames3 = ['subnet-db-prod-1a', 'subnet-db-prod-10b'];
+        } else {
+          modelNames1 = ['subne-web-staging-1a', 'subne-web-staging-1b'];
+          modelNames2 = ['subnet-qa-1a', 'subnet-qa-1b'];
+          modelNames3 = ['subnet-db-qa-1a', 'subnet-db-qa-1b'];
+        }
         if (event) {
           $container = $(event.currentTarget);
           name = $container.data('name');
-          if (name === 'APIService' || name === 'AgentService' || name === 'nginx') {
-            modelNames = ['web-a', 'web-b'];
-            modelIds = _.map(modelNames, function(name) {
+          if (name === 'api-service' || name === 'agent-service' || name === 'nginx') {
+            modelIds = _.map(modelNames1, function(name) {
+              return nameMap[name];
+            });
+          } else if (name === 'request-master' || name === 'mongos' || name === 'worker' || name === 'resource-diff') {
+            modelIds = _.map(modelNames2, function(name) {
               return nameMap[name];
             });
           } else {
-            modelNames = ['back-a', 'back-b'];
-            modelIds = _.map(modelNames, function(name) {
+            modelIds = _.map(modelNames3, function(name) {
               return nameMap[name];
             });
           }
@@ -22965,7 +22977,7 @@ return TEMPLATE; });
               if (isApp) {
                 title = 'RUNNING TASKS';
                 constraints = ["mesos-dns.9b85d1a7-c47a-11e4-865f-0ae4c5a555b7", "10.0.0.6:31388"];
-                if (name === 'MongoDB') {
+                if (name === 'mongodb' || name === 'mongo-config') {
                   task = '2/' + task;
                   yellow = true;
                   instanceTip = 'Tasks/Instances';
