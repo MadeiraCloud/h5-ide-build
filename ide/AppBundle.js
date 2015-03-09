@@ -660,7 +660,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return this.get("importMsrId") || void 0;
       },
       getMarathonStackId: function() {
-        return 'app-96a672f6';
+        return 'stack-334a97bd';
       },
       getThumbnail: function() {
         return ThumbUtil.fetch(this.get("id"));

@@ -21895,16 +21895,16 @@ function program16(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"container-edit\">\n    <a class=\"target route edit-marathon-stack icon-edit\" href=\"/workspace/"
+  buffer += "<!-- <div class=\"container-edit\">\n    <a class=\"target route edit-marathon-stack icon-edit\" href=\"/workspace/"
     + escapeExpression(((stack1 = (depth0 && depth0.project)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "/ops/"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">Edit in <span>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></a>\n</div>\n<input id=\"filter-containers\" class=\"input filter-containers\" type=\"text\" placeholder=\"Filter container...\"/>\n<!-- <div class=\"tip\">Click container item to inspect placement on canvas.</div> -->\n<ul class=\"group-list\">\n    ";
+    + "</span></a>\n</div> -->\n<input id=\"filter-containers\" class=\"input filter-containers\" type=\"text\" placeholder=\"Filter container...\"/>\n<!-- <div class=\"tip\">Click container item to inspect placement on canvas.</div> -->\n<ul class=\"group-list\">\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.groups), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul>\n<div class=\"container-change\">Change Marathon Stack…</div>";
+  buffer += "\n</ul>\n<!-- <div class=\"container-change\">Change Marathon Stack…</div> -->";
   return buffer;
   };
 TEMPLATE.containerList=Handlebars.template(__TEMPLATE__);
@@ -22419,7 +22419,7 @@ return TEMPLATE; });
         }
       },
       popApplyMarathonModal: function() {
-        var data, modalOptions, model, _i, _len, _ref;
+        var data, isApp, modalOptions, model, _i, _len, _ref, _ref1;
         data = [];
         _ref = this.workspace.scene.project.stacks().filter(function(a) {
           return a.type === OpsModel.Type.Mesos;
@@ -22431,6 +22431,8 @@ return TEMPLATE; });
             id: model.id
           });
         }
+        isApp = ((_ref1 = Design.instance().mode()) === 'appedit' || _ref1 === 'app');
+        data.isApp = isApp;
         modalOptions = {
           template: MC.template.applyMarathonStack(data),
           title: 'Apply Marathon Stack ',
@@ -22499,34 +22501,43 @@ return TEMPLATE; });
         return this.highlightCanvas(e);
       },
       highlightCanvas: function(event) {
-        var $container, json, modelIds, modelNames1, modelNames2, modelNames3, models, name, nameMap;
+        var $container, json, modelIds, models, name, nameMap, prodModelNames1, prodModelNames2, prodModelNames3, qaModelNames1, qaModelNames2, qaModelNames3;
         nameMap = {};
         json = Design.instance().serialize();
         _.each(json.component, function(comp) {
           return nameMap[comp.name] = comp.uid;
         });
-        if (this.marathonJson.name.indexOf('qa') !== -1) {
-          modelNames1 = ['subne-web-staging-1a', 'subne-web-staging-1b'];
-          modelNames2 = ['subnet-qa-1a', 'subnet-qa-1b'];
-          modelNames3 = ['subnet-db-qa-1a', 'subnet-db-qa-1b'];
-        } else {
-          modelNames1 = ['subne-web-prod-1a', 'subnet--web-4prod-1b'];
-          modelNames2 = ['app-prod-1a-0', 'app-prod-1b-0'];
-          modelNames3 = ['subnet-db-prod-1a', 'subnet-db-prod-10b'];
-        }
+        prodModelNames1 = ['subne-web-prod-1a', 'subnet--web-4prod-1b'];
+        prodModelNames2 = ['app-prod-1a-0', 'app-prod-1b-0'];
+        prodModelNames3 = ['subnet-db-prod-1a', 'subnet-db-prod-10b'];
+        qaModelNames1 = ['subne-web-staging-1a', 'subne-web-staging-1b'];
+        qaModelNames2 = ['subnet-qa-1a', 'subnet-qa-1b'];
+        qaModelNames3 = ['subnet-db-qa-1a', 'subnet-db-qa-1b'];
         if (event) {
           $container = $(event.currentTarget);
           name = $container.data('name');
-          if (name === 'api-service' || name === 'agent-service' || name === 'nginx') {
-            modelIds = _.map(modelNames1, function(name) {
+          if (name === 'prod_nginx') {
+            modelIds = _.map(prodModelNames1, function(name) {
               return nameMap[name];
             });
-          } else if (name === 'request-master' || name === 'mongos' || name === 'worker' || name === 'resource-diff') {
-            modelIds = _.map(modelNames2, function(name) {
+          } else if (name === 'prod_requestworker' || name === 'prod_mongos') {
+            modelIds = _.map(prodModelNames2, function(name) {
               return nameMap[name];
             });
-          } else {
-            modelIds = _.map(modelNames3, function(name) {
+          } else if (name === 'prod_mongodb' || name === 'prod_mongo-config' || name === 'prod_zookeeper') {
+            modelIds = _.map(prodModelNames3, function(name) {
+              return nameMap[name];
+            });
+          } else if (name === 'qa_nginx') {
+            modelIds = _.map(qaModelNames1, function(name) {
+              return nameMap[name];
+            });
+          } else if (name === 'qa_requestworker' || name === 'qa_mongos') {
+            modelIds = _.map(qaModelNames2, function(name) {
+              return nameMap[name];
+            });
+          } else if (name === 'qa_mongodb' || name === 'qa_mongo-config' || name === 'qa_zookeeper') {
+            modelIds = _.map(qaModelNames3, function(name) {
               return nameMap[name];
             });
           }

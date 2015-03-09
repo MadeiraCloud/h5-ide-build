@@ -2516,9 +2516,7 @@ function program3(depth0,data) {
     + "</span></li>\n			</ol>\n			<button class=\"btn btn-blue visualize-vpc-btn";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-vpcid=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">";
+  buffer += "\" data-vpcid=\"vpc-ef4d038a\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</button>\n		</li>\n		";
