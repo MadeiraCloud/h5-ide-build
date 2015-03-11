@@ -39,11 +39,11 @@ function program4(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                                        <li data-region=\""
+  buffer += "\n                                      <li data-region=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.alias)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n                                    ";
+    + "</li>\n                                  ";
   return buffer;
   }
 
@@ -80,7 +80,7 @@ function program11(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
     + "</button>\n\n    <div class=\"hovermenu\">\n      <button class=\"btn btn-primary icon-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
-    + "<i class=\"icon-caret-down\"></i></button>\n      <div class=\"dropdown-menu\">\n        <ul data-provider=\"docker::marathon\"><li data-region=\"us-east-1\" class=\"create-stack\">Marathon Stack</li></ul>\n        ";
+    + "<i class=\"icon-caret-down\"></i></button>\n      <div class=\"dropdown-menu\">\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.providers), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </div>\n    </div>\n\n      <div class=\"hovermenu\">\n        <button class=\"btn btn-primary icon-import\">"
@@ -95,14 +95,14 @@ function program11(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROVIDE_CRED_TO_VISUALIZE", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_VISUALIZE_VPC", {hash:{},data:data}))
-    + "</button>\n\n  </header>\n\n  <div class=\"dashboard-wrapper\">\n      <article class=\"dashboard-content\">\n          <div id=\"global-region-wrap\">\n              <!-- Global Map -->\n              <section id=\"dashboard-data-wrap\">\n                  <!-- Region view -->\n                  <section id=\"RegionView\">\n                      <div class=\"region-app-stack-wrap\">\n                          <div class=\"dash-region-apps-wrap\">\n                              <div class=\"dashboard-loading\">\n                                  <div class=\"loading-spinner\"></div>\n                              </div>\n                          </div>\n                          <div class=\"dash-region-stacks-wrap\">\n                              <div class=\"dashboard-loading\">\n                                  <div class=\"loading-spinner\"></div>\n                              </div>\n                          </div>\n                      </div>\n\n                      <div class=\"region-app-stack-wrap marathon\">\n                          <div class=\"dash-region-apps-wrap\">\n                              <div class=\"dashboard-loading\">\n                                  <div class=\"loading-spinner\"></div>\n                              </div>\n                          </div>\n                          <div class=\"dash-region-stacks-wrap\">\n                              <div class=\"dashboard-loading\">\n                                  <div class=\"loading-spinner\"></div>\n                              </div>\n                          </div>\n                      </div>\n\n                      <div class=\"dash-resource-wrap\">\n                        <header class=\"dash-region-header\">\n                            <label class=\"region-resource-tab\">\n                                Resource Table\n                            </label>\n                            <nav class=\"dash-region-navigation\" data-type=\"resource\">\n                                <button class=\"js-toggle-dropdown\">\n                                    <i class=\"icon-caret-down right\"></i><span>"
+    + "</button>\n\n  </header>\n\n  <div class=\"dashboard-wrapper\">\n      <article class=\"dashboard-content\">\n          <div id=\"global-region-wrap\">\n              <!-- Global Map -->\n              <section id=\"dashboard-data-wrap\">\n                  <!-- Region view -->\n                  <section id=\"RegionView\">\n                      <div id=\"region-app-stack-wrap\">\n                          <div class=\"dash-region-apps-wrap\">\n                              <div class=\"dashboard-loading\">\n                                  <div class=\"loading-spinner\"></div>\n                              </div>\n                          </div>\n                          <div class=\"dash-region-stacks-wrap\">\n                              <div class=\"dashboard-loading\">\n                                  <div class=\"loading-spinner\"></div>\n                              </div>\n                          </div>\n                      </div>\n                      <div class=\"dash-resource-wrap\">\n                          <label class=\"region-resource-tab\">\n                              <span>Resource Table</span>\n                          </label>\n                          <nav class=\"dash-region-navigation\" data-type=\"resource\">\n                              <button class=\"js-toggle-dropdown\">\n                                  <i class=\"icon-caret-down right\"></i><span>"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
-    + "</span>\n                                </button>\n                                <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n                                    <li data-region=\"global\">"
+    + "</span>\n                              </button>\n                              <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n                                  <li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
-    + "</li>\n                                    ";
+    + "</li>\n                                  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.providers), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                                </ul>\n                            </nav>\n                          </header>\n                          <ul id=\"GlobalView\" style=\"display: none;\"></ul>\n                          <div id=\"RegionViewWrap\">\n                              <nav class=\"\" id=\"RegionResourceNav\">\n                                  <div class=\"resource-tab instances on\" data-type=\"INSTANCE\">\n                                      <span class=\"resource-count\">"
+  buffer += "\n                              </ul>\n                          </nav>\n                          <ul id=\"GlobalView\" style=\"display: none;\"></ul>\n                          <div id=\"RegionViewWrap\">\n                              <nav class=\"\" id=\"RegionResourceNav\">\n                                  <div class=\"resource-tab instances on\" data-type=\"INSTANCE\">\n                                      <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_INSTANCE", {hash:{},data:data}))
     + "</span><span\n                                          class=\"count-bubble\"></span></div>\n                                  <div class=\"resource-tab rds\" data-type=\"DBINSTANCE\">\n                                      <span class=\"resource-count\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_RDS", {hash:{},data:data}))
@@ -1034,30 +1034,12 @@ TEMPLATE.globalResources=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  
-  return "Docker App";
-  }
-
-function program3(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}));
-  }
-
-function program5(depth0,data) {
-  
-  
-  return "hide";
-  }
-
-function program7(depth0,data) {
-  
   var buffer = "", stack1;
-  buffer += "\n                    <li data-region=\""
+  buffer += "\n                <li data-region=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1067,7 +1049,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data,depth1) {
+function program3(depth0,data,depth1) {
   
   var buffer = "", stack1;
   buffer += "\n            <li data-id=\""
@@ -1077,44 +1059,42 @@ function program9(depth0,data,depth1) {
     + "/ops/"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.programWithDepth(12, program12, data, depth1),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.progressing), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                </a></li>\n        ";
   return buffer;
   }
-function program10(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <div class=\"thumbnail app-thumbnail\"></div>\n                <div class=\"region-resource-progess-wrap\"><div class=\"region-resource-progess\" style=\"width:"
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "%;\"></div></div>\n                <div class=\"region-resource-info truncate\" title=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n                    <div class=\"loading-spinner loading-spinner-small\"></div><span>"
+    + "\">\n                    <div class=\"loading-spinner loading-spinner-small\"></div>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " - "
     + escapeExpression(((stack1 = (depth0 && depth0.stateDesc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "...</span>\n                </div>\n            ";
+    + "...\n                </div>\n            ";
   return buffer;
   }
 
-function program12(depth0,data,depth2) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers.unless.call(depth0, (depth2 && depth2.isMarathon), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                <div class=\"thumbnail app-thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    <i class=\"icon-terminate terminate-app tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_TERMINATE_APP", {hash:{},data:data}))
-    + "\"></i>\n                    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    <i class=\"icon-terminate terminate-app\"></i>\n                    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    <span class=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(26, program26, data),fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(18, program18, data),fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " truncate\" title=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1123,64 +1103,55 @@ function program12(depth0,data,depth2) {
     + "</span>\n                </div>\n                ";
   return buffer;
   }
-function program13(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<i class=\"icon-app-type-"
     + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i>\n                ";
+    + "\"></i>";
   return buffer;
   }
 
-function program15(depth0,data) {
-  
-  
-  return "\n                    <i class=\"icon-app-type-marathon\"></i>\n                ";
-  }
-
-function program17(depth0,data) {
+function program9(depth0,data) {
   
   
   return "class=\"hide\"";
   }
 
-function program19(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(22, program22, data),fn:self.program(20, program20, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    ";
   return buffer;
   }
-function program20(depth0,data) {
+function program12(depth0,data) {
   
-  var buffer = "";
-  buffer += "<i class=\"icon-stop stop-app tooltip\"  data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_STOP_APP", {hash:{},data:data}))
-    + "\"></i>";
-  return buffer;
+  
+  return "<i class=\"icon-stop stop-app\"></i>";
   }
 
-function program22(depth0,data) {
+function program14(depth0,data) {
   
   
   return "<i class=\"icon-play start-app\"></i>";
   }
 
-function program24(depth0,data) {
+function program16(depth0,data) {
   
   
   return "running";
   }
 
-function program26(depth0,data) {
+function program18(depth0,data) {
   
   
   return "stopped";
   }
 
-function program28(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "";
   buffer += "\n            <div class=\"blank-widget\"><div>"
@@ -1189,25 +1160,21 @@ function program28(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"dash-region-apps-wrap\">\n    <header class=\"dash-region-header\">\n        <label class=\"region-resource-tab\">\n            "
+  buffer += "<div class=\"dash-region-apps-wrap\">\n    <label class=\"region-resource-tab\">\n        <span>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.apps)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "<b>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMarathon), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</b>\n        </label>\n        <nav class=\"dash-region-navigation ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMarathon), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-type=\"apps\">\n            <button class=\"js-toggle-dropdown\">\n                <i class=\"icon-caret-down right\"></i><span>"
+    + " <small>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_APP", {hash:{},data:data}))
+    + "</small></span>\n    </label>\n    <nav class=\"dash-region-navigation\" data-type=\"apps\">\n        <button class=\"js-toggle-dropdown\">\n            <i class=\"icon-caret-down right\"></i><span>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.currentRegion)),stack1 == null || stack1 === false ? stack1 : stack1.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n            </button>\n            <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n                <li data-region=\"global\">"
+    + "</span>\n        </button>\n        <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n            <li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
     + " <span>"
     + escapeExpression(((stack1 = (depth0 && depth0.globalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+    + "</span></li>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </ul>\n        </nav>\n    </header>\n\n    <ul id=\"region-resource-app-wrap\" class=\"region-resource-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(28, program28, data),fn:self.programWithDepth(9, program9, data, depth0),data:data});
+  buffer += "\n        </ul>\n    </nav>\n\n    <ul id=\"region-resource-app-wrap\" class=\"region-resource-list\">\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(20, program20, data),fn:self.programWithDepth(3, program3, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>";
   return buffer;
@@ -1218,30 +1185,12 @@ TEMPLATE.region_apps=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  
-  return "Docker Stack";
-  }
-
-function program3(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}));
-  }
-
-function program5(depth0,data) {
-  
-  
-  return "hide";
-  }
-
-function program7(depth0,data) {
-  
   var buffer = "", stack1;
-  buffer += "\n                    <li data-region=\""
+  buffer += "\n                <li data-region=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1251,7 +1200,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data,depth1) {
+function program3(depth0,data,depth1) {
   
   var buffer = "", stack1;
   buffer += "\n            <li data-id=\""
@@ -1263,7 +1212,7 @@ function program9(depth0,data,depth1) {
     + "\">\n                    <div class=\"thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/></div>\n                    <div class=\"region-resource-info\">\n                        <i class=\"icon-delete delete-stack tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DEL_STACK", {hash:{},data:data}))
@@ -1274,13 +1223,13 @@ function program9(depth0,data,depth1) {
     + "</span>\n                    </div>\n                </a>\n            </li>\n        ";
   return buffer;
   }
-function program10(depth0,data) {
+function program4(depth0,data) {
   
   
   return "class=\"hide\"";
   }
 
-function program12(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "";
   buffer += "\n            <div class=\"blank-widget\"><div>"
@@ -1289,25 +1238,21 @@ function program12(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"dash-region-stacks-wrap\">\n    <header class=\"dash-region-header\">\n        <label class=\"region-resource-tab stack\">\n            "
+  buffer += "<div class=\"dash-region-stacks-wrap\">\n    <label class=\"region-resource-tab\">\n        <span class=\"stack\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.stacks)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "<b>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMarathon), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</b>\n        </label>\n        <nav class=\"dash-region-navigation ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMarathon), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-type=\"stacks\">\n            <button class=\"js-toggle-dropdown\">\n                <i class=\"icon-caret-down right\"></i><span>"
+    + " <small>"
+    + escapeExpression(helpers.i18n.call(depth0, "DASH_LBL_STACK", {hash:{},data:data}))
+    + "</small></span>\n    </label>\n    <nav class=\"dash-region-navigation\" data-type=\"stacks\">\n        <button class=\"js-toggle-dropdown\">\n            <i class=\"icon-caret-down right\"></i><span>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.currentRegion)),stack1 == null || stack1 === false ? stack1 : stack1.shortName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span>\n            </button>\n\n            <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n                <li data-region=\"global\">"
+    + "</span>\n        </button>\n\n        <ul id=\"region-switch-list\" class=\"dropdown-menu\">\n            <li data-region=\"global\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_BTN_GLOBAL", {hash:{},data:data}))
     + " <span>"
     + escapeExpression(((stack1 = (depth0 && depth0.globalCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+    + "</span></li>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </ul>\n        </nav>\n    </header>\n    <ul id=\"region-resource-stack-wrap\" class=\"region-resource-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.program(12, program12, data),fn:self.programWithDepth(9, program9, data, depth0),data:data});
+  buffer += "\n        </ul>\n    </nav>\n    <ul id=\"region-resource-stack-wrap\" class=\"region-resource-list\">\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.program(6, program6, data),fn:self.programWithDepth(3, program3, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n</div>";
   return buffer;
@@ -2516,7 +2461,9 @@ function program3(depth0,data) {
     + "</span></li>\n			</ol>\n			<button class=\"btn btn-blue visualize-vpc-btn";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-vpcid=\"vpc-ef4d038a\">";
+  buffer += "\" data-vpcid=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.imported), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</button>\n		</li>\n		";
@@ -2816,16 +2763,16 @@ return TEMPLATE; });
         this.logCol.on('change add', this.updateLog, this);
         this.render();
         this.listenTo(this.model.scene.project, "update:stack", function() {
-          return this.updateStacks();
+          return self.updateRegionAppStack("stacks");
         });
         this.listenTo(this.model.scene.project, "update:app", function() {
-          return this.updateApps();
+          return self.updateRegionAppStack("apps");
         });
         this.listenTo(this.model.scene.project, "change:stack", function() {
-          return this.updateStacks();
+          return self.updateRegionAppStack("stacks");
         });
         this.listenTo(this.model.scene.project, "change:app", function() {
-          return this.updateApps();
+          return self.updateRegionAppStack("apps");
         });
         this.listenTo(this.model.scene.project, "update:credential", function() {
           return self.updateDemoView();
@@ -2931,14 +2878,7 @@ return TEMPLATE; });
           };
         } else {
           this.__globalLoading = false;
-          data = {};
-          _.each(this.model.getAwsResData(), function(resList, key) {
-            var orderedList;
-            orderedList = _.sortBy(resList, function(res) {
-              return -res.data.length;
-            });
-            return data[key] = orderedList;
-          });
+          data = this.model.getAwsResData();
         }
         this.$el.find("#GlobalView").html(dataTemplate.globalResources(data));
         if (this.region === "global") {
@@ -2955,10 +2895,7 @@ return TEMPLATE; });
       },
       initRegion: function() {
         this.updateRegionAppStack("stacks", "global");
-        this.updateRegionAppStack("stacks", "global", true);
         this.updateRegionAppStack("apps", "global");
-        this.updateRegionAppStack("apps", "global", true);
-        this.toggleMarathonOpslist();
         return this.updateRegionResources();
       },
       switchRegion: function(evt) {
@@ -3009,39 +2946,16 @@ return TEMPLATE; });
       updateAppStackProgress: function(ops) {
         $("#region-resource-app-wrap, #region-resource-stack-wrap").children("li[data-id='" + ops.id + "']").find(".region-resource-progess").css("width", ops.get("progress") + "%");
       },
-      updateStacks: function() {
-        this.updateRegionAppStack("stacks", null);
-        this.updateRegionAppStack("stacks", null, true);
-        return this.toggleMarathonOpslist();
-      },
-      updateApps: function() {
-        this.updateRegionAppStack("apps", null);
-        this.updateRegionAppStack("apps", null, true);
-        return this.toggleMarathonOpslist();
-      },
-      toggleMarathonOpslist: function() {
-        var $marathonWrap, hasMarathonOps;
-        $marathonWrap = this.$el.find(".region-app-stack-wrap.marathon");
-        hasMarathonOps = $marathonWrap.find(".region-resource-list li").size() > 0;
-        return $marathonWrap.toggle(hasMarathonOps);
-      },
-      updateRegionAppStack: function(updateType, region, isMarathon) {
+      updateRegionAppStack: function(updateType, region) {
         var attr, data, filter, resources, self, tojson;
         if (updateType == null) {
-          updateType = "stacks";
-        }
-        if (isMarathon == null) {
-          isMarathon = false;
+          updateType = "stack";
         }
         if (updateType !== "stacks" && updateType !== "apps") {
           return false;
         }
         if (!region) {
-          if (isMarathon) {
-            region = "global";
-          } else {
-            region = this[updateType + "Region"];
-          }
+          region = this[updateType + "Region"];
         }
         self = this;
         attr = {
@@ -3072,21 +2986,12 @@ return TEMPLATE; });
         resources = self.model.scene.project[updateType]();
         resources.comparator = "updateTime";
         resources.sort();
-        if (isMarathon) {
-          resources = resources.filter(function(f) {
-            return f.get("provider") === "docker::marathon";
-          });
-        } else {
-          resources = resources.filter(function(f) {
-            return f.get("provider") !== "docker::marathon";
-          });
-        }
         attr[updateType] = resources.filter(filter).map(function(m) {
           return m.toJSON(tojson);
         }).reverse();
         attr.region = _.map(data, function(obj) {
           var _ref;
-          obj.count = ((_ref = _.groupBy(attr[updateType], "region")[obj.id]) != null ? _ref.length : void 0) || 0;
+          obj.count = ((_ref = resources.groupBy("region")[obj.id]) != null ? _ref.length : void 0) || 0;
           return obj;
         });
         attr.globalCount = resources.length;
@@ -3097,12 +3002,7 @@ return TEMPLATE; });
           id: "global",
           shortName: lang.IDE.DASH_BTN_GLOBAL
         };
-        if (isMarathon) {
-          attr.isMarathon = isMarathon;
-          this.$el.find(".region-app-stack-wrap.marathon .dash-region-" + updateType + "-wrap").replaceWith(dataTemplate["region_" + updateType](attr));
-        } else {
-          this.$el.find(".region-app-stack-wrap").not(".marathon").find(".dash-region-" + updateType + "-wrap").replaceWith(dataTemplate["region_" + updateType](attr));
-        }
+        this.$el.find("#region-app-stack-wrap .dash-region-" + updateType + "-wrap").replaceWith(dataTemplate["region_" + updateType](attr));
       },
       updateRegionTabCount: function() {
         var $nav, count, r, resourceCount;

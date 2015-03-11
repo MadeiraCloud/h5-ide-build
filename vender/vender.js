@@ -18095,29 +18095,29 @@ define('svg',[], function() {
           l = this.value[i][0]
 
           if (l == 'M' || l == 'L' || l == 'T')  {
-            this.value[i][1] = Math.round((this.value[i][1] + x)*1000)/1000
-            this.value[i][2] = Math.round((this.value[i][2] + y)*1000)/1000
+            this.value[i][1] += x
+            this.value[i][2] += y
 
           } else if (l == 'H')  {
-            this.value[i][1] = Math.round((this.value[i][1] + x)*1000)/1000
+            this.value[i][1] += x
 
           } else if (l == 'V')  {
-            this.value[i][1] = Math.round((this.value[i][1] + y)*1000)/1000
+            this.value[i][1] += y
 
           } else if (l == 'C' || l == 'S' || l == 'Q')  {
-            this.value[i][1] = Math.round((this.value[i][1] + x)*1000)/1000
-            this.value[i][2] = Math.round((this.value[i][2] + y)*1000)/1000
-            this.value[i][3] = Math.round((this.value[i][3] + x)*1000)/1000
-            this.value[i][4] = Math.round((this.value[i][4] + y)*1000)/1000
+            this.value[i][1] += x
+            this.value[i][2] += y
+            this.value[i][3] += x
+            this.value[i][4] += y
 
             if (l == 'C')  {
-              this.value[i][5] = Math.round((this.value[i][5] + x)*1000)/1000
-              this.value[i][6] = Math.round((this.value[i][6] + y)*1000)/1000
+              this.value[i][5] += x
+              this.value[i][6] += y
             }
 
           } else if (l == 'A')  {
-            this.value[i][6] = Math.round((this.value[i][6] + x)*1000)/1000
-            this.value[i][7] = Math.round((this.value[i][7] + y)*1000)/1000
+            this.value[i][6] += x
+            this.value[i][7] += y
           }
 
         }
@@ -19102,10 +19102,8 @@ define('svg',[], function() {
         }
 
         /* remove defs node */
-        if (this._defs) {
-          this._defs.clear();
-          this._defs = null;
-        }
+        if (this._defs)
+          this._defs.clear()
 
         return this
       }

@@ -4,5 +4,5 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<article class=\"panel-body\"></article>\r\n<article class=\"panel-float hidden\"></article>";
+  return "<article class=\"panel-body\"></article>\n<article class=\"panel-float hidden\"></article>";
   }; return Handlebars.template(TEMPLATE); });

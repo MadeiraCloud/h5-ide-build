@@ -170,15 +170,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\r\n    <div class=\"confirmSession\">\r\n        <div class=\"modal-text-major\">\r\n            <p>"
+  buffer += "<section class=\"invalid-session\" id=\"SessionDialog\">\n    <div class=\"confirmSession\">\n        <div class=\"modal-text-major\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ERROR", {hash:{},data:data}))
-    + "</p>\r\n            <p>"
+    + "</p>\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_ACTION", {hash:{},data:data}))
-    + "</p>\r\n        </div>\r\n        <div class=\"modal-text-minor\">"
+    + "</p>\n        </div>\n        <div class=\"modal-text-minor\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_INVALID_SESSION_WARNING", {hash:{},data:data}))
-    + "</div>\r\n    </div>\r\n    <div class=\"reconnectSession\" style=\"display:none;\">\r\n        <div class=\"modal-text-major\">"
+    + "</div>\n    </div>\n    <div class=\"reconnectSession\" style=\"display:none;\">\n        <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_PROVIDE_PASSWORD_TO_RECONNECT", {hash:{},data:data}))
-    + "</div>\r\n        <div class=\"modal-input\">\r\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\r\n        </div>\r\n    </div>\r\n</section>";
+    + "</div>\n        <div class=\"modal-input\">\n            <input type=\"password\" id=\"SessionPassword\" class=\"input\" placeholder=\"Password\" style=\"width:200px;\" autofocus>\n        </div>\n    </div>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -306,13 +306,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"complete-fullname\">\r\n    <div class=\"control-group fullname\">\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-firstname\" class=\"account-label\">"
+  buffer += "<div class=\"complete-fullname\">\n    <div class=\"control-group fullname\">\n        <div class=\"half-group\">\n            <label for=\"complete-firstname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "FIRST_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n        <div class=\"half-group\">\r\n            <label for=\"complete-lastname\" class=\"account-label\">"
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-firstname\" class=\"input\" type=\"text\"/>\n        </div>\n        <div class=\"half-group\">\n            <label for=\"complete-lastname\" class=\"account-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "LAST_NAME", {hash:{},data:data}))
-    + "</label>\r\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\r\n        </div>\r\n    </div>\r\n    <p class=\"information\">"
+    + "</label>\n            <input autocomplete=\"off\" id=\"complete-lastname\" class=\"input\" type=\"text\"/>\n        </div>\n    </div>\n    <p class=\"information\">"
     + escapeExpression(helpers.i18n.call(depth0, "YOU_CAN_LATER_UPDATE_PROFILE", {hash:{},data:data}))
-    + "</p>\r\n</div>";
+    + "</p>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -502,8 +502,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     KnownOpsModelClass = {};
     OpsModelType = {
       OpenStack: "OpenstackOps",
-      Amazon: "AwsOps",
-      Mesos: "Mesos"
+      Amazon: "AwsOps"
     };
     OpsModelState = {
       UnRun: 0,
@@ -564,7 +563,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
         this.__userTriggerAppProgress = false;
 
-        /* env:dev                                                                                                                                                                                                       env:dev:end */
+        /* env:dev                                                                                                                                                                                                     env:dev:end */
 
         /* env:debug */
         this.listenTo(this, "change:state", function() {
@@ -659,9 +658,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       getMsrId: function() {
         return this.get("importMsrId") || void 0;
       },
-      getMarathonStackId: function() {
-        return 'stack-334a97bd';
-      },
       getThumbnail: function() {
         return ThumbUtil.fetch(this.get("id"));
       },
@@ -674,8 +670,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
       },
       getJsonData: function() {
-        var base;
-        base = {
+        return {
           id: this.get("id") || "",
           name: this.get("name"),
           region: this.get("region"),
@@ -686,18 +681,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           description: this.get("description"),
           property: {
             stoppable: this.get("stoppable")
-          }
+          },
+          resource_diff: this.__jsonData.resource_diff,
+          component: this.__jsonData.component,
+          layout: this.__jsonData.layout,
+          agent: this.__jsonData.agent,
+          stack_id: this.__jsonData.stack_id
         };
-        if (this.__jsonData) {
-          return _.extend(base, {
-            resource_diff: this.__jsonData.resource_diff,
-            component: this.__jsonData.component,
-            layout: this.__jsonData.layout,
-            agent: this.__jsonData.agent,
-            stack_id: this.__jsonData.stack_id,
-            host: this.__jsonData.host
-          });
-        }
       },
       fetchJsonData: function() {
         return this.__fjdImport(this) || this.__fdjLocalInit(this) || this.__fjdStack(this) || this.__fjdApp(this);
@@ -830,8 +820,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           resource_diff: json.resource_diff,
           component: json.component,
           layout: json.layout,
-          agent: json.agent,
-          host: json.host
+          agent: json.agent
         };
         stoppable = ((_ref = json.property) != null ? _ref.stoppable : void 0) || true;
         this.set({
@@ -3444,30 +3433,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 /*
 ----------------------------
-  The Model for stack / app
-----------------------------
-
-  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
- */
-
-(function() {
-  define('ide/submodels/OpsModelMarathon',["OpsModel", "ApiRequest", "constant"], function(OpsModel, ApiRequest, constant) {
-    return OpsModel.extend({
-      type: OpsModel.Type.Mesos,
-      credential: function() {
-        return this.project().credentials().models[0];
-      },
-      getMsrId: function() {}
-    }, {
-      supportedProviders: ["docker::marathon"]
-    });
-  });
-
-}).call(this);
-
-
-/*
-----------------------------
   This is the core / entry point / controller of the whole IDE.
 ----------------------------
 
@@ -3476,7 +3441,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  */
 
 (function() {
-  define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./SceneManager", "ApiRequest", "i18n!/nls/lang.js", "UI.notification", "./submodels/OpsModelAws", "./submodels/OpsModelOs", "./submodels/OpsModelMarathon"], function(Websocket, ApplicationView, ApplicationModel, User, SceneManager, ApiRequest, lang) {
+  define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./SceneManager", "ApiRequest", "i18n!/nls/lang.js", "UI.notification", "./submodels/OpsModelAws", "./submodels/OpsModelOs"], function(Websocket, ApplicationView, ApplicationModel, User, SceneManager, ApiRequest, lang) {
     var VisualOps;
     VisualOps = function() {
       if (window.App) {

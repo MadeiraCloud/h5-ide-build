@@ -168,7 +168,7 @@
 /* property-newtwork-acl */
 
 .acl-rule-list.property-list li {
-	// width: 280px;
+	width: 280px;
 	padding: 0;
 
 	.acl-rule-number {
@@ -457,7 +457,7 @@
 /* General Style for Property Panel List */
 
 .property-list li {
-	// width         : 260px;
+	width         : 260px;
 	padding       : 10px;
 	border-bottom : 1px solid $bg-p;
 	background    : lighten($bg-p, 5%);
@@ -528,106 +528,4 @@
 
 }
 
-.container-settings {
-	.input-item{
-		margin-top: 20px;
-		min-height: 33px;
-		line-height: 33px;
 
-		&:first-child { margin-top: 0; }
-	}
-	.icon-add { padding-left: 3px; }
-	.icon-add::before { content: "\F13D"; }
-	.select3 { height: 33px; }
-	.privileged { margin-top: 16px; }
-	.multi-input, .titles { clear: both; }
-	.ipt-wrapper { display: flex; }
-	.ipt-wrapper input { margin: 0 5px; }
-	.multi-ipt-row:first-child:last-child .icon-del { display: block; }
-	.input-item .left { width: 115px; }
-	.titles span { display: inline-block; padding: 9px 7px; width: 215px; }
-	.port-mappings .titles span { width: 139px; }
-	.container {
-		position: absolute;
-		overflow: auto;
-		padding: 20px 30px;
-		top: 43px;
-		bottom: 60px;
-		left: 0;
-		right: 0;
-	}
-
-	.dl-vertical { margin: 10px 20px; }
-}
-
-.open-container {
-  margin: 10px auto;
-  display: block;
-  width: 80%;
-  padding: 10px 20px;
-  font-size: 15px;
-}
-
-.selection-command, .selection-arguments{
-  margin-top: 10px;
-}
-
-.mesos-envs{
-  input.input.mesos-env-key, input.input.mesos-env-value{
-    width: 114px!important;
-    display: inline-block;
-  }
-}
-
-.mesos-constraints{
-  .multi-ipt-row .ipt-wrapper input, .multi-ipt-row .ipt-wrapper select{
-    width: 78px!important;
-    display: inline-block;
-    height: 33px;
-  }
-  .multi-ipt-row .ipt-wrapper select{
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    padding: 0 5px;
-  }
-  .multi-ipt-row{
-    margin-top: 5px;
-  }
-  .multi-ipt-row .ipt-controls{
-    margin-right: 10px;
-  }
-}
-
-.mesos-health-check-item-remove {
-  position: absolute;
-  right: 0;
-  width: 32px;
-  height: 487px;
-  text-align: center;
-  line-height: 487px;
-  color: #555;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-left: 1px #313131 solid;
-  cursor: pointer;
-}
-
-.property-content #mesos-health-checks-list .elb-property-listener{
-  .property-control-group .input{
-    width: 210px;
-  }
-  .selectbox{
-    width: 240px;
-  }
-}
-.property-content #mesos-health-checks-list .elb-property-listener:only-child{
-  .mesos-health-check-item-remove {
-    display: none;
-  }
-  .property-control-group .input{
-    width: 230px;
-  }
-  .selectbox{
-    width: 260px;
-  }
-}
