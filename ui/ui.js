@@ -10314,9 +10314,12 @@ Date.parseFunctions={count:0};Date.parseRegexes=[];Date.formatFunctions={count:0
         }
         this.tpl.find(".modal-body").html(this.option.$template);
         this.setElement(this.tpl);
-        if (modals.length && modals[modals.length - 1].isMoving && this.option.force) {
+        this.isReady = false;
+        if (modals.length && !modals[modals.length - 1].isReady) {
           console.warn("Sorry, But we are moving...");
-          modals[modals.length - 1].nextOptions.push(this.option);
+          if (this.option.force) {
+            modals[modals.length - 1].nextOptions.push(this.option);
+          }
           return this;
         }
         this.tpl.appendTo(this.wrap);
@@ -10340,7 +10343,8 @@ Date.parseFunctions={count:0};Date.parseRegexes=[];Date.formatFunctions={count:0
             return self.tpl.addClass("bounce");
           });
           _.delay(function() {
-            return self.trigger("shown", this);
+            self.trigger("shown", this);
+            return self.isReady = true;
           }, 300);
         }
         _.delay(function() {
