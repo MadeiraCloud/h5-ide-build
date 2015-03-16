@@ -32634,7 +32634,8 @@ return TEMPLATE; });
             _results.push(compo.resource.DBSubnetGroupName = "");
             break;
           case 'AWS.RDS.OptionGroup':
-            _results.push(compo.resource.OptionGroupName = "");
+            compo.resource.OptionGroupName = "";
+            _results.push(compo.resource.CreatedBy = "");
             break;
         }
       }

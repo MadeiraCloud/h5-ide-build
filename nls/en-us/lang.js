@@ -1869,7 +1869,7 @@ define({
         "DBINSTANCE_READ_REPLICAS": "Read Replicas",
         "DBINSTANCE_REPLICAS_SOURCE": "Read Replicas Source",
         "DBINSTANCE_DBCONFIG": "Database Config",
-        "DATABASE_NAME": "Database Name",
+        "DATABASE_NAME": "DB instance name",
         "DBINSTANCE_PORT": "Database Port",
         "DBINSTANCE_OG": "Option Group",
         "DBINSTANCE_PG": "Parameter Group",

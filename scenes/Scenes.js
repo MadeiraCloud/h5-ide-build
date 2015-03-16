@@ -703,7 +703,7 @@ return TEMPLATE; });
         for (idx = _i = 0, _len = unread.length; _i < _len; idx = ++_i) {
           n = unread[idx];
           data.opsModel = n.target();
-          if (ws.isWorkingOn(data)) {
+          if (ws && ws.isWorkingOn(data)) {
             n.markAsRead();
             unread.splice(idx, 1);
             break;
