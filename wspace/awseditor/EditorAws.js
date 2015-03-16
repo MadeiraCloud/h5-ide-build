@@ -31202,11 +31202,17 @@ return TEMPLATE; });
     }, {
       handleTypes: constant.RESTYPE.DBOG,
       deserialize: function(data, layout_data, resolve) {
+        var createdBy;
+        if (Design.instance().modeIsStack()) {
+          createdBy = "";
+        } else {
+          createdBy = data.resource.CreatedBy;
+        }
         return new Model({
           id: data.uid,
           name: data.name,
           appId: data.resource.OptionGroupName,
-          createdBy: data.resource.CreatedBy,
+          createdBy: createdBy,
           engineName: data.resource.EngineName,
           engineVersion: data.resource.MajorEngineVersion,
           options: data.resource.Options,
