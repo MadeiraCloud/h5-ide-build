@@ -7009,8 +7009,8 @@ function program30(depth0,data) {
         if (elb.ListenerDescriptions) {
           $.each(elb.ListenerDescriptions, function(i, listener) {
             elb.listenerDisplay.push(listener);
-            if (listener.Listener.SSLCertificateId) {
-              listener.Listener.server_certificate = listener.Listener.SSLCertificateId.split('/')[1];
+            if (listener.Listener.SslcertificateId) {
+              listener.Listener.server_certificate = listener.Listener.SslcertificateId.split('/')[1];
               return null;
             }
           });
@@ -15957,14 +15957,11 @@ function program11(depth0,data) {
   buffer += "\n\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        <section class=\"property-control-group clearfix\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
-    + "</label>\n            <div>"
-    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </section>\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DATABASE_NAME", {hash:{},data:data}))
+  buffer += "\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
     + "</label>\n            <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\n            <input class=\"input\" type=\"text\" value=\""
@@ -16036,8 +16033,13 @@ function program16(depth0,data) {
 
 function program18(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PENDING_APPLY", {hash:{},data:data}));
+  var buffer = "", stack1;
+  buffer += "\n        <section class=\"property-control-group clearfix\">\n            <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
+    + "</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        ";
+  return buffer;
   }
 
 function program20(depth0,data) {
@@ -18330,8 +18332,9 @@ return TEMPLATE; });
         var $target, that, value;
         that = this;
         $target = $(event.currentTarget);
+        value = $target.val().toLowerCase();
+        $target.val(value);
         if (MC.aws.aws.checkResName(this.resModel.get('id'), $target, 'DBInstance')) {
-          value = $target.val().toLowerCase();
           $target.parsley('custom', function(val) {
             var errTip, max, min;
             val = val.toLowerCase();
