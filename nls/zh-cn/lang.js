@@ -440,6 +440,7 @@ define({
         "SETTINGS_ERR_CRED_VALIDATE": "您的证书验证失败。请保证其正确性，并至少拥有 AWS 的读权限。",
         "SETTINGS_ERR_CRED_UPDATE": "更新证书失败。",
         "SETTINGS_ERR_CRED_REMOVE": "移除证书失败。",
+        "CRED_REMOVE_FAILD_CAUSEDBY_EXIST_APP": "当前工作空间存在 App，如想继续请先移除这些 App。",
         "SETTINGS_ERR_PROJECT_REMOVE": "删除项目失败。",
         "SETTINGS_ERR_PROJECT_RENAME": "项目改名失败。",
         "SETTINGS_ERR_PROJECT_LEAVE": "离开项目失败。",

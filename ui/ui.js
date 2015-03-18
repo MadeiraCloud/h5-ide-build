@@ -10343,13 +10343,13 @@ Date.parseFunctions={count:0};Date.parseRegexes=[];Date.formatFunctions={count:0
             return self.tpl.addClass("bounce");
           });
           _.delay(function() {
-            self.trigger("shown", this);
-            return self.isReady = true;
+            return self.trigger("shown", this);
           }, 300);
         }
         _.delay(function() {
-          return self.resize();
-        }, 400);
+          self.resize();
+          return self.isReady = true;
+        }, 300);
         _.delay(function() {
           return self.nextOptions.forEach(function(option) {
             return new Modal(option);

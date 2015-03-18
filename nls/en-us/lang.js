@@ -440,6 +440,7 @@ define({
         "SETTINGS_ERR_CRED_VALIDATE": "Failed to validate the credential. <br> Make sure it is correct and at least has read access to AWS.",
         "SETTINGS_ERR_CRED_UPDATE": "Failed to update credential.",
         "SETTINGS_ERR_CRED_REMOVE": "Failed to remove credential.",
+        "CRED_REMOVE_FAILD_CAUSEDBY_EXIST_APP": "Cannot remove credential when there exist apps in workspace. Try to forget apps first.",
         "SETTINGS_ERR_PROJECT_REMOVE": "Failed to remove the workspace.",
         "SETTINGS_ERR_PROJECT_RENAME": "Failed to rename the workspace.",
         "SETTINGS_ERR_PROJECT_LEAVE": "Failed to leave the workspace.",

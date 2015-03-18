@@ -3379,7 +3379,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <li class=\"aws-credential\">\n            \n            <div class=\"credential-name\">";
+  buffer += "\n        <li class=\"aws-credential\">\n\n            <div class=\"credential-name\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDemo), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n            <div class=\"credential-describe\">\n                ";
@@ -3440,24 +3440,15 @@ function program15(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</li>\n                ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.needed), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </ul>\n            ";
-  return buffer;
-  }
-function program16(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n                <li class=\"delete-link icon-delete\" data-id="
+    + "</li>\n                <li class=\"delete-link icon-delete\" data-id="
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ">"
     + escapeExpression(helpers.i18n.call(depth0, "CFM_BTN_REMOVE", {hash:{},data:data}))
-    + "</li>\n                ";
+    + "</li>\n            </ul>\n            ";
   return buffer;
   }
 
-function program18(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <button class=\"btn btn-primary setup-credential\">"
@@ -3466,7 +3457,7 @@ function program18(depth0,data) {
   return buffer;
   }
 
-function program20(depth0,data) {
+function program19(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <div class=\"demo-note\">\n        "
@@ -3482,10 +3473,10 @@ function program20(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.credentials), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.addable), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.addable), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDemo), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDemo), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
   return buffer;
@@ -3581,9 +3572,6 @@ return TEMPLATE; });
           json.isAdmin = data.isAdmin;
           json.providerName = c.getProviderName();
           json.name = json.alias || json.providerName;
-          json.needed = applist.some(function(app) {
-            return (app != null ? app.get('provider') : void 0) === json.provider;
-          });
           if (json.isDemo) {
             data.hasDemo = true;
           }
@@ -3631,12 +3619,17 @@ return TEMPLATE; });
           var _ref;
           return (_ref = that.removeConfirmView) != null ? _ref.close() : void 0;
         }, function(error) {
-          var credName;
+          var credName, message;
+          if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
+            message = lang.IDE.CRED_REMOVE_FAILD_CAUSEDBY_EXIST_APP;
+          } else {
+            message = lang.IDE.SETTINGS_ERR_CRED_REMOVE;
+          }
           credName = credential.getProviderName();
           that.stopModalLoading(that.removeConfirmView, TplCredential.removeConfirm({
             name: credName
           }));
-          return that.showModalError(that.removeConfirmView, lang.IDE.SETTINGS_ERR_CRED_REMOVE);
+          return that.showModalError(that.removeConfirmView, message);
         });
       },
       showRemoveConfirmModel: function(e) {
