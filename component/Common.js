@@ -156,9 +156,12 @@ return TEMPLATE; });
         return this.modal.toggleFooter(true);
       },
       remove: function() {
-        var _ref;
-        if ((_ref = this.modal) != null) {
+        var _ref, _ref1;
+        if ((_ref = this.updateConfirmView) != null) {
           _ref.close();
+        }
+        if ((_ref1 = this.modal) != null) {
+          _ref1.close();
         }
         return Backbone.View.prototype.remove.apply(this, arguments);
       },
@@ -226,7 +229,8 @@ return TEMPLATE; });
           }
         });
         return this.updateConfirmView.on('confirm', function() {
-          return this.updateCredential(true);
+          this.updateCredential(true);
+          return this.updateConfirmView.close();
         }, this);
       },
       updateCredential: function(forceUpdate) {
