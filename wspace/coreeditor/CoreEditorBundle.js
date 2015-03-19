@@ -6116,6 +6116,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.view.toggleProcessing();
         if (!this.diff()) {
           this.view.canvas.update();
+          this.view.propertyPanel.refresh();
         }
       },
       loadVpcResource: function() {

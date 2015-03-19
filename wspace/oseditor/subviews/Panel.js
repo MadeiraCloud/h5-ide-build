@@ -154,6 +154,9 @@
         }
         return this.open(this.__currentPanel, args);
       },
+      refresh: function() {
+        return this.openCurrent.apply(this, arguments);
+      },
       __openOrHidePanel: function(e) {
         var targetPanelName;
         targetPanelName = $(e.currentTarget).attr('data-target');
