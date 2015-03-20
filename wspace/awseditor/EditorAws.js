@@ -34246,6 +34246,7 @@ return TEMPLATE; });
         this.listenTo(this.model, "change:volumeList", this.render);
         this.listenTo(this.model, "change:imageId", this.render);
         this.listenTo(this.canvas, "switchMode", this.render);
+        this.listenTo(this.canvas, "change:externalData", this.render);
         this.listenTo(this.model, "change:expandedList", function() {
           var self;
           self = this;
