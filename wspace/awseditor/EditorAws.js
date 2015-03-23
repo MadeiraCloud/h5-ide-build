@@ -1942,7 +1942,7 @@ function program35(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
     + "</label>\n      <div class=\"ranged-number-input\">\n          <label for=\"volume-size-ranged\"></label>\n          <input id=\"volume-size-ranged\" type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-property-ranged-number\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label>"
+    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"5\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-property-ranged-number\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE", {hash:{},data:data}))
     + "</label>\n      <div id=\"volume-type-radios\">\n\n      <div>\n      	<div class=\"radio\">\n          <input id=\"radio-standard\" type=\"radio\" name=\"volume-type\" ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isStandard), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
@@ -2170,10 +2170,11 @@ function program57(depth0,data) {
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('wspace/awseditor/property/instance/view',['../base/view', './template/stack', 'i18n!/nls/lang.js', 'constant', 'kp_dropdown'], function(PropertyView, template, lang, constant, kp) {
-    var InstanceView, noop;
+    var InstanceView, iopsMax, noop;
     noop = function() {
       return null;
     };
+    iopsMax = 20000;
     InstanceView = PropertyView.extend({
       events: {
         'change .instance-name': 'instanceNameChange',
@@ -2210,6 +2211,9 @@ function program57(depth0,data) {
         if (type === "io1") {
           volumeSize = parseInt($('#volume-size-ranged').val(), 10);
           iops = volumeSize * 10;
+          if (iops > iopsMax) {
+            iops = iopsMax;
+          }
           $("#iops-ranged").val(iops).keyup();
         } else {
           this.model.setIops("");
@@ -2266,7 +2270,7 @@ function program57(depth0,data) {
         me = this;
         $('#volume-size-ranged').parsley('custom', function(val) {
           val = +val;
-          if (!val || val > 1024 || val < me.model.attributes.min_volume_size) {
+          if (!val || val > 16384 || val < me.model.attributes.min_volume_size) {
             return sprintf(lang.PARSLEY.VOLUME_SIZE_OF_ROOTDEVICE_MUST_IN_RANGE, me.model.attributes.min_volume_size);
           }
         });
@@ -2274,7 +2278,7 @@ function program57(depth0,data) {
           var volume_size;
           val = +val;
           volume_size = parseInt($('#volume-size-ranged').val(), 10);
-          if (val > 4000 || val < 100) {
+          if (val > iopsMax || val < 100) {
             return lang.PARSLEY.IOPS_MUST_BETWEEN_100_4000;
           } else if (val > 10 * volume_size) {
             return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
@@ -5462,7 +5466,7 @@ function program20(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
     + "</label>\n        <div class=\"ranged-number-input\">\n            <label for=\"volume-size-ranged\"></label>\n            <input id=\"volume-size-ranged\" type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.volume_size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-required=\"true\" data-type=\"number\" ";
+    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"5\" data-required=\"true\" data-required=\"true\" data-type=\"number\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n        <label for=\"volume-property-ranged-number\" >GB</label>\n        </div>\n    </section>\n\n    ";
@@ -5514,7 +5518,8 @@ function program20(depth0,data) {
   }; return Handlebars.template(TEMPLATE); });
 (function() {
   define('wspace/awseditor/property/volume/view',['../base/view', './template/stack', 'event', 'i18n!/nls/lang.js'], function(PropertyView, template, ide_event, lang) {
-    var VolumeView;
+    var VolumeView, iopsMax;
+    iopsMax = 20000;
     VolumeView = PropertyView.extend({
       events: {
         'click #volume-type-radios input': 'volumeTypeChecked',
@@ -5531,7 +5536,7 @@ function program20(depth0,data) {
         }, this.model.toJSON())));
         $('#volume-size-ranged').parsley('custom', function(val) {
           val = +val;
-          if (!val || val > 1024 || val < 1) {
+          if (!val || val > 16384 || val < 1) {
             return lang.PARSLEY.VOLUME_SIZE_MUST_IN_1_1024;
           }
         });
@@ -5539,7 +5544,7 @@ function program20(depth0,data) {
           var volume_size;
           val = +val;
           volume_size = parseInt($('#volume-size-ranged').val(), 10);
-          if (val > 4000 || val < 100) {
+          if (val > iopsMax || val < 100) {
             return lang.PARSLEY.IOPS_MUST_BETWEEN_100_4000;
           } else if (val > 10 * volume_size) {
             return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
@@ -5548,14 +5553,20 @@ function program20(depth0,data) {
         return this.model.attributes.volume_detail.name;
       },
       volumeTypeChecked: function(event) {
-        var iops, type;
+        var iops, type, volumeSize;
         this.processIops();
         type = $('#volume-type-radios input:checked').val();
-        iops = type === 'io1' ? $('#iops-ranged').val() : '';
-        if (type !== 'io1') {
-          $('#iops-group').hide();
-        } else {
+        if (type === 'io1') {
           $('#iops-group').show();
+          volumeSize = parseInt($('#volume-size-ranged').val(), 10);
+          iops = volumeSize * 10;
+          if (iops > iopsMax) {
+            iops = iopsMax;
+          }
+          $("#iops-ranged").val(iops);
+        } else {
+          iops = '';
+          $('#iops-group').hide();
         }
         this.model.setVolumeType(type, iops);
         return this.sizeChanged();
