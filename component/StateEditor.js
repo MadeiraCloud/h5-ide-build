@@ -1,357 +1,105 @@
-(function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/stateeditor/model',['MC', 'constant', 'CloudResources', "Design", "ApiRequest", "OpsModel", 'backbone', 'jquery', 'underscore'], function(MC, constant, CloudResources, Design, ApiRequest, OpsModel) {
-    var StateEditorModel;
-    StateEditorModel = Backbone.Model.extend({
-      defaults: {
-        compData: null,
-        allCompData: null,
-        stateLogDataAry: []
-      },
-      initialize: function(options) {
-        var allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, compData, groupResSelectData, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, resId, resModel, resUID, stateModuel, that;
-        that = this;
-        resUID = options.resUID;
-        resModel = Design.instance().component(resUID);
-        if (!(resModel && resModel.serialize)) {
-          return;
+define('component/stateeditor/model',['MC', 'constant', 'CloudResources', "Design", "ApiRequest", "OpsModel", 'backbone', 'jquery', 'underscore'], function(MC, constant, CloudResources, Design, ApiRequest, OpsModel) {
+  var StateEditorModel;
+  StateEditorModel = Backbone.Model.extend({
+    defaults: {
+      compData: null,
+      allCompData: null,
+      stateLogDataAry: []
+    },
+    initialize: function(options) {
+      var allCompData, cmdAry, cmdModuleMap, cmdNameAry, cmdParaMap, cmdParaObjMap, compData, groupResSelectData, moduleCMDMap, moduleData, moduleDataObj, osPlatform, osPlatformDistro, platformInfo, resAttrDataAry, resId, resModel, resUID, stateModuel, that;
+      that = this;
+      resUID = options.resUID;
+      resModel = Design.instance().component(resUID);
+      if (!(resModel && resModel.serialize)) {
+        return;
+      }
+      resId = options.resId || resModel.get('appId');
+      allCompData = Design.instance().serialize().component;
+      compData = allCompData[resUID];
+      that.set({
+        resModel: resModel,
+        resId: resId,
+        compData: compData,
+        allCompData: allCompData
+      });
+      stateModuel = Design.instance().get('agent').module;
+      moduleDataObj = App.model.getStateModule(stateModuel.repo, stateModuel.tag);
+      platformInfo = that.getResPlatformInfo();
+      osPlatform = platformInfo.osPlatform;
+      osPlatformDistro = platformInfo.osPlatformDistro;
+      if (osPlatform === 'windows') {
+        that.set('isWindowsPlatform', true);
+      } else {
+        that.set('isWindowsPlatform', false);
+      }
+      if (osPlatformDistro === 'windows') {
+        that.set('isWindowsPlatform', true);
+      }
+      that.set('amiExist', platformInfo.amiExist);
+      if (osPlatformDistro) {
+        that.set('supportedPlatform', true);
+      } else {
+        that.set('supportedPlatform', false);
+      }
+      moduleData = {};
+      if (osPlatform === 'linux' || !osPlatformDistro) {
+        if (moduleDataObj.linux) {
+          moduleData = _.extend(moduleData, moduleDataObj.linux);
         }
-        resId = options.resId || resModel.get('appId');
-        allCompData = Design.instance().serialize().component;
-        compData = allCompData[resUID];
-        that.set({
-          resModel: resModel,
-          resId: resId,
-          compData: compData,
-          allCompData: allCompData
+      } else if (osPlatform === 'windows') {
+        if (moduleDataObj.windows) {
+          moduleData = _.extend(moduleData, moduleDataObj.windows);
+        }
+      }
+      if (moduleDataObj.common) {
+        moduleData = _.extend(moduleData, moduleDataObj.common);
+      }
+      if (moduleDataObj.meta) {
+        moduleData = _.extend(moduleData, moduleDataObj.meta);
+      }
+      cmdAry = [];
+      cmdParaMap = {};
+      cmdParaObjMap = {};
+      cmdModuleMap = {};
+      moduleCMDMap = {};
+      _.each(moduleData, function(cmdObj, cmdName) {
+        var cmdAllParaAry, cmdDistroAry, paraAryObj, supportCMD;
+        cmdDistroAry = cmdObj.distro;
+        supportCMD = false;
+        if (((!cmdDistroAry) || (cmdDistroAry && __indexOf.call(cmdDistroAry, osPlatformDistro) >= 0)) && osPlatform === 'linux') {
+          supportCMD = true;
+        }
+        if (!osPlatformDistro) {
+          supportCMD = true;
+        }
+        cmdObj.support = supportCMD;
+        cmdAry.push({
+          name: cmdName,
+          support: supportCMD
         });
-        stateModuel = Design.instance().get('agent').module;
-        moduleDataObj = App.model.getStateModule(stateModuel.repo, stateModuel.tag);
-        platformInfo = that.getResPlatformInfo();
-        osPlatform = platformInfo.osPlatform;
-        osPlatformDistro = platformInfo.osPlatformDistro;
-        if (osPlatform === 'windows') {
-          that.set('isWindowsPlatform', true);
-        } else {
-          that.set('isWindowsPlatform', false);
-        }
-        if (osPlatformDistro === 'windows') {
-          that.set('isWindowsPlatform', true);
-        }
-        that.set('amiExist', platformInfo.amiExist);
-        if (osPlatformDistro) {
-          that.set('supportedPlatform', true);
-        } else {
-          that.set('supportedPlatform', false);
-        }
-        moduleData = {};
-        if (osPlatform === 'linux' || !osPlatformDistro) {
-          if (moduleDataObj.linux) {
-            moduleData = _.extend(moduleData, moduleDataObj.linux);
-          }
-        } else if (osPlatform === 'windows') {
-          if (moduleDataObj.windows) {
-            moduleData = _.extend(moduleData, moduleDataObj.windows);
-          }
-        }
-        if (moduleDataObj.common) {
-          moduleData = _.extend(moduleData, moduleDataObj.common);
-        }
-        if (moduleDataObj.meta) {
-          moduleData = _.extend(moduleData, moduleDataObj.meta);
-        }
-        cmdAry = [];
-        cmdParaMap = {};
-        cmdParaObjMap = {};
-        cmdModuleMap = {};
-        moduleCMDMap = {};
-        _.each(moduleData, function(cmdObj, cmdName) {
-          var cmdAllParaAry, cmdDistroAry, paraAryObj, supportCMD;
-          cmdDistroAry = cmdObj.distro;
-          supportCMD = false;
-          if (((!cmdDistroAry) || (cmdDistroAry && __indexOf.call(cmdDistroAry, osPlatformDistro) >= 0)) && osPlatform === 'linux') {
-            supportCMD = true;
-          }
-          if (!osPlatformDistro) {
-            supportCMD = true;
-          }
-          cmdObj.support = supportCMD;
-          cmdAry.push({
-            name: cmdName,
-            support: supportCMD
-          });
-          paraAryObj = cmdObj.parameter;
-          cmdParaMap[cmdName] = [];
-          cmdParaObjMap[cmdName] = {};
-          cmdModuleMap[cmdName] = cmdObj;
-          moduleCMDMap[cmdObj.module] = cmdName;
-          _.each(paraAryObj, function(paraObj, paraName) {
-            var paraBuildObj;
-            paraBuildObj = _.extend(paraObj, {});
-            paraBuildObj.name = paraName;
-            paraBuildObj['type_' + paraBuildObj.type] = true;
-            cmdParaMap[cmdName].push(paraBuildObj);
-            cmdParaObjMap[cmdName][paraName] = paraBuildObj;
-            return null;
-          });
-          cmdAllParaAry = cmdParaMap[cmdName];
-          cmdParaMap[cmdName] = that.sortParaList(cmdAllParaAry, 'name');
+        paraAryObj = cmdObj.parameter;
+        cmdParaMap[cmdName] = [];
+        cmdParaObjMap[cmdName] = {};
+        cmdModuleMap[cmdName] = cmdObj;
+        moduleCMDMap[cmdObj.module] = cmdName;
+        _.each(paraAryObj, function(paraObj, paraName) {
+          var paraBuildObj;
+          paraBuildObj = _.extend(paraObj, {});
+          paraBuildObj.name = paraName;
+          paraBuildObj['type_' + paraBuildObj.type] = true;
+          cmdParaMap[cmdName].push(paraBuildObj);
+          cmdParaObjMap[cmdName][paraName] = paraBuildObj;
           return null;
         });
-        cmdNameAry = cmdAry.sort(function(val1, val2) {
-          if (val1.support === val2.support) {
-            if (val1.name > val2.name) {
-              return 1;
-            } else if (val1.name < val2.name) {
-              return -1;
-            } else {
-              return 0;
-            }
-          } else {
-            if (val1.support === true) {
-              return -1;
-            }
-            if (val2.support === true) {
-              return 1;
-            }
-          }
-        });
-        allCompData = that.get('allCompData');
-        that.set('cmdNameAry', cmdNameAry);
-        that.set('cmdParaMap', cmdParaMap);
-        that.set('cmdParaObjMap', cmdParaObjMap);
-        that.set('cmdModuleMap', cmdModuleMap);
-        that.set('moduleCMDMap', moduleCMDMap);
-        that.genStateRefList(allCompData);
-        resAttrDataAry = MC.aws.aws.genAttrRefList(compData, allCompData);
-        that.set('resAttrDataAry', resAttrDataAry);
-        that.genResAttrDataMap();
-        that.genAttrRefRegexList();
-        groupResSelectData = that.getGroupResSelectData();
-        that.set('groupResSelectData', groupResSelectData);
-        return that.set('currentState', Design.instance().mode());
-      },
-      genResAttrDataMap: function() {
-        var nameToUIDRefMap, resAttrDataAry, uidToNameRefMap;
-        nameToUIDRefMap = {};
-        uidToNameRefMap = {};
-        resAttrDataAry = this.get('resAttrDataAry');
-        _.each(resAttrDataAry, function(data) {
-          nameToUIDRefMap["@{" + data.name + "}"] = "@{" + data.uid + "}";
-          return uidToNameRefMap["@{" + data.uid + "}"] = "@{" + data.name + "}";
-        });
-        this.set('nameToUIDRefMap', nameToUIDRefMap);
-        return this.set('uidToNameRefMap', uidToNameRefMap);
-      },
-      sortParaList: function(cmdAllParaAry, paraName) {
-        var newCMDAllParaAry;
-        newCMDAllParaAry = cmdAllParaAry.sort(function(paraObj1, paraObj2) {
-          if (paraObj1.required === paraObj2.required) {
-            if (paraObj1[paraName] < paraObj2[paraName]) {
-              return -1;
-            } else {
-              return 1;
-            }
-          }
-          if (paraObj1.required) {
-            return -1;
-          }
-          if (paraObj2.required) {
-            return 1;
-          }
-        });
-        return newCMDAllParaAry;
-      },
-      getResPlatformInfo: function() {
-        var amiExist, cachedAmi, imageId, imageObj, isAWSAMI, layoutOSType, linuxDistroRange, osPlatform, osPlatformDistro, osType, resModel, that;
-        that = this;
-        resModel = that.get('resModel');
-        imageId = resModel.get('imageId');
-        isAWSAMI = true;
-        if (resModel.type === constant.RESTYPE.OSSERVER) {
-          isAWSAMI = false;
-        }
-        if (isAWSAMI) {
-          imageObj = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, Design.instance().region()).get(imageId);
-        } else {
-          imageObj = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
-        }
-        osPlatform = null;
-        osPlatformDistro = null;
-        amiExist = true;
-        layoutOSType = '';
-        cachedAmi = resModel.get('cachedAmi');
-        if (cachedAmi) {
-          layoutOSType = cachedAmi.osType;
-        }
-        if (imageObj) {
-          if (isAWSAMI) {
-            osType = imageObj.get('osType') || layoutOSType;
-          } else {
-            osType = imageObj.get('os_type');
-          }
-          linuxDistroRange = ['centos', 'redhat', 'ubuntu', 'rhel', 'debian', 'amazon', 'amaz'];
-          if (osType === 'windows') {
-            osPlatform = 'windows';
-          } else if (__indexOf.call(linuxDistroRange, osType) >= 0) {
-            osPlatform = 'linux';
-            osPlatformDistro = osType;
-          } else if (__indexOf.call(linuxDistroRange, layoutOSType) >= 0) {
-            osPlatform = 'linux';
-            osPlatformDistro = layoutOSType;
-          }
-        } else {
-          amiExist = false;
-        }
-        return {
-          osPlatform: osPlatform,
-          osPlatformDistro: osPlatformDistro,
-          amiExist: amiExist
-        };
-      },
-      updateAllStateRef: function(newOldStateIdMap) {
-        var allInstanceModel, allLCModel, cmdParaObjMap, dealFunc, moduleCMDMap, newOldStateIdRefMap, that;
-        that = this;
-        allInstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
-        allLCModel = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
-        newOldStateIdRefMap = {};
-        _.each(newOldStateIdMap, function(value, key) {
-          var newKey, newValue;
-          newKey = that.replaceParaNameToUID(key);
-          newValue = that.replaceParaNameToUID(value);
-          newOldStateIdRefMap[newKey] = newValue;
-          return null;
-        });
-        moduleCMDMap = that.get('moduleCMDMap');
-        cmdParaObjMap = that.get('cmdParaObjMap');
-        dealFunc = function(resModel) {
-          var compUID, stateObj;
-          stateObj = resModel.getStateData();
-          compUID = resModel.id;
-          if (stateObj && stateObj.length > 0) {
-            _.each(stateObj, function(stateItemObj) {
-              var cmdName, moduleName, paraModelObj, paraObj;
-              paraObj = stateItemObj.parameter;
-              moduleName = stateItemObj.module;
-              cmdName = moduleCMDMap[moduleName];
-              if (!cmdName) {
-                return;
-              }
-              paraModelObj = cmdParaObjMap[cmdName];
-              if (!paraModelObj) {
-                return;
-              }
-              _.each(paraObj, function(paraValue, paraName) {
-                var newParaValue, paraType;
-                paraType = paraModelObj[paraName].type;
-                if (paraType === 'state') {
-                  newParaValue = _.map(paraValue, function(stateRef) {
-                    if (newOldStateIdRefMap[stateRef]) {
-                      return newOldStateIdRefMap[stateRef];
-                    }
-                    return stateRef;
-                  });
-                  paraObj[paraName] = newParaValue;
-                }
-                return null;
-              });
-              return null;
-            });
-            resModel.setStateData(stateObj);
-          }
-          return null;
-        };
-        _.each(allInstanceModel, dealFunc);
-        _.each(allLCModel, dealFunc);
+        cmdAllParaAry = cmdParaMap[cmdName];
+        cmdParaMap[cmdName] = that.sortParaList(cmdAllParaAry, 'name');
         return null;
-      },
-      setStateData: function(stateData) {
-        var resModel, that;
-        that = this;
-        resModel = that.get('resModel');
-        return resModel.setStateData(stateData);
-      },
-      getStateData: function() {
-        var resModel, stateData, that;
-        that = this;
-        resModel = that.get('resModel');
-        if (!(resModel && resModel.getStateData)) {
-          return null;
-        }
-        stateData = resModel.getStateData();
-        if (_.isArray(stateData)) {
-          return stateData;
-        }
-        return null;
-      },
-      getResName: function() {
-        var compData, resName, that;
-        that = this;
-        resName = '';
-        compData = that.get('compData');
-        if (compData && compData.name) {
-          resName = compData.name;
-        }
-        if (compData.type === constant.RESTYPE.INSTANCE) {
-          if (compData.serverGroupUid === compData.uid) {
-            if (compData.serverGroupName) {
-              resName = compData.serverGroupName;
-            }
-          }
-        }
-        return resName;
-      },
-      genStateRefList: function(allCompData) {
-        var compData, compList, currentCompUID, moduleCMDMap, resStateDataAry, that;
-        that = this;
-        compList = _.values(allCompData);
-        resStateDataAry = [];
-        compData = that.get('compData');
-        currentCompUID = compData.uid;
-        moduleCMDMap = that.get('moduleCMDMap');
-        if (compList && !_.isEmpty(compList) && _.isArray(compList)) {
-          _.each(compList, function(compObj) {
-            var compName, compType, compUID, lcUID, stateAry;
-            compUID = compObj.uid;
-            compType = compObj.type;
-            compName = compObj.name;
-            if (currentCompUID === compUID) {
-              return;
-            }
-            if (compType === constant.RESTYPE.INSTANCE) {
-              if (compObj.index !== 0) {
-                return;
-              }
-              compName = compObj.serverGroupName;
-            }
-            if (compType === constant.RESTYPE.ASG) {
-              compName = compObj.name;
-              lcUID = MC.extractID(compObj.resource.LaunchConfigurationName);
-              if (lcUID) {
-                compObj = allCompData[lcUID];
-              }
-            }
-            stateAry = compObj.state;
-            if (stateAry && _.isArray(stateAry)) {
-              _.each(stateAry, function(stateObj, idx) {
-                var stateMeta, stateNumStr, stateRefStr;
-                if (stateObj.module !== 'meta.comment') {
-                  stateNumStr = String(idx + 1);
-                  stateRefStr = '{' + compName + '.state.' + stateNumStr + '}';
-                  stateMeta = moduleCMDMap[stateObj.module];
-                  return resStateDataAry.push({
-                    name: stateRefStr,
-                    value: stateRefStr,
-                    meta: stateMeta
-                  });
-                }
-              });
-            }
-            return null;
-          });
-        }
-        resStateDataAry = resStateDataAry.sort(function(val1, val2) {
+      });
+      cmdNameAry = cmdAry.sort(function(val1, val2) {
+        if (val1.support === val2.support) {
           if (val1.name > val2.name) {
             return 1;
           } else if (val1.name < val2.name) {
@@ -359,370 +107,619 @@
           } else {
             return 0;
           }
-        });
-        return that.set('resStateDataAry', resStateDataAry);
-      },
-      genAttrRefRegexList: function() {
-        var attrRefRegexList, resAttrDataAry, resAttrRegexStr, resStateDataAry, stateRefRegexList, that;
-        that = this;
-        attrRefRegexList = [];
-        resAttrDataAry = that.get('resAttrDataAry');
-        resStateDataAry = that.get('resStateDataAry');
-        if (!resAttrDataAry) {
-          resAttrDataAry = [];
+        } else {
+          if (val1.support === true) {
+            return -1;
+          }
+          if (val2.support === true) {
+            return 1;
+          }
         }
-        attrRefRegexList = _.map(resAttrDataAry, function(refObj) {
-          var regStr;
-          regStr = refObj.name.replace('{', '\\{').replace('}', '\\}').replace('.', '\\.').replace('[', '\\[').replace(']', '\\]');
-          return '@' + '{' + regStr + '}';
+      });
+      allCompData = that.get('allCompData');
+      that.set('cmdNameAry', cmdNameAry);
+      that.set('cmdParaMap', cmdParaMap);
+      that.set('cmdParaObjMap', cmdParaObjMap);
+      that.set('cmdModuleMap', cmdModuleMap);
+      that.set('moduleCMDMap', moduleCMDMap);
+      that.genStateRefList(allCompData);
+      resAttrDataAry = MC.aws.aws.genAttrRefList(compData, allCompData);
+      that.set('resAttrDataAry', resAttrDataAry);
+      that.genResAttrDataMap();
+      that.genAttrRefRegexList();
+      groupResSelectData = that.getGroupResSelectData();
+      that.set('groupResSelectData', groupResSelectData);
+      return that.set('currentState', Design.instance().mode());
+    },
+    genResAttrDataMap: function() {
+      var nameToUIDRefMap, resAttrDataAry, uidToNameRefMap;
+      nameToUIDRefMap = {};
+      uidToNameRefMap = {};
+      resAttrDataAry = this.get('resAttrDataAry');
+      _.each(resAttrDataAry, function(data) {
+        nameToUIDRefMap["@{" + data.name + "}"] = "@{" + data.uid + "}";
+        return uidToNameRefMap["@{" + data.uid + "}"] = "@{" + data.name + "}";
+      });
+      this.set('nameToUIDRefMap', nameToUIDRefMap);
+      return this.set('uidToNameRefMap', uidToNameRefMap);
+    },
+    sortParaList: function(cmdAllParaAry, paraName) {
+      var newCMDAllParaAry;
+      newCMDAllParaAry = cmdAllParaAry.sort(function(paraObj1, paraObj2) {
+        if (paraObj1.required === paraObj2.required) {
+          if (paraObj1[paraName] < paraObj2[paraName]) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }
+        if (paraObj1.required) {
+          return -1;
+        }
+        if (paraObj2.required) {
+          return 1;
+        }
+      });
+      return newCMDAllParaAry;
+    },
+    getResPlatformInfo: function() {
+      var amiExist, cachedAmi, imageId, imageObj, isAWSAMI, layoutOSType, linuxDistroRange, osPlatform, osPlatformDistro, osType, resModel, that;
+      that = this;
+      resModel = that.get('resModel');
+      imageId = resModel.get('imageId');
+      isAWSAMI = true;
+      if (resModel.type === constant.RESTYPE.OSSERVER) {
+        isAWSAMI = false;
+      }
+      if (isAWSAMI) {
+        imageObj = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, Design.instance().region()).get(imageId);
+      } else {
+        imageObj = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSIMAGE, Design.instance().region()).get(imageId);
+      }
+      osPlatform = null;
+      osPlatformDistro = null;
+      amiExist = true;
+      layoutOSType = '';
+      cachedAmi = resModel.get('cachedAmi');
+      if (cachedAmi) {
+        layoutOSType = cachedAmi.osType;
+      }
+      if (imageObj) {
+        if (isAWSAMI) {
+          osType = imageObj.get('osType') || layoutOSType;
+        } else {
+          osType = imageObj.get('os_type');
+        }
+        linuxDistroRange = ['centos', 'redhat', 'ubuntu', 'rhel', 'debian', 'amazon', 'amaz'];
+        if (osType === 'windows') {
+          osPlatform = 'windows';
+        } else if (__indexOf.call(linuxDistroRange, osType) >= 0) {
+          osPlatform = 'linux';
+          osPlatformDistro = osType;
+        } else if (__indexOf.call(linuxDistroRange, layoutOSType) >= 0) {
+          osPlatform = 'linux';
+          osPlatformDistro = layoutOSType;
+        }
+      } else {
+        amiExist = false;
+      }
+      return {
+        osPlatform: osPlatform,
+        osPlatformDistro: osPlatformDistro,
+        amiExist: amiExist
+      };
+    },
+    updateAllStateRef: function(newOldStateIdMap) {
+      var allInstanceModel, allLCModel, cmdParaObjMap, dealFunc, moduleCMDMap, newOldStateIdRefMap, that;
+      that = this;
+      allInstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE).allObjects();
+      allLCModel = Design.modelClassForType(constant.RESTYPE.LC).allObjects();
+      newOldStateIdRefMap = {};
+      _.each(newOldStateIdMap, function(value, key) {
+        var newKey, newValue;
+        newKey = that.replaceParaNameToUID(key);
+        newValue = that.replaceParaNameToUID(value);
+        newOldStateIdRefMap[newKey] = newValue;
+        return null;
+      });
+      moduleCMDMap = that.get('moduleCMDMap');
+      cmdParaObjMap = that.get('cmdParaObjMap');
+      dealFunc = function(resModel) {
+        var compUID, stateObj;
+        stateObj = resModel.getStateData();
+        compUID = resModel.id;
+        if (stateObj && stateObj.length > 0) {
+          _.each(stateObj, function(stateItemObj) {
+            var cmdName, moduleName, paraModelObj, paraObj;
+            paraObj = stateItemObj.parameter;
+            moduleName = stateItemObj.module;
+            cmdName = moduleCMDMap[moduleName];
+            if (!cmdName) {
+              return;
+            }
+            paraModelObj = cmdParaObjMap[cmdName];
+            if (!paraModelObj) {
+              return;
+            }
+            _.each(paraObj, function(paraValue, paraName) {
+              var newParaValue, paraType;
+              paraType = paraModelObj[paraName].type;
+              if (paraType === 'state') {
+                newParaValue = _.map(paraValue, function(stateRef) {
+                  if (newOldStateIdRefMap[stateRef]) {
+                    return newOldStateIdRefMap[stateRef];
+                  }
+                  return stateRef;
+                });
+                paraObj[paraName] = newParaValue;
+              }
+              return null;
+            });
+            return null;
+          });
+          resModel.setStateData(stateObj);
+        }
+        return null;
+      };
+      _.each(allInstanceModel, dealFunc);
+      _.each(allLCModel, dealFunc);
+      return null;
+    },
+    setStateData: function(stateData) {
+      var resModel, that;
+      that = this;
+      resModel = that.get('resModel');
+      return resModel.setStateData(stateData);
+    },
+    getStateData: function() {
+      var resModel, stateData, that;
+      that = this;
+      resModel = that.get('resModel');
+      if (!(resModel && resModel.getStateData)) {
+        return null;
+      }
+      stateData = resModel.getStateData();
+      if (_.isArray(stateData)) {
+        return stateData;
+      }
+      return null;
+    },
+    getResName: function() {
+      var compData, resName, that;
+      that = this;
+      resName = '';
+      compData = that.get('compData');
+      if (compData && compData.name) {
+        resName = compData.name;
+      }
+      if (compData.type === constant.RESTYPE.INSTANCE) {
+        if (compData.serverGroupUid === compData.uid) {
+          if (compData.serverGroupName) {
+            resName = compData.serverGroupName;
+          }
+        }
+      }
+      return resName;
+    },
+    genStateRefList: function(allCompData) {
+      var compData, compList, currentCompUID, moduleCMDMap, resStateDataAry, that;
+      that = this;
+      compList = _.values(allCompData);
+      resStateDataAry = [];
+      compData = that.get('compData');
+      currentCompUID = compData.uid;
+      moduleCMDMap = that.get('moduleCMDMap');
+      if (compList && !_.isEmpty(compList) && _.isArray(compList)) {
+        _.each(compList, function(compObj) {
+          var compName, compType, compUID, lcUID, stateAry;
+          compUID = compObj.uid;
+          compType = compObj.type;
+          compName = compObj.name;
+          if (currentCompUID === compUID) {
+            return;
+          }
+          if (compType === constant.RESTYPE.INSTANCE) {
+            if (compObj.index !== 0) {
+              return;
+            }
+            compName = compObj.serverGroupName;
+          }
+          if (compType === constant.RESTYPE.ASG) {
+            compName = compObj.name;
+            lcUID = MC.extractID(compObj.resource.LaunchConfigurationName);
+            if (lcUID) {
+              compObj = allCompData[lcUID];
+            }
+          }
+          stateAry = compObj.state;
+          if (stateAry && _.isArray(stateAry)) {
+            _.each(stateAry, function(stateObj, idx) {
+              var stateMeta, stateNumStr, stateRefStr;
+              if (stateObj.module !== 'meta.comment') {
+                stateNumStr = String(idx + 1);
+                stateRefStr = '{' + compName + '.state.' + stateNumStr + '}';
+                stateMeta = moduleCMDMap[stateObj.module];
+                return resStateDataAry.push({
+                  name: stateRefStr,
+                  value: stateRefStr,
+                  meta: stateMeta
+                });
+              }
+            });
+          }
+          return null;
         });
-        stateRefRegexList = _.map(resStateDataAry, function(refObj) {
-          var regStr;
-          regStr = refObj.name.replace('{', '\\{').replace('}', '\\}').replace('.', '\\.').replace('[', '\\[').replace(']', '\\]');
-          return '@' + regStr;
-        });
-        attrRefRegexList = attrRefRegexList.concat(stateRefRegexList);
-        resAttrRegexStr = attrRefRegexList.join('|');
-        return that.set('resAttrRegexStr', resAttrRegexStr);
-      },
-      replaceStateUIDToName: function(paraValue) {
-        var allCompData, compData, newParaValue, newRefStr, refMatchAry, refMatchStr, refRegex, resName, resUID, stateNum, stateNumMap, stateUID, that, uidMatchAry, uidRegex;
-        that = this;
-        allCompData = that.get('allCompData');
-        refRegex = /@\{([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})\.state\.state-([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})\}/g;
-        uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/g;
-        refMatchAry = paraValue.match(refRegex);
-        newParaValue = paraValue;
-        if (refMatchAry && refMatchAry.length) {
-          refMatchStr = refMatchAry[0];
+      }
+      resStateDataAry = resStateDataAry.sort(function(val1, val2) {
+        if (val1.name > val2.name) {
+          return 1;
+        } else if (val1.name < val2.name) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+      return that.set('resStateDataAry', resStateDataAry);
+    },
+    genAttrRefRegexList: function() {
+      var attrRefRegexList, resAttrDataAry, resAttrRegexStr, resStateDataAry, stateRefRegexList, that;
+      that = this;
+      attrRefRegexList = [];
+      resAttrDataAry = that.get('resAttrDataAry');
+      resStateDataAry = that.get('resStateDataAry');
+      if (!resAttrDataAry) {
+        resAttrDataAry = [];
+      }
+      attrRefRegexList = _.map(resAttrDataAry, function(refObj) {
+        var regStr;
+        regStr = refObj.name.replace('{', '\\{').replace('}', '\\}').replace('.', '\\.').replace('[', '\\[').replace(']', '\\]');
+        return '@' + '{' + regStr + '}';
+      });
+      stateRefRegexList = _.map(resStateDataAry, function(refObj) {
+        var regStr;
+        regStr = refObj.name.replace('{', '\\{').replace('}', '\\}').replace('.', '\\.').replace('[', '\\[').replace(']', '\\]');
+        return '@' + regStr;
+      });
+      attrRefRegexList = attrRefRegexList.concat(stateRefRegexList);
+      resAttrRegexStr = attrRefRegexList.join('|');
+      return that.set('resAttrRegexStr', resAttrRegexStr);
+    },
+    replaceStateUIDToName: function(paraValue) {
+      var allCompData, compData, newParaValue, newRefStr, refMatchAry, refMatchStr, refRegex, resName, resUID, stateNum, stateNumMap, stateUID, that, uidMatchAry, uidRegex;
+      that = this;
+      allCompData = that.get('allCompData');
+      refRegex = /@\{([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})\.state\.state-([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})\}/g;
+      uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/g;
+      refMatchAry = paraValue.match(refRegex);
+      newParaValue = paraValue;
+      if (refMatchAry && refMatchAry.length) {
+        refMatchStr = refMatchAry[0];
+        uidMatchAry = refMatchStr.match(uidRegex);
+        resUID = uidMatchAry[0];
+        stateUID = 'state-' + uidMatchAry[1];
+        compData = allCompData[resUID];
+        resName = 'unknown';
+        stateNum = 'unknown';
+        if (compData) {
+          stateNumMap = {};
+          resName = compData.name;
+          if (compData.type === constant.RESTYPE.INSTANCE) {
+            if (compData.number && compData.number > 1) {
+              resName = compData.serverGroupName;
+            }
+          }
+          if (compData.type === constant.RESTYPE.LC) {
+            _.each(allCompData, function(asgCompData) {
+              var lcUID, lcUIDRef;
+              if (asgCompData.type === constant.RESTYPE.ASG) {
+                lcUIDRef = asgCompData.resource.LaunchConfigurationName;
+                if (lcUIDRef) {
+                  lcUID = MC.extractID(lcUIDRef);
+                  if (lcUID === resUID) {
+                    resName = asgCompData.name;
+                  }
+                }
+              }
+              return null;
+            });
+          }
+          if (compData.state && _.isArray(compData.state)) {
+            _.each(compData.state, function(stateObj, idx) {
+              if (stateObj.id === stateUID) {
+                stateNum = idx + 1;
+              }
+              return null;
+            });
+          }
+        }
+        newRefStr = refMatchStr.replace(resUID, resName).replace(stateUID, stateNum);
+        newParaValue = newParaValue.replace(refMatchStr, newRefStr);
+      }
+      return newParaValue;
+    },
+    replaceStateNameToUID: function(paraValue) {
+      var allCompData, compData, lcCompData, lcUID, lcUIDRef, newParaValue, newUIDStr, refMatchAry, refMatchStr, refRegex, resName, resUID, stateNum, stateUID, that;
+      that = this;
+      allCompData = that.get('allCompData');
+      refRegex = /@\{([\w-]+)\.state\.\d+\}/g;
+      refMatchAry = paraValue.match(refRegex);
+      newParaValue = paraValue;
+      if (refMatchAry && refMatchAry.length) {
+        refMatchStr = refMatchAry[0];
+        resName = refMatchStr.replace('@{', '').split('.')[0];
+        resUID = that.getUIDByResName(resName);
+        stateNum = Number(refMatchStr.replace('}', '').split('.')[2]);
+        stateUID = '';
+        lcCompData = null;
+        if (resUID && _.isNumber(stateNum)) {
+          compData = allCompData[resUID];
+          if (compData.type === constant.RESTYPE.ASG) {
+            lcUIDRef = compData.resource.LaunchConfigurationName;
+            if (lcUIDRef) {
+              lcUID = MC.extractID(lcUIDRef);
+              resUID = lcUID;
+              lcCompData = allCompData[lcUID];
+            }
+          }
+          if (lcCompData) {
+            compData = lcCompData;
+          }
+          if (compData.state && _.isArray(compData.state) && compData.state[stateNum - 1]) {
+            stateUID = compData.state[stateNum - 1].id;
+          }
+        }
+        if (resUID && stateUID) {
+          newUIDStr = refMatchStr.replace(resName, resUID).replace('.state.' + stateNum, '.state.' + stateUID);
+          newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
+        }
+      }
+      return newParaValue;
+    },
+    replaceParaUIDToName: function(paraValue) {
+      var allCompData, currentCompUID, newParaValue, refMatchAry, refRegex, that, uidRegex;
+      that = this;
+      currentCompUID = that.get('compData').uid;
+      allCompData = that.get('allCompData');
+      refRegex = /@\{([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})(\.(\w+(\[\d+\])*))+\}/g;
+      uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/;
+      refMatchAry = paraValue.match(refRegex);
+      newParaValue = paraValue;
+      if (Design.instance().type() === OpsModel.Type.OpenStack) {
+        _.each(refMatchAry, function(refMatchStr) {
+          var newRefStr, resUID, uidMatchAry, uidToNameRefMap;
           uidMatchAry = refMatchStr.match(uidRegex);
           resUID = uidMatchAry[0];
-          stateUID = 'state-' + uidMatchAry[1];
+          uidToNameRefMap = that.get('uidToNameRefMap');
+          newRefStr = uidToNameRefMap[refMatchStr];
+          if (!newRefStr) {
+            newRefStr = refMatchStr.replace(resUID, 'unknown');
+          }
+          return newParaValue = newParaValue.replace(refMatchStr, newRefStr);
+        });
+      } else {
+        _.each(refMatchAry, function(refMatchStr) {
+          var compData, newRefStr, resName, resUID, uidMatchAry;
+          uidMatchAry = refMatchStr.match(uidRegex);
+          resUID = uidMatchAry[0];
           compData = allCompData[resUID];
-          resName = 'unknown';
-          stateNum = 'unknown';
           if (compData) {
-            stateNumMap = {};
             resName = compData.name;
             if (compData.type === constant.RESTYPE.INSTANCE) {
               if (compData.number && compData.number > 1) {
                 resName = compData.serverGroupName;
               }
             }
-            if (compData.type === constant.RESTYPE.LC) {
-              _.each(allCompData, function(asgCompData) {
-                var lcUID, lcUIDRef;
-                if (asgCompData.type === constant.RESTYPE.ASG) {
-                  lcUIDRef = asgCompData.resource.LaunchConfigurationName;
-                  if (lcUIDRef) {
-                    lcUID = MC.extractID(lcUIDRef);
-                    if (lcUID === resUID) {
-                      resName = asgCompData.name;
-                    }
-                  }
-                }
-                return null;
-              });
-            }
-            if (compData.state && _.isArray(compData.state)) {
-              _.each(compData.state, function(stateObj, idx) {
-                if (stateObj.id === stateUID) {
-                  stateNum = idx + 1;
-                }
-                return null;
-              });
-            }
+          } else {
+            resName = 'unknown';
           }
-          newRefStr = refMatchStr.replace(resUID, resName).replace(stateUID, stateNum);
+          newRefStr = refMatchStr.replace(resUID, resName);
           newParaValue = newParaValue.replace(refMatchStr, newRefStr);
-        }
-        return newParaValue;
-      },
-      replaceStateNameToUID: function(paraValue) {
-        var allCompData, compData, lcCompData, lcUID, lcUIDRef, newParaValue, newUIDStr, refMatchAry, refMatchStr, refRegex, resName, resUID, stateNum, stateUID, that;
-        that = this;
-        allCompData = that.get('allCompData');
-        refRegex = /@\{([\w-]+)\.state\.\d+\}/g;
-        refMatchAry = paraValue.match(refRegex);
-        newParaValue = paraValue;
-        if (refMatchAry && refMatchAry.length) {
-          refMatchStr = refMatchAry[0];
-          resName = refMatchStr.replace('@{', '').split('.')[0];
-          resUID = that.getUIDByResName(resName);
-          stateNum = Number(refMatchStr.replace('}', '').split('.')[2]);
-          stateUID = '';
-          lcCompData = null;
-          if (resUID && _.isNumber(stateNum)) {
-            compData = allCompData[resUID];
-            if (compData.type === constant.RESTYPE.ASG) {
-              lcUIDRef = compData.resource.LaunchConfigurationName;
-              if (lcUIDRef) {
-                lcUID = MC.extractID(lcUIDRef);
-                resUID = lcUID;
-                lcCompData = allCompData[lcUID];
-              }
-            }
-            if (lcCompData) {
-              compData = lcCompData;
-            }
-            if (compData.state && _.isArray(compData.state) && compData.state[stateNum - 1]) {
-              stateUID = compData.state[stateNum - 1].id;
-            }
-          }
-          if (resUID && stateUID) {
-            newUIDStr = refMatchStr.replace(resName, resUID).replace('.state.' + stateNum, '.state.' + stateUID);
-            newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
-          }
-        }
-        return newParaValue;
-      },
-      replaceParaUIDToName: function(paraValue) {
-        var allCompData, currentCompUID, newParaValue, refMatchAry, refRegex, that, uidRegex;
-        that = this;
-        currentCompUID = that.get('compData').uid;
-        allCompData = that.get('allCompData');
-        refRegex = /@\{([A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12})(\.(\w+(\[\d+\])*))+\}/g;
-        uidRegex = /[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}/;
-        refMatchAry = paraValue.match(refRegex);
-        newParaValue = paraValue;
-        if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          _.each(refMatchAry, function(refMatchStr) {
-            var newRefStr, resUID, uidMatchAry, uidToNameRefMap;
-            uidMatchAry = refMatchStr.match(uidRegex);
-            resUID = uidMatchAry[0];
-            uidToNameRefMap = that.get('uidToNameRefMap');
-            newRefStr = uidToNameRefMap[refMatchStr];
-            if (!newRefStr) {
-              newRefStr = refMatchStr.replace(resUID, 'unknown');
-            }
-            return newParaValue = newParaValue.replace(refMatchStr, newRefStr);
-          });
-        } else {
-          _.each(refMatchAry, function(refMatchStr) {
-            var compData, newRefStr, resName, resUID, uidMatchAry;
-            uidMatchAry = refMatchStr.match(uidRegex);
-            resUID = uidMatchAry[0];
-            compData = allCompData[resUID];
-            if (compData) {
-              resName = compData.name;
-              if (compData.type === constant.RESTYPE.INSTANCE) {
-                if (compData.number && compData.number > 1) {
-                  resName = compData.serverGroupName;
-                }
-              }
-            } else {
-              resName = 'unknown';
-            }
-            newRefStr = refMatchStr.replace(resUID, resName);
-            newParaValue = newParaValue.replace(refMatchStr, newRefStr);
-            return null;
-          });
-        }
-        return newParaValue;
-      },
-      replaceParaNameToUID: function(paraValue) {
-        var allCompData, newParaValue, refMatchAry, refRegex, that;
-        that = this;
-        allCompData = that.get('allCompData');
-        refRegex = constant.REGEXP.stateEditorOriginReference;
-        refMatchAry = paraValue.match(refRegex);
-        newParaValue = paraValue;
-        if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          _.each(refMatchAry, function(refMatchStr) {
-            var nameToUIDRefMap, newUIDStr, resName;
-            resName = refMatchStr.replace('@{', '').split('.')[0];
-            if (resName !== 'self') {
-              nameToUIDRefMap = that.get('nameToUIDRefMap');
-              newUIDStr = nameToUIDRefMap[refMatchStr];
-              if (newUIDStr) {
-                newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
-              }
-            }
-            return null;
-          });
-        } else {
-          _.each(refMatchAry, function(refMatchStr) {
-            var newUIDStr, resName, resUID;
-            resName = refMatchStr.replace('@{', '').split('.')[0];
-            if (resName !== 'self') {
-              resUID = that.getUIDByResName(resName);
-              if (resUID) {
-                newUIDStr = refMatchStr.replace(resName, resUID);
-                newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
-              }
-            }
-            return null;
-          });
-        }
-        return newParaValue;
-      },
-      getUIDByResName: function(resName) {
-        var allCompData, currentCompUID, resultUID, that;
-        that = this;
-        currentCompUID = that.get('compData').uid;
-        allCompData = that.get('allCompData');
-        resultUID = '';
-        $.each(allCompData, function(uid, resObj) {
-          if (resObj.type === constant.RESTYPE.INSTANCE) {
-            if (resObj.number && resObj.number > 1) {
-              if (resObj.serverGroupName === resName) {
-                resultUID = uid;
-                return false;
-              }
-            }
-          }
-          if (resObj.name === resName) {
-            resultUID = uid;
-          }
           return null;
         });
-        return resultUID;
-      },
-      getResState: function(resId) {
-        var resModel, resState, _ref;
-        if (Design.instance().type() === OpsModel.Type.Amazon) {
-          resModel = CloudResources(Design.instance().credentialId(), constant.RESTYPE.INSTANCE, Design.instance().region()).get(resId);
-          resState = 'unknown';
-          if (resModel) {
-            resState = (_ref = resModel.get('instanceState')) != null ? _ref.name : void 0;
-          }
-          return this.set('resState', resState);
-        } else {
-          resModel = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSSERVER, Design.instance().region()).get(resId);
-          resState = 'unknown';
-          if (resModel) {
-            resState = resModel.get('status');
-          }
-          return this.set('resState', resState);
-        }
-      },
-      genStateLogData: function(resId, callback) {
-        var agentStatus, appId, originStatusDataAry, resModel, stateDataAry, stateIdNumMap, that;
-        that = this;
-        appId = Design.instance().get('id');
-        if (!(appId && resId)) {
-          that.set('stateLogDataAry', []);
-          callback();
-          return;
-        }
-        resModel = that.get('resModel');
-        stateDataAry = resModel.getStateData();
-        stateIdNumMap = {};
-        originStatusDataAry = _.map(stateDataAry, function(stateObj, idx) {
-          stateIdNumMap[stateObj.id] = idx;
-          return {
-            id: stateObj.id,
-            result: 'pending'
-          };
-        });
-        agentStatus = 'pending';
-        return ApiRequest('state_log', {
-          app_id: appId,
-          res_id: resId
-        }).then(function(data) {
-          var logAry, statusDataAry, statusObj;
-          if (data) {
-            statusDataAry = data;
-            if (statusDataAry && statusDataAry[0]) {
-              statusObj = statusDataAry[0];
-              if (statusObj.agent_status) {
-                agentStatus = statusObj.agent_status;
-              }
-              logAry = statusObj.status;
-              if (logAry && _.isArray(logAry)) {
-                _.each(logAry, function(logObj) {
-                  var stateNum;
-                  stateNum = stateIdNumMap[logObj.id];
-                  if (_.isNumber(stateNum)) {
-                    originStatusDataAry[stateNum] = logObj;
-                  }
-                });
-              }
-            }
-            originStatusDataAry.unshift({
-              id: 'Agent',
-              result: agentStatus
-            });
-            that.set('stateLogDataAry', originStatusDataAry);
-            that.set('agentStatus', agentStatus);
-          }
-          if (callback) {
-            return callback();
-          }
-        }, function(err) {
-          if (callback) {
-            return callback();
-          }
-        });
-      },
-      getCurrentResUID: function() {
-        var compData, currentCompUID, that;
-        that = this;
-        compData = that.get('compData');
-        currentCompUID = compData.uid;
-        return currentCompUID;
-      },
-      getGroupResSelectData: function() {
-        var allCompData, compData, dataAry, originCompUID, originGroupUID, that;
-        that = this;
-        compData = that.get('compData');
-        allCompData = that.get('allCompData');
-        originGroupUID = '';
-        originCompUID = compData.uid;
-        if (compData.type === 'AWS.EC2.Instance') {
-          originGroupUID = compData.serverGroupUid;
-        }
-        dataAry = [];
-        _.each(allCompData, function(compObj) {
-          var asgName, compType, compUID, currentGroupUID, lsgUID, resId, resName;
-          compType = compObj.type;
-          compUID = compObj.uid;
-          if (compType === 'AWS.EC2.Instance' && compData.type === compType) {
-            currentGroupUID = compObj.serverGroupUid;
-            if (compUID === originCompUID) {
-              resId = compObj.resource.InstanceId;
-              resName = compObj.name;
-              dataAry.push({
-                res_id: resId,
-                res_name: resName
-              });
-            } else if (originGroupUID && currentGroupUID && compUID !== originGroupUID && currentGroupUID === originGroupUID) {
-              resId = compObj.resource.InstanceId;
-              dataAry.push({
-                res_id: resId,
-                res_name: compObj.name
-              });
-            }
-          }
-          if (compType === 'AWS.AutoScaling.Group' && compData.type === 'AWS.AutoScaling.LaunchConfiguration') {
-            asgName = compObj.resource.AutoScalingGroupName;
-            lsgUID = MC.extractID(compObj.resource.LaunchConfigurationName);
-            if (lsgUID === originCompUID) {
-              $.each(CloudResources(Design.instance().credentialId(), constant.RESTYPE.ASG, Design.instance().region()).toJSON(), function(idx, resObj) {
-                if (resObj && resObj.AutoScalingGroupName && resObj.Instances) {
-                  if (resObj.AutoScalingGroupName === asgName) {
-                    return $.each(resObj.Instances, function(idx, instanceObj) {
-                      var instanceId;
-                      instanceId = instanceObj.InstanceId;
-                      return dataAry.push({
-                        res_id: instanceId,
-                        res_name: instanceId
-                      });
-                    });
-                  }
-                }
-              });
-            }
-          }
-          return null;
-        });
-        return dataAry;
       }
-    });
-    return StateEditorModel;
+      return newParaValue;
+    },
+    replaceParaNameToUID: function(paraValue) {
+      var allCompData, newParaValue, refMatchAry, refRegex, that;
+      that = this;
+      allCompData = that.get('allCompData');
+      refRegex = constant.REGEXP.stateEditorOriginReference;
+      refMatchAry = paraValue.match(refRegex);
+      newParaValue = paraValue;
+      if (Design.instance().type() === OpsModel.Type.OpenStack) {
+        _.each(refMatchAry, function(refMatchStr) {
+          var nameToUIDRefMap, newUIDStr, resName;
+          resName = refMatchStr.replace('@{', '').split('.')[0];
+          if (resName !== 'self') {
+            nameToUIDRefMap = that.get('nameToUIDRefMap');
+            newUIDStr = nameToUIDRefMap[refMatchStr];
+            if (newUIDStr) {
+              newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
+            }
+          }
+          return null;
+        });
+      } else {
+        _.each(refMatchAry, function(refMatchStr) {
+          var newUIDStr, resName, resUID;
+          resName = refMatchStr.replace('@{', '').split('.')[0];
+          if (resName !== 'self') {
+            resUID = that.getUIDByResName(resName);
+            if (resUID) {
+              newUIDStr = refMatchStr.replace(resName, resUID);
+              newParaValue = newParaValue.replace(refMatchStr, newUIDStr);
+            }
+          }
+          return null;
+        });
+      }
+      return newParaValue;
+    },
+    getUIDByResName: function(resName) {
+      var allCompData, currentCompUID, resultUID, that;
+      that = this;
+      currentCompUID = that.get('compData').uid;
+      allCompData = that.get('allCompData');
+      resultUID = '';
+      $.each(allCompData, function(uid, resObj) {
+        if (resObj.type === constant.RESTYPE.INSTANCE) {
+          if (resObj.number && resObj.number > 1) {
+            if (resObj.serverGroupName === resName) {
+              resultUID = uid;
+              return false;
+            }
+          }
+        }
+        if (resObj.name === resName) {
+          resultUID = uid;
+        }
+        return null;
+      });
+      return resultUID;
+    },
+    getResState: function(resId) {
+      var resModel, resState, _ref;
+      if (Design.instance().type() === OpsModel.Type.Amazon) {
+        resModel = CloudResources(Design.instance().credentialId(), constant.RESTYPE.INSTANCE, Design.instance().region()).get(resId);
+        resState = 'unknown';
+        if (resModel) {
+          resState = (_ref = resModel.get('instanceState')) != null ? _ref.name : void 0;
+        }
+        return this.set('resState', resState);
+      } else {
+        resModel = CloudResources(Design.instance().credentialId(), constant.RESTYPE.OSSERVER, Design.instance().region()).get(resId);
+        resState = 'unknown';
+        if (resModel) {
+          resState = resModel.get('status');
+        }
+        return this.set('resState', resState);
+      }
+    },
+    genStateLogData: function(resId, callback) {
+      var agentStatus, appId, originStatusDataAry, resModel, stateDataAry, stateIdNumMap, that;
+      that = this;
+      appId = Design.instance().get('id');
+      if (!(appId && resId)) {
+        that.set('stateLogDataAry', []);
+        callback();
+        return;
+      }
+      resModel = that.get('resModel');
+      stateDataAry = resModel.getStateData();
+      stateIdNumMap = {};
+      originStatusDataAry = _.map(stateDataAry, function(stateObj, idx) {
+        stateIdNumMap[stateObj.id] = idx;
+        return {
+          id: stateObj.id,
+          result: 'pending'
+        };
+      });
+      agentStatus = 'pending';
+      return ApiRequest('state_log', {
+        app_id: appId,
+        res_id: resId
+      }).then(function(data) {
+        var logAry, statusDataAry, statusObj;
+        if (data) {
+          statusDataAry = data;
+          if (statusDataAry && statusDataAry[0]) {
+            statusObj = statusDataAry[0];
+            if (statusObj.agent_status) {
+              agentStatus = statusObj.agent_status;
+            }
+            logAry = statusObj.status;
+            if (logAry && _.isArray(logAry)) {
+              _.each(logAry, function(logObj) {
+                var stateNum;
+                stateNum = stateIdNumMap[logObj.id];
+                if (_.isNumber(stateNum)) {
+                  originStatusDataAry[stateNum] = logObj;
+                }
+              });
+            }
+          }
+          originStatusDataAry.unshift({
+            id: 'Agent',
+            result: agentStatus
+          });
+          that.set('stateLogDataAry', originStatusDataAry);
+          that.set('agentStatus', agentStatus);
+        }
+        if (callback) {
+          return callback();
+        }
+      }, function(err) {
+        if (callback) {
+          return callback();
+        }
+      });
+    },
+    getCurrentResUID: function() {
+      var compData, currentCompUID, that;
+      that = this;
+      compData = that.get('compData');
+      currentCompUID = compData.uid;
+      return currentCompUID;
+    },
+    getGroupResSelectData: function() {
+      var allCompData, compData, dataAry, originCompUID, originGroupUID, that;
+      that = this;
+      compData = that.get('compData');
+      allCompData = that.get('allCompData');
+      originGroupUID = '';
+      originCompUID = compData.uid;
+      if (compData.type === 'AWS.EC2.Instance') {
+        originGroupUID = compData.serverGroupUid;
+      }
+      dataAry = [];
+      _.each(allCompData, function(compObj) {
+        var asgName, compType, compUID, currentGroupUID, lsgUID, resId, resName;
+        compType = compObj.type;
+        compUID = compObj.uid;
+        if (compType === 'AWS.EC2.Instance' && compData.type === compType) {
+          currentGroupUID = compObj.serverGroupUid;
+          if (compUID === originCompUID) {
+            resId = compObj.resource.InstanceId;
+            resName = compObj.name;
+            dataAry.push({
+              res_id: resId,
+              res_name: resName
+            });
+          } else if (originGroupUID && currentGroupUID && compUID !== originGroupUID && currentGroupUID === originGroupUID) {
+            resId = compObj.resource.InstanceId;
+            dataAry.push({
+              res_id: resId,
+              res_name: compObj.name
+            });
+          }
+        }
+        if (compType === 'AWS.AutoScaling.Group' && compData.type === 'AWS.AutoScaling.LaunchConfiguration') {
+          asgName = compObj.resource.AutoScalingGroupName;
+          lsgUID = MC.extractID(compObj.resource.LaunchConfigurationName);
+          if (lsgUID === originCompUID) {
+            $.each(CloudResources(Design.instance().credentialId(), constant.RESTYPE.ASG, Design.instance().region()).toJSON(), function(idx, resObj) {
+              if (resObj && resObj.AutoScalingGroupName && resObj.Instances) {
+                if (resObj.AutoScalingGroupName === asgName) {
+                  return $.each(resObj.Instances, function(idx, instanceObj) {
+                    var instanceId;
+                    instanceId = instanceObj.InstanceId;
+                    return dataAry.push({
+                      res_id: instanceId,
+                      res_name: instanceId
+                    });
+                  });
+                }
+              }
+            });
+          }
+        }
+        return null;
+      });
+      return dataAry;
+    }
   });
-
-}).call(this);
+  return StateEditorModel;
+});
 
 define('component/stateeditor/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -1412,184 +1409,181 @@ TEMPLATE.stateTextExpandModal=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('component/stateeditor/validate',['Design', 'validation', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC', 'UI.errortip'], function(Design, validationTA, constant, lang) {
-    var Action, Helper, Message, Setup, TA, Validator, validate;
-    TA = validationTA.state;
-    Message = {};
-    Setup = {
-      before: function() {},
-      after: function() {}
-    };
-    Validator = {
-      command: function(val, param, elem, represent) {
-        var map;
-        val = Helper.trim(val);
-        map = param.dataMap;
-        if (!this.required(val)) {
-          return 'Command name is required.';
-        }
-        if (!this.stateAllowed(val, map)) {
-          return "Command \"" + val + "\" is not supported.";
-        }
-        return null;
-      },
-      parameter: function(val, param, elem, represent) {
-        var result, validateList;
-        validateList = ['required', 'type'];
-        result = null;
-        if (this[param.constraint.type]) {
-          result = this[param.constraint.type](val, param, elem, represent);
-        }
-        if (!result) {
-          result = this.componentExist(val);
-        }
-        return result;
-      },
-      dict: function(val, param, elem, represent) {
-        var result, subType;
-        subType = param.subType;
-        result = null;
-        if (param.constraint.required && subType === 'key' && !this.required(val)) {
-          result = 'dict key is required';
-        }
-        return result;
-      },
-      array: function(val, param, elem, represent) {
-        var result;
-        result = null;
-        if (param.constraint.required && !this.required(val)) {
-          result = 'array value is required';
-        }
-        return result;
-      },
-      line: function(val, param, elem, represent) {
-        var result;
-        result = null;
-        if (param.constraint.required && !this.required(val)) {
-          result = 'line value is required';
-        }
-        return result;
-      },
-      text: function(val, param, elem, represent) {
-        var result;
-        result = null;
-        if (param.constraint.required && !this.required(val)) {
-          result = 'text value is required';
-        } else {
-          result = this.componentExist(val);
-        }
-        return result;
-      },
-      bool: function(val, param, elem, represent) {
-        var result;
-        result = null;
-        if (param.constraint.required && !this.required(val)) {
-          result = 'line value is required';
-        } else if (!(this.isBool(val) || this.isStringBool(val, true))) {
-          result = "invalid boolean value: \"" + val + "\"";
-        }
-        return result;
-      },
-      componentExist: function(val) {
-        var inexsitCount, ref, refs, _i, _len;
-        refs = Helper.getRefName(val);
-        inexsitCount = 0;
-        for (_i = 0, _len = refs.length; _i < _len; _i++) {
-          ref = refs[_i];
-          if (!Helper.nameExist(ref.name)) {
-            inexsitCount++;
-          }
-        }
-        if (inexsitCount) {
-          return "Reference 'unknown' doesn't exist.";
-        }
-        return null;
-      },
-      required: function(val) {
-        return this.notnull(val) && this.notblank(val);
-      },
-      notnull: function(val) {
-        return val.length > 0;
-      },
-      notblank: function(val) {
-        return 'string' === typeof val && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
-      },
-      isBool: function(val) {
-        return _.isBoolean(val);
-      },
-      isStringBool: function(val, allowEmpty) {
-        return /^(true|false)$/i.test(val || allowEmpty && val === '');
-      },
-      stateAllowed: function(val, map) {
-        return __indexOf.call(Helper.getAllowCommands(map), val) >= 0;
+define('component/stateeditor/validate',['Design', 'validation', 'constant', 'i18n!/nls/lang.js', 'jquery', 'underscore', 'MC', 'UI.errortip'], function(Design, validationTA, constant, lang) {
+  var Action, Helper, Message, Setup, TA, Validator, validate;
+  TA = validationTA.state;
+  Message = {};
+  Setup = {
+    before: function() {},
+    after: function() {}
+  };
+  Validator = {
+    command: function(val, param, elem, represent) {
+      var map;
+      val = Helper.trim(val);
+      map = param.dataMap;
+      if (!this.required(val)) {
+        return 'Command name is required.';
       }
-    };
-    Helper = {
-      getAllowCommands: function(map) {
-        return _.keys(map);
-      },
-      trim: function(val) {
-        return $.trim(val);
-      },
-      nameExist: function(name) {
-        var allCompData, component, uid;
-        allCompData = Design.instance().serialize().component;
-        for (uid in allCompData) {
-          component = allCompData[uid];
-          if (component.name === name) {
-            return true;
-          }
-        }
-        return false;
-      },
-      getRefName: function(val) {
-        var reg, resArr, ret;
-        reg = constant.REGEXP.stateEditorOriginReference;
-        ret = [];
-        while ((resArr = reg.exec(val)) !== null) {
-          ret.push({
-            name: resArr[1],
-            ref: resArr[0]
-          });
-        }
-        return ret;
+      if (!this.stateAllowed(val, map)) {
+        return "Command \"" + val + "\" is not supported.";
       }
-    };
-    Action = {
-      displayError: function(msg, elem, represent) {
-        if (!errortip.hasError(elem)) {
-          errortip.createError(msg, elem);
-          return errortip.createError(msg, represent);
-        } else {
-          errortip.changeError(msg, elem);
-          return errortip.changeError(msg, represent);
-        }
-      },
-      clearError: function(elem, represent) {
-        if (errortip.hasError(elem)) {
-          errortip.removeError(elem);
-          return errortip.removeError(represent);
-        }
+      return null;
+    },
+    parameter: function(val, param, elem, represent) {
+      var result, validateList;
+      validateList = ['required', 'type'];
+      result = null;
+      if (this[param.constraint.type]) {
+        result = this[param.constraint.type](val, param, elem, represent);
       }
-    };
-    validate = function(value, param, elem, represent) {
-      var res;
-      res = Validator[param.type](value, param, elem, represent);
-      if (res) {
-        Action.displayError(res, elem, represent);
+      if (!result) {
+        result = this.componentExist(val);
+      }
+      return result;
+    },
+    dict: function(val, param, elem, represent) {
+      var result, subType;
+      subType = param.subType;
+      result = null;
+      if (param.constraint.required && subType === 'key' && !this.required(val)) {
+        result = 'dict key is required';
+      }
+      return result;
+    },
+    array: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'array value is required';
+      }
+      return result;
+    },
+    line: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'line value is required';
+      }
+      return result;
+    },
+    text: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'text value is required';
       } else {
-        Action.clearError(elem, represent);
+        result = this.componentExist(val);
       }
-      return res;
-    };
-    _.extend(validate, Setup);
-    return validate;
-  });
-
-}).call(this);
+      return result;
+    },
+    bool: function(val, param, elem, represent) {
+      var result;
+      result = null;
+      if (param.constraint.required && !this.required(val)) {
+        result = 'line value is required';
+      } else if (!(this.isBool(val) || this.isStringBool(val, true))) {
+        result = "invalid boolean value: \"" + val + "\"";
+      }
+      return result;
+    },
+    componentExist: function(val) {
+      var inexsitCount, ref, refs, _i, _len;
+      refs = Helper.getRefName(val);
+      inexsitCount = 0;
+      for (_i = 0, _len = refs.length; _i < _len; _i++) {
+        ref = refs[_i];
+        if (!Helper.nameExist(ref.name)) {
+          inexsitCount++;
+        }
+      }
+      if (inexsitCount) {
+        return "Reference 'unknown' doesn't exist.";
+      }
+      return null;
+    },
+    required: function(val) {
+      return this.notnull(val) && this.notblank(val);
+    },
+    notnull: function(val) {
+      return val.length > 0;
+    },
+    notblank: function(val) {
+      return 'string' === typeof val && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+    },
+    isBool: function(val) {
+      return _.isBoolean(val);
+    },
+    isStringBool: function(val, allowEmpty) {
+      return /^(true|false)$/i.test(val || allowEmpty && val === '');
+    },
+    stateAllowed: function(val, map) {
+      return __indexOf.call(Helper.getAllowCommands(map), val) >= 0;
+    }
+  };
+  Helper = {
+    getAllowCommands: function(map) {
+      return _.keys(map);
+    },
+    trim: function(val) {
+      return $.trim(val);
+    },
+    nameExist: function(name) {
+      var allCompData, component, uid;
+      allCompData = Design.instance().serialize().component;
+      for (uid in allCompData) {
+        component = allCompData[uid];
+        if (component.name === name) {
+          return true;
+        }
+      }
+      return false;
+    },
+    getRefName: function(val) {
+      var reg, resArr, ret;
+      reg = constant.REGEXP.stateEditorOriginReference;
+      ret = [];
+      while ((resArr = reg.exec(val)) !== null) {
+        ret.push({
+          name: resArr[1],
+          ref: resArr[0]
+        });
+      }
+      return ret;
+    }
+  };
+  Action = {
+    displayError: function(msg, elem, represent) {
+      if (!errortip.hasError(elem)) {
+        errortip.createError(msg, elem);
+        return errortip.createError(msg, represent);
+      } else {
+        errortip.changeError(msg, elem);
+        return errortip.changeError(msg, represent);
+      }
+    },
+    clearError: function(elem, represent) {
+      if (errortip.hasError(elem)) {
+        errortip.removeError(elem);
+        return errortip.removeError(represent);
+      }
+    }
+  };
+  validate = function(value, param, elem, represent) {
+    var res;
+    res = Validator[param.type](value, param, elem, represent);
+    if (res) {
+      Action.displayError(res, elem, represent);
+    } else {
+      Action.clearError(elem, represent);
+    }
+    return res;
+  };
+  _.extend(validate, Setup);
+  return validate;
+});
 
 
 define('component/stateeditor/lib/markdown',[], function(){
@@ -3009,1072 +3003,1950 @@ var Markdown = {};
 return Markdown;
 });
 
-(function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequest', 'ApiRequestOs', 'OpsModel', "UI.modalplus", 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest, ApiRequestOs, OpsModel, modalPlus) {
-    var StateClipboard, StateEditorView, id, tpl;
-    StateClipboard = [];
-    for (id in template) {
-      tpl = template[id];
-      Handlebars.registerPartial(id, tpl);
-    }
-    StateEditorView = Backbone.View.extend({
-      events: {
-        'closed': 'closedPopup',
-        'blur .parameter-item.dict .parameter-value': 'onDictInputBlur',
-        'keyup .parameter-item.dict .parameter-value': 'onDictInputChange',
-        'paste .parameter-item.dict .parameter-value': 'onDictInputChange',
-        'keyup .parameter-item.array .parameter-value': 'onArrayInputChange',
-        'paste .parameter-item.array .parameter-value': 'onArrayInputChange',
-        'keyup .parameter-item.state .parameter-value': 'onArrayInputChange',
-        'paste .parameter-item.state .parameter-value': 'onArrayInputChange',
-        'blur .parameter-item.array .parameter-value': 'onArrayInputBlur',
-        'blur .parameter-item.state .parameter-value': 'onArrayInputBlur',
-        'blur .command-value': 'onCommandInputBlur',
-        'focus .editable-area': 'onFocusInput',
-        'blur .editable-area': 'onBlurInput',
-        'click #state-toolbar-add': 'addStateItem',
-        'click #state-toolbar-copy-all': 'copyAllState',
-        'click #state-toolbar-copy': 'copyState',
-        'click #state-toolbar-delete': 'removeState',
-        'click #state-toolbar-paste': 'pasteState',
-        'click #state-toolbar-undo': 'onUndo',
-        'click #state-toolbar-redo': 'onRedo',
-        'click #state-toolbar-selectAll': 'onSelectAllClick',
-        'click .state-toolbar': 'onStateToolbarClick',
-        'click .state-toolbar .checkbox': 'checkboxSelect',
-        'click .state-toolbar .state-remove': 'onStateRemoveClick',
-        'click .state-save': 'onStateSaveClick',
-        'click .state-cancel': 'onStateCancelClick',
-        'click .state-close': 'onStateCancelClick',
-        'click .parameter-item .parameter-remove': 'onParaRemoveClick',
-        'click .state-desc-toggle': 'onDescToggleClick',
-        'click .state-log-toggle': 'onLogToggleClick',
-        'click .state-log-refresh': 'refreshStateLog',
-        'click .state-sys-log-btn': 'openSysLogModal',
-        'click .state-item-add': 'onStateItemAddClick',
-        'click .state-item-add-btn': 'onStateItemAddBtnClick',
-        'click #state-editor': 'onClickBlank',
-        'click .state-log-item-header': 'onStateLogItemHeaderClick',
-        'click .state-log-item .state-log-item-view-detail': 'onStateLogDetailBtnClick',
-        'keyup .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
-        'paste .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
-        'click .parameter-item .parameter-name': 'onParaNameClick',
-        'click .parameter-item .parameter-text-expand': 'onTextParaExpandClick',
-        'SWITCH_STATE': 'onSwitchState',
-        'EXPAND_STATE': 'onExpandState',
-        'COLLAPSE_STATE': 'onCollapseState',
-        'REMOVE_STATE': 'onRemoveState',
-        'ACE_TAB_SWITCH': 'aceTabSwitch',
-        'ACE_UTAB_SWITCH': 'aceUTabSwitch',
-        'SAVE_STATE': 'onStateSaveClick'
-      },
-      editorShow: false,
-      initialize: function(options) {
-        this.model = new Model({
-          resUID: options.uid
-        });
-        ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, this.onStateStatusUpdate, this);
-        return ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, this.onStateStatusUpdate, this);
-      },
-      initState: function() {
-        this.initData();
-        this.initUndoManager();
-        return $(document).on('keydown.stateEditor', {
-          target: this
-        }, this.keyEvent);
-      },
-      closedPopup: function() {
-        this.trigger('CLOSE_POPUP');
-        return $(document).off('keydown.stateEditor', this.keyEvent);
-      },
-      render: function() {
-        var resModel, that, _ref;
-        that = this;
-        resModel = this.model.get('resModel');
-        if (resModel) {
-          that.initState();
-        }
-        if (that.isWindowsPlatform) {
-          this.__renderEmpty('is_windows');
-          return that;
-        }
-        if (Design.instance().get('agent').enabled) {
-          if (resModel && ((_ref = resModel.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC || _ref === constant.RESTYPE.OSSERVER)) {
-            this.__renderState();
-          } else {
-            this.__renderEmpty();
-          }
+define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lang.js', 'component/stateeditor/template', 'component/stateeditor/validate', 'constant', 'component/stateeditor/lib/markdown', 'ApiRequest', 'ApiRequestOs', 'OpsModel', "UI.modalplus", 'UI.errortip'], function(Model, ide_event, lang, template, validate, constant, Markdown, ApiRequest, ApiRequestOs, OpsModel, modalPlus) {
+  var StateClipboard, StateEditorView, id, tpl;
+  StateClipboard = [];
+  for (id in template) {
+    tpl = template[id];
+    Handlebars.registerPartial(id, tpl);
+  }
+  StateEditorView = Backbone.View.extend({
+    events: {
+      'closed': 'closedPopup',
+      'blur .parameter-item.dict .parameter-value': 'onDictInputBlur',
+      'keyup .parameter-item.dict .parameter-value': 'onDictInputChange',
+      'paste .parameter-item.dict .parameter-value': 'onDictInputChange',
+      'keyup .parameter-item.array .parameter-value': 'onArrayInputChange',
+      'paste .parameter-item.array .parameter-value': 'onArrayInputChange',
+      'keyup .parameter-item.state .parameter-value': 'onArrayInputChange',
+      'paste .parameter-item.state .parameter-value': 'onArrayInputChange',
+      'blur .parameter-item.array .parameter-value': 'onArrayInputBlur',
+      'blur .parameter-item.state .parameter-value': 'onArrayInputBlur',
+      'blur .command-value': 'onCommandInputBlur',
+      'focus .editable-area': 'onFocusInput',
+      'blur .editable-area': 'onBlurInput',
+      'click #state-toolbar-add': 'addStateItem',
+      'click #state-toolbar-copy-all': 'copyAllState',
+      'click #state-toolbar-copy': 'copyState',
+      'click #state-toolbar-delete': 'removeState',
+      'click #state-toolbar-paste': 'pasteState',
+      'click #state-toolbar-undo': 'onUndo',
+      'click #state-toolbar-redo': 'onRedo',
+      'click #state-toolbar-selectAll': 'onSelectAllClick',
+      'click .state-toolbar': 'onStateToolbarClick',
+      'click .state-toolbar .checkbox': 'checkboxSelect',
+      'click .state-toolbar .state-remove': 'onStateRemoveClick',
+      'click .state-save': 'onStateSaveClick',
+      'click .state-cancel': 'onStateCancelClick',
+      'click .state-close': 'onStateCancelClick',
+      'click .parameter-item .parameter-remove': 'onParaRemoveClick',
+      'click .state-desc-toggle': 'onDescToggleClick',
+      'click .state-log-toggle': 'onLogToggleClick',
+      'click .state-log-refresh': 'refreshStateLog',
+      'click .state-sys-log-btn': 'openSysLogModal',
+      'click .state-item-add': 'onStateItemAddClick',
+      'click .state-item-add-btn': 'onStateItemAddBtnClick',
+      'click #state-editor': 'onClickBlank',
+      'click .state-log-item-header': 'onStateLogItemHeaderClick',
+      'click .state-log-item .state-log-item-view-detail': 'onStateLogDetailBtnClick',
+      'keyup .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
+      'paste .parameter-item.optional .parameter-value': 'onOptionalParaItemChange',
+      'click .parameter-item .parameter-name': 'onParaNameClick',
+      'click .parameter-item .parameter-text-expand': 'onTextParaExpandClick',
+      'SWITCH_STATE': 'onSwitchState',
+      'EXPAND_STATE': 'onExpandState',
+      'COLLAPSE_STATE': 'onCollapseState',
+      'REMOVE_STATE': 'onRemoveState',
+      'ACE_TAB_SWITCH': 'aceTabSwitch',
+      'ACE_UTAB_SWITCH': 'aceUTabSwitch',
+      'SAVE_STATE': 'onStateSaveClick'
+    },
+    editorShow: false,
+    initialize: function(options) {
+      this.model = new Model({
+        resUID: options.uid
+      });
+      ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, this.onStateStatusUpdate, this);
+      return ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, this.onStateStatusUpdate, this);
+    },
+    initState: function() {
+      this.initData();
+      this.initUndoManager();
+      return $(document).on('keydown.stateEditor', {
+        target: this
+      }, this.keyEvent);
+    },
+    closedPopup: function() {
+      this.trigger('CLOSE_POPUP');
+      return $(document).off('keydown.stateEditor', this.keyEvent);
+    },
+    render: function() {
+      var resModel, that, _ref;
+      that = this;
+      resModel = this.model.get('resModel');
+      if (resModel) {
+        that.initState();
+      }
+      if (that.isWindowsPlatform) {
+        this.__renderEmpty('is_windows');
+        return that;
+      }
+      if (Design.instance().get('agent').enabled) {
+        if (resModel && ((_ref = resModel.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC || _ref === constant.RESTYPE.OSSERVER)) {
+          this.__renderState();
         } else {
-          this.__renderEmpty('disalbed');
+          this.__renderEmpty();
         }
-        return this;
-      },
-      __renderEmpty: function(type) {
-        var tip, tipSet;
-        tipSet = {
-          disalbed: lang.IDE.STATE_TIP_VP_DISABLED,
-          "void": lang.IDE.STATE_TIP_NO_SE,
-          group: lang.IDE.STATE_TIP_GROUP,
-          "default": lang.IDE.STATE_TIP_DEFAULT,
-          group_in_app: lang.IDE.STATE_TIP_GROUP_IN_APP,
-          is_windows: lang.IDE.STATE_TIP_IS_WINDOWS
-        };
-        tip = type && tipSet[type] || tipSet["default"];
-        this.$el.html($.trim(template.stateEmptyTpl({
-          tip: tip
-        })));
-        this.editorShow = false;
-        return this;
-      },
-      renderStateCount: function() {
-        var count;
-        count = this.$stateList.find('.state-item').length;
-        return $('#OpsEditor').find('.sidebar-title a.state .state-count').text(count);
-      },
-      __renderState: function() {
-        var $aceAutocompleteTip, $logPanel, $logPanelRefresh, $logPanelToggle, $logSysBtn, $stateItemList, currentAppState, docMouseDownFunc, onPasteGistData, stateObj, that, _ref, _ref1;
-        this.editorShow = true;
-        that = this;
-        that.unloadEditor();
-        this.$el.html($.trim(template.editorModalTpl({
-          res_name: that.resName,
-          supported_platform: that.supportedPlatform,
-          current_state: that.currentState,
-          no_state: that.resNoState,
-          allow_add_state: ((_ref = that.currentState) === 'stack' || _ref === 'appedit')
-        })), false, null, {
-          opacity: 0.2,
-          conflict: 'loose'
-        });
-        that.$editorModal = that.$el;
-        that.$stateList = that.$editorModal.find('.state-list');
-        that.$stateLogList = that.$editorModal.find('.state-log-list');
-        that.$cmdDsec = that.$('#state-description');
-        that.$noStateContainer = that.$editorModal.find('.state-no-state-container');
-        that.$haveStateContainer = that.$editorModal.find('.state-have-state-container');
-        that.$stateGistPasteArea = this.$('#state-gist-paste-area');
-        if (that.resNoState) {
-          that.$haveStateContainer.hide();
-          that.$noStateContainer.show();
-        } else {
-          that.$haveStateContainer.show();
-          that.$noStateContainer.hide();
-        }
-        docMouseDownFunc = jQuery.proxy(that.onDocumentMouseDown, that);
-        $(document).off('mousedown', docMouseDownFunc).on('mousedown', docMouseDownFunc);
-        onPasteGistData = jQuery.proxy(that.onPasteGistData, that);
-        $(document).off('paste', onPasteGistData).on('paste', onPasteGistData);
-        that.$('#state-editor').on('scroll', function() {
-          return that.$('.ace_editor.ace_autocomplete').hide();
-        });
-        stateObj = that.loadStateData(that.originCompStateData);
-        that.refreshStateList(stateObj);
-        $stateItemList = that.$stateList.find('.state-item');
-        that.refreshStateViewList($stateItemList);
-        that.bindStateListSortEvent();
-        if (that.readOnlyMode) {
-          that.setEditorReadOnlyMode();
-        }
-        that.refreshDescription();
-        that.refreshStateLog();
-        if (that.isShowLogPanel) {
-          that.showLogPanel();
-        }
-        $logPanelToggle = that.$editorModal.find('.state-log-toggle');
-        $logPanelRefresh = that.$editorModal.find('.state-log-refresh');
-        $logSysBtn = that.$editorModal.find('.state-sys-log-btn');
-        $logPanel = $('#OpsEditor').find('#state-log');
-        if (that.currentState === 'stack') {
+      } else {
+        this.__renderEmpty('disalbed');
+      }
+      return this;
+    },
+    __renderEmpty: function(type) {
+      var tip, tipSet;
+      tipSet = {
+        disalbed: lang.IDE.STATE_TIP_VP_DISABLED,
+        "void": lang.IDE.STATE_TIP_NO_SE,
+        group: lang.IDE.STATE_TIP_GROUP,
+        "default": lang.IDE.STATE_TIP_DEFAULT,
+        group_in_app: lang.IDE.STATE_TIP_GROUP_IN_APP,
+        is_windows: lang.IDE.STATE_TIP_IS_WINDOWS
+      };
+      tip = type && tipSet[type] || tipSet["default"];
+      this.$el.html($.trim(template.stateEmptyTpl({
+        tip: tip
+      })));
+      this.editorShow = false;
+      return this;
+    },
+    renderStateCount: function() {
+      var count;
+      count = this.$stateList.find('.state-item').length;
+      return $('#OpsEditor').find('.sidebar-title a.state .state-count').text(count);
+    },
+    __renderState: function() {
+      var $aceAutocompleteTip, $logPanel, $logPanelRefresh, $logPanelToggle, $logSysBtn, $stateItemList, currentAppState, docMouseDownFunc, onPasteGistData, stateObj, that, _ref, _ref1;
+      this.editorShow = true;
+      that = this;
+      that.unloadEditor();
+      this.$el.html($.trim(template.editorModalTpl({
+        res_name: that.resName,
+        supported_platform: that.supportedPlatform,
+        current_state: that.currentState,
+        no_state: that.resNoState,
+        allow_add_state: ((_ref = that.currentState) === 'stack' || _ref === 'appedit')
+      })), false, null, {
+        opacity: 0.2,
+        conflict: 'loose'
+      });
+      that.$editorModal = that.$el;
+      that.$stateList = that.$editorModal.find('.state-list');
+      that.$stateLogList = that.$editorModal.find('.state-log-list');
+      that.$cmdDsec = that.$('#state-description');
+      that.$noStateContainer = that.$editorModal.find('.state-no-state-container');
+      that.$haveStateContainer = that.$editorModal.find('.state-have-state-container');
+      that.$stateGistPasteArea = this.$('#state-gist-paste-area');
+      if (that.resNoState) {
+        that.$haveStateContainer.hide();
+        that.$noStateContainer.show();
+      } else {
+        that.$haveStateContainer.show();
+        that.$noStateContainer.hide();
+      }
+      docMouseDownFunc = jQuery.proxy(that.onDocumentMouseDown, that);
+      $(document).off('mousedown', docMouseDownFunc).on('mousedown', docMouseDownFunc);
+      onPasteGistData = jQuery.proxy(that.onPasteGistData, that);
+      $(document).off('paste', onPasteGistData).on('paste', onPasteGistData);
+      that.$('#state-editor').on('scroll', function() {
+        return that.$('.ace_editor.ace_autocomplete').hide();
+      });
+      stateObj = that.loadStateData(that.originCompStateData);
+      that.refreshStateList(stateObj);
+      $stateItemList = that.$stateList.find('.state-item');
+      that.refreshStateViewList($stateItemList);
+      that.bindStateListSortEvent();
+      if (that.readOnlyMode) {
+        that.setEditorReadOnlyMode();
+      }
+      that.refreshDescription();
+      that.refreshStateLog();
+      if (that.isShowLogPanel) {
+        that.showLogPanel();
+      }
+      $logPanelToggle = that.$editorModal.find('.state-log-toggle');
+      $logPanelRefresh = that.$editorModal.find('.state-log-refresh');
+      $logSysBtn = that.$editorModal.find('.state-sys-log-btn');
+      $logPanel = $('#OpsEditor').find('#state-log');
+      if (that.currentState === 'stack') {
+        $logPanelToggle.hide();
+      } else if ((_ref1 = that.currentState) === 'app') {
+        currentAppState = Design.instance().get('state');
+        if (currentAppState === 'Stopped') {
           $logPanelToggle.hide();
-        } else if ((_ref1 = that.currentState) === 'app') {
-          currentAppState = Design.instance().get('state');
-          if (currentAppState === 'Stopped') {
-            $logPanelToggle.hide();
-            $logPanelRefresh.hide();
-            if (!that.currentResId) {
-              $logSysBtn.hide();
-            }
-          } else {
-            setTimeout(function() {
-              return that.onLogToggleClick();
-            }, 0);
+          $logPanelRefresh.hide();
+          if (!that.currentResId) {
+            $logSysBtn.hide();
           }
+        } else {
+          setTimeout(function() {
+            return that.onLogToggleClick();
+          }, 0);
         }
-        $aceAutocompleteTip = $('#OpsEditor').find('.ace_autocomplete_tip');
-        if (!$aceAutocompleteTip.length) {
-          $('#OpsEditor').find('body').append('<div class="ace_autocomplete_tip">No result matches the input</div>');
-        }
-        that.$aceAutocompleteTip = $('#OpsEditor').find('.ace_autocomplete_tip');
-        that.updateToolbar();
-        return this;
-      },
-      initData: function() {
-        var that;
-        that = this;
-        that.cmdNameAry = that.model.get('cmdNameAry');
-        that.cmdParaMap = that.model.get('cmdParaMap');
-        that.cmdParaObjMap = that.model.get('cmdParaObjMap');
-        that.cmdModuleMap = that.model.get('cmdModuleMap');
-        that.moduleCMDMap = that.model.get('moduleCMDMap');
-        that.langTools = ace.require('ace/ext/language_tools');
-        that.Tokenizer = ace.require("ace/tokenizer").Tokenizer;
-        that.resAttrDataAry = that.model.get('resAttrDataAry');
-        that.resStateDataAry = that.model.get('resStateDataAry');
-        that.groupResSelectData = that.model.get('groupResSelectData');
-        that.originCompStateData = that.model.getStateData();
-        that.resName = that.model.getResName();
-        that.supportedPlatform = that.model.get('supportedPlatform');
-        that.amiExist = that.model.get('amiExist');
-        that.isWindowsPlatform = that.model.get('isWindowsPlatform');
-        that.currentResId = that.model.get('resId');
-        that.currentState = that.model.get('currentState');
-        that.resAttrRegexStr = that.model.get('resAttrRegexStr');
-        that.markdownConvert = new Markdown.Converter();
-        that.generalTip = lang.IDE.STATE_HELP_INTRO_LBL;
-        that.resNoState = true;
-        if (that.originCompStateData && _.isArray(that.originCompStateData) && that.originCompStateData.length) {
-          that.resNoState = false;
-        }
-        if (that.currentState === 'app') {
-          that.readOnlyMode = true;
-          that.isShowLogPanel = true;
-          that.setEditorAppModel();
-        }
-        if (that.currentState === 'appedit') {
-          that.readOnlyMode = false;
-          that.isShowLogPanel = true;
-          return that.setEditorAppModel();
-        } else if (that.currentState === 'stack') {
-          that.readOnlyMode = false;
-          return that.isShowLogPanel = false;
-        }
-      },
-      setEditorAppModel: function() {
-        var that;
-        that = this;
-        if ((!that.currentResId) && that.groupResSelectData && that.groupResSelectData[0]) {
-          that.currentResId = that.groupResSelectData[0].res_id;
-        }
-        if (!that.currentResId) {
-          that.isShowLogPanel = false;
-        }
-        return null;
-      },
-      genStateUID: function() {
-        return 'state-' + MC.guid();
-      },
-      bindStateListSortEvent: function() {
-        var that;
-        that = this;
-        return that.$stateList.dragsort({
-          itemSelector: '.state-item',
-          dragSelector: '.state-drag',
-          dragBetween: true,
-          placeHolderTemplate: '<div class="state-item state-placeholder"></div>',
-          dragStart: function(stateItem) {
-            var $stateItem;
-            $stateItem = $(stateItem);
-            return that.collapseItem($stateItem);
-          },
-          dragEnd: function(stateItem, oldIndex) {
-            var $stateItem, newIndex, stateId;
-            $stateItem = $(stateItem);
-            newIndex = $stateItem.index();
-            stateId = $stateItem.attr('data-id');
-            if (oldIndex !== newIndex) {
-              that.undoManager.register(stateId, oldIndex, 'sort', newIndex);
-            }
-            return that.refreshLogItemNum();
-          }
-        });
-      },
-      refreshStateLog: function(event) {
-        var $loadText, $logPanel, selectedResId, that;
-        that = this;
-        selectedResId = that.currentResId;
-        that.showLogListLoading(true);
-        that.model.getResState(selectedResId);
-        if (!that.isLoadingLogList) {
-          $logPanel = $('#OpsEditor').find('#state-log');
-          $loadText = $logPanel.find('.state-log-loading');
-          $loadText.text('Refresh...');
-          that.isLoadingLogList = true;
-          that.model.genStateLogData(selectedResId, function() {
-            that.refreshStateLogList();
-            that.showLogListLoading(false);
-            return that.isLoadingLogList = false;
-          });
-          if (that.logRefreshTimer) {
-            clearTimeout(that.logRefreshTimer);
-          }
-          return that.logRefreshTimer = setTimeout(function() {
-            if (that.isLoadingLogList) {
-              return $loadText.text('Request log info timeout, please try again');
-            }
-          }, 5000);
-        }
-      },
-      refreshStateList: function(stateListObj) {
-        var $stateItems, that;
-        that = this;
-        if (!(stateListObj && stateListObj.state_list.length)) {
-          stateListObj = {
-            state_list: []
-          };
-        }
-        that.$stateList.html($.trim(template.stateListTpl(stateListObj)));
-        return $stateItems = that.$stateList.find('.state-item');
-      },
-      refreshStateViewList: function($stateItemList) {
-        var $lastArrayInputListAry, $lastDictInputList, $lastInputListAry, $lastStateInputListAry, that;
-        that = this;
-        _.each($stateItemList, function(stateItem) {
+      }
+      $aceAutocompleteTip = $('#OpsEditor').find('.ace_autocomplete_tip');
+      if (!$aceAutocompleteTip.length) {
+        $('#OpsEditor').find('body').append('<div class="ace_autocomplete_tip">No result matches the input</div>');
+      }
+      that.$aceAutocompleteTip = $('#OpsEditor').find('.ace_autocomplete_tip');
+      that.updateToolbar();
+      return this;
+    },
+    initData: function() {
+      var that;
+      that = this;
+      that.cmdNameAry = that.model.get('cmdNameAry');
+      that.cmdParaMap = that.model.get('cmdParaMap');
+      that.cmdParaObjMap = that.model.get('cmdParaObjMap');
+      that.cmdModuleMap = that.model.get('cmdModuleMap');
+      that.moduleCMDMap = that.model.get('moduleCMDMap');
+      that.langTools = ace.require('ace/ext/language_tools');
+      that.Tokenizer = ace.require("ace/tokenizer").Tokenizer;
+      that.resAttrDataAry = that.model.get('resAttrDataAry');
+      that.resStateDataAry = that.model.get('resStateDataAry');
+      that.groupResSelectData = that.model.get('groupResSelectData');
+      that.originCompStateData = that.model.getStateData();
+      that.resName = that.model.getResName();
+      that.supportedPlatform = that.model.get('supportedPlatform');
+      that.amiExist = that.model.get('amiExist');
+      that.isWindowsPlatform = that.model.get('isWindowsPlatform');
+      that.currentResId = that.model.get('resId');
+      that.currentState = that.model.get('currentState');
+      that.resAttrRegexStr = that.model.get('resAttrRegexStr');
+      that.markdownConvert = new Markdown.Converter();
+      that.generalTip = lang.IDE.STATE_HELP_INTRO_LBL;
+      that.resNoState = true;
+      if (that.originCompStateData && _.isArray(that.originCompStateData) && that.originCompStateData.length) {
+        that.resNoState = false;
+      }
+      if (that.currentState === 'app') {
+        that.readOnlyMode = true;
+        that.isShowLogPanel = true;
+        that.setEditorAppModel();
+      }
+      if (that.currentState === 'appedit') {
+        that.readOnlyMode = false;
+        that.isShowLogPanel = true;
+        return that.setEditorAppModel();
+      } else if (that.currentState === 'stack') {
+        that.readOnlyMode = false;
+        return that.isShowLogPanel = false;
+      }
+    },
+    setEditorAppModel: function() {
+      var that;
+      that = this;
+      if ((!that.currentResId) && that.groupResSelectData && that.groupResSelectData[0]) {
+        that.currentResId = that.groupResSelectData[0].res_id;
+      }
+      if (!that.currentResId) {
+        that.isShowLogPanel = false;
+      }
+      return null;
+    },
+    genStateUID: function() {
+      return 'state-' + MC.guid();
+    },
+    bindStateListSortEvent: function() {
+      var that;
+      that = this;
+      return that.$stateList.dragsort({
+        itemSelector: '.state-item',
+        dragSelector: '.state-drag',
+        dragBetween: true,
+        placeHolderTemplate: '<div class="state-item state-placeholder"></div>',
+        dragStart: function(stateItem) {
           var $stateItem;
           $stateItem = $(stateItem);
-          that.refreshStateView($stateItem);
-          return null;
-        });
-        if (!that.readOnlyMode) {
-          $lastDictInputList = $stateItemList.find('.parameter-item.dict .parameter-dict-item .key');
-          _.each($lastDictInputList, function(lastDictInput) {
-            return that.onDictInputChange({
-              currentTarget: lastDictInput
-            }, true);
-          });
-          $lastArrayInputListAry = $stateItemList.find('.parameter-item.array .parameter-value').toArray();
-          $lastStateInputListAry = $stateItemList.find('.parameter-item.state .parameter-value').toArray();
-          $lastInputListAry = $lastArrayInputListAry.concat($lastStateInputListAry);
-          return _.each($lastInputListAry, function(lastInput) {
-            return that.onArrayInputChange({
-              currentTarget: lastInput
-            }, true);
-          });
-        }
-      },
-      refreshStateView: function($stateItem) {
-        var $cmdValueElem, $cmdViewValueElem, $paraItemList, $paraListElem, $paraViewListElem, cmdName, cmdValue, currentParaMap, mustShowPara, paraListViewRenderAry, that;
-        that = this;
-        cmdName = $stateItem.attr('data-command');
-        currentParaMap = that.cmdParaObjMap[cmdName];
-        $cmdViewValueElem = $stateItem.find('.command-view-value');
-        $paraListElem = $stateItem.find('.parameter-list');
-        $paraViewListElem = $stateItem.find('.parameter-view-list');
-        $paraItemList = $paraListElem.find('.parameter-item');
-        $cmdValueElem = $stateItem.find('.state-edit .command-value');
-        cmdValue = that.getPlainText($cmdValueElem);
-        $cmdViewValueElem.text(cmdValue);
-        paraListViewRenderAry = [];
-        mustShowPara = true;
-        _.each(currentParaMap, function(paraObj) {
-          if (paraObj.visible) {
-            mustShowPara = false;
-          }
-          return null;
-        });
-        _.each($paraItemList, function(paraItemElem) {
-          var $paraDictItems, $paraItem, $valueInput, $valueInputs, paraName, paraNoVisible, paraObj, paraType, paraValue, paraValueAry, valueValue, viewRenderObj;
-          $paraItem = $(paraItemElem);
-          paraName = $paraItem.attr('data-para-name');
-          paraObj = currentParaMap[paraName];
-          paraType = paraObj.type;
-          paraName = paraObj.name;
-          paraNoVisible = true;
-          if (mustShowPara) {
-            paraNoVisible = false;
-          } else {
-            if (paraObj.visible) {
-              if (paraObj.required) {
-                paraNoVisible = false;
-              } else {
-                if (!$paraItem.hasClass('disabled')) {
-                  paraNoVisible = false;
-                }
-              }
-            }
-          }
-          viewRenderObj = {
-            para_name: paraName,
-            para_no_visible: paraNoVisible
-          };
-          viewRenderObj['type_' + paraType] = true;
-          paraValue = '';
-          if (paraType === 'dict') {
-            $paraDictItems = $paraItem.find('.parameter-dict-item');
-            paraValueAry = [];
-            _.each($paraDictItems, function(paraDictItem) {
-              var $keyInput, $paraDictItem, $valueInput, keyValue, valueValue;
-              $paraDictItem = $(paraDictItem);
-              $keyInput = $paraDictItem.find('.key');
-              $valueInput = $paraDictItem.find('.value');
-              keyValue = that.getPlainText($keyInput);
-              valueValue = that.getPlainText($valueInput);
-              if (keyValue && valueValue) {
-                paraValueAry.push(keyValue + ':' + valueValue);
-              }
-              if (keyValue && !valueValue) {
-                paraValueAry.push(keyValue);
-              }
-              return null;
-            });
-            paraValue = paraValueAry.join(', ');
-          } else if (paraType === 'array' || paraType === 'state') {
-            $valueInputs = $paraItem.find('.parameter-value');
-            paraValueAry = [];
-            _.each($valueInputs, function(valueInput) {
-              var $valueInput, valueValue;
-              $valueInput = $(valueInput);
-              valueValue = that.getPlainText($valueInput);
-              if (valueValue) {
-                return paraValueAry.push(valueValue);
-              }
-            });
-            paraValue = paraValueAry.join(', ');
-          } else if (paraType === 'line' || paraType === 'text' || paraType === 'bool' || paraType === 'state') {
-            $valueInput = $paraItem.find('.parameter-value');
-            valueValue = that.getPlainText($valueInput);
-            paraValue = valueValue;
-            if (paraType === 'bool') {
-              if (paraValue === 'true') {
-                paraValue = paraName;
-              } else {
-                viewRenderObj.para_no_visible = true;
-              }
-            }
-          }
-          viewRenderObj.para_value = paraValue;
-          if (paraValue) {
-            paraListViewRenderAry.push(viewRenderObj);
-          }
-          return null;
-        });
-        return $paraViewListElem.html($.trim(template.paraViewListTpl({
-          parameter_view_list: paraListViewRenderAry
-        })));
-      },
-      bindStateListEvent: function($stateItems) {
-        var that;
-        that = this;
-        return _.each($stateItems, function(stateItem) {
-          var $cmdValueItem, $stateItem;
+          return that.collapseItem($stateItem);
+        },
+        dragEnd: function(stateItem, oldIndex) {
+          var $stateItem, newIndex, stateId;
           $stateItem = $(stateItem);
-          $cmdValueItem = $stateItem.find('.command-value');
-          that.bindCommandEvent($cmdValueItem);
-          return null;
-        });
-      },
-      bindCommandEvent: function($cmdValueItem) {
-        var cmdNameAry, that;
-        that = this;
-        cmdNameAry = that.cmdNameAry;
-        cmdNameAry = _.map(cmdNameAry, function(value, i) {
-          var metaStr;
-          metaStr = '';
-          if (value.support === false) {
-            metaStr = 'not supported';
+          newIndex = $stateItem.index();
+          stateId = $stateItem.attr('data-id');
+          if (oldIndex !== newIndex) {
+            that.undoManager.register(stateId, oldIndex, 'sort', newIndex);
           }
-          return {
-            'name': value.name,
-            'value': value.name,
-            'meta': metaStr,
-            'support': value.support
-          };
+          return that.refreshLogItemNum();
+        }
+      });
+    },
+    refreshStateLog: function(event) {
+      var $loadText, $logPanel, selectedResId, that;
+      that = this;
+      selectedResId = that.currentResId;
+      that.showLogListLoading(true);
+      that.model.getResState(selectedResId);
+      if (!that.isLoadingLogList) {
+        $logPanel = $('#OpsEditor').find('#state-log');
+        $loadText = $logPanel.find('.state-log-loading');
+        $loadText.text('Refresh...');
+        that.isLoadingLogList = true;
+        that.model.genStateLogData(selectedResId, function() {
+          that.refreshStateLogList();
+          that.showLogListLoading(false);
+          return that.isLoadingLogList = false;
         });
-        return that.initCodeEditor($cmdValueItem[0], {
-          focus: cmdNameAry
+        if (that.logRefreshTimer) {
+          clearTimeout(that.logRefreshTimer);
+        }
+        return that.logRefreshTimer = setTimeout(function() {
+          if (that.isLoadingLogList) {
+            return $loadText.text('Request log info timeout, please try again');
+          }
+        }, 5000);
+      }
+    },
+    refreshStateList: function(stateListObj) {
+      var $stateItems, that;
+      that = this;
+      if (!(stateListObj && stateListObj.state_list.length)) {
+        stateListObj = {
+          state_list: []
+        };
+      }
+      that.$stateList.html($.trim(template.stateListTpl(stateListObj)));
+      return $stateItems = that.$stateList.find('.state-item');
+    },
+    refreshStateViewList: function($stateItemList) {
+      var $lastArrayInputListAry, $lastDictInputList, $lastInputListAry, $lastStateInputListAry, that;
+      that = this;
+      _.each($stateItemList, function(stateItem) {
+        var $stateItem;
+        $stateItem = $(stateItem);
+        that.refreshStateView($stateItem);
+        return null;
+      });
+      if (!that.readOnlyMode) {
+        $lastDictInputList = $stateItemList.find('.parameter-item.dict .parameter-dict-item .key');
+        _.each($lastDictInputList, function(lastDictInput) {
+          return that.onDictInputChange({
+            currentTarget: lastDictInput
+          }, true);
         });
-      },
-      bindParaListEvent: function($paraListElem, currentCMD) {
-        var that;
-        that = this;
-        return setTimeout(function() {
-          var $paraItemList, currentParaMap;
-          $paraItemList = $paraListElem.find('.parameter-item');
-          currentParaMap = that.cmdParaObjMap[currentCMD];
-          return _.each($paraItemList, function(paraItem) {
-            var $paraItem, currentParaName, paraObj;
-            $paraItem = $(paraItem);
-            currentParaName = $paraItem.attr('data-para-name');
-            paraObj = currentParaMap[currentParaName];
-            that.bindParaItemEvent($paraItem, paraObj);
+        $lastArrayInputListAry = $stateItemList.find('.parameter-item.array .parameter-value').toArray();
+        $lastStateInputListAry = $stateItemList.find('.parameter-item.state .parameter-value').toArray();
+        $lastInputListAry = $lastArrayInputListAry.concat($lastStateInputListAry);
+        return _.each($lastInputListAry, function(lastInput) {
+          return that.onArrayInputChange({
+            currentTarget: lastInput
+          }, true);
+        });
+      }
+    },
+    refreshStateView: function($stateItem) {
+      var $cmdValueElem, $cmdViewValueElem, $paraItemList, $paraListElem, $paraViewListElem, cmdName, cmdValue, currentParaMap, mustShowPara, paraListViewRenderAry, that;
+      that = this;
+      cmdName = $stateItem.attr('data-command');
+      currentParaMap = that.cmdParaObjMap[cmdName];
+      $cmdViewValueElem = $stateItem.find('.command-view-value');
+      $paraListElem = $stateItem.find('.parameter-list');
+      $paraViewListElem = $stateItem.find('.parameter-view-list');
+      $paraItemList = $paraListElem.find('.parameter-item');
+      $cmdValueElem = $stateItem.find('.state-edit .command-value');
+      cmdValue = that.getPlainText($cmdValueElem);
+      $cmdViewValueElem.text(cmdValue);
+      paraListViewRenderAry = [];
+      mustShowPara = true;
+      _.each(currentParaMap, function(paraObj) {
+        if (paraObj.visible) {
+          mustShowPara = false;
+        }
+        return null;
+      });
+      _.each($paraItemList, function(paraItemElem) {
+        var $paraDictItems, $paraItem, $valueInput, $valueInputs, paraName, paraNoVisible, paraObj, paraType, paraValue, paraValueAry, valueValue, viewRenderObj;
+        $paraItem = $(paraItemElem);
+        paraName = $paraItem.attr('data-para-name');
+        paraObj = currentParaMap[paraName];
+        paraType = paraObj.type;
+        paraName = paraObj.name;
+        paraNoVisible = true;
+        if (mustShowPara) {
+          paraNoVisible = false;
+        } else {
+          if (paraObj.visible) {
+            if (paraObj.required) {
+              paraNoVisible = false;
+            } else {
+              if (!$paraItem.hasClass('disabled')) {
+                paraNoVisible = false;
+              }
+            }
+          }
+        }
+        viewRenderObj = {
+          para_name: paraName,
+          para_no_visible: paraNoVisible
+        };
+        viewRenderObj['type_' + paraType] = true;
+        paraValue = '';
+        if (paraType === 'dict') {
+          $paraDictItems = $paraItem.find('.parameter-dict-item');
+          paraValueAry = [];
+          _.each($paraDictItems, function(paraDictItem) {
+            var $keyInput, $paraDictItem, $valueInput, keyValue, valueValue;
+            $paraDictItem = $(paraDictItem);
+            $keyInput = $paraDictItem.find('.key');
+            $valueInput = $paraDictItem.find('.value');
+            keyValue = that.getPlainText($keyInput);
+            valueValue = that.getPlainText($valueInput);
+            if (keyValue && valueValue) {
+              paraValueAry.push(keyValue + ':' + valueValue);
+            }
+            if (keyValue && !valueValue) {
+              paraValueAry.push(keyValue);
+            }
             return null;
           });
-        }, 0);
-      },
-      bindParaItemEvent: function($paraItem, paraObj) {
-        var $commentStateItem, $firstInput, $inputElem, $inputElemAry, firstEditor, haveAtDataAry, paraOption, paraOptionAry, paraType, that;
-        that = this;
-        paraType = paraObj.type;
-        paraOption = paraObj.option;
-        paraOptionAry = null;
-        if (paraOption) {
-          if (_.isString(paraOption)) {
-            paraOptionAry = [paraOption];
-          } else if (_.isArray(paraOption)) {
-            paraOptionAry = paraOption;
-          }
-          paraOptionAry = _.map(paraOptionAry, function(valueStr) {
-            return {
-              name: valueStr,
-              value: valueStr
-            };
+          paraValue = paraValueAry.join(', ');
+        } else if (paraType === 'array' || paraType === 'state') {
+          $valueInputs = $paraItem.find('.parameter-value');
+          paraValueAry = [];
+          _.each($valueInputs, function(valueInput) {
+            var $valueInput, valueValue;
+            $valueInput = $(valueInput);
+            valueValue = that.getPlainText($valueInput);
+            if (valueValue) {
+              return paraValueAry.push(valueValue);
+            }
           });
+          paraValue = paraValueAry.join(', ');
+        } else if (paraType === 'line' || paraType === 'text' || paraType === 'bool' || paraType === 'state') {
+          $valueInput = $paraItem.find('.parameter-value');
+          valueValue = that.getPlainText($valueInput);
+          paraValue = valueValue;
+          if (paraType === 'bool') {
+            if (paraValue === 'true') {
+              paraValue = paraName;
+            } else {
+              viewRenderObj.para_no_visible = true;
+            }
+          }
         }
-        if (paraType === 'dict') {
-          return _.each($paraItem, function(paraDictItem) {
-            var $keyInputs, $paraDictItem, $valueInputs;
-            $paraDictItem = $(paraDictItem);
-            $keyInputs = $paraDictItem.find('.key');
-            $valueInputs = $paraDictItem.find('.value');
-            _.each($keyInputs, function(keyInput) {
-              return that.initCodeEditor(keyInput, {});
-            });
-            return _.each($valueInputs, function(valueInput) {
-              return that.initCodeEditor(valueInput, {
-                focus: paraOptionAry,
-                at: that.resAttrDataAry
-              });
-            });
+        viewRenderObj.para_value = paraValue;
+        if (paraValue) {
+          paraListViewRenderAry.push(viewRenderObj);
+        }
+        return null;
+      });
+      return $paraViewListElem.html($.trim(template.paraViewListTpl({
+        parameter_view_list: paraListViewRenderAry
+      })));
+    },
+    bindStateListEvent: function($stateItems) {
+      var that;
+      that = this;
+      return _.each($stateItems, function(stateItem) {
+        var $cmdValueItem, $stateItem;
+        $stateItem = $(stateItem);
+        $cmdValueItem = $stateItem.find('.command-value');
+        that.bindCommandEvent($cmdValueItem);
+        return null;
+      });
+    },
+    bindCommandEvent: function($cmdValueItem) {
+      var cmdNameAry, that;
+      that = this;
+      cmdNameAry = that.cmdNameAry;
+      cmdNameAry = _.map(cmdNameAry, function(value, i) {
+        var metaStr;
+        metaStr = '';
+        if (value.support === false) {
+          metaStr = 'not supported';
+        }
+        return {
+          'name': value.name,
+          'value': value.name,
+          'meta': metaStr,
+          'support': value.support
+        };
+      });
+      return that.initCodeEditor($cmdValueItem[0], {
+        focus: cmdNameAry
+      });
+    },
+    bindParaListEvent: function($paraListElem, currentCMD) {
+      var that;
+      that = this;
+      return setTimeout(function() {
+        var $paraItemList, currentParaMap;
+        $paraItemList = $paraListElem.find('.parameter-item');
+        currentParaMap = that.cmdParaObjMap[currentCMD];
+        return _.each($paraItemList, function(paraItem) {
+          var $paraItem, currentParaName, paraObj;
+          $paraItem = $(paraItem);
+          currentParaName = $paraItem.attr('data-para-name');
+          paraObj = currentParaMap[currentParaName];
+          that.bindParaItemEvent($paraItem, paraObj);
+          return null;
+        });
+      }, 0);
+    },
+    bindParaItemEvent: function($paraItem, paraObj) {
+      var $commentStateItem, $firstInput, $inputElem, $inputElemAry, firstEditor, haveAtDataAry, paraOption, paraOptionAry, paraType, that;
+      that = this;
+      paraType = paraObj.type;
+      paraOption = paraObj.option;
+      paraOptionAry = null;
+      if (paraOption) {
+        if (_.isString(paraOption)) {
+          paraOptionAry = [paraOption];
+        } else if (_.isArray(paraOption)) {
+          paraOptionAry = paraOption;
+        }
+        paraOptionAry = _.map(paraOptionAry, function(valueStr) {
+          return {
+            name: valueStr,
+            value: valueStr
+          };
+        });
+      }
+      if (paraType === 'dict') {
+        return _.each($paraItem, function(paraDictItem) {
+          var $keyInputs, $paraDictItem, $valueInputs;
+          $paraDictItem = $(paraDictItem);
+          $keyInputs = $paraDictItem.find('.key');
+          $valueInputs = $paraDictItem.find('.value');
+          _.each($keyInputs, function(keyInput) {
+            return that.initCodeEditor(keyInput, {});
           });
-        } else if (paraType === 'line' || paraType === 'text' || paraType === 'array') {
-          $inputElemAry = $paraItem.find('.parameter-value');
-          if (!$inputElemAry.length) {
-            $inputElemAry = $paraItem.nextAll('.parameter-value');
-          }
-          _.each($inputElemAry, function(inputElem) {
-            return that.initCodeEditor(inputElem, {
+          return _.each($valueInputs, function(valueInput) {
+            return that.initCodeEditor(valueInput, {
               focus: paraOptionAry,
               at: that.resAttrDataAry
             });
           });
-          $commentStateItem = $paraItem.parents('.state-item.comment');
-          $firstInput = $commentStateItem.find('.parameter-value');
-          firstEditor = $firstInput.data('editor');
-          if (firstEditor) {
-            return firstEditor.focus();
-          }
-        } else if (paraType === 'state') {
-          $inputElemAry = $paraItem.find('.parameter-value');
-          if (!$inputElemAry.length) {
-            $inputElemAry = $paraItem.nextAll('.parameter-value');
-          }
-          haveAtDataAry = _.map(that.resStateDataAry, function(stateRefObj) {
-            return {
-              name: '@' + stateRefObj.name,
-              value: '@' + stateRefObj.value,
-              meta: stateRefObj.meta
-            };
-          });
-          return _.each($inputElemAry, function(inputElem) {
-            return that.initCodeEditor(inputElem, {
-              focus: haveAtDataAry
-            });
-          });
-        } else if (paraType === 'bool') {
-          $inputElem = $paraItem.find('.parameter-value');
-          return that.initCodeEditor($inputElem[0], {
-            focus: [
-              {
-                name: 'true',
-                value: 'true'
-              }, {
-                name: 'false',
-                value: 'false'
-              }
-            ]
-          });
+        });
+      } else if (paraType === 'line' || paraType === 'text' || paraType === 'array') {
+        $inputElemAry = $paraItem.find('.parameter-value');
+        if (!$inputElemAry.length) {
+          $inputElemAry = $paraItem.nextAll('.parameter-value');
         }
-      },
-      unBindParaListEvent: function($paraListElem) {
-        var that;
-        that = this;
-        return setTimeout(function() {
-          var $editInputs;
-          $editInputs = $paraListElem.find('.editable-area');
-          return _.each($editInputs, function(editInput) {
-            var $editInput, editor;
-            $editInput = $(editInput);
-            editor = $editInput.data('editor');
-            if (editor) {
-              return editor.destroy();
-            }
+        _.each($inputElemAry, function(inputElem) {
+          return that.initCodeEditor(inputElem, {
+            focus: paraOptionAry,
+            at: that.resAttrDataAry
           });
-        }, 0);
-      },
-      refreshDescription: function(cmdName) {
-        var descHTML, descMarkdown, moduleObj, that;
-        that = this;
-        descMarkdown = '';
-        if (cmdName) {
-          moduleObj = that.cmdModuleMap[cmdName];
-          if (moduleObj.reference) {
-            descMarkdown = moduleObj.reference.en;
-          }
-          that.$cmdDsec.attr('data-command', cmdName);
-        } else {
-          descHTML = that.generalTip;
-          that.$cmdDsec.html(descHTML);
-          return;
+        });
+        $commentStateItem = $paraItem.parents('.state-item.comment');
+        $firstInput = $commentStateItem.find('.parameter-value');
+        firstEditor = $firstInput.data('editor');
+        if (firstEditor) {
+          return firstEditor.focus();
         }
-        descHTML = '';
-        setTimeout(function() {
-          if (descMarkdown) {
-            descHTML = that.markdownConvert.makeHtml(descMarkdown);
-          }
-          that.$cmdDsec.html(descHTML);
-          that.$cmdDsec.find('em:contains(required)').parents('li').addClass('required');
-          that.$cmdDsec.find('em:contains(optional)').parents('li').addClass('optional');
-          return that.$cmdDsec.scrollTop(0);
-        }, 0);
-        return null;
-      },
-      refreshParaList: function($paraListElem, currentCMD) {
-        var currentParaAry, currentParaMap, newParaAry, that;
-        that = this;
-        currentParaMap = that.cmdParaObjMap[currentCMD];
-        currentParaAry = that.cmdParaMap[currentCMD];
-        newParaAry = [];
-        _.each(currentParaAry, function(paraObj) {
-          var newParaObj, paraDisabled, _ref, _ref1;
-          paraDisabled = false;
-          if (!paraObj.required) {
-            paraDisabled = true;
-          }
-          newParaObj = {
-            para_name: paraObj.name,
-            required: paraObj.required,
-            para_disabled: paraDisabled
+      } else if (paraType === 'state') {
+        $inputElemAry = $paraItem.find('.parameter-value');
+        if (!$inputElemAry.length) {
+          $inputElemAry = $paraItem.nextAll('.parameter-value');
+        }
+        haveAtDataAry = _.map(that.resStateDataAry, function(stateRefObj) {
+          return {
+            name: '@' + stateRefObj.name,
+            value: '@' + stateRefObj.value,
+            meta: stateRefObj.meta
           };
-          newParaObj['type_' + paraObj.type] = true;
-          if ((_ref = paraObj.type) === 'line' || _ref === 'text' || _ref === 'bool') {
-            newParaObj.para_value = '';
-          } else if (paraObj.type === 'dict') {
-            newParaObj.para_value = [
+        });
+        return _.each($inputElemAry, function(inputElem) {
+          return that.initCodeEditor(inputElem, {
+            focus: haveAtDataAry
+          });
+        });
+      } else if (paraType === 'bool') {
+        $inputElem = $paraItem.find('.parameter-value');
+        return that.initCodeEditor($inputElem[0], {
+          focus: [
+            {
+              name: 'true',
+              value: 'true'
+            }, {
+              name: 'false',
+              value: 'false'
+            }
+          ]
+        });
+      }
+    },
+    unBindParaListEvent: function($paraListElem) {
+      var that;
+      that = this;
+      return setTimeout(function() {
+        var $editInputs;
+        $editInputs = $paraListElem.find('.editable-area');
+        return _.each($editInputs, function(editInput) {
+          var $editInput, editor;
+          $editInput = $(editInput);
+          editor = $editInput.data('editor');
+          if (editor) {
+            return editor.destroy();
+          }
+        });
+      }, 0);
+    },
+    refreshDescription: function(cmdName) {
+      var descHTML, descMarkdown, moduleObj, that;
+      that = this;
+      descMarkdown = '';
+      if (cmdName) {
+        moduleObj = that.cmdModuleMap[cmdName];
+        if (moduleObj.reference) {
+          descMarkdown = moduleObj.reference.en;
+        }
+        that.$cmdDsec.attr('data-command', cmdName);
+      } else {
+        descHTML = that.generalTip;
+        that.$cmdDsec.html(descHTML);
+        return;
+      }
+      descHTML = '';
+      setTimeout(function() {
+        if (descMarkdown) {
+          descHTML = that.markdownConvert.makeHtml(descMarkdown);
+        }
+        that.$cmdDsec.html(descHTML);
+        that.$cmdDsec.find('em:contains(required)').parents('li').addClass('required');
+        that.$cmdDsec.find('em:contains(optional)').parents('li').addClass('optional');
+        return that.$cmdDsec.scrollTop(0);
+      }, 0);
+      return null;
+    },
+    refreshParaList: function($paraListElem, currentCMD) {
+      var currentParaAry, currentParaMap, newParaAry, that;
+      that = this;
+      currentParaMap = that.cmdParaObjMap[currentCMD];
+      currentParaAry = that.cmdParaMap[currentCMD];
+      newParaAry = [];
+      _.each(currentParaAry, function(paraObj) {
+        var newParaObj, paraDisabled, _ref, _ref1;
+        paraDisabled = false;
+        if (!paraObj.required) {
+          paraDisabled = true;
+        }
+        newParaObj = {
+          para_name: paraObj.name,
+          required: paraObj.required,
+          para_disabled: paraDisabled
+        };
+        newParaObj['type_' + paraObj.type] = true;
+        if ((_ref = paraObj.type) === 'line' || _ref === 'text' || _ref === 'bool') {
+          newParaObj.para_value = '';
+        } else if (paraObj.type === 'dict') {
+          newParaObj.para_value = [
+            {
+              key: '',
+              value: ''
+            }
+          ];
+        } else if ((_ref1 = paraObj.type) === 'array' || _ref1 === 'state') {
+          newParaObj.para_value = [''];
+        }
+        newParaAry.push(newParaObj);
+        return null;
+      });
+      $paraListElem.html($.trim(template.paraListTpl({
+        parameter_list: newParaAry
+      })));
+      return that.bindParaListEvent($paraListElem, currentCMD);
+    },
+    getParaObj: function($inputElem) {
+      var $paraItem, $stateItem, currentCMD, currentParaMap, currentParaName, paraObj, that;
+      that = this;
+      $stateItem = $inputElem.parents('.state-item');
+      $paraItem = $inputElem.parents('.parameter-item');
+      currentCMD = $stateItem.attr('data-command');
+      currentParaName = $paraItem.attr('data-para-name');
+      currentParaMap = that.cmdParaObjMap[currentCMD];
+      paraObj = currentParaMap[currentParaName];
+      return paraObj;
+    },
+    onDictInputChange: function(event, noBindEvent) {
+      var $currentDictItemContainer, $currentDictItemElem, $currentInputElem, $dictItemElem, $keyInput, $paraItem, $paraValueAry, $valueInput, currentValue, keyInputValue, newDictItemHTML, nextDictItemElemAry, paraObj, that, valueInputValue;
+      that = this;
+      if (that.readOnlyMode) {
+        return;
+      }
+      $currentInputElem = $(event.currentTarget);
+      currentValue = that.getPlainText($currentInputElem);
+      if (currentValue) {
+        $currentInputElem.removeClass('disabled');
+      }
+      paraObj = that.getParaObj($currentInputElem);
+      $currentDictItemElem = $currentInputElem.parent('.parameter-dict-item');
+      nextDictItemElemAry = $currentDictItemElem.next();
+      if (!nextDictItemElemAry.length) {
+        $currentDictItemContainer = $currentDictItemElem.parents('.parameter-container');
+        $keyInput = $currentDictItemElem.find('.key');
+        $valueInput = $currentDictItemElem.find('.value');
+        keyInputValue = that.getPlainText($keyInput);
+        valueInputValue = that.getPlainText($valueInput);
+        if (keyInputValue || valueInputValue) {
+          newDictItemHTML = $.trim(template.paraDictListTpl({
+            para_value: [
               {
                 key: '',
                 value: ''
               }
-            ];
-          } else if ((_ref1 = paraObj.type) === 'array' || _ref1 === 'state') {
-            newParaObj.para_value = [''];
+            ]
+          }));
+          $dictItemElem = $(newDictItemHTML).appendTo($currentDictItemContainer);
+          $paraValueAry = $dictItemElem.find('.parameter-value');
+          $paraValueAry.addClass('disabled');
+          $paraItem = $dictItemElem.parents('.parameter-item');
+          if (!noBindEvent) {
+            return that.bindParaItemEvent($paraItem, paraObj);
           }
-          newParaAry.push(newParaObj);
+        }
+      }
+    },
+    onDictInputBlur: function(event) {
+      var $currentDictItemContainer, $currentInputElem, allInputElemAry, newAllInputElemAry, newInputElemAry, that;
+      that = this;
+      if (that.readOnlyMode) {
+        return;
+      }
+      $currentInputElem = $(event.currentTarget);
+      $currentDictItemContainer = $currentInputElem.parents('.parameter-container');
+      allInputElemAry = $currentDictItemContainer.find('.parameter-dict-item');
+      _.each(allInputElemAry, function(itemElem, idx) {
+        var inputElemAry, isAllInputEmpty;
+        inputElemAry = $(itemElem).find('.parameter-value');
+        isAllInputEmpty = true;
+        _.each(inputElemAry, function(inputElem) {
+          if (that.getPlainText(inputElem)) {
+            isAllInputEmpty = false;
+          }
           return null;
         });
-        $paraListElem.html($.trim(template.paraListTpl({
-          parameter_list: newParaAry
-        })));
-        return that.bindParaListEvent($paraListElem, currentCMD);
-      },
-      getParaObj: function($inputElem) {
-        var $paraItem, $stateItem, currentCMD, currentParaMap, currentParaName, paraObj, that;
-        that = this;
-        $stateItem = $inputElem.parents('.state-item');
-        $paraItem = $inputElem.parents('.parameter-item');
-        currentCMD = $stateItem.attr('data-command');
-        currentParaName = $paraItem.attr('data-para-name');
-        currentParaMap = that.cmdParaObjMap[currentCMD];
-        paraObj = currentParaMap[currentParaName];
-        return paraObj;
-      },
-      onDictInputChange: function(event, noBindEvent) {
-        var $currentDictItemContainer, $currentDictItemElem, $currentInputElem, $dictItemElem, $keyInput, $paraItem, $paraValueAry, $valueInput, currentValue, keyInputValue, newDictItemHTML, nextDictItemElemAry, paraObj, that, valueInputValue;
-        that = this;
-        if (that.readOnlyMode) {
-          return;
+        if (isAllInputEmpty && idx !== allInputElemAry.length - 1) {
+          $(itemElem).remove();
         }
-        $currentInputElem = $(event.currentTarget);
-        currentValue = that.getPlainText($currentInputElem);
-        if (currentValue) {
-          $currentInputElem.removeClass('disabled');
-        }
-        paraObj = that.getParaObj($currentInputElem);
-        $currentDictItemElem = $currentInputElem.parent('.parameter-dict-item');
-        nextDictItemElemAry = $currentDictItemElem.next();
-        if (!nextDictItemElemAry.length) {
-          $currentDictItemContainer = $currentDictItemElem.parents('.parameter-container');
-          $keyInput = $currentDictItemElem.find('.key');
-          $valueInput = $currentDictItemElem.find('.value');
-          keyInputValue = that.getPlainText($keyInput);
-          valueInputValue = that.getPlainText($valueInput);
-          if (keyInputValue || valueInputValue) {
-            newDictItemHTML = $.trim(template.paraDictListTpl({
-              para_value: [
-                {
-                  key: '',
-                  value: ''
-                }
-              ]
-            }));
-            $dictItemElem = $(newDictItemHTML).appendTo($currentDictItemContainer);
-            $paraValueAry = $dictItemElem.find('.parameter-value');
-            $paraValueAry.addClass('disabled');
-            $paraItem = $dictItemElem.parents('.parameter-item');
-            if (!noBindEvent) {
-              return that.bindParaItemEvent($paraItem, paraObj);
-            }
+        return null;
+      });
+      newAllInputElemAry = $currentDictItemContainer.find('.parameter-dict-item');
+      if (newAllInputElemAry.length === 1) {
+        newInputElemAry = $(newAllInputElemAry[0]).find('.parameter-value');
+        return newInputElemAry.removeClass('disabled');
+      }
+    },
+    onArrayInputChange: function(event, noBindEvent) {
+      var $arrayItemElem, $currentArrayInputContainer, $currentInputElem, $paraItem, currentInput, currentValue, newArrayItemHTML, nextInputElemAry, paraObj, that;
+      that = this;
+      $currentInputElem = $(event.currentTarget);
+      currentValue = that.getPlainText($currentInputElem);
+      if (currentValue) {
+        $currentInputElem.removeClass('disabled');
+      }
+      paraObj = that.getParaObj($currentInputElem);
+      nextInputElemAry = $currentInputElem.next();
+      if (!nextInputElemAry.length) {
+        $currentArrayInputContainer = $currentInputElem.parents('.parameter-container');
+        currentInput = that.getPlainText($currentInputElem);
+        if (currentInput) {
+          newArrayItemHTML = $.trim(template.paraArrayListTpl({
+            para_value: ['']
+          }));
+          $arrayItemElem = $(newArrayItemHTML).appendTo($currentArrayInputContainer);
+          $arrayItemElem.addClass('disabled');
+          $paraItem = $arrayItemElem.parents('.parameter-item');
+          if (!noBindEvent) {
+            return that.bindParaItemEvent($paraItem, paraObj);
           }
         }
-      },
-      onDictInputBlur: function(event) {
-        var $currentDictItemContainer, $currentInputElem, allInputElemAry, newAllInputElemAry, newInputElemAry, that;
-        that = this;
-        if (that.readOnlyMode) {
+      }
+    },
+    onArrayInputBlur: function(event) {
+      var $currentArrayItemContainer, $currentInputElem, allInputElemAry, that;
+      that = this;
+      $currentInputElem = $(event.currentTarget);
+      $currentArrayItemContainer = $currentInputElem.parents('.parameter-container');
+      allInputElemAry = $currentArrayItemContainer.find('.parameter-value');
+      return _.each(allInputElemAry, function(itemElem, idx) {
+        var inputValue;
+        inputValue = that.getPlainText(itemElem);
+        if (!inputValue && idx !== allInputElemAry.length - 1) {
+          $(itemElem).remove();
+        }
+        return null;
+      });
+    },
+    onFocusInput: function(event) {
+      var $currentInput, $stateItem, cmdName, currentDescCMDName, currentValue, paraObj, that;
+      that = this;
+      $currentInput = $(event.currentTarget);
+      if ($currentInput.hasClass('parameter-value')) {
+        currentValue = that.getPlainText($currentInput);
+        paraObj = that.getParaObj($currentInput);
+        if (paraObj) {
+          that.highlightParaDesc(paraObj.name);
+        }
+      }
+      $stateItem = $currentInput.parents('.state-item');
+      cmdName = $stateItem.attr('data-command');
+      currentDescCMDName = that.$cmdDsec.attr('data-command');
+      if (cmdName && currentDescCMDName !== cmdName) {
+        return that.refreshDescription(cmdName);
+      }
+    },
+    onBlurInput: function(event) {
+      var $currentInput, $paraItem, content, editor, that;
+      that = this;
+      $currentInput = $(event.currentTarget);
+      editor = $currentInput.data('editor');
+      if (editor) {
+        if (!($currentInput.hasClass('key') || $currentInput.hasClass('text'))) {
+          content = $.trim(editor.getValue());
+          editor.setValue(content);
+        }
+        editor.clearSelection();
+        $paraItem = $currentInput.parents('.parameter-item');
+        if ($paraItem.hasClass('dict') && $currentInput.hasClass('value')) {
+          editor.getSelection().selectFileStart();
+          return editor.clearSelection();
+        }
+      }
+    },
+    onParaNameClick: function(event) {
+      var $currentParaName, $paraFirstVauleInput, $paraItem, inputEditor, that;
+      that = this;
+      $currentParaName = $(event.currentTarget);
+      $paraItem = $currentParaName.parents('.parameter-item');
+      $paraFirstVauleInput = $paraItem.find('.parameter-value');
+      inputEditor = $paraFirstVauleInput.data('editor');
+      if (inputEditor) {
+        return inputEditor.focus();
+      }
+    },
+    onStateToolbarClick: function(event) {
+      var $stateItem, $stateToolbarElem, that;
+      that = this;
+      $stateToolbarElem = $(event.currentTarget);
+      that.clearFocusedItem();
+      $stateItem = $stateToolbarElem.parents('.state-item');
+      $stateItem.addClass('focused');
+      if ($stateItem.hasClass('view')) {
+        that.expandItem.call(this, $stateItem);
+      } else {
+        that.collapseItem.call(this, $stateItem);
+      }
+      return false;
+    },
+    expandItem: function($stateItem) {
+      var $cmdValueItem, $paraListItem, $stateItemList, cmdEditor, cmdName, currentCMD, currentStateId, that, _ref;
+      that = this;
+      that.clearFocusedItem();
+      $stateItemList = that.$stateList.find('.state-item');
+      currentCMD = $stateItem.attr('data-command');
+      $paraListItem = $stateItem.find('.parameter-list');
+      that.bindStateListEvent([$stateItem]);
+      _.each($stateItemList, function(otherStateItem) {
+        var $otherStateItem;
+        $otherStateItem = $(otherStateItem);
+        if (!$stateItem.is($otherStateItem) && !$otherStateItem.hasClass('view')) {
+          that.refreshStateView($otherStateItem);
+        }
+        return null;
+      });
+      $stateItemList.addClass('view');
+      $stateItem.removeClass('view').addClass('focused');
+      cmdName = $stateItem.attr('data-command');
+      if (cmdName) {
+        that.refreshDescription(cmdName);
+      }
+      if ((_ref = that.currentState) === 'app' || _ref === 'appedit') {
+        currentStateId = $stateItem.attr('data-id');
+        that.scrollToLogItem(currentStateId);
+      }
+      $cmdValueItem = $stateItem.find('.command-value');
+      cmdEditor = $cmdValueItem.data('editor');
+      if (cmdEditor) {
+        setTimeout(function() {
+          return cmdEditor.focus();
+        }, 0);
+      }
+      return that.bindParaListEvent($paraListItem, currentCMD);
+    },
+    collapseItem: function($stateItem) {
+      var $focusInput, $paraListItem, editor, that;
+      that = this;
+      $focusInput = that.$stateList.find('.editable-area.ace_focus');
+      if ($focusInput) {
+        editor = $focusInput.data('editor');
+        if (editor) {
+          editor.blur();
+        }
+      }
+      that.refreshStateView($stateItem);
+      $stateItem.addClass('view');
+      that.refreshDescription();
+      return $paraListItem = $stateItem.find('.parameter-list');
+    },
+    onExpandState: function(event) {
+      var that;
+      that = this;
+      that.expandItem($('.state-list').find('.focused'));
+      return false;
+    },
+    onCollapseState: function(event) {
+      var that;
+      that = this;
+      that.collapseItem($('.state-list').find('.focused'));
+      return false;
+    },
+    clearSelectedItem: function() {
+      var that;
+      that = this;
+      that.$stateList.find('.selected').removeClass('selected');
+      that.$stateList.find('.checkbox input').prop('checked', false);
+      return null;
+    },
+    clearFocusedItem: function() {
+      var that;
+      that = this;
+      that.$stateList.find('.focused').removeClass('focused');
+      return null;
+    },
+    onStateItemAddClick: function(event) {
+      var that;
+      that = this;
+      that.addStateItem.call(this, event);
+      return false;
+    },
+    addStateItem: function(event) {
+      var $cmdValueItem, $focusState, $newStateItem, $stateItem, $stateItemList, $stateItems, cmdEditor, newStateHTML, newStateId, statePos, that;
+      that = this;
+      if (that.currentState === 'app') {
+        return false;
+      }
+      $stateItem = that.$stateList.find('.state-item:last');
+      newStateId = that.genStateUID();
+      newStateHTML = $.trim(template.stateListTpl({
+        state_list: [
+          {
+            id: newStateId
+          }
+        ]
+      }));
+      $focusState = that.$stateList.find('.state-item.focused');
+      if ($focusState.length) {
+        $newStateItem = $(newStateHTML).insertAfter($focusState);
+      } else {
+        $newStateItem = $(newStateHTML).appendTo(that.$stateList);
+      }
+      that.clearFocusedItem();
+      $cmdValueItem = $newStateItem.find('.command-value');
+      that.bindCommandEvent($cmdValueItem);
+      $stateItemList = that.$stateList.find('.state-item');
+      _.each($stateItemList, function(otherStateItem) {
+        var $otherStateItem;
+        $otherStateItem = $(otherStateItem);
+        if (!$newStateItem.is($otherStateItem) && !$otherStateItem.hasClass('view')) {
+          that.refreshStateView($otherStateItem);
+        }
+        return null;
+      });
+      $stateItemList.addClass('view');
+      $newStateItem.removeClass('view').addClass('focused');
+      cmdEditor = $cmdValueItem.data('editor');
+      if (cmdEditor) {
+        setTimeout(function() {
+          return cmdEditor.focus();
+        }, 0);
+      }
+      that.refreshLogItemNum();
+      $stateItems = that.$stateList.find('.state-item');
+      if ($stateItems.length) {
+        that.$haveStateContainer.show();
+        that.$noStateContainer.hide();
+      }
+      statePos = $newStateItem.index();
+      that.undoManager.register(newStateId, statePos, 'add');
+      that.updateToolbar();
+      return false;
+    },
+    onStateRemoveClick: function(event) {
+      var $currentElem, $stateItem, that;
+      that = this;
+      $currentElem = $(event.currentTarget);
+      $stateItem = $currentElem.parents('.state-item');
+      return that.onRemoveState(null, $stateItem);
+    },
+    submitValidate: function(element) {
+      var $editor, bindValidateFailed, doValidate, elems, result, that, validateFailed;
+      that = this;
+      doValidate = function(elem) {
+        var param, represent, value;
+        value = that.getPlainText(elem);
+        param = that.getParaObjByInput(elem);
+        represent = that.getRepresent(elem);
+        return validate(value, param, elem, represent);
+      };
+      validateFailed = function(e) {
+        var result;
+        result = doValidate(e.currentTarget);
+        if (!result) {
+          return $(e.currentTarget).off('keyup.validate');
+        }
+      };
+      bindValidateFailed = function(elem) {
+        return $(elem).on('keyup.validate', validateFailed);
+      };
+      if (element) {
+        result = doValidate(element);
+      } else {
+        $editor = this.$stateList.find('.editable-area:not(".disabled")');
+        elems = $editor.toArray();
+        result = true;
+        _.each(elems, function(e) {
+          var res;
+          res = doValidate(e);
+          if (res) {
+            bindValidateFailed(e);
+            if (result) {
+              result = false;
+            }
+          }
+          return result;
+        });
+      }
+      return result;
+    },
+    genStateItemData: function($stateItem) {
+      var $paraItemList, $paraListElem, cmdName, moduleObj, stateId, stateItemObj, that;
+      that = this;
+      cmdName = $stateItem.attr('data-command');
+      stateId = $stateItem.attr('data-id');
+      moduleObj = that.cmdModuleMap[cmdName];
+      if (!moduleObj) {
+        return {
+          id: stateId,
+          module: '',
+          parameter: {}
+        };
+      }
+      stateItemObj = {
+        id: stateId,
+        module: moduleObj.module,
+        parameter: {}
+      };
+      $paraListElem = $stateItem.find('.parameter-list');
+      $paraItemList = $paraListElem.find('.parameter-item');
+      _.each($paraItemList, function(paraItem) {
+        var $arrayItemList, $dictItemList, $paraInput, $paraItem, arrayObj, dictObjAry, isStateParaItem, paraName, paraValue;
+        $paraItem = $(paraItem);
+        if ($paraItem.hasClass('disabled')) {
           return;
         }
-        $currentInputElem = $(event.currentTarget);
-        $currentDictItemContainer = $currentInputElem.parents('.parameter-container');
-        allInputElemAry = $currentDictItemContainer.find('.parameter-dict-item');
-        _.each(allInputElemAry, function(itemElem, idx) {
-          var inputElemAry, isAllInputEmpty;
-          inputElemAry = $(itemElem).find('.parameter-value');
-          isAllInputEmpty = true;
-          _.each(inputElemAry, function(inputElem) {
-            if (that.getPlainText(inputElem)) {
-              isAllInputEmpty = false;
+        paraName = $paraItem.attr('data-para-name');
+        paraValue = null;
+        if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
+          $paraInput = $paraItem.find('.parameter-value');
+          paraValue = that.getPlainText($paraInput);
+          if ($paraItem.hasClass('bool')) {
+            if (paraValue === 'true') {
+              paraValue = true;
+            } else if (paraValue === 'false') {
+              paraValue = false;
+            } else {
+              paraValue = '';
+            }
+          }
+          if ($paraItem.hasClass('line') || $paraItem.hasClass('text')) {
+            paraValue = that.model.replaceParaNameToUID(paraValue);
+          }
+        } else if ($paraItem.hasClass('dict')) {
+          $dictItemList = $paraItem.find('.parameter-dict-item');
+          dictObjAry = [];
+          _.each($dictItemList, function(dictItem) {
+            var $dictItem, $keyInput, $valueInput, keyValue, valueValue;
+            $dictItem = $(dictItem);
+            $keyInput = $dictItem.find('.key');
+            $valueInput = $dictItem.find('.value');
+            keyValue = that.getPlainText($keyInput);
+            valueValue = that.getPlainText($valueInput);
+            if (keyValue) {
+              valueValue = that.model.replaceParaNameToUID(valueValue);
+              dictObjAry.push({
+                key: keyValue,
+                value: valueValue
+              });
             }
             return null;
           });
-          if (isAllInputEmpty && idx !== allInputElemAry.length - 1) {
-            $(itemElem).remove();
+          paraValue = dictObjAry;
+        } else if ($paraItem.hasClass('array') || $paraItem.hasClass('state')) {
+          $arrayItemList = $paraItem.find('.parameter-value');
+          isStateParaItem = $paraItem.hasClass('state');
+          arrayObj = [];
+          _.each($arrayItemList, function(arrayItem) {
+            var $arrayItem, arrayValue;
+            $arrayItem = $(arrayItem);
+            arrayValue = that.getPlainText($arrayItem);
+            if (arrayValue) {
+              if (isStateParaItem) {
+                arrayValue = that.model.replaceStateNameToUID(arrayValue);
+              } else {
+                arrayValue = that.model.replaceParaNameToUID(arrayValue);
+              }
+              arrayObj.push(arrayValue);
+            }
+            return null;
+          });
+          paraValue = arrayObj;
+        }
+        return stateItemObj.parameter[paraName] = paraValue;
+      });
+      return stateItemObj;
+    },
+    saveStateData: function() {
+      var $stateItemList, stateObjAry, that;
+      that = this;
+      if (!that.$stateList) {
+        return null;
+      }
+      $stateItemList = that.$stateList.find('.state-item');
+      stateObjAry = [];
+      _.each($stateItemList, function(stateItem, idx) {
+        var $stateItem, stateItemObj;
+        $stateItem = $(stateItem);
+        stateItemObj = that.genStateItemData($stateItem);
+        if (stateItemObj && stateItemObj.module && stateItemObj.id) {
+          stateObjAry.push(stateItemObj);
+        }
+        return null;
+      });
+      return stateObjAry;
+    },
+    loadStateData: function(stateObjAry) {
+      var renderObj, that;
+      that = this;
+      renderObj = {
+        state_list: [],
+        err_list: []
+      };
+      _.each(stateObjAry, function(state, idx) {
+        var cmdName, err, paraListObj, paraModelObj, stateId, stateRenderObj, _ref;
+        try {
+          cmdName = that.moduleCMDMap[state.module];
+          if (!cmdName) {
+            throw new Error('command');
           }
-          return null;
-        });
-        newAllInputElemAry = $currentDictItemContainer.find('.parameter-dict-item');
-        if (newAllInputElemAry.length === 1) {
-          newInputElemAry = $(newAllInputElemAry[0]).find('.parameter-value');
-          return newInputElemAry.removeClass('disabled');
+          if (!((_ref = that.cmdModuleMap[cmdName]) != null ? _ref.support : void 0)) {
+            throw new Error('command');
+          }
+          paraModelObj = that.cmdParaObjMap[cmdName];
+          paraListObj = state.parameter;
+          stateId = state.id;
+          stateRenderObj = {
+            id: stateId,
+            id_show: idx + 1,
+            cmd_value: cmdName,
+            parameter_list: []
+          };
+          _.each(paraModelObj, function(paraModelValue, paraModelName) {
+            var paraListAry, paraModelRequired, paraModelType, paraValue, renderParaObj, renderParaValue;
+            paraModelType = paraModelValue.type;
+            paraModelRequired = paraModelValue.required;
+            renderParaObj = {
+              para_name: paraModelName,
+              para_disabled: true,
+              required: paraModelRequired
+            };
+            renderParaObj['type_' + paraModelType] = true;
+            paraValue = paraListObj[paraModelName];
+            if (paraValue === void 0 && paraModelRequired) {
+              throw new Error('parameter');
+            }
+            if (paraValue === void 0 && !paraModelRequired) {
+              renderParaObj.para_disabled = true;
+            } else {
+              renderParaObj.para_disabled = false;
+            }
+            renderParaValue = null;
+            if (paraModelType === 'line' || paraModelType === 'text' || paraModelType === 'bool') {
+              renderParaValue = String(paraValue);
+              if (!paraValue) {
+                renderParaValue = '';
+              }
+              if (paraModelType === 'bool' && paraValue === false) {
+                renderParaValue = 'false';
+              }
+              if (paraModelType === 'line' || paraModelType === 'text') {
+                renderParaValue = that.model.replaceParaUIDToName(renderParaValue);
+                if (renderParaValue && renderParaValue.indexOf('@{unknown') !== -1) {
+                  renderObj.err_list.push('reference');
+                }
+              }
+            } else if (paraModelType === 'dict') {
+              renderParaValue = [];
+              if (_.isArray(paraValue)) {
+                _.each(paraValue, function(paraValueObj) {
+                  paraValueObj.value = that.model.replaceParaUIDToName(paraValueObj.value);
+                  if (paraValueObj.value && paraValueObj.value.indexOf('@{unknown') !== -1) {
+                    renderObj.err_list.push('reference');
+                  }
+                  renderParaValue.push({
+                    key: paraValueObj.key,
+                    value: paraValueObj.value
+                  });
+                  return null;
+                });
+              } else if (_.isObject(paraValue)) {
+                _.each(paraValue, function(paraValueStr, paraKey) {
+                  paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
+                  if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
+                    renderObj.err_list.push('reference');
+                  }
+                  renderParaValue.push({
+                    key: paraKey,
+                    value: paraValueStr
+                  });
+                  return null;
+                });
+              }
+              if (!paraValue || _.isEmpty(paraValue)) {
+                renderParaValue = [
+                  {
+                    key: '',
+                    value: ''
+                  }
+                ];
+              }
+            } else if (paraModelType === 'array' || paraModelType === 'state') {
+              renderParaValue = [];
+              if (!_.isArray(paraValue)) {
+                if (!paraValue) {
+                  paraValue = '';
+                }
+                paraValue = [paraValue];
+              }
+              _.each(paraValue, function(paraValueStr) {
+                if (paraModelType === 'state') {
+                  paraValueStr = that.model.replaceStateUIDToName(paraValueStr);
+                } else {
+                  paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
+                }
+                if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
+                  renderObj.err_list.push('reference');
+                }
+                renderParaValue.push(paraValueStr);
+                return null;
+              });
+              if (!paraValue || !paraValue.length) {
+                renderParaValue = [''];
+              }
+            }
+            renderParaObj.para_value = renderParaValue;
+            stateRenderObj.parameter_list.push(renderParaObj);
+            paraListAry = stateRenderObj.parameter_list;
+            stateRenderObj.parameter_list = that.model.sortParaList(paraListAry, 'para_name');
+            return null;
+          });
+          renderObj.state_list.push(stateRenderObj);
+        } catch (_error) {
+          err = _error;
+          renderObj.err_list.push(err.message);
         }
-      },
-      onArrayInputChange: function(event, noBindEvent) {
-        var $arrayItemElem, $currentArrayInputContainer, $currentInputElem, $paraItem, currentInput, currentValue, newArrayItemHTML, nextInputElemAry, paraObj, that;
-        that = this;
-        $currentInputElem = $(event.currentTarget);
-        currentValue = that.getPlainText($currentInputElem);
-        if (currentValue) {
-          $currentInputElem.removeClass('disabled');
-        }
-        paraObj = that.getParaObj($currentInputElem);
-        nextInputElemAry = $currentInputElem.next();
-        if (!nextInputElemAry.length) {
-          $currentArrayInputContainer = $currentInputElem.parents('.parameter-container');
-          currentInput = that.getPlainText($currentInputElem);
-          if (currentInput) {
-            newArrayItemHTML = $.trim(template.paraArrayListTpl({
-              para_value: ['']
-            }));
-            $arrayItemElem = $(newArrayItemHTML).appendTo($currentArrayInputContainer);
-            $arrayItemElem.addClass('disabled');
-            $paraItem = $arrayItemElem.parents('.parameter-item');
-            if (!noBindEvent) {
-              return that.bindParaItemEvent($paraItem, paraObj);
+        return null;
+      });
+      return renderObj;
+    },
+    onStateSaveClick: function() {
+      var changeAry, changeObj, compareStateData, otherCompareStateData, stateData, that, _ref;
+      that = this;
+      stateData = that.saveStateData();
+      if (stateData) {
+        that.model.setStateData(stateData);
+      }
+      if (stateData) {
+        compareStateData = null;
+        otherCompareStateData = null;
+        changeAry = [];
+        if (that.originCompStateData && stateData) {
+          if (that.originCompStateData.length > stateData.length) {
+            compareStateData = stateData;
+            otherCompareStateData = that.originCompStateData;
+          } else {
+            compareStateData = that.originCompStateData;
+            otherCompareStateData = stateData;
+          }
+          _.each(compareStateData, function(stateObj, idx) {
+            if (!_.isEqual(stateObj, otherCompareStateData[idx])) {
+              changeAry.push(stateObj.id);
+            }
+            return null;
+          });
+          if ((_ref = that.currentState) === 'app' || _ref === 'appedit') {
+            changeObj = {
+              resId: that.currentResId,
+              stateIds: changeAry
+            };
+            if ((!_.isEqual(that.originCompStateData, stateData)) || changeAry.length) {
+              return ide_event.trigger(ide_event.STATE_EDITOR_DATA_UPDATE, changeObj);
             }
           }
         }
-      },
-      onArrayInputBlur: function(event) {
-        var $currentArrayItemContainer, $currentInputElem, allInputElemAry, that;
-        that = this;
-        $currentInputElem = $(event.currentTarget);
-        $currentArrayItemContainer = $currentInputElem.parents('.parameter-container');
-        allInputElemAry = $currentArrayItemContainer.find('.parameter-value');
-        return _.each(allInputElemAry, function(itemElem, idx) {
-          var inputValue;
-          inputValue = that.getPlainText(itemElem);
-          if (!inputValue && idx !== allInputElemAry.length - 1) {
-            $(itemElem).remove();
-          }
-          return null;
-        });
-      },
-      onFocusInput: function(event) {
-        var $currentInput, $stateItem, cmdName, currentDescCMDName, currentValue, paraObj, that;
-        that = this;
-        $currentInput = $(event.currentTarget);
-        if ($currentInput.hasClass('parameter-value')) {
-          currentValue = that.getPlainText($currentInput);
-          paraObj = that.getParaObj($currentInput);
-          if (paraObj) {
-            that.highlightParaDesc(paraObj.name);
-          }
+      }
+    },
+    onStateCancelClick: function(event) {
+      var that;
+      that = this;
+      that.unloadEditor();
+      return that.closedPopup();
+    },
+    onParaRemoveClick: function(event) {
+      var $currentElem, $paraItem, that;
+      that = this;
+      $currentElem = $(event.currentTarget);
+      $paraItem = $currentElem.parents('.parameter-item');
+      if ($paraItem.hasClass('disabled')) {
+        $paraItem.removeClass('disabled');
+      } else {
+        $paraItem.addClass('disabled');
+      }
+      return null;
+    },
+    onDescToggleClick: function(event) {
+      var $descPanel, $descPanelToggle, $logPanel, $logPanelToggle, $stateEditor, expandPanel, that;
+      that = this;
+      $stateEditor = $('#OpsEditor').find('#state-editor');
+      $descPanel = $('#OpsEditor').find('#state-description');
+      $logPanel = $('#OpsEditor').find('#state-log');
+      $descPanelToggle = that.$editorModal.find('.state-desc-toggle');
+      $logPanelToggle = that.$editorModal.find('.state-log-toggle');
+      expandPanel = $('#OpsEditor').find('#OEPanelRight').hasClass('state-wide');
+      if (expandPanel && $descPanel.hasClass('show')) {
+        $stateEditor.addClass('full');
+        $logPanel.removeClass('show');
+        $descPanel.removeClass('show');
+        $descPanelToggle.removeClass('active');
+        $('#OpsEditor').find('#OEPanelRight').removeClass('state-wide');
+      } else {
+        $stateEditor.removeClass('full');
+        $logPanel.removeClass('show');
+        $descPanel.addClass('show');
+        $descPanelToggle.addClass('active');
+        $('#OpsEditor').find('#OEPanelRight').addClass('state-wide');
+      }
+      return $logPanelToggle.removeClass('active');
+    },
+    onLogToggleClick: function(event) {
+      var $descPanel, $descPanelToggle, $logPanel, $logPanelToggle, $stateEditor, currentAppState, expandPanel, that, _ref;
+      that = this;
+      if ((_ref = that.currentState) === 'app' || _ref === 'appedit') {
+        currentAppState = Design.instance().get('state');
+        if (currentAppState === 'Stopped') {
+          return;
         }
-        $stateItem = $currentInput.parents('.state-item');
-        cmdName = $stateItem.attr('data-command');
-        currentDescCMDName = that.$cmdDsec.attr('data-command');
-        if (cmdName && currentDescCMDName !== cmdName) {
-          return that.refreshDescription(cmdName);
-        }
-      },
-      onBlurInput: function(event) {
-        var $currentInput, $paraItem, content, editor, that;
-        that = this;
-        $currentInput = $(event.currentTarget);
-        editor = $currentInput.data('editor');
-        if (editor) {
-          if (!($currentInput.hasClass('key') || $currentInput.hasClass('text'))) {
-            content = $.trim(editor.getValue());
-            editor.setValue(content);
-          }
-          editor.clearSelection();
-          $paraItem = $currentInput.parents('.parameter-item');
-          if ($paraItem.hasClass('dict') && $currentInput.hasClass('value')) {
-            editor.getSelection().selectFileStart();
-            return editor.clearSelection();
-          }
-        }
-      },
-      onParaNameClick: function(event) {
-        var $currentParaName, $paraFirstVauleInput, $paraItem, inputEditor, that;
-        that = this;
-        $currentParaName = $(event.currentTarget);
-        $paraItem = $currentParaName.parents('.parameter-item');
-        $paraFirstVauleInput = $paraItem.find('.parameter-value');
-        inputEditor = $paraFirstVauleInput.data('editor');
-        if (inputEditor) {
-          return inputEditor.focus();
-        }
-      },
-      onStateToolbarClick: function(event) {
-        var $stateItem, $stateToolbarElem, that;
-        that = this;
-        $stateToolbarElem = $(event.currentTarget);
-        that.clearFocusedItem();
-        $stateItem = $stateToolbarElem.parents('.state-item');
-        $stateItem.addClass('focused');
-        if ($stateItem.hasClass('view')) {
-          that.expandItem.call(this, $stateItem);
-        } else {
-          that.collapseItem.call(this, $stateItem);
-        }
-        return false;
-      },
-      expandItem: function($stateItem) {
-        var $cmdValueItem, $paraListItem, $stateItemList, cmdEditor, cmdName, currentCMD, currentStateId, that, _ref;
-        that = this;
-        that.clearFocusedItem();
-        $stateItemList = that.$stateList.find('.state-item');
-        currentCMD = $stateItem.attr('data-command');
-        $paraListItem = $stateItem.find('.parameter-list');
-        that.bindStateListEvent([$stateItem]);
-        _.each($stateItemList, function(otherStateItem) {
-          var $otherStateItem;
-          $otherStateItem = $(otherStateItem);
-          if (!$stateItem.is($otherStateItem) && !$otherStateItem.hasClass('view')) {
-            that.refreshStateView($otherStateItem);
-          }
-          return null;
-        });
-        $stateItemList.addClass('view');
-        $stateItem.removeClass('view').addClass('focused');
-        cmdName = $stateItem.attr('data-command');
-        if (cmdName) {
-          that.refreshDescription(cmdName);
-        }
-        if ((_ref = that.currentState) === 'app' || _ref === 'appedit') {
-          currentStateId = $stateItem.attr('data-id');
-          that.scrollToLogItem(currentStateId);
-        }
-        $cmdValueItem = $stateItem.find('.command-value');
-        cmdEditor = $cmdValueItem.data('editor');
-        if (cmdEditor) {
-          setTimeout(function() {
-            return cmdEditor.focus();
-          }, 0);
-        }
-        return that.bindParaListEvent($paraListItem, currentCMD);
-      },
-      collapseItem: function($stateItem) {
-        var $focusInput, $paraListItem, editor, that;
-        that = this;
-        $focusInput = that.$stateList.find('.editable-area.ace_focus');
-        if ($focusInput) {
-          editor = $focusInput.data('editor');
+      }
+      $stateEditor = $('#OpsEditor').find('#state-editor');
+      $descPanel = $('#OpsEditor').find('#state-description');
+      $logPanel = $('#OpsEditor').find('#state-log');
+      $descPanelToggle = that.$editorModal.find('.state-desc-toggle');
+      $logPanelToggle = that.$editorModal.find('.state-log-toggle');
+      expandPanel = $('#OpsEditor').find('#OEPanelRight').hasClass('state-wide');
+      if (expandPanel && $logPanel.hasClass('show')) {
+        $stateEditor.addClass('full');
+        $descPanel.removeClass('show');
+        $logPanel.removeClass('show');
+        $logPanelToggle.removeClass('active');
+        $('#OpsEditor').find('#OEPanelRight').removeClass('state-wide');
+      } else {
+        $stateEditor.removeClass('full');
+        $descPanel.removeClass('show');
+        $logPanel.addClass('show');
+        $logPanelToggle.addClass('active');
+        $('#OpsEditor').find('#OEPanelRight').addClass('state-wide');
+      }
+      return $descPanelToggle.removeClass('active');
+    },
+    showLogPanel: function() {
+      var $descPanel, $descPanelToggle, $logPanel, $logPanelToggle, $stateEditor, that;
+      that = this;
+      $stateEditor = $('#OpsEditor').find('#state-editor');
+      $descPanel = $('#OpsEditor').find('#state-description');
+      $logPanel = $('#OpsEditor').find('#state-log');
+      $descPanelToggle = that.$editorModal.find('.state-desc-toggle');
+      $logPanelToggle = that.$editorModal.find('.state-log-toggle');
+      $stateEditor.removeClass('full');
+      $descPanel.removeClass('show');
+      $logPanel.addClass('show');
+      $logPanelToggle.addClass('active');
+      $descPanelToggle.removeClass('active');
+      return null;
+    },
+    onDocumentMouseDown: function(event) {
+      var $allEditableArea, $currentElem, $parentElem, that;
+      that = this;
+      $currentElem = $(event.target);
+      $parentElem = $currentElem.parents('.editable-area');
+      if (!$parentElem.length && !$currentElem.hasClass('editable-area') && !$currentElem.hasClass('ace_scrollbar')) {
+        $allEditableArea = $('#OpsEditor').find('.editable-area');
+        _.each($allEditableArea, function(editableArea) {
+          var $editableArea, editor;
+          $editableArea = $(editableArea);
+          editor = $editableArea.data('editor');
           if (editor) {
             editor.blur();
           }
-        }
-        that.refreshStateView($stateItem);
-        $stateItem.addClass('view');
-        that.refreshDescription();
-        return $paraListItem = $stateItem.find('.parameter-list');
-      },
-      onExpandState: function(event) {
-        var that;
-        that = this;
-        that.expandItem($('.state-list').find('.focused'));
-        return false;
-      },
-      onCollapseState: function(event) {
-        var that;
-        that = this;
-        that.collapseItem($('.state-list').find('.focused'));
-        return false;
-      },
-      clearSelectedItem: function() {
-        var that;
-        that = this;
-        that.$stateList.find('.selected').removeClass('selected');
-        that.$stateList.find('.checkbox input').prop('checked', false);
-        return null;
-      },
-      clearFocusedItem: function() {
-        var that;
-        that = this;
-        that.$stateList.find('.focused').removeClass('focused');
-        return null;
-      },
-      onStateItemAddClick: function(event) {
-        var that;
-        that = this;
-        that.addStateItem.call(this, event);
-        return false;
-      },
-      addStateItem: function(event) {
-        var $cmdValueItem, $focusState, $newStateItem, $stateItem, $stateItemList, $stateItems, cmdEditor, newStateHTML, newStateId, statePos, that;
-        that = this;
-        if (that.currentState === 'app') {
-          return false;
-        }
-        $stateItem = that.$stateList.find('.state-item:last');
-        newStateId = that.genStateUID();
-        newStateHTML = $.trim(template.stateListTpl({
-          state_list: [
-            {
-              id: newStateId
-            }
-          ]
-        }));
-        $focusState = that.$stateList.find('.state-item.focused');
-        if ($focusState.length) {
-          $newStateItem = $(newStateHTML).insertAfter($focusState);
-        } else {
-          $newStateItem = $(newStateHTML).appendTo(that.$stateList);
-        }
-        that.clearFocusedItem();
-        $cmdValueItem = $newStateItem.find('.command-value');
-        that.bindCommandEvent($cmdValueItem);
-        $stateItemList = that.$stateList.find('.state-item');
-        _.each($stateItemList, function(otherStateItem) {
-          var $otherStateItem;
-          $otherStateItem = $(otherStateItem);
-          if (!$newStateItem.is($otherStateItem) && !$otherStateItem.hasClass('view')) {
-            that.refreshStateView($otherStateItem);
-          }
           return null;
         });
-        $stateItemList.addClass('view');
-        $newStateItem.removeClass('view').addClass('focused');
-        cmdEditor = $cmdValueItem.data('editor');
-        if (cmdEditor) {
-          setTimeout(function() {
-            return cmdEditor.focus();
-          }, 0);
-        }
-        that.refreshLogItemNum();
-        $stateItems = that.$stateList.find('.state-item');
-        if ($stateItems.length) {
-          that.$haveStateContainer.show();
-          that.$noStateContainer.hide();
-        }
-        statePos = $newStateItem.index();
-        that.undoManager.register(newStateId, statePos, 'add');
-        that.updateToolbar();
-        return false;
-      },
-      onStateRemoveClick: function(event) {
-        var $currentElem, $stateItem, that;
-        that = this;
-        $currentElem = $(event.currentTarget);
-        $stateItem = $currentElem.parents('.state-item');
-        return that.onRemoveState(null, $stateItem);
-      },
-      submitValidate: function(element) {
-        var $editor, bindValidateFailed, doValidate, elems, result, that, validateFailed;
-        that = this;
-        doValidate = function(elem) {
-          var param, represent, value;
-          value = that.getPlainText(elem);
-          param = that.getParaObjByInput(elem);
-          represent = that.getRepresent(elem);
-          return validate(value, param, elem, represent);
-        };
-        validateFailed = function(e) {
-          var result;
-          result = doValidate(e.currentTarget);
-          if (!result) {
-            return $(e.currentTarget).off('keyup.validate');
-          }
-        };
-        bindValidateFailed = function(elem) {
-          return $(elem).on('keyup.validate', validateFailed);
-        };
-        if (element) {
-          result = doValidate(element);
+        setTimeout(function() {
+          return that.$stateGistPasteArea.focus();
+        }, 0);
+      }
+      return that.onMouseDownSaveFromOther(event);
+    },
+    onMouseDownSaveFromOther: function(event) {
+      var $currentElem, $parentEditorModel, $parentElem, $propertyPanel, $stateEditorModel, that;
+      that = this;
+      $currentElem = $(event.target);
+      $parentElem = $currentElem.parents('.editable-area');
+      $stateEditorModel = $('#OpsEditor').find('#state-editor-model');
+      $parentEditorModel = $currentElem.parents('#state-editor-model');
+      if ($stateEditorModel.length && (!$parentEditorModel.length)) {
+        $propertyPanel = $('#OpsEditor').find('#OEPanelRight');
+        if ($stateEditorModel.length) {
+          return that.onStateSaveClick();
         } else {
-          $editor = this.$stateList.find('.editable-area:not(".disabled")');
-          elems = $editor.toArray();
-          result = true;
-          _.each(elems, function(e) {
-            var res;
-            res = doValidate(e);
-            if (res) {
-              bindValidateFailed(e);
-              if (result) {
-                result = false;
-              }
-            }
-            return result;
-          });
-        }
-        return result;
-      },
-      genStateItemData: function($stateItem) {
-        var $paraItemList, $paraListElem, cmdName, moduleObj, stateId, stateItemObj, that;
-        that = this;
-        cmdName = $stateItem.attr('data-command');
-        stateId = $stateItem.attr('data-id');
-        moduleObj = that.cmdModuleMap[cmdName];
-        if (!moduleObj) {
-          return {
-            id: stateId,
-            module: '',
-            parameter: {}
-          };
-        }
-        stateItemObj = {
-          id: stateId,
-          module: moduleObj.module,
-          parameter: {}
-        };
-        $paraListElem = $stateItem.find('.parameter-list');
-        $paraItemList = $paraListElem.find('.parameter-item');
-        _.each($paraItemList, function(paraItem) {
-          var $arrayItemList, $dictItemList, $paraInput, $paraItem, arrayObj, dictObjAry, isStateParaItem, paraName, paraValue;
-          $paraItem = $(paraItem);
-          if ($paraItem.hasClass('disabled')) {
-            return;
+          if ($currentElem.parents('#tabbar-wrapper').length) {
+            return that.onStateSaveClick();
           }
-          paraName = $paraItem.attr('data-para-name');
-          paraValue = null;
-          if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
-            $paraInput = $paraItem.find('.parameter-value');
-            paraValue = that.getPlainText($paraInput);
-            if ($paraItem.hasClass('bool')) {
-              if (paraValue === 'true') {
-                paraValue = true;
-              } else if (paraValue === 'false') {
-                paraValue = false;
-              } else {
-                paraValue = '';
+        }
+      }
+    },
+    initCodeEditor: function(editorElem, hintObj, option) {
+      var $editorElem, that, _initEditor;
+      that = this;
+      if (!editorElem) {
+        return;
+      }
+      $editorElem = $(editorElem);
+      if ($editorElem.data('editor')) {
+        return;
+      }
+      if (!option) {
+        option = {};
+      }
+      _initEditor = function() {
+        var editColumn, editRow, editSession, editor, editorSingleLine, enableTab, maxLines, resRefModeAry, tk;
+        editor = ace.edit(editorElem);
+        $editorElem.data('editor', editor);
+        editor.hintObj = hintObj;
+        editor.renderer.setPadding(4);
+        editor.setBehavioursEnabled(false);
+        editorSingleLine = false;
+        maxLines = void 0;
+        if ($editorElem.hasClass('line')) {
+          maxLines = 1;
+          editorSingleLine = true;
+        }
+        resRefModeAry = [
+          {
+            token: 'res_ref_correct',
+            regex: that.resAttrRegexStr
+          }, {
+            token: 'res_ref',
+            regex: '@\\{(\\w|\\-)+(\\.(\\w+(\\[\\d+\\])*))+\\}'
+          }
+        ];
+        editSession = editor.getSession();
+        enableTab = false;
+        if (option.isCodeEditor) {
+          ace.modeResRefRule = resRefModeAry;
+          if (option.extName === 'js') {
+            editSession.setMode('ace/mode/javascript');
+          } else if (option.extName === 'sh') {
+            editSession.setMode('ace/mode/sh');
+          } else if (option.extName === 'rb') {
+            editSession.setMode('ace/mode/ruby');
+          } else if (option.extName === 'py') {
+            editSession.setMode('ace/mode/python');
+          }
+          editor.setTheme('ace/theme/tomorrow_night');
+          enableTab = true;
+        } else {
+          tk = new that.Tokenizer({
+            'start': resRefModeAry
+          });
+          editSession.$mode.$tokenizer = tk;
+          editSession.bgTokenizer.setTokenizer(tk);
+          editor.renderer.updateText();
+        }
+        editor.setOptions({
+          enableBasicAutocompletion: true,
+          maxLines: maxLines,
+          showGutter: option.showGutter || false,
+          highlightGutterLine: true,
+          showPrintMargin: false,
+          highlightActiveLine: false,
+          highlightSelectedWord: false,
+          enableSnippets: false,
+          singleLine: editorSingleLine,
+          enableTab: enableTab,
+          useSoftTabs: false,
+          tabSize: 4
+        });
+        editRow = editSession.getLength();
+        editColumn = editSession.getLine(editRow - 1).length;
+        editor.gotoLine(editRow, editColumn);
+        editor.commands.on("afterExec", function(e) {
+          var $firstInput, $paraItem, $paraListElem, $stateItem, commentCMDEditor, currentValue, cursorPos, firstEditor, hintDataAryMap, isShowTip, lastChar, lineStr, originCMDName, thatEditor, value;
+          thatEditor = e.editor;
+          currentValue = thatEditor.getValue();
+          hintDataAryMap = thatEditor.hintObj;
+          if (e.command.name === "insertstring") {
+            if (/^{$/.test(e.args) && hintDataAryMap.at) {
+              editSession = thatEditor.getSession();
+              cursorPos = thatEditor.getCursorPosition();
+              editRow = cursorPos.row;
+              editColumn = cursorPos.column;
+              lineStr = editSession.getLine(editRow);
+              lastChar = lineStr[editColumn - 2];
+              if (lastChar === '@') {
+                thatEditor.insert('}');
+                thatEditor.moveCursorTo(editRow, editColumn);
+                that.setEditorCompleter(thatEditor, hintDataAryMap.at, 'reference');
+                thatEditor.execCommand("startAutocomplete");
               }
             }
-            if ($paraItem.hasClass('line') || $paraItem.hasClass('text')) {
-              paraValue = that.model.replaceParaNameToUID(paraValue);
+          }
+          if (e.command.name === "backspace") {
+            $stateItem = $editorElem.parents('.state-item');
+            if (hintDataAryMap.focus) {
+              $paraItem = $editorElem.parents('.parameter-item');
+              if ($paraItem.hasClass('bool') || $paraItem.hasClass('state')) {
+                that.setPlainText($editorElem, '');
+              }
+              that.setEditorCompleter(thatEditor, hintDataAryMap.focus, 'command');
+              thatEditor.execCommand("startAutocomplete");
             }
-          } else if ($paraItem.hasClass('dict')) {
-            $dictItemList = $paraItem.find('.parameter-dict-item');
-            dictObjAry = [];
+            if (currentValue === '' && $stateItem.hasClass('comment')) {
+              commentCMDEditor = $stateItem.find('.command-value').data('editor');
+              if (commentCMDEditor) {
+                commentCMDEditor.focus();
+              }
+            }
+          }
+          if (e.command.name === "autocomplete_confirm") {
+            $stateItem = $editorElem.parents('.state-item');
+            $paraListElem = $stateItem.find('.parameter-list');
+            if ($editorElem.hasClass('command-value')) {
+              value = e.args;
+              originCMDName = $stateItem.attr('data-command');
+              if (originCMDName !== value) {
+                that.setCMDForStateItem($stateItem, value);
+                that.refreshDescription(value);
+                that.refreshParaList($paraListElem, value);
+                that.refreshStateView($stateItem);
+              }
+            }
+            if (value === '#') {
+              $firstInput = $paraListElem.find('.parameter-value');
+              firstEditor = $firstInput.data('editor');
+              if (firstEditor) {
+                firstEditor.focus();
+              }
+            } else if ($editorElem.hasClass('parameter-value')) {
+              cursorPos = thatEditor.getCursorPosition();
+              thatEditor.moveCursorTo(cursorPos.row, cursorPos.column + 1);
+              $paraItem = $editorElem.parents('.parameter-item');
+              if ($paraItem.hasClass('dict')) {
+                that.onDictInputChange({
+                  currentTarget: $editorElem[0]
+                });
+              } else if ($paraItem.hasClass('array') || $paraItem.hasClass('state')) {
+                that.onArrayInputChange({
+                  currentTarget: $editorElem[0]
+                });
+              } else if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
+                $paraItem.removeClass('disabled');
+              }
+            } else if ($editorElem.hasClass('text-code-editor')) {
+              cursorPos = thatEditor.getCursorPosition();
+              thatEditor.moveCursorTo(cursorPos.row, cursorPos.column + 1);
+            }
+          }
+          if (e.command.name === "autocomplete_match") {
+            isShowTip = false;
+            if ($editorElem.hasClass('parameter-value')) {
+              $paraItem = $editorElem.parents('.parameter-item');
+              if ($paraItem.hasClass('state')) {
+                isShowTip = true;
+              }
+            }
+            if ($editorElem.hasClass('command-value')) {
+              isShowTip = true;
+            }
+            if (isShowTip) {
+              if (!e.args) {
+                return that.$aceAutocompleteTip.show();
+              } else {
+                return that.$aceAutocompleteTip.hide();
+              }
+            }
+          }
+        });
+        editor.on("focus", function(e, thatEditor) {
+          var $stateItem, $valueInput, currentValue, hintDataAryMap, inputPosX, inputPosY;
+          $valueInput = $(thatEditor.container);
+          $stateItem = $valueInput.parents('.state-item');
+          that.justScrollToElem(that.$stateList, $valueInput);
+          hintDataAryMap = thatEditor.hintObj;
+          currentValue = thatEditor.getValue();
+          if (!currentValue && hintDataAryMap.focus) {
+            that.setEditorCompleter(thatEditor, hintDataAryMap.focus, 'command');
+            thatEditor.execCommand("startAutocomplete");
+          }
+          inputPosX = $valueInput.offset().left;
+          inputPosY = $valueInput.offset().top;
+          that.$aceAutocompleteTip.css({
+            left: inputPosX,
+            top: inputPosY + 25
+          });
+          that.clearFocusedItem();
+          return $stateItem.addClass('focused');
+        });
+        editor.on("blur", function(e, thatEditor) {
+          var $paraItem, $stateItem, $valueInput, currentValue;
+          that.$cmdDsec.find('.highlight').removeClass('highlight');
+          that.$aceAutocompleteTip.hide();
+          $valueInput = $(thatEditor.container);
+          $stateItem = $valueInput.parents('.state-item');
+          $paraItem = $valueInput.parents('.parameter-item');
+          currentValue = thatEditor.getValue();
+          if ($paraItem && $paraItem[0]) {
+            if ($paraItem.hasClass('bool')) {
+              if (currentValue !== 'true' && currentValue !== 'false') {
+                return that.setPlainText($valueInput, '');
+              }
+            }
+          }
+        });
+        if (that.readOnlyMode) {
+          return editor.setReadOnly(true);
+        }
+      };
+      if ($editorElem.hasClass('command-value') || $editorElem.hasClass('text-code-editor')) {
+        return _initEditor();
+      } else {
+        return setTimeout(function() {
+          return _initEditor();
+        }, 0);
+      }
+    },
+    highlightParaDesc: function(paraName) {
+      var $paraNameSpan, err, paraNameSpan, paraParagraph, scrollToPos, that;
+      that = this;
+      that.$cmdDsec.find('.highlight').removeClass('highlight');
+      $paraNameSpan = that.$cmdDsec.find("strong code:contains('" + paraName + "')");
+      paraNameSpan = $paraNameSpan.filter(function() {
+        return $(this).text() === paraName;
+      });
+      if (paraNameSpan[0]) {
+        paraParagraph = $(paraNameSpan[0]).parents('li');
+        paraParagraph.addClass('highlight');
+      }
+      try {
+        scrollToPos = paraParagraph.offset().top - that.$cmdDsec.offset().top + that.$cmdDsec.scrollTop() - 15;
+        that.$cmdDsec.stop(true, true);
+        return that.$cmdDsec.animate({
+          scrollTop: scrollToPos
+        }, 150);
+      } catch (_error) {
+        err = _error;
+        return null;
+      }
+    },
+    scrollToLogItem: function(stateId) {
+      var $stateLog, $targetStateItem, err, scrollToPos, that;
+      that = this;
+      $targetStateItem = that.$stateLogList.find(".state-log-item[data-state-id='" + stateId + "']");
+      $stateLog = $('#OpsEditor').find('#state-log');
+      try {
+        if ($targetStateItem[0]) {
+          scrollToPos = $targetStateItem.offset().top - $stateLog.offset().top + $stateLog.scrollTop();
+          $stateLog.stop(true, true);
+          return $stateLog.animate({
+            scrollTop: scrollToPos
+          }, 150);
+        }
+      } catch (_error) {
+        err = _error;
+        return null;
+      }
+    },
+    justScrollToElem: function($parent, $target) {
+      var err, parentOffsetTop, parentTop, scrollPos, targetOffsetTop, targetTop;
+      try {
+        targetOffsetTop = $target.offset().top;
+        parentOffsetTop = $parent.offset().top;
+        targetTop = targetOffsetTop + 35;
+        parentTop = parentOffsetTop + $parent.height();
+        if (targetTop > parentTop) {
+          scrollPos = $parent.scrollTop() + targetTop - parentTop + 15;
+        } else if (targetOffsetTop < parentOffsetTop) {
+          scrollPos = $parent.scrollTop() + targetOffsetTop - parentOffsetTop - 15;
+        }
+        return $parent.scrollTop(scrollPos);
+      } catch (_error) {
+        err = _error;
+        return null;
+      }
+    },
+    setEditorCompleter: function(editor, dataAry, metaType) {
+      editor.completers = [
+        {
+          getCompletions: function(editor, session, pos, prefix, callback) {
+            if (dataAry && dataAry.length) {
+              return callback(null, dataAry.map(function(ea) {
+                return {
+                  name: ea.name,
+                  value: ea.value,
+                  score: ea.value,
+                  meta: ea.meta,
+                  support: ea.support
+                };
+              }));
+            } else {
+              return callback(null, []);
+            }
+          }
+        }
+      ];
+      return null;
+    },
+    getRepresent: function(inputElem) {
+      var $input, $paraItem, $stateItem, paramName, represent;
+      $input = $(inputElem);
+      $stateItem = $input.closest('.state-item');
+      if ($input.hasClass('command-value')) {
+        represent = $stateItem.find('.state-view .command-view-value');
+      } else {
+        $paraItem = $input.closest('.parameter-item');
+        paramName = $paraItem.data('paraName');
+        represent = $stateItem.find(".state-view [data-para-name='" + paramName + "']");
+      }
+      return represent;
+    },
+    getParaObjByInput: function(inputElem) {
+      var $inputElem, $paraItem, $stateItem, command, constraint, currentParaMap, paramName, retVal, subType, that, type;
+      that = this;
+      $inputElem = $(inputElem);
+      retVal = {};
+      if ($inputElem.hasClass('command-value')) {
+        type = 'command';
+        retVal = {
+          type: type,
+          dataMap: that.cmdParaObjMap
+        };
+      } else {
+        type = 'parameter';
+        $paraItem = $inputElem.closest('.parameter-item');
+        $stateItem = $paraItem.closest('.state-item');
+        paramName = $paraItem.data('paraName');
+        command = $stateItem.data('command');
+        currentParaMap = that.cmdParaObjMap[command];
+        constraint = currentParaMap[paramName];
+        if ($inputElem.hasClass('key')) {
+          subType = 'key';
+        } else if ($inputElem.hasClass('value')) {
+          subType = 'value';
+        }
+        retVal = {
+          type: type,
+          subType: subType,
+          command: command,
+          paramName: paramName,
+          constraint: constraint,
+          dataMap: that.cmdParaObjMap,
+          refList: that.model.genAttrRefList()
+        };
+      }
+      return retVal;
+    },
+    getPlainText: function(inputElem) {
+      var $inputElem, editor;
+      $inputElem = $(inputElem);
+      editor = $inputElem.data('editor');
+      if (editor) {
+        return editor.getValue();
+      } else {
+        if (!$inputElem.hasClass('ace_editor')) {
+          return $inputElem.text();
+        }
+        return '';
+      }
+    },
+    setPlainText: function(inputElem, content) {
+      var $inputElem, editor;
+      $inputElem = $(inputElem);
+      editor = $inputElem.data('editor');
+      if (editor) {
+        return editor.setValue(content);
+      }
+    },
+    updateStateIdBySort: function(newOldStateIdMap) {
+      var that;
+      that = this;
+      return that.model.updateAllStateRef(newOldStateIdMap);
+    },
+    refreshStateLogList: function() {
+      var $stateLogItems, instanceStateHTML, renderHTML, resState, stateIdLogViewMap, stateLogDataAry, stateLogViewAry, stateStatusMap, that;
+      that = this;
+      stateLogDataAry = that.model.get('stateLogDataAry');
+      if (!(stateLogDataAry && stateLogDataAry.length)) {
+        that.showLogListLoading(false, true);
+      }
+      that.stateIdLogContentMap = {};
+      stateLogViewAry = [];
+      stateStatusMap = {};
+      stateIdLogViewMap = {};
+      $stateLogItems = that.$stateLogList.find('.state-log-item');
+      _.each($stateLogItems, function(stateLogItem) {
+        var $stateLogItem, stateId, stateView;
+        $stateLogItem = $(stateLogItem);
+        stateId = $stateLogItem.attr('data-state-id');
+        stateView = $stateLogItem.hasClass('view');
+        if (stateId) {
+          stateIdLogViewMap[stateId] = stateView;
+        }
+        return null;
+      });
+      _.each(stateLogDataAry, function(logObj, idx) {
+        var commentStr, isStateLog, longStdout, stateId, stateNum, stateStatus, stdoutStr, timeStr, viewLog;
+        timeStr = null;
+        if (logObj.time) {
+          timeStr = MC.dateFormat(new Date(logObj.time), 'yyyy-MM-dd hh:mm:ss');
+        }
+        stateStatus = logObj.result;
+        stateId = "" + logObj.id;
+        stateNum = '';
+        isStateLog = false;
+        if (logObj.id !== 'Agent') {
+          stateId = "State " + stateId;
+          isStateLog = true;
+          stateStatusMap[logObj.id] = stateStatus;
+        } else {
+          stateNum = logObj.id;
+        }
+        stdoutStr = '';
+        commentStr = '';
+        longStdout = false;
+        if (logObj.comment) {
+          commentStr = $.trim(logObj.comment.replace(/\n\n/g, '\n'));
+        }
+        if (logObj.stdout) {
+          stdoutStr = $.trim(logObj.stdout.replace(/\n\n/g, '\n'));
+          if (stdoutStr.length > 100) {
+            longStdout = true;
+            that.stateIdLogContentMap[logObj.id] = {
+              number: stateNum,
+              content: stdoutStr
+            };
+          }
+        }
+        viewLog = stateIdLogViewMap[logObj.id];
+        if (viewLog !== true && viewLog !== false) {
+          viewLog = false;
+        }
+        stateLogViewAry.push({
+          id: logObj.id,
+          state_num: stateNum,
+          log_time: timeStr,
+          state_status: stateStatus,
+          stdout: stdoutStr,
+          comment: commentStr,
+          long_stdout: longStdout,
+          view: viewLog,
+          is_state_log: isStateLog
+        });
+        return null;
+      });
+      renderHTML = $.trim(template.stateLogItemTpl({
+        state_logs: stateLogViewAry
+      }));
+      that.refreshStateItemStatus(stateStatusMap);
+      resState = that.model.get('resState');
+      instanceStateHTML = $.trim(template.stateLogInstanceItemTpl({
+        res_status: (resState || "").toLowerCase()
+      }));
+      that.$stateLogList.empty().append(instanceStateHTML).append(renderHTML);
+      return that.refreshLogItemNum();
+    },
+    setEditorReadOnlyMode: function() {
+      var $closeBtn, $saveCancelBtn, that;
+      that = this;
+      that.$stateList.find('.state-drag').hide();
+      that.$stateList.find('.state-add').hide();
+      that.$stateList.find('.state-remove').hide();
+      that.$stateList.find('.parameter-remove').hide();
+      that.$editorModal.find('.state-item-add').hide();
+      $saveCancelBtn = that.$editorModal.find('.state-save, .state-cancel');
+      $saveCancelBtn.hide();
+      $closeBtn = that.$editorModal.find('.state-close');
+      return $closeBtn.css('display', 'inline-block');
+    },
+    showLogListLoading: function(loadShow, infoShow) {
+      var $loadText, $logInfo, $logPanel, that;
+      that = this;
+      $logPanel = $('#OpsEditor').find('#state-log');
+      $loadText = $logPanel.find('.state-log-loading');
+      $logInfo = $logPanel.find('.state-log-info');
+      if (loadShow) {
+        $loadText.show();
+        return $logInfo.hide();
+      } else {
+        $loadText.hide();
+        if (infoShow) {
+          return $logInfo.show();
+        } else {
+          return $logInfo.hide();
+        }
+      }
+    },
+    onStateStatusUpdate: function(newStateUpdateResIdAry) {
+      var selectedResId, that;
+      that = this;
+      selectedResId = that.currentResId;
+      if (newStateUpdateResIdAry) {
+        if (newStateUpdateResIdAry.length) {
+          if (selectedResId && __indexOf.call(newStateUpdateResIdAry, selectedResId) >= 0) {
+            return that.refreshStateLog();
+          }
+        } else {
+          return that.refreshStateLog();
+        }
+      } else {
+        return that.refreshStateLog();
+      }
+    },
+    onOptionalParaItemChange: function(event) {
+      var $arrayItemList, $currentInputElem, $dictItemList, $paraItem, currentValue, needDisable, that;
+      that = this;
+      $currentInputElem = $(event.currentTarget);
+      currentValue = that.getPlainText($currentInputElem);
+      $paraItem = $currentInputElem.parents('.parameter-item');
+      if (currentValue) {
+        return $paraItem.removeClass('disabled');
+      } else {
+        if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
+          return $paraItem.addClass('disabled');
+        } else if ($paraItem.hasClass('dict')) {
+          needDisable = true;
+          $dictItemList = $paraItem.find('.parameter-dict-item');
+          if ($dictItemList.length <= 2) {
             _.each($dictItemList, function(dictItem) {
               var $dictItem, $keyInput, $valueInput, keyValue, valueValue;
               $dictItem = $(dictItem);
@@ -4082,1504 +4954,595 @@ return Markdown;
               $valueInput = $dictItem.find('.value');
               keyValue = that.getPlainText($keyInput);
               valueValue = that.getPlainText($valueInput);
-              if (keyValue) {
-                valueValue = that.model.replaceParaNameToUID(valueValue);
-                dictObjAry.push({
-                  key: keyValue,
-                  value: valueValue
-                });
+              if (keyValue || valueValue) {
+                needDisable = false;
               }
               return null;
             });
-            paraValue = dictObjAry;
-          } else if ($paraItem.hasClass('array') || $paraItem.hasClass('state')) {
-            $arrayItemList = $paraItem.find('.parameter-value');
-            isStateParaItem = $paraItem.hasClass('state');
-            arrayObj = [];
+            if (needDisable) {
+              return $paraItem.addClass('disabled');
+            }
+          }
+        } else if ($paraItem.hasClass('array') || $paraItem.hasClass('state')) {
+          needDisable = true;
+          $arrayItemList = $paraItem.find('.parameter-value');
+          if ($arrayItemList.length <= 2) {
             _.each($arrayItemList, function(arrayItem) {
-              var $arrayItem, arrayValue;
+              var $arrayItem, inputValue;
               $arrayItem = $(arrayItem);
-              arrayValue = that.getPlainText($arrayItem);
-              if (arrayValue) {
-                if (isStateParaItem) {
-                  arrayValue = that.model.replaceStateNameToUID(arrayValue);
-                } else {
-                  arrayValue = that.model.replaceParaNameToUID(arrayValue);
-                }
-                arrayObj.push(arrayValue);
+              inputValue = that.getPlainText($arrayItem);
+              if (inputValue) {
+                needDisable = false;
               }
               return null;
             });
-            paraValue = arrayObj;
+            if (needDisable) {
+              return $paraItem.addClass('disabled');
+            }
           }
-          return stateItemObj.parameter[paraName] = paraValue;
-        });
-        return stateItemObj;
-      },
-      saveStateData: function() {
-        var $stateItemList, stateObjAry, that;
-        that = this;
-        if (!that.$stateList) {
-          return null;
         }
-        $stateItemList = that.$stateList.find('.state-item');
-        stateObjAry = [];
-        _.each($stateItemList, function(stateItem, idx) {
-          var $stateItem, stateItemObj;
-          $stateItem = $(stateItem);
-          stateItemObj = that.genStateItemData($stateItem);
-          if (stateItemObj && stateItemObj.module && stateItemObj.id) {
-            stateObjAry.push(stateItemObj);
+      }
+    },
+    onCommandInputBlur: function(event) {
+      var $currentElem, $paraListElem, $stateItem, currentValue, moduleObj, originCMDName, that;
+      that = this;
+      $currentElem = $(event.currentTarget);
+      $stateItem = $currentElem.parents('.state-item');
+      currentValue = that.getPlainText($currentElem);
+      moduleObj = that.cmdModuleMap[currentValue];
+      originCMDName = $stateItem.attr('data-command');
+      if (moduleObj && moduleObj.support) {
+        if (originCMDName !== currentValue) {
+          that.setCMDForStateItem($stateItem, currentValue);
+          that.refreshDescription(currentValue);
+          $paraListElem = $stateItem.find('.parameter-list');
+          that.refreshParaList($paraListElem, currentValue);
+          return that.refreshStateView($stateItem);
+        }
+      } else {
+        return that.setPlainText($currentElem, originCMDName);
+      }
+    },
+    setCMDForStateItem: function($stateItem, cmdValue) {
+      var that;
+      that = this;
+      $stateItem.attr('data-command', cmdValue);
+      if (cmdValue === '#') {
+        return $stateItem.addClass('comment');
+      } else {
+        return $stateItem.removeClass('comment');
+      }
+    },
+    refreshStateItemStatus: function(stateStatusMap) {
+      var $stateItemList, that;
+      that = this;
+      $stateItemList = that.$stateList.find('.state-item');
+      return _.each($stateItemList, function(stateItem) {
+        var $stateItem, $statusIcon, stateId, stateStatus;
+        $stateItem = $(stateItem);
+        stateId = $stateItem.attr('data-id');
+        $statusIcon = $stateItem.find('.state-status-icon');
+        $statusIcon.removeClass('status-green').removeClass('status-red').removeClass('status-yellow');
+        stateStatus = stateStatusMap[stateId];
+        if (stateStatus === 'success') {
+          $statusIcon.addClass('status-green');
+        } else if (stateStatus === 'failure') {
+          $statusIcon.addClass('status-red');
+        } else {
+          $statusIcon.addClass('status-yellow');
+        }
+        return null;
+      });
+    },
+    refreshLogItemNum: function() {
+      var $logItemList, $stateItemList, stateIdNumMap, that;
+      that = this;
+      if (that.currentState === 'stack') {
+        return;
+      }
+      stateIdNumMap = {};
+      $stateItemList = that.$stateList.find('.state-item');
+      _.each($stateItemList, function(stateItem, idx) {
+        var $stateItem, stateId;
+        $stateItem = $(stateItem);
+        stateId = $stateItem.attr('data-id');
+        stateIdNumMap[stateId] = idx + 1;
+        return null;
+      });
+      $logItemList = that.$stateLogList.find('.state-log-item');
+      return _.each($logItemList, function(logItem, idx) {
+        var $logItem, stateId, stateNum, stateNumStr;
+        if (idx >= 2) {
+          $logItem = $(logItem);
+          stateId = $logItem.attr('data-state-id');
+          stateNum = stateIdNumMap[stateId];
+          stateNumStr = 'deleted';
+          if (stateNum) {
+            stateNumStr = stateNum;
           }
-          return null;
-        });
-        return stateObjAry;
-      },
-      loadStateData: function(stateObjAry) {
-        var renderObj, that;
-        that = this;
-        renderObj = {
-          state_list: [],
-          err_list: []
-        };
-        _.each(stateObjAry, function(state, idx) {
-          var cmdName, err, paraListObj, paraModelObj, stateId, stateRenderObj, _ref;
-          try {
-            cmdName = that.moduleCMDMap[state.module];
-            if (!cmdName) {
-              throw new Error('command');
-            }
-            if (!((_ref = that.cmdModuleMap[cmdName]) != null ? _ref.support : void 0)) {
-              throw new Error('command');
-            }
-            paraModelObj = that.cmdParaObjMap[cmdName];
-            paraListObj = state.parameter;
-            stateId = state.id;
-            stateRenderObj = {
-              id: stateId,
-              id_show: idx + 1,
-              cmd_value: cmdName,
-              parameter_list: []
-            };
-            _.each(paraModelObj, function(paraModelValue, paraModelName) {
-              var paraListAry, paraModelRequired, paraModelType, paraValue, renderParaObj, renderParaValue;
-              paraModelType = paraModelValue.type;
-              paraModelRequired = paraModelValue.required;
-              renderParaObj = {
-                para_name: paraModelName,
-                para_disabled: true,
-                required: paraModelRequired
-              };
-              renderParaObj['type_' + paraModelType] = true;
-              paraValue = paraListObj[paraModelName];
-              if (paraValue === void 0 && paraModelRequired) {
-                throw new Error('parameter');
+          $logItem.find('.state-log-item-name').text('State ' + stateNumStr);
+        }
+        return null;
+      });
+    },
+    unloadEditor: function() {
+      var $aceEditors, that;
+      that = this;
+      $aceEditors = $('#OpsEditor').find('.ace_editor');
+      return $aceEditors.remove();
+    },
+    initUndoManager: function() {
+      var that;
+      that = this;
+      that.commandStack = [];
+      that.commandIndex = -1;
+      that.undoManager = {
+        register: function(stateId, statePos, method, stateData) {
+          var insertPos, newIndex, oldIndex, stateDataAry, statePosAry;
+          that.commandStack.splice(that.commandIndex + 1, that.commandStack.length - that.commandIndex);
+          if (method === 'remove') {
+            stateDataAry = [];
+            statePosAry = statePos;
+            _.each(stateId, function(stateIdValue) {
+              var $stateItem, stateDataValue;
+              $stateItem = that.getStateItemById(stateIdValue);
+              stateDataValue = that.getStateItemByData($stateItem);
+              return stateDataAry.push(stateDataValue);
+            });
+            that.commandStack.push({
+              redo: function() {
+                return _.each(stateDataAry, function(stateDataValue) {
+                  var $stateItem;
+                  $stateItem = that.getStateItemById(stateDataValue.id);
+                  return that.onRemoveState(null, $stateItem, true);
+                });
+              },
+              undo: function() {
+                var idx;
+                idx = 0;
+                _.each(stateDataAry, function(stateDataValue) {
+                  return that.addStateItemByData([stateDataValue], statePosAry[idx++] - 1);
+                });
+                return null;
               }
-              if (paraValue === void 0 && !paraModelRequired) {
-                renderParaObj.para_disabled = true;
-              } else {
-                renderParaObj.para_disabled = false;
+            });
+          }
+          if (method === 'add') {
+            that.commandStack.push({
+              redo: function() {
+                return null;
+              },
+              undo: function() {
+                var $stateItem;
+                $stateItem = that.getStateItemById(stateId);
+                stateData = that.getStateItemByData($stateItem);
+                this.redo = function() {
+                  return that.addStateItemByData([stateData], statePos - 1);
+                };
+                return that.onRemoveState(null, $stateItem, true);
               }
-              renderParaValue = null;
-              if (paraModelType === 'line' || paraModelType === 'text' || paraModelType === 'bool') {
-                renderParaValue = String(paraValue);
-                if (!paraValue) {
-                  renderParaValue = '';
-                }
-                if (paraModelType === 'bool' && paraValue === false) {
-                  renderParaValue = 'false';
-                }
-                if (paraModelType === 'line' || paraModelType === 'text') {
-                  renderParaValue = that.model.replaceParaUIDToName(renderParaValue);
-                  if (renderParaValue && renderParaValue.indexOf('@{unknown') !== -1) {
-                    renderObj.err_list.push('reference');
-                  }
-                }
-              } else if (paraModelType === 'dict') {
-                renderParaValue = [];
-                if (_.isArray(paraValue)) {
-                  _.each(paraValue, function(paraValueObj) {
-                    paraValueObj.value = that.model.replaceParaUIDToName(paraValueObj.value);
-                    if (paraValueObj.value && paraValueObj.value.indexOf('@{unknown') !== -1) {
-                      renderObj.err_list.push('reference');
-                    }
-                    renderParaValue.push({
-                      key: paraValueObj.key,
-                      value: paraValueObj.value
-                    });
-                    return null;
-                  });
-                } else if (_.isObject(paraValue)) {
-                  _.each(paraValue, function(paraValueStr, paraKey) {
-                    paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
-                    if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
-                      renderObj.err_list.push('reference');
-                    }
-                    renderParaValue.push({
-                      key: paraKey,
-                      value: paraValueStr
-                    });
-                    return null;
-                  });
-                }
-                if (!paraValue || _.isEmpty(paraValue)) {
-                  renderParaValue = [
-                    {
-                      key: '',
-                      value: ''
-                    }
-                  ];
-                }
-              } else if (paraModelType === 'array' || paraModelType === 'state') {
-                renderParaValue = [];
-                if (!_.isArray(paraValue)) {
-                  if (!paraValue) {
-                    paraValue = '';
-                  }
-                  paraValue = [paraValue];
-                }
-                _.each(paraValue, function(paraValueStr) {
-                  if (paraModelType === 'state') {
-                    paraValueStr = that.model.replaceStateUIDToName(paraValueStr);
-                  } else {
-                    paraValueStr = that.model.replaceParaUIDToName(paraValueStr);
-                  }
-                  if (paraValueStr && paraValueStr.indexOf('@{unknown') !== -1) {
-                    renderObj.err_list.push('reference');
-                  }
-                  renderParaValue.push(paraValueStr);
+            });
+          }
+          if (method === 'sort') {
+            oldIndex = statePos;
+            newIndex = stateData;
+            that.commandStack.push({
+              redo: function() {
+                var $stateItem;
+                $stateItem = that.getStateItemById(stateId);
+                stateData = that.getStateItemByData($stateItem);
+                that.onRemoveState(null, $stateItem, true);
+                return that.addStateItemByData([stateData], newIndex - 1);
+              },
+              undo: function() {
+                var $stateItem;
+                $stateItem = that.getStateItemById(stateId);
+                stateData = that.getStateItemByData($stateItem);
+                that.onRemoveState(null, $stateItem, true);
+                return that.addStateItemByData([stateData], oldIndex - 1);
+              }
+            });
+          }
+          if (method === 'paste') {
+            insertPos = statePos;
+            stateDataAry = _.map(stateData, function(data) {
+              return _.extend({}, data);
+            });
+            that.commandStack.push({
+              redo: function() {
+                return that.addStateItemByData(stateDataAry, insertPos - 1);
+              },
+              undo: function() {
+                return _.each(stateDataAry, function(pasteStateData) {
+                  var $stateItem, pasteStateId;
+                  pasteStateId = pasteStateData.id;
+                  $stateItem = that.getStateItemById(pasteStateId);
+                  that.onRemoveState(null, $stateItem, true);
                   return null;
                 });
-                if (!paraValue || !paraValue.length) {
-                  renderParaValue = [''];
-                }
               }
-              renderParaObj.para_value = renderParaValue;
-              stateRenderObj.parameter_list.push(renderParaObj);
-              paraListAry = stateRenderObj.parameter_list;
-              stateRenderObj.parameter_list = that.model.sortParaList(paraListAry, 'para_name');
-              return null;
             });
-            renderObj.state_list.push(stateRenderObj);
-          } catch (_error) {
-            err = _error;
-            renderObj.err_list.push(err.message);
+          }
+          that.commandIndex = that.commandStack.length - 1;
+          _.defer(_.bind(that.renderStateCount, that));
+          return null;
+        },
+        redo: function() {
+          var operateCommand;
+          if (that.undoManager.hasRedo()) {
+            operateCommand = that.commandStack[that.commandIndex + 1];
+            if (operateCommand) {
+              operateCommand.redo();
+              that.commandIndex = that.commandIndex + 1;
+            }
+            that.renderStateCount();
           }
           return null;
-        });
-        return renderObj;
-      },
-      onStateSaveClick: function() {
-        var changeAry, changeObj, compareStateData, otherCompareStateData, stateData, that, _ref;
-        that = this;
-        stateData = that.saveStateData();
-        if (stateData) {
-          that.model.setStateData(stateData);
-        }
-        if (stateData) {
-          compareStateData = null;
-          otherCompareStateData = null;
-          changeAry = [];
-          if (that.originCompStateData && stateData) {
-            if (that.originCompStateData.length > stateData.length) {
-              compareStateData = stateData;
-              otherCompareStateData = that.originCompStateData;
-            } else {
-              compareStateData = that.originCompStateData;
-              otherCompareStateData = stateData;
+        },
+        undo: function() {
+          var operateCommand;
+          if (that.undoManager.hasUndo()) {
+            operateCommand = that.commandStack[that.commandIndex];
+            if (operateCommand) {
+              operateCommand.undo();
+              that.commandIndex = that.commandIndex - 1;
             }
-            _.each(compareStateData, function(stateObj, idx) {
-              if (!_.isEqual(stateObj, otherCompareStateData[idx])) {
-                changeAry.push(stateObj.id);
-              }
-              return null;
-            });
-            if ((_ref = that.currentState) === 'app' || _ref === 'appedit') {
-              changeObj = {
-                resId: that.currentResId,
-                stateIds: changeAry
-              };
-              if ((!_.isEqual(that.originCompStateData, stateData)) || changeAry.length) {
-                return ide_event.trigger(ide_event.STATE_EDITOR_DATA_UPDATE, changeObj);
-              }
-            }
-          }
-        }
-      },
-      onStateCancelClick: function(event) {
-        var that;
-        that = this;
-        that.unloadEditor();
-        return that.closedPopup();
-      },
-      onParaRemoveClick: function(event) {
-        var $currentElem, $paraItem, that;
-        that = this;
-        $currentElem = $(event.currentTarget);
-        $paraItem = $currentElem.parents('.parameter-item');
-        if ($paraItem.hasClass('disabled')) {
-          $paraItem.removeClass('disabled');
-        } else {
-          $paraItem.addClass('disabled');
-        }
-        return null;
-      },
-      onDescToggleClick: function(event) {
-        var $descPanel, $descPanelToggle, $logPanel, $logPanelToggle, $stateEditor, expandPanel, that;
-        that = this;
-        $stateEditor = $('#OpsEditor').find('#state-editor');
-        $descPanel = $('#OpsEditor').find('#state-description');
-        $logPanel = $('#OpsEditor').find('#state-log');
-        $descPanelToggle = that.$editorModal.find('.state-desc-toggle');
-        $logPanelToggle = that.$editorModal.find('.state-log-toggle');
-        expandPanel = $('#OpsEditor').find('#OEPanelRight').hasClass('state-wide');
-        if (expandPanel && $descPanel.hasClass('show')) {
-          $stateEditor.addClass('full');
-          $logPanel.removeClass('show');
-          $descPanel.removeClass('show');
-          $descPanelToggle.removeClass('active');
-          $('#OpsEditor').find('#OEPanelRight').removeClass('state-wide');
-        } else {
-          $stateEditor.removeClass('full');
-          $logPanel.removeClass('show');
-          $descPanel.addClass('show');
-          $descPanelToggle.addClass('active');
-          $('#OpsEditor').find('#OEPanelRight').addClass('state-wide');
-        }
-        return $logPanelToggle.removeClass('active');
-      },
-      onLogToggleClick: function(event) {
-        var $descPanel, $descPanelToggle, $logPanel, $logPanelToggle, $stateEditor, currentAppState, expandPanel, that, _ref;
-        that = this;
-        if ((_ref = that.currentState) === 'app' || _ref === 'appedit') {
-          currentAppState = Design.instance().get('state');
-          if (currentAppState === 'Stopped') {
-            return;
-          }
-        }
-        $stateEditor = $('#OpsEditor').find('#state-editor');
-        $descPanel = $('#OpsEditor').find('#state-description');
-        $logPanel = $('#OpsEditor').find('#state-log');
-        $descPanelToggle = that.$editorModal.find('.state-desc-toggle');
-        $logPanelToggle = that.$editorModal.find('.state-log-toggle');
-        expandPanel = $('#OpsEditor').find('#OEPanelRight').hasClass('state-wide');
-        if (expandPanel && $logPanel.hasClass('show')) {
-          $stateEditor.addClass('full');
-          $descPanel.removeClass('show');
-          $logPanel.removeClass('show');
-          $logPanelToggle.removeClass('active');
-          $('#OpsEditor').find('#OEPanelRight').removeClass('state-wide');
-        } else {
-          $stateEditor.removeClass('full');
-          $descPanel.removeClass('show');
-          $logPanel.addClass('show');
-          $logPanelToggle.addClass('active');
-          $('#OpsEditor').find('#OEPanelRight').addClass('state-wide');
-        }
-        return $descPanelToggle.removeClass('active');
-      },
-      showLogPanel: function() {
-        var $descPanel, $descPanelToggle, $logPanel, $logPanelToggle, $stateEditor, that;
-        that = this;
-        $stateEditor = $('#OpsEditor').find('#state-editor');
-        $descPanel = $('#OpsEditor').find('#state-description');
-        $logPanel = $('#OpsEditor').find('#state-log');
-        $descPanelToggle = that.$editorModal.find('.state-desc-toggle');
-        $logPanelToggle = that.$editorModal.find('.state-log-toggle');
-        $stateEditor.removeClass('full');
-        $descPanel.removeClass('show');
-        $logPanel.addClass('show');
-        $logPanelToggle.addClass('active');
-        $descPanelToggle.removeClass('active');
-        return null;
-      },
-      onDocumentMouseDown: function(event) {
-        var $allEditableArea, $currentElem, $parentElem, that;
-        that = this;
-        $currentElem = $(event.target);
-        $parentElem = $currentElem.parents('.editable-area');
-        if (!$parentElem.length && !$currentElem.hasClass('editable-area') && !$currentElem.hasClass('ace_scrollbar')) {
-          $allEditableArea = $('#OpsEditor').find('.editable-area');
-          _.each($allEditableArea, function(editableArea) {
-            var $editableArea, editor;
-            $editableArea = $(editableArea);
-            editor = $editableArea.data('editor');
-            if (editor) {
-              editor.blur();
-            }
-            return null;
-          });
-          setTimeout(function() {
-            return that.$stateGistPasteArea.focus();
-          }, 0);
-        }
-        return that.onMouseDownSaveFromOther(event);
-      },
-      onMouseDownSaveFromOther: function(event) {
-        var $currentElem, $parentEditorModel, $parentElem, $propertyPanel, $stateEditorModel, that;
-        that = this;
-        $currentElem = $(event.target);
-        $parentElem = $currentElem.parents('.editable-area');
-        $stateEditorModel = $('#OpsEditor').find('#state-editor-model');
-        $parentEditorModel = $currentElem.parents('#state-editor-model');
-        if ($stateEditorModel.length && (!$parentEditorModel.length)) {
-          $propertyPanel = $('#OpsEditor').find('#OEPanelRight');
-          if ($stateEditorModel.length) {
-            return that.onStateSaveClick();
-          } else {
-            if ($currentElem.parents('#tabbar-wrapper').length) {
-              return that.onStateSaveClick();
-            }
-          }
-        }
-      },
-      initCodeEditor: function(editorElem, hintObj, option) {
-        var $editorElem, that, _initEditor;
-        that = this;
-        if (!editorElem) {
-          return;
-        }
-        $editorElem = $(editorElem);
-        if ($editorElem.data('editor')) {
-          return;
-        }
-        if (!option) {
-          option = {};
-        }
-        _initEditor = function() {
-          var editColumn, editRow, editSession, editor, editorSingleLine, enableTab, maxLines, resRefModeAry, tk;
-          editor = ace.edit(editorElem);
-          $editorElem.data('editor', editor);
-          editor.hintObj = hintObj;
-          editor.renderer.setPadding(4);
-          editor.setBehavioursEnabled(false);
-          editorSingleLine = false;
-          maxLines = void 0;
-          if ($editorElem.hasClass('line')) {
-            maxLines = 1;
-            editorSingleLine = true;
-          }
-          resRefModeAry = [
-            {
-              token: 'res_ref_correct',
-              regex: that.resAttrRegexStr
-            }, {
-              token: 'res_ref',
-              regex: '@\\{(\\w|\\-)+(\\.(\\w+(\\[\\d+\\])*))+\\}'
-            }
-          ];
-          editSession = editor.getSession();
-          enableTab = false;
-          if (option.isCodeEditor) {
-            ace.modeResRefRule = resRefModeAry;
-            if (option.extName === 'js') {
-              editSession.setMode('ace/mode/javascript');
-            } else if (option.extName === 'sh') {
-              editSession.setMode('ace/mode/sh');
-            } else if (option.extName === 'rb') {
-              editSession.setMode('ace/mode/ruby');
-            } else if (option.extName === 'py') {
-              editSession.setMode('ace/mode/python');
-            }
-            editor.setTheme('ace/theme/tomorrow_night');
-            enableTab = true;
-          } else {
-            tk = new that.Tokenizer({
-              'start': resRefModeAry
-            });
-            editSession.$mode.$tokenizer = tk;
-            editSession.bgTokenizer.setTokenizer(tk);
-            editor.renderer.updateText();
-          }
-          editor.setOptions({
-            enableBasicAutocompletion: true,
-            maxLines: maxLines,
-            showGutter: option.showGutter || false,
-            highlightGutterLine: true,
-            showPrintMargin: false,
-            highlightActiveLine: false,
-            highlightSelectedWord: false,
-            enableSnippets: false,
-            singleLine: editorSingleLine,
-            enableTab: enableTab,
-            useSoftTabs: false,
-            tabSize: 4
-          });
-          editRow = editSession.getLength();
-          editColumn = editSession.getLine(editRow - 1).length;
-          editor.gotoLine(editRow, editColumn);
-          editor.commands.on("afterExec", function(e) {
-            var $firstInput, $paraItem, $paraListElem, $stateItem, commentCMDEditor, currentValue, cursorPos, firstEditor, hintDataAryMap, isShowTip, lastChar, lineStr, originCMDName, thatEditor, value;
-            thatEditor = e.editor;
-            currentValue = thatEditor.getValue();
-            hintDataAryMap = thatEditor.hintObj;
-            if (e.command.name === "insertstring") {
-              if (/^{$/.test(e.args) && hintDataAryMap.at) {
-                editSession = thatEditor.getSession();
-                cursorPos = thatEditor.getCursorPosition();
-                editRow = cursorPos.row;
-                editColumn = cursorPos.column;
-                lineStr = editSession.getLine(editRow);
-                lastChar = lineStr[editColumn - 2];
-                if (lastChar === '@') {
-                  thatEditor.insert('}');
-                  thatEditor.moveCursorTo(editRow, editColumn);
-                  that.setEditorCompleter(thatEditor, hintDataAryMap.at, 'reference');
-                  thatEditor.execCommand("startAutocomplete");
-                }
-              }
-            }
-            if (e.command.name === "backspace") {
-              $stateItem = $editorElem.parents('.state-item');
-              if (hintDataAryMap.focus) {
-                $paraItem = $editorElem.parents('.parameter-item');
-                if ($paraItem.hasClass('bool') || $paraItem.hasClass('state')) {
-                  that.setPlainText($editorElem, '');
-                }
-                that.setEditorCompleter(thatEditor, hintDataAryMap.focus, 'command');
-                thatEditor.execCommand("startAutocomplete");
-              }
-              if (currentValue === '' && $stateItem.hasClass('comment')) {
-                commentCMDEditor = $stateItem.find('.command-value').data('editor');
-                if (commentCMDEditor) {
-                  commentCMDEditor.focus();
-                }
-              }
-            }
-            if (e.command.name === "autocomplete_confirm") {
-              $stateItem = $editorElem.parents('.state-item');
-              $paraListElem = $stateItem.find('.parameter-list');
-              if ($editorElem.hasClass('command-value')) {
-                value = e.args;
-                originCMDName = $stateItem.attr('data-command');
-                if (originCMDName !== value) {
-                  that.setCMDForStateItem($stateItem, value);
-                  that.refreshDescription(value);
-                  that.refreshParaList($paraListElem, value);
-                  that.refreshStateView($stateItem);
-                }
-              }
-              if (value === '#') {
-                $firstInput = $paraListElem.find('.parameter-value');
-                firstEditor = $firstInput.data('editor');
-                if (firstEditor) {
-                  firstEditor.focus();
-                }
-              } else if ($editorElem.hasClass('parameter-value')) {
-                cursorPos = thatEditor.getCursorPosition();
-                thatEditor.moveCursorTo(cursorPos.row, cursorPos.column + 1);
-                $paraItem = $editorElem.parents('.parameter-item');
-                if ($paraItem.hasClass('dict')) {
-                  that.onDictInputChange({
-                    currentTarget: $editorElem[0]
-                  });
-                } else if ($paraItem.hasClass('array') || $paraItem.hasClass('state')) {
-                  that.onArrayInputChange({
-                    currentTarget: $editorElem[0]
-                  });
-                } else if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
-                  $paraItem.removeClass('disabled');
-                }
-              } else if ($editorElem.hasClass('text-code-editor')) {
-                cursorPos = thatEditor.getCursorPosition();
-                thatEditor.moveCursorTo(cursorPos.row, cursorPos.column + 1);
-              }
-            }
-            if (e.command.name === "autocomplete_match") {
-              isShowTip = false;
-              if ($editorElem.hasClass('parameter-value')) {
-                $paraItem = $editorElem.parents('.parameter-item');
-                if ($paraItem.hasClass('state')) {
-                  isShowTip = true;
-                }
-              }
-              if ($editorElem.hasClass('command-value')) {
-                isShowTip = true;
-              }
-              if (isShowTip) {
-                if (!e.args) {
-                  return that.$aceAutocompleteTip.show();
-                } else {
-                  return that.$aceAutocompleteTip.hide();
-                }
-              }
-            }
-          });
-          editor.on("focus", function(e, thatEditor) {
-            var $stateItem, $valueInput, currentValue, hintDataAryMap, inputPosX, inputPosY;
-            $valueInput = $(thatEditor.container);
-            $stateItem = $valueInput.parents('.state-item');
-            that.justScrollToElem(that.$stateList, $valueInput);
-            hintDataAryMap = thatEditor.hintObj;
-            currentValue = thatEditor.getValue();
-            if (!currentValue && hintDataAryMap.focus) {
-              that.setEditorCompleter(thatEditor, hintDataAryMap.focus, 'command');
-              thatEditor.execCommand("startAutocomplete");
-            }
-            inputPosX = $valueInput.offset().left;
-            inputPosY = $valueInput.offset().top;
-            that.$aceAutocompleteTip.css({
-              left: inputPosX,
-              top: inputPosY + 25
-            });
-            that.clearFocusedItem();
-            return $stateItem.addClass('focused');
-          });
-          editor.on("blur", function(e, thatEditor) {
-            var $paraItem, $stateItem, $valueInput, currentValue;
-            that.$cmdDsec.find('.highlight').removeClass('highlight');
-            that.$aceAutocompleteTip.hide();
-            $valueInput = $(thatEditor.container);
-            $stateItem = $valueInput.parents('.state-item');
-            $paraItem = $valueInput.parents('.parameter-item');
-            currentValue = thatEditor.getValue();
-            if ($paraItem && $paraItem[0]) {
-              if ($paraItem.hasClass('bool')) {
-                if (currentValue !== 'true' && currentValue !== 'false') {
-                  return that.setPlainText($valueInput, '');
-                }
-              }
-            }
-          });
-          if (that.readOnlyMode) {
-            return editor.setReadOnly(true);
-          }
-        };
-        if ($editorElem.hasClass('command-value') || $editorElem.hasClass('text-code-editor')) {
-          return _initEditor();
-        } else {
-          return setTimeout(function() {
-            return _initEditor();
-          }, 0);
-        }
-      },
-      highlightParaDesc: function(paraName) {
-        var $paraNameSpan, err, paraNameSpan, paraParagraph, scrollToPos, that;
-        that = this;
-        that.$cmdDsec.find('.highlight').removeClass('highlight');
-        $paraNameSpan = that.$cmdDsec.find("strong code:contains('" + paraName + "')");
-        paraNameSpan = $paraNameSpan.filter(function() {
-          return $(this).text() === paraName;
-        });
-        if (paraNameSpan[0]) {
-          paraParagraph = $(paraNameSpan[0]).parents('li');
-          paraParagraph.addClass('highlight');
-        }
-        try {
-          scrollToPos = paraParagraph.offset().top - that.$cmdDsec.offset().top + that.$cmdDsec.scrollTop() - 15;
-          that.$cmdDsec.stop(true, true);
-          return that.$cmdDsec.animate({
-            scrollTop: scrollToPos
-          }, 150);
-        } catch (_error) {
-          err = _error;
-          return null;
-        }
-      },
-      scrollToLogItem: function(stateId) {
-        var $stateLog, $targetStateItem, err, scrollToPos, that;
-        that = this;
-        $targetStateItem = that.$stateLogList.find(".state-log-item[data-state-id='" + stateId + "']");
-        $stateLog = $('#OpsEditor').find('#state-log');
-        try {
-          if ($targetStateItem[0]) {
-            scrollToPos = $targetStateItem.offset().top - $stateLog.offset().top + $stateLog.scrollTop();
-            $stateLog.stop(true, true);
-            return $stateLog.animate({
-              scrollTop: scrollToPos
-            }, 150);
-          }
-        } catch (_error) {
-          err = _error;
-          return null;
-        }
-      },
-      justScrollToElem: function($parent, $target) {
-        var err, parentOffsetTop, parentTop, scrollPos, targetOffsetTop, targetTop;
-        try {
-          targetOffsetTop = $target.offset().top;
-          parentOffsetTop = $parent.offset().top;
-          targetTop = targetOffsetTop + 35;
-          parentTop = parentOffsetTop + $parent.height();
-          if (targetTop > parentTop) {
-            scrollPos = $parent.scrollTop() + targetTop - parentTop + 15;
-          } else if (targetOffsetTop < parentOffsetTop) {
-            scrollPos = $parent.scrollTop() + targetOffsetTop - parentOffsetTop - 15;
-          }
-          return $parent.scrollTop(scrollPos);
-        } catch (_error) {
-          err = _error;
-          return null;
-        }
-      },
-      setEditorCompleter: function(editor, dataAry, metaType) {
-        editor.completers = [
-          {
-            getCompletions: function(editor, session, pos, prefix, callback) {
-              if (dataAry && dataAry.length) {
-                return callback(null, dataAry.map(function(ea) {
-                  return {
-                    name: ea.name,
-                    value: ea.value,
-                    score: ea.value,
-                    meta: ea.meta,
-                    support: ea.support
-                  };
-                }));
-              } else {
-                return callback(null, []);
-              }
-            }
-          }
-        ];
-        return null;
-      },
-      getRepresent: function(inputElem) {
-        var $input, $paraItem, $stateItem, paramName, represent;
-        $input = $(inputElem);
-        $stateItem = $input.closest('.state-item');
-        if ($input.hasClass('command-value')) {
-          represent = $stateItem.find('.state-view .command-view-value');
-        } else {
-          $paraItem = $input.closest('.parameter-item');
-          paramName = $paraItem.data('paraName');
-          represent = $stateItem.find(".state-view [data-para-name='" + paramName + "']");
-        }
-        return represent;
-      },
-      getParaObjByInput: function(inputElem) {
-        var $inputElem, $paraItem, $stateItem, command, constraint, currentParaMap, paramName, retVal, subType, that, type;
-        that = this;
-        $inputElem = $(inputElem);
-        retVal = {};
-        if ($inputElem.hasClass('command-value')) {
-          type = 'command';
-          retVal = {
-            type: type,
-            dataMap: that.cmdParaObjMap
-          };
-        } else {
-          type = 'parameter';
-          $paraItem = $inputElem.closest('.parameter-item');
-          $stateItem = $paraItem.closest('.state-item');
-          paramName = $paraItem.data('paraName');
-          command = $stateItem.data('command');
-          currentParaMap = that.cmdParaObjMap[command];
-          constraint = currentParaMap[paramName];
-          if ($inputElem.hasClass('key')) {
-            subType = 'key';
-          } else if ($inputElem.hasClass('value')) {
-            subType = 'value';
-          }
-          retVal = {
-            type: type,
-            subType: subType,
-            command: command,
-            paramName: paramName,
-            constraint: constraint,
-            dataMap: that.cmdParaObjMap,
-            refList: that.model.genAttrRefList()
-          };
-        }
-        return retVal;
-      },
-      getPlainText: function(inputElem) {
-        var $inputElem, editor;
-        $inputElem = $(inputElem);
-        editor = $inputElem.data('editor');
-        if (editor) {
-          return editor.getValue();
-        } else {
-          if (!$inputElem.hasClass('ace_editor')) {
-            return $inputElem.text();
-          }
-          return '';
-        }
-      },
-      setPlainText: function(inputElem, content) {
-        var $inputElem, editor;
-        $inputElem = $(inputElem);
-        editor = $inputElem.data('editor');
-        if (editor) {
-          return editor.setValue(content);
-        }
-      },
-      updateStateIdBySort: function(newOldStateIdMap) {
-        var that;
-        that = this;
-        return that.model.updateAllStateRef(newOldStateIdMap);
-      },
-      refreshStateLogList: function() {
-        var $stateLogItems, instanceStateHTML, renderHTML, resState, stateIdLogViewMap, stateLogDataAry, stateLogViewAry, stateStatusMap, that;
-        that = this;
-        stateLogDataAry = that.model.get('stateLogDataAry');
-        if (!(stateLogDataAry && stateLogDataAry.length)) {
-          that.showLogListLoading(false, true);
-        }
-        that.stateIdLogContentMap = {};
-        stateLogViewAry = [];
-        stateStatusMap = {};
-        stateIdLogViewMap = {};
-        $stateLogItems = that.$stateLogList.find('.state-log-item');
-        _.each($stateLogItems, function(stateLogItem) {
-          var $stateLogItem, stateId, stateView;
-          $stateLogItem = $(stateLogItem);
-          stateId = $stateLogItem.attr('data-state-id');
-          stateView = $stateLogItem.hasClass('view');
-          if (stateId) {
-            stateIdLogViewMap[stateId] = stateView;
+            that.renderStateCount();
           }
           return null;
-        });
-        _.each(stateLogDataAry, function(logObj, idx) {
-          var commentStr, isStateLog, longStdout, stateId, stateNum, stateStatus, stdoutStr, timeStr, viewLog;
-          timeStr = null;
-          if (logObj.time) {
-            timeStr = MC.dateFormat(new Date(logObj.time), 'yyyy-MM-dd hh:mm:ss');
-          }
-          stateStatus = logObj.result;
-          stateId = "" + logObj.id;
-          stateNum = '';
-          isStateLog = false;
-          if (logObj.id !== 'Agent') {
-            stateId = "State " + stateId;
-            isStateLog = true;
-            stateStatusMap[logObj.id] = stateStatus;
-          } else {
-            stateNum = logObj.id;
-          }
-          stdoutStr = '';
-          commentStr = '';
-          longStdout = false;
-          if (logObj.comment) {
-            commentStr = $.trim(logObj.comment.replace(/\n\n/g, '\n'));
-          }
-          if (logObj.stdout) {
-            stdoutStr = $.trim(logObj.stdout.replace(/\n\n/g, '\n'));
-            if (stdoutStr.length > 100) {
-              longStdout = true;
-              that.stateIdLogContentMap[logObj.id] = {
-                number: stateNum,
-                content: stdoutStr
-              };
-            }
-          }
-          viewLog = stateIdLogViewMap[logObj.id];
-          if (viewLog !== true && viewLog !== false) {
-            viewLog = false;
-          }
-          stateLogViewAry.push({
-            id: logObj.id,
-            state_num: stateNum,
-            log_time: timeStr,
-            state_status: stateStatus,
-            stdout: stdoutStr,
-            comment: commentStr,
-            long_stdout: longStdout,
-            view: viewLog,
-            is_state_log: isStateLog
-          });
-          return null;
-        });
-        renderHTML = $.trim(template.stateLogItemTpl({
-          state_logs: stateLogViewAry
-        }));
-        that.refreshStateItemStatus(stateStatusMap);
-        resState = that.model.get('resState');
-        instanceStateHTML = $.trim(template.stateLogInstanceItemTpl({
-          res_status: (resState || "").toLowerCase()
-        }));
-        that.$stateLogList.empty().append(instanceStateHTML).append(renderHTML);
-        return that.refreshLogItemNum();
-      },
-      setEditorReadOnlyMode: function() {
-        var $closeBtn, $saveCancelBtn, that;
-        that = this;
-        that.$stateList.find('.state-drag').hide();
-        that.$stateList.find('.state-add').hide();
-        that.$stateList.find('.state-remove').hide();
-        that.$stateList.find('.parameter-remove').hide();
-        that.$editorModal.find('.state-item-add').hide();
-        $saveCancelBtn = that.$editorModal.find('.state-save, .state-cancel');
-        $saveCancelBtn.hide();
-        $closeBtn = that.$editorModal.find('.state-close');
-        return $closeBtn.css('display', 'inline-block');
-      },
-      showLogListLoading: function(loadShow, infoShow) {
-        var $loadText, $logInfo, $logPanel, that;
-        that = this;
-        $logPanel = $('#OpsEditor').find('#state-log');
-        $loadText = $logPanel.find('.state-log-loading');
-        $logInfo = $logPanel.find('.state-log-info');
-        if (loadShow) {
-          $loadText.show();
-          return $logInfo.hide();
-        } else {
-          $loadText.hide();
-          if (infoShow) {
-            return $logInfo.show();
-          } else {
-            return $logInfo.hide();
-          }
+        },
+        hasUndo: function() {
+          return that.commandIndex !== -1;
+        },
+        hasRedo: function() {
+          return that.commandIndex < (that.commandStack.length - 1);
         }
-      },
-      onStateStatusUpdate: function(newStateUpdateResIdAry) {
-        var selectedResId, that;
-        that = this;
-        selectedResId = that.currentResId;
-        if (newStateUpdateResIdAry) {
-          if (newStateUpdateResIdAry.length) {
-            if (selectedResId && __indexOf.call(newStateUpdateResIdAry, selectedResId) >= 0) {
-              return that.refreshStateLog();
-            }
-          } else {
-            return that.refreshStateLog();
-          }
-        } else {
-          return that.refreshStateLog();
-        }
-      },
-      onOptionalParaItemChange: function(event) {
-        var $arrayItemList, $currentInputElem, $dictItemList, $paraItem, currentValue, needDisable, that;
-        that = this;
-        $currentInputElem = $(event.currentTarget);
-        currentValue = that.getPlainText($currentInputElem);
-        $paraItem = $currentInputElem.parents('.parameter-item');
-        if (currentValue) {
-          return $paraItem.removeClass('disabled');
-        } else {
-          if ($paraItem.hasClass('line') || $paraItem.hasClass('bool') || $paraItem.hasClass('text')) {
-            return $paraItem.addClass('disabled');
-          } else if ($paraItem.hasClass('dict')) {
-            needDisable = true;
-            $dictItemList = $paraItem.find('.parameter-dict-item');
-            if ($dictItemList.length <= 2) {
-              _.each($dictItemList, function(dictItem) {
-                var $dictItem, $keyInput, $valueInput, keyValue, valueValue;
-                $dictItem = $(dictItem);
-                $keyInput = $dictItem.find('.key');
-                $valueInput = $dictItem.find('.value');
-                keyValue = that.getPlainText($keyInput);
-                valueValue = that.getPlainText($valueInput);
-                if (keyValue || valueValue) {
-                  needDisable = false;
-                }
-                return null;
-              });
-              if (needDisable) {
-                return $paraItem.addClass('disabled');
-              }
-            }
-          } else if ($paraItem.hasClass('array') || $paraItem.hasClass('state')) {
-            needDisable = true;
-            $arrayItemList = $paraItem.find('.parameter-value');
-            if ($arrayItemList.length <= 2) {
-              _.each($arrayItemList, function(arrayItem) {
-                var $arrayItem, inputValue;
-                $arrayItem = $(arrayItem);
-                inputValue = that.getPlainText($arrayItem);
-                if (inputValue) {
-                  needDisable = false;
-                }
-                return null;
-              });
-              if (needDisable) {
-                return $paraItem.addClass('disabled');
-              }
-            }
-          }
-        }
-      },
-      onCommandInputBlur: function(event) {
-        var $currentElem, $paraListElem, $stateItem, currentValue, moduleObj, originCMDName, that;
-        that = this;
-        $currentElem = $(event.currentTarget);
-        $stateItem = $currentElem.parents('.state-item');
-        currentValue = that.getPlainText($currentElem);
-        moduleObj = that.cmdModuleMap[currentValue];
-        originCMDName = $stateItem.attr('data-command');
-        if (moduleObj && moduleObj.support) {
-          if (originCMDName !== currentValue) {
-            that.setCMDForStateItem($stateItem, currentValue);
-            that.refreshDescription(currentValue);
-            $paraListElem = $stateItem.find('.parameter-list');
-            that.refreshParaList($paraListElem, currentValue);
-            return that.refreshStateView($stateItem);
-          }
-        } else {
-          return that.setPlainText($currentElem, originCMDName);
-        }
-      },
-      setCMDForStateItem: function($stateItem, cmdValue) {
-        var that;
-        that = this;
-        $stateItem.attr('data-command', cmdValue);
-        if (cmdValue === '#') {
-          return $stateItem.addClass('comment');
-        } else {
-          return $stateItem.removeClass('comment');
-        }
-      },
-      refreshStateItemStatus: function(stateStatusMap) {
-        var $stateItemList, that;
-        that = this;
-        $stateItemList = that.$stateList.find('.state-item');
-        return _.each($stateItemList, function(stateItem) {
-          var $stateItem, $statusIcon, stateId, stateStatus;
-          $stateItem = $(stateItem);
-          stateId = $stateItem.attr('data-id');
-          $statusIcon = $stateItem.find('.state-status-icon');
-          $statusIcon.removeClass('status-green').removeClass('status-red').removeClass('status-yellow');
-          stateStatus = stateStatusMap[stateId];
-          if (stateStatus === 'success') {
-            $statusIcon.addClass('status-green');
-          } else if (stateStatus === 'failure') {
-            $statusIcon.addClass('status-red');
-          } else {
-            $statusIcon.addClass('status-yellow');
-          }
-          return null;
-        });
-      },
-      refreshLogItemNum: function() {
-        var $logItemList, $stateItemList, stateIdNumMap, that;
-        that = this;
-        if (that.currentState === 'stack') {
-          return;
-        }
-        stateIdNumMap = {};
-        $stateItemList = that.$stateList.find('.state-item');
-        _.each($stateItemList, function(stateItem, idx) {
-          var $stateItem, stateId;
-          $stateItem = $(stateItem);
-          stateId = $stateItem.attr('data-id');
-          stateIdNumMap[stateId] = idx + 1;
-          return null;
-        });
-        $logItemList = that.$stateLogList.find('.state-log-item');
-        return _.each($logItemList, function(logItem, idx) {
-          var $logItem, stateId, stateNum, stateNumStr;
-          if (idx >= 2) {
-            $logItem = $(logItem);
-            stateId = $logItem.attr('data-state-id');
-            stateNum = stateIdNumMap[stateId];
-            stateNumStr = 'deleted';
-            if (stateNum) {
-              stateNumStr = stateNum;
-            }
-            $logItem.find('.state-log-item-name').text('State ' + stateNumStr);
-          }
-          return null;
-        });
-      },
-      unloadEditor: function() {
-        var $aceEditors, that;
-        that = this;
-        $aceEditors = $('#OpsEditor').find('.ace_editor');
-        return $aceEditors.remove();
-      },
-      initUndoManager: function() {
-        var that;
-        that = this;
-        that.commandStack = [];
-        that.commandIndex = -1;
-        that.undoManager = {
-          register: function(stateId, statePos, method, stateData) {
-            var insertPos, newIndex, oldIndex, stateDataAry, statePosAry;
-            that.commandStack.splice(that.commandIndex + 1, that.commandStack.length - that.commandIndex);
-            if (method === 'remove') {
-              stateDataAry = [];
-              statePosAry = statePos;
-              _.each(stateId, function(stateIdValue) {
-                var $stateItem, stateDataValue;
-                $stateItem = that.getStateItemById(stateIdValue);
-                stateDataValue = that.getStateItemByData($stateItem);
-                return stateDataAry.push(stateDataValue);
-              });
-              that.commandStack.push({
-                redo: function() {
-                  return _.each(stateDataAry, function(stateDataValue) {
-                    var $stateItem;
-                    $stateItem = that.getStateItemById(stateDataValue.id);
-                    return that.onRemoveState(null, $stateItem, true);
-                  });
-                },
-                undo: function() {
-                  var idx;
-                  idx = 0;
-                  _.each(stateDataAry, function(stateDataValue) {
-                    return that.addStateItemByData([stateDataValue], statePosAry[idx++] - 1);
-                  });
-                  return null;
-                }
-              });
-            }
-            if (method === 'add') {
-              that.commandStack.push({
-                redo: function() {
-                  return null;
-                },
-                undo: function() {
-                  var $stateItem;
-                  $stateItem = that.getStateItemById(stateId);
-                  stateData = that.getStateItemByData($stateItem);
-                  this.redo = function() {
-                    return that.addStateItemByData([stateData], statePos - 1);
-                  };
-                  return that.onRemoveState(null, $stateItem, true);
-                }
-              });
-            }
-            if (method === 'sort') {
-              oldIndex = statePos;
-              newIndex = stateData;
-              that.commandStack.push({
-                redo: function() {
-                  var $stateItem;
-                  $stateItem = that.getStateItemById(stateId);
-                  stateData = that.getStateItemByData($stateItem);
-                  that.onRemoveState(null, $stateItem, true);
-                  return that.addStateItemByData([stateData], newIndex - 1);
-                },
-                undo: function() {
-                  var $stateItem;
-                  $stateItem = that.getStateItemById(stateId);
-                  stateData = that.getStateItemByData($stateItem);
-                  that.onRemoveState(null, $stateItem, true);
-                  return that.addStateItemByData([stateData], oldIndex - 1);
-                }
-              });
-            }
-            if (method === 'paste') {
-              insertPos = statePos;
-              stateDataAry = _.map(stateData, function(data) {
-                return _.extend({}, data);
-              });
-              that.commandStack.push({
-                redo: function() {
-                  return that.addStateItemByData(stateDataAry, insertPos - 1);
-                },
-                undo: function() {
-                  return _.each(stateDataAry, function(pasteStateData) {
-                    var $stateItem, pasteStateId;
-                    pasteStateId = pasteStateData.id;
-                    $stateItem = that.getStateItemById(pasteStateId);
-                    that.onRemoveState(null, $stateItem, true);
-                    return null;
-                  });
-                }
-              });
-            }
-            that.commandIndex = that.commandStack.length - 1;
-            _.defer(_.bind(that.renderStateCount, that));
-            return null;
-          },
-          redo: function() {
-            var operateCommand;
-            if (that.undoManager.hasRedo()) {
-              operateCommand = that.commandStack[that.commandIndex + 1];
-              if (operateCommand) {
-                operateCommand.redo();
-                that.commandIndex = that.commandIndex + 1;
-              }
-              that.renderStateCount();
-            }
-            return null;
-          },
-          undo: function() {
-            var operateCommand;
-            if (that.undoManager.hasUndo()) {
-              operateCommand = that.commandStack[that.commandIndex];
-              if (operateCommand) {
-                operateCommand.undo();
-                that.commandIndex = that.commandIndex - 1;
-              }
-              that.renderStateCount();
-            }
-            return null;
-          },
-          hasUndo: function() {
-            return that.commandIndex !== -1;
-          },
-          hasRedo: function() {
-            return that.commandIndex < (that.commandStack.length - 1);
-          }
-        };
-        return null;
-      },
-      getStateItemById: function(stateId) {
-        var $stateItem, that;
-        that = this;
-        $stateItem = that.$stateList.find('.state-item[data-id="' + stateId + '"]');
-        return $stateItem;
-      },
-      getStateItemByData: function($stateItem) {
-        var stateData, that;
-        that = this;
-        stateData = that.genStateItemData($stateItem);
+      };
+      return null;
+    },
+    getStateItemById: function(stateId) {
+      var $stateItem, that;
+      that = this;
+      $stateItem = that.$stateList.find('.state-item[data-id="' + stateId + '"]');
+      return $stateItem;
+    },
+    getStateItemByData: function($stateItem) {
+      var stateData, that;
+      that = this;
+      stateData = that.genStateItemData($stateItem);
+      return stateData;
+    },
+    setNewStateIdForStateAry: function(stateDataAry) {
+      var that;
+      that = this;
+      stateDataAry = _.map(stateDataAry, function(stateData) {
+        stateData.id = that.genStateUID();
         return stateData;
-      },
-      setNewStateIdForStateAry: function(stateDataAry) {
-        var that;
-        that = this;
-        stateDataAry = _.map(stateDataAry, function(stateData) {
-          stateData.id = that.genStateUID();
-          return stateData;
-        });
-        return stateDataAry;
-      },
-      addStateItemByData: function(stateDataAry, insertPos) {
-        var $currentStateItems, $newStateItems, $stateItems, newStateItems, parseErrList, returnInsertPos, stateListObj, that;
-        that = this;
-        stateListObj = that.loadStateData(stateDataAry);
-        parseErrList = stateListObj.err_list;
-        if (parseErrList.length) {
-          if (__indexOf.call(parseErrList, 'command') >= 0 || __indexOf.call(parseErrList, 'parameter') >= 0) {
-            notification('warning', lang.NOTIFY.INFO_STATE_PARSE_COMMAND_FAILED);
-          }
-          if (__indexOf.call(parseErrList, 'reference') >= 0) {
-            notification('warning', lang.NOTIFY.INFO_STATE_PARSE_REFRENCE_FAILED);
-          }
+      });
+      return stateDataAry;
+    },
+    addStateItemByData: function(stateDataAry, insertPos) {
+      var $currentStateItems, $newStateItems, $stateItems, newStateItems, parseErrList, returnInsertPos, stateListObj, that;
+      that = this;
+      stateListObj = that.loadStateData(stateDataAry);
+      parseErrList = stateListObj.err_list;
+      if (parseErrList.length) {
+        if (__indexOf.call(parseErrList, 'command') >= 0 || __indexOf.call(parseErrList, 'parameter') >= 0) {
+          notification('warning', lang.NOTIFY.INFO_STATE_PARSE_COMMAND_FAILED);
         }
-        newStateItems = $.trim(template.stateListTpl(stateListObj));
-        $currentStateItems = that.$stateList.find('.state-item');
-        returnInsertPos = null;
-        if (_.isNumber(insertPos)) {
-          if (insertPos <= -1) {
-            $newStateItems = $(newStateItems).prependTo(that.$stateList);
-            returnInsertPos = -1;
-          } else {
-            if ($currentStateItems[insertPos]) {
-              $newStateItems = $(newStateItems).insertAfter($currentStateItems[insertPos]);
-              returnInsertPos = insertPos;
-            } else {
-              $newStateItems = $(newStateItems).appendTo(that.$stateList);
-              returnInsertPos = that.$stateList.length - 1;
-            }
-          }
+        if (__indexOf.call(parseErrList, 'reference') >= 0) {
+          notification('warning', lang.NOTIFY.INFO_STATE_PARSE_REFRENCE_FAILED);
+        }
+      }
+      newStateItems = $.trim(template.stateListTpl(stateListObj));
+      $currentStateItems = that.$stateList.find('.state-item');
+      returnInsertPos = null;
+      if (_.isNumber(insertPos)) {
+        if (insertPos <= -1) {
+          $newStateItems = $(newStateItems).prependTo(that.$stateList);
+          returnInsertPos = -1;
         } else {
-          $newStateItems = $(newStateItems).appendTo(that.$stateList);
-          returnInsertPos = that.$stateList.length - 1;
-        }
-        that.bindStateListEvent($newStateItems);
-        that.refreshStateViewList($newStateItems);
-        $stateItems = that.$stateList.find('.state-item');
-        if ($stateItems.length) {
-          that.$haveStateContainer.show();
-          that.$noStateContainer.hide();
-        }
-        return returnInsertPos;
-      },
-      keyEvent: function(event) {
-        var altKey, focused, isCurrentSE, isHaveSE, is_editable, is_input, keyCode, metaKey, shiftKey, status, tagName, target, that;
-        that = this;
-        target = event.data.target;
-        isCurrentSE = target.$el.parents('#OpsEditor').length;
-        isHaveSE = $('#OpsEditor .OEPanelRight').hasClass('state');
-        if (!isHaveSE) {
-          return;
-        }
-        if (!isCurrentSE) {
-          return;
-        }
-        status = target.currentState;
-        is_editable = status === 'appedit' || status === 'stack';
-        tagName = event.target.tagName.toLowerCase();
-        is_input = tagName === 'input' || tagName === 'textarea';
-        keyCode = event.which;
-        metaKey = event.ctrlKey || event.metaKey;
-        shiftKey = event.shiftKey;
-        altKey = event.altKey;
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 90 && is_editable) {
-          target.undoManager.undo();
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 89 && is_editable) {
-          target.undoManager.redo();
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 67 && is_input === false && is_editable) {
-          target.copyState.call(target, event);
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 86 && is_editable && is_input === false) {
-          target.pasteState.call(target, event);
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 69) {
-          target.onTextParaExpandClick.call(target, event);
-          return false;
-        }
-        if (metaKey && (keyCode === 46 || keyCode === 8) && shiftKey === false && altKey === false && is_editable) {
-          target.removeState.call(target, event);
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 13 && is_editable) {
-          target.addStateItem.call(target, event);
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 40 && is_editable) {
-          target.moveState.call(target, 'down');
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 38 && is_editable) {
-          target.moveState.call(target, 'up');
-          return false;
-        }
-        if (metaKey === false && shiftKey === false && altKey === false && keyCode === 27) {
-          target.collapseItem.call(target, $('#OpsEditor').find('.state-list .focused'));
-          if ($('#modal-state-text-expand').is(':visible')) {
-            target.saveStateTextEditorContent();
-            return false;
+          if ($currentStateItems[insertPos]) {
+            $newStateItems = $(newStateItems).insertAfter($currentStateItems[insertPos]);
+            returnInsertPos = insertPos;
+          } else {
+            $newStateItems = $(newStateItems).appendTo(that.$stateList);
+            returnInsertPos = that.$stateList.length - 1;
           }
-          return false;
         }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 73) {
-          target.onDescToggleClick(target, event);
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 76 && status !== 'stack') {
-          target.onLogToggleClick(target, event);
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 65 && is_editable) {
-          target.selectAll(target, event);
-          return false;
-        }
-        if (metaKey && shiftKey === false && altKey === false && keyCode === 68 && is_editable) {
-          target.unSelectAll(target, event);
-          return false;
-        }
-        if (keyCode === 9 && shiftKey && metaKey === false) {
-          target.onSwitchState.call(target, true);
-          return false;
-        }
-        if (metaKey === false && shiftKey === false && keyCode === 38) {
-          target.switchFocus.call(target, true);
-          return false;
-        }
-        if (metaKey === false && shiftKey === false && keyCode === 40) {
-          target.switchFocus.call(target);
-          return false;
-        }
-        if (metaKey === false && shiftKey === false && keyCode === 32 && is_input === false && is_editable) {
-          target.toggleSelected.call(target);
-          return false;
-        }
-        if (metaKey === false && shiftKey === false && keyCode === 13) {
-          focused = $('#OpsEditor').find('#state-editor .state-item.focused');
-          if (focused[0] !== null && focused.hasClass('view') === true) {
-            target.expandItem.call(target, focused);
-          }
-          if ($(event.target).parent().hasClass('text') === true) {
-            return true;
-          }
-          return false;
-        }
-        if (metaKey === false && shiftKey === false && keyCode === 9) {
-          target.onSwitchState.call(target);
-          return false;
-        }
-      },
-      onUndo: function() {
-        var that;
-        that = this;
-        that.undoManager.undo();
+      } else {
+        $newStateItems = $(newStateItems).appendTo(that.$stateList);
+        returnInsertPos = that.$stateList.length - 1;
+      }
+      that.bindStateListEvent($newStateItems);
+      that.refreshStateViewList($newStateItems);
+      $stateItems = that.$stateList.find('.state-item');
+      if ($stateItems.length) {
+        that.$haveStateContainer.show();
+        that.$noStateContainer.hide();
+      }
+      return returnInsertPos;
+    },
+    keyEvent: function(event) {
+      var altKey, focused, isCurrentSE, isHaveSE, is_editable, is_input, keyCode, metaKey, shiftKey, status, tagName, target, that;
+      that = this;
+      target = event.data.target;
+      isCurrentSE = target.$el.parents('#OpsEditor').length;
+      isHaveSE = $('#OpsEditor .OEPanelRight').hasClass('state');
+      if (!isHaveSE) {
+        return;
+      }
+      if (!isCurrentSE) {
+        return;
+      }
+      status = target.currentState;
+      is_editable = status === 'appedit' || status === 'stack';
+      tagName = event.target.tagName.toLowerCase();
+      is_input = tagName === 'input' || tagName === 'textarea';
+      keyCode = event.which;
+      metaKey = event.ctrlKey || event.metaKey;
+      shiftKey = event.shiftKey;
+      altKey = event.altKey;
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 90 && is_editable) {
+        target.undoManager.undo();
         return false;
-      },
-      onRedo: function() {
-        var that;
-        that = this;
-        that.undoManager.redo();
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 89 && is_editable) {
+        target.undoManager.redo();
         return false;
-      },
-      copyState: function() {
-        var stack, that;
-        that = this;
-        stack = [];
-        $('#OpsEditor').find('.state-list .selected').each(function() {
-          return stack.push(that.getStateItemByData($(this)));
-        });
-        if (stack.length) {
-          StateClipboard = stack;
-          that.updateToolbar();
-          notification('info', lang.NOTIFY.INFO_STATE_COPY_TO_CLIPBOARD);
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 67 && is_input === false && is_editable) {
+        target.copyState.call(target, event);
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 86 && is_editable && is_input === false) {
+        target.pasteState.call(target, event);
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 69) {
+        target.onTextParaExpandClick.call(target, event);
+        return false;
+      }
+      if (metaKey && (keyCode === 46 || keyCode === 8) && shiftKey === false && altKey === false && is_editable) {
+        target.removeState.call(target, event);
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 13 && is_editable) {
+        target.addStateItem.call(target, event);
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 40 && is_editable) {
+        target.moveState.call(target, 'down');
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 38 && is_editable) {
+        target.moveState.call(target, 'up');
+        return false;
+      }
+      if (metaKey === false && shiftKey === false && altKey === false && keyCode === 27) {
+        target.collapseItem.call(target, $('#OpsEditor').find('.state-list .focused'));
+        if ($('#modal-state-text-expand').is(':visible')) {
+          target.saveStateTextEditorContent();
+          return false;
         }
-        return true;
-      },
-      copyAllState: function() {
-        var stack, that;
-        that = this;
-        stack = [];
-        $('#OpsEditor').find('.state-list .state-item').each(function() {
-          return stack.push(that.getStateItemByData($(this)));
-        });
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 73) {
+        target.onDescToggleClick(target, event);
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 76 && status !== 'stack') {
+        target.onLogToggleClick(target, event);
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 65 && is_editable) {
+        target.selectAll(target, event);
+        return false;
+      }
+      if (metaKey && shiftKey === false && altKey === false && keyCode === 68 && is_editable) {
+        target.unSelectAll(target, event);
+        return false;
+      }
+      if (keyCode === 9 && shiftKey && metaKey === false) {
+        target.onSwitchState.call(target, true);
+        return false;
+      }
+      if (metaKey === false && shiftKey === false && keyCode === 38) {
+        target.switchFocus.call(target, true);
+        return false;
+      }
+      if (metaKey === false && shiftKey === false && keyCode === 40) {
+        target.switchFocus.call(target);
+        return false;
+      }
+      if (metaKey === false && shiftKey === false && keyCode === 32 && is_input === false && is_editable) {
+        target.toggleSelected.call(target);
+        return false;
+      }
+      if (metaKey === false && shiftKey === false && keyCode === 13) {
+        focused = $('#OpsEditor').find('#state-editor .state-item.focused');
+        if (focused[0] !== null && focused.hasClass('view') === true) {
+          target.expandItem.call(target, focused);
+        }
+        if ($(event.target).parent().hasClass('text') === true) {
+          return true;
+        }
+        return false;
+      }
+      if (metaKey === false && shiftKey === false && keyCode === 9) {
+        target.onSwitchState.call(target);
+        return false;
+      }
+    },
+    onUndo: function() {
+      var that;
+      that = this;
+      that.undoManager.undo();
+      return false;
+    },
+    onRedo: function() {
+      var that;
+      that = this;
+      that.undoManager.redo();
+      return false;
+    },
+    copyState: function() {
+      var stack, that;
+      that = this;
+      stack = [];
+      $('#OpsEditor').find('.state-list .selected').each(function() {
+        return stack.push(that.getStateItemByData($(this)));
+      });
+      if (stack.length) {
         StateClipboard = stack;
         that.updateToolbar();
         notification('info', lang.NOTIFY.INFO_STATE_COPY_TO_CLIPBOARD);
-        return true;
-      },
-      moveState: function(direction) {
-        var focused_index, item, new_index, next_item, prev_item, state_id, that;
-        that = this;
-        item = $('#OpsEditor').find('#state-editor .state-item.focused');
-        focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
-        if (direction === 'down') {
-          next_item = item.next();
-          if (next_item.length > 0) {
-            item.insertAfter(next_item);
-            new_index = focused_index + 1;
-          } else {
-            item.parent().prepend(item);
-            new_index = 0;
-          }
-        }
-        if (direction === 'up') {
-          prev_item = item.prev();
-          if (prev_item.length > 0) {
-            item.insertBefore(prev_item);
-            new_index = focused_index - 1;
-          } else {
-            item.parent().append(item);
-            new_index = $('#OpsEditor').find('#state-editor .state-item').length;
-          }
-        }
-        state_id = item.data('id');
-        that.undoManager.register(state_id, focused_index, 'sort', new_index);
-        return false;
-      },
-      pasteState: function() {
-        var focused_index, insertPos, newStateDataAry, that;
-        that = this;
-        focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
-        if (focused_index === -1) {
-          focused_index = null;
-        }
-        newStateDataAry = that.setNewStateIdForStateAry(StateClipboard);
-        insertPos = that.addStateItemByData(newStateDataAry, focused_index);
-        that.undoManager.register(null, insertPos, 'paste', newStateDataAry);
-        that.clearSelectedItem();
-        that.clearFocusedItem();
-        that.updateToolbar();
-        return true;
-      },
-      removeState: function() {
-        var that;
-        that = this;
-        that.onRemoveState(null, $('#OpsEditor').find('.state-list').find('.selected'));
-        return true;
-      },
-      toggleSelected: function() {
-        var item, that;
-        that = this;
-        item = $('#OpsEditor').find('#state-editor .state-item.focused');
-        if (item.hasClass('selected')) {
-          item.removeClass('selected');
-          item.find('.checkbox input').prop('checked', false);
+      }
+      return true;
+    },
+    copyAllState: function() {
+      var stack, that;
+      that = this;
+      stack = [];
+      $('#OpsEditor').find('.state-list .state-item').each(function() {
+        return stack.push(that.getStateItemByData($(this)));
+      });
+      StateClipboard = stack;
+      that.updateToolbar();
+      notification('info', lang.NOTIFY.INFO_STATE_COPY_TO_CLIPBOARD);
+      return true;
+    },
+    moveState: function(direction) {
+      var focused_index, item, new_index, next_item, prev_item, state_id, that;
+      that = this;
+      item = $('#OpsEditor').find('#state-editor .state-item.focused');
+      focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
+      if (direction === 'down') {
+        next_item = item.next();
+        if (next_item.length > 0) {
+          item.insertAfter(next_item);
+          new_index = focused_index + 1;
         } else {
-          item.addClass('selected');
-          item.find('.checkbox input').prop('checked', true);
+          item.parent().prepend(item);
+          new_index = 0;
         }
-        that.updateToolbar();
-        return false;
-      },
-      switchFocus: function(reverse) {
-        var focused_index, stack, target_index, target_item, that, total;
-        that = this;
-        focused_index = 0;
-        stack = $('#OpsEditor').find('#state-editor .state-item');
-        total = stack.length;
-        focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
-        that.clearFocusedItem();
-        if (reverse && reverse === true) {
-          if (focused_index > 0) {
-            target_index = focused_index - 1;
-          }
-          if (focused_index < 1) {
-            target_index = total - 1;
-          }
+      }
+      if (direction === 'up') {
+        prev_item = item.prev();
+        if (prev_item.length > 0) {
+          item.insertBefore(prev_item);
+          new_index = focused_index - 1;
         } else {
-          if (focused_index + 1 < total) {
-            target_index = focused_index + 1;
-          } else {
-            target_index = 0;
-          }
+          item.parent().append(item);
+          new_index = $('#OpsEditor').find('#state-editor .state-item').length;
         }
-        target_item = stack.eq(target_index);
-        target_item.addClass('focused');
-        that.justScrollToElem(that.$stateList, target_item);
-        return false;
-      },
-      onSwitchState: function(reverse) {
-        var focused_index, stack, target_index, target_item, that, total;
-        that = this;
-        focused_index = 0;
-        stack = $('#OpsEditor').find('#state-editor .state-item');
-        total = stack.length;
-        focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
-        that.clearFocusedItem();
-        if (reverse && reverse === true) {
-          if (focused_index > 0) {
-            target_index = focused_index - 1;
-          }
-          if (focused_index < 1) {
-            target_index = total - 1;
-          }
+      }
+      state_id = item.data('id');
+      that.undoManager.register(state_id, focused_index, 'sort', new_index);
+      return false;
+    },
+    pasteState: function() {
+      var focused_index, insertPos, newStateDataAry, that;
+      that = this;
+      focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
+      if (focused_index === -1) {
+        focused_index = null;
+      }
+      newStateDataAry = that.setNewStateIdForStateAry(StateClipboard);
+      insertPos = that.addStateItemByData(newStateDataAry, focused_index);
+      that.undoManager.register(null, insertPos, 'paste', newStateDataAry);
+      that.clearSelectedItem();
+      that.clearFocusedItem();
+      that.updateToolbar();
+      return true;
+    },
+    removeState: function() {
+      var that;
+      that = this;
+      that.onRemoveState(null, $('#OpsEditor').find('.state-list').find('.selected'));
+      return true;
+    },
+    toggleSelected: function() {
+      var item, that;
+      that = this;
+      item = $('#OpsEditor').find('#state-editor .state-item.focused');
+      if (item.hasClass('selected')) {
+        item.removeClass('selected');
+        item.find('.checkbox input').prop('checked', false);
+      } else {
+        item.addClass('selected');
+        item.find('.checkbox input').prop('checked', true);
+      }
+      that.updateToolbar();
+      return false;
+    },
+    switchFocus: function(reverse) {
+      var focused_index, stack, target_index, target_item, that, total;
+      that = this;
+      focused_index = 0;
+      stack = $('#OpsEditor').find('#state-editor .state-item');
+      total = stack.length;
+      focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
+      that.clearFocusedItem();
+      if (reverse && reverse === true) {
+        if (focused_index > 0) {
+          target_index = focused_index - 1;
+        }
+        if (focused_index < 1) {
+          target_index = total - 1;
+        }
+      } else {
+        if (focused_index + 1 < total) {
+          target_index = focused_index + 1;
         } else {
-          if (focused_index + 1 < total) {
-            target_index = focused_index + 1;
-          } else {
-            target_index = 0;
-          }
+          target_index = 0;
         }
-        target_item = stack.eq(target_index);
-        that.expandItem.call(this, target_item.addClass('focused'));
-        return false;
-      },
-      aceTabSwitch: function(event, container) {
-        var container_item, index, stack, that, total;
-        that = this;
-        if (that.currentState === 'app') {
-          that.onSwitchState.call(this, event);
-          return false;
+      }
+      target_item = stack.eq(target_index);
+      target_item.addClass('focused');
+      that.justScrollToElem(that.$stateList, target_item);
+      return false;
+    },
+    onSwitchState: function(reverse) {
+      var focused_index, stack, target_index, target_item, that, total;
+      that = this;
+      focused_index = 0;
+      stack = $('#OpsEditor').find('#state-editor .state-item');
+      total = stack.length;
+      focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
+      that.clearFocusedItem();
+      if (reverse && reverse === true) {
+        if (focused_index > 0) {
+          target_index = focused_index - 1;
         }
-        container_item = $(container);
-        index = 0;
-        if (container_item.hasClass('command-value')) {
-          stack = container_item.parents('.state-item').find('.parameter-list .ace_editor');
-          if (stack.length > 0) {
-            stack.eq(0).find('.ace_text-input').focus();
-          }
+        if (focused_index < 1) {
+          target_index = total - 1;
+        }
+      } else {
+        if (focused_index + 1 < total) {
+          target_index = focused_index + 1;
         } else {
-          stack = container_item.parents('.parameter-list').find('.ace_editor');
-          total = stack.length;
-          $.each(stack, function(i, item) {
-            if (container === item) {
-              return index = i;
-            }
-          });
-          if (index + 1 < total) {
-            stack.eq(index + 1).find('.ace_text-input').focus();
-          } else {
-            container_item.parents('.state-item').find('.command-value .ace_text-input').focus();
-          }
+          target_index = 0;
         }
+      }
+      target_item = stack.eq(target_index);
+      that.expandItem.call(this, target_item.addClass('focused'));
+      return false;
+    },
+    aceTabSwitch: function(event, container) {
+      var container_item, index, stack, that, total;
+      that = this;
+      if (that.currentState === 'app') {
+        that.onSwitchState.call(this, event);
         return false;
-      },
-      aceUTabSwitch: function(event, container) {
-        var container_item, index, stack, that, total;
-        that = this;
-        if (that.currentState === 'app') {
-          that.onSwitchState.call(this, event);
-          return false;
+      }
+      container_item = $(container);
+      index = 0;
+      if (container_item.hasClass('command-value')) {
+        stack = container_item.parents('.state-item').find('.parameter-list .ace_editor');
+        if (stack.length > 0) {
+          stack.eq(0).find('.ace_text-input').focus();
         }
-        container_item = $(container);
-        index = 0;
-        if (container_item.hasClass('command-value')) {
-          stack = container_item.parents('.state-item').find('.parameter-list .ace_editor');
-          total = stack.length;
-          stack.eq(total - 1).find('.ace_text-input').focus();
-          return false;
-        }
+      } else {
         stack = container_item.parents('.parameter-list').find('.ace_editor');
         total = stack.length;
         $.each(stack, function(i, item) {
@@ -5587,343 +5550,371 @@ return Markdown;
             return index = i;
           }
         });
-        if (index > 0) {
-          stack.eq(index - 1).find('.ace_text-input').focus();
-        }
-        if (index === 0) {
+        if (index + 1 < total) {
+          stack.eq(index + 1).find('.ace_text-input').focus();
+        } else {
           container_item.parents('.state-item').find('.command-value .ace_text-input').focus();
         }
+      }
+      return false;
+    },
+    aceUTabSwitch: function(event, container) {
+      var container_item, index, stack, that, total;
+      that = this;
+      if (that.currentState === 'app') {
+        that.onSwitchState.call(this, event);
         return false;
-      },
-      onRemoveState: function(event, $targetStates, noRegisterUndo) {
-        var $stateItems, stateIdAry, statePosAry, that;
-        that = this;
-        if (that.currentState === 'app') {
-          return false;
+      }
+      container_item = $(container);
+      index = 0;
+      if (container_item.hasClass('command-value')) {
+        stack = container_item.parents('.state-item').find('.parameter-list .ace_editor');
+        total = stack.length;
+        stack.eq(total - 1).find('.ace_text-input').focus();
+        return false;
+      }
+      stack = container_item.parents('.parameter-list').find('.ace_editor');
+      total = stack.length;
+      $.each(stack, function(i, item) {
+        if (container === item) {
+          return index = i;
         }
-        if (!noRegisterUndo) {
-          stateIdAry = [];
-          statePosAry = [];
-          _.each($targetStates, function(targetState) {
-            var $targetState, stateId, statePos;
-            $targetState = $(targetState);
-            stateId = $targetState.attr('data-id');
-            stateIdAry.push(stateId);
-            statePos = $targetState.index();
-            return statePosAry.push(statePos);
-          });
-          that.undoManager.register(stateIdAry, statePosAry, 'remove');
-        }
+      });
+      if (index > 0) {
+        stack.eq(index - 1).find('.ace_text-input').focus();
+      }
+      if (index === 0) {
+        container_item.parents('.state-item').find('.command-value .ace_text-input').focus();
+      }
+      return false;
+    },
+    onRemoveState: function(event, $targetStates, noRegisterUndo) {
+      var $stateItems, stateIdAry, statePosAry, that;
+      that = this;
+      if (that.currentState === 'app') {
+        return false;
+      }
+      if (!noRegisterUndo) {
+        stateIdAry = [];
+        statePosAry = [];
         _.each($targetStates, function(targetState) {
-          var $targetState;
+          var $targetState, stateId, statePos;
           $targetState = $(targetState);
-          that.collapseItem($targetState);
+          stateId = $targetState.attr('data-id');
+          stateIdAry.push(stateId);
+          statePos = $targetState.index();
+          return statePosAry.push(statePos);
+        });
+        that.undoManager.register(stateIdAry, statePosAry, 'remove');
+      }
+      _.each($targetStates, function(targetState) {
+        var $targetState;
+        $targetState = $(targetState);
+        that.collapseItem($targetState);
+        return null;
+      });
+      $targetStates.remove();
+      $stateItems = that.$stateList.find('.state-item');
+      if (!$stateItems.length) {
+        that.$haveStateContainer.hide();
+        that.$noStateContainer.show();
+      } else {
+        _.each($stateItems, function(stateItem) {
+          var $stateItem;
+          $stateItem = $(stateItem);
+          if (!$stateItem.hasClass('view')) {
+            that.expandItem($stateItem);
+          }
           return null;
         });
-        $targetStates.remove();
-        $stateItems = that.$stateList.find('.state-item');
-        if (!$stateItems.length) {
-          that.$haveStateContainer.hide();
-          that.$noStateContainer.show();
-        } else {
-          _.each($stateItems, function(stateItem) {
-            var $stateItem;
-            $stateItem = $(stateItem);
-            if (!$stateItem.hasClass('view')) {
-              that.expandItem($stateItem);
-            }
-            return null;
-          });
+      }
+      that.refreshLogItemNum();
+      that.updateToolbar();
+      return false;
+    },
+    checkboxSelect: function(event) {
+      var checkbox, item, that;
+      that = this;
+      checkbox = $(event.currentTarget).find('input');
+      item = checkbox.parents('.state-item');
+      item.removeClass('selected');
+      if (checkbox.prop('checked') === false) {
+        checkbox.prop('checked', true);
+        item.addClass('selected');
+      } else {
+        checkbox.prop('checked', false);
+      }
+      that.updateToolbar();
+      return false;
+    },
+    selectAll: function() {
+      var that;
+      that = this;
+      $('#OpsEditor').find('#state-editor .state-item').addClass('selected').find('.checkbox input').prop('checked', true);
+      that.updateToolbar();
+      return true;
+    },
+    unSelectAll: function() {
+      var that;
+      that = this;
+      $('#OpsEditor').find('#state-editor .state-item').removeClass('selected').find('.checkbox input').prop('checked', false);
+      that.updateToolbar();
+      return true;
+    },
+    onSelectAllClick: function() {
+      var checkbox, that;
+      that = this;
+      checkbox = $(event.currentTarget).find('input');
+      if (checkbox.prop('checked') === false) {
+        checkbox.prop('checked', true);
+        that.selectAll.call(this, event);
+      } else {
+        checkbox.prop('checked', false);
+        that.unSelectAll.call(this, event);
+      }
+      return false;
+    },
+    onStateItemAddBtnClick: function(event) {
+      var that;
+      that = this;
+      that.onStateItemAddClick();
+      that.$haveStateContainer.show();
+      that.$noStateContainer.hide();
+      return false;
+    },
+    updateToolbar: function() {
+      var selected_length, that;
+      that = this;
+      selected_length = that.$('#state-editor .state-item.selected').length;
+      if (selected_length > 0) {
+        that.$('#state-toolbar-copy, #state-toolbar-delete').show();
+        that.$('#state-toolbar-copy-all').hide();
+        that.$('#state-toolbar-copy-count, #state-toolbar-delete-count').text(selected_length);
+      } else {
+        that.$('#state-toolbar-copy, #state-toolbar-delete').hide();
+        that.$('#state-toolbar-copy-all').show();
+      }
+      if (StateClipboard.length > 0) {
+        that.$('#state-toolbar-paste').removeClass('disabled');
+      } else {
+        that.$('#state-toolbar-paste').addClass('disabled');
+      }
+      if (selected_length > 0 && selected_length === that.$('#state-editor .state-item').length) {
+        that.$('#state-toolbar-selectAll').find('input').prop('checked', true);
+      } else {
+        that.$('#state-toolbar-selectAll').find('input').prop('checked', false);
+      }
+      return true;
+    },
+    onClickBlank: function(event) {
+      var target, that;
+      that = this;
+      target = $(event.target);
+      if (target.parents('.state-item').length === 0) {
+        that.clearFocusedItem();
+      }
+      return false;
+    },
+    onPasteGistData: function(event) {
+      var err, pasteData, pasteDataJSON, that;
+      that = this;
+      pasteData = event.originalEvent.clipboardData.getData('text/plain');
+      try {
+        pasteDataJSON = JSON.parse(pasteData);
+        pasteDataJSON = that.setNewStateIdForStateAry(pasteDataJSON);
+        return that.addStateItemByData(pasteDataJSON);
+      } catch (_error) {
+        err = _error;
+        return null;
+      }
+    },
+    onStateLogItemHeaderClick: function(event) {
+      var $currentTarget, $stateLogItem;
+      $currentTarget = $(event.currentTarget);
+      $stateLogItem = $currentTarget.parents('.state-log-item');
+      return $stateLogItem.toggleClass('view');
+    },
+    openSysLogModal: function() {
+      var region, reqApi, serverId, that;
+      that = this;
+      serverId = that.currentResId;
+      region = Design.instance().region();
+      if (Design.instance().type() === OpsModel.Type.OpenStack) {
+        reqApi = "os_server_GetConsoleOutput";
+        ApiRequestOs(reqApi, {
+          region: region,
+          server_id: serverId
+        }).then(_.bind(this.refreshSysLog, this), _.bind(this.refreshSysLog, this));
+      } else {
+        reqApi = "ins_GetConsoleOutput";
+        ApiRequest(reqApi, {
+          key_id: Design.instance().credentialId(),
+          region_name: region,
+          instance_id: serverId
+        }).then(_.bind(this.refreshSysLog, this), _.bind(this.refreshSysLog, this));
+      }
+      this.sysLogModal = new modalPlus({
+        template: MC.template.modalInstanceSysLog({
+          log_content: ''
+        }),
+        width: 900,
+        title: lang.IDE.SYSTEM_LOG + serverId,
+        confirm: {
+          hide: true
         }
-        that.refreshLogItemNum();
-        that.updateToolbar();
-        return false;
-      },
-      checkboxSelect: function(event) {
-        var checkbox, item, that;
-        that = this;
-        checkbox = $(event.currentTarget).find('input');
-        item = checkbox.parents('.state-item');
-        item.removeClass('selected');
-        if (checkbox.prop('checked') === false) {
-          checkbox.prop('checked', true);
-          item.addClass('selected');
-        } else {
-          checkbox.prop('checked', false);
-        }
-        that.updateToolbar();
-        return false;
-      },
-      selectAll: function() {
-        var that;
-        that = this;
-        $('#OpsEditor').find('#state-editor .state-item').addClass('selected').find('.checkbox input').prop('checked', true);
-        that.updateToolbar();
-        return true;
-      },
-      unSelectAll: function() {
-        var that;
-        that = this;
-        $('#OpsEditor').find('#state-editor .state-item').removeClass('selected').find('.checkbox input').prop('checked', false);
-        that.updateToolbar();
-        return true;
-      },
-      onSelectAllClick: function() {
-        var checkbox, that;
-        that = this;
-        checkbox = $(event.currentTarget).find('input');
-        if (checkbox.prop('checked') === false) {
-          checkbox.prop('checked', true);
-          that.selectAll.call(this, event);
-        } else {
-          checkbox.prop('checked', false);
-          that.unSelectAll.call(this, event);
-        }
-        return false;
-      },
-      onStateItemAddBtnClick: function(event) {
-        var that;
-        that = this;
-        that.onStateItemAddClick();
-        that.$haveStateContainer.show();
-        that.$noStateContainer.hide();
-        return false;
-      },
-      updateToolbar: function() {
-        var selected_length, that;
-        that = this;
-        selected_length = that.$('#state-editor .state-item.selected').length;
-        if (selected_length > 0) {
-          that.$('#state-toolbar-copy, #state-toolbar-delete').show();
-          that.$('#state-toolbar-copy-all').hide();
-          that.$('#state-toolbar-copy-count, #state-toolbar-delete-count').text(selected_length);
-        } else {
-          that.$('#state-toolbar-copy, #state-toolbar-delete').hide();
-          that.$('#state-toolbar-copy-all').show();
-        }
-        if (StateClipboard.length > 0) {
-          that.$('#state-toolbar-paste').removeClass('disabled');
-        } else {
-          that.$('#state-toolbar-paste').addClass('disabled');
-        }
-        if (selected_length > 0 && selected_length === that.$('#state-editor .state-item').length) {
-          that.$('#state-toolbar-selectAll').find('input').prop('checked', true);
-        } else {
-          that.$('#state-toolbar-selectAll').find('input').prop('checked', false);
-        }
-        return true;
-      },
-      onClickBlank: function(event) {
-        var target, that;
-        that = this;
-        target = $(event.target);
-        if (target.parents('.state-item').length === 0) {
-          that.clearFocusedItem();
-        }
-        return false;
-      },
-      onPasteGistData: function(event) {
-        var err, pasteData, pasteDataJSON, that;
-        that = this;
-        pasteData = event.originalEvent.clipboardData.getData('text/plain');
-        try {
-          pasteDataJSON = JSON.parse(pasteData);
-          pasteDataJSON = that.setNewStateIdForStateAry(pasteDataJSON);
-          return that.addStateItemByData(pasteDataJSON);
-        } catch (_error) {
-          err = _error;
-          return null;
-        }
-      },
-      onStateLogItemHeaderClick: function(event) {
-        var $currentTarget, $stateLogItem;
-        $currentTarget = $(event.currentTarget);
-        $stateLogItem = $currentTarget.parents('.state-log-item');
-        return $stateLogItem.toggleClass('view');
-      },
-      openSysLogModal: function() {
-        var region, reqApi, serverId, that;
-        that = this;
-        serverId = that.currentResId;
-        region = Design.instance().region();
+      }).tpl.attr("id", "modal-instance-sys-log");
+      return false;
+    },
+    refreshSysLog: function(result) {
+      var $contentElem, logContent, output, that, _ref;
+      that = this;
+      $('#modal-instance-sys-log .instance-sys-log-loading').hide();
+      if (result) {
+        output = (_ref = result.GetConsoleOutputResponse) != null ? _ref.output : void 0;
         if (Design.instance().type() === OpsModel.Type.OpenStack) {
-          reqApi = "os_server_GetConsoleOutput";
-          ApiRequestOs(reqApi, {
-            region: region,
-            server_id: serverId
-          }).then(_.bind(this.refreshSysLog, this), _.bind(this.refreshSysLog, this));
-        } else {
-          reqApi = "ins_GetConsoleOutput";
-          ApiRequest(reqApi, {
-            key_id: Design.instance().credentialId(),
-            region_name: region,
-            instance_id: serverId
-          }).then(_.bind(this.refreshSysLog, this), _.bind(this.refreshSysLog, this));
+          output = result.output;
         }
-        this.sysLogModal = new modalPlus({
-          template: MC.template.modalInstanceSysLog({
-            log_content: ''
-          }),
-          width: 900,
-          title: lang.IDE.SYSTEM_LOG + serverId,
-          confirm: {
-            hide: true
-          }
-        }).tpl.attr("id", "modal-instance-sys-log");
-        return false;
-      },
-      refreshSysLog: function(result) {
-        var $contentElem, logContent, output, that, _ref;
-        that = this;
-        $('#modal-instance-sys-log .instance-sys-log-loading').hide();
-        if (result) {
-          output = (_ref = result.GetConsoleOutputResponse) != null ? _ref.output : void 0;
-          if (Design.instance().type() === OpsModel.Type.OpenStack) {
-            output = result.output;
-          }
-          if (output) {
-            logContent = Base64.decode(output);
-            $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
-            $contentElem.html(MC.template.convertBreaklines({
-              content: logContent
-            }));
-            $contentElem.show();
-            that.sysLogModal.resize();
-            return;
-          }
+        if (output) {
+          logContent = Base64.decode(output);
+          $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
+          $contentElem.html(MC.template.convertBreaklines({
+            content: logContent
+          }));
+          $contentElem.show();
+          that.sysLogModal.resize();
+          return;
         }
-        $('#modal-instance-sys-log .instance-sys-log-info').show();
-        return this.sysLogModal.resize();
-      },
-      onStateLogDetailBtnClick: function(event) {
-        var $logDetailBtn, $logItem, stateId, stateLogObj, that;
-        that = this;
-        $logDetailBtn = $(event.currentTarget);
-        $logItem = $logDetailBtn.parents('.state-log-item');
-        stateId = $logItem.attr('data-state-id');
-        if (stateId) {
-          stateLogObj = that.stateIdLogContentMap[stateId];
-          if (stateLogObj) {
-            that.logModal = new modalPlus({
-              title: lang.IDE.STATE_LOG_DETAIL_MOD_TIT,
-              template: template.stateLogDetailModal({
-                number: stateLogObj.number,
-                content: stateLogObj.content
-              }),
-              width: 900,
-              confirm: {
-                hide: true
-              }
-            });
-            that.logModal.tpl.attr("id", "modal-state-log-detail");
-            return that.logModal.resize();
-          }
-        }
-      },
-      onTextParaExpandClick: function(event) {
-        var $focusElem, $paraItem, $paraValue, $stateItem, cmdName, extName, filePath, filePathAry, paraEditor, paraName, stateData, that;
-        that = this;
-        $focusElem = $(event.target);
-        if ($focusElem.parents('.parameter-dict-item').length) {
-          $paraValue = $focusElem.parents('.parameter-dict-item').find('.parameter-value.value');
-        } else {
-          $paraValue = $focusElem.parents('.parameter-container').find('.parameter-value');
-        }
-        paraEditor = $paraValue.data('editor');
-        if (paraEditor) {
-          $paraItem = $paraValue.parents('.parameter-item');
-          if ($paraItem.hasClass('text') || $paraItem.hasClass('dict')) {
-            paraName = $paraItem.attr('data-para-name');
-            $stateItem = $paraItem.parents('.state-item');
-            extName = '';
-            stateData = that.getStateItemByData($stateItem);
-            if (stateData && stateData.parameter && stateData.parameter.path) {
-              filePath = stateData.parameter.path;
-              filePathAry = filePath.split('.');
-              extName = filePathAry[filePathAry.length - 1];
+      }
+      $('#modal-instance-sys-log .instance-sys-log-info').show();
+      return this.sysLogModal.resize();
+    },
+    onStateLogDetailBtnClick: function(event) {
+      var $logDetailBtn, $logItem, stateId, stateLogObj, that;
+      that = this;
+      $logDetailBtn = $(event.currentTarget);
+      $logItem = $logDetailBtn.parents('.state-log-item');
+      stateId = $logItem.attr('data-state-id');
+      if (stateId) {
+        stateLogObj = that.stateIdLogContentMap[stateId];
+        if (stateLogObj) {
+          that.logModal = new modalPlus({
+            title: lang.IDE.STATE_LOG_DETAIL_MOD_TIT,
+            template: template.stateLogDetailModal({
+              number: stateLogObj.number,
+              content: stateLogObj.content
+            }),
+            width: 900,
+            confirm: {
+              hide: true
             }
-            cmdName = $stateItem.attr('data-command');
-            return that.openStateTextEditor(cmdName, paraName, extName, paraEditor);
+          });
+          that.logModal.tpl.attr("id", "modal-state-log-detail");
+          return that.logModal.resize();
+        }
+      }
+    },
+    onTextParaExpandClick: function(event) {
+      var $focusElem, $paraItem, $paraValue, $stateItem, cmdName, extName, filePath, filePathAry, paraEditor, paraName, stateData, that;
+      that = this;
+      $focusElem = $(event.target);
+      if ($focusElem.parents('.parameter-dict-item').length) {
+        $paraValue = $focusElem.parents('.parameter-dict-item').find('.parameter-value.value');
+      } else {
+        $paraValue = $focusElem.parents('.parameter-container').find('.parameter-value');
+      }
+      paraEditor = $paraValue.data('editor');
+      if (paraEditor) {
+        $paraItem = $paraValue.parents('.parameter-item');
+        if ($paraItem.hasClass('text') || $paraItem.hasClass('dict')) {
+          paraName = $paraItem.attr('data-para-name');
+          $stateItem = $paraItem.parents('.state-item');
+          extName = '';
+          stateData = that.getStateItemByData($stateItem);
+          if (stateData && stateData.parameter && stateData.parameter.path) {
+            filePath = stateData.parameter.path;
+            filePathAry = filePath.split('.');
+            extName = filePathAry[filePathAry.length - 1];
           }
+          cmdName = $stateItem.attr('data-command');
+          return that.openStateTextEditor(cmdName, paraName, extName, paraEditor);
         }
-      },
-      openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
-        var $codeArea, codeEditor, textContent, that;
-        that = this;
-        textContent = originEditor.getValue();
-        that.editorModal = new modalPlus({
-          title: "" + (that.readOnlyMode ? lang.IDE.STATE_TEXT_VIEW : lang.IDE.STATE_TEXT_EDIT) + " " + cmdName + " " + paraName,
-          template: template.stateTextExpandModal(),
-          width: 900,
-          disableFooter: that.readOnlyMode,
-          confirm: !that.readOnlyMode ? lang.IDE.STATE_TEXT_EXPAND_MODAL_SAVE_BTN : void 0,
-          cancel: {
-            hide: true
-          },
-          disableClose: true
-        });
-        that.editorModal.tpl.attr("id", "modal-state-text-expand");
-        $('#modal-state-text-expand').data('origin-editor', originEditor);
-        $codeArea = $('#modal-state-text-expand .editable-area');
-        that.initCodeEditor($codeArea[0], {
-          at: that.resAttrDataAry
-        }, {
-          showGutter: true,
-          isCodeEditor: true,
-          extName: extName
-        });
-        codeEditor = $codeArea.data('editor');
-        if (codeEditor) {
-          codeEditor.setValue(textContent);
-          codeEditor.focus();
-          codeEditor.clearSelection();
+      }
+    },
+    openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
+      var $codeArea, codeEditor, textContent, that;
+      that = this;
+      textContent = originEditor.getValue();
+      that.editorModal = new modalPlus({
+        title: "" + (that.readOnlyMode ? lang.IDE.STATE_TEXT_VIEW : lang.IDE.STATE_TEXT_EDIT) + " " + cmdName + " " + paraName,
+        template: template.stateTextExpandModal(),
+        width: 900,
+        disableFooter: that.readOnlyMode,
+        confirm: !that.readOnlyMode ? lang.IDE.STATE_TEXT_EXPAND_MODAL_SAVE_BTN : void 0,
+        cancel: {
+          hide: true
+        },
+        disableClose: true
+      });
+      that.editorModal.tpl.attr("id", "modal-state-text-expand");
+      $('#modal-state-text-expand').data('origin-editor', originEditor);
+      $codeArea = $('#modal-state-text-expand .editable-area');
+      that.initCodeEditor($codeArea[0], {
+        at: that.resAttrDataAry
+      }, {
+        showGutter: true,
+        isCodeEditor: true,
+        extName: extName
+      });
+      codeEditor = $codeArea.data('editor');
+      if (codeEditor) {
+        codeEditor.setValue(textContent);
+        codeEditor.focus();
+        codeEditor.clearSelection();
+      }
+      return that.editorModal.on('confirm', function() {
+        return that.saveStateTextEditorContent();
+      });
+    },
+    saveStateTextEditorContent: function() {
+      var $codeArea, $paraItem, codeEditor, codeEditorValue, originEditor, that;
+      that = this;
+      if (that.readOnlyMode) {
+        if (that.editorModal) {
+          return that.editorModal.close();
         }
-        return that.editorModal.on('confirm', function() {
-          return that.saveStateTextEditorContent();
-        });
-      },
-      saveStateTextEditorContent: function() {
-        var $codeArea, $paraItem, codeEditor, codeEditorValue, originEditor, that;
-        that = this;
-        if (that.readOnlyMode) {
+      } else {
+        originEditor = $('#modal-state-text-expand').data('origin-editor');
+        if (originEditor) {
+          $codeArea = $('#modal-state-text-expand .editable-area');
+          codeEditor = $codeArea.data('editor');
+          codeEditorValue = codeEditor.getValue();
+          $paraItem = $(originEditor.container).parents('.parameter-item');
+          if ($paraItem && $paraItem.hasClass('optional')) {
+            if (codeEditorValue) {
+              $paraItem.removeClass('disabled');
+            } else {
+              $paraItem.addClass('disabled');
+            }
+          }
+          originEditor.setValue(codeEditorValue);
+          if ($paraItem.hasClass('dict')) {
+            originEditor.getSelection().selectFileStart();
+          }
+          originEditor.clearSelection();
+          originEditor.focus();
           if (that.editorModal) {
             return that.editorModal.close();
           }
-        } else {
-          originEditor = $('#modal-state-text-expand').data('origin-editor');
-          if (originEditor) {
-            $codeArea = $('#modal-state-text-expand .editable-area');
-            codeEditor = $codeArea.data('editor');
-            codeEditorValue = codeEditor.getValue();
-            $paraItem = $(originEditor.container).parents('.parameter-item');
-            if ($paraItem && $paraItem.hasClass('optional')) {
-              if (codeEditorValue) {
-                $paraItem.removeClass('disabled');
-              } else {
-                $paraItem.addClass('disabled');
-              }
-            }
-            originEditor.setValue(codeEditorValue);
-            if ($paraItem.hasClass('dict')) {
-              originEditor.getSelection().selectFileStart();
-            }
-            originEditor.clearSelection();
-            originEditor.focus();
-            if (that.editorModal) {
-              return that.editorModal.close();
-            }
-          }
         }
-      },
-      remove: function() {
-        this.onStateSaveClick();
-        return Backbone.View.prototype.remove.call(this);
       }
-    });
-    return StateEditorView;
+    },
+    remove: function() {
+      this.onStateSaveClick();
+      return Backbone.View.prototype.remove.call(this);
+    }
   });
-
-}).call(this);
+  return StateEditorView;
+});
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Distributed under the BSD license:
@@ -18472,9 +18463,6 @@ display: inline-block;\
 height: 11px;\
 margin-top: -2px;\
 vertical-align: middle;\
-background-image:\
-url(\"data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%11%00%00%00%09%08%06%00%00%00%D4%E8%C7%0C%00%00%03%1EiCCPICC%20Profile%00%00x%01%85T%DFk%D3P%14%FE%DAe%9D%B0%E1%8B%3Ag%11%09%3Eh%91ndStC%9C%B6kW%BA%CDZ%EA6%B7!H%9B%A6m%5C%9A%C6%24%ED~%B0%07%D9%8Bo%3A%C5w%F1%07%3E%F9%07%0C%D9%83o%7B%92%0D%C6%14a%F8%AC%88%22L%F6%22%B3%9E%9B4M'S%03%B9%F7%BB%DF%F9%EE9'%E7%E4%5E%A0%F9qZ%D3%14%2F%0F%14USO%C5%C2%FC%C4%E4%14%DF%F2%01%5E%1CC%2B%FChM%8B%86%16J%26G%40%0F%D3%B2y%EF%B3%F3%0E%1E%C6lt%EEo%DF%AB%FEc%D5%9A%95%0C%11%F0%1C%20%BE%945%C4%22%E1Y%A0i%5C%D4t%13%E0%D6%89%EF%9D15%C2%CDLsX%A7%04%09%1Fg8oc%81%E1%8C%8D%23%96f45%40%9A%09%C2%07%C5B%3AK%B8%408%98i%E0%F3%0D%D8%CE%81%14%E4'%26%A9%92.%8B%3C%ABER%2F%E5dE%B2%0C%F6%F0%1Fs%83%F2_%B0%A8%94%E9%9B%AD%E7%10%8Dm%9A%19N%D1%7C%8A%DE%1F9%7Dp%8C%E6%00%D5%C1%3F_%18%BDA%B8%9DpX6%E3%A35~B%CD%24%AE%11%26%BD%E7%EEti%98%EDe%9A%97Y)%12%25%1C%24%BCbT%AE3li%E6%0B%03%89%9A%E6%D3%ED%F4P%92%B0%9F4%BF43Y%F3%E3%EDP%95%04%EB1%C5%F5%F6KF%F4%BA%BD%D7%DB%91%93%07%E35%3E%A7)%D6%7F%40%FE%BD%F7%F5r%8A%E5y%92%F0%EB%B4%1E%8D%D5%F4%5B%92%3AV%DB%DB%E4%CD%A6%23%C3%C4wQ%3F%03HB%82%8E%1Cd(%E0%91B%0Ca%9Ac%C4%AA%F8L%16%19%22J%A4%D2itTy%B28%D6%3B(%93%96%ED%1CGx%C9_%0E%B8%5E%16%F5%5B%B2%B8%F6%E0%FB%9E%DD%25%D7%8E%BC%15%85%C5%B7%A3%D8Q%ED%B5%81%E9%BA%B2%13%9A%1B%7Fua%A5%A3n%E17%B9%E5%9B%1Bm%AB%0B%08Q%FE%8A%E5%B1H%5Ee%CAO%82Q%D7u6%E6%90S%97%FCu%0B%CF2%94%EE%25v%12X%0C%BA%AC%F0%5E%F8*l%0AO%85%17%C2%97%BF%D4%C8%CE%DE%AD%11%CB%80q%2C%3E%AB%9ES%CD%C6%EC%25%D2L%D2%EBd%B8%BF%8A%F5B%C6%18%F9%901CZ%9D%BE%24M%9C%8A9%F2%DAP%0B'%06w%82%EB%E6%E2%5C%2F%D7%07%9E%BB%CC%5D%E1%FA%B9%08%AD.r%23%8E%C2%17%F5E%7C!%F0%BE3%BE%3E_%B7o%88a%A7%DB%BE%D3d%EB%A31Z%EB%BB%D3%91%BA%A2%B1z%94%8F%DB'%F6%3D%8E%AA%13%19%B2%B1%BE%B1~V%08%2B%B4%A2cjJ%B3tO%00%03%25mN%97%F3%05%93%EF%11%84%0B%7C%88%AE-%89%8F%ABbW%90O%2B%0Ao%99%0C%5E%97%0CI%AFH%D9.%B0%3B%8F%ED%03%B6S%D6%5D%E6i_s9%F3*p%E9%1B%FD%C3%EB.7U%06%5E%19%C0%D1s.%17%A03u%E4%09%B0%7C%5E%2C%EB%15%DB%1F%3C%9E%B7%80%91%3B%DBc%AD%3Dma%BA%8B%3EV%AB%DBt.%5B%1E%01%BB%0F%AB%D5%9F%CF%AA%D5%DD%E7%E4%7F%0Bx%A3%FC%06%A9%23%0A%D6%C2%A1_2%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%B5IDAT(%15%A5%91%3D%0E%02!%10%85ac%E1%05%D6%CE%D6%C6%CE%D2%E8%ED%CD%DE%C0%C6%D6N.%E0V%F8%3D%9Ca%891XH%C2%BE%D9y%3F%90!%E6%9C%C3%BFk%E5%011%C6-%F5%C8N%04%DF%BD%FF%89%DFt%83DN%60%3E%F3%AB%A0%DE%1A%5Dg%BE%10Q%97%1B%40%9C%A8o%10%8F%5E%828%B4%1B%60%87%F6%02%26%85%1Ch%1E%C1%2B%5Bk%FF%86%EE%B7j%09%9A%DA%9B%ACe%A3%F9%EC%DA!9%B4%D5%A6%81%86%86%98%CC%3C%5B%40%FA%81%B3%E9%CB%23%94%C16Azo%05%D4%E1%C1%95a%3B%8A'%A0%E8%CC%17%22%85%1D%BA%00%A2%FA%DC%0A%94%D1%D1%8D%8B%3A%84%17B%C7%60%1A%25Z%FC%8D%00%00%00%00IEND%AEB%60%82\"),\
-url(\"data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%05%00%00%007%08%06%00%00%00%C4%DD%80C%00%00%03%1EiCCPICC%20Profile%00%00x%01%85T%DFk%D3P%14%FE%DAe%9D%B0%E1%8B%3Ag%11%09%3Eh%91ndStC%9C%B6kW%BA%CDZ%EA6%B7!H%9B%A6m%5C%9A%C6%24%ED~%B0%07%D9%8Bo%3A%C5w%F1%07%3E%F9%07%0C%D9%83o%7B%92%0D%C6%14a%F8%AC%88%22L%F6%22%B3%9E%9B4M'S%03%B9%F7%BB%DF%F9%EE9'%E7%E4%5E%A0%F9qZ%D3%14%2F%0F%14USO%C5%C2%FC%C4%E4%14%DF%F2%01%5E%1CC%2B%FChM%8B%86%16J%26G%40%0F%D3%B2y%EF%B3%F3%0E%1E%C6lt%EEo%DF%AB%FEc%D5%9A%95%0C%11%F0%1C%20%BE%945%C4%22%E1Y%A0i%5C%D4t%13%E0%D6%89%EF%9D15%C2%CDLsX%A7%04%09%1Fg8oc%81%E1%8C%8D%23%96f45%40%9A%09%C2%07%C5B%3AK%B8%408%98i%E0%F3%0D%D8%CE%81%14%E4'%26%A9%92.%8B%3C%ABER%2F%E5dE%B2%0C%F6%F0%1Fs%83%F2_%B0%A8%94%E9%9B%AD%E7%10%8Dm%9A%19N%D1%7C%8A%DE%1F9%7Dp%8C%E6%00%D5%C1%3F_%18%BDA%B8%9DpX6%E3%A35~B%CD%24%AE%11%26%BD%E7%EEti%98%EDe%9A%97Y)%12%25%1C%24%BCbT%AE3li%E6%0B%03%89%9A%E6%D3%ED%F4P%92%B0%9F4%BF43Y%F3%E3%EDP%95%04%EB1%C5%F5%F6KF%F4%BA%BD%D7%DB%91%93%07%E35%3E%A7)%D6%7F%40%FE%BD%F7%F5r%8A%E5y%92%F0%EB%B4%1E%8D%D5%F4%5B%92%3AV%DB%DB%E4%CD%A6%23%C3%C4wQ%3F%03HB%82%8E%1Cd(%E0%91B%0Ca%9Ac%C4%AA%F8L%16%19%22J%A4%D2itTy%B28%D6%3B(%93%96%ED%1CGx%C9_%0E%B8%5E%16%F5%5B%B2%B8%F6%E0%FB%9E%DD%25%D7%8E%BC%15%85%C5%B7%A3%D8Q%ED%B5%81%E9%BA%B2%13%9A%1B%7Fua%A5%A3n%E17%B9%E5%9B%1Bm%AB%0B%08Q%FE%8A%E5%B1H%5Ee%CAO%82Q%D7u6%E6%90S%97%FCu%0B%CF2%94%EE%25v%12X%0C%BA%AC%F0%5E%F8*l%0AO%85%17%C2%97%BF%D4%C8%CE%DE%AD%11%CB%80q%2C%3E%AB%9ES%CD%C6%EC%25%D2L%D2%EBd%B8%BF%8A%F5B%C6%18%F9%901CZ%9D%BE%24M%9C%8A9%F2%DAP%0B'%06w%82%EB%E6%E2%5C%2F%D7%07%9E%BB%CC%5D%E1%FA%B9%08%AD.r%23%8E%C2%17%F5E%7C!%F0%BE3%BE%3E_%B7o%88a%A7%DB%BE%D3d%EB%A31Z%EB%BB%D3%91%BA%A2%B1z%94%8F%DB'%F6%3D%8E%AA%13%19%B2%B1%BE%B1~V%08%2B%B4%A2cjJ%B3tO%00%03%25mN%97%F3%05%93%EF%11%84%0B%7C%88%AE-%89%8F%ABbW%90O%2B%0Ao%99%0C%5E%97%0CI%AFH%D9.%B0%3B%8F%ED%03%B6S%D6%5D%E6i_s9%F3*p%E9%1B%FD%C3%EB.7U%06%5E%19%C0%D1s.%17%A03u%E4%09%B0%7C%5E%2C%EB%15%DB%1F%3C%9E%B7%80%91%3B%DBc%AD%3Dma%BA%8B%3EV%AB%DBt.%5B%1E%01%BB%0F%AB%D5%9F%CF%AA%D5%DD%E7%E4%7F%0Bx%A3%FC%06%A9%23%0A%D6%C2%A1_2%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%3AIDAT8%11c%FC%FF%FF%7F%18%03%1A%60%01%F2%3F%A0%891%80%04%FF%11-%F8%17%9BJ%E2%05%B1ZD%81v%26t%E7%80%F8%A3%82h%A12%1A%20%A3%01%02%0F%01%BA%25%06%00%19%C0%0D%AEF%D5%3ES%00%00%00%00IEND%AEB%60%82\");\
 background-repeat: no-repeat, repeat-x;\
 background-position: center center, top left;\
 color: transparent;\
@@ -18488,9 +18476,6 @@ pointer-events: auto;\
 .ace_dark .ace_fold {\
 }\
 .ace_fold:hover{\
-background-image:\
-url(\"data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%11%00%00%00%09%08%06%00%00%00%D4%E8%C7%0C%00%00%03%1EiCCPICC%20Profile%00%00x%01%85T%DFk%D3P%14%FE%DAe%9D%B0%E1%8B%3Ag%11%09%3Eh%91ndStC%9C%B6kW%BA%CDZ%EA6%B7!H%9B%A6m%5C%9A%C6%24%ED~%B0%07%D9%8Bo%3A%C5w%F1%07%3E%F9%07%0C%D9%83o%7B%92%0D%C6%14a%F8%AC%88%22L%F6%22%B3%9E%9B4M'S%03%B9%F7%BB%DF%F9%EE9'%E7%E4%5E%A0%F9qZ%D3%14%2F%0F%14USO%C5%C2%FC%C4%E4%14%DF%F2%01%5E%1CC%2B%FChM%8B%86%16J%26G%40%0F%D3%B2y%EF%B3%F3%0E%1E%C6lt%EEo%DF%AB%FEc%D5%9A%95%0C%11%F0%1C%20%BE%945%C4%22%E1Y%A0i%5C%D4t%13%E0%D6%89%EF%9D15%C2%CDLsX%A7%04%09%1Fg8oc%81%E1%8C%8D%23%96f45%40%9A%09%C2%07%C5B%3AK%B8%408%98i%E0%F3%0D%D8%CE%81%14%E4'%26%A9%92.%8B%3C%ABER%2F%E5dE%B2%0C%F6%F0%1Fs%83%F2_%B0%A8%94%E9%9B%AD%E7%10%8Dm%9A%19N%D1%7C%8A%DE%1F9%7Dp%8C%E6%00%D5%C1%3F_%18%BDA%B8%9DpX6%E3%A35~B%CD%24%AE%11%26%BD%E7%EEti%98%EDe%9A%97Y)%12%25%1C%24%BCbT%AE3li%E6%0B%03%89%9A%E6%D3%ED%F4P%92%B0%9F4%BF43Y%F3%E3%EDP%95%04%EB1%C5%F5%F6KF%F4%BA%BD%D7%DB%91%93%07%E35%3E%A7)%D6%7F%40%FE%BD%F7%F5r%8A%E5y%92%F0%EB%B4%1E%8D%D5%F4%5B%92%3AV%DB%DB%E4%CD%A6%23%C3%C4wQ%3F%03HB%82%8E%1Cd(%E0%91B%0Ca%9Ac%C4%AA%F8L%16%19%22J%A4%D2itTy%B28%D6%3B(%93%96%ED%1CGx%C9_%0E%B8%5E%16%F5%5B%B2%B8%F6%E0%FB%9E%DD%25%D7%8E%BC%15%85%C5%B7%A3%D8Q%ED%B5%81%E9%BA%B2%13%9A%1B%7Fua%A5%A3n%E17%B9%E5%9B%1Bm%AB%0B%08Q%FE%8A%E5%B1H%5Ee%CAO%82Q%D7u6%E6%90S%97%FCu%0B%CF2%94%EE%25v%12X%0C%BA%AC%F0%5E%F8*l%0AO%85%17%C2%97%BF%D4%C8%CE%DE%AD%11%CB%80q%2C%3E%AB%9ES%CD%C6%EC%25%D2L%D2%EBd%B8%BF%8A%F5B%C6%18%F9%901CZ%9D%BE%24M%9C%8A9%F2%DAP%0B'%06w%82%EB%E6%E2%5C%2F%D7%07%9E%BB%CC%5D%E1%FA%B9%08%AD.r%23%8E%C2%17%F5E%7C!%F0%BE3%BE%3E_%B7o%88a%A7%DB%BE%D3d%EB%A31Z%EB%BB%D3%91%BA%A2%B1z%94%8F%DB'%F6%3D%8E%AA%13%19%B2%B1%BE%B1~V%08%2B%B4%A2cjJ%B3tO%00%03%25mN%97%F3%05%93%EF%11%84%0B%7C%88%AE-%89%8F%ABbW%90O%2B%0Ao%99%0C%5E%97%0CI%AFH%D9.%B0%3B%8F%ED%03%B6S%D6%5D%E6i_s9%F3*p%E9%1B%FD%C3%EB.7U%06%5E%19%C0%D1s.%17%A03u%E4%09%B0%7C%5E%2C%EB%15%DB%1F%3C%9E%B7%80%91%3B%DBc%AD%3Dma%BA%8B%3EV%AB%DBt.%5B%1E%01%BB%0F%AB%D5%9F%CF%AA%D5%DD%E7%E4%7F%0Bx%A3%FC%06%A9%23%0A%D6%C2%A1_2%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%B5IDAT(%15%A5%91%3D%0E%02!%10%85ac%E1%05%D6%CE%D6%C6%CE%D2%E8%ED%CD%DE%C0%C6%D6N.%E0V%F8%3D%9Ca%891XH%C2%BE%D9y%3F%90!%E6%9C%C3%BFk%E5%011%C6-%F5%C8N%04%DF%BD%FF%89%DFt%83DN%60%3E%F3%AB%A0%DE%1A%5Dg%BE%10Q%97%1B%40%9C%A8o%10%8F%5E%828%B4%1B%60%87%F6%02%26%85%1Ch%1E%C1%2B%5Bk%FF%86%EE%B7j%09%9A%DA%9B%ACe%A3%F9%EC%DA!9%B4%D5%A6%81%86%86%98%CC%3C%5B%40%FA%81%B3%E9%CB%23%94%C16Azo%05%D4%E1%C1%95a%3B%8A'%A0%E8%CC%17%22%85%1D%BA%00%A2%FA%DC%0A%94%D1%D1%8D%8B%3A%84%17B%C7%60%1A%25Z%FC%8D%00%00%00%00IEND%AEB%60%82\"),\
-url(\"data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%05%00%00%007%08%06%00%00%00%C4%DD%80C%00%00%03%1EiCCPICC%20Profile%00%00x%01%85T%DFk%D3P%14%FE%DAe%9D%B0%E1%8B%3Ag%11%09%3Eh%91ndStC%9C%B6kW%BA%CDZ%EA6%B7!H%9B%A6m%5C%9A%C6%24%ED~%B0%07%D9%8Bo%3A%C5w%F1%07%3E%F9%07%0C%D9%83o%7B%92%0D%C6%14a%F8%AC%88%22L%F6%22%B3%9E%9B4M'S%03%B9%F7%BB%DF%F9%EE9'%E7%E4%5E%A0%F9qZ%D3%14%2F%0F%14USO%C5%C2%FC%C4%E4%14%DF%F2%01%5E%1CC%2B%FChM%8B%86%16J%26G%40%0F%D3%B2y%EF%B3%F3%0E%1E%C6lt%EEo%DF%AB%FEc%D5%9A%95%0C%11%F0%1C%20%BE%945%C4%22%E1Y%A0i%5C%D4t%13%E0%D6%89%EF%9D15%C2%CDLsX%A7%04%09%1Fg8oc%81%E1%8C%8D%23%96f45%40%9A%09%C2%07%C5B%3AK%B8%408%98i%E0%F3%0D%D8%CE%81%14%E4'%26%A9%92.%8B%3C%ABER%2F%E5dE%B2%0C%F6%F0%1Fs%83%F2_%B0%A8%94%E9%9B%AD%E7%10%8Dm%9A%19N%D1%7C%8A%DE%1F9%7Dp%8C%E6%00%D5%C1%3F_%18%BDA%B8%9DpX6%E3%A35~B%CD%24%AE%11%26%BD%E7%EEti%98%EDe%9A%97Y)%12%25%1C%24%BCbT%AE3li%E6%0B%03%89%9A%E6%D3%ED%F4P%92%B0%9F4%BF43Y%F3%E3%EDP%95%04%EB1%C5%F5%F6KF%F4%BA%BD%D7%DB%91%93%07%E35%3E%A7)%D6%7F%40%FE%BD%F7%F5r%8A%E5y%92%F0%EB%B4%1E%8D%D5%F4%5B%92%3AV%DB%DB%E4%CD%A6%23%C3%C4wQ%3F%03HB%82%8E%1Cd(%E0%91B%0Ca%9Ac%C4%AA%F8L%16%19%22J%A4%D2itTy%B28%D6%3B(%93%96%ED%1CGx%C9_%0E%B8%5E%16%F5%5B%B2%B8%F6%E0%FB%9E%DD%25%D7%8E%BC%15%85%C5%B7%A3%D8Q%ED%B5%81%E9%BA%B2%13%9A%1B%7Fua%A5%A3n%E17%B9%E5%9B%1Bm%AB%0B%08Q%FE%8A%E5%B1H%5Ee%CAO%82Q%D7u6%E6%90S%97%FCu%0B%CF2%94%EE%25v%12X%0C%BA%AC%F0%5E%F8*l%0AO%85%17%C2%97%BF%D4%C8%CE%DE%AD%11%CB%80q%2C%3E%AB%9ES%CD%C6%EC%25%D2L%D2%EBd%B8%BF%8A%F5B%C6%18%F9%901CZ%9D%BE%24M%9C%8A9%F2%DAP%0B'%06w%82%EB%E6%E2%5C%2F%D7%07%9E%BB%CC%5D%E1%FA%B9%08%AD.r%23%8E%C2%17%F5E%7C!%F0%BE3%BE%3E_%B7o%88a%A7%DB%BE%D3d%EB%A31Z%EB%BB%D3%91%BA%A2%B1z%94%8F%DB'%F6%3D%8E%AA%13%19%B2%B1%BE%B1~V%08%2B%B4%A2cjJ%B3tO%00%03%25mN%97%F3%05%93%EF%11%84%0B%7C%88%AE-%89%8F%ABbW%90O%2B%0Ao%99%0C%5E%97%0CI%AFH%D9.%B0%3B%8F%ED%03%B6S%D6%5D%E6i_s9%F3*p%E9%1B%FD%C3%EB.7U%06%5E%19%C0%D1s.%17%A03u%E4%09%B0%7C%5E%2C%EB%15%DB%1F%3C%9E%B7%80%91%3B%DBc%AD%3Dma%BA%8B%3EV%AB%DBt.%5B%1E%01%BB%0F%AB%D5%9F%CF%AA%D5%DD%E7%E4%7F%0Bx%A3%FC%06%A9%23%0A%D6%C2%A1_2%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%003IDAT8%11c%FC%FF%FF%7F%3E%03%1A%60%01%F2%3F%A3%891%80%04%FFQ%26%F8w%C0%B43%A1%DB%0C%E2%8F%0A%A2%85%CAh%80%8C%06%08%3C%04%E8%96%18%00%A3S%0D%CD%CF%D8%C1%9D%00%00%00%00IEND%AEB%60%82\");\
 background-repeat: no-repeat, repeat-x;\
 background-position: center center, top left;\
 }\
@@ -18540,7 +18525,6 @@ cursor: pointer;\
 display: inline-block;   \
 }\
 .ace_fold-widget.ace_end {\
-background-image: url(\"data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%05%00%00%00%05%08%06%00%00%00%8Do%26%E5%00%00%004IDATx%DAm%C7%C1%09%000%08C%D1%8C%ECE%C8E(%8E%EC%02)%1EZJ%F1%C1'%04%07I%E1%E5%EE%CAL%F5%A2%99%99%22%E2%D6%1FU%B5%FE0%D9x%A7%26Wz5%0E%D5%00%00%00%00IEND%AEB%60%82\");\
 }\
 .ace_fold-widget.ace_closed {\
 background-image: url(\"data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%03%00%00%00%06%08%06%00%00%00%06%E5%24%0C%00%00%009IDATx%DA5%CA%C1%09%000%08%03%C0%AC*(%3E%04%C1%0D%BA%B1%23%A4Uh%E0%20%81%C0%CC%F8%82%81%AA%A2%AArGfr%88%08%11%11%1C%DD%7D%E0%EE%5B%F6%F6%CB%B8%05Q%2F%E9tai%D9%00%00%00%00IEND%AEB%60%82\");\
@@ -26482,59 +26466,56 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 define("component/stateeditor/lib/ace", function(){});
 
-(function() {
-  define('StateEditor',['event', 'StateEditorView', 'component/stateeditor/model', 'component/stateeditor/lib/ace', 'UI.modal', 'jquerysort'], function(ide_event, View, Model) {
-    var loadModule, unLoadModule;
-    loadModule = function(allCompData, uid, resId, force) {
-      var compData, model, view;
-      compData = allCompData[uid];
-      if (compData) {
-        model = new Model({
-          resUID: uid,
-          resId: resId
-        });
-      } else {
-        model = new Backbone.Model();
-      }
-      view = new View({
-        model: model
+define('StateEditor',['event', 'StateEditorView', 'component/stateeditor/model', 'component/stateeditor/lib/ace', 'UI.modal', 'jquerysort'], function(ide_event, View, Model) {
+  var loadModule, unLoadModule;
+  loadModule = function(allCompData, uid, resId, force) {
+    var compData, model, view;
+    compData = allCompData[uid];
+    if (compData) {
+      model = new Model({
+        resUID: uid,
+        resId: resId
       });
-      view.model = model;
+    } else {
+      model = new Backbone.Model();
+    }
+    view = new View({
+      model: model
+    });
+    view.model = model;
+    ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR);
+    ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, function(newStateUpdateResIdAry) {
+      return view.onStateStatusUpdate(newStateUpdateResIdAry);
+    });
+    ide_event.offListen(ide_event.STATE_EDITOR_SAVE_DATA);
+    ide_event.onLongListen(ide_event.STATE_EDITOR_SAVE_DATA, function(event) {
+      return view.onMouseDownSaveFromOther(event);
+    });
+    if (!force) {
+      $('#OEPanelRight').addClass('state');
+    }
+    return $('#OEPanelRight .sub-stateeditor').html(view.render().el);
+  };
+  unLoadModule = function(view, model) {
+    var err;
+    console.log('state editor unLoadModule');
+    try {
+      view.off();
+      model.off();
+      view.undelegateEvents();
+      modal.close();
+      view = null;
+      model = null;
       ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR);
-      ide_event.onLongListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR, function(newStateUpdateResIdAry) {
-        return view.onStateStatusUpdate(newStateUpdateResIdAry);
-      });
-      ide_event.offListen(ide_event.STATE_EDITOR_SAVE_DATA);
-      ide_event.onLongListen(ide_event.STATE_EDITOR_SAVE_DATA, function(event) {
-        return view.onMouseDownSaveFromOther(event);
-      });
-      if (!force) {
-        $('#OEPanelRight').addClass('state');
-      }
-      return $('#OEPanelRight .sub-stateeditor').html(view.render().el);
-    };
-    unLoadModule = function(view, model) {
-      var err;
-      console.log('state editor unLoadModule');
-      try {
-        view.off();
-        model.off();
-        view.undelegateEvents();
-        modal.close();
-        view = null;
-        model = null;
-        ide_event.offListen(ide_event.UPDATE_STATE_STATUS_DATA_TO_EDITOR);
-      } catch (_error) {
-        err = _error;
-      }
-    };
-    return {
-      loadModule: loadModule,
-      unLoadModule: unLoadModule
-    };
-  });
-
-}).call(this);
+    } catch (_error) {
+      err = _error;
+    }
+  };
+  return {
+    loadModule: loadModule,
+    unLoadModule: unLoadModule
+  };
+});
 
 
 define("component/StateEditor", function(){});

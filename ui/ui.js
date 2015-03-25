@@ -6681,150 +6681,147 @@ define('UI.errortip',["jquery"], function($){
 
 });
 
-(function() {
-  define('UI.dnd',["jquery"], function($) {
-    var cancelDnd, cloneElement, defaultOptions, detectDrag, emptyFunction, onMouseMove, onMouseUp, startDrag;
-    cloneElement = function(data) {
-      if (data.noShadow) {
-        return $();
-      } else {
-        return $("<div id='DndItem'></div>").appendTo(document.body).html(data.source.html()).attr("class", data.source.attr("class").replace("bubble", "").replace("tooltip", ""));
-      }
-    };
-    emptyFunction = function() {};
-    defaultOptions = {
-      clone: cloneElement,
-      eventPrefix: "",
-      minDistance: 4,
-      lockToCenter: true,
-      noShadow: false,
-      onDragStart: emptyFunction,
-      onDrag: emptyFunction,
-      onDragEnd: emptyFunction
-    };
-    $.fn.dnd = function(mouseDownEvent, options) {
-      console.assert(options.dropTargets);
-      console.assert(options.dataTransfer);
-      options = $.extend({
-        source: this,
-        startX: mouseDownEvent.pageX,
-        startY: mouseDownEvent.pageY
-      }, defaultOptions, options);
-      $(document).on({
-        "mousemove.uidnd": detectDrag,
-        "mousedown.uidnd": cancelDnd,
-        "mouseup.uidnd": cancelDnd,
-        "urlroute.uidnd": cancelDnd
-      }, options);
-      return this;
-    };
-    cancelDnd = function(evt) {
-      var data;
-      $(document).off(".uidnd");
-      data = evt.data;
+define('UI.dnd',["jquery"], function($) {
+  var cancelDnd, cloneElement, defaultOptions, detectDrag, emptyFunction, onMouseMove, onMouseUp, startDrag;
+  cloneElement = function(data) {
+    if (data.noShadow) {
+      return $();
+    } else {
+      return $("<div id='DndItem'></div>").appendTo(document.body).html(data.source.html()).attr("class", data.source.attr("class").replace("bubble", "").replace("tooltip", ""));
+    }
+  };
+  emptyFunction = function() {};
+  defaultOptions = {
+    clone: cloneElement,
+    eventPrefix: "",
+    minDistance: 4,
+    lockToCenter: true,
+    noShadow: false,
+    onDragStart: emptyFunction,
+    onDrag: emptyFunction,
+    onDragEnd: emptyFunction
+  };
+  $.fn.dnd = function(mouseDownEvent, options) {
+    console.assert(options.dropTargets);
+    console.assert(options.dataTransfer);
+    options = $.extend({
+      source: this,
+      startX: mouseDownEvent.pageX,
+      startY: mouseDownEvent.pageY
+    }, defaultOptions, options);
+    $(document).on({
+      "mousemove.uidnd": detectDrag,
+      "mousedown.uidnd": cancelDnd,
+      "mouseup.uidnd": cancelDnd,
+      "urlroute.uidnd": cancelDnd
+    }, options);
+    return this;
+  };
+  cancelDnd = function(evt) {
+    var data;
+    $(document).off(".uidnd");
+    data = evt.data;
 
-      /*
-       * If we need to style the drag shadow, we can temporary comment out this line.
-       */
-      if (data.shadow) {
-        data.shadow.remove();
+    /*
+     * If we need to style the drag shadow, we can temporary comment out this line.
+     */
+    if (data.shadow) {
+      data.shadow.remove();
+    }
+    if (data.hoverZone) {
+      data.hoverZone.removeClass("dragOver").triggerHandler("" + data.eventPrefix + "dragleave", data);
+    }
+    if (data.onDragCancel && evt.type === "urlroute") {
+      data.onDragCancel(evt);
+    }
+  };
+  detectDrag = function(evt) {
+    var data;
+    data = evt.data;
+    if (Math.pow(evt.pageX - data.startX, 2) + Math.pow(evt.pageY - data.startY, 2) >= 4) {
+      $(document).off("mousemove.uidnd").on({
+        "mousemove.uidnd": onMouseMove,
+        "mouseup.uidnd": onMouseUp
+      }, data);
+      startDrag(data, evt);
+    }
+    return false;
+  };
+  startDrag = function(data, evt) {
+    var offset, shadow;
+    data.shadow = shadow = data.clone(data);
+    data.onDragStart(data);
+    if (data.lockToCenter) {
+      data.offsetX = shadow.outerWidth() / 2;
+      data.offsetY = shadow.outerHeight() / 2;
+    } else {
+      offset = data.source.offset();
+      data.offsetX = data.startX - offset.left;
+      data.offsetY = data.startY - offset.top;
+    }
+    shadow.css({
+      left: evt.pageX - data.offsetX,
+      top: evt.pageY - data.offsetY
+    });
+    data.dropZones = _.map(data.dropTargets, function(tgt) {
+      var $tgt;
+      $tgt = $(tgt);
+      offset = $tgt.offset();
+      return {
+        x1: offset.left,
+        y1: offset.top,
+        x2: offset.left + $tgt.outerWidth(),
+        y2: offset.top + $tgt.outerHeight()
+      };
+    });
+  };
+  onMouseMove = function(evt) {
+    var data, dz, hoverZone, idx, newZone, _i, _len, _ref, _ref1, _ref2;
+    data = evt.data;
+    data.pageX = evt.pageX;
+    data.pageY = evt.pageY;
+    _ref = data.dropZones;
+    for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+      dz = _ref[idx];
+      if ((dz.x1 <= (_ref1 = evt.pageX) && _ref1 <= dz.x2) && (dz.y1 <= (_ref2 = evt.pageY) && _ref2 <= dz.y2)) {
+        newZone = data.dropTargets.eq(idx);
+        data.zoneDimension = dz;
+        break;
       }
-      if (data.hoverZone) {
-        data.hoverZone.removeClass("dragOver").triggerHandler("" + data.eventPrefix + "dragleave", data);
+    }
+    hoverZone = data.hoverZone;
+    if (hoverZone && newZone && newZone[0] === hoverZone[0]) {
+      newZone.triggerHandler("" + data.eventPrefix + "dragover", data);
+    } else {
+      if (hoverZone) {
+        hoverZone.removeClass("dragOver").triggerHandler("" + data.eventPrefix + "dragleave", data);
       }
-      if (data.onDragCancel && evt.type === "urlroute") {
-        data.onDragCancel(evt);
+      if (newZone) {
+        newZone.addClass("dragOver").triggerHandler("" + data.eventPrefix + "dragenter", data);
       }
-    };
-    detectDrag = function(evt) {
-      var data;
-      data = evt.data;
-      if (Math.pow(evt.pageX - data.startX, 2) + Math.pow(evt.pageY - data.startY, 2) >= 4) {
-        $(document).off("mousemove.uidnd").on({
-          "mousemove.uidnd": onMouseMove,
-          "mouseup.uidnd": onMouseUp
-        }, data);
-        startDrag(data, evt);
-      }
-      return false;
-    };
-    startDrag = function(data, evt) {
-      var offset, shadow;
-      data.shadow = shadow = data.clone(data);
-      data.onDragStart(data);
-      if (data.lockToCenter) {
-        data.offsetX = shadow.outerWidth() / 2;
-        data.offsetY = shadow.outerHeight() / 2;
-      } else {
-        offset = data.source.offset();
-        data.offsetX = data.startX - offset.left;
-        data.offsetY = data.startY - offset.top;
-      }
-      shadow.css({
-        left: evt.pageX - data.offsetX,
-        top: evt.pageY - data.offsetY
-      });
-      data.dropZones = _.map(data.dropTargets, function(tgt) {
-        var $tgt;
-        $tgt = $(tgt);
-        offset = $tgt.offset();
-        return {
-          x1: offset.left,
-          y1: offset.top,
-          x2: offset.left + $tgt.outerWidth(),
-          y2: offset.top + $tgt.outerHeight()
-        };
-      });
-    };
-    onMouseMove = function(evt) {
-      var data, dz, hoverZone, idx, newZone, _i, _len, _ref, _ref1, _ref2;
-      data = evt.data;
-      data.pageX = evt.pageX;
-      data.pageY = evt.pageY;
-      _ref = data.dropZones;
-      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-        dz = _ref[idx];
-        if ((dz.x1 <= (_ref1 = evt.pageX) && _ref1 <= dz.x2) && (dz.y1 <= (_ref2 = evt.pageY) && _ref2 <= dz.y2)) {
-          newZone = data.dropTargets.eq(idx);
-          data.zoneDimension = dz;
-          break;
-        }
-      }
-      hoverZone = data.hoverZone;
-      if (hoverZone && newZone && newZone[0] === hoverZone[0]) {
-        newZone.triggerHandler("" + data.eventPrefix + "dragover", data);
-      } else {
-        if (hoverZone) {
-          hoverZone.removeClass("dragOver").triggerHandler("" + data.eventPrefix + "dragleave", data);
-        }
-        if (newZone) {
-          newZone.addClass("dragOver").triggerHandler("" + data.eventPrefix + "dragenter", data);
-        }
-        data.shadow.toggleClass("dragOver", !!newZone);
-        data.hoverZone = newZone;
-      }
-      data.shadow.css({
-        left: evt.pageX - data.offsetX,
-        top: evt.pageY - data.offsetY
-      });
-      data.onDrag(evt);
-      return false;
-    };
-    onMouseUp = function(evt) {
-      var data;
-      data = evt.data;
-      cancelDnd(evt);
-      data.pageX = evt.pageX;
-      data.pageY = evt.pageY;
-      data.onDragEnd(evt);
-      if (data.hoverZone) {
-        data.hoverZone.triggerHandler("" + data.eventPrefix + "drop", data);
-      }
-    };
-    return null;
-  });
-
-}).call(this);
+      data.shadow.toggleClass("dragOver", !!newZone);
+      data.hoverZone = newZone;
+    }
+    data.shadow.css({
+      left: evt.pageX - data.offsetX,
+      top: evt.pageY - data.offsetY
+    });
+    data.onDrag(evt);
+    return false;
+  };
+  onMouseUp = function(evt) {
+    var data;
+    data = evt.data;
+    cancelDnd(evt);
+    data.pageX = evt.pageX;
+    data.pageY = evt.pageY;
+    data.onDragEnd(evt);
+    if (data.hoverZone) {
+      data.hoverZone.triggerHandler("" + data.eventPrefix + "drop", data);
+    }
+  };
+  return null;
+});
 
 /*!
  * jqPagination, a jQuery pagination plugin (obviously)
@@ -10230,1598 +10227,1592 @@ define('jqdatetimepicker',["jquery"], function($){
  */
 
 Date.parseFunctions={count:0};Date.parseRegexes=[];Date.formatFunctions={count:0};Date.prototype.dateFormat=function(b){if(b=="unixtime"){return parseInt(this.getTime()/1000);}if(Date.formatFunctions[b]==null){Date.createNewFormat(b);}var a=Date.formatFunctions[b];return this[a]();};Date.createNewFormat=function(format){var funcName="format"+Date.formatFunctions.count++;Date.formatFunctions[format]=funcName;var code="Date.prototype."+funcName+" = function() {return ";var special=false;var ch="";for(var i=0;i<format.length;++i){ch=format.charAt(i);if(!special&&ch=="\\"){special=true;}else{if(special){special=false;code+="'"+String.escape(ch)+"' + ";}else{code+=Date.getFormatCode(ch);}}}eval(code.substring(0,code.length-3)+";}");};Date.getFormatCode=function(a){switch(a){case"d":return"String.leftPad(this.getDate(), 2, '0') + ";case"D":return"Date.dayNames[this.getDay()].substring(0, 3) + ";case"j":return"this.getDate() + ";case"l":return"Date.dayNames[this.getDay()] + ";case"S":return"this.getSuffix() + ";case"w":return"this.getDay() + ";case"z":return"this.getDayOfYear() + ";case"W":return"this.getWeekOfYear() + ";case"F":return"Date.monthNames[this.getMonth()] + ";case"m":return"String.leftPad(this.getMonth() + 1, 2, '0') + ";case"M":return"Date.monthNames[this.getMonth()].substring(0, 3) + ";case"n":return"(this.getMonth() + 1) + ";case"t":return"this.getDaysInMonth() + ";case"L":return"(this.isLeapYear() ? 1 : 0) + ";case"Y":return"this.getFullYear() + ";case"y":return"('' + this.getFullYear()).substring(2, 4) + ";case"a":return"(this.getHours() < 12 ? 'am' : 'pm') + ";case"A":return"(this.getHours() < 12 ? 'AM' : 'PM') + ";case"g":return"((this.getHours() %12) ? this.getHours() % 12 : 12) + ";case"G":return"this.getHours() + ";case"h":return"String.leftPad((this.getHours() %12) ? this.getHours() % 12 : 12, 2, '0') + ";case"H":return"String.leftPad(this.getHours(), 2, '0') + ";case"i":return"String.leftPad(this.getMinutes(), 2, '0') + ";case"s":return"String.leftPad(this.getSeconds(), 2, '0') + ";case"O":return"this.getGMTOffset() + ";case"T":return"this.getTimezone() + ";case"Z":return"(this.getTimezoneOffset() * -60) + ";default:return"'"+String.escape(a)+"' + ";}};Date.parseDate=function(a,c){if(c=="unixtime"){return new Date(!isNaN(parseInt(a))?parseInt(a)*1000:0);}if(Date.parseFunctions[c]==null){Date.createParser(c);}var b=Date.parseFunctions[c];return Date[b](a);};Date.createParser=function(format){var funcName="parse"+Date.parseFunctions.count++;var regexNum=Date.parseRegexes.length;var currentGroup=1;Date.parseFunctions[format]=funcName;var code="Date."+funcName+" = function(input) {\nvar y = -1, m = -1, d = -1, h = -1, i = -1, s = -1, z = -1;\nvar d = new Date();\ny = d.getFullYear();\nm = d.getMonth();\nd = d.getDate();\nvar results = input.match(Date.parseRegexes["+regexNum+"]);\nif (results && results.length > 0) {";var regex="";var special=false;var ch="";for(var i=0;i<format.length;++i){ch=format.charAt(i);if(!special&&ch=="\\"){special=true;}else{if(special){special=false;regex+=String.escape(ch);}else{obj=Date.formatCodeToRegex(ch,currentGroup);currentGroup+=obj.g;regex+=obj.s;if(obj.g&&obj.c){code+=obj.c;}}}}code+="if (y > 0 && z > 0){\nvar doyDate = new Date(y,0);\ndoyDate.setDate(z);\nm = doyDate.getMonth();\nd = doyDate.getDate();\n}";code+="if (y > 0 && m >= 0 && d > 0 && h >= 0 && i >= 0 && s >= 0)\n{return new Date(y, m, d, h, i, s);}\nelse if (y > 0 && m >= 0 && d > 0 && h >= 0 && i >= 0)\n{return new Date(y, m, d, h, i);}\nelse if (y > 0 && m >= 0 && d > 0 && h >= 0)\n{return new Date(y, m, d, h);}\nelse if (y > 0 && m >= 0 && d > 0)\n{return new Date(y, m, d);}\nelse if (y > 0 && m >= 0)\n{return new Date(y, m);}\nelse if (y > 0)\n{return new Date(y);}\n}return null;}";Date.parseRegexes[regexNum]=new RegExp("^"+regex+"$");eval(code);};Date.formatCodeToRegex=function(b,a){switch(b){case"D":return{g:0,c:null,s:"(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)"};case"j":case"d":return{g:1,c:"d = parseInt(results["+a+"], 10);\n",s:"(\\d{1,2})"};case"l":return{g:0,c:null,s:"(?:"+Date.dayNames.join("|")+")"};case"S":return{g:0,c:null,s:"(?:st|nd|rd|th)"};case"w":return{g:0,c:null,s:"\\d"};case"z":return{g:1,c:"z = parseInt(results["+a+"], 10);\n",s:"(\\d{1,3})"};case"W":return{g:0,c:null,s:"(?:\\d{2})"};case"F":return{g:1,c:"m = parseInt(Date.monthNumbers[results["+a+"].substring(0, 3)], 10);\n",s:"("+Date.monthNames.join("|")+")"};case"M":return{g:1,c:"m = parseInt(Date.monthNumbers[results["+a+"]], 10);\n",s:"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"};case"n":case"m":return{g:1,c:"m = parseInt(results["+a+"], 10) - 1;\n",s:"(\\d{1,2})"};case"t":return{g:0,c:null,s:"\\d{1,2}"};case"L":return{g:0,c:null,s:"(?:1|0)"};case"Y":return{g:1,c:"y = parseInt(results["+a+"], 10);\n",s:"(\\d{4})"};case"y":return{g:1,c:"var ty = parseInt(results["+a+"], 10);\ny = ty > Date.y2kYear ? 1900 + ty : 2000 + ty;\n",s:"(\\d{1,2})"};case"a":return{g:1,c:"if (results["+a+"] == 'am') {\nif (h == 12) { h = 0; }\n} else { if (h < 12) { h += 12; }}",s:"(am|pm)"};case"A":return{g:1,c:"if (results["+a+"] == 'AM') {\nif (h == 12) { h = 0; }\n} else { if (h < 12) { h += 12; }}",s:"(AM|PM)"};case"g":case"G":case"h":case"H":return{g:1,c:"h = parseInt(results["+a+"], 10);\n",s:"(\\d{1,2})"};case"i":return{g:1,c:"i = parseInt(results["+a+"], 10);\n",s:"(\\d{2})"};case"s":return{g:1,c:"s = parseInt(results["+a+"], 10);\n",s:"(\\d{2})"};case"O":return{g:0,c:null,s:"[+-]\\d{4}"};case"T":return{g:0,c:null,s:"[A-Z]{3}"};case"Z":return{g:0,c:null,s:"[+-]\\d{1,5}"};default:return{g:0,c:null,s:String.escape(b)};}};Date.prototype.getTimezone=function(){return this.toString().replace(/^.*? ([A-Z]{3}) [0-9]{4}.*$/,"$1").replace(/^.*?\(([A-Z])[a-z]+ ([A-Z])[a-z]+ ([A-Z])[a-z]+\)$/,"$1$2$3");};Date.prototype.getGMTOffset=function(){return(this.getTimezoneOffset()>0?"-":"+")+String.leftPad(Math.floor(Math.abs(this.getTimezoneOffset())/60),2,"0")+String.leftPad(Math.abs(this.getTimezoneOffset())%60,2,"0");};Date.prototype.getDayOfYear=function(){var a=0;Date.daysInMonth[1]=this.isLeapYear()?29:28;for(var b=0;b<this.getMonth();++b){a+=Date.daysInMonth[b];}return a+this.getDate();};Date.prototype.getWeekOfYear=function(){var b=this.getDayOfYear()+(4-this.getDay());var a=new Date(this.getFullYear(),0,1);var c=(7-a.getDay()+4);return String.leftPad(Math.ceil((b-c)/7)+1,2,"0");};Date.prototype.isLeapYear=function(){var a=this.getFullYear();return((a&3)==0&&(a%100||(a%400==0&&a)));};Date.prototype.getFirstDayOfMonth=function(){var a=(this.getDay()-(this.getDate()-1))%7;return(a<0)?(a+7):a;};Date.prototype.getLastDayOfMonth=function(){var a=(this.getDay()+(Date.daysInMonth[this.getMonth()]-this.getDate()))%7;return(a<0)?(a+7):a;};Date.prototype.getDaysInMonth=function(){Date.daysInMonth[1]=this.isLeapYear()?29:28;return Date.daysInMonth[this.getMonth()];};Date.prototype.getSuffix=function(){switch(this.getDate()){case 1:case 21:case 31:return"st";case 2:case 22:return"nd";case 3:case 23:return"rd";default:return"th";}};String.escape=function(a){return a.replace(/('|\\)/g,"\\$1");};String.leftPad=function(d,b,c){var a=new String(d);if(c==null){c=" ";}while(a.length<b){a=c+a;}return a;};Date.daysInMonth=[31,28,31,30,31,30,31,31,30,31,30,31];Date.monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];Date.dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];Date.y2kYear=50;Date.monthNumbers={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};Date.patterns={ISO8601LongPattern:"Y-m-d H:i:s",ISO8601ShortPattern:"Y-m-d",ShortDatePattern:"n/j/Y",LongDatePattern:"l, F d, Y",FullDateTimePattern:"l, F d, Y g:i:s A",MonthDayPattern:"F d",ShortTimePattern:"g:i A",LongTimePattern:"g:i:s A",SortableDateTimePattern:"Y-m-d\\TH:i:s",UniversalSortableDateTimePattern:"Y-m-d H:i:sO",YearMonthPattern:"F, Y"};
-(function() {
-  define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang) {
-    var Modal, defaultOptions, modals;
-    modals = [];
-    defaultOptions = {
-      title: "",
-      mode: "normal",
-      template: "",
-      width: 520,
-      maxHeight: null,
-      delay: 300,
-      compact: false,
-      disableClose: false,
-      disableFooter: false,
-      disableDrag: false,
-      hideClose: false,
-      hasScroll: false,
-      hasHeader: true,
-      hasFooter: true,
-      cancel: {
-        text: "",
-        hide: false
-      },
-      confirm: {
-        text: "",
-        color: "blue",
-        disabled: false,
-        hide: false
-      },
-      onClose: null,
-      onConfirm: null,
-      onShow: null
-    };
-    Modal = Backbone.View.extend({
-      events: {
-        "click .modal-confirm": "confirm",
-        "click .btn.modal-close": "cancel",
-        "click i.modal-close": "close"
-      },
-      constructor: function(option) {
-        var _base, _base1, _ref;
-        $(':focus').blur();
-        this.nextOptions = [];
-        this.nextCloses = [];
-        if (typeof option.cancel === "string") {
-          option.cancel = {
-            text: option.cancel
-          };
+define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang) {
+  var Modal, defaultOptions, modals;
+  modals = [];
+  defaultOptions = {
+    title: "",
+    mode: "normal",
+    template: "",
+    width: 520,
+    maxHeight: null,
+    delay: 300,
+    compact: false,
+    disableClose: false,
+    disableFooter: false,
+    disableDrag: false,
+    hideClose: false,
+    hasScroll: false,
+    hasHeader: true,
+    hasFooter: true,
+    cancel: {
+      text: "",
+      hide: false
+    },
+    confirm: {
+      text: "",
+      color: "blue",
+      disabled: false,
+      hide: false
+    },
+    onClose: null,
+    onConfirm: null,
+    onShow: null
+  };
+  Modal = Backbone.View.extend({
+    events: {
+      "click .modal-confirm": "confirm",
+      "click .btn.modal-close": "cancel",
+      "click i.modal-close": "close"
+    },
+    constructor: function(option) {
+      var _base, _base1, _ref;
+      $(':focus').blur();
+      this.nextOptions = [];
+      this.nextCloses = [];
+      if (typeof option.cancel === "string") {
+        option.cancel = {
+          text: option.cancel
+        };
+      }
+      if (typeof option.confirm === "string") {
+        option.confirm = {
+          text: option.confirm
+        };
+      }
+      if (option.mode === "fullscreen") {
+        option.disableClose = true;
+        option.disableFooter = true;
+      }
+      option.hasFooter = !option.disableFooter;
+      if ((_ref = option.mode) === 'fullscreen' || _ref === 'panel') {
+        option.disableDrag = true;
+      }
+      this.wrap = $("#modal-wrap");
+      if (this.wrap.size() === 0) {
+        this.wrap = $("<div id='modal-wrap'></div>").appendTo($("body"));
+      }
+      this.option = $.extend(true, {}, defaultOptions, option);
+      (_base = this.option.cancel).text || (_base.text = lang.IDE.POP_LBL_CANCEL);
+      (_base1 = this.option.confirm).text || (_base1.text = lang.IDE.LBL_SUBMIT);
+      return this.render();
+    },
+    render: function() {
+      var self, _base;
+      self = this;
+      if (typeof this.option.template === "object") {
+        this.option.$template = this.option.template;
+        this.option.template = "";
+      }
+      this.tpl = $(MC.template.modalTemplate(this.option));
+      if (this.option.width) {
+        this.tpl.find(".modal-wrapper-fix").css("width", this.option.width);
+      }
+      this.tpl.find(".modal-body").html(this.option.$template);
+      this.setElement(this.tpl);
+      this.isReady = false;
+      if (modals.length && !modals[modals.length - 1].isReady) {
+        console.warn("Sorry, But we are moving...");
+        if (this.option.force) {
+          modals[modals.length - 1].nextOptions.push(this.option);
         }
-        if (typeof option.confirm === "string") {
-          option.confirm = {
-            text: option.confirm
-          };
+        return this;
+      }
+      this.tpl.appendTo(this.wrap);
+      this.resize();
+      modals.push(this);
+      if (modals.length > 1) {
+        if (self.option.mode === 'normal') {
+          modals[modals.length - 1].resize(1);
+          modals[modals.length - 1].animate("slideIn");
         }
-        if (option.mode === "fullscreen") {
-          option.disableClose = true;
-          option.disableFooter = true;
+        modals[modals.length - 2].animate("fadeOut");
+        modals[modals.length - 1].tpl.addClass("bounce");
+      } else {
+        this.tpl.addClass("animate");
+        this.trigger("show", this);
+        if (typeof (_base = this.option).onShow === "function") {
+          _base.onShow(this);
         }
-        option.hasFooter = !option.disableFooter;
-        if ((_ref = option.mode) === 'fullscreen' || _ref === 'panel') {
-          option.disableDrag = true;
-        }
-        this.wrap = $("#modal-wrap");
-        if (this.wrap.size() === 0) {
-          this.wrap = $("<div id='modal-wrap'></div>").appendTo($("body"));
-        }
-        this.option = $.extend(true, {}, defaultOptions, option);
-        (_base = this.option.cancel).text || (_base.text = lang.IDE.POP_LBL_CANCEL);
-        (_base1 = this.option.confirm).text || (_base1.text = lang.IDE.LBL_SUBMIT);
-        return this.render();
-      },
-      render: function() {
-        var self, _base;
-        self = this;
-        if (typeof this.option.template === "object") {
-          this.option.$template = this.option.template;
-          this.option.template = "";
-        }
-        this.tpl = $(MC.template.modalTemplate(this.option));
-        if (this.option.width) {
-          this.tpl.find(".modal-wrapper-fix").css("width", this.option.width);
-        }
-        this.tpl.find(".modal-body").html(this.option.$template);
-        this.setElement(this.tpl);
-        this.isReady = false;
-        if (modals.length && !modals[modals.length - 1].isReady) {
-          console.warn("Sorry, But we are moving...");
-          if (this.option.force) {
-            modals[modals.length - 1].nextOptions.push(this.option);
-          }
-          return this;
-        }
-        this.tpl.appendTo(this.wrap);
-        this.resize();
-        modals.push(this);
-        if (modals.length > 1) {
-          if (self.option.mode === 'normal') {
-            modals[modals.length - 1].resize(1);
-            modals[modals.length - 1].animate("slideIn");
-          }
-          modals[modals.length - 2].animate("fadeOut");
-          modals[modals.length - 1].tpl.addClass("bounce");
-        } else {
-          this.tpl.addClass("animate");
-          this.trigger("show", this);
-          if (typeof (_base = this.option).onShow === "function") {
-            _base.onShow(this);
-          }
-          _.defer(function() {
-            self.wrap.addClass("show");
-            return self.tpl.addClass("bounce");
-          });
-          _.delay(function() {
-            return self.trigger("shown", this);
-          }, 300);
-        }
+        _.defer(function() {
+          self.wrap.addClass("show");
+          return self.tpl.addClass("bounce");
+        });
         _.delay(function() {
-          self.resize();
-          return self.isReady = true;
+          return self.trigger("shown", this);
         }, 300);
-        _.delay(function() {
-          return self.nextOptions.forEach(function(option) {
-            return new Modal(option);
-          });
-        }, (this.option.delay || 300) + 10);
-        this.bindEvent();
-        return this;
-      },
-      close: function(number) {
-        var cb, modal, nextModal, _base;
-        modal = modals[modals.length - 1];
-        if (modal != null ? modal.pending : void 0) {
-          modal.nextCloses.push(this);
-          return false;
+      }
+      _.delay(function() {
+        self.resize();
+        return self.isReady = true;
+      }, 300);
+      _.delay(function() {
+        return self.nextOptions.forEach(function(option) {
+          return new Modal(option);
+        });
+      }, (this.option.delay || 300) + 10);
+      this.bindEvent();
+      return this;
+    },
+    close: function(number) {
+      var cb, modal, nextModal, _base;
+      modal = modals[modals.length - 1];
+      if (modal != null ? modal.pending : void 0) {
+        modal.nextCloses.push(this);
+        return false;
+      }
+      if (!number || typeof number !== "number") {
+        if (typeof number === "function") {
+          cb = number;
         }
-        if (!number || typeof number !== "number") {
-          if (typeof number === "function") {
-            cb = number;
-          }
-          number = 1;
-        }
-        if (this.isClosed) {
-          return false;
-        }
-        nextModal = modals[modals.length - (1 + number)];
-        modal.pending = true;
-        modal.trigger("close", this);
-        if (typeof (_base = modal.option).onClose === "function") {
-          _base.onClose(this);
-        }
-        if (modals.length > 1) {
-          if (modal.option.mode === "panel") {
-            modal.tpl.removeClass("bounce");
-          } else {
-            modal.animate("slideOut");
-          }
-          nextModal.animate("fadeIn");
-        } else {
-          modal.wrap.removeClass("show");
+        number = 1;
+      }
+      if (this.isClosed) {
+        return false;
+      }
+      nextModal = modals[modals.length - (1 + number)];
+      modal.pending = true;
+      modal.trigger("close", this);
+      if (typeof (_base = modal.option).onClose === "function") {
+        _base.onClose(this);
+      }
+      if (modals.length > 1) {
+        if (modal.option.mode === "panel") {
           modal.tpl.removeClass("bounce");
+        } else {
+          modal.animate("slideOut");
         }
-        _.delay(function() {
-          var _ref;
-          modal.tpl.remove();
-          modal.trigger("closed", this);
-          modal.pending = false;
-          if (modals.length > 1) {
-            modals.length = modals.length - number;
-          } else {
-            modal.wrap.remove();
-            modals = [];
-          }
-          if ((_ref = modals[modals.length - 1]) != null) {
-            _ref.resize();
-          }
-          return typeof cb === "function" ? cb() : void 0;
-        }, modal.option.delay || 300);
-        _.delay(function() {
-          return modal.nextCloses.forEach(function(modalToClose) {
-            return modalToClose.close();
-          });
-        }, (modal.option.delay || 300) + 10);
-        modal.isClosed = true;
-        return this;
-      },
-      confirm: function(evt) {
-        var _base;
-        if ($(evt.currentTarget).is(":disabled")) {
-          return false;
+        nextModal.animate("fadeIn");
+      } else {
+        modal.wrap.removeClass("show");
+        modal.tpl.removeClass("bounce");
+      }
+      _.delay(function() {
+        var _ref;
+        modal.tpl.remove();
+        modal.trigger("closed", this);
+        modal.pending = false;
+        if (modals.length > 1) {
+          modals.length = modals.length - number;
+        } else {
+          modal.wrap.remove();
+          modals = [];
         }
-        this.trigger("confirm", this);
-        if (typeof (_base = this.option).onConfirm === "function") {
-          _base.onConfirm();
+        if ((_ref = modals[modals.length - 1]) != null) {
+          _ref.resize();
         }
-        return this;
-      },
-      cancel: function() {
-        var _base;
-        this.trigger("cancel", this);
-        this.close();
-        if (typeof (_base = this.option).onCancel === "function") {
-          _base.onCancel(this);
-        }
-        return this;
-      },
-      bindEvent: function() {
-        var diffX, diffY, disableClose, draggable, modal, self;
-        self = this;
-        disableClose = false;
-        _.each(modals, function(modal) {
-          if (modal.option.disableClose) {
-            disableClose = true;
-          }
+        return typeof cb === "function" ? cb() : void 0;
+      }, modal.option.delay || 300);
+      _.delay(function() {
+        return modal.nextCloses.forEach(function(modalToClose) {
+          return modalToClose.close();
         });
-        if (!disableClose) {
-          this.wrap.off("click");
-          this.wrap.on("click", function(e) {
-            if (e.target === e.currentTarget) {
-              return self.close();
-            }
-          });
+      }, (modal.option.delay || 300) + 10);
+      modal.isClosed = true;
+      return this;
+    },
+    confirm: function(evt) {
+      var _base;
+      if ($(evt.currentTarget).is(":disabled")) {
+        return false;
+      }
+      this.trigger("confirm", this);
+      if (typeof (_base = this.option).onConfirm === "function") {
+        _base.onConfirm();
+      }
+      return this;
+    },
+    cancel: function() {
+      var _base;
+      this.trigger("cancel", this);
+      this.close();
+      if (typeof (_base = this.option).onCancel === "function") {
+        _base.onCancel(this);
+      }
+      return this;
+    },
+    bindEvent: function() {
+      var diffX, diffY, disableClose, draggable, modal, self;
+      self = this;
+      disableClose = false;
+      _.each(modals, function(modal) {
+        if (modal.option.disableClose) {
+          disableClose = true;
         }
-        $(window).resize(function() {
-          if (!self.isClosed) {
-            if (self === modals[modals.length - 1]) {
-              return self.resize();
-            } else {
-              return self.resize(-1);
-            }
-          }
-        });
-        $(document).keyup(function(e) {
-          if (e.which === 27 && !self.option.disableClose) {
-            e.preventDefault();
+      });
+      if (!disableClose) {
+        this.wrap.off("click");
+        this.wrap.on("click", function(e) {
+          if (e.target === e.currentTarget) {
             return self.close();
           }
         });
-        modal = modals[modals.length - 1];
-        if (this.option.disableDrag) {
-          return false;
-        } else if (modal) {
-          diffX = 0;
-          diffY = 0;
-          draggable = false;
-          modal.find(".modal-header h3").mousedown(function(e) {
-            var originalLayout;
-            draggable = true;
-            if (e.which) {
-              if (e.which === 3) {
-                draggable = false;
-              }
-            } else if (e.button && e.button === 2) {
+      }
+      $(window).resize(function() {
+        if (!self.isClosed) {
+          if (self === modals[modals.length - 1]) {
+            return self.resize();
+          } else {
+            return self.resize(-1);
+          }
+        }
+      });
+      $(document).keyup(function(e) {
+        if (e.which === 27 && !self.option.disableClose) {
+          e.preventDefault();
+          return self.close();
+        }
+      });
+      modal = modals[modals.length - 1];
+      if (this.option.disableDrag) {
+        return false;
+      } else if (modal) {
+        diffX = 0;
+        diffY = 0;
+        draggable = false;
+        modal.find(".modal-header h3").mousedown(function(e) {
+          var originalLayout;
+          draggable = true;
+          if (e.which) {
+            if (e.which === 3) {
               draggable = false;
             }
-            if (draggable) {
-              originalLayout = modal.tpl.offset();
-              diffX = originalLayout.left - e.clientX;
-              diffY = originalLayout.top - e.clientY;
-            }
-          });
-          $(document).mousemove(function(e) {
-            var _base, _base1, _ref;
-            if (draggable) {
-              modal.tpl.css({
-                left: e.clientX + diffX,
-                top: e.clientY + diffY
-              });
-              if (window.getSelection) {
-                if (typeof (_base = window.getSelection()).empty === "function") {
-                  _base.empty();
-                }
-                if (typeof (_base1 = window.getSelection()).removeAllRanges === "function") {
-                  _base1.removeAllRanges();
-                }
-                return (_ref = document.selection) != null ? typeof _ref.empty === "function" ? _ref.empty() : void 0 : void 0;
-              }
-            }
-          });
-          return $(document).mouseup(function(e) {
-            var left, maxHeight, maxRight, top;
-            if (draggable) {
-              left = e.clientX + diffX;
-              top = e.clientY + diffY;
-              maxHeight = $(window).height() - modal.tpl.height();
-              maxRight = $(window).width() - modal.tpl.width();
-              if (top < 0) {
-                top = 0;
-              }
-              if (left < 0) {
-                left = 0;
-              }
-              if (top > maxHeight) {
-                top = maxHeight;
-              }
-              if (left > maxRight) {
-                left = maxRight;
-              }
-              modal.tpl.animate({
-                top: top,
-                left: left
-              }, 100);
-            }
+          } else if (e.button && e.button === 2) {
             draggable = false;
-            diffX = diffY = 0;
-          });
-        }
-      },
-      resize: function(isSlideIn) {
-        var height, left, self, top, width, windowHeight, windowWidth;
-        self = this;
-        if (!isSlideIn) {
-          this.tpl.show();
-        }
-        if (this.option.mode === "panel" && !isSlideIn) {
-          this.trigger("resize", this);
-          return false;
-        }
-        if (this.option.mode === "fullscreen" && !isSlideIn) {
-          this.tpl.removeAttr("style");
-          return false;
-        }
-        windowWidth = $(window).width();
-        windowHeight = $(window).height();
-        width = this.tpl.width();
-        height = this.tpl.height();
-        top = (windowHeight - height) * 0.4;
-        left = (windowWidth - width) / 2;
-        if (isSlideIn) {
-          this.tpl.removeClass("animate");
-        }
-        if (top < 0) {
-          top = 10;
-        }
-        if (isSlideIn === 1) {
-          left = windowWidth + left;
-        }
-        if (isSlideIn === -1) {
-          left = -windowWidth + left;
-        }
-        self.tpl.css({
-          top: top,
-          left: left
+          }
+          if (draggable) {
+            originalLayout = modal.tpl.offset();
+            diffX = originalLayout.left - e.clientX;
+            diffY = originalLayout.top - e.clientY;
+          }
         });
-        if (isSlideIn) {
-          self.tpl.hide();
-        }
-        this.trigger("resize", {
-          top: top,
-          left: left
+        $(document).mousemove(function(e) {
+          var _base, _base1, _ref;
+          if (draggable) {
+            modal.tpl.css({
+              left: e.clientX + diffX,
+              top: e.clientY + diffY
+            });
+            if (window.getSelection) {
+              if (typeof (_base = window.getSelection()).empty === "function") {
+                _base.empty();
+              }
+              if (typeof (_base1 = window.getSelection()).removeAllRanges === "function") {
+                _base1.removeAllRanges();
+              }
+              return (_ref = document.selection) != null ? typeof _ref.empty === "function" ? _ref.empty() : void 0 : void 0;
+            }
+          }
         });
-        return this;
-      },
-      isOpen: function() {
-        return !this.isClosed;
-      },
-      next: function(option) {
-        var newModal;
-        newModal = new Modal(option);
-        this.trigger("next", newModal);
-        newModal;
-        return this;
-      },
-      toggleConfirm: function(disabled) {
-        this.tpl.find(".modal-confirm").attr("disabled", !!disabled);
-        return this;
-      },
-      toggleFooter: function(visible) {
-        this.tpl.find(".modal-footer").toggle(!!visible);
-        return this;
-      },
-      setContent: function(content) {
-        var selector;
-        if (this.option.maxHeight || this.option.hasScroll) {
-          selector = ".scroll-content";
-        } else {
-          selector = ".modal-body";
-        }
-        this.tpl.find(selector).html(content);
-        this.resize();
-        return this;
-      },
-      compact: function() {
-        this.tpl.find(".modal-body").css({
-          padding: 0
+        return $(document).mouseup(function(e) {
+          var left, maxHeight, maxRight, top;
+          if (draggable) {
+            left = e.clientX + diffX;
+            top = e.clientY + diffY;
+            maxHeight = $(window).height() - modal.tpl.height();
+            maxRight = $(window).width() - modal.tpl.width();
+            if (top < 0) {
+              top = 0;
+            }
+            if (left < 0) {
+              left = 0;
+            }
+            if (top > maxHeight) {
+              top = maxHeight;
+            }
+            if (left > maxRight) {
+              left = maxRight;
+            }
+            modal.tpl.animate({
+              top: top,
+              left: left
+            }, 100);
+          }
+          draggable = false;
+          diffX = diffY = 0;
         });
-        return this;
-      },
-      setWidth: function(width) {
-        var body;
-        body = this.tpl.find('.modal-body');
-        body.parent().css({
-          width: width
-        });
-        this.resize();
-        return this;
-      },
-      animate: function(animate) {
-        var delayOption, left, offset, that, windowWidth;
+      }
+    },
+    resize: function(isSlideIn) {
+      var height, left, self, top, width, windowHeight, windowWidth;
+      self = this;
+      if (!isSlideIn) {
         this.tpl.show();
-        that = this;
-        if (this.option.mode === "fullscreen" && animate === "slideIn") {
-          return false;
-        }
-        if (this.option.mode === "panel") {
-          return false;
-        }
-        if (this.isMoving) {
-          console.warn("It's animating.");
-          return false;
-        }
-        windowWidth = $(window).width();
-        offset = this.tpl.offset();
-        left = offset.left + windowWidth;
-        delayOption = 300;
-        if (animate === "fadeOut" || animate === "fadeIn") {
-          delayOption = 100;
-          left = +offset.left + windowWidth;
-        }
-        if (animate === "fadeOut" || animate === "slideIn") {
-          left = +offset.left - windowWidth;
-        }
-        that.isMoving = true;
-        this.tpl.animate({
-          left: left
-        }, delayOption, (function() {
-          that.isMoving = false;
-          return false;
-        }));
-        return this;
-      },
-      find: function(selector) {
-        return this.tpl.find(selector);
-      },
-      $: function(selector) {
-        return this.tpl.find(selector);
-      },
-      setTitle: function(title) {
-        this.tpl.find(".modal-header h3").text(title);
-        return this;
-      },
-      abnormal: function() {
-        var _ref;
-        return (_ref = this.option.mode) === "panel" || _ref === "fullscreen";
       }
-    });
-    return Modal;
-  });
-
-}).call(this);
-
-(function() {
-  define('UI.nanoscroller',["jquery"], function($) {
-    
-    var BROWSER_IS_IE7, BROWSER_SCROLLBAR_HEIGHT, BROWSER_SCROLLBAR_WIDTH, DOMSCROLL, DOWN, DRAG, KEYDOWN, KEYUP, LEFT, MOUSEDOWN, MOUSEMOVE, MOUSEUP, MOUSEWHEEL, NanoScroll, PANEDOWN, PANERIGHT, RESIZE, RIGHT, SCROLL, SCROLLBAR, TOUCHMOVE, UP, WHEEL, defaults, getBrowserScrollbarSizes;
-    defaults = {
-
-      /**
-        a classname for the pane element.
-        @property paneClass
-        @type String
-        @default 'pane'
-       */
-      paneClass: 'nano-pane',
-
-      /**
-        a classname for the pane-y element.
-        @property paneClassY
-        @type String
-        @default 'pane-y'
-       */
-      paneClassY: 'pane-y',
-
-      /**
-        a classname for the pane-x element.
-        @property paneClassX
-        @type String
-        @default 'pane-x'
-       */
-      paneClassX: 'pane-x',
-
-      /**
-        a classname for the slider element.
-        @property sliderClass
-        @type String
-        @default 'slider'
-       */
-      sliderClass: 'nano-slider',
-
-      /**
-        a classname for the slider-y element.
-        @property sliderClassY
-        @type String
-        @default 'slider-y'
-       */
-      sliderClassY: 'slider-y',
-
-      /**
-        a classname for the slider-x element.
-        @property sliderClassX
-        @type String
-        @default 'slider-x'
-       */
-      sliderClassX: 'slider-x',
-
-      /**
-        a classname for the content element.
-        @property contentClass
-        @type String
-        @default 'content'
-       */
-      contentClass: 'nano-content',
-
-      /**
-        a setting to enable native scrolling in iOS devices.
-        @property iOSNativeScrolling
-        @type Boolean
-        @default false
-       */
-      iOSNativeScrolling: false,
-
-      /**
-        a setting to prevent the rest of the page being
-        scrolled when user scrolls the `.content` element.
-        @property preventPageScrolling
-        @type Boolean
-        @default false
-       */
-      preventPageScrolling: false,
-
-      /**
-        a setting to disable binding to the resize event.
-        @property disableResize
-        @type Boolean
-        @default false
-       */
-      disableResize: false,
-
-      /**
-        a setting to make the scrollbar always visible.
-        @property alwaysVisible
-        @type Boolean
-        @default false
-       */
-      alwaysVisible: false,
-
-      /**
-        a default timeout for the `flash()` method.
-        @property flashDelay
-        @type Number
-        @default 1500
-       */
-      flashDelay: 1500,
-
-      /**
-        a minimum height for the `.slider` element.
-        @property sliderMinHeight
-        @type Number
-        @default 20
-       */
-      sliderMinHeight: 20,
-
-      /**
-        a maximum height for the `.slider` element.
-        @property sliderMaxHeight
-        @type Number
-        @default null
-       */
-      sliderMaxHeight: null
-    };
-
-    /**
-      @property SCROLLBAR
-      @type String
-      @static
-      @final
-      @private
-     */
-    SCROLLBAR = 'scrollbar';
-
-    /**
-      @property SCROLL
-      @type String
-      @static
-      @final
-      @private
-     */
-    SCROLL = 'scroll';
-
-    /**
-      @property MOUSEDOWN
-      @type String
-      @final
-      @private
-     */
-    MOUSEDOWN = 'mousedown';
-
-    /**
-      @property MOUSEMOVE
-      @type String
-      @static
-      @final
-      @private
-     */
-    MOUSEMOVE = 'mousemove';
-
-    /**
-      @property MOUSEWHEEL
-      @type String
-      @final
-      @private
-     */
-    MOUSEWHEEL = 'mousewheel';
-
-    /**
-      @property MOUSEUP
-      @type String
-      @static
-      @final
-      @private
-     */
-    MOUSEUP = 'mouseup';
-
-    /**
-      @property RESIZE
-      @type String
-      @final
-      @private
-     */
-    RESIZE = 'resize';
-
-    /**
-      @property DRAG
-      @type String
-      @static
-      @final
-      @private
-     */
-    DRAG = 'drag';
-
-    /**
-      @property UP
-      @type String
-      @static
-      @final
-      @private
-     */
-    UP = 'up';
-
-    /**
-      @property PANEDOWN
-      @type String
-      @static
-      @final
-      @private
-     */
-    PANEDOWN = 'panedown';
-
-    /**
-      @property LEFT
-      @type String
-      @static
-      @final
-      @private
-     */
-    LEFT = 'left';
-
-    /**
-      @property PANERIGHT
-      @type String
-      @static
-      @final
-      @private
-     */
-    PANERIGHT = 'paneright';
-
-    /**
-      @property DOMSCROLL
-      @type String
-      @static
-      @final
-      @private
-     */
-    DOMSCROLL = 'DOMMouseScroll';
-
-    /**
-      @property DOWN
-      @type String
-      @static
-      @final
-      @private
-     */
-    DOWN = 'down';
-
-    /**
-      @property RIGHT
-      @type String
-      @static
-      @final
-      @private
-     */
-    RIGHT = 'right';
-
-    /**
-      @property WHEEL
-      @type String
-      @static
-      @final
-      @private
-     */
-    WHEEL = 'wheel';
-
-    /**
-      @property KEYDOWN
-      @type String
-      @static
-      @final
-      @private
-     */
-    KEYDOWN = 'keydown';
-
-    /**
-      @property KEYUP
-      @type String
-      @static
-      @final
-      @private
-     */
-    KEYUP = 'keyup';
-
-    /**
-      @property TOUCHMOVE
-      @type String
-      @static
-      @final
-      @private
-     */
-    TOUCHMOVE = 'touchmove';
-
-    /**
-      @property BROWSER_IS_IE7
-      @type Boolean
-      @static
-      @final
-      @private
-     */
-    BROWSER_IS_IE7 = window.navigator.appName === 'Microsoft Internet Explorer' && /msie 7./i.test(window.navigator.appVersion) && window.ActiveXObject;
-
-    /**
-      @property BROWSER_SCROLLBAR_WIDTH
-      @type Number
-      @static
-      @default null
-      @private
-     */
-    BROWSER_SCROLLBAR_WIDTH = null;
-
-    /**
-      @property BROWSER_SCROLLBAR_HEIGHT
-      @type Number
-      @static
-      @default null
-      @private
-     */
-    BROWSER_SCROLLBAR_HEIGHT = null;
-
-    /**
-      Returns browser's native scrollbar width
-      @method getBrowserScrollbarSizes
-      @return {Number} the scrollbar width in pixels
-      @static
-      @private
-     */
-    getBrowserScrollbarSizes = function() {
-      var outer, outerStyle, scrollbarHeight, scrollbarWidth;
-      outer = document.createElement('div');
-      outerStyle = outer.style;
-      outerStyle.position = 'absolute';
-      outerStyle.width = '100px';
-      outerStyle.height = '100px';
-      outerStyle.overflow = SCROLL;
-      outerStyle.top = '-9999px';
-      document.body.appendChild(outer);
-      scrollbarWidth = outer.offsetWidth - outer.clientWidth;
-      scrollbarHeight = outer.offsetHeight - outer.clientHeight;
-      document.body.removeChild(outer);
-      return [scrollbarWidth, scrollbarHeight];
-    };
-
-    /**
-      @class NanoScroll
-      @param element {HTMLElement|Node} the main element
-      @param options {Object} nanoScroller's options
-      @constructor
-     */
-    NanoScroll = (function() {
-      function NanoScroll(el, options) {
-        var _ref;
-        this.el = el;
-        this.options = options;
-        if (!BROWSER_SCROLLBAR_WIDTH || !BROWSER_SCROLLBAR_HEIGHT) {
-          _ref = getBrowserScrollbarSizes(), BROWSER_SCROLLBAR_WIDTH = _ref[0], BROWSER_SCROLLBAR_HEIGHT = _ref[1];
-        }
-        this.$el = $(this.el);
-        this.doc = $(document);
-        this.win = $(window);
-        this.$content = this.$el.children("." + options.contentClass);
-        this.$content.attr('tabindex', 0);
-        this.content = this.$content[0];
-        if (this.options.iOSNativeScrolling && (this.el.style.WebkitOverflowScrolling != null)) {
-          this.nativeScrolling();
-        } else {
-          this.generate();
-        }
-        this.createEvents();
-        this.addEvents();
-        this.reset();
+      if (this.option.mode === "panel" && !isSlideIn) {
+        this.trigger("resize", this);
+        return false;
       }
-
-
-      /**
-        Prevents the rest of the page being scrolled
-        when user scrolls the `.content` element.
-        @method preventVerticalScrolling
-        @param event {Event}
-        @param direction {String} Scroll direction (up or down)
-        @private
-       */
-
-      NanoScroll.prototype.preventVerticalScrolling = function(e, direction) {
-        if (!this.isActiveY) {
-          return;
-        }
-        if (e.type === DOMSCROLL) {
-          if (direction === DOWN && e.originalEvent.detail > 0 || direction === UP && e.originalEvent.detail < 0) {
-            e.preventDefault();
-          }
-        } else if (e.type === MOUSEWHEEL) {
-          if (!e.originalEvent || !e.originalEvent.wheelDelta) {
-            return;
-          }
-          if (direction === DOWN && e.originalEvent.wheelDelta < 0 || direction === UP && e.originalEvent.wheelDelta > 0) {
-            e.preventDefault();
-          }
-        }
-      };
-
-
-      /**
-        Prevents the rest of the page being scrolled
-        when user scrolls the `.content` element.
-        @method preventHorizontalScrolling
-        @param event {Event}
-        @param direction {String} Scroll direction (left or right)
-        @private
-       */
-
-      NanoScroll.prototype.preventHorizontalScrolling = function(e, direction) {
-        if (!this.isActiveX) {
-          return;
-        }
-        if (e.type === DOMSCROLL) {
-          if (direction === RIGHT && e.originalEvent.detail > 0 || direction === LEFT && e.originalEvent.detail < 0) {
-            e.preventDefault();
-          }
-        } else if (e.type === MOUSEWHEEL) {
-          if (!e.originalEvent || !e.originalEvent.wheelDelta) {
-            return;
-          }
-          if (direction === RIGHT && e.originalEvent.wheelDelta < 0 || direction === LEFT && e.originalEvent.wheelDelta > 0) {
-            e.preventDefault();
-          }
-        }
-      };
-
-
-      /**
-        Enable iOS native scrolling
-       */
-
-      NanoScroll.prototype.nativeScrolling = function() {
-        this.$content.css({
-          WebkitOverflowScrolling: 'touch'
-        });
-        this.iOSNativeScrolling = true;
-        this.isActiveX = true;
-        this.isActiveY = true;
-      };
-
-
-      /**
-        Updates those nanoScroller properties that
-        are related to current scrollbar position.
-        @method updateVerticalScrollValues
-        @private
-       */
-
-      NanoScroll.prototype.updateVerticalScrollValues = function() {
-        var content;
-        content = this.content;
-        if (!content) {
-          return;
-        }
-        this.maxScrollTop = content.scrollHeight - content.clientHeight;
-        this.contentScrollTop = content.scrollTop;
-        if (!this.iOSNativeScrolling) {
-          this.maxSliderTop = this.yPaneHeight - this.ySliderHeight;
-          this.ySliderTop = this.contentScrollTop * this.maxSliderTop / this.maxScrollTop;
-        }
-      };
-
-
-      /**
-        Updates those nanoScroller properties that
-        are related to current scrollbar position.
-        @method updateVerticalScrollValues
-        @private
-       */
-
-      NanoScroll.prototype.updateHorizontalScrollValues = function() {
-        var content;
-        content = this.content;
-        if (!content) {
-          return;
-        }
-        this.maxScrollLeft = content.scrollWidth - content.clientWidth;
-        this.contentScrollLeft = content.scrollLeft;
-        if (!this.iOSNativeScrolling) {
-          this.maxSliderLeft = this.xPaneWidth - this.xSliderWidth;
-          this.xSliderLeft = this.contentScrollLeft * this.maxSliderLeft / this.maxScrollLeft;
-        }
-      };
-
-
-      /**
-        Creates event related methods
-        @method createEvents
-        @private
-       */
-
-      NanoScroll.prototype.createEvents = function() {
-        this.yEvents = {
-          down: (function(_this) {
-            return function(e) {
-              _this.isYBeingDragged = true;
-              _this.offsetY = e.pageY - _this.ySlider.offset().top;
-              _this.yPane.addClass('active');
-              _this.doc.bind(MOUSEMOVE, _this.yEvents[DRAG]).bind(MOUSEUP, _this.yEvents[UP]);
-              return false;
-            };
-          })(this),
-          drag: (function(_this) {
-            return function(e) {
-              _this.ySliderY = e.pageY - _this.$el.offset().top - _this.offsetY;
-              _this.scrollY();
-              _this.updateVerticalScrollValues();
-              if (_this.contentScrollTop >= _this.maxScrollTop) {
-                _this.$el.trigger('scrollend');
-              } else if (_this.contentScrollTop === 0) {
-                _this.$el.trigger('scrolltop');
-              }
-              return false;
-            };
-          })(this),
-          up: (function(_this) {
-            return function(e) {
-              _this.isYBeingDragged = false;
-              _this.yPane.removeClass('active');
-              _this.doc.unbind(MOUSEMOVE, _this.yEvents[DRAG]).unbind(MOUSEUP, _this.yEvents[UP]);
-              return false;
-            };
-          })(this),
-          resize: (function(_this) {
-            return function(e) {
-              _this.reset();
-            };
-          })(this),
-          panedown: (function(_this) {
-            return function(e) {
-              _this.ySliderY = (e.offsetY || e.originalEvent.layerY) - (_this.ySliderHeight * 0.5);
-              _this.scrollY();
-              _this.yEvents.down(e);
-              return false;
-            };
-          })(this),
-          scroll: (function(_this) {
-            return function(e) {
-              if (_this.isYBeingDragged) {
-                return;
-              }
-              _this.updateVerticalScrollValues();
-              if (!_this.iOSNativeScrolling) {
-                _this.ySliderY = _this.ySliderTop;
-                _this.ySlider.css({
-                  top: _this.ySliderTop
-                });
-              }
-              if (e == null) {
-                return;
-              }
-              if (_this.contentScrollTop >= _this.maxScrollTop) {
-                if (_this.options.preventPageScrolling) {
-                  _this.preventVerticalScrolling(e, DOWN);
-                }
-                _this.$el.trigger('scrollend');
-              } else if (_this.contentScrollTop === 0) {
-                if (_this.options.preventPageScrolling) {
-                  _this.preventVerticalScrolling(e, UP);
-                }
-                _this.$el.trigger('scrolltop');
-              }
-            };
-          })(this),
-          wheel: (function(_this) {
-            return function(e) {
-              if (e == null) {
-                return;
-              }
-              _this.ySliderY += -e.wheelDeltaY || -e.delta;
-              _this.scrollY();
-              return false;
-            };
-          })(this)
-        };
-        this.xEvents = {
-          down: (function(_this) {
-            return function(e) {
-              _this.isXBeingDragged = true;
-              _this.offsetX = e.pageX - _this.xSlider.offset().left;
-              _this.xPane.addClass('active');
-              _this.doc.bind(MOUSEMOVE, _this.xEvents[DRAG]).bind(MOUSEUP, _this.xEvents[UP]);
-              return false;
-            };
-          })(this),
-          drag: (function(_this) {
-            return function(e) {
-              _this.xSliderX = e.pageX - _this.$el.offset().left - _this.offsetX;
-              _this.scrollX();
-              _this.updateHorizontalScrollValues();
-              if (_this.contentScrollLeft >= _this.maxScrollLeft) {
-                _this.$el.trigger('scrollend');
-              } else if (_this.contentScrollLeft === 0) {
-                _this.$el.trigger('scrollleft');
-              }
-              return false;
-            };
-          })(this),
-          up: (function(_this) {
-            return function(e) {
-              _this.isXBeingDragged = false;
-              _this.xPane.removeClass('active');
-              _this.doc.unbind(MOUSEMOVE, _this.xEvents[DRAG]).unbind(MOUSEUP, _this.xEvents[UP]);
-              return false;
-            };
-          })(this),
-          resize: (function(_this) {
-            return function(e) {
-              _this.reset();
-            };
-          })(this),
-          panedown: (function(_this) {
-            return function(e) {
-              _this.xSliderX = (e.offsetX || e.originalEvent.layerX) - (_this.xSliderWidth * 0.5);
-              _this.scrollX();
-              _this.xEvents.down(e);
-              return false;
-            };
-          })(this),
-          scroll: (function(_this) {
-            return function(e) {
-              if (_this.isXBeingDragged) {
-                return;
-              }
-              _this.updateHorizontalScrollValues();
-              if (!_this.iOSNativeScrolling) {
-                _this.xSliderX = _this.xSliderLeft;
-                _this.xSlider.css({
-                  left: _this.xSliderLeft
-                });
-              }
-              if (e == null) {
-                return;
-              }
-              if (_this.contentScrollLeft >= _this.maxScrollLeft) {
-                if (_this.options.preventPageScrolling) {
-                  _this.preventHorizontalScrolling(e, RIGHT);
-                }
-                _this.$el.trigger('scrollend');
-              } else if (_this.contentScrollLeft === 0) {
-                if (_this.options.preventPageScrolling) {
-                  _this.preventHorizontalScrolling(e, LEFT);
-                }
-                _this.$el.trigger('scrollleft');
-              }
-            };
-          })(this),
-          wheel: (function(_this) {
-            return function(e) {
-              if (e == null) {
-                return;
-              }
-              _this.xSliderX += -e.wheelDeltaX || -e.delta;
-              _this.scrollX();
-              return false;
-            };
-          })(this)
-        };
-      };
-
-
-      /**
-        Adds event listeners with jQuery.
-        @method addEvents
-        @private
-       */
-
-      NanoScroll.prototype.addEvents = function() {
-        var xEvents, yEvents;
-        this.removeEvents();
-        yEvents = this.yEvents;
-        xEvents = this.xEvents;
-        if (!this.options.disableResize) {
-          this.win.bind(RESIZE, yEvents[RESIZE]).bind(RESIZE, xEvents[RESIZE]);
-        }
-        if (!this.iOSNativeScrolling) {
-          this.ySlider.bind(MOUSEDOWN, yEvents[DOWN]);
-          this.xSlider.bind(MOUSEDOWN, xEvents[DOWN]);
-          this.yPane.bind(MOUSEDOWN, yEvents[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, yEvents[WHEEL]);
-          this.xPane.bind(MOUSEDOWN, xEvents[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, xEvents[WHEEL]);
-        }
-        this.$content.bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, yEvents[SCROLL]).bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, xEvents[SCROLL]);
-      };
-
-
-      /**
-        Removes event listeners with jQuery.
-        @method removeEvents
-        @private
-       */
-
-      NanoScroll.prototype.removeEvents = function() {
-        var xEvents, yEvents;
-        yEvents = this.yEvents;
-        xEvents = this.xEvents;
-        this.win.unbind(RESIZE, yEvents[RESIZE]).unbind(RESIZE, xEvents[RESIZE]);
-        if (!this.iOSNativeScrolling) {
-          this.ySlider.unbind();
-          this.xSlider.unbind();
-          this.yPane.unbind();
-          this.xPane.unbind();
-        }
-        this.$content.unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, yEvents[SCROLL]).unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, xEvents[SCROLL]);
-      };
-
-
-      /**
-        Generates nanoScroller's scrollbar and elements for it.
-        @method generate
-        @chainable
-        @private
-       */
-
-      NanoScroll.prototype.generate = function() {
-        var contentClass, cssRuleX, cssRuleY, options, paneClass, paneClassX, paneClassY, sliderClass, sliderClassX, sliderClassY;
-        options = this.options;
-        paneClass = options.paneClass, paneClassY = options.paneClassY, paneClassX = options.paneClassX, sliderClass = options.sliderClass, sliderClassY = options.sliderClassY, sliderClassX = options.sliderClassX, contentClass = options.contentClass;
-        if (!this.$el.find("" + paneClassY).length && !this.$el.find("" + sliderClassY).length) {
-          this.$el.append("<div class=\"" + paneClass + " " + paneClassY + "\"><div class=\"" + sliderClass + " " + sliderClassY + "\" /></div>");
-        }
-        if (!this.$el.find("" + paneClassX).length && !this.$el.find("" + sliderClassX).length) {
-          this.$el.append("<div class=\"" + paneClass + " " + paneClassX + "\"><div class=\"" + sliderClass + " " + sliderClassX + "\" /></div>");
-        }
-        this.yPane = this.$el.children("." + paneClassY);
-        this.xPane = this.$el.children("." + paneClassX);
-        this.ySlider = this.yPane.find("." + sliderClassY);
-        this.xSlider = this.xPane.find("." + sliderClassX);
-        if (BROWSER_SCROLLBAR_WIDTH) {
-          cssRuleY = this.$el.css('direction') === 'rtl' ? {
-            left: -BROWSER_SCROLLBAR_WIDTH
-          } : {
-            right: -BROWSER_SCROLLBAR_WIDTH
-          };
-          this.$el.addClass('has-scrollbar');
-          this.$content.css(cssRuleY);
-        }
-        if (BROWSER_SCROLLBAR_HEIGHT) {
-          cssRuleX = {
-            bottom: -BROWSER_SCROLLBAR_HEIGHT
-          };
-          this.$el.addClass('has-scrollbar');
-          this.$content.css(cssRuleX);
-        }
-        return this;
-      };
-
-
-      /**
-        @method restore
-        @private
-       */
-
-      NanoScroll.prototype.restore = function() {
-        this.stopped = false;
-        this.yPane.show();
-        this.xPane.show();
-        this.addEvents();
-      };
-
-
-      /**
-        Resets nanoScroller's scrollbar.
-        @method reset
-        @chainable
-        @example
-            $(".nano").nanoScroller();
-       */
-
-      NanoScroll.prototype.reset = function() {
-        var content, contentHeight, contentStyle, contentStyleOverflowX, contentStyleOverflowY, contentWidth, paneBottom, paneHeight, paneLeft, paneOuterHeight, paneOuterWidth, paneRight, paneTop, paneWidth, sliderHeight, sliderWidth;
-        if (!this.content) {
-          return;
-        }
-        if (this.iOSNativeScrolling) {
-          this.contentHeight = this.content.scrollHeight;
-          this.contentWidth = this.content.scrollWidth;
-          return;
-        }
-        this.$el.removeClass('has-scrollbar-x');
-        this.$el.removeClass('has-scrollbar-y');
-        if (!this.$el.find("." + this.options.paneClassY).length && !this.$el.find("." + this.options.paneClassX).length) {
-          this.generate().stop();
-        }
-        if (this.stopped) {
-          this.restore();
-        }
-        content = this.content;
-        contentStyle = content.style;
-        contentStyleOverflowY = contentStyle.overflowY;
-        contentStyleOverflowX = contentStyle.overflowX;
-        if (BROWSER_IS_IE7) {
-          this.$content.css({
-            height: this.$content.height(),
-            width: this.$content.height()
-          });
-        }
-        contentHeight = content.scrollHeight + BROWSER_SCROLLBAR_WIDTH;
-        contentWidth = content.scrollWidth + BROWSER_SCROLLBAR_HEIGHT;
-        if (content.scrollWidth > this.xPane.outerWidth(true)) {
-          this.$el.addClass('has-scrollbar-x');
-        }
-        if (content.scrollHeight > this.yPane.outerHeight(true)) {
-          this.$el.addClass('has-scrollbar-y');
-        }
-        paneHeight = this.yPane.outerHeight();
-        paneTop = parseInt(this.yPane.css('top'), 10);
-        paneBottom = parseInt(this.yPane.css('bottom'), 10);
-        paneOuterHeight = paneHeight + paneTop + paneBottom;
-        paneWidth = this.xPane.outerWidth();
-        paneLeft = parseInt(this.xPane.css('left'), 10);
-        paneRight = parseInt(this.xPane.css('right'), 10);
-        paneOuterWidth = paneWidth + paneLeft + paneRight;
-        sliderHeight = Math.round(paneOuterHeight / contentHeight * paneOuterHeight);
-        if (sliderHeight < this.options.sliderMinHeight) {
-          sliderHeight = this.options.sliderMinHeight;
-        } else if ((this.options.sliderMaxHeight != null) && sliderHeight > this.options.sliderMaxHeight) {
-          sliderHeight = this.options.sliderMaxHeight;
-        }
-        if (contentStyleOverflowY === SCROLL && contentStyle.overflowX !== SCROLL) {
-          sliderHeight += BROWSER_SCROLLBAR_WIDTH;
-        }
-        sliderWidth = Math.round(paneOuterWidth / contentWidth * paneOuterWidth);
-        if (sliderWidth < this.options.sliderMinWidth) {
-          sliderWidth = this.options.sliderMinWidth;
-        } else if ((this.options.sliderMaxWidth != null) && sliderWidth > this.options.sliderMaxWidth) {
-          sliderWidth = this.options.sliderMaxWidth;
-        }
-        if (contentStyleOverflowX === SCROLL && contentStyle.overflowY !== SCROLL) {
-          sliderWidth += BROWSER_SCROLLBAR_HEIGHT;
-        }
-        this.maxSliderTop = paneOuterHeight - sliderHeight;
-        this.maxSliderLeft = paneOuterWidth - sliderWidth;
-        this.contentHeight = contentHeight;
-        this.contentWidth = contentWidth;
-        this.yPaneHeight = paneHeight;
-        this.xPaneWidth = paneWidth;
-        this.yPaneOuterHeight = paneOuterHeight;
-        this.xPaneOuterWidth = paneOuterWidth;
-        this.ySliderHeight = sliderHeight;
-        this.xSliderWidth = sliderWidth;
-        this.ySlider.height(sliderHeight);
-        this.xSlider.width(sliderWidth);
-        this.yEvents.scroll();
-        this.xEvents.scroll();
-        this.yPane.show();
-        this.isActiveY = true;
-        if ((content.scrollHeight === content.clientHeight) || (this.yPane.outerHeight(true) >= content.scrollHeight && contentStyleOverflowY !== SCROLL)) {
-          this.yPane.hide();
-          this.$el.removeClass('has-scrollbar-y');
-          this.isActiveY = false;
-        } else if (this.el.clientHeight === content.scrollHeight && contentStyleOverflowY === SCROLL) {
-          this.ySlider.hide();
-        } else {
-          this.ySlider.show();
-        }
-        this.xPane.show();
-        this.isActiveX = true;
-        if ((content.scrollWidth === content.clientWidth) || (this.xPane.outerWidth(true) >= content.scrollWidth && contentStyleOverflowX !== SCROLL)) {
-          this.xPane.hide();
-          this.$el.removeClass('has-scrollbar-x');
-          this.isActiveX = false;
-        } else if (this.el.clientWidth === content.scrollWidth && contentStyleOverflowX === SCROLL) {
-          this.xSlider.hide();
-        } else {
-          this.xSlider.show();
-        }
-        this.yPane.css({
-          opacity: (this.options.alwaysVisible ? 1 : ''),
-          visibility: (this.options.alwaysVisible ? 'visible' : '')
-        });
-        this.xPane.css({
-          opacity: (this.options.alwaysVisible ? 1 : ''),
-          visibility: (this.options.alwaysVisible ? 'visible' : '')
-        });
-        return this;
-      };
-
-
-      /**
-        @method scroll
-        @private
-        @example
-            $(".nano").nanoScroller({ scroll: 'top' });
-       */
-
-      NanoScroll.prototype.scroll = function() {
-        return this.scrollY();
-      };
-
-
-      /**
-        @method scrollY
-        @private
-        @example
-            $(".nano").nanoScroller({ scrollY: 'top' });
-       */
-
-      NanoScroll.prototype.scrollY = function() {
-        if (!this.isActiveY) {
-          return;
-        }
-        this.ySliderY = Math.max(0, this.ySliderY);
-        this.ySliderY = Math.min(this.maxSliderTop, this.ySliderY);
-        this.$content.scrollTop((this.yPaneHeight - this.contentHeight + BROWSER_SCROLLBAR_WIDTH) * this.ySliderY / this.maxSliderTop * -1);
-        if (!this.iOSNativeScrolling) {
-          this.ySlider.css({
-            top: this.ySliderY
-          });
-        }
-        return this;
-      };
-
-
-      /**
-        @method scrollX
-        @private
-        @example
-            $(".nano").nanoScroller({ scrollX: 'top' });
-       */
-
-      NanoScroll.prototype.scrollX = function() {
-        if (!this.isActiveX) {
-          return;
-        }
-        this.xSliderX = Math.max(0, this.xSliderX);
-        this.xSliderX = Math.min(this.maxSliderLeft, this.xSliderX);
-        this.$content.scrollLeft((this.xPaneWidth - this.contentWidth + BROWSER_SCROLLBAR_HEIGHT) * this.xSliderX / this.maxSliderLeft * -1);
-        if (!this.iOSNativeScrolling) {
-          this.xSlider.css({
-            left: this.xSliderX
-          });
-        }
-        return this;
-      };
-
-
-      /**
-        Scroll at the bottom with an offset value
-        @method scrollBottom
-        @param offsetY {Number}
-        @chainable
-        @example
-            $(".nano").nanoScroller({ scrollBottom: value });
-       */
-
-      NanoScroll.prototype.scrollBottom = function(offsetY) {
-        if (!this.isActiveY) {
-          return;
-        }
-        this.reset();
-        this.$content.scrollTop(this.contentHeight - this.$content.height() - offsetY).trigger(MOUSEWHEEL);
-        return this;
-      };
-
-
-      /**
-        Scroll at the right with an offset value
-        @method scrollRight
-        @param offsetX {Number}
-        @chainable
-        @example
-            $(".nano").nanoScroller({ scrollRight: value });
-       */
-
-      NanoScroll.prototype.scrollRight = function(offsetX) {
-        if (!this.isActiveX) {
-          return;
-        }
-        this.reset();
-        this.$content.scrollLeft(this.contentWidth - this.$content.width() - offsetX).trigger(MOUSEWHEEL);
-        return this;
-      };
-
-
-      /**
-        Scroll at the top with an offset value
-        @method scrollTop
-        @param offsetY {Number}
-        @chainable
-        @example
-            $(".nano").nanoScroller({ scrollTop: value });
-       */
-
-      NanoScroll.prototype.scrollTop = function(offsetY) {
-        if (!this.isActiveY) {
-          return;
-        }
-        this.reset();
-        this.$content.scrollTop(+offsetY).trigger(MOUSEWHEEL);
-        return this;
-      };
-
-
-      /**
-        Scroll at the left with an offset value
-        @method scrollLeft
-        @param offsetX {Number}
-        @chainable
-        @example
-            $(".nano").nanoScroller({ scrollLeft: value });
-       */
-
-      NanoScroll.prototype.scrollLeft = function(offsetX) {
-        if (!this.isActiveX) {
-          return;
-        }
-        this.reset();
-        this.$content.scrollLeft(+offsetX).trigger(MOUSEWHEEL);
-        return this;
-      };
-
-
-      /**
-        Scroll to an element
-        @method scrollTo
-        @param node {Node} A node to scroll to.
-        @chainable
-        @example
-            $(".nano").nanoScroller({ scrollTo: $('#a_node') });
-       */
-
-      NanoScroll.prototype.scrollTo = function(node) {
-        var n;
-        if (!(this.isActiveY || this.isActiveX)) {
-          return;
-        }
-        this.reset();
-        n = $(node).get(0);
-        if (this.isActiveY) {
-          this.scrollTop(n.offsetTop);
-        }
-        if (this.isActiveX) {
-          this.scrollLeft(n.offsetLeft);
-        }
-        return this;
-      };
-
-
-      /**
-        To stop the operation.
-        This option will tell the plugin to disable all event bindings and hide the gadget scrollbar from the UI.
-        @method stop
-        @chainable
-        @example
-            $(".nano").nanoScroller({ stop: true });
-       */
-
-      NanoScroll.prototype.stop = function() {
-        this.stopped = true;
-        this.removeEvents();
-        this.yPane.hide();
-        this.xPane.hide();
-        return this;
-      };
-
-
-      /**
-        To flash the scrollbar gadget for an amount of time defined in plugin settings (defaults to 1,5s).
-        Useful if you want to show the user (e.g. on pageload) that there is more content waiting for him.
-        @method flash
-        @chainable
-        @example
-            $(".nano").nanoScroller({ flash: true });
-       */
-
-      NanoScroll.prototype.flash = function() {
-        if (!(this.isActiveY || this.isActiveX)) {
-          return;
-        }
-        this.reset();
-        if (this.isActiveY) {
-          this.yPane.addClass('flashed');
-        }
-        if (this.isActiveX) {
-          this.xPane.addClass('flashed');
-        }
-        setTimeout((function(_this) {
-          return function() {
-            if (_this.isActiveY) {
-              _this.yPane.removeClass('flashed');
-            }
-            if (_this.isActiveX) {
-              _this.xPane.removeClass('flashed');
-            }
-          };
-        })(this), this.options.flashDelay);
-        return this;
-      };
-
-      return NanoScroll;
-
-    })();
-    $.fn.nanoScroller = function(settings) {
-      return this.each(function() {
-        var options, scrollbar;
-        if (!(scrollbar = this.nanoscroller)) {
-          options = $.extend({}, defaults, settings);
-          this.nanoscroller = scrollbar = new NanoScroll(this, options);
-        }
-        if (settings && typeof settings === "object") {
-          $.extend(scrollbar.options, settings);
-          if (settings.scrollBottom) {
-            return scrollbar.scrollBottom(settings.scrollBottom);
-          }
-          if (settings.scrollTop) {
-            return scrollbar.scrollTop(settings.scrollTop);
-          }
-          if (settings.scrollRight) {
-            return scrollbar.scrollRight(settings.scrollRight);
-          }
-          if (settings.scrollLeft) {
-            return scrollbar.scrollLeft(settings.scrollLeft);
-          }
-          if (settings.scrollTo) {
-            return scrollbar.scrollTo(settings.scrollTo);
-          }
-          if (settings.scroll === 'bottom') {
-            return scrollbar.scrollBottom(0);
-          }
-          if (settings.scroll === 'top') {
-            return scrollbar.scrollTop(0);
-          }
-          if (settings.scroll === 'right') {
-            return scrollbar.scrollRight(0);
-          }
-          if (settings.scroll === 'left') {
-            return scrollbar.scrollLeft(0);
-          }
-          if (settings.scroll && settings.scroll instanceof $) {
-            return scrollbar.scrollTo(settings.scroll);
-          }
-          if (settings.stop) {
-            return scrollbar.stop();
-          }
-          if (settings.flash) {
-            return scrollbar.flash();
-          }
-        }
-        return scrollbar.reset();
+      if (this.option.mode === "fullscreen" && !isSlideIn) {
+        this.tpl.removeAttr("style");
+        return false;
+      }
+      windowWidth = $(window).width();
+      windowHeight = $(window).height();
+      width = this.tpl.width();
+      height = this.tpl.height();
+      top = (windowHeight - height) * 0.4;
+      left = (windowWidth - width) / 2;
+      if (isSlideIn) {
+        this.tpl.removeClass("animate");
+      }
+      if (top < 0) {
+        top = 10;
+      }
+      if (isSlideIn === 1) {
+        left = windowWidth + left;
+      }
+      if (isSlideIn === -1) {
+        left = -windowWidth + left;
+      }
+      self.tpl.css({
+        top: top,
+        left: left
       });
-    };
+      if (isSlideIn) {
+        self.tpl.hide();
+      }
+      this.trigger("resize", {
+        top: top,
+        left: left
+      });
+      return this;
+    },
+    isOpen: function() {
+      return !this.isClosed;
+    },
+    next: function(option) {
+      var newModal;
+      newModal = new Modal(option);
+      this.trigger("next", newModal);
+      newModal;
+      return this;
+    },
+    toggleConfirm: function(disabled) {
+      this.tpl.find(".modal-confirm").attr("disabled", !!disabled);
+      return this;
+    },
+    toggleFooter: function(visible) {
+      this.tpl.find(".modal-footer").toggle(!!visible);
+      return this;
+    },
+    setContent: function(content) {
+      var selector;
+      if (this.option.maxHeight || this.option.hasScroll) {
+        selector = ".scroll-content";
+      } else {
+        selector = ".modal-body";
+      }
+      this.tpl.find(selector).html(content);
+      this.resize();
+      return this;
+    },
+    compact: function() {
+      this.tpl.find(".modal-body").css({
+        padding: 0
+      });
+      return this;
+    },
+    setWidth: function(width) {
+      var body;
+      body = this.tpl.find('.modal-body');
+      body.parent().css({
+        width: width
+      });
+      this.resize();
+      return this;
+    },
+    animate: function(animate) {
+      var delayOption, left, offset, that, windowWidth;
+      this.tpl.show();
+      that = this;
+      if (this.option.mode === "fullscreen" && animate === "slideIn") {
+        return false;
+      }
+      if (this.option.mode === "panel") {
+        return false;
+      }
+      if (this.isMoving) {
+        console.warn("It's animating.");
+        return false;
+      }
+      windowWidth = $(window).width();
+      offset = this.tpl.offset();
+      left = offset.left + windowWidth;
+      delayOption = 300;
+      if (animate === "fadeOut" || animate === "fadeIn") {
+        delayOption = 100;
+        left = +offset.left + windowWidth;
+      }
+      if (animate === "fadeOut" || animate === "slideIn") {
+        left = +offset.left - windowWidth;
+      }
+      that.isMoving = true;
+      this.tpl.animate({
+        left: left
+      }, delayOption, (function() {
+        that.isMoving = false;
+        return false;
+      }));
+      return this;
+    },
+    find: function(selector) {
+      return this.tpl.find(selector);
+    },
+    $: function(selector) {
+      return this.tpl.find(selector);
+    },
+    setTitle: function(title) {
+      this.tpl.find(".modal-header h3").text(title);
+      return this;
+    },
+    abnormal: function() {
+      var _ref;
+      return (_ref = this.option.mode) === "panel" || _ref === "fullscreen";
+    }
   });
+  return Modal;
+});
 
-}).call(this);
+define('UI.nanoscroller',["jquery"], function($) {
+  
+  var BROWSER_IS_IE7, BROWSER_SCROLLBAR_HEIGHT, BROWSER_SCROLLBAR_WIDTH, DOMSCROLL, DOWN, DRAG, KEYDOWN, KEYUP, LEFT, MOUSEDOWN, MOUSEMOVE, MOUSEUP, MOUSEWHEEL, NanoScroll, PANEDOWN, PANERIGHT, RESIZE, RIGHT, SCROLL, SCROLLBAR, TOUCHMOVE, UP, WHEEL, defaults, getBrowserScrollbarSizes;
+  defaults = {
+
+    /**
+      a classname for the pane element.
+      @property paneClass
+      @type String
+      @default 'pane'
+     */
+    paneClass: 'nano-pane',
+
+    /**
+      a classname for the pane-y element.
+      @property paneClassY
+      @type String
+      @default 'pane-y'
+     */
+    paneClassY: 'pane-y',
+
+    /**
+      a classname for the pane-x element.
+      @property paneClassX
+      @type String
+      @default 'pane-x'
+     */
+    paneClassX: 'pane-x',
+
+    /**
+      a classname for the slider element.
+      @property sliderClass
+      @type String
+      @default 'slider'
+     */
+    sliderClass: 'nano-slider',
+
+    /**
+      a classname for the slider-y element.
+      @property sliderClassY
+      @type String
+      @default 'slider-y'
+     */
+    sliderClassY: 'slider-y',
+
+    /**
+      a classname for the slider-x element.
+      @property sliderClassX
+      @type String
+      @default 'slider-x'
+     */
+    sliderClassX: 'slider-x',
+
+    /**
+      a classname for the content element.
+      @property contentClass
+      @type String
+      @default 'content'
+     */
+    contentClass: 'nano-content',
+
+    /**
+      a setting to enable native scrolling in iOS devices.
+      @property iOSNativeScrolling
+      @type Boolean
+      @default false
+     */
+    iOSNativeScrolling: false,
+
+    /**
+      a setting to prevent the rest of the page being
+      scrolled when user scrolls the `.content` element.
+      @property preventPageScrolling
+      @type Boolean
+      @default false
+     */
+    preventPageScrolling: false,
+
+    /**
+      a setting to disable binding to the resize event.
+      @property disableResize
+      @type Boolean
+      @default false
+     */
+    disableResize: false,
+
+    /**
+      a setting to make the scrollbar always visible.
+      @property alwaysVisible
+      @type Boolean
+      @default false
+     */
+    alwaysVisible: false,
+
+    /**
+      a default timeout for the `flash()` method.
+      @property flashDelay
+      @type Number
+      @default 1500
+     */
+    flashDelay: 1500,
+
+    /**
+      a minimum height for the `.slider` element.
+      @property sliderMinHeight
+      @type Number
+      @default 20
+     */
+    sliderMinHeight: 20,
+
+    /**
+      a maximum height for the `.slider` element.
+      @property sliderMaxHeight
+      @type Number
+      @default null
+     */
+    sliderMaxHeight: null
+  };
+
+  /**
+    @property SCROLLBAR
+    @type String
+    @static
+    @final
+    @private
+   */
+  SCROLLBAR = 'scrollbar';
+
+  /**
+    @property SCROLL
+    @type String
+    @static
+    @final
+    @private
+   */
+  SCROLL = 'scroll';
+
+  /**
+    @property MOUSEDOWN
+    @type String
+    @final
+    @private
+   */
+  MOUSEDOWN = 'mousedown';
+
+  /**
+    @property MOUSEMOVE
+    @type String
+    @static
+    @final
+    @private
+   */
+  MOUSEMOVE = 'mousemove';
+
+  /**
+    @property MOUSEWHEEL
+    @type String
+    @final
+    @private
+   */
+  MOUSEWHEEL = 'mousewheel';
+
+  /**
+    @property MOUSEUP
+    @type String
+    @static
+    @final
+    @private
+   */
+  MOUSEUP = 'mouseup';
+
+  /**
+    @property RESIZE
+    @type String
+    @final
+    @private
+   */
+  RESIZE = 'resize';
+
+  /**
+    @property DRAG
+    @type String
+    @static
+    @final
+    @private
+   */
+  DRAG = 'drag';
+
+  /**
+    @property UP
+    @type String
+    @static
+    @final
+    @private
+   */
+  UP = 'up';
+
+  /**
+    @property PANEDOWN
+    @type String
+    @static
+    @final
+    @private
+   */
+  PANEDOWN = 'panedown';
+
+  /**
+    @property LEFT
+    @type String
+    @static
+    @final
+    @private
+   */
+  LEFT = 'left';
+
+  /**
+    @property PANERIGHT
+    @type String
+    @static
+    @final
+    @private
+   */
+  PANERIGHT = 'paneright';
+
+  /**
+    @property DOMSCROLL
+    @type String
+    @static
+    @final
+    @private
+   */
+  DOMSCROLL = 'DOMMouseScroll';
+
+  /**
+    @property DOWN
+    @type String
+    @static
+    @final
+    @private
+   */
+  DOWN = 'down';
+
+  /**
+    @property RIGHT
+    @type String
+    @static
+    @final
+    @private
+   */
+  RIGHT = 'right';
+
+  /**
+    @property WHEEL
+    @type String
+    @static
+    @final
+    @private
+   */
+  WHEEL = 'wheel';
+
+  /**
+    @property KEYDOWN
+    @type String
+    @static
+    @final
+    @private
+   */
+  KEYDOWN = 'keydown';
+
+  /**
+    @property KEYUP
+    @type String
+    @static
+    @final
+    @private
+   */
+  KEYUP = 'keyup';
+
+  /**
+    @property TOUCHMOVE
+    @type String
+    @static
+    @final
+    @private
+   */
+  TOUCHMOVE = 'touchmove';
+
+  /**
+    @property BROWSER_IS_IE7
+    @type Boolean
+    @static
+    @final
+    @private
+   */
+  BROWSER_IS_IE7 = window.navigator.appName === 'Microsoft Internet Explorer' && /msie 7./i.test(window.navigator.appVersion) && window.ActiveXObject;
+
+  /**
+    @property BROWSER_SCROLLBAR_WIDTH
+    @type Number
+    @static
+    @default null
+    @private
+   */
+  BROWSER_SCROLLBAR_WIDTH = null;
+
+  /**
+    @property BROWSER_SCROLLBAR_HEIGHT
+    @type Number
+    @static
+    @default null
+    @private
+   */
+  BROWSER_SCROLLBAR_HEIGHT = null;
+
+  /**
+    Returns browser's native scrollbar width
+    @method getBrowserScrollbarSizes
+    @return {Number} the scrollbar width in pixels
+    @static
+    @private
+   */
+  getBrowserScrollbarSizes = function() {
+    var outer, outerStyle, scrollbarHeight, scrollbarWidth;
+    outer = document.createElement('div');
+    outerStyle = outer.style;
+    outerStyle.position = 'absolute';
+    outerStyle.width = '100px';
+    outerStyle.height = '100px';
+    outerStyle.overflow = SCROLL;
+    outerStyle.top = '-9999px';
+    document.body.appendChild(outer);
+    scrollbarWidth = outer.offsetWidth - outer.clientWidth;
+    scrollbarHeight = outer.offsetHeight - outer.clientHeight;
+    document.body.removeChild(outer);
+    return [scrollbarWidth, scrollbarHeight];
+  };
+
+  /**
+    @class NanoScroll
+    @param element {HTMLElement|Node} the main element
+    @param options {Object} nanoScroller's options
+    @constructor
+   */
+  NanoScroll = (function() {
+    function NanoScroll(el, options) {
+      var _ref;
+      this.el = el;
+      this.options = options;
+      if (!BROWSER_SCROLLBAR_WIDTH || !BROWSER_SCROLLBAR_HEIGHT) {
+        _ref = getBrowserScrollbarSizes(), BROWSER_SCROLLBAR_WIDTH = _ref[0], BROWSER_SCROLLBAR_HEIGHT = _ref[1];
+      }
+      this.$el = $(this.el);
+      this.doc = $(document);
+      this.win = $(window);
+      this.$content = this.$el.children("." + options.contentClass);
+      this.$content.attr('tabindex', 0);
+      this.content = this.$content[0];
+      if (this.options.iOSNativeScrolling && (this.el.style.WebkitOverflowScrolling != null)) {
+        this.nativeScrolling();
+      } else {
+        this.generate();
+      }
+      this.createEvents();
+      this.addEvents();
+      this.reset();
+    }
+
+
+    /**
+      Prevents the rest of the page being scrolled
+      when user scrolls the `.content` element.
+      @method preventVerticalScrolling
+      @param event {Event}
+      @param direction {String} Scroll direction (up or down)
+      @private
+     */
+
+    NanoScroll.prototype.preventVerticalScrolling = function(e, direction) {
+      if (!this.isActiveY) {
+        return;
+      }
+      if (e.type === DOMSCROLL) {
+        if (direction === DOWN && e.originalEvent.detail > 0 || direction === UP && e.originalEvent.detail < 0) {
+          e.preventDefault();
+        }
+      } else if (e.type === MOUSEWHEEL) {
+        if (!e.originalEvent || !e.originalEvent.wheelDelta) {
+          return;
+        }
+        if (direction === DOWN && e.originalEvent.wheelDelta < 0 || direction === UP && e.originalEvent.wheelDelta > 0) {
+          e.preventDefault();
+        }
+      }
+    };
+
+
+    /**
+      Prevents the rest of the page being scrolled
+      when user scrolls the `.content` element.
+      @method preventHorizontalScrolling
+      @param event {Event}
+      @param direction {String} Scroll direction (left or right)
+      @private
+     */
+
+    NanoScroll.prototype.preventHorizontalScrolling = function(e, direction) {
+      if (!this.isActiveX) {
+        return;
+      }
+      if (e.type === DOMSCROLL) {
+        if (direction === RIGHT && e.originalEvent.detail > 0 || direction === LEFT && e.originalEvent.detail < 0) {
+          e.preventDefault();
+        }
+      } else if (e.type === MOUSEWHEEL) {
+        if (!e.originalEvent || !e.originalEvent.wheelDelta) {
+          return;
+        }
+        if (direction === RIGHT && e.originalEvent.wheelDelta < 0 || direction === LEFT && e.originalEvent.wheelDelta > 0) {
+          e.preventDefault();
+        }
+      }
+    };
+
+
+    /**
+      Enable iOS native scrolling
+     */
+
+    NanoScroll.prototype.nativeScrolling = function() {
+      this.$content.css({
+        WebkitOverflowScrolling: 'touch'
+      });
+      this.iOSNativeScrolling = true;
+      this.isActiveX = true;
+      this.isActiveY = true;
+    };
+
+
+    /**
+      Updates those nanoScroller properties that
+      are related to current scrollbar position.
+      @method updateVerticalScrollValues
+      @private
+     */
+
+    NanoScroll.prototype.updateVerticalScrollValues = function() {
+      var content;
+      content = this.content;
+      if (!content) {
+        return;
+      }
+      this.maxScrollTop = content.scrollHeight - content.clientHeight;
+      this.contentScrollTop = content.scrollTop;
+      if (!this.iOSNativeScrolling) {
+        this.maxSliderTop = this.yPaneHeight - this.ySliderHeight;
+        this.ySliderTop = this.contentScrollTop * this.maxSliderTop / this.maxScrollTop;
+      }
+    };
+
+
+    /**
+      Updates those nanoScroller properties that
+      are related to current scrollbar position.
+      @method updateVerticalScrollValues
+      @private
+     */
+
+    NanoScroll.prototype.updateHorizontalScrollValues = function() {
+      var content;
+      content = this.content;
+      if (!content) {
+        return;
+      }
+      this.maxScrollLeft = content.scrollWidth - content.clientWidth;
+      this.contentScrollLeft = content.scrollLeft;
+      if (!this.iOSNativeScrolling) {
+        this.maxSliderLeft = this.xPaneWidth - this.xSliderWidth;
+        this.xSliderLeft = this.contentScrollLeft * this.maxSliderLeft / this.maxScrollLeft;
+      }
+    };
+
+
+    /**
+      Creates event related methods
+      @method createEvents
+      @private
+     */
+
+    NanoScroll.prototype.createEvents = function() {
+      this.yEvents = {
+        down: (function(_this) {
+          return function(e) {
+            _this.isYBeingDragged = true;
+            _this.offsetY = e.pageY - _this.ySlider.offset().top;
+            _this.yPane.addClass('active');
+            _this.doc.bind(MOUSEMOVE, _this.yEvents[DRAG]).bind(MOUSEUP, _this.yEvents[UP]);
+            return false;
+          };
+        })(this),
+        drag: (function(_this) {
+          return function(e) {
+            _this.ySliderY = e.pageY - _this.$el.offset().top - _this.offsetY;
+            _this.scrollY();
+            _this.updateVerticalScrollValues();
+            if (_this.contentScrollTop >= _this.maxScrollTop) {
+              _this.$el.trigger('scrollend');
+            } else if (_this.contentScrollTop === 0) {
+              _this.$el.trigger('scrolltop');
+            }
+            return false;
+          };
+        })(this),
+        up: (function(_this) {
+          return function(e) {
+            _this.isYBeingDragged = false;
+            _this.yPane.removeClass('active');
+            _this.doc.unbind(MOUSEMOVE, _this.yEvents[DRAG]).unbind(MOUSEUP, _this.yEvents[UP]);
+            return false;
+          };
+        })(this),
+        resize: (function(_this) {
+          return function(e) {
+            _this.reset();
+          };
+        })(this),
+        panedown: (function(_this) {
+          return function(e) {
+            _this.ySliderY = (e.offsetY || e.originalEvent.layerY) - (_this.ySliderHeight * 0.5);
+            _this.scrollY();
+            _this.yEvents.down(e);
+            return false;
+          };
+        })(this),
+        scroll: (function(_this) {
+          return function(e) {
+            if (_this.isYBeingDragged) {
+              return;
+            }
+            _this.updateVerticalScrollValues();
+            if (!_this.iOSNativeScrolling) {
+              _this.ySliderY = _this.ySliderTop;
+              _this.ySlider.css({
+                top: _this.ySliderTop
+              });
+            }
+            if (e == null) {
+              return;
+            }
+            if (_this.contentScrollTop >= _this.maxScrollTop) {
+              if (_this.options.preventPageScrolling) {
+                _this.preventVerticalScrolling(e, DOWN);
+              }
+              _this.$el.trigger('scrollend');
+            } else if (_this.contentScrollTop === 0) {
+              if (_this.options.preventPageScrolling) {
+                _this.preventVerticalScrolling(e, UP);
+              }
+              _this.$el.trigger('scrolltop');
+            }
+          };
+        })(this),
+        wheel: (function(_this) {
+          return function(e) {
+            if (e == null) {
+              return;
+            }
+            _this.ySliderY += -e.wheelDeltaY || -e.delta;
+            _this.scrollY();
+            return false;
+          };
+        })(this)
+      };
+      this.xEvents = {
+        down: (function(_this) {
+          return function(e) {
+            _this.isXBeingDragged = true;
+            _this.offsetX = e.pageX - _this.xSlider.offset().left;
+            _this.xPane.addClass('active');
+            _this.doc.bind(MOUSEMOVE, _this.xEvents[DRAG]).bind(MOUSEUP, _this.xEvents[UP]);
+            return false;
+          };
+        })(this),
+        drag: (function(_this) {
+          return function(e) {
+            _this.xSliderX = e.pageX - _this.$el.offset().left - _this.offsetX;
+            _this.scrollX();
+            _this.updateHorizontalScrollValues();
+            if (_this.contentScrollLeft >= _this.maxScrollLeft) {
+              _this.$el.trigger('scrollend');
+            } else if (_this.contentScrollLeft === 0) {
+              _this.$el.trigger('scrollleft');
+            }
+            return false;
+          };
+        })(this),
+        up: (function(_this) {
+          return function(e) {
+            _this.isXBeingDragged = false;
+            _this.xPane.removeClass('active');
+            _this.doc.unbind(MOUSEMOVE, _this.xEvents[DRAG]).unbind(MOUSEUP, _this.xEvents[UP]);
+            return false;
+          };
+        })(this),
+        resize: (function(_this) {
+          return function(e) {
+            _this.reset();
+          };
+        })(this),
+        panedown: (function(_this) {
+          return function(e) {
+            _this.xSliderX = (e.offsetX || e.originalEvent.layerX) - (_this.xSliderWidth * 0.5);
+            _this.scrollX();
+            _this.xEvents.down(e);
+            return false;
+          };
+        })(this),
+        scroll: (function(_this) {
+          return function(e) {
+            if (_this.isXBeingDragged) {
+              return;
+            }
+            _this.updateHorizontalScrollValues();
+            if (!_this.iOSNativeScrolling) {
+              _this.xSliderX = _this.xSliderLeft;
+              _this.xSlider.css({
+                left: _this.xSliderLeft
+              });
+            }
+            if (e == null) {
+              return;
+            }
+            if (_this.contentScrollLeft >= _this.maxScrollLeft) {
+              if (_this.options.preventPageScrolling) {
+                _this.preventHorizontalScrolling(e, RIGHT);
+              }
+              _this.$el.trigger('scrollend');
+            } else if (_this.contentScrollLeft === 0) {
+              if (_this.options.preventPageScrolling) {
+                _this.preventHorizontalScrolling(e, LEFT);
+              }
+              _this.$el.trigger('scrollleft');
+            }
+          };
+        })(this),
+        wheel: (function(_this) {
+          return function(e) {
+            if (e == null) {
+              return;
+            }
+            _this.xSliderX += -e.wheelDeltaX || -e.delta;
+            _this.scrollX();
+            return false;
+          };
+        })(this)
+      };
+    };
+
+
+    /**
+      Adds event listeners with jQuery.
+      @method addEvents
+      @private
+     */
+
+    NanoScroll.prototype.addEvents = function() {
+      var xEvents, yEvents;
+      this.removeEvents();
+      yEvents = this.yEvents;
+      xEvents = this.xEvents;
+      if (!this.options.disableResize) {
+        this.win.bind(RESIZE, yEvents[RESIZE]).bind(RESIZE, xEvents[RESIZE]);
+      }
+      if (!this.iOSNativeScrolling) {
+        this.ySlider.bind(MOUSEDOWN, yEvents[DOWN]);
+        this.xSlider.bind(MOUSEDOWN, xEvents[DOWN]);
+        this.yPane.bind(MOUSEDOWN, yEvents[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, yEvents[WHEEL]);
+        this.xPane.bind(MOUSEDOWN, xEvents[PANEDOWN]).bind("" + MOUSEWHEEL + " " + DOMSCROLL, xEvents[WHEEL]);
+      }
+      this.$content.bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, yEvents[SCROLL]).bind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, xEvents[SCROLL]);
+    };
+
+
+    /**
+      Removes event listeners with jQuery.
+      @method removeEvents
+      @private
+     */
+
+    NanoScroll.prototype.removeEvents = function() {
+      var xEvents, yEvents;
+      yEvents = this.yEvents;
+      xEvents = this.xEvents;
+      this.win.unbind(RESIZE, yEvents[RESIZE]).unbind(RESIZE, xEvents[RESIZE]);
+      if (!this.iOSNativeScrolling) {
+        this.ySlider.unbind();
+        this.xSlider.unbind();
+        this.yPane.unbind();
+        this.xPane.unbind();
+      }
+      this.$content.unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, yEvents[SCROLL]).unbind("" + SCROLL + " " + MOUSEWHEEL + " " + DOMSCROLL + " " + TOUCHMOVE, xEvents[SCROLL]);
+    };
+
+
+    /**
+      Generates nanoScroller's scrollbar and elements for it.
+      @method generate
+      @chainable
+      @private
+     */
+
+    NanoScroll.prototype.generate = function() {
+      var contentClass, cssRuleX, cssRuleY, options, paneClass, paneClassX, paneClassY, sliderClass, sliderClassX, sliderClassY;
+      options = this.options;
+      paneClass = options.paneClass, paneClassY = options.paneClassY, paneClassX = options.paneClassX, sliderClass = options.sliderClass, sliderClassY = options.sliderClassY, sliderClassX = options.sliderClassX, contentClass = options.contentClass;
+      if (!this.$el.find("" + paneClassY).length && !this.$el.find("" + sliderClassY).length) {
+        this.$el.append("<div class=\"" + paneClass + " " + paneClassY + "\"><div class=\"" + sliderClass + " " + sliderClassY + "\" /></div>");
+      }
+      if (!this.$el.find("" + paneClassX).length && !this.$el.find("" + sliderClassX).length) {
+        this.$el.append("<div class=\"" + paneClass + " " + paneClassX + "\"><div class=\"" + sliderClass + " " + sliderClassX + "\" /></div>");
+      }
+      this.yPane = this.$el.children("." + paneClassY);
+      this.xPane = this.$el.children("." + paneClassX);
+      this.ySlider = this.yPane.find("." + sliderClassY);
+      this.xSlider = this.xPane.find("." + sliderClassX);
+      if (BROWSER_SCROLLBAR_WIDTH) {
+        cssRuleY = this.$el.css('direction') === 'rtl' ? {
+          left: -BROWSER_SCROLLBAR_WIDTH
+        } : {
+          right: -BROWSER_SCROLLBAR_WIDTH
+        };
+        this.$el.addClass('has-scrollbar');
+        this.$content.css(cssRuleY);
+      }
+      if (BROWSER_SCROLLBAR_HEIGHT) {
+        cssRuleX = {
+          bottom: -BROWSER_SCROLLBAR_HEIGHT
+        };
+        this.$el.addClass('has-scrollbar');
+        this.$content.css(cssRuleX);
+      }
+      return this;
+    };
+
+
+    /**
+      @method restore
+      @private
+     */
+
+    NanoScroll.prototype.restore = function() {
+      this.stopped = false;
+      this.yPane.show();
+      this.xPane.show();
+      this.addEvents();
+    };
+
+
+    /**
+      Resets nanoScroller's scrollbar.
+      @method reset
+      @chainable
+      @example
+          $(".nano").nanoScroller();
+     */
+
+    NanoScroll.prototype.reset = function() {
+      var content, contentHeight, contentStyle, contentStyleOverflowX, contentStyleOverflowY, contentWidth, paneBottom, paneHeight, paneLeft, paneOuterHeight, paneOuterWidth, paneRight, paneTop, paneWidth, sliderHeight, sliderWidth;
+      if (!this.content) {
+        return;
+      }
+      if (this.iOSNativeScrolling) {
+        this.contentHeight = this.content.scrollHeight;
+        this.contentWidth = this.content.scrollWidth;
+        return;
+      }
+      this.$el.removeClass('has-scrollbar-x');
+      this.$el.removeClass('has-scrollbar-y');
+      if (!this.$el.find("." + this.options.paneClassY).length && !this.$el.find("." + this.options.paneClassX).length) {
+        this.generate().stop();
+      }
+      if (this.stopped) {
+        this.restore();
+      }
+      content = this.content;
+      contentStyle = content.style;
+      contentStyleOverflowY = contentStyle.overflowY;
+      contentStyleOverflowX = contentStyle.overflowX;
+      if (BROWSER_IS_IE7) {
+        this.$content.css({
+          height: this.$content.height(),
+          width: this.$content.height()
+        });
+      }
+      contentHeight = content.scrollHeight + BROWSER_SCROLLBAR_WIDTH;
+      contentWidth = content.scrollWidth + BROWSER_SCROLLBAR_HEIGHT;
+      if (content.scrollWidth > this.xPane.outerWidth(true)) {
+        this.$el.addClass('has-scrollbar-x');
+      }
+      if (content.scrollHeight > this.yPane.outerHeight(true)) {
+        this.$el.addClass('has-scrollbar-y');
+      }
+      paneHeight = this.yPane.outerHeight();
+      paneTop = parseInt(this.yPane.css('top'), 10);
+      paneBottom = parseInt(this.yPane.css('bottom'), 10);
+      paneOuterHeight = paneHeight + paneTop + paneBottom;
+      paneWidth = this.xPane.outerWidth();
+      paneLeft = parseInt(this.xPane.css('left'), 10);
+      paneRight = parseInt(this.xPane.css('right'), 10);
+      paneOuterWidth = paneWidth + paneLeft + paneRight;
+      sliderHeight = Math.round(paneOuterHeight / contentHeight * paneOuterHeight);
+      if (sliderHeight < this.options.sliderMinHeight) {
+        sliderHeight = this.options.sliderMinHeight;
+      } else if ((this.options.sliderMaxHeight != null) && sliderHeight > this.options.sliderMaxHeight) {
+        sliderHeight = this.options.sliderMaxHeight;
+      }
+      if (contentStyleOverflowY === SCROLL && contentStyle.overflowX !== SCROLL) {
+        sliderHeight += BROWSER_SCROLLBAR_WIDTH;
+      }
+      sliderWidth = Math.round(paneOuterWidth / contentWidth * paneOuterWidth);
+      if (sliderWidth < this.options.sliderMinWidth) {
+        sliderWidth = this.options.sliderMinWidth;
+      } else if ((this.options.sliderMaxWidth != null) && sliderWidth > this.options.sliderMaxWidth) {
+        sliderWidth = this.options.sliderMaxWidth;
+      }
+      if (contentStyleOverflowX === SCROLL && contentStyle.overflowY !== SCROLL) {
+        sliderWidth += BROWSER_SCROLLBAR_HEIGHT;
+      }
+      this.maxSliderTop = paneOuterHeight - sliderHeight;
+      this.maxSliderLeft = paneOuterWidth - sliderWidth;
+      this.contentHeight = contentHeight;
+      this.contentWidth = contentWidth;
+      this.yPaneHeight = paneHeight;
+      this.xPaneWidth = paneWidth;
+      this.yPaneOuterHeight = paneOuterHeight;
+      this.xPaneOuterWidth = paneOuterWidth;
+      this.ySliderHeight = sliderHeight;
+      this.xSliderWidth = sliderWidth;
+      this.ySlider.height(sliderHeight);
+      this.xSlider.width(sliderWidth);
+      this.yEvents.scroll();
+      this.xEvents.scroll();
+      this.yPane.show();
+      this.isActiveY = true;
+      if ((content.scrollHeight === content.clientHeight) || (this.yPane.outerHeight(true) >= content.scrollHeight && contentStyleOverflowY !== SCROLL)) {
+        this.yPane.hide();
+        this.$el.removeClass('has-scrollbar-y');
+        this.isActiveY = false;
+      } else if (this.el.clientHeight === content.scrollHeight && contentStyleOverflowY === SCROLL) {
+        this.ySlider.hide();
+      } else {
+        this.ySlider.show();
+      }
+      this.xPane.show();
+      this.isActiveX = true;
+      if ((content.scrollWidth === content.clientWidth) || (this.xPane.outerWidth(true) >= content.scrollWidth && contentStyleOverflowX !== SCROLL)) {
+        this.xPane.hide();
+        this.$el.removeClass('has-scrollbar-x');
+        this.isActiveX = false;
+      } else if (this.el.clientWidth === content.scrollWidth && contentStyleOverflowX === SCROLL) {
+        this.xSlider.hide();
+      } else {
+        this.xSlider.show();
+      }
+      this.yPane.css({
+        opacity: (this.options.alwaysVisible ? 1 : ''),
+        visibility: (this.options.alwaysVisible ? 'visible' : '')
+      });
+      this.xPane.css({
+        opacity: (this.options.alwaysVisible ? 1 : ''),
+        visibility: (this.options.alwaysVisible ? 'visible' : '')
+      });
+      return this;
+    };
+
+
+    /**
+      @method scroll
+      @private
+      @example
+          $(".nano").nanoScroller({ scroll: 'top' });
+     */
+
+    NanoScroll.prototype.scroll = function() {
+      return this.scrollY();
+    };
+
+
+    /**
+      @method scrollY
+      @private
+      @example
+          $(".nano").nanoScroller({ scrollY: 'top' });
+     */
+
+    NanoScroll.prototype.scrollY = function() {
+      if (!this.isActiveY) {
+        return;
+      }
+      this.ySliderY = Math.max(0, this.ySliderY);
+      this.ySliderY = Math.min(this.maxSliderTop, this.ySliderY);
+      this.$content.scrollTop((this.yPaneHeight - this.contentHeight + BROWSER_SCROLLBAR_WIDTH) * this.ySliderY / this.maxSliderTop * -1);
+      if (!this.iOSNativeScrolling) {
+        this.ySlider.css({
+          top: this.ySliderY
+        });
+      }
+      return this;
+    };
+
+
+    /**
+      @method scrollX
+      @private
+      @example
+          $(".nano").nanoScroller({ scrollX: 'top' });
+     */
+
+    NanoScroll.prototype.scrollX = function() {
+      if (!this.isActiveX) {
+        return;
+      }
+      this.xSliderX = Math.max(0, this.xSliderX);
+      this.xSliderX = Math.min(this.maxSliderLeft, this.xSliderX);
+      this.$content.scrollLeft((this.xPaneWidth - this.contentWidth + BROWSER_SCROLLBAR_HEIGHT) * this.xSliderX / this.maxSliderLeft * -1);
+      if (!this.iOSNativeScrolling) {
+        this.xSlider.css({
+          left: this.xSliderX
+        });
+      }
+      return this;
+    };
+
+
+    /**
+      Scroll at the bottom with an offset value
+      @method scrollBottom
+      @param offsetY {Number}
+      @chainable
+      @example
+          $(".nano").nanoScroller({ scrollBottom: value });
+     */
+
+    NanoScroll.prototype.scrollBottom = function(offsetY) {
+      if (!this.isActiveY) {
+        return;
+      }
+      this.reset();
+      this.$content.scrollTop(this.contentHeight - this.$content.height() - offsetY).trigger(MOUSEWHEEL);
+      return this;
+    };
+
+
+    /**
+      Scroll at the right with an offset value
+      @method scrollRight
+      @param offsetX {Number}
+      @chainable
+      @example
+          $(".nano").nanoScroller({ scrollRight: value });
+     */
+
+    NanoScroll.prototype.scrollRight = function(offsetX) {
+      if (!this.isActiveX) {
+        return;
+      }
+      this.reset();
+      this.$content.scrollLeft(this.contentWidth - this.$content.width() - offsetX).trigger(MOUSEWHEEL);
+      return this;
+    };
+
+
+    /**
+      Scroll at the top with an offset value
+      @method scrollTop
+      @param offsetY {Number}
+      @chainable
+      @example
+          $(".nano").nanoScroller({ scrollTop: value });
+     */
+
+    NanoScroll.prototype.scrollTop = function(offsetY) {
+      if (!this.isActiveY) {
+        return;
+      }
+      this.reset();
+      this.$content.scrollTop(+offsetY).trigger(MOUSEWHEEL);
+      return this;
+    };
+
+
+    /**
+      Scroll at the left with an offset value
+      @method scrollLeft
+      @param offsetX {Number}
+      @chainable
+      @example
+          $(".nano").nanoScroller({ scrollLeft: value });
+     */
+
+    NanoScroll.prototype.scrollLeft = function(offsetX) {
+      if (!this.isActiveX) {
+        return;
+      }
+      this.reset();
+      this.$content.scrollLeft(+offsetX).trigger(MOUSEWHEEL);
+      return this;
+    };
+
+
+    /**
+      Scroll to an element
+      @method scrollTo
+      @param node {Node} A node to scroll to.
+      @chainable
+      @example
+          $(".nano").nanoScroller({ scrollTo: $('#a_node') });
+     */
+
+    NanoScroll.prototype.scrollTo = function(node) {
+      var n;
+      if (!(this.isActiveY || this.isActiveX)) {
+        return;
+      }
+      this.reset();
+      n = $(node).get(0);
+      if (this.isActiveY) {
+        this.scrollTop(n.offsetTop);
+      }
+      if (this.isActiveX) {
+        this.scrollLeft(n.offsetLeft);
+      }
+      return this;
+    };
+
+
+    /**
+      To stop the operation.
+      This option will tell the plugin to disable all event bindings and hide the gadget scrollbar from the UI.
+      @method stop
+      @chainable
+      @example
+          $(".nano").nanoScroller({ stop: true });
+     */
+
+    NanoScroll.prototype.stop = function() {
+      this.stopped = true;
+      this.removeEvents();
+      this.yPane.hide();
+      this.xPane.hide();
+      return this;
+    };
+
+
+    /**
+      To flash the scrollbar gadget for an amount of time defined in plugin settings (defaults to 1,5s).
+      Useful if you want to show the user (e.g. on pageload) that there is more content waiting for him.
+      @method flash
+      @chainable
+      @example
+          $(".nano").nanoScroller({ flash: true });
+     */
+
+    NanoScroll.prototype.flash = function() {
+      if (!(this.isActiveY || this.isActiveX)) {
+        return;
+      }
+      this.reset();
+      if (this.isActiveY) {
+        this.yPane.addClass('flashed');
+      }
+      if (this.isActiveX) {
+        this.xPane.addClass('flashed');
+      }
+      setTimeout((function(_this) {
+        return function() {
+          if (_this.isActiveY) {
+            _this.yPane.removeClass('flashed');
+          }
+          if (_this.isActiveX) {
+            _this.xPane.removeClass('flashed');
+          }
+        };
+      })(this), this.options.flashDelay);
+      return this;
+    };
+
+    return NanoScroll;
+
+  })();
+  $.fn.nanoScroller = function(settings) {
+    return this.each(function() {
+      var options, scrollbar;
+      if (!(scrollbar = this.nanoscroller)) {
+        options = $.extend({}, defaults, settings);
+        this.nanoscroller = scrollbar = new NanoScroll(this, options);
+      }
+      if (settings && typeof settings === "object") {
+        $.extend(scrollbar.options, settings);
+        if (settings.scrollBottom) {
+          return scrollbar.scrollBottom(settings.scrollBottom);
+        }
+        if (settings.scrollTop) {
+          return scrollbar.scrollTop(settings.scrollTop);
+        }
+        if (settings.scrollRight) {
+          return scrollbar.scrollRight(settings.scrollRight);
+        }
+        if (settings.scrollLeft) {
+          return scrollbar.scrollLeft(settings.scrollLeft);
+        }
+        if (settings.scrollTo) {
+          return scrollbar.scrollTo(settings.scrollTo);
+        }
+        if (settings.scroll === 'bottom') {
+          return scrollbar.scrollBottom(0);
+        }
+        if (settings.scroll === 'top') {
+          return scrollbar.scrollTop(0);
+        }
+        if (settings.scroll === 'right') {
+          return scrollbar.scrollRight(0);
+        }
+        if (settings.scroll === 'left') {
+          return scrollbar.scrollLeft(0);
+        }
+        if (settings.scroll && settings.scroll instanceof $) {
+          return scrollbar.scrollTo(settings.scroll);
+        }
+        if (settings.stop) {
+          return scrollbar.stop();
+        }
+        if (settings.flash) {
+          return scrollbar.flash();
+        }
+      }
+      return scrollbar.reset();
+    });
+  };
+});
 
 define('UI.selectize',['jquery'], function($) {
 
@@ -15703,205 +15694,199 @@ var MicroPlugin = (function() {
 
 });
 
-(function() {
-  define('UI.selection',['UI.selectize'], function() {
-    var initSelection, listenSelectionInserted;
-    initSelection = function($valueDom, selectTpl, validationInstance) {
-      var create, maxItems, mutil, validHandle, validHandleName;
-      if (!$valueDom || !$valueDom.length) {
-        return;
+define('UI.selection',['UI.selectize'], function() {
+  var initSelection, listenSelectionInserted;
+  initSelection = function($valueDom, selectTpl, validationInstance) {
+    var create, maxItems, mutil, validHandle, validHandleName;
+    if (!$valueDom || !$valueDom.length) {
+      return;
+    }
+    if (!$valueDom.hasClass('selectized')) {
+      mutil = false;
+      maxItems = void 0;
+      if ($valueDom.hasClass('dropdown')) {
+        return false;
       }
-      if (!$valueDom.hasClass('selectized')) {
-        mutil = false;
-        maxItems = void 0;
-        if ($valueDom.hasClass('dropdown')) {
-          return false;
-        }
-        if ($valueDom.hasClass('mutil')) {
-          mutil = true;
-          maxItems = null;
-        }
-        if ($valueDom.hasClass('bool')) {
-          $valueDom.selectize({
-            multi: mutil,
-            maxItems: maxItems,
-            persist: true,
-            valueField: 'value',
-            labelField: 'text',
-            searchField: ['text'],
-            create: false,
-            openOnFocus: false,
-            plugins: ['custom_selection'],
-            onInitialize: function() {
-              var value;
-              value = this.$input.attr('value');
-              if (value) {
-                this.setValue(value.split(','), true);
-              }
-              return $valueDom.trigger('selectized', this);
-            },
-            options: [
-              {
-                text: 'True',
-                value: 'true'
-              }, {
-                text: 'False',
-                value: 'false'
-              }
-            ],
-            render: {
-              option: function(item) {
-                return '<div>' + item.text + '</div>';
-              },
-              item: function(item) {
-                return '<div>' + item.text + '</div>';
-              }
+      if ($valueDom.hasClass('mutil')) {
+        mutil = true;
+        maxItems = null;
+      }
+      if ($valueDom.hasClass('bool')) {
+        $valueDom.selectize({
+          multi: mutil,
+          maxItems: maxItems,
+          persist: true,
+          valueField: 'value',
+          labelField: 'text',
+          searchField: ['text'],
+          create: false,
+          openOnFocus: false,
+          plugins: ['custom_selection'],
+          onInitialize: function() {
+            var value;
+            value = this.$input.attr('value');
+            if (value) {
+              this.setValue(value.split(','), true);
             }
-          });
-        }
-        if ($valueDom.hasClass('option')) {
-          create = false;
-          validHandleName = $valueDom.data('valid-handle');
-          if (validHandleName && selectTpl && selectTpl[validHandleName]) {
-            validHandle = selectTpl[validHandleName];
-            if (validHandle) {
-              create = true;
+            return $valueDom.trigger('selectized', this);
+          },
+          options: [
+            {
+              text: 'True',
+              value: 'true'
+            }, {
+              text: 'False',
+              value: 'false'
+            }
+          ],
+          render: {
+            option: function(item) {
+              return '<div>' + item.text + '</div>';
+            },
+            item: function(item) {
+              return '<div>' + item.text + '</div>';
             }
           }
-          $valueDom.selectize({
-            multi: mutil,
-            maxItems: maxItems,
-            persist: true,
-            create: create,
-            createOnBlur: create,
-            openOnFocus: false,
-            plugins: ['custom_selection'],
-            onInitialize: function() {
-              var dataTarget, value;
-              value = this.$input.attr('value');
-              if (value) {
-                this.setValue(value.split(','), true);
-              }
-              dataTarget = this.$input.attr('data-target');
-              if (validationInstance && dataTarget) {
-                this.$control_input.attr('data-selection-id', MC.guid());
-                this.$control_input.attr('data-target', dataTarget);
-                this.$control_input.selectionValid(validationInstance);
-              }
-              return $valueDom.trigger('selectized', this);
-            },
-            validHandle: validHandle,
-            render: {
-              option: function(item) {
-                var tplName;
-                tplName = this.$input.data('option-tpl');
-                if (tplName && selectTpl && selectTpl[tplName]) {
-                  return selectTpl[tplName].call(this.$input, item);
-                } else {
-                  return '<div>' + item.text + '</div>';
-                }
-              },
-              item: function(item) {
-                var tplName;
-                tplName = this.$input.data('item-tpl');
-                if (tplName && selectTpl && selectTpl[tplName]) {
-                  return selectTpl[tplName].call(this.$input, item);
-                } else {
-                  return '<div>' + item.text + '</div>';
-                }
-              },
-              button: function() {
-                var tplName;
-                tplName = this.$input.data('button-tpl');
-                if (tplName && selectTpl && selectTpl[tplName]) {
-                  return selectTpl[tplName].call(this.$input);
-                } else {
-                  return null;
-                }
-              }
-            },
-            createFilter: function(value) {
-              if (validHandle) {
-                return validHandle.call(this.$input, value);
-              }
-              return false;
-            }
-          });
-        }
-        if (validationInstance && $valueDom.is('input, textarea')) {
-          $valueDom.attr('data-selection-id', MC.guid());
-          return $valueDom.selectionValid(validationInstance);
-        }
-      }
-    };
-    listenSelectionInserted = function($parent, selectTpl, validationInstance) {
-      return $parent.off('DOMNodeInserted').on('DOMNodeInserted', function(event) {
-        var $target;
-        $target = $(event.target);
-        $target.find('select.selection, input').each(function() {
-          return initSelection($(this), selectTpl, validationInstance);
         });
-        if (($target[0].nodeName === 'SELECT' || $target[0].nodeName === 'INPUT') && $target.hasClass('.selection')) {
-          return initSelection($target, selectTpl, validationInstance);
+      }
+      if ($valueDom.hasClass('option')) {
+        create = false;
+        validHandleName = $valueDom.data('valid-handle');
+        if (validHandleName && selectTpl && selectTpl[validHandleName]) {
+          validHandle = selectTpl[validHandleName];
+          if (validHandle) {
+            create = true;
+          }
         }
+        $valueDom.selectize({
+          multi: mutil,
+          maxItems: maxItems,
+          persist: true,
+          create: create,
+          createOnBlur: create,
+          openOnFocus: false,
+          plugins: ['custom_selection'],
+          onInitialize: function() {
+            var dataTarget, value;
+            value = this.$input.attr('value');
+            if (value) {
+              this.setValue(value.split(','), true);
+            }
+            dataTarget = this.$input.attr('data-target');
+            if (validationInstance && dataTarget) {
+              this.$control_input.attr('data-selection-id', MC.guid());
+              this.$control_input.attr('data-target', dataTarget);
+              this.$control_input.selectionValid(validationInstance);
+            }
+            return $valueDom.trigger('selectized', this);
+          },
+          validHandle: validHandle,
+          render: {
+            option: function(item) {
+              var tplName;
+              tplName = this.$input.data('option-tpl');
+              if (tplName && selectTpl && selectTpl[tplName]) {
+                return selectTpl[tplName].call(this.$input, item);
+              } else {
+                return '<div>' + item.text + '</div>';
+              }
+            },
+            item: function(item) {
+              var tplName;
+              tplName = this.$input.data('item-tpl');
+              if (tplName && selectTpl && selectTpl[tplName]) {
+                return selectTpl[tplName].call(this.$input, item);
+              } else {
+                return '<div>' + item.text + '</div>';
+              }
+            },
+            button: function() {
+              var tplName;
+              tplName = this.$input.data('button-tpl');
+              if (tplName && selectTpl && selectTpl[tplName]) {
+                return selectTpl[tplName].call(this.$input);
+              } else {
+                return null;
+              }
+            }
+          },
+          createFilter: function(value) {
+            if (validHandle) {
+              return validHandle.call(this.$input, value);
+            }
+            return false;
+          }
+        });
+      }
+      if (validationInstance && $valueDom.is('input, textarea')) {
+        $valueDom.attr('data-selection-id', MC.guid());
+        return $valueDom.selectionValid(validationInstance);
+      }
+    }
+  };
+  listenSelectionInserted = function($parent, selectTpl, validationInstance) {
+    return $parent.off('DOMNodeInserted').on('DOMNodeInserted', function(event) {
+      var $target;
+      $target = $(event.target);
+      $target.find('select.selection, input').each(function() {
+        return initSelection($(this), selectTpl, validationInstance);
       });
-    };
-    listenSelectionInserted.unbind = function($parent, selectTpl) {
-      return $parent.unbindSelection();
-    };
-    return listenSelectionInserted;
-  });
-
-}).call(this);
-
-(function() {
-  define('UI.bubblepopup',['jquery'], function() {
-    var bubblePopup;
-    $(document).on('click', function(event) {
-      if (!$(event.target).hasClass('bubble-popuped')) {
-        $('#bubble-box').remove();
-        return $('.bubble-popuped').removeClass('bubble-popuped');
+      if (($target[0].nodeName === 'SELECT' || $target[0].nodeName === 'INPUT') && $target.hasClass('.selection')) {
+        return initSelection($target, selectTpl, validationInstance);
       }
     });
-    bubblePopup = function(target, content, handleMap) {
-      var $content, bubble_box, coordinate, height, target_height, target_offset, target_width, width;
-      target = $(target);
-      bubble_box = $('#bubble-box');
-      coordinate = {};
-      if ($.trim(content) !== '') {
-        if (!bubble_box[0]) {
-          $(document.body).append('<div id="bubble-box" class="bubble-popup"><div class="arrow"></div><div id="bubble-content"></div></div>');
-          bubble_box = $('#bubble-box');
-        }
-        $content = $('#bubble-content').html(content);
-        $content.find('.cancel').on('click', function() {
-          $('#bubble-box').remove();
-          return $('.bubble-popuped').removeClass('bubble-popuped');
-        });
-        _.each(handleMap, function(handle, selector) {
-          return $content.find(selector).on('click', handle);
-        });
-        target_offset = target.offset();
-        target_width = target.innerWidth();
-        target_height = target.innerHeight();
-        width = bubble_box.width();
-        height = bubble_box.height();
-        if (target_offset.top + target_height + height - document.documentElement.scrollTop > window.innerHeight) {
-          coordinate.top = target_offset.top - height - 15;
-          bubble_box.addClass('bubble-top');
-        } else {
-          coordinate.top = target_offset.top + target_height + 15;
-          bubble_box.addClass('bubble-bottom');
-        }
-        coordinate.left = target_offset.left - ((width - target_width) / 2);
-        bubble_box.css(coordinate).show();
-        return target.addClass('bubble-popuped');
-      }
-    };
-    return bubblePopup;
-  });
+  };
+  listenSelectionInserted.unbind = function($parent, selectTpl) {
+    return $parent.unbindSelection();
+  };
+  return listenSelectionInserted;
+});
 
-}).call(this);
+define('UI.bubblepopup',['jquery'], function() {
+  var bubblePopup;
+  $(document).on('click', function(event) {
+    if (!$(event.target).hasClass('bubble-popuped')) {
+      $('#bubble-box').remove();
+      return $('.bubble-popuped').removeClass('bubble-popuped');
+    }
+  });
+  bubblePopup = function(target, content, handleMap) {
+    var $content, bubble_box, coordinate, height, target_height, target_offset, target_width, width;
+    target = $(target);
+    bubble_box = $('#bubble-box');
+    coordinate = {};
+    if ($.trim(content) !== '') {
+      if (!bubble_box[0]) {
+        $(document.body).append('<div id="bubble-box" class="bubble-popup"><div class="arrow"></div><div id="bubble-content"></div></div>');
+        bubble_box = $('#bubble-box');
+      }
+      $content = $('#bubble-content').html(content);
+      $content.find('.cancel').on('click', function() {
+        $('#bubble-box').remove();
+        return $('.bubble-popuped').removeClass('bubble-popuped');
+      });
+      _.each(handleMap, function(handle, selector) {
+        return $content.find(selector).on('click', handle);
+      });
+      target_offset = target.offset();
+      target_width = target.innerWidth();
+      target_height = target.innerHeight();
+      width = bubble_box.width();
+      height = bubble_box.height();
+      if (target_offset.top + target_height + height - document.documentElement.scrollTop > window.innerHeight) {
+        coordinate.top = target_offset.top - height - 15;
+        bubble_box.addClass('bubble-top');
+      } else {
+        coordinate.top = target_offset.top + target_height + 15;
+        bubble_box.addClass('bubble-bottom');
+      }
+      coordinate.left = target_offset.left - ((width - target_width) / 2);
+      bubble_box.css(coordinate).show();
+      return target.addClass('bubble-popuped');
+    }
+  };
+  return bubblePopup;
+});
 
 /*
 Copyright 2012 Igor Vaynberg

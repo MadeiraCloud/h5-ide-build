@@ -94,304 +94,297 @@ TEMPLATE.nocredential=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalplus', 'i18n!/nls/lang.js', 'backbone'], function(constant, ApiRequest, Credential, Modal, lang) {
-    var credentialFormView, credentialLoadingTips;
-    credentialLoadingTips = {
-      add: lang.IDE.SETTINGS_CRED_ADDING,
-      update: lang.IDE.SETTINGS_CRED_UPDATING,
-      remove: lang.IDE.SETTINGS_CRED_REMOVING
-    };
-    credentialFormView = Backbone.View.extend({
-      events: {
-        'keyup input': 'updateSubmitBtn',
-        'paste input': 'deferUpdateSubmitBtn'
-      },
-      initialize: function(options) {
-        return _.extend(this, options);
-      },
-      render: function() {
-        var confirmText, data, title;
-        if (this.credential) {
-          data = this.credential.toJSON();
-          title = lang.IDE.UPDATE_CLOUD_CREDENTIAL;
-          confirmText = lang.IDE.HEAD_BTN_UPDATE;
-        } else {
-          data = {};
-          title = lang.IDE.ADD_CLOUD_CREDENTIAL;
-          confirmText = lang.IDE.CFM_BTN_ADD;
-        }
-        this.$el.html(MC.template.credentialForm(data));
-        this.modal = new Modal({
-          title: title,
-          template: this.el,
-          width: 480,
-          confirm: {
-            text: confirmText,
-            disabled: true
-          }
-        });
-        this.modal.on('confirm', function() {
-          if (this.credential) {
-            this.updateCredential();
-          } else {
-            this.addCredential();
-          }
-          return this.trigger('confirm');
-        }, this);
-        return this;
-      },
-      loading: function() {
-        var action;
-        this.$('#CredSetupWrap').hide();
-        action = this.credential ? 'Update' : 'Add';
-        this.$el.append(MC.template.credentialLoading({
-          tip: credentialLoadingTips[action]
-        }));
-        return this.modal.toggleFooter(false);
-      },
-      loadingEnd: function() {
-        this.$('.loading-zone').remove();
-        this.$('#CredSetupWrap').show();
-        return this.modal.toggleFooter(true);
-      },
-      remove: function() {
-        var _ref, _ref1;
-        if ((_ref = this.updateConfirmView) != null) {
-          _ref.close();
-        }
-        if ((_ref1 = this.modal) != null) {
-          _ref1.close();
-        }
-        return Backbone.View.prototype.remove.apply(this, arguments);
-      },
-      deferUpdateSubmitBtn: function(e) {
-        return _.defer(_.bind(this.updateSubmitBtn, this, e));
-      },
-      updateSubmitBtn: function() {
-        var d;
-        d = this.getData();
-        if (d.alias.length && d.awsAccount.length && d.awsAccessKey.length && d.awsSecretKey.length) {
-          this.modal.toggleConfirm(false);
-        } else {
-          this.modal.toggleConfirm(true);
-        }
-      },
-      addCredential: function() {
-        var credential, credentialData, data, provider, that;
-        that = this;
-        data = this.getData();
-        provider = Credential.PROVIDER.AWSGLOBAL;
-        credential = this.model.credentials().findWhere({
-          provider: provider
-        });
-        if (credential) {
-          credential.set(data, {
-            silent: true
-          });
-        } else {
-          credentialData = {
-            alias: data.alias,
-            account_id: data.awsAccount,
-            access_key: data.awsAccessKey,
-            secret_key: data.awsSecretKey
-          };
-          credentialData.provider = data.provider || Credential.PROVIDER.AWSGLOBAL;
-          credential = new Credential(credentialData, {
-            project: this.model
-          });
-        }
-        this.loading();
-        return credential.save().then(function() {
-          return that.remove();
-        }, function(error) {
-          var msg;
-          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
-            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
-          } else {
-            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
-          }
-          that.loadingEnd();
-          return that.showModalError(msg);
-        });
-      },
-      showUpdateConfirmModel: function() {
-        var _ref;
-        if ((_ref = this.updateConfirmView) != null) {
-          _ref.close();
-        }
-        this.updateConfirmView = new Modal({
-          title: lang.IDE.UPDATE_CLOUD_CREDENTIAL,
-          template: MC.template.updateCredentialConfirm,
-          confirm: {
-            text: lang.IDE.SETTINGS_LABEL_UPDATE_CONFIRM,
-            color: 'red'
-          }
-        });
-        return this.updateConfirmView.on('confirm', function() {
-          this.updateCredential(true);
-          return this.updateConfirmView.close();
-        }, this);
-      },
-      updateCredential: function(forceUpdate) {
-        var newData, that;
-        if (forceUpdate == null) {
-          forceUpdate = false;
-        }
-        that = this;
-        if (!this.credential) {
-          return false;
-        }
-        this.loading();
-        newData = this.getData();
-        return this.credential.save(newData, forceUpdate, true).then(function() {
-          var _ref;
-          if ((_ref = that.updateConfirmView) != null) {
-            _ref.close();
-          }
-          return that.remove();
-        }, function(error) {
-          var msg;
-          that.loadingEnd();
-          if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
-            msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
-          } else if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
-            that.hideModalError();
-            that.showUpdateConfirmModel();
-          } else {
-            msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
-          }
-          return msg && that.showModalError(msg);
-        });
-      },
-      showModalError: function(message) {
-        return this.$el.find('.cred-setup-msg').show().html(message);
-      },
-      hideModalError: function() {
-        return this.$el.find('.cred-setup-msg').hide();
-      },
-      getData: function() {
-        var that;
-        that = this;
-        return {
-          alias: that.$('#CredSetupAlias').val(),
-          awsAccount: that.$('#CredSetupAccount').val(),
-          awsAccessKey: that.$('#CredSetupAccessKey').val(),
-          awsSecretKey: that.$('#CredSetupSecretKey').val()
-        };
+define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalplus', 'i18n!/nls/lang.js', 'backbone'], function(constant, ApiRequest, Credential, Modal, lang) {
+  var credentialFormView, credentialLoadingTips;
+  credentialLoadingTips = {
+    add: lang.IDE.SETTINGS_CRED_ADDING,
+    update: lang.IDE.SETTINGS_CRED_UPDATING,
+    remove: lang.IDE.SETTINGS_CRED_REMOVING
+  };
+  credentialFormView = Backbone.View.extend({
+    events: {
+      'keyup input': 'updateSubmitBtn',
+      'paste input': 'deferUpdateSubmitBtn'
+    },
+    initialize: function(options) {
+      return _.extend(this, options);
+    },
+    render: function() {
+      var confirmText, data, title;
+      if (this.credential) {
+        data = this.credential.toJSON();
+        title = lang.IDE.UPDATE_CLOUD_CREDENTIAL;
+        confirmText = lang.IDE.HEAD_BTN_UPDATE;
+      } else {
+        data = {};
+        title = lang.IDE.ADD_CLOUD_CREDENTIAL;
+        confirmText = lang.IDE.CFM_BTN_ADD;
       }
-    });
-    return credentialFormView;
+      this.$el.html(MC.template.credentialForm(data));
+      this.modal = new Modal({
+        title: title,
+        template: this.el,
+        width: 480,
+        confirm: {
+          text: confirmText,
+          disabled: true
+        }
+      });
+      this.modal.on('confirm', function() {
+        if (this.credential) {
+          this.updateCredential();
+        } else {
+          this.addCredential();
+        }
+        return this.trigger('confirm');
+      }, this);
+      return this;
+    },
+    loading: function() {
+      var action;
+      this.$('#CredSetupWrap').hide();
+      action = this.credential ? 'Update' : 'Add';
+      this.$el.append(MC.template.credentialLoading({
+        tip: credentialLoadingTips[action]
+      }));
+      return this.modal.toggleFooter(false);
+    },
+    loadingEnd: function() {
+      this.$('.loading-zone').remove();
+      this.$('#CredSetupWrap').show();
+      return this.modal.toggleFooter(true);
+    },
+    remove: function() {
+      var _ref, _ref1;
+      if ((_ref = this.updateConfirmView) != null) {
+        _ref.close();
+      }
+      if ((_ref1 = this.modal) != null) {
+        _ref1.close();
+      }
+      return Backbone.View.prototype.remove.apply(this, arguments);
+    },
+    deferUpdateSubmitBtn: function(e) {
+      return _.defer(_.bind(this.updateSubmitBtn, this, e));
+    },
+    updateSubmitBtn: function() {
+      var d;
+      d = this.getData();
+      if (d.alias.length && d.awsAccount.length && d.awsAccessKey.length && d.awsSecretKey.length) {
+        this.modal.toggleConfirm(false);
+      } else {
+        this.modal.toggleConfirm(true);
+      }
+    },
+    addCredential: function() {
+      var credential, credentialData, data, provider, that;
+      that = this;
+      data = this.getData();
+      provider = Credential.PROVIDER.AWSGLOBAL;
+      credential = this.model.credentials().findWhere({
+        provider: provider
+      });
+      if (credential) {
+        credential.set(data, {
+          silent: true
+        });
+      } else {
+        credentialData = {
+          alias: data.alias,
+          account_id: data.awsAccount,
+          access_key: data.awsAccessKey,
+          secret_key: data.awsSecretKey
+        };
+        credentialData.provider = data.provider || Credential.PROVIDER.AWSGLOBAL;
+        credential = new Credential(credentialData, {
+          project: this.model
+        });
+      }
+      this.loading();
+      return credential.save().then(function() {
+        return that.remove();
+      }, function(error) {
+        var msg;
+        if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
+          msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
+        } else {
+          msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
+        }
+        that.loadingEnd();
+        return that.showModalError(msg);
+      });
+    },
+    showUpdateConfirmModel: function() {
+      var _ref;
+      if ((_ref = this.updateConfirmView) != null) {
+        _ref.close();
+      }
+      this.updateConfirmView = new Modal({
+        title: lang.IDE.UPDATE_CLOUD_CREDENTIAL,
+        template: MC.template.updateCredentialConfirm,
+        confirm: {
+          text: lang.IDE.SETTINGS_LABEL_UPDATE_CONFIRM,
+          color: 'red'
+        }
+      });
+      return this.updateConfirmView.on('confirm', function() {
+        this.updateCredential(true);
+        return this.updateConfirmView.close();
+      }, this);
+    },
+    updateCredential: function(forceUpdate) {
+      var newData, that;
+      if (forceUpdate == null) {
+        forceUpdate = false;
+      }
+      that = this;
+      if (!this.credential) {
+        return false;
+      }
+      this.loading();
+      newData = this.getData();
+      return this.credential.save(newData, forceUpdate, true).then(function() {
+        var _ref;
+        if ((_ref = that.updateConfirmView) != null) {
+          _ref.close();
+        }
+        return that.remove();
+      }, function(error) {
+        var msg;
+        that.loadingEnd();
+        if (error.error === ApiRequest.Errors.UserInvalidCredentia) {
+          msg = lang.IDE.SETTINGS_ERR_CRED_VALIDATE;
+        } else if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
+          that.hideModalError();
+          that.showUpdateConfirmModel();
+        } else {
+          msg = lang.IDE.SETTINGS_ERR_CRED_UPDATE;
+        }
+        return msg && that.showModalError(msg);
+      });
+    },
+    showModalError: function(message) {
+      return this.$el.find('.cred-setup-msg').show().html(message);
+    },
+    hideModalError: function() {
+      return this.$el.find('.cred-setup-msg').hide();
+    },
+    getData: function() {
+      var that;
+      that = this;
+      return {
+        alias: that.$('#CredSetupAlias').val(),
+        awsAccount: that.$('#CredSetupAccount').val(),
+        awsAccessKey: that.$('#CredSetupAccessKey').val(),
+        awsSecretKey: that.$('#CredSetupSecretKey').val()
+      };
+    }
   });
-
-}).call(this);
+  return credentialFormView;
+});
 
 
 /* Example:
 Refer to kpView.coffee
  */
-
-(function() {
-  define('combo_dropdown',['component/common/comboDropdownTpl', 'backbone', 'jquery', "credentialFormView"], function(template, Backbone, $, CredentialFormView) {
-    return Backbone.View.extend({
-      tagName: 'section',
-      events: {
-        'click .combo-dd-manage': '__manage',
-        'click .show-credential': '__showCredential',
-        'OPTION_SHOW .selectbox': '__optionShow',
-        'OPTION_CHANGE .selectbox': '__optionChange',
-        'keyup .combo-dd-filter': '__filter',
-        'keydown .combo-dd-filter': '__stopPropagation',
-        'click .combo-dd-filter': '__returnFalse',
-        'click .create-one': '__quickCreate'
-      },
-      __quickCreate: function() {
-        return this.trigger('quick_create');
-      },
-      __stopPropagation: function(event) {
-        return event.stopPropagation();
-      },
-      __returnFalse: function() {
-        return false;
-      },
-      __showCredential: function() {
-        return new CredentialFormView({
-          model: Design.instance().project()
-        }).render();
-      },
-      __filter: function(event) {
-        return this.trigger('filter', event.currentTarget.value);
-      },
-      __manage: function(event) {
-        this.trigger('manage');
-        return event.stopPropagation();
-      },
-      __optionShow: function() {
-        this.$('.combo-dd-filter').val('');
-        if (!this.$('.combo-dd-content').html().trim()) {
-          this.render('loading');
-        }
-        return this.trigger('open');
-      },
-      __optionChange: function(event, name, data) {
-        return this.trigger('change', name, data);
-      },
-      initialize: function(options) {
-        this.options = options;
-        this.$el.html(template.frame(this.options));
-        return this;
-      },
-      render: function(tpl) {
-        this.$('.combo-dd-content').html(template[tpl] && template[tpl](this.options) || tpl);
-        return this;
-      },
-      setSelection: function(dom) {
-        this.$('.selection').html(dom);
-        return this;
-      },
-      getSelection: function(dom) {
-        return $.trim(this.$('.selection').text());
-      },
-      setContent: function(dom) {
-        this.$('.combo-dd-content').html(template.listframe);
-        this.$('.combo-dd-list').html(dom);
-        return this;
-      },
-      toggleControls: function(showOrHide, whichOne) {
-        if (whichOne) {
-          this.$(".combo-dd-" + whichOne).toggle(showOrHide);
-        } else {
-          this.$('.combo-dd-filter, .combo-dd-manage').toggle(showOrHide);
-        }
-        return this;
-      },
-      delegate: function(events, context) {
-        var eventName, key, match, method, selector, _i, _len;
-        if (!events || !_.isObject(events)) {
-          return this;
-        }
-        for (method = _i = 0, _len = events.length; _i < _len; method = ++_i) {
-          key = events[method];
-          if (!method) {
-            continue;
-          }
-          match = key.match(/^(\S+)\s*(.*)$/);
-          eventName = match[1];
-          selector = match[2];
-          method = _.bind(method, context || this);
-          eventName += '.delegateEvents' + this.cid;
-          if (selector === '') {
-            this.$el.on(eventName, method);
-          } else {
-            this.$el.on(eventName, selector, method);
-          }
-        }
+define('combo_dropdown',['component/common/comboDropdownTpl', 'backbone', 'jquery', "credentialFormView"], function(template, Backbone, $, CredentialFormView) {
+  return Backbone.View.extend({
+    tagName: 'section',
+    events: {
+      'click .combo-dd-manage': '__manage',
+      'click .show-credential': '__showCredential',
+      'OPTION_SHOW .selectbox': '__optionShow',
+      'OPTION_CHANGE .selectbox': '__optionChange',
+      'keyup .combo-dd-filter': '__filter',
+      'keydown .combo-dd-filter': '__stopPropagation',
+      'click .combo-dd-filter': '__returnFalse',
+      'click .create-one': '__quickCreate'
+    },
+    __quickCreate: function() {
+      return this.trigger('quick_create');
+    },
+    __stopPropagation: function(event) {
+      return event.stopPropagation();
+    },
+    __returnFalse: function() {
+      return false;
+    },
+    __showCredential: function() {
+      return new CredentialFormView({
+        model: Design.instance().project()
+      }).render();
+    },
+    __filter: function(event) {
+      return this.trigger('filter', event.currentTarget.value);
+    },
+    __manage: function(event) {
+      this.trigger('manage');
+      return event.stopPropagation();
+    },
+    __optionShow: function() {
+      this.$('.combo-dd-filter').val('');
+      if (!this.$('.combo-dd-content').html().trim()) {
+        this.render('loading');
+      }
+      return this.trigger('open');
+    },
+    __optionChange: function(event, name, data) {
+      return this.trigger('change', name, data);
+    },
+    initialize: function(options) {
+      this.options = options;
+      this.$el.html(template.frame(this.options));
+      return this;
+    },
+    render: function(tpl) {
+      this.$('.combo-dd-content').html(template[tpl] && template[tpl](this.options) || tpl);
+      return this;
+    },
+    setSelection: function(dom) {
+      this.$('.selection').html(dom);
+      return this;
+    },
+    getSelection: function(dom) {
+      return $.trim(this.$('.selection').text());
+    },
+    setContent: function(dom) {
+      this.$('.combo-dd-content').html(template.listframe);
+      this.$('.combo-dd-list').html(dom);
+      return this;
+    },
+    toggleControls: function(showOrHide, whichOne) {
+      if (whichOne) {
+        this.$(".combo-dd-" + whichOne).toggle(showOrHide);
+      } else {
+        this.$('.combo-dd-filter, .combo-dd-manage').toggle(showOrHide);
+      }
+      return this;
+    },
+    delegate: function(events, context) {
+      var eventName, key, match, method, selector, _i, _len;
+      if (!events || !_.isObject(events)) {
         return this;
       }
-    });
+      for (method = _i = 0, _len = events.length; _i < _len; method = ++_i) {
+        key = events[method];
+        if (!method) {
+          continue;
+        }
+        match = key.match(/^(\S+)\s*(.*)$/);
+        eventName = match[1];
+        selector = match[2];
+        method = _.bind(method, context || this);
+        eventName += '.delegateEvents' + this.cid;
+        if (selector === '') {
+          this.$el.on(eventName, method);
+        } else {
+          this.$el.on(eventName, selector, method);
+        }
+      }
+      return this;
+    }
   });
-
-}).call(this);
+});
 
 define('component/common/toolbarModalTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -677,349 +670,345 @@ return TEMPLATE; });
 /* Example:
 Refer to kpView.coffee
  */
-
-(function() {
-  define('toolbar_modal',['component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', "credentialFormView", 'UI.notification'], function(template, Backbone, $, modalplus, CredentialFormView) {
-    return Backbone.View.extend({
-      tagName: 'section',
-      __slide: null,
-      __modalplus: null,
-      events: {
-        'change #t-m-select-all': '__checkAll',
-        'change .one-cb': '__checkOne',
-        'click .t-m-btn': '__handleSlide',
-        'click tr .show-detail': '__handleDetail',
-        'click .cancel': 'cancel',
-        'click .do-action': '__doAction',
-        'click [data-btn=refresh]': '__refresh',
-        'click .table-head .sortable': '__sort',
-        'click .show-credential': '__showCredential'
-      },
-      initialize: function(options) {
-        this.options = options || {};
-        if (!this.options.title) {
-          this.options.title = 'Default Title';
-        }
-        if (options.context) {
-          this.options.context.modal = this;
-          this.options.context.M$ = _.bind(this.$, this);
-        }
-        return null;
-      },
-      __showCredential: function() {
-        return new CredentialFormView({
-          model: Design.instance().project()
-        }).render();
-      },
-      __sort: function() {
-        return this.$('.tr-detail').remove();
-      },
-      __doAction: function(event) {
-        var action;
-        this.error();
-        action = $(event.currentTarget).data('action');
-        return this.trigger('action', action, this.getChecked());
-      },
-      getChecked: function() {
-        var allChecked, checkedInfo;
-        allChecked = this.$('.one-cb:checked');
-        checkedInfo = [];
-        allChecked.each(function() {
-          return checkedInfo.push({
-            id: this.id,
-            value: this.value,
-            data: $(this).data()
-          });
+define('toolbar_modal',['component/common/toolbarModalTpl', 'backbone', 'jquery', 'UI.modalplus', "credentialFormView", 'UI.notification'], function(template, Backbone, $, modalplus, CredentialFormView) {
+  return Backbone.View.extend({
+    tagName: 'section',
+    __slide: null,
+    __modalplus: null,
+    events: {
+      'change #t-m-select-all': '__checkAll',
+      'change .one-cb': '__checkOne',
+      'click .t-m-btn': '__handleSlide',
+      'click tr .show-detail': '__handleDetail',
+      'click .cancel': 'cancel',
+      'click .do-action': '__doAction',
+      'click [data-btn=refresh]': '__refresh',
+      'click .table-head .sortable': '__sort',
+      'click .show-credential': '__showCredential'
+    },
+    initialize: function(options) {
+      this.options = options || {};
+      if (!this.options.title) {
+        this.options.title = 'Default Title';
+      }
+      if (options.context) {
+        this.options.context.modal = this;
+        this.options.context.M$ = _.bind(this.$, this);
+      }
+      return null;
+    },
+    __showCredential: function() {
+      return new CredentialFormView({
+        model: Design.instance().project()
+      }).render();
+    },
+    __sort: function() {
+      return this.$('.tr-detail').remove();
+    },
+    __doAction: function(event) {
+      var action;
+      this.error();
+      action = $(event.currentTarget).data('action');
+      return this.trigger('action', action, this.getChecked());
+    },
+    getChecked: function() {
+      var allChecked, checkedInfo;
+      allChecked = this.$('.one-cb:checked');
+      checkedInfo = [];
+      allChecked.each(function() {
+        return checkedInfo.push({
+          id: this.id,
+          value: this.value,
+          data: $(this).data()
         });
-        return checkedInfo;
-      },
-      __slideReject: function() {
-        return _.isFunction(this.options.slideable) && !this.options.slideable();
-      },
-      __handleSlide: function(event) {
-        var $activeButton, $button, activeButton, button;
-        $button = $(event.currentTarget);
-        button = $button.data('btn');
-        if (button === 'refresh') {
-          return this;
-        }
-        if (this.__slideReject()) {
-          return this;
-        }
-        $activeButton = this.$('.toolbar .active');
-        activeButton = $activeButton && $activeButton.data('btn');
-        if ($activeButton.length) {
-          if ($activeButton.get(0) === $button.get(0)) {
-            if (this.options.longtermActive) {
-              return;
-            }
-            $button.removeClass('active');
-            this.toggleSlide(false);
-            this.__slide = null;
-            this.trigger('slideup', button, this.getChecked());
-          } else {
-            $activeButton.removeClass('active');
-            $button.addClass('active');
-            this.toggleSlide(true);
-            this.__slide = button;
-            this.trigger('slidedown', button, this.getChecked());
+      });
+      return checkedInfo;
+    },
+    __slideReject: function() {
+      return _.isFunction(this.options.slideable) && !this.options.slideable();
+    },
+    __handleSlide: function(event) {
+      var $activeButton, $button, activeButton, button;
+      $button = $(event.currentTarget);
+      button = $button.data('btn');
+      if (button === 'refresh') {
+        return this;
+      }
+      if (this.__slideReject()) {
+        return this;
+      }
+      $activeButton = this.$('.toolbar .active');
+      activeButton = $activeButton && $activeButton.data('btn');
+      if ($activeButton.length) {
+        if ($activeButton.get(0) === $button.get(0)) {
+          if (this.options.longtermActive) {
+            return;
           }
+          $button.removeClass('active');
+          this.toggleSlide(false);
+          this.__slide = null;
+          this.trigger('slideup', button, this.getChecked());
         } else {
+          $activeButton.removeClass('active');
           $button.addClass('active');
           this.toggleSlide(true);
           this.__slide = button;
           this.trigger('slidedown', button, this.getChecked());
         }
-        return null;
-      },
-      __handleDetail: function(event) {
-        var $target, $tr;
-        $target = $(event.currentTarget);
-        $tr = $target.closest('tr');
-        if ($tr.hasClass('detailed')) {
-          $tr.removeClass('detailed');
-          return $tr.next('.tr-detail').remove();
-        } else {
-          $tr.addClass('detailed').after(template.tr_detail({
-            columnCount: this.options.columns.length + 1
-          }));
-          return this.trigger('detail', event, $tr.data(), $tr);
-        }
-      },
-      __refresh: function() {
-        if (this.__slideReject()) {
-          return this;
-        }
-        this.renderLoading();
-        return this.trigger('refresh');
-      },
-      __close: function(event) {
-        this.trigger('close');
-        this.remove();
-        return false;
-      },
-      __checkOne: function(event) {
-        var $target, cbAll, cbAmount, checkedAmount;
-        $target = $(event.currentTarget);
-        this.__processDelBtn();
-        cbAll = this.$('#t-m-select-all');
-        cbAmount = this.$('.one-cb').length;
-        checkedAmount = this.$('.one-cb:checked').length;
-        $target.closest('tr').toggleClass('selected');
-        if (checkedAmount === cbAmount) {
-          cbAll.prop('checked', true);
-        } else if (cbAmount - checkedAmount === 1) {
-          cbAll.prop('checked', false);
-        }
-        return this.__triggerChecked(event);
-      },
-      __checkAll: function(event) {
-        this.__processDelBtn();
-        if (event.currentTarget.checked) {
-          this.$('input[type="checkbox"]:not(:disabled)').prop('checked', true).parents('tr.item').addClass('selected');
-        } else {
-          this.$('input[type="checkbox"]').prop('checked', false);
-          this.$('tr.item').removeClass('selected');
-        }
-        return this.__triggerChecked(event);
-      },
-      __triggerChecked: function(param) {
-        return this.trigger('checked', param, this.getChecked());
-      },
-      __processDelBtn: function(enable) {
-        var that;
-        if (arguments.length === 1) {
-          return this.$('[data-btn=delete]').prop('disabled', !enable);
-        } else {
-          that = this;
-          return _.defer(function() {
-            if (that.$('.one-cb:checked').length) {
-              return that.$('[data-btn=delete]').prop('disabled', false);
-            } else {
-              return that.$('[data-btn=delete]').prop('disabled', true);
-            }
-          });
-        }
-      },
-      __stopPropagation: function(event) {
-        var exception;
-        exception = '.sortable, #download-kp, .selection, .item';
-        if (!$(event.target).is(exception)) {
-          return event.stopPropagation();
-        }
-      },
-      __open: function() {
-        var options;
-        options = {
-          template: this.el,
-          title: this.options.title,
-          disableFooter: true,
-          disableClose: true,
-          width: '855px',
-          height: '473px',
-          compact: true,
-          hasScroll: true,
-          mode: "panel"
-        };
-        this.__modalplus = new modalplus(options);
-        this.__modalplus.on('closed', this.__close, this);
-        this.__modalplus.on("resize", this.__resizeModal.bind(this));
-        return this;
-      },
-      __getHeightOfContent: function() {
-        var $modal, footerHeight, headerHeight, windowHeight;
-        windowHeight = $(window).height();
-        $modal = this.__modalplus.tpl;
-        headerHeight = $modal.find(".modal-header").outerHeight();
-        footerHeight = $modal.find('.modal-footer').height() || 0;
-        return windowHeight - headerHeight - footerHeight - 75;
-      },
-      __resizeModal: function() {
-        var scroll, that;
-        that = this;
-        this.__modalplus.tpl.find(".scrollbar-veritical-thumb").removeAttr("style");
-        scroll = this.__modalplus.tpl.find(".table-head-fix.will-be-covered .scroll-wrap");
-        scroll = scroll.size() > 0 ? scroll : this.__modalplus.find('.will-be-covered>div');
-        if (scroll.size()) {
-          return scroll.height(that.__getHeightOfContent());
-        }
-      },
-      __renderToolbarSlide: function() {
-        var $contentWrap, data, that, _ref;
-        that = this;
-        $contentWrap = this.$('.content-wrap');
-        if (!$contentWrap.find('.toolbar').size()) {
-          data = this.options;
-          data.hasButton = !!((_ref = data.buttons) != null ? _ref.length : void 0);
-          data.buttons = _.reject(data.buttons, function(btn) {
-            if (btn.type === 'create') {
-              data.btnValueCreate = btn.name;
-              return true;
-            }
-          });
-          data.height = that.__getHeightOfContent();
-          this.$('.content-wrap').html(template.toolbar_slide(data));
-          return this;
-        }
-      },
-      render: function(refresh) {
-        var tpl;
-        this.$el.html(template.frame(this.options));
-        if (_.isString(refresh)) {
-          tpl = refresh;
-          this.$('.content-wrap').html(template[tpl] && template[tpl](this.options) || tpl);
-        } else {
-          this.renderLoading();
-        }
-        if (!refresh) {
-          this.__open();
-        }
-        return this;
-      },
-      renderLoading: function() {
-        this.$('.content-wrap').html(template.loading);
-        return this;
-      },
-      renderListLoading: function() {
-        this.$('.list-content').html(template.loading);
-        return this;
-      },
-      setContent: function(dom, noTable) {
-        this.tempDom = dom;
-        this.__renderToolbarSlide();
-        if (noTable) {
-          this.$('.list-content').html(dom);
-        } else {
-          this.$('.list-content').html(template.table(this.options));
-          this.$('.t-m-content').html(dom);
-        }
-        this.__triggerChecked(null);
-        this.trigger("rendered", this);
-        return this;
-      },
-      setSlide: function(dom) {
-        this.$('.slidebox .content').html(dom);
-        this.error();
-        return this;
-      },
-      setDetail: function($tr, dom) {
-        var $trDetail;
-        $trDetail = $tr.next('.tr-detail');
-        $trDetail.find('td').html(dom);
-        return $trDetail;
-      },
-      triggerSlide: function(which) {
-        return this.$("[data-btn=" + which + "]").click();
-      },
-      cancel: function() {
-        var $activeButton;
-        if (this.__slideReject()) {
-          return this;
-        }
-        $activeButton = this.$('.toolbar .active');
-        this.trigger('slideup', $activeButton.data('btn'), this.getChecked());
-        if (!this.options.longtermActive) {
-          $activeButton.removeClass('active');
-        }
-        this.toggleSlide(false);
-        return this;
-      },
-      unCheckSelectAll: function() {
-        this.$('#t-m-select-all').get(0).checked = false;
-        return this.__processDelBtn(false);
-      },
-      delegate: function(events, context) {
-        var eventName, key, match, method, selector;
-        if (!events || !_.isObject(events)) {
-          return this;
-        }
-        context = context || this;
-        for (key in events) {
-          method = events[key];
-          if (!_.isFunction(method)) {
-            method = context[events[key]];
-          }
-          if (!method) {
-            continue;
-          }
-          match = key.match(/^(\S+)\s*(.*)$/);
-          eventName = match[1];
-          selector = match[2];
-          method = _.bind(method, context);
-          eventName += '.delegateEvents' + this.cid;
-          if (selector === '') {
-            this.$el.on(eventName, method);
-          } else {
-            this.$el.on(eventName, selector, method);
-          }
-        }
-        return this;
-      },
-      error: function(msg) {
-        var $error;
-        $error = this.$('.error');
-        if (msg) {
-          return $error.text(msg).show();
-        } else {
-          return $error.hide();
-        }
-      },
-      getSlide: function() {
-        return this.__slide;
-      },
-      toggleSlide: function(display) {
-        var $slidebox;
-        $slidebox = this.$('.slidebox');
-        if (display) {
-          this.setSlide(template.loading);
-        }
-        $slidebox.toggleClass('show', display || false);
+      } else {
+        $button.addClass('active');
+        this.toggleSlide(true);
+        this.__slide = button;
+        this.trigger('slidedown', button, this.getChecked());
+      }
+      return null;
+    },
+    __handleDetail: function(event) {
+      var $target, $tr;
+      $target = $(event.currentTarget);
+      $tr = $target.closest('tr');
+      if ($tr.hasClass('detailed')) {
+        $tr.removeClass('detailed');
+        return $tr.next('.tr-detail').remove();
+      } else {
+        $tr.addClass('detailed').after(template.tr_detail({
+          columnCount: this.options.columns.length + 1
+        }));
+        return this.trigger('detail', event, $tr.data(), $tr);
+      }
+    },
+    __refresh: function() {
+      if (this.__slideReject()) {
         return this;
       }
-    });
+      this.renderLoading();
+      return this.trigger('refresh');
+    },
+    __close: function(event) {
+      this.trigger('close');
+      this.remove();
+      return false;
+    },
+    __checkOne: function(event) {
+      var $target, cbAll, cbAmount, checkedAmount;
+      $target = $(event.currentTarget);
+      this.__processDelBtn();
+      cbAll = this.$('#t-m-select-all');
+      cbAmount = this.$('.one-cb').length;
+      checkedAmount = this.$('.one-cb:checked').length;
+      $target.closest('tr').toggleClass('selected');
+      if (checkedAmount === cbAmount) {
+        cbAll.prop('checked', true);
+      } else if (cbAmount - checkedAmount === 1) {
+        cbAll.prop('checked', false);
+      }
+      return this.__triggerChecked(event);
+    },
+    __checkAll: function(event) {
+      this.__processDelBtn();
+      if (event.currentTarget.checked) {
+        this.$('input[type="checkbox"]:not(:disabled)').prop('checked', true).parents('tr.item').addClass('selected');
+      } else {
+        this.$('input[type="checkbox"]').prop('checked', false);
+        this.$('tr.item').removeClass('selected');
+      }
+      return this.__triggerChecked(event);
+    },
+    __triggerChecked: function(param) {
+      return this.trigger('checked', param, this.getChecked());
+    },
+    __processDelBtn: function(enable) {
+      var that;
+      if (arguments.length === 1) {
+        return this.$('[data-btn=delete]').prop('disabled', !enable);
+      } else {
+        that = this;
+        return _.defer(function() {
+          if (that.$('.one-cb:checked').length) {
+            return that.$('[data-btn=delete]').prop('disabled', false);
+          } else {
+            return that.$('[data-btn=delete]').prop('disabled', true);
+          }
+        });
+      }
+    },
+    __stopPropagation: function(event) {
+      var exception;
+      exception = '.sortable, #download-kp, .selection, .item';
+      if (!$(event.target).is(exception)) {
+        return event.stopPropagation();
+      }
+    },
+    __open: function() {
+      var options;
+      options = {
+        template: this.el,
+        title: this.options.title,
+        disableFooter: true,
+        disableClose: true,
+        width: '855px',
+        height: '473px',
+        compact: true,
+        hasScroll: true,
+        mode: "panel"
+      };
+      this.__modalplus = new modalplus(options);
+      this.__modalplus.on('closed', this.__close, this);
+      this.__modalplus.on("resize", this.__resizeModal.bind(this));
+      return this;
+    },
+    __getHeightOfContent: function() {
+      var $modal, footerHeight, headerHeight, windowHeight;
+      windowHeight = $(window).height();
+      $modal = this.__modalplus.tpl;
+      headerHeight = $modal.find(".modal-header").outerHeight();
+      footerHeight = $modal.find('.modal-footer').height() || 0;
+      return windowHeight - headerHeight - footerHeight - 75;
+    },
+    __resizeModal: function() {
+      var scroll, that;
+      that = this;
+      this.__modalplus.tpl.find(".scrollbar-veritical-thumb").removeAttr("style");
+      scroll = this.__modalplus.tpl.find(".table-head-fix.will-be-covered .scroll-wrap");
+      scroll = scroll.size() > 0 ? scroll : this.__modalplus.find('.will-be-covered>div');
+      if (scroll.size()) {
+        return scroll.height(that.__getHeightOfContent());
+      }
+    },
+    __renderToolbarSlide: function() {
+      var $contentWrap, data, that, _ref;
+      that = this;
+      $contentWrap = this.$('.content-wrap');
+      if (!$contentWrap.find('.toolbar').size()) {
+        data = this.options;
+        data.hasButton = !!((_ref = data.buttons) != null ? _ref.length : void 0);
+        data.buttons = _.reject(data.buttons, function(btn) {
+          if (btn.type === 'create') {
+            data.btnValueCreate = btn.name;
+            return true;
+          }
+        });
+        data.height = that.__getHeightOfContent();
+        this.$('.content-wrap').html(template.toolbar_slide(data));
+        return this;
+      }
+    },
+    render: function(refresh) {
+      var tpl;
+      this.$el.html(template.frame(this.options));
+      if (_.isString(refresh)) {
+        tpl = refresh;
+        this.$('.content-wrap').html(template[tpl] && template[tpl](this.options) || tpl);
+      } else {
+        this.renderLoading();
+      }
+      if (!refresh) {
+        this.__open();
+      }
+      return this;
+    },
+    renderLoading: function() {
+      this.$('.content-wrap').html(template.loading);
+      return this;
+    },
+    renderListLoading: function() {
+      this.$('.list-content').html(template.loading);
+      return this;
+    },
+    setContent: function(dom, noTable) {
+      this.tempDom = dom;
+      this.__renderToolbarSlide();
+      if (noTable) {
+        this.$('.list-content').html(dom);
+      } else {
+        this.$('.list-content').html(template.table(this.options));
+        this.$('.t-m-content').html(dom);
+      }
+      this.__triggerChecked(null);
+      this.trigger("rendered", this);
+      return this;
+    },
+    setSlide: function(dom) {
+      this.$('.slidebox .content').html(dom);
+      this.error();
+      return this;
+    },
+    setDetail: function($tr, dom) {
+      var $trDetail;
+      $trDetail = $tr.next('.tr-detail');
+      $trDetail.find('td').html(dom);
+      return $trDetail;
+    },
+    triggerSlide: function(which) {
+      return this.$("[data-btn=" + which + "]").click();
+    },
+    cancel: function() {
+      var $activeButton;
+      if (this.__slideReject()) {
+        return this;
+      }
+      $activeButton = this.$('.toolbar .active');
+      this.trigger('slideup', $activeButton.data('btn'), this.getChecked());
+      if (!this.options.longtermActive) {
+        $activeButton.removeClass('active');
+      }
+      this.toggleSlide(false);
+      return this;
+    },
+    unCheckSelectAll: function() {
+      this.$('#t-m-select-all').get(0).checked = false;
+      return this.__processDelBtn(false);
+    },
+    delegate: function(events, context) {
+      var eventName, key, match, method, selector;
+      if (!events || !_.isObject(events)) {
+        return this;
+      }
+      context = context || this;
+      for (key in events) {
+        method = events[key];
+        if (!_.isFunction(method)) {
+          method = context[events[key]];
+        }
+        if (!method) {
+          continue;
+        }
+        match = key.match(/^(\S+)\s*(.*)$/);
+        eventName = match[1];
+        selector = match[2];
+        method = _.bind(method, context);
+        eventName += '.delegateEvents' + this.cid;
+        if (selector === '') {
+          this.$el.on(eventName, method);
+        } else {
+          this.$el.on(eventName, selector, method);
+        }
+      }
+      return this;
+    },
+    error: function(msg) {
+      var $error;
+      $error = this.$('.error');
+      if (msg) {
+        return $error.text(msg).show();
+      } else {
+        return $error.hide();
+      }
+    },
+    getSlide: function() {
+      return this.__slide;
+    },
+    toggleSlide: function(display) {
+      var $slidebox;
+      $slidebox = this.$('.slidebox');
+      if (display) {
+        this.setSlide(template.loading);
+      }
+      $slidebox.toggleClass('show', display || false);
+      return this;
+    }
   });
-
-}).call(this);
+});
 
 
 define("component/Common", function(){});

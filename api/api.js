@@ -1,194 +1,185 @@
-(function() {
-  define('ApiRequestDefs',[], function() {
+define('ApiRequestDefs',[], function() {
+
+  /*
+   * === McError ===
+   * McError is Object to represent an Error. Every promise handler that wants to throw error should throw an McError
+   * If McError contains aws result error, it will have 3 additional members:
+    awsError     : Number
+    awsErrorCode : String
+    awsResult    : String or Object
+   */
+  var ApiRequestDefs;
+  window.McError = function(errorNum, errorMsg, params) {
+    return {
+      error: errorNum,
+      msg: errorMsg || "",
+      result: params || void 0,
+      reason: errorMsg
+
+      /* env:dev                                                     env:dev:end */
+    };
+  };
+
+  /*
+  == Following name of the paramter is autofilled. Thus the paramter is not required.
+  == It also means that you cannot use a param name if the param is for sth. else.
+     For example, the param's name cannot be username, if it's used to represent Instance's Id.
+  
+  ** Auto Fill List :
+  username
+  usercode
+  session_id
+   */
+  ApiRequestDefs = {
+    Defs: {},
 
     /*
-     * === McError ===
-     * McError is Object to represent an Error. Every promise handler that wants to throw error should throw an McError
-     * If McError contains aws result error, it will have 3 additional members:
-      awsError     : Number
-      awsErrorCode : String
-      awsResult    : String or Object
+    Parsers are promise's success hanlder.
+    Thus, if the parser cannot parse a result, it should throw an error !!!
+    An example would be like : `throw McError( 300, "Cannot parse the result" )`
      */
-    var ApiRequestDefs;
-    window.McError = function(errorNum, errorMsg, params) {
-      return {
-        error: errorNum,
-        msg: errorMsg || "",
-        result: params || void 0,
-        reason: errorMsg
+    Parsers: {}
+  };
+  ApiRequestDefs.AutoFill = function(paramter_name) {
+    switch (paramter_name) {
+      case "username":
+        return App.user.get("usercode");
+      case "session_id":
+        return App.user.get("session");
+      case "region_name":
+        console.warn("Autofilling region_name:'us-east-1' for ApiRequest, this is for some api who requires region_name while it doesn't care about its value. %o", MC.prettyStackTrace(1));
+        return "us-east-1";
+    }
+    return null;
+  };
+  return ApiRequestDefs;
+});
 
-        /* env:dev                                                     env:dev:end */
-      };
-    };
+define('api/ApiRequestErrors',[], function() {
 
-    /*
-    == Following name of the paramter is autofilled. Thus the paramter is not required.
-    == It also means that you cannot use a param name if the param is for sth. else.
-       For example, the param's name cannot be username, if it's used to represent Instance's Id.
-    
-    ** Auto Fill List :
-    username
-    usercode
-    session_id
-     */
-    ApiRequestDefs = {
-      Defs: {},
+  /*
+   * === Error Code Defination ===
+   * 1. Any network errors will be negative. For example, when server returns 404, the `error` in the promise will be -404.
+   */
+  var Errors;
+  Errors = {
+    InvalidRpcReturn: -1,
+    XhrFailure: -2,
+    InvalidMethodCall: -3,
+    InvalidAwsReturn: -4,
+    MissingDataInServer: -5,
+    OperationFailure: -6,
+    Network404: -404,
+    Network500: -500,
+    ChangeCredConfirm: 296,
+    InvalidCred: 326,
+    GlobalErrorInit: 100,
+    GlobalErrorApi: 101,
+    GlobalErrorSession: 102,
+    GlobalErrorDb: 103,
+    GlobalErrorRegion: 104,
+    GlobalErrorId: 105,
+    GlobalErrorUsername: 106,
+    GlobalErrorIntercom: 107,
+    GlobalErrorUnknown: 109,
+    UserInvalidUser: 110,
+    UserInvalidUsername: 111,
+    UserErrorUser: 112,
+    UserBlockedUser: 113,
+    UserRemovedUser: 114,
+    UserNoUser: 115,
+    UserInvalidEmail: 116,
+    SessionInvalidSessio: 120,
+    SessionInvalidId: 121,
+    SessionFailedCreate: 122,
+    SessionFailedUpdate: 123,
+    SessionFailedDelete: 124,
+    SessionFailedGet: 125,
+    SessionErrorSession: 126,
+    SessionNotConnected: 127,
+    RequestErrorRequest: 130,
+    RequestInvalidId: 131,
+    RequestNoPending: 132,
+    RequestErrorEmail: 133,
+    RequestOnProcess: 134,
+    IdConstrain: 134,
+    AppInvalidFormat: 210,
+    AppNotStop: 211,
+    AppBeingOperated: 212,
+    AppNotRename: 213,
+    AppInvalidId: 214,
+    AppInvalidState: 214,
+    AppIsRunning: 215,
+    AppIsStopped: 216,
+    AppNotStoppable: 217,
+    FavoriteId: 217,
+    AppAlreadyImported: 218,
+    AppConflict: 219,
+    GuestErrorGuest: 230,
+    GuestInvalidId: 231,
+    GuestInvalidState: 232,
+    GuestGuestEnd: 233,
+    GuestGuestFailed: 234,
+    GuestGuestThank: 245,
+    GuestGuestBusy: 246,
+    OpsbackendId: 246,
+    OpsbackendRemoveStat: 240,
+    OpsbackendErrorStatu: 241,
+    StackInvalidFormat: 250,
+    StackNotStop: 251,
+    StackRepeatedStack: 252,
+    StackInvalidId: 253,
+    StackIsRemoved: 254,
+    StackIsDisabled: 255,
+    StackVerifyFailed: 256,
+    StackConflict: 258,
+    StateErrorModule: 260,
+    UserInvalidCredentia: 293,
+    RequestNotSend: 300,
+    UserInvalidKey: 320,
+    UserInvalidUpdateTim: 321,
+    UserExpiredActivatio: 322,
+    UserInvalidOperation: 323,
+    UserExistedUser: 324,
+    UserExistedApp: 325,
+    TokenCreateFailed: 330,
+    TokenNoneToken: 331,
+    TokenMismatchedToken: 332,
+    AwsErrorApi: 400,
+    AwsInvalidAws: 401,
+    AwsExceededResource: 402,
+    AwsErrorAws: 403,
+    AwsErrorParams: 404,
+    AwsErrorExternal: 405,
+    AwsInvalidKeypair: 406,
+    AwsErrorEmail: 407,
+    AwsNoAmi: 408,
+    AwsErrorUnknown: 409
+  };
+  return Errors;
+});
 
-      /*
-      Parsers are promise's success hanlder.
-      Thus, if the parser cannot parse a result, it should throw an error !!!
-      An example would be like : `throw McError( 300, "Cannot parse the result" )`
-       */
-      Parsers: {}
-    };
-    ApiRequestDefs.AutoFill = function(paramter_name) {
-      switch (paramter_name) {
-        case "username":
-          return App.user.get("usercode");
-        case "session_id":
-          return App.user.get("session");
-        case "region_name":
-          console.warn("Autofilling region_name:'us-east-1' for ApiRequest, this is for some api who requires region_name while it doesn't care about its value. %o", MC.prettyStackTrace(1));
-          return "us-east-1";
-      }
-      return null;
-    };
-    return ApiRequestDefs;
-  });
+define('api/ApiRequestHandlers',["./ApiRequestErrors"], function(Errors) {
 
-}).call(this);
-
-(function() {
-  define('api/ApiRequestErrors',[], function() {
-
-    /*
-     * === Error Code Defination ===
-     * 1. Any network errors will be negative. For example, when server returns 404, the `error` in the promise will be -404.
-     */
-    var Errors;
-    Errors = {
-      InvalidRpcReturn: -1,
-      XhrFailure: -2,
-      InvalidMethodCall: -3,
-      InvalidAwsReturn: -4,
-      MissingDataInServer: -5,
-      OperationFailure: -6,
-      Network404: -404,
-      Network500: -500,
-      ChangeCredConfirm: 296,
-      InvalidCred: 326,
-      GlobalErrorInit: 100,
-      GlobalErrorApi: 101,
-      GlobalErrorSession: 102,
-      GlobalErrorDb: 103,
-      GlobalErrorRegion: 104,
-      GlobalErrorId: 105,
-      GlobalErrorUsername: 106,
-      GlobalErrorIntercom: 107,
-      GlobalErrorUnknown: 109,
-      UserInvalidUser: 110,
-      UserInvalidUsername: 111,
-      UserErrorUser: 112,
-      UserBlockedUser: 113,
-      UserRemovedUser: 114,
-      UserNoUser: 115,
-      UserInvalidEmail: 116,
-      SessionInvalidSessio: 120,
-      SessionInvalidId: 121,
-      SessionFailedCreate: 122,
-      SessionFailedUpdate: 123,
-      SessionFailedDelete: 124,
-      SessionFailedGet: 125,
-      SessionErrorSession: 126,
-      SessionNotConnected: 127,
-      RequestErrorRequest: 130,
-      RequestInvalidId: 131,
-      RequestNoPending: 132,
-      RequestErrorEmail: 133,
-      RequestOnProcess: 134,
-      IdConstrain: 134,
-      AppInvalidFormat: 210,
-      AppNotStop: 211,
-      AppBeingOperated: 212,
-      AppNotRename: 213,
-      AppInvalidId: 214,
-      AppInvalidState: 214,
-      AppIsRunning: 215,
-      AppIsStopped: 216,
-      AppNotStoppable: 217,
-      FavoriteId: 217,
-      AppAlreadyImported: 218,
-      AppConflict: 219,
-      GuestErrorGuest: 230,
-      GuestInvalidId: 231,
-      GuestInvalidState: 232,
-      GuestGuestEnd: 233,
-      GuestGuestFailed: 234,
-      GuestGuestThank: 245,
-      GuestGuestBusy: 246,
-      OpsbackendId: 246,
-      OpsbackendRemoveStat: 240,
-      OpsbackendErrorStatu: 241,
-      StackInvalidFormat: 250,
-      StackNotStop: 251,
-      StackRepeatedStack: 252,
-      StackInvalidId: 253,
-      StackIsRemoved: 254,
-      StackIsDisabled: 255,
-      StackVerifyFailed: 256,
-      StackConflict: 258,
-      StateErrorModule: 260,
-      UserInvalidCredentia: 293,
-      RequestNotSend: 300,
-      UserInvalidKey: 320,
-      UserInvalidUpdateTim: 321,
-      UserExpiredActivatio: 322,
-      UserInvalidOperation: 323,
-      UserExistedUser: 324,
-      UserExistedApp: 325,
-      TokenCreateFailed: 330,
-      TokenNoneToken: 331,
-      TokenMismatchedToken: 332,
-      AwsErrorApi: 400,
-      AwsInvalidAws: 401,
-      AwsExceededResource: 402,
-      AwsErrorAws: 403,
-      AwsErrorParams: 404,
-      AwsErrorExternal: 405,
-      AwsInvalidKeypair: 406,
-      AwsErrorEmail: 407,
-      AwsNoAmi: 408,
-      AwsErrorUnknown: 409
-    };
-    return Errors;
-  });
-
-}).call(this);
-
-(function() {
-  define('api/ApiRequestHandlers',["./ApiRequestErrors"], function(Errors) {
-
-    /*
-     * === Global Error Handlers ===
-     * These handlers are used to handle specific errors for any ajax call
-     */
-    var AwsHandlers, Handlers;
-    AwsHandlers = {};
-    Handlers = {
-      AwsHandlers: AwsHandlers
-    };
-    Handlers[Errors.GlobalErrorSession] = function(error) {
-      App.acquireSession();
-      throw error;
-    };
-    AwsHandlers[401] = function(error) {
-      App.askForAwsCredential();
-      throw error;
-    };
-    return Handlers;
-  });
-
-}).call(this);
+  /*
+   * === Global Error Handlers ===
+   * These handlers are used to handle specific errors for any ajax call
+   */
+  var AwsHandlers, Handlers;
+  AwsHandlers = {};
+  Handlers = {
+    AwsHandlers: AwsHandlers
+  };
+  Handlers[Errors.GlobalErrorSession] = function(error) {
+    App.acquireSession();
+    throw error;
+  };
+  AwsHandlers[401] = function(error) {
+    App.askForAwsCredential();
+    throw error;
+  };
+  return Handlers;
+});
 
 define('api/define/forge',['ApiRequestDefs'], function( ApiRequestDefs ){
 	var Apis = {
@@ -772,392 +763,377 @@ define('api/define/openstack/os',['ApiRequestDefs'], function( ApiRequestDefs ){
 
 define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define/aws/aws', './define/aws/cloudwatch', './define/aws/ec2', './define/aws/elb', './define/aws/iam', './define/aws/opsworks', './define/aws/rds', './define/aws/sdb', './define/aws/sns', './define/aws/vpc', './define/openstack/cinder', './define/openstack/neutron', './define/openstack/nova', './define/openstack/glance', './define/openstack/os' ],function(){})
 ;
-(function() {
-  define('ApiRequest',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHandlers", "api/ApiBundle", "MC"], function(ApiDefination, ApiErrors, ApiHandlers) {
+define('ApiRequest',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHandlers", "api/ApiBundle", "MC"], function(ApiDefination, ApiErrors, ApiHandlers) {
 
-    /*
-     * === ApiRequest ===
-     *
-     * Paramters :
-     *   apiName       : (String) The name of the api, see ApiRequestDefs
-     *   apiParameters : An object to be send with the api request.
-     *         If an api has its parameters map, the `apiParameters` will be converted from OBJECT to ARRAY
-     *         If an api has no param map, the apiParameters is considered as the first and only one paramter
-     *         to be send with the api.
-     */
-    var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow, tryParseAws;
-    OneParaArray = [""];
-    EmptyArray = [];
-    EmptyObject = {};
-    RequestData = {
-      jsonrpc: '2.0',
-      id: "1",
-      method: '',
-      params: {}
-    };
-    logAndThrow = function(obj) {
+  /*
+   * === ApiRequest ===
+   *
+   * Paramters :
+   *   apiName       : (String) The name of the api, see ApiRequestDefs
+   *   apiParameters : An object to be send with the api request.
+   *         If an api has its parameters map, the `apiParameters` will be converted from OBJECT to ARRAY
+   *         If an api has no param map, the apiParameters is considered as the first and only one paramter
+   *         to be send with the api.
+   */
+  var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow, tryParseAws;
+  OneParaArray = [""];
+  EmptyArray = [];
+  EmptyObject = {};
+  RequestData = {
+    jsonrpc: '2.0',
+    id: "1",
+    method: '',
+    params: {}
+  };
+  logAndThrow = function(obj) {
 
-      /* env:dev                                   env:dev:end */
-      throw obj;
-    };
-    tryParseAws = function(xml, findError) {
-      var e, json;
-      try {
-        xml = $.parseXML(xml);
-        json = $.xml2json(xml);
-      } catch (_error) {
-        e = _error;
-        if (findError) {
-          return {
-            error: ApiErrors.InvalidAwsReturn,
-            result: awsResult
-          };
-        } else {
-          return null;
-        }
-      }
-      if (!findError) {
-        return json;
-      }
-      xml = $(xml).find("Error");
-      return {
-        error: xml.find("Code").text() || "",
-        result: xml.find("Message").text() || ""
-      };
-    };
-    AjaxSuccessHandler = function(res) {
-      var awsresult, error, globalHandler, _ref;
-      if (!res || !res.result || res.result.length !== 2) {
-        logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
-      }
-      if (res.result[0] !== 0 && !((ApiErrors.AwsErrorAws <= (_ref = res.result[0]) && _ref <= ApiErrors.AwsErrorExternal))) {
-        globalHandler = ApiHandlers[res.result[0]];
-        if (globalHandler) {
-          return globalHandler(res);
-        }
-        logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
-      }
-      awsresult = res.result[1];
-      if (awsresult && _.isArray(awsresult) && (typeof awsresult[1] === "string") && awsresult[1][0] === "<") {
-        if (awsresult[0] === 200) {
-          res = tryParseAws(awsresult[1]);
-          if (!res) {
-            logAndThrow(McError(ApiErrors.InvalidAwsReturn, "Aws returns invalid xml data.", res.result));
-          } else {
-            return res;
-          }
-        } else {
-          error = McError(res.result[0], "Service Error", res.result[1]);
-          error.awsError = awsresult[0];
-          awsresult = tryParseAws(awsresult[1], true);
-          error.awsErrorCode = "" + awsresult.error;
-          error.awsResult = awsresult.result;
-          globalHandler = ApiHandlers.AwsHandlers[error.awsError];
-          if (globalHandler) {
-            return globalHandler(error);
-          }
-          logAndThrow(error);
-        }
-      }
-      return res.result[1];
-    };
-    AjaxErrorHandler = function(jqXHR, textStatus, error) {
-      if (!error && jqXHR.status !== 200) {
-        logAndThrow(McError(-jqXHR.status, "Network Error"));
-      }
-      logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
-    };
-    Abort = function() {
-      this.ajax.abort();
-    };
-
-    /*
-     ApiRequest Defination
-     */
-    ApiRequest = function(apiName, apiParameters) {
-      var ApiDef, ajax, i, p, request, _i, _len, _ref;
-      ApiDef = ApiDefination.Defs[apiName];
-      apiParameters = apiParameters || EmptyObject;
-      if (!ApiDef) {
-        console.error("Cannot find defination of the api:", apiName);
-        return;
-      }
-      if (ApiDef.type !== "aws" && ApiDef.type !== "forge") {
-        console.error("Cannot send non-aws request(" + apiName + ") by using `ApiRequest`");
-        return;
-      }
-      RequestData.method = ApiDef.method || "";
-      if (ApiDef.params) {
-        RequestData.params = p = [];
-        _ref = ApiDef.params;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          i = _ref[_i];
-          if (apiParameters.hasOwnProperty(i)) {
-            p.push(apiParameters[i]);
-          } else {
-            p.push(ApiDefination.AutoFill(i));
-          }
-        }
-      } else if (apiParameters) {
-        OneParaArray[0] = apiParameters;
-        RequestData.params = OneParaArray;
+    /* env:dev                                   env:dev:end */
+    throw obj;
+  };
+  tryParseAws = function(xml, findError) {
+    var e, json;
+    try {
+      xml = $.parseXML(xml);
+      json = $.xml2json(xml);
+    } catch (_error) {
+      e = _error;
+      if (findError) {
+        return {
+          error: ApiErrors.InvalidAwsReturn,
+          result: awsResult
+        };
       } else {
-        RequestData.params = EmptyArray;
+        return null;
       }
-      ajax = $.ajax({
-        url: MC.API_HOST + ApiDef.url,
-        dataType: "json",
-        type: "POST",
-        jsonp: false,
-        data: JSON.stringify(RequestData)
-      });
-      request = Q(ajax).then(AjaxSuccessHandler, AjaxErrorHandler);
-      if (ApiDefination.Parsers[apiName]) {
-        request = request.then(ApiDefination.Parsers[apiName]);
-      }
-      request.abort = Abort;
-      request.ajax = ajax;
-      return request;
-    };
-    ApiRequest.Errors = ApiErrors;
-    return ApiRequest;
-  });
-
-}).call(this);
-
-(function() {
-  define('ApiRequestRDefs',[], function() {
+    }
+    if (!findError) {
+      return json;
+    }
+    xml = $(xml).find("Error");
     return {
-      "payment_purchase": {
-        url: "/payment/purchase_page/",
-        params: ["projectId"]
-      },
-      "payment_self": {
-        url: "/payment/self_page/",
-        params: ["projectId"]
-      },
-      "payment_statement": {
-        url: "/payment/statement_list/",
-        params: ["projectId"]
-      },
-      "payment_usage": {
-        url: "/payment/usage/",
-        params: ["projectId", "startDate", "endDate"]
+      error: xml.find("Code").text() || "",
+      result: xml.find("Message").text() || ""
+    };
+  };
+  AjaxSuccessHandler = function(res) {
+    var awsresult, error, globalHandler, _ref;
+    if (!res || !res.result || res.result.length !== 2) {
+      logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
+    }
+    if (res.result[0] !== 0 && !((ApiErrors.AwsErrorAws <= (_ref = res.result[0]) && _ref <= ApiErrors.AwsErrorExternal))) {
+      globalHandler = ApiHandlers[res.result[0]];
+      if (globalHandler) {
+        return globalHandler(res);
       }
-    };
-  });
-
-}).call(this);
-
-(function() {
-  define('ApiRequestR',["ApiRequestRDefs", "api/ApiRequestErrors", "MC"], function(ApiDefination, ApiErrors) {
-
-    /*
-     * === Restful ApiRequest ===
-     *
-     * Paramters :
-     *   apiName       : (String) The name of the api, see ApiRequestDefs
-     *   apiParameters : An object to be send with the api request.
-     *         If an api has its parameters map, the `apiParameters` will be converted from OBJECT to ARRAY
-     *         If an api has no param map, the apiParameters is considered as the first and only one paramter
-     *         to be send with the api.
-     */
-    var Abort, AjaxErrorHandler, ApiRequestRestful, EmptyObject, logAndThrow;
-    EmptyObject = {};
-    logAndThrow = function(obj) {
-
-      /* env:dev                                   env:dev:end */
-      throw obj;
-    };
-    AjaxErrorHandler = function(jqXHR, textStatus, error) {
-      if (!error && jqXHR.status !== 200) {
-        logAndThrow(McError(-jqXHR.status, "Network Error"));
-      }
-      logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
-    };
-    Abort = function() {
-      this.ajax.abort();
-    };
-
-    /*
-     Restful ApiRequest Defination
-     */
-    ApiRequestRestful = function(apiName, apiParameters) {
-      var ApiDef, ajax, i, p, request, url, _i, _len, _ref;
-      ApiDef = ApiDefination[apiName];
-      apiParameters = apiParameters || EmptyObject;
-      if (!ApiDef) {
-        console.error("Cannot find defination of the api:", apiName);
-        return;
-      }
-      url = ApiDef.url + App.user.get("usercode") + "/" + App.user.get("session");
-      if (ApiDef.params) {
-        p = [];
-        _ref = ApiDef.params;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          i = _ref[_i];
-          if (apiParameters.hasOwnProperty(i)) {
-            p.push(apiParameters[i]);
-          }
-        }
-        if (p.length) {
-          url += "/" + p.join("/");
-        }
-      }
-      ajax = $.ajax({
-        url: MC.API_HOST + url,
-        dataType: "json",
-        type: ApiDef.method || "GET",
-        jsonp: false,
-        cache: false
-      });
-      request = Q(ajax).fail(AjaxErrorHandler);
-      request.abort = Abort;
-      request.ajax = ajax;
-      return request;
-    };
-    ApiRequestRestful.Errors = ApiErrors;
-    return ApiRequestRestful;
-  });
-
-}).call(this);
-
-(function() {
-  define('api/ApiRequestOsHandlers',["./ApiRequestHandlers"], function(Handlers) {
-
-    /*
-     * === Global Error Handlers ===
-     * These handlers are used to handle specific errors for any ajax call
-     */
-    var OsHandlers;
-    Handlers.OsHandlers = OsHandlers = {};
-    return Handlers;
-  });
-
-}).call(this);
-
-(function() {
-  define('ApiRequestOs',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHandlers", "api/ApiBundle", "MC", "api/ApiRequestOsHandlers"], function(ApiDefination, ApiErrors, ApiHandlers) {
-
-    /*
-     * === ApiRequest ===
-     *
-     * Paramters :
-     *   apiName       : (String) The name of the api, see ApiRequestDefs
-     *   apiParameters : An object to be send with the api request.
-     *         If an api has its parameters map, the `apiParameters` will be converted from OBJECT to ARRAY
-     *         If an api has no param map, the apiParameters is considered as the first and only one paramter
-     *         to be send with the api.
-     */
-    var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow;
-    OneParaArray = [""];
-    EmptyArray = [];
-    EmptyObject = {};
-    RequestData = {
-      jsonrpc: '2.0',
-      id: "1",
-      method: '',
-      params: {}
-    };
-    logAndThrow = function(obj) {
-
-      /* env:dev                                   env:dev:end */
-      throw obj;
-    };
-    AjaxSuccessHandler = function(res, apiName, apiParameters) {
-      var awsresult, error, globalHandler, osHandler, osResult, _ref;
-      if (!res || !res.result || res.result.length !== 2) {
-        logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
-      }
-      if (res.result[0] !== 0) {
-        globalHandler = ApiHandlers[res.result[0]];
-        osResult = res.result[1];
-        if (osResult) {
-          osHandler = ApiHandlers.OsHandlers[osResult[0]];
-        }
-        if (globalHandler || osHandler) {
-          return (osHandler || globalHandler)(res, apiName, apiParameters, ApiRequest);
-        }
-        logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
-      }
-      awsresult = res.result[1];
-      if (awsresult && _.isArray(awsresult)) {
-        if ((200 <= (_ref = awsresult[0]) && _ref < 300)) {
-          return awsresult[1];
+      logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
+    }
+    awsresult = res.result[1];
+    if (awsresult && _.isArray(awsresult) && (typeof awsresult[1] === "string") && awsresult[1][0] === "<") {
+      if (awsresult[0] === 200) {
+        res = tryParseAws(awsresult[1]);
+        if (!res) {
+          logAndThrow(McError(ApiErrors.InvalidAwsReturn, "Aws returns invalid xml data.", res.result));
         } else {
-          error = McError(res.result[0], "Service Error", res.result[1]);
-          error.awsError = awsresult[0];
-          error.awsResult = awsresult[1];
-          logAndThrow(error);
+          return res;
         }
-      }
-      return res.result[1];
-    };
-    AjaxErrorHandler = function(jqXHR, textStatus, error) {
-      if (!error && jqXHR.status !== 200) {
-        logAndThrow(McError(-jqXHR.status, "Network Error"));
-      }
-      logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
-    };
-    Abort = function() {
-      this.ajax.abort();
-    };
-
-    /*
-     ApiRequest Defination
-     */
-    ApiRequest = function(apiName, apiParameters) {
-      var ApiDef, ajax, i, p, request, _i, _len, _ref;
-      ApiDef = ApiDefination.Defs[apiName];
-      apiParameters = apiParameters || EmptyObject;
-      if (!ApiDef) {
-        console.error("Cannot find defination of the api:", apiName);
-        return;
-      }
-      if (ApiDef.type !== "openstack") {
-        console.error("Cannot send non-openstack request(" + apiName + ") by using `ApiRequestOs`");
-        return;
-      }
-      RequestData.method = ApiDef.method || "";
-      if (ApiDef.params) {
-        RequestData.params = p = [];
-        _ref = ApiDef.params;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          i = _ref[_i];
-          if (apiParameters.hasOwnProperty(i)) {
-            p.push(apiParameters[i]);
-          } else {
-            p.push(ApiDefination.AutoFill(i));
-          }
-        }
-      } else if (apiParameters) {
-        OneParaArray[0] = apiParameters;
-        RequestData.params = OneParaArray;
       } else {
-        RequestData.params = EmptyArray;
+        error = McError(res.result[0], "Service Error", res.result[1]);
+        error.awsError = awsresult[0];
+        awsresult = tryParseAws(awsresult[1], true);
+        error.awsErrorCode = "" + awsresult.error;
+        error.awsResult = awsresult.result;
+        globalHandler = ApiHandlers.AwsHandlers[error.awsError];
+        if (globalHandler) {
+          return globalHandler(error);
+        }
+        logAndThrow(error);
       }
-      ajax = $.ajax({
-        url: MC.API_HOST + ApiDef.url,
-        dataType: "json",
-        type: "POST",
-        jsonp: false,
-        data: JSON.stringify(RequestData)
-      });
-      request = Q(ajax).then((function(res) {
-        return AjaxSuccessHandler(res, apiName, apiParameters);
-      }), AjaxErrorHandler);
-      if (ApiDefination.Parsers[apiName]) {
-        request = request.then(ApiDefination.Parsers[apiName]);
-      }
-      request.abort = Abort;
-      request.ajax = ajax;
-      return request;
-    };
-    ApiRequest.Errors = ApiErrors;
-    return ApiRequest;
-  });
+    }
+    return res.result[1];
+  };
+  AjaxErrorHandler = function(jqXHR, textStatus, error) {
+    if (!error && jqXHR.status !== 200) {
+      logAndThrow(McError(-jqXHR.status, "Network Error"));
+    }
+    logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
+  };
+  Abort = function() {
+    this.ajax.abort();
+  };
 
-}).call(this);
+  /*
+   ApiRequest Defination
+   */
+  ApiRequest = function(apiName, apiParameters) {
+    var ApiDef, ajax, i, p, request, _i, _len, _ref;
+    ApiDef = ApiDefination.Defs[apiName];
+    apiParameters = apiParameters || EmptyObject;
+    if (!ApiDef) {
+      console.error("Cannot find defination of the api:", apiName);
+      return;
+    }
+    if (ApiDef.type !== "aws" && ApiDef.type !== "forge") {
+      console.error("Cannot send non-aws request(" + apiName + ") by using `ApiRequest`");
+      return;
+    }
+    RequestData.method = ApiDef.method || "";
+    if (ApiDef.params) {
+      RequestData.params = p = [];
+      _ref = ApiDef.params;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        if (apiParameters.hasOwnProperty(i)) {
+          p.push(apiParameters[i]);
+        } else {
+          p.push(ApiDefination.AutoFill(i));
+        }
+      }
+    } else if (apiParameters) {
+      OneParaArray[0] = apiParameters;
+      RequestData.params = OneParaArray;
+    } else {
+      RequestData.params = EmptyArray;
+    }
+    ajax = $.ajax({
+      url: MC.API_HOST + ApiDef.url,
+      dataType: "json",
+      type: "POST",
+      jsonp: false,
+      data: JSON.stringify(RequestData)
+    });
+    request = Q(ajax).then(AjaxSuccessHandler, AjaxErrorHandler);
+    if (ApiDefination.Parsers[apiName]) {
+      request = request.then(ApiDefination.Parsers[apiName]);
+    }
+    request.abort = Abort;
+    request.ajax = ajax;
+    return request;
+  };
+  ApiRequest.Errors = ApiErrors;
+  return ApiRequest;
+});
+
+define('ApiRequestRDefs',[], function() {
+  return {
+    "payment_purchase": {
+      url: "/payment/purchase_page/",
+      params: ["projectId"]
+    },
+    "payment_self": {
+      url: "/payment/self_page/",
+      params: ["projectId"]
+    },
+    "payment_statement": {
+      url: "/payment/statement_list/",
+      params: ["projectId"]
+    },
+    "payment_usage": {
+      url: "/payment/usage/",
+      params: ["projectId", "startDate", "endDate"]
+    }
+  };
+});
+
+define('ApiRequestR',["ApiRequestRDefs", "api/ApiRequestErrors", "MC"], function(ApiDefination, ApiErrors) {
+
+  /*
+   * === Restful ApiRequest ===
+   *
+   * Paramters :
+   *   apiName       : (String) The name of the api, see ApiRequestDefs
+   *   apiParameters : An object to be send with the api request.
+   *         If an api has its parameters map, the `apiParameters` will be converted from OBJECT to ARRAY
+   *         If an api has no param map, the apiParameters is considered as the first and only one paramter
+   *         to be send with the api.
+   */
+  var Abort, AjaxErrorHandler, ApiRequestRestful, EmptyObject, logAndThrow;
+  EmptyObject = {};
+  logAndThrow = function(obj) {
+
+    /* env:dev                                   env:dev:end */
+    throw obj;
+  };
+  AjaxErrorHandler = function(jqXHR, textStatus, error) {
+    if (!error && jqXHR.status !== 200) {
+      logAndThrow(McError(-jqXHR.status, "Network Error"));
+    }
+    logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
+  };
+  Abort = function() {
+    this.ajax.abort();
+  };
+
+  /*
+   Restful ApiRequest Defination
+   */
+  ApiRequestRestful = function(apiName, apiParameters) {
+    var ApiDef, ajax, i, p, request, url, _i, _len, _ref;
+    ApiDef = ApiDefination[apiName];
+    apiParameters = apiParameters || EmptyObject;
+    if (!ApiDef) {
+      console.error("Cannot find defination of the api:", apiName);
+      return;
+    }
+    url = ApiDef.url + App.user.get("usercode") + "/" + App.user.get("session");
+    if (ApiDef.params) {
+      p = [];
+      _ref = ApiDef.params;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        if (apiParameters.hasOwnProperty(i)) {
+          p.push(apiParameters[i]);
+        }
+      }
+      if (p.length) {
+        url += "/" + p.join("/");
+      }
+    }
+    ajax = $.ajax({
+      url: MC.API_HOST + url,
+      dataType: "json",
+      type: ApiDef.method || "GET",
+      jsonp: false,
+      cache: false
+    });
+    request = Q(ajax).fail(AjaxErrorHandler);
+    request.abort = Abort;
+    request.ajax = ajax;
+    return request;
+  };
+  ApiRequestRestful.Errors = ApiErrors;
+  return ApiRequestRestful;
+});
+
+define('api/ApiRequestOsHandlers',["./ApiRequestHandlers"], function(Handlers) {
+
+  /*
+   * === Global Error Handlers ===
+   * These handlers are used to handle specific errors for any ajax call
+   */
+  var OsHandlers;
+  Handlers.OsHandlers = OsHandlers = {};
+  return Handlers;
+});
+
+define('ApiRequestOs',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHandlers", "api/ApiBundle", "MC", "api/ApiRequestOsHandlers"], function(ApiDefination, ApiErrors, ApiHandlers) {
+
+  /*
+   * === ApiRequest ===
+   *
+   * Paramters :
+   *   apiName       : (String) The name of the api, see ApiRequestDefs
+   *   apiParameters : An object to be send with the api request.
+   *         If an api has its parameters map, the `apiParameters` will be converted from OBJECT to ARRAY
+   *         If an api has no param map, the apiParameters is considered as the first and only one paramter
+   *         to be send with the api.
+   */
+  var Abort, AjaxErrorHandler, AjaxSuccessHandler, ApiRequest, EmptyArray, EmptyObject, OneParaArray, RequestData, logAndThrow;
+  OneParaArray = [""];
+  EmptyArray = [];
+  EmptyObject = {};
+  RequestData = {
+    jsonrpc: '2.0',
+    id: "1",
+    method: '',
+    params: {}
+  };
+  logAndThrow = function(obj) {
+
+    /* env:dev                                   env:dev:end */
+    throw obj;
+  };
+  AjaxSuccessHandler = function(res, apiName, apiParameters) {
+    var awsresult, error, globalHandler, osHandler, osResult, _ref;
+    if (!res || !res.result || res.result.length !== 2) {
+      logAndThrow(McError(ApiErrors.InvalidRpcReturn, "Invalid JsonRpc Return Data"));
+    }
+    if (res.result[0] !== 0) {
+      globalHandler = ApiHandlers[res.result[0]];
+      osResult = res.result[1];
+      if (osResult) {
+        osHandler = ApiHandlers.OsHandlers[osResult[0]];
+      }
+      if (globalHandler || osHandler) {
+        return (osHandler || globalHandler)(res, apiName, apiParameters, ApiRequest);
+      }
+      logAndThrow(McError(res.result[0], "Service Error", res.result[1]));
+    }
+    awsresult = res.result[1];
+    if (awsresult && _.isArray(awsresult)) {
+      if ((200 <= (_ref = awsresult[0]) && _ref < 300)) {
+        return awsresult[1];
+      } else {
+        error = McError(res.result[0], "Service Error", res.result[1]);
+        error.awsError = awsresult[0];
+        error.awsResult = awsresult[1];
+        logAndThrow(error);
+      }
+    }
+    return res.result[1];
+  };
+  AjaxErrorHandler = function(jqXHR, textStatus, error) {
+    if (!error && jqXHR.status !== 200) {
+      logAndThrow(McError(-jqXHR.status, "Network Error"));
+    }
+    logAndThrow(McError(ApiErrors.XhrFailure, textStatus, error));
+  };
+  Abort = function() {
+    this.ajax.abort();
+  };
+
+  /*
+   ApiRequest Defination
+   */
+  ApiRequest = function(apiName, apiParameters) {
+    var ApiDef, ajax, i, p, request, _i, _len, _ref;
+    ApiDef = ApiDefination.Defs[apiName];
+    apiParameters = apiParameters || EmptyObject;
+    if (!ApiDef) {
+      console.error("Cannot find defination of the api:", apiName);
+      return;
+    }
+    if (ApiDef.type !== "openstack") {
+      console.error("Cannot send non-openstack request(" + apiName + ") by using `ApiRequestOs`");
+      return;
+    }
+    RequestData.method = ApiDef.method || "";
+    if (ApiDef.params) {
+      RequestData.params = p = [];
+      _ref = ApiDef.params;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        if (apiParameters.hasOwnProperty(i)) {
+          p.push(apiParameters[i]);
+        } else {
+          p.push(ApiDefination.AutoFill(i));
+        }
+      }
+    } else if (apiParameters) {
+      OneParaArray[0] = apiParameters;
+      RequestData.params = OneParaArray;
+    } else {
+      RequestData.params = EmptyArray;
+    }
+    ajax = $.ajax({
+      url: MC.API_HOST + ApiDef.url,
+      dataType: "json",
+      type: "POST",
+      jsonp: false,
+      data: JSON.stringify(RequestData)
+    });
+    request = Q(ajax).then((function(res) {
+      return AjaxSuccessHandler(res, apiName, apiParameters);
+    }), AjaxErrorHandler);
+    if (ApiDefination.Parsers[apiName]) {
+      request = request.then(ApiDefination.Parsers[apiName]);
+    }
+    request.abort = Abort;
+    request.ajax = ajax;
+    return request;
+  };
+  ApiRequest.Errors = ApiErrors;
+  return ApiRequest;
+});
 
 
 define("api/api", function(){});

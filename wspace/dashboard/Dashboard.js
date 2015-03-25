@@ -365,449 +365,446 @@ TEMPLATE.importCFConfirm=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('wspace/dashboard/ImportDialog',['./ImportDialogTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "CloudResources", "ApiRequest", "JsonExporter", "backbone", "UI.select2", "UI.nanoscroller"], function(tplPartials, Modal, constant, lang, CloudResources, ApiRequest, JsonExporter) {
-    return Backbone.View.extend({
-      events: {
-        "change #modal-import-json-file": "onSelectFile",
-        "drop #modal-import-json-dropzone": "onSelectFile",
-        "dragenter #modal-import-json-dropzone": "onDragenter",
-        "dragleave #modal-import-json-dropzone": "onDragleave",
-        "dragover  #modal-import-json-dropzone": "onDragover",
-        "click #import-cf-cancel": "cancelImport",
-        "click #import-cf-import": "doImport",
-        "keypress .cf-input": "onFocusInput",
-        "OPTION_CHANGE #import-cf-region": "onRegionChange"
-      },
-      initialize: function(attr) {
-        var self;
-        self = this;
-        this.type = attr.type;
-        this.project = attr.project;
-        this.modal = new Modal({
-          title: this.type === "stack" ? lang.IDE.POP_IMPORT_JSON_TIT : lang.IDE.POP_IMPORT_CF_TIT,
-          template: this.type === "stack" ? tplPartials.importJSON() : tplPartials.importCF(),
-          width: "470",
-          disableFooter: true,
-          onClose: function() {
-            return self.onModalClose();
-          }
-        });
-        this.setElement(this.modal.tpl);
-        this.regionForceFetchMap = {};
-        this.reader = new FileReader();
-        this.reader.onload = function(evt) {
-          return self.onReaderLoader(evt);
-        };
-        this.reader.onerror = this.onReaderError;
-      },
-      onDragenter: function() {
-        return this.$el.find("#modal-import-json-dropzone").toggleClass("dragover", true);
-      },
-      onDragleave: function() {
-        return this.$el.find("#modal-import-json-dropzone").toggleClass("dragover", false);
-      },
-      onDragover: function(evt) {
-        var dt;
-        dt = evt.originalEvent.dataTransfer;
-        if (dt) {
-          dt.dropEffect = "copy";
+define('wspace/dashboard/ImportDialog',['./ImportDialogTpl', "UI.modalplus", "constant", "i18n!/nls/lang.js", "CloudResources", "ApiRequest", "JsonExporter", "backbone", "UI.select2", "UI.nanoscroller"], function(tplPartials, Modal, constant, lang, CloudResources, ApiRequest, JsonExporter) {
+  return Backbone.View.extend({
+    events: {
+      "change #modal-import-json-file": "onSelectFile",
+      "drop #modal-import-json-dropzone": "onSelectFile",
+      "dragenter #modal-import-json-dropzone": "onDragenter",
+      "dragleave #modal-import-json-dropzone": "onDragleave",
+      "dragover  #modal-import-json-dropzone": "onDragover",
+      "click #import-cf-cancel": "cancelImport",
+      "click #import-cf-import": "doImport",
+      "keypress .cf-input": "onFocusInput",
+      "OPTION_CHANGE #import-cf-region": "onRegionChange"
+    },
+    initialize: function(attr) {
+      var self;
+      self = this;
+      this.type = attr.type;
+      this.project = attr.project;
+      this.modal = new Modal({
+        title: this.type === "stack" ? lang.IDE.POP_IMPORT_JSON_TIT : lang.IDE.POP_IMPORT_CF_TIT,
+        template: this.type === "stack" ? tplPartials.importJSON() : tplPartials.importCF(),
+        width: "470",
+        disableFooter: true,
+        onClose: function() {
+          return self.onModalClose();
         }
-        evt.stopPropagation();
-        evt.preventDefault();
-      },
-      onSelectFile: function(evt) {
-        var files;
-        evt.stopPropagation();
-        evt.preventDefault();
-        $("#modal-import-json-dropzone").removeClass("dragover");
-        $("#import-json-error").html("");
-        evt = evt.originalEvent;
-        files = (evt.dataTransfer || evt.target).files;
-        if (!files || !files.length) {
+      });
+      this.setElement(this.modal.tpl);
+      this.regionForceFetchMap = {};
+      this.reader = new FileReader();
+      this.reader.onload = function(evt) {
+        return self.onReaderLoader(evt);
+      };
+      this.reader.onerror = this.onReaderError;
+    },
+    onDragenter: function() {
+      return this.$el.find("#modal-import-json-dropzone").toggleClass("dragover", true);
+    },
+    onDragleave: function() {
+      return this.$el.find("#modal-import-json-dropzone").toggleClass("dragover", false);
+    },
+    onDragover: function(evt) {
+      var dt;
+      dt = evt.originalEvent.dataTransfer;
+      if (dt) {
+        dt.dropEffect = "copy";
+      }
+      evt.stopPropagation();
+      evt.preventDefault();
+    },
+    onSelectFile: function(evt) {
+      var files;
+      evt.stopPropagation();
+      evt.preventDefault();
+      $("#modal-import-json-dropzone").removeClass("dragover");
+      $("#import-json-error").html("");
+      evt = evt.originalEvent;
+      files = (evt.dataTransfer || evt.target).files;
+      if (!files || !files.length) {
+        return;
+      }
+      this.filename = (files[0].name || "").split(".")[0];
+      this.reader.readAsText(files[0]);
+      return null;
+    },
+    onReaderLoader: function(evt) {
+      var error, opsModel, result;
+      result = JsonExporter.importJson(this.reader.result);
+      if (_.isString(result)) {
+        $("#import-json-error").html(result);
+        return;
+      }
+      if (this.type === "stack" && result.AWSTemplateFormatVersion) {
+        error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
+      } else if (this.type === "cf" && !result.AWSTemplateFormatVersion) {
+        error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
+      }
+      if (!error) {
+        if (result.AWSTemplateFormatVersion) {
+          this.handleCFTemplate(result);
           return;
         }
-        this.filename = (files[0].name || "").split(".")[0];
-        this.reader.readAsText(files[0]);
-        return null;
-      },
-      onReaderLoader: function(evt) {
-        var error, opsModel, result;
-        result = JsonExporter.importJson(this.reader.result);
-        if (_.isString(result)) {
-          $("#import-json-error").html(result);
-          return;
+      }
+      opsModel = this.project.createStackByJson(result);
+      App.loadUrl(opsModel.url());
+      this.modal.close();
+      this.model = this.project = this.reader = null;
+      return null;
+    },
+    onReaderError: function() {
+      return $("#import-json-error").html(lang.IDE.POP_IMPORT_ERROR);
+    },
+    handleCFTemplate: function(cfJson) {
+      var data, key, parameters, value, _ref;
+      parameters = [];
+      _ref = cfJson.Parameters;
+      for (key in _ref) {
+        value = _ref[key];
+        value.Name = key;
+        value.NoEcho = value.NoEcho === true;
+        if (value.AllowedValues && !_.isArray(value.AllowedValues)) {
+          value.AllowedValues = void 0;
         }
-        if (this.type === "stack" && result.AWSTemplateFormatVersion) {
-          error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
-        } else if (this.type === "cf" && !result.AWSTemplateFormatVersion) {
-          error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
+        if (value.Type === "AWS::EC2::KeyPair::KeyName") {
+          this.hasKpParam = true;
         }
-        if (!error) {
-          if (result.AWSTemplateFormatVersion) {
-            this.handleCFTemplate(result);
-            return;
+        value.__Constraint = "";
+        if (value.AllowedValues) {
+          value.__Constraint = "AllowedPattern: " + value.AllowedValues.join(",") + " ";
+        }
+        if (value.Type === "Number") {
+          if (value.MinValue) {
+            value.__Constraint += "MinValue: " + value.MinValue + " ";
+          }
+          if (value.MaxValue) {
+            value.__Constraint += "MaxValue: " + value.MaxValue + " ";
+          }
+        } else if (value.Type === "String") {
+          if (value.MinLength) {
+            value.__Constraint += "MinLength: " + value.MinLength + " ";
+          }
+          if (value.MaxLength) {
+            value.__Constraint += "MaxLength: " + value.MaxLength + " ";
           }
         }
-        opsModel = this.project.createStackByJson(result);
-        App.loadUrl(opsModel.url());
-        this.modal.close();
-        this.model = this.project = this.reader = null;
-        return null;
-      },
-      onReaderError: function() {
-        return $("#import-json-error").html(lang.IDE.POP_IMPORT_ERROR);
-      },
-      handleCFTemplate: function(cfJson) {
-        var data, key, parameters, value, _ref;
-        parameters = [];
-        _ref = cfJson.Parameters;
-        for (key in _ref) {
-          value = _ref[key];
-          value.Name = key;
-          value.NoEcho = value.NoEcho === true;
-          if (value.AllowedValues && !_.isArray(value.AllowedValues)) {
-            value.AllowedValues = void 0;
-          }
-          if (value.Type === "AWS::EC2::KeyPair::KeyName") {
-            this.hasKpParam = true;
-          }
-          value.__Constraint = "";
-          if (value.AllowedValues) {
-            value.__Constraint = "AllowedPattern: " + value.AllowedValues.join(",") + " ";
-          }
-          if (value.Type === "Number") {
-            if (value.MinValue) {
-              value.__Constraint += "MinValue: " + value.MinValue + " ";
-            }
-            if (value.MaxValue) {
-              value.__Constraint += "MaxValue: " + value.MaxValue + " ";
-            }
-          } else if (value.Type === "String") {
-            if (value.MinLength) {
-              value.__Constraint += "MinLength: " + value.MinLength + " ";
-            }
-            if (value.MaxLength) {
-              value.__Constraint += "MaxLength: " + value.MaxLength + " ";
-            }
-          }
-          parameters.push(value);
+        parameters.push(value);
+      }
+      this.parameters = parameters;
+      this.cfJson = cfJson;
+      data = {
+        regions: constant.REGION_KEYS.slice(0),
+        parameters: parameters
+      };
+      this.modal.setContent(tplPartials.importCFConfirm(data));
+      this.modal.setWidth("570");
+      this.modal.setTitle(lang.IDE.POP_IMPORT_CF_TIT);
+      this.modal.tpl.find(".cf-params-wrap").nanoScroller();
+      this.initInputs();
+      this.onRegionChange();
+    },
+    onModalClose: function() {
+      var ipt, select2, _i, _len, _ref;
+      _ref = this.modal.tpl.find("#import-cf-params").children().find("input.cf-input");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        ipt = _ref[_i];
+        select2 = $(ipt).data("select2");
+        if (select2) {
+          $(ipt).select2("destroy");
         }
-        this.parameters = parameters;
-        this.cfJson = cfJson;
-        data = {
-          regions: constant.REGION_KEYS.slice(0),
-          parameters: parameters
-        };
-        this.modal.setContent(tplPartials.importCFConfirm(data));
-        this.modal.setWidth("570");
-        this.modal.setTitle(lang.IDE.POP_IMPORT_CF_TIT);
-        this.modal.tpl.find(".cf-params-wrap").nanoScroller();
-        this.initInputs();
-        this.onRegionChange();
-      },
-      onModalClose: function() {
-        var ipt, select2, _i, _len, _ref;
-        _ref = this.modal.tpl.find("#import-cf-params").children().find("input.cf-input");
+      }
+    },
+    initInputs: function() {
+      var $inputs, av, avs, formatNoMatches, ipt, kpInitSelection, kpQuery, numberCreateSC, param, select2, select2Option, self, _i, _j, _len, _len1, _ref, _ref1;
+      self = this;
+      kpQuery = function(options) {
+        var kp, kps, term, _i, _len, _ref;
+        kps = [];
+        term = options.term.toLowerCase();
+        _ref = self.currentRegionKps;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          ipt = _ref[_i];
-          select2 = $(ipt).data("select2");
-          if (select2) {
-            $(ipt).select2("destroy");
+          kp = _ref[_i];
+          if (kp.toLowerCase().indexOf(term) >= 0) {
+            kps.push({
+              id: kp,
+              text: kp
+            });
           }
         }
-      },
-      initInputs: function() {
-        var $inputs, av, avs, formatNoMatches, ipt, kpInitSelection, kpQuery, numberCreateSC, param, select2, select2Option, self, _i, _j, _len, _len1, _ref, _ref1;
-        self = this;
-        kpQuery = function(options) {
-          var kp, kps, term, _i, _len, _ref;
-          kps = [];
-          term = options.term.toLowerCase();
-          _ref = self.currentRegionKps;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            kp = _ref[_i];
-            if (kp.toLowerCase().indexOf(term) >= 0) {
-              kps.push({
-                id: kp,
-                text: kp
-              });
-            }
-          }
-          return options.callback({
-            more: false,
-            results: kps
-          });
-        };
-        kpInitSelection = function(element, callback) {
-          var def;
-          def = element.select2("val");
-          return callback({
-            id: def,
-            text: def
-          });
-        };
-        numberCreateSC = function(term) {
-          if (isNaN(Number(term))) {
-            return;
-          }
-          return {
-            id: term,
-            text: term
-          };
-        };
-        formatNoMatches = function(term) {
-          if (!term) {
-            return "Input value...";
-          } else {
-            return "Invalid input";
-          }
-        };
-        $inputs = $("#import-cf-params").children();
-        _ref = this.parameters;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          param = _ref[_i];
-          if (param.NoEcho) {
-            continue;
-          }
-          select2 = false;
-          ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input");
-          select2Option = {
-            allowClear: true,
-            data: [],
-            formatNoMatches: formatNoMatches
-          };
-          if (param.Type === "CommaDelimitedList" || param.Type === "List<Number>") {
-            select2 = true;
-            select2Option.multiple = true;
-            select2Option.allowDuplicate = true;
-            if (!param.AllowedValues) {
-              select2Option.tags = [];
-              select2Option.data = void 0;
-              select2Option.tokenSeparators = [","];
-            }
-          }
-          if (param.Type === "List<Number>") {
-            select2Option.createSearchChoice = numberCreateSC;
-          }
-          if (param.Type === "AWS::EC2::KeyPair::KeyName") {
-            select2 = true;
-            select2Option.query = kpQuery;
-            select2Option.initSelection = kpInitSelection;
-          }
-          if (param.AllowedValues) {
-            select2 = true;
-            avs = [];
-            _ref1 = param.AllowedValues;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              av = _ref1[_j];
-              avs.push({
-                id: "" + av,
-                text: "" + av
-              });
-            }
-            select2Option.data = avs;
-            select2Option.selectOnComma = true;
-          }
-          if (select2) {
-            ipt.select2(select2Option);
-          }
-        }
-      },
-      onRegionChange: function() {
-        var credId, currentRegion, self;
-        if (!this.hasKpParam) {
+        return options.callback({
+          more: false,
+          results: kps
+        });
+      };
+      kpInitSelection = function(element, callback) {
+        var def;
+        def = element.select2("val");
+        return callback({
+          id: def,
+          text: def
+        });
+      };
+      numberCreateSC = function(term) {
+        if (isNaN(Number(term))) {
           return;
         }
-        credId = this.project.credIdOfProvider("aws::global");
-        currentRegion = $("#import-cf-region").find(".selected").attr("data-id");
-        if (!this.regionForceFetchMap[currentRegion]) {
-          this.regionForceFetchMap[currentRegion] = true;
-          CloudResources(credId, constant.RESTYPE.KP, currentRegion).fetchForce();
-        }
-        self = this;
-        $("#import-cf-form .loader").show();
-        CloudResources(credId, constant.RESTYPE.KP, currentRegion).fetch().then(function() {
-          var $inputs, $ipt, param, _i, _len, _ref;
-          $("#import-cf-form .loader").hide();
-          self.currentRegionKps = CloudResources(credId, constant.RESTYPE.KP, currentRegion).pluck("id");
-          $inputs = $("#import-cf-params").children();
-          _ref = self.parameters;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            param = _ref[_i];
-            if (param.Type === "AWS::EC2::KeyPair::KeyName") {
-              $ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input.cf-input");
-              $ipt.select2("val", $ipt.select2("val") || param.Default);
-            }
-          }
-        });
-      },
-      extractUserInput: function($li) {
-        var $input, AllowedPattern, allowed, av, idx, name, param, type, v, value, valueArray, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
-        type = $li.attr("data-type");
-        $input = $li.find("input.cf-input");
-        if ($input.siblings(".select2-container").length) {
-          value = $input.select2("val");
+        return {
+          id: term,
+          text: term
+        };
+      };
+      formatNoMatches = function(term) {
+        if (!term) {
+          return "Input value...";
         } else {
-          value = $li.find("input.cf-input").val();
+          return "Invalid input";
         }
-        name = $li.attr("data-name");
-        param = this.cfJson.Parameters[name];
-        if (!value) {
-          return {
-            name: name,
-            value: ""
-          };
+      };
+      $inputs = $("#import-cf-params").children();
+      _ref = this.parameters;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        param = _ref[_i];
+        if (param.NoEcho) {
+          continue;
         }
-        if (type === "Number" || type === "String") {
-          valueArray = [value];
-        } else {
-          if (_.isArray(value)) {
-            valueArray = value;
-          } else {
-            valueArray = value.split(",");
-          }
-        }
-        if (type === "Number" || type === "List<Number>") {
-          for (idx = _i = 0, _len = valueArray.length; _i < _len; idx = ++_i) {
-            v = valueArray[idx];
-            v = Number(v);
-            if (isNaN(v)) {
-              return false;
-            }
-            if (param.MinValue && Number(param.MinValue) > v) {
-              return false;
-            }
-            if (param.MaxValue && Number(param.MaxValue) < v) {
-              return false;
-            }
-            valueArray[idx] = v;
-          }
-        } else if (type === "String" || type === "CommaDelimitedList") {
-          if (param.AllowedPattern) {
-            AllowedPattern = new RegExp(param.AllowedPattern);
-          }
-          for (idx = _j = 0, _len1 = valueArray.length; _j < _len1; idx = ++_j) {
-            v = valueArray[idx];
-            if (param.MinLength && Number(param.MinLength) > v.length) {
-              return false;
-            }
-            if (param.MaxLength && Number(param.MaxLength) < v.length) {
-              return false;
-            }
-            if (AllowedPattern && !AllowedPattern.test(v)) {
-              return false;
-            }
+        select2 = false;
+        ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input");
+        select2Option = {
+          allowClear: true,
+          data: [],
+          formatNoMatches: formatNoMatches
+        };
+        if (param.Type === "CommaDelimitedList" || param.Type === "List<Number>") {
+          select2 = true;
+          select2Option.multiple = true;
+          select2Option.allowDuplicate = true;
+          if (!param.AllowedValues) {
+            select2Option.tags = [];
+            select2Option.data = void 0;
+            select2Option.tokenSeparators = [","];
           }
         }
-        if (param.AllowedValues) {
-          for (_k = 0, _len2 = valueArray.length; _k < _len2; _k++) {
-            v = valueArray[_k];
-            _ref = param.AllowedValues || [];
-            for (_l = 0, _len3 = _ref.length; _l < _len3; _l++) {
-              av = _ref[_l];
-              if ("" + av === "" + v) {
-                allowed = true;
-                break;
-              }
-            }
-            if (!allowed) {
-              return false;
-            }
-          }
+        if (param.Type === "List<Number>") {
+          select2Option.createSearchChoice = numberCreateSC;
         }
         if (param.Type === "AWS::EC2::KeyPair::KeyName") {
-          if (this.currentRegionKps.indexOf(value) < 0) {
+          select2 = true;
+          select2Option.query = kpQuery;
+          select2Option.initSelection = kpInitSelection;
+        }
+        if (param.AllowedValues) {
+          select2 = true;
+          avs = [];
+          _ref1 = param.AllowedValues;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            av = _ref1[_j];
+            avs.push({
+              id: "" + av,
+              text: "" + av
+            });
+          }
+          select2Option.data = avs;
+          select2Option.selectOnComma = true;
+        }
+        if (select2) {
+          ipt.select2(select2Option);
+        }
+      }
+    },
+    onRegionChange: function() {
+      var credId, currentRegion, self;
+      if (!this.hasKpParam) {
+        return;
+      }
+      credId = this.project.credIdOfProvider("aws::global");
+      currentRegion = $("#import-cf-region").find(".selected").attr("data-id");
+      if (!this.regionForceFetchMap[currentRegion]) {
+        this.regionForceFetchMap[currentRegion] = true;
+        CloudResources(credId, constant.RESTYPE.KP, currentRegion).fetchForce();
+      }
+      self = this;
+      $("#import-cf-form .loader").show();
+      CloudResources(credId, constant.RESTYPE.KP, currentRegion).fetch().then(function() {
+        var $inputs, $ipt, param, _i, _len, _ref;
+        $("#import-cf-form .loader").hide();
+        self.currentRegionKps = CloudResources(credId, constant.RESTYPE.KP, currentRegion).pluck("id");
+        $inputs = $("#import-cf-params").children();
+        _ref = self.parameters;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          param = _ref[_i];
+          if (param.Type === "AWS::EC2::KeyPair::KeyName") {
+            $ipt = $inputs.filter("[data-name='" + param.Name + "']").find("input.cf-input");
+            $ipt.select2("val", $ipt.select2("val") || param.Default);
+          }
+        }
+      });
+    },
+    extractUserInput: function($li) {
+      var $input, AllowedPattern, allowed, av, idx, name, param, type, v, value, valueArray, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+      type = $li.attr("data-type");
+      $input = $li.find("input.cf-input");
+      if ($input.siblings(".select2-container").length) {
+        value = $input.select2("val");
+      } else {
+        value = $li.find("input.cf-input").val();
+      }
+      name = $li.attr("data-name");
+      param = this.cfJson.Parameters[name];
+      if (!value) {
+        return {
+          name: name,
+          value: ""
+        };
+      }
+      if (type === "Number" || type === "String") {
+        valueArray = [value];
+      } else {
+        if (_.isArray(value)) {
+          valueArray = value;
+        } else {
+          valueArray = value.split(",");
+        }
+      }
+      if (type === "Number" || type === "List<Number>") {
+        for (idx = _i = 0, _len = valueArray.length; _i < _len; idx = ++_i) {
+          v = valueArray[idx];
+          v = Number(v);
+          if (isNaN(v)) {
+            return false;
+          }
+          if (param.MinValue && Number(param.MinValue) > v) {
+            return false;
+          }
+          if (param.MaxValue && Number(param.MaxValue) < v) {
+            return false;
+          }
+          valueArray[idx] = v;
+        }
+      } else if (type === "String" || type === "CommaDelimitedList") {
+        if (param.AllowedPattern) {
+          AllowedPattern = new RegExp(param.AllowedPattern);
+        }
+        for (idx = _j = 0, _len1 = valueArray.length; _j < _len1; idx = ++_j) {
+          v = valueArray[idx];
+          if (param.MinLength && Number(param.MinLength) > v.length) {
+            return false;
+          }
+          if (param.MaxLength && Number(param.MaxLength) < v.length) {
+            return false;
+          }
+          if (AllowedPattern && !AllowedPattern.test(v)) {
             return false;
           }
         }
-        if (type === "String" || type === "Number") {
-          value = valueArray[0];
-        } else if (type === "List<Number>" || type === "CommaDelimitedList") {
-          value = valueArray.join(",");
-        }
-        return {
-          name: name,
-          value: value
-        };
-      },
-      checkCFParameter: function() {
-        var $entries, $li, error, hasEmpty, li, result, _i, _len;
-        $entries = this.modal.tpl.find(".cf-params").children();
-        error = false;
-        hasEmpty = false;
-        for (_i = 0, _len = $entries.length; _i < _len; _i++) {
-          li = $entries[_i];
-          $li = $(li);
-          result = this.extractUserInput($li);
-          if (!result) {
-            error = true;
-            $li.toggleClass("error", true);
-          } else {
-            if (!result.value) {
-              hasEmpty = true;
-            }
-            this.cfJson.Parameters[result.name].Default = result.value;
-            $li.toggleClass("error", false);
-          }
-        }
-        this.modal.tpl.find(".param-error").hide();
-        this.modal.tpl.find(".param-empty").hide();
-        if (error) {
-          this.modal.tpl.find(".param-error").show();
-          this.emptyParamConfirm = false;
-        } else if (hasEmpty) {
-          this.modal.tpl.find(".param-empty").show();
-          if (!this.emptyParamConfirm) {
-            error = this.emptyParamConfirm = true;
-          }
-        }
-        return !error;
-      },
-      doImport: function() {
-        var credId, region, self;
-        if (!this.checkCFParameter()) {
-          return;
-        }
-        self = this;
-        this.modal.tpl.find(".loading-spinner").show();
-        this.modal.tpl.closest(".modal-box").find(".modal-close").hide();
-        $("#import-cf-form").hide();
-        this.modal.resize();
-        region = $("#import-cf-region").find(".selected").attr("data-id");
-        credId = this.project.credIdOfProvider("aws::global");
-        return CloudResources(credId, constant.RESTYPE.AZ, region).fetch().then(function() {
-          return ApiRequest("stack_import_cloudformation", {
-            region_name: $("#import-cf-region").find(".selected").attr("data-id"),
-            cf_template: self.cfJson,
-            parameters: {
-              az: _.pluck(CloudResources(credId, constant.RESTYPE.AZ, region).where({
-                category: region
-              }), "id")
-            }
-          }).then(function(data) {
-            self.modal.close();
-            data.provider = "aws::global";
-            if (self.filename) {
-              data.name = self.filename;
-            }
-            return App.loadUrl(self.project.createStackByJson(data, true).url());
-          }, function() {
-            self.modal.close();
-            notification('error', sprintf(lang.IDE.POP_IMPORT_CFM_ERROR));
-          });
-        });
-      },
-      cancelImport: function() {
-        return this.modal.close();
-      },
-      onFocusInput: function(evt) {
-        return $(evt.currentTarget).closest("li").removeClass("error");
       }
-    });
+      if (param.AllowedValues) {
+        for (_k = 0, _len2 = valueArray.length; _k < _len2; _k++) {
+          v = valueArray[_k];
+          _ref = param.AllowedValues || [];
+          for (_l = 0, _len3 = _ref.length; _l < _len3; _l++) {
+            av = _ref[_l];
+            if ("" + av === "" + v) {
+              allowed = true;
+              break;
+            }
+          }
+          if (!allowed) {
+            return false;
+          }
+        }
+      }
+      if (param.Type === "AWS::EC2::KeyPair::KeyName") {
+        if (this.currentRegionKps.indexOf(value) < 0) {
+          return false;
+        }
+      }
+      if (type === "String" || type === "Number") {
+        value = valueArray[0];
+      } else if (type === "List<Number>" || type === "CommaDelimitedList") {
+        value = valueArray.join(",");
+      }
+      return {
+        name: name,
+        value: value
+      };
+    },
+    checkCFParameter: function() {
+      var $entries, $li, error, hasEmpty, li, result, _i, _len;
+      $entries = this.modal.tpl.find(".cf-params").children();
+      error = false;
+      hasEmpty = false;
+      for (_i = 0, _len = $entries.length; _i < _len; _i++) {
+        li = $entries[_i];
+        $li = $(li);
+        result = this.extractUserInput($li);
+        if (!result) {
+          error = true;
+          $li.toggleClass("error", true);
+        } else {
+          if (!result.value) {
+            hasEmpty = true;
+          }
+          this.cfJson.Parameters[result.name].Default = result.value;
+          $li.toggleClass("error", false);
+        }
+      }
+      this.modal.tpl.find(".param-error").hide();
+      this.modal.tpl.find(".param-empty").hide();
+      if (error) {
+        this.modal.tpl.find(".param-error").show();
+        this.emptyParamConfirm = false;
+      } else if (hasEmpty) {
+        this.modal.tpl.find(".param-empty").show();
+        if (!this.emptyParamConfirm) {
+          error = this.emptyParamConfirm = true;
+        }
+      }
+      return !error;
+    },
+    doImport: function() {
+      var credId, region, self;
+      if (!this.checkCFParameter()) {
+        return;
+      }
+      self = this;
+      this.modal.tpl.find(".loading-spinner").show();
+      this.modal.tpl.closest(".modal-box").find(".modal-close").hide();
+      $("#import-cf-form").hide();
+      this.modal.resize();
+      region = $("#import-cf-region").find(".selected").attr("data-id");
+      credId = this.project.credIdOfProvider("aws::global");
+      return CloudResources(credId, constant.RESTYPE.AZ, region).fetch().then(function() {
+        return ApiRequest("stack_import_cloudformation", {
+          region_name: $("#import-cf-region").find(".selected").attr("data-id"),
+          cf_template: self.cfJson,
+          parameters: {
+            az: _.pluck(CloudResources(credId, constant.RESTYPE.AZ, region).where({
+              category: region
+            }), "id")
+          }
+        }).then(function(data) {
+          self.modal.close();
+          data.provider = "aws::global";
+          if (self.filename) {
+            data.name = self.filename;
+          }
+          return App.loadUrl(self.project.createStackByJson(data, true).url());
+        }, function() {
+          self.modal.close();
+          notification('error', sprintf(lang.IDE.POP_IMPORT_CFM_ERROR));
+        });
+      });
+    },
+    cancelImport: function() {
+      return this.modal.close();
+    },
+    onFocusInput: function(evt) {
+      return $(evt.currentTarget).closest("li").removeClass("error");
+    }
   });
-
-}).call(this);
+});
 
 define('wspace/dashboard/DashboardTplData',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -2520,1124 +2517,1115 @@ TEMPLATE.content=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('wspace/dashboard/VisualizeDialog',["Credential", "ApiRequest", "UI.modalplus", "./VisualizeTpl", "i18n!/nls/lang.js", "constant", "backbone"], function(Credential, ApiRequest, Modal, VisualizeTpl, lang, constant) {
-    var VisualizeVpcParams;
-    VisualizeVpcParams = {
-      'AWS.VPC.VPC': {},
-      'AWS.VPC.Subnet': {},
-      'AWS.EC2.Instance': {
-        'filter': {
-          'instance-state-name': ['pending', 'running', 'stopping', 'stopped']
-        }
-      },
-      'AWS.VPC.NetworkInterface': {},
-      'AWS.ELB': {}
-    };
-    return Backbone.View.extend({
-      events: {
-        "click #VisualizeReload": "sendRequest",
-        "click .visualize-vpc-btn": "importVpc"
-      },
-      initialize: function(attr) {
-        var self;
-        this.model = attr.model;
-        this.dialog = attr.dialog;
-        this.dialog || (this.dialog = new Modal({
-          title: lang.IDE.DASH_IMPORT_VPC_AS_APP
-        }));
-        this.dialog.setTitle(lang.IDE.DASH_IMPORT_VPC_AS_APP).setWidth(770).setContent(VisualizeTpl.frame()).toggleFooter().compact().resize();
-        self = this;
-        this.dialog.on("close", function() {
-          return self.remove();
-        });
-        this.setElement(this.dialog.tpl.find("#VisualizeVpcDialog"));
-        this.sendRequest();
-        this.listenTo(App.WS, "visualizeUpdate", this.onReceiveData);
-      },
-      render: function() {
-        if (this.fail) {
-          return this.$el.html(VisualizeTpl.failure());
-        } else if (this.data) {
-          return this.$el.html(VisualizeTpl.content(this.data));
-        } else {
-          return this.$el.html(VisualizeTpl.loading());
-        }
-      },
-      remove: function() {
-        this.stopListening();
-        if (this.timeout) {
-          clearTimeout(this.timeout);
-          this.timeout = null;
-        }
-      },
-      sendRequest: function() {
-        var self;
-        self = this;
-        if (this.timeout) {
-          clearTimeout(this.timeout);
-        }
-        this.timeout = setTimeout((function() {
-          return self.failToLoad();
-        }), 480000);
-        ApiRequest("aws_resource", {
-          region_name: null,
-          key_id: this.model.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL),
-          resources: VisualizeVpcParams,
-          addition: "statistic",
-          retry_times: 1
-        }).fail(function() {
-          return self.failToLoad();
-        });
-        this.fail = false;
-        this.data = null;
-        this.render();
-      },
-      failToLoad: function() {
-        this.fail = true;
-        this.data = null;
-        this.render();
-        if (this.timeout) {
-          clearTimeout(this.timeout);
-          this.timeout = null;
-        }
-      },
-      onReceiveData: function(result) {
-        this.fail = false;
-        if (this.timeout) {
-          clearTimeout(this.timeout);
-          this.timeout = null;
-        }
-        this.data = this.parseVisData(result);
-        this.render();
-      },
-      parseVisData: function(data) {
-        var e, instanceMap, obj, region, regions, resourceMap, resources, t, tags, vpc, vpcMap, vpcs, _i, _len, _ref;
-        resourceMap = function(res) {
-          return _.keys(res || {});
-        };
-        instanceMap = function(res, stopped) {
-          var ami, id, instances, state, _ref, _ref1;
-          instances = [];
-          _ref = res || {};
-          for (id in _ref) {
-            ami = _ref[id];
-            state = ((_ref1 = ami.instanceState) != null ? _ref1.name : void 0) || "";
-            if (stopped) {
-              if (state === "stopped" || state === "stopping") {
-                instances.push(id);
-              }
-            } else {
-              if (state === "running" || state === "pending") {
-                instances.push(id);
-              }
+define('wspace/dashboard/VisualizeDialog',["Credential", "ApiRequest", "UI.modalplus", "./VisualizeTpl", "i18n!/nls/lang.js", "constant", "backbone"], function(Credential, ApiRequest, Modal, VisualizeTpl, lang, constant) {
+  var VisualizeVpcParams;
+  VisualizeVpcParams = {
+    'AWS.VPC.VPC': {},
+    'AWS.VPC.Subnet': {},
+    'AWS.EC2.Instance': {
+      'filter': {
+        'instance-state-name': ['pending', 'running', 'stopping', 'stopped']
+      }
+    },
+    'AWS.VPC.NetworkInterface': {},
+    'AWS.ELB': {}
+  };
+  return Backbone.View.extend({
+    events: {
+      "click #VisualizeReload": "sendRequest",
+      "click .visualize-vpc-btn": "importVpc"
+    },
+    initialize: function(attr) {
+      var self;
+      this.model = attr.model;
+      this.dialog = attr.dialog;
+      this.dialog || (this.dialog = new Modal({
+        title: lang.IDE.DASH_IMPORT_VPC_AS_APP
+      }));
+      this.dialog.setTitle(lang.IDE.DASH_IMPORT_VPC_AS_APP).setWidth(770).setContent(VisualizeTpl.frame()).toggleFooter().compact().resize();
+      self = this;
+      this.dialog.on("close", function() {
+        return self.remove();
+      });
+      this.setElement(this.dialog.tpl.find("#VisualizeVpcDialog"));
+      this.sendRequest();
+      this.listenTo(App.WS, "visualizeUpdate", this.onReceiveData);
+    },
+    render: function() {
+      if (this.fail) {
+        return this.$el.html(VisualizeTpl.failure());
+      } else if (this.data) {
+        return this.$el.html(VisualizeTpl.content(this.data));
+      } else {
+        return this.$el.html(VisualizeTpl.loading());
+      }
+    },
+    remove: function() {
+      this.stopListening();
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }
+    },
+    sendRequest: function() {
+      var self;
+      self = this;
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
+      this.timeout = setTimeout((function() {
+        return self.failToLoad();
+      }), 480000);
+      ApiRequest("aws_resource", {
+        region_name: null,
+        key_id: this.model.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL),
+        resources: VisualizeVpcParams,
+        addition: "statistic",
+        retry_times: 1
+      }).fail(function() {
+        return self.failToLoad();
+      });
+      this.fail = false;
+      this.data = null;
+      this.render();
+    },
+    failToLoad: function() {
+      this.fail = true;
+      this.data = null;
+      this.render();
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }
+    },
+    onReceiveData: function(result) {
+      this.fail = false;
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }
+      this.data = this.parseVisData(result);
+      this.render();
+    },
+    parseVisData: function(data) {
+      var e, instanceMap, obj, region, regions, resourceMap, resources, t, tags, vpc, vpcMap, vpcs, _i, _len, _ref;
+      resourceMap = function(res) {
+        return _.keys(res || {});
+      };
+      instanceMap = function(res, stopped) {
+        var ami, id, instances, state, _ref, _ref1;
+        instances = [];
+        _ref = res || {};
+        for (id in _ref) {
+          ami = _ref[id];
+          state = ((_ref1 = ami.instanceState) != null ? _ref1.name : void 0) || "";
+          if (stopped) {
+            if (state === "stopped" || state === "stopping") {
+              instances.push(id);
+            }
+          } else {
+            if (state === "running" || state === "pending") {
+              instances.push(id);
             }
           }
-          return instances;
-        };
-        regions = [];
-        for (region in data) {
-          vpcMap = data[region];
-          if (region === "_id" || region === "username" || region === "timestamp") {
-            continue;
-          }
-          vpcs = [];
-          regions.push({
-            id: region,
-            name: constant.REGION_SHORT_LABEL[region],
-            subname: constant.REGION_LABEL[region],
-            vpcs: vpcs
-          });
-          for (vpc in vpcMap) {
-            resources = vpcMap[vpc];
-            try {
-              tags = {};
-              if (resources.Tag && resources.Tag.item) {
-                if (resources.Tag.item.length) {
-                  _ref = resources.Tag.item;
-                  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    t = _ref[_i];
-                    tags[t.key] = t.value;
-                  }
-                } else {
-                  tags[resources.Tag.item.key] = resources.Tag.item.value;
+        }
+        return instances;
+      };
+      regions = [];
+      for (region in data) {
+        vpcMap = data[region];
+        if (region === "_id" || region === "username" || region === "timestamp") {
+          continue;
+        }
+        vpcs = [];
+        regions.push({
+          id: region,
+          name: constant.REGION_SHORT_LABEL[region],
+          subname: constant.REGION_LABEL[region],
+          vpcs: vpcs
+        });
+        for (vpc in vpcMap) {
+          resources = vpcMap[vpc];
+          try {
+            tags = {};
+            if (resources.Tag && resources.Tag.item) {
+              if (resources.Tag.item.length) {
+                _ref = resources.Tag.item;
+                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                  t = _ref[_i];
+                  tags[t.key] = t.value;
                 }
+              } else {
+                tags[resources.Tag.item.key] = resources.Tag.item.value;
               }
-              obj = {
-                id: vpc,
-                name: tags.Name || tags.name,
-                subnet: resourceMap(resources["AWS|VPC|Subnet"]),
-                ami: instanceMap(resources["AWS|EC2|Instance"]),
-                stopped: instanceMap(resources["AWS|EC2|Instance"], true),
-                eni: resourceMap(resources["AWS|VPC|NetworkInterface"]),
-                eip: resourceMap(resources["AWS|EC2|EIP"]),
-                elb: resourceMap(resources["AWS|ELB"]),
-                imported: !!resources.project_id
-              };
-              vpcs.push(obj);
-            } catch (_error) {
-              e = _error;
             }
+            obj = {
+              id: vpc,
+              name: tags.Name || tags.name,
+              subnet: resourceMap(resources["AWS|VPC|Subnet"]),
+              ami: instanceMap(resources["AWS|EC2|Instance"]),
+              stopped: instanceMap(resources["AWS|EC2|Instance"], true),
+              eni: resourceMap(resources["AWS|VPC|NetworkInterface"]),
+              eip: resourceMap(resources["AWS|EC2|EIP"]),
+              elb: resourceMap(resources["AWS|ELB"]),
+              imported: !!resources.project_id
+            };
+            vpcs.push(obj);
+          } catch (_error) {
+            e = _error;
           }
         }
-        return regions;
-      },
-      importVpc: function(event) {
-        var $tgt, opsmodel;
-        if ($(event.currentTarget).hasClass('disabled')) {
-          return false;
-        }
-        $tgt = $(event.currentTarget);
-        if ($tgt.hasClass(".disabled")) {
-          return false;
-        }
-        opsmodel = this.model.createAppByExistingResource($tgt.attr("data-vpcid"), $tgt.closest("ul").attr("data-region"), Credential.PROVIDER.AWSGLOBAL);
-        this.dialog.close();
-        App.loadUrl(opsmodel.url());
+      }
+      return regions;
+    },
+    importVpc: function(event) {
+      var $tgt, opsmodel;
+      if ($(event.currentTarget).hasClass('disabled')) {
         return false;
       }
-    });
+      $tgt = $(event.currentTarget);
+      if ($tgt.hasClass(".disabled")) {
+        return false;
+      }
+      opsmodel = this.model.createAppByExistingResource($tgt.attr("data-vpcid"), $tgt.closest("ul").attr("data-region"), Credential.PROVIDER.AWSGLOBAL);
+      this.dialog.close();
+      App.loadUrl(opsmodel.url());
+      return false;
+    }
   });
+});
 
-}).call(this);
-
-(function() {
-  define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "Credential", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, Credential, CredentialFormView) {
-    Handlebars.registerHelper("awsAmiIcon", function(credentialId, amiId, region) {
-      var ami;
-      ami = CloudResources(credentialId, constant.RESTYPE.AMI, region).get(amiId);
-      if (ami) {
-        ami = ami.attributes;
-        return ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png";
-      } else {
-        console.log(credentialId, amiId, region, ami);
-        return "empty.png";
+define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "Credential", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, Credential, CredentialFormView) {
+  Handlebars.registerHelper("awsAmiIcon", function(credentialId, amiId, region) {
+    var ami;
+    ami = CloudResources(credentialId, constant.RESTYPE.AMI, region).get(amiId);
+    if (ami) {
+      ami = ami.attributes;
+      return ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png";
+    } else {
+      console.log(credentialId, amiId, region, ami);
+      return "empty.png";
+    }
+  });
+  Handlebars.registerHelper("awsIsEip", function(credentialId, ip, region, options) {
+    var eip, _i, _len, _ref;
+    if (!ip) {
+      return "";
+    }
+    _ref = CloudResources(credentialId, constant.RESTYPE.EIP, region).models;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      eip = _ref[_i];
+      if (eip.get("publicIp") === ip) {
+        return options.fn(this);
       }
-    });
-    Handlebars.registerHelper("awsIsEip", function(credentialId, ip, region, options) {
-      var eip, _i, _len, _ref;
-      if (!ip) {
-        return "";
-      }
-      _ref = CloudResources(credentialId, constant.RESTYPE.EIP, region).models;
+    }
+    return "";
+  });
+  return Backbone.View.extend({
+    events: {
+      "click .dashboard-header .create-stack": "createStack",
+      "click .dashboard-header .import-stack": "importStack",
+      "click .dashboard-header .icon-visualize": "importApp",
+      "click .dashboard-sidebar .dashboard-nav-log": "updateLog",
+      "click .dashboard-sidebar nav buttton": "updateLog",
+      'click #region-switch-list li': 'switchRegion',
+      'click .resource-tab': 'switchResource',
+      "click .region-resource-list .delete-stack": "deleteStack",
+      'click .region-resource-list .duplicate-stack': 'duplicateStack',
+      "click .region-resource-list .start-app": "startApp",
+      'click .region-resource-list .stop-app': 'stopApp',
+      'click .region-resource-list .terminate-app': 'terminateApp',
+      "click .show-credential": "showCredential",
+      "click .icon-detail": "showResourceDetail",
+      'click .refreshResource': 'reloadResource',
+      "click .global-resource-li": "switchGlobalResource"
+    },
+    initialize: function() {
+      var credentialId, region, self, _i, _len, _ref;
+      this.resourcesTab = "INSTANCE";
+      this.region = "global";
+      this.appsRegion = "global";
+      this.stacksRegion = "global";
+      this.setElement($(Template.main({
+        providers: this.model.supportedProviders(),
+        id: this.model.scene.project.get("id"),
+        isAdmin: this.model.scene.project.amIAdmin()
+      })).appendTo(this.model.scene.spaceParentElement()));
+      self = this;
+      this.logCol = this.model.scene.project.logs();
+      this.logCol.on('change add', this.updateLog, this);
+      this.render();
+      this.listenTo(this.model.scene.project, "update:stack", function() {
+        return self.updateRegionAppStack("stacks");
+      });
+      this.listenTo(this.model.scene.project, "update:app", function() {
+        return self.updateRegionAppStack("apps");
+      });
+      this.listenTo(this.model.scene.project, "change:stack", function() {
+        return self.updateRegionAppStack("stacks");
+      });
+      this.listenTo(this.model.scene.project, "change:app", function() {
+        return self.updateRegionAppStack("apps");
+      });
+      this.listenTo(this.model.scene.project, "update:credential", function() {
+        return self.updateDemoView();
+      });
+      this.listenTo(this.model.scene.project, "change:credential", function() {
+        return self.updateDemoView();
+      });
+      this.listenTo(this.model.scene.project.apps(), "change:progress", function(ops) {
+        return self.updateAppStackProgress(ops);
+      });
+      this.listenTo(this.model.scene.project.stacks(), "change:progress", function(ops) {
+        return self.updateAppStackProgress(ops);
+      });
+      this.listenTo(App.WS, "visualizeUpdate", this.onVisualizeUpdated);
+      credentialId = this.model.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
+      this.credentialAccount = this.model.scene.project.credOfProvider(Credential.PROVIDER.AWSGLOBAL).get("awsAccount");
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.ELB), "update", this.onGlobalResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.VPN), "update", this.onGlobalResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.VPC), "update", this.onRegionResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.ASG), "update", this.onRegionResChanged);
+      this.listenTo(CloudResources(credentialId, constant.RESTYPE.CW), "update", this.onRegionResChanged);
+      _ref = constant.REGION_KEYS;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        eip = _ref[_i];
-        if (eip.get("publicIp") === ip) {
-          return options.fn(this);
+        region = _ref[_i];
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region), "update", this.onRegionResChanged);
+        this.listenTo(CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, region), "update", this.onGlobalResChanged);
+      }
+      MC.template.dashboardBubble = _.bind(this.dashboardBubble, this);
+      MC.template.dashboardBubbleSub = _.bind(this.dashboardBubbleSub, this);
+    },
+    render: function() {
+      var self;
+      this.updateDemoView();
+      this.updateGlobalResources();
+      this.model.fetchAwsResources();
+      this.initRegion();
+      this.updateLog();
+      self = this;
+      setInterval(function() {
+        if (!self.$el.find(".refreshResource").hasClass("reloading")) {
+          self.$el.find(".refreshResource").text(MC.intervalDate(self.lastUpdate / 1000));
+        }
+        self.updateLog();
+      }, 1000 * 60);
+      this.$el.toggleClass("observer", this.model.isReadOnly());
+    },
+    createStack: function(evt) {
+      var $tgt, opsModel, provider, region;
+      $tgt = $(evt.currentTarget);
+      provider = $tgt.closest("ul").attr("data-provider");
+      region = $tgt.attr("data-region");
+      opsModel = this.model.scene.project.createStack(region, provider);
+      this.model.scene.loadSpace(opsModel);
+    },
+    showCredential: function() {
+      return new CredentialFormView({
+        model: this.model.scene.project
+      }).render();
+    },
+    importStack: function(evt) {
+      new ImportDialog({
+        type: $(evt.currentTarget).attr("data-type"),
+        project: this.model.scene.project
+      });
+      return false;
+    },
+    importApp: function() {
+      return new AppAction({
+        project: this.model.scene.project
+      }).showPayment().then((function(_this) {
+        return function(result) {
+          return new VisualizeDialog({
+            model: _this.model.scene.project,
+            dialog: result != null ? result.modal : void 0
+          });
+        };
+      })(this));
+    },
+    updateDemoView: function() {
+      var newCredentialAccount;
+      if (!this.model.scene.project.isDemoMode()) {
+        this.$el.find("#dashboard-data-wrap").removeClass("demo");
+        this.$el.find("#VisualizeVPC").removeAttr("disabled").removeClass("tooltip").removeAttr("title");
+        newCredentialAccount = this.model.scene.project.credOfProvider(Credential.PROVIDER.AWSGLOBAL).get("awsAccount");
+        if (this.credentialAccount !== newCredentialAccount) {
+          this.reloadResource();
+          this.credentialAccount = newCredentialAccount;
+        }
+      } else {
+        this.$el.find("#VisualizeVPC").attr("disabled", "disabled").addClass("tooltip").attr("title", lang.IDE.PROVIDE_CRED_TO_VISUALIZE);
+        this.$el.find("#dashboard-data-wrap").toggleClass("demo", true);
+      }
+    },
+    updateGlobalResources: function() {
+      var data;
+      if (!this.model.isAwsResReady()) {
+        this.__globalLoading = true;
+        data = {
+          loading: true
+        };
+      } else {
+        this.__globalLoading = false;
+        data = this.model.getAwsResData();
+      }
+      this.$el.find("#GlobalView").html(dataTemplate.globalResources(data));
+      if (this.region === "global") {
+        this.$el.find("#GlobalView").removeAttr("style");
+        this.$el.find("#RegionViewWrap").hide();
+      }
+    },
+    onGlobalResChanged: function() {
+      this.updateGlobalResources();
+      return this.updateRegionResources();
+    },
+    onRegionResChanged: function() {
+      return this.updateRegionResources();
+    },
+    initRegion: function() {
+      this.updateRegionAppStack("stacks", "global");
+      this.updateRegionAppStack("apps", "global");
+      return this.updateRegionResources();
+    },
+    switchRegion: function(evt) {
+      var region, target, updateType;
+      if (evt && evt.currentTarget) {
+        target = evt.currentTarget;
+        region = $(target).data("region");
+        if (region !== "global") {
+          this.model.fetchAwsResources(region);
+        }
+        updateType = $(evt.currentTarget).parents(".dash-region-navigation").data("type");
+        if (updateType === "stacks" || updateType === "apps") {
+          this[updateType + "Region"] = region;
+          return this.updateRegionAppStack(updateType, region);
+        } else if (updateType === "resource") {
+          this.region = region;
+          return this.updateRegionResources();
         }
       }
-      return "";
-    });
-    return Backbone.View.extend({
-      events: {
-        "click .dashboard-header .create-stack": "createStack",
-        "click .dashboard-header .import-stack": "importStack",
-        "click .dashboard-header .icon-visualize": "importApp",
-        "click .dashboard-sidebar .dashboard-nav-log": "updateLog",
-        "click .dashboard-sidebar nav buttton": "updateLog",
-        'click #region-switch-list li': 'switchRegion',
-        'click .resource-tab': 'switchResource',
-        "click .region-resource-list .delete-stack": "deleteStack",
-        'click .region-resource-list .duplicate-stack': 'duplicateStack',
-        "click .region-resource-list .start-app": "startApp",
-        'click .region-resource-list .stop-app': 'stopApp',
-        'click .region-resource-list .terminate-app': 'terminateApp',
-        "click .show-credential": "showCredential",
-        "click .icon-detail": "showResourceDetail",
-        'click .refreshResource': 'reloadResource',
-        "click .global-resource-li": "switchGlobalResource"
-      },
-      initialize: function() {
-        var credentialId, region, self, _i, _len, _ref;
-        this.resourcesTab = "INSTANCE";
-        this.region = "global";
-        this.appsRegion = "global";
-        this.stacksRegion = "global";
-        this.setElement($(Template.main({
-          providers: this.model.supportedProviders(),
-          id: this.model.scene.project.get("id"),
-          isAdmin: this.model.scene.project.amIAdmin()
-        })).appendTo(this.model.scene.spaceParentElement()));
-        self = this;
-        this.logCol = this.model.scene.project.logs();
-        this.logCol.on('change add', this.updateLog, this);
-        this.render();
-        this.listenTo(this.model.scene.project, "update:stack", function() {
-          return self.updateRegionAppStack("stacks");
+    },
+    switchGlobalResource: function(evt) {
+      var $elem, region, type;
+      console.log(evt);
+      $elem = $(evt.currentTarget);
+      region = $elem.data("region");
+      type = $elem.parent().parent().data("type");
+      $(".dash-resource-wrap").find("#region-switch-list").find("li[data-region=" + region + "]").click();
+      return $("#RegionViewWrap").find("nav>div[data-type='" + type + "']").click();
+    },
+    updateRegionResources: function() {
+      var tpl, type;
+      this.$el.find(".dash-resource-wrap .js-toggle-dropdown span").text(constant.REGION_SHORT_LABEL[this.region] || lang.IDE.DASH_BTN_GLOBAL);
+      if (this.region === "global") {
+        this.updateGlobalResources();
+        return;
+      }
+      this.$el.find("#RegionViewWrap").show();
+      this.$el.find("#GlobalView").hide();
+      this.updateRegionTabCount();
+      type = constant.RESTYPE[this.resourcesTab];
+      if (!this.model.isAwsResReady(this.region, type)) {
+        tpl = '<div class="dashboard-loading"><div class="loading-spinner"></div></div>';
+      } else {
+        tpl = dataTemplate["resource" + this.resourcesTab](this.model.getAwsResData(this.region, type));
+      }
+      return this.$el.find("#RegionResourceData").html(tpl);
+    },
+    updateAppStackProgress: function(ops) {
+      $("#region-resource-app-wrap, #region-resource-stack-wrap").children("li[data-id='" + ops.id + "']").find(".region-resource-progess").css("width", ops.get("progress") + "%");
+    },
+    updateRegionAppStack: function(updateType, region) {
+      var attr, data, filter, resources, self, tojson;
+      if (updateType == null) {
+        updateType = "stack";
+      }
+      if (updateType !== "stacks" && updateType !== "apps") {
+        return false;
+      }
+      if (!region) {
+        region = this[updateType + "Region"];
+      }
+      self = this;
+      attr = {
+        apps: [],
+        stacks: [],
+        region: this.region
+      };
+      data = _.map(constant.REGION_LABEL, function(name, id) {
+        return {
+          id: id,
+          name: name,
+          count: 0,
+          shortName: constant.REGION_SHORT_LABEL[id]
+        };
+      });
+      if (region !== "global") {
+        filter = function(f) {
+          return f.get("region") === region && f.isExisting();
+        };
+      } else {
+        filter = function() {
+          return true;
+        };
+      }
+      tojson = {
+        thumbnail: true
+      };
+      resources = self.model.scene.project[updateType]();
+      resources.comparator = "updateTime";
+      resources.sort();
+      attr[updateType] = resources.filter(filter).map(function(m) {
+        return m.toJSON(tojson);
+      }).reverse();
+      attr.region = _.map(data, function(obj) {
+        var _ref;
+        obj.count = ((_ref = resources.groupBy("region")[obj.id]) != null ? _ref.length : void 0) || 0;
+        return obj;
+      });
+      attr.globalCount = resources.length;
+      attr.projectId = self.model.scene.project.id;
+      attr.currentRegion = _.find(data, function(e) {
+        return e.id === region;
+      }) || {
+        id: "global",
+        shortName: lang.IDE.DASH_BTN_GLOBAL
+      };
+      this.$el.find("#region-app-stack-wrap .dash-region-" + updateType + "-wrap").replaceWith(dataTemplate["region_" + updateType](attr));
+    },
+    updateRegionTabCount: function() {
+      var $nav, count, r, resourceCount;
+      resourceCount = this.model.getResourcesCount(this.region);
+      $nav = this.$el.find("#RegionResourceNav");
+      for (r in resourceCount) {
+        count = resourceCount[r];
+        $nav.children("." + r).children(".count-bubble").text(count === "" ? "-" : count);
+      }
+    },
+    switchResource: function(evt) {
+      this.$el.find("#RegionResourceNav").children().removeClass("on");
+      this.resourcesTab = $(evt.currentTarget).addClass("on").attr("data-type");
+      this.updateRegionResources();
+    },
+    deleteStack: function(event) {
+      var id;
+      event.preventDefault();
+      id = $(event.currentTarget).closest("li").attr("data-id");
+      (new AppAction({
+        model: this.model.scene.project.getOpsModel(id)
+      })).deleteStack();
+      return false;
+    },
+    duplicateStack: function(event) {
+      var id;
+      event.preventDefault();
+      id = $(event.currentTarget).closest("li").attr("data-id");
+      App.loadUrl(this.model.scene.project.stacks().get(id).duplicate().url());
+      return false;
+    },
+    startApp: function(event) {
+      var id;
+      event.preventDefault();
+      id = $(event.currentTarget).closest("li").attr("data-id");
+      (new AppAction({
+        model: this.model.scene.project.getOpsModel(id)
+      })).startApp();
+      return false;
+    },
+    stopApp: function(event) {
+      var id;
+      event.preventDefault();
+      id = $(event.currentTarget).closest("li").attr("data-id");
+      (new AppAction({
+        model: this.model.scene.project.getOpsModel(id)
+      })).stopApp();
+      return false;
+    },
+    terminateApp: function(event) {
+      var id;
+      event.preventDefault();
+      id = $(event.currentTarget).closest("li").attr("data-id");
+      (new AppAction({
+        model: this.model.scene.project.getOpsModel(id)
+      })).terminateApp();
+      return false;
+    },
+    reloadResource: function() {
+      if ($(".refreshResource").hasClass("reloading")) {
+        return;
+      }
+      $(".refreshResource").addClass("reloading").text("");
+      this.model.clearVisualizeData();
+      CloudResources.invalidate().done(function() {
+        return $(".refreshResource").removeClass("reloading").text(lang.IDE.DASH_TPL_JUST_NOW);
+      });
+    },
+    showResourceDetail: function(evt) {
+      var $tgt, formattedData, id, resModel, type;
+      $tgt = $(evt.currentTarget);
+      id = $tgt.attr("data-id");
+      type = constant.RESTYPE[this.resourcesTab];
+      resModel = this.model.getResourceData(this.region, type, id);
+      formattedData = this.formatDetail(this.resourcesTab, resModel.attributes);
+      if (formattedData.title) {
+        id = formattedData.title;
+        delete formattedData.title;
+      }
+      new Modal({
+        title: id,
+        width: "450",
+        template: dataTemplate.resourceDetail(formattedData),
+        disableFooter: true
+      });
+    },
+    formatDetail: function(type, data) {
+      var json, result, _ref, _ref1, _ref2;
+      switch (type) {
+        case "SUBSCRIPTION":
+          return {
+            DASH_LBL_TITLE: data.Endpoint,
+            DASH_LBL_ENDPOINT: data.Endpoint,
+            DASH_LBL_OWNER: data.Owner,
+            DASH_LBL_PROTOCOL: data.Protocol,
+            DASH_LBL_SUBSCRIPTION_ARN: data.SubscriptionArn,
+            DASH_LBL_TOPIC_ARN: data.TopicArn
+          };
+        case "VPC":
+          return {
+            DASH_LBL_STATE: data.state,
+            DASH_LBL_CIDR: data.cidrBlock,
+            DASH_LBL_TENANCY: data.instanceTenancy
+          };
+        case "ASG":
+          return {
+            DASH_LBL_TITLE: data.Name,
+            DASH_BUB_NAME: data.Name,
+            DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZones.join(", "),
+            DASH_LBL_CREATE_TIME: data.CreatedTime,
+            DASH_LBL_DEFAULT_COOLDOWN: data.DefaultCooldown,
+            DASH_LBL_DESIRED_CAPACITY: data.DesiredCapacity,
+            DASH_LBL_MAX_SIZE: data.MaxSize,
+            DASH_LBL_MIN_SIZE: data.MinSize,
+            DASH_LBL_HEALTH_CHECK_GRACE_PERIOD: data.HealthCheckGracePeriod,
+            DASH_LBL_HEALTH_CHECK_TYPE: data.HealthCheckType,
+            DASH_LBL_LAUNCH_CONFIGURATION_NAME: data.LaunchConfigurationName,
+            DASH_LBL_TERMINATION_POLICIES: data.TerminationPolicies.join(", "),
+            DASH_LBL_AUTOSCALING_GROUP_ARN: data.id
+          };
+        case "ELB":
+          return {
+            DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZones.join(", "),
+            DASH_LBL_CREATE_TIME: data.CreatedTime,
+            DASH_LBL_DNS_NAME: data.DNSName,
+            DASH_LBL_HEALTH_CHECK: this.formatData('HealthCheck', [data.HealthCheck], "Health Check", true),
+            DASH_LBL_INSTANCE: data.Instances.join(", "),
+            DASH_LBL_LISTENER_DESC: this.formatData('ListenerDescriptions', _.pluck(data.ListenerDescriptions.member, "Listener"), "Listener Descriptions", true),
+            DASH_LBL_SECURITY_GROUPS: data.SecurityGroups.join(", "),
+            DASH_LBL_SUBNETS: data.Subnets.join(", ")
+          };
+        case "VPN":
+          return {
+            DASH_LBL_STATE: data.state,
+            DASH_LBL_VGW_ID: data.vpnGatewayId,
+            DASH_LBL_CGW_ID: data.customerGatewayId,
+            DASH_LBL_TYPE: data.type
+          };
+        case "VOL":
+          return {
+            DASH_LBL_VOLUME_ID: data.id,
+            DASH_LBL_DEVICE_NAME: data.device,
+            DASH_LBL_SNAPSHOT_ID: data.snapshotId,
+            DASH_LBL_VOLUME_SIZE: data.size,
+            DASH_LBL_STATUS: data.status,
+            DASH_LBL_INSTANCE_ID: data.instanceId,
+            DASH_LBL_DELETE_ON_TERM: data.deleteOnTermination,
+            DASH_LBL_AVAILABILITY_ZONE: data.availabilityZone,
+            DASH_LBL_VOLUME_TYPE: data.volumeType,
+            DASH_LBL_CREATE_TIME: data.createTime,
+            DASH_LBL_ATTACH_TIME: data.attachTime
+          };
+        case "INSTANCE":
+          return {
+            DASH_LBL_STATUS: data.instanceState.name,
+            DASH_LBL_MONITORING: data.monitoring.state,
+            DASH_LBL_PRIMARY_PRIVATE_IP: data.privateIpAddress,
+            DASH_LBL_PRIVATE_DNS: data.privateDnsName,
+            DASH_LBL_LAUNCH_TIME: data.launchTime,
+            DASH_LBL_AVAILABILITY_ZONE: data.placement.availabilityZone,
+            DASH_LBL_AMI_LAUNCH_INDEX: data.amiLaunchIndex,
+            DASH_LBL_INSTANCE_TYPE: data.instanceType,
+            DASH_LBL_BLOCK_DEVICE_TYPE: data.rootDeviceType,
+            DASH_LBL_BLOCK_DEVICES: data.blockDeviceMapping ? this.formatData("BlockDevice", data.blockDeviceMapping, "deviceName") : null,
+            DASH_LBL_NETWORK_INTERFACE: data.networkInterfaceSet ? this.formatData("ENI", data.networkInterfaceSet, "networkInterfaceId") : null
+          };
+        case 'EIP':
+          result = {
+            DASH_LBL_PUBLIC_IP: data.publicIp,
+            DASH_LBL_DOMAIN: data.domain,
+            DASH_LBL_ALLOCATION_ID: data.id,
+            DASH_LBL_CATEGORY: data.category,
+            DASH_LBL_TITLE: data.publicIp
+          };
+          if (data.associationId) {
+            result.DASH_LBL_ASSOCIATION_ID = data.associationId;
+          }
+          if (data.networkInterfaceId) {
+            result.DASH_LBL_NETWORK_INTERFACE_ID = data.networkInterfaceId;
+          }
+          if (data.instanceId) {
+            result.DASH_LBL_INSTANCE_ID = data.instanceId;
+          }
+          if (data.privateIpAddresse) {
+            result.DASH_LBL_PRIVATE_IP_ADDRESS = data.privateIpAddresses;
+          }
+          return result;
+        case 'CW':
+          return {
+            DASH_LBL_ALARM_NAME: data.Name,
+            DASH_LBL_COMPARISON_OPERATOR: data.ComparisonOperator,
+            DASH_LBL_DIMENSIONS: this.formatData('Dimensions', data.Dimensions, 'Dimensions', true),
+            DASH_LBL_EVALUATION_PERIODS: data.EvaluationPeriods,
+            DASH_LBL_INSUFFICIENT_DATA_ACTIONS: data.InsufficientDataActions,
+            DASH_LBL_METRIC_NAME: data.MetricName,
+            DASH_LBL_NAMESPACE: data.Namespace,
+            DASH_LBL_OK_ACTIONS: data.OKActions,
+            DASH_LBL_PERIOD: data.Period,
+            DASH_LBL_STATE_REGION: data.StateReason,
+            DASH_LBL_STATE_UPDATED_TIMESTAMP: data.StateUpdatedTimestamp,
+            DASH_LBL_STATE_VALUE: data.StateValue,
+            DASH_LBL_STATISTIC: data.Statistic,
+            DASH_LBL_THRESHOLD: data.Threshold,
+            DASH_LBL_CATEGORY: data.category,
+            DASH_LBL_TITLE: data.Name,
+            DASH_LBL_ACTIONS_ENABLED: data.ActionsEnabled ? "true" : 'false',
+            DASH_LBL_ALARM_ACTIONS: data.AlarmActions.member,
+            DASH_LBL_ALARM_ARN: data.id
+          };
+        case "DBINSTANCE":
+          json = {
+            DASH_LBL_STATUS: data.DBInstanceStatus,
+            DASH_LBL_ENDPOINT: data.Endpoint.Address + "" + data.Endpoint.Port,
+            DASH_LBL_ENGINE: data.Engine,
+            DASH_LBL_DB_NAME: data.name || data.Name || data.DBName || "None",
+            DASH_LBL_OPTION_GROUP: ((_ref = data.OptionGroupMemberships) != null ? (_ref1 = _ref.OptionGroupMembership) != null ? _ref1.OptionGroupName : void 0 : void 0) || "None",
+            DASH_LBL_PARAMETER_GROUP: ((_ref2 = data.DBParameterGroups) != null ? _ref2.DBParameterGroupName : void 0) || "None",
+            DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZone,
+            DASH_LBL_SUBNET_GROUP: data.sbgId || "None",
+            DASH_LBL_PUBLICLY_ACCESSIBLE: data.PubliclyAccessible.toString(),
+            DASH_LBL_IOPS: data.Iops || "OFF",
+            DASH_LBL_MULTI_AZ: data.MultiAZ.toString(),
+            DASH_LBL_AUTOMATED_BACKUP: data.AutoMinorVersionUpgrade,
+            DASH_LBL_LATEST_RESTORE_TIME: data.LatestRestorableTime,
+            DASH_LBL_AUTO_MINOR_VERSION_UPGRADE: data.AutoMinorVersionUpgrade,
+            DASH_LBL_MAINTENANCE_WINDOW: data.PreferredMaintenanceWindow,
+            DASH_LBL_BACKUP_WINDOW: data.PreferredBackupWindow
+          };
+          return json;
+      }
+    },
+    formatData: function(type, array, key, force) {
+      var result;
+      if ((['BlockDevice', "AttachmentSet", "HealthCheck", "ListenerDescriptions", 'Dimensions', 'ENI'].indexOf(type)) > -1) {
+        _.map(array, function(blockDevice, index) {
+          _.map(blockDevice, function(e, key) {
+            if (key === "ebs") {
+              _.extend(blockDevice, e);
+            }
+            if (_.isObject(e)) {
+              return delete blockDevice[key];
+            }
+          });
+          return _.map(blockDevice, function(e, key) {
+            if (_.isBoolean(e)) {
+              blockDevice[key] = e.toString();
+              return null;
+            }
+          });
         });
-        this.listenTo(this.model.scene.project, "update:app", function() {
-          return self.updateRegionAppStack("apps");
+        _.map(array, function(data) {
+          if (force) {
+            data._title = key;
+          } else {
+            data._title = data[key];
+          }
+          data.bubble = {
+            value: force ? key : data[key],
+            data: JSON.stringify(data),
+            template: "dashboardBubbleSub"
+          };
+          return data;
         });
-        this.listenTo(this.model.scene.project, "change:stack", function() {
-          return self.updateRegionAppStack("stacks");
+        array.bubble = true;
+        return array;
+      } else {
+        result = _.map(array, function(i) {
+          i.bubble = {};
+          i.bubble.value = i[key];
+          i.bubble.data = JSON.stringify({
+            type: type,
+            id: i[key]
+          });
+          return i;
         });
-        this.listenTo(this.model.scene.project, "change:app", function() {
-          return self.updateRegionAppStack("apps");
+        result.bubble = true;
+        return result;
+      }
+    },
+    dashboardBubbleSub: function(data) {
+      var formattedData, renderData;
+      renderData = {};
+      formattedData = {};
+      _.each(data, function(value, key) {
+        var newKey;
+        newKey = lang.IDE["BUBBLE_" + key.toUpperCase().split("-").join("_")] || key;
+        formattedData[newKey] = value;
+      });
+      renderData.data = formattedData;
+      renderData.title = data.id || data.name || data._title;
+      delete renderData.data._title;
+      return dataTemplate.bubbleResourceSub(renderData);
+    },
+    dashboardBubble: function(data) {
+      var d, formattedData, resourceData, _ref;
+      resourceData = (_ref = this.model.getAwsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0;
+      formattedData = {};
+      _.each(resourceData, function(value, key) {
+        var newKey;
+        newKey = lang.IDE["BUBBLE_" + key.toUpperCase().split("-").join("_")] || key;
+        formattedData[newKey] = value;
+      });
+      d = {
+        id: data.id,
+        data: formattedData
+      };
+      _.each(d.data, function(e, key) {
+        if (_.isBoolean(e)) {
+          d.data[key] = e.toString();
+        }
+        if (e === "") {
+          d.data[key] = "None";
+        }
+        if ((_.isArray(e)) && e.length === 0) {
+          d.data[key] = ['None'];
+        }
+        if ((_.isObject(e)) && (!_.isArray(e))) {
+          return delete d.data[key];
+        }
+      });
+      return dataTemplate.bubbleResourceInfo(d);
+    },
+    updateLog: function(event) {
+      var $btn, $sidebar, myRole, that;
+      that = this;
+      if (event) {
+        $btn = $(event.currentTarget);
+        $sidebar = $btn.parents('.dashboard-sidebar');
+        $sidebar.find('.dashboard-nav-log').removeClass('selected');
+        $sidebar.find('.dashboard-log').addClass('hide');
+        $btn.addClass('selected');
+        if ($btn.hasClass('dashboard-nav-activity')) {
+          $sidebar.find('.dashboard-log-activity').removeClass('hide');
+        } else {
+          $sidebar.find('.dashboard-log-audit').removeClass('hide');
+        }
+      }
+      myRole = that.model.scene.project.get('myRole');
+      that.renderLog("activity");
+      if (myRole === 'admin') {
+        return that.renderLog("audit");
+      } else {
+        return that.renderLog("audit", true);
+      }
+    },
+    renderLog: function(type, empty) {
+      var $container, container, dataAry, models, projectId, that;
+      that = this;
+      if (type === 'activity') {
+        models = this.logCol.history();
+        container = '.dashboard-log-activity';
+      } else if (type === 'audit') {
+        models = this.logCol.audit();
+        container = '.dashboard-log-audit';
+      }
+      $container = this.$el.find('.dashboard-sidebar').find(container);
+      if (empty) {
+        $container.html(Template.noActivity());
+        return;
+      }
+      projectId = this.model.scene.project.id;
+      dataAry = _.filter(models, function(data) {
+        return data.get('success');
+      });
+      dataAry = _.map(models, function(data) {
+        var action, event, eventStr, target, targetId, _name, _target;
+        action = data.get('action') || '';
+        target = data.get('target') || '';
+        type = (data.get('type') || '').toLowerCase();
+        targetId = data.get('targetId') || '';
+        if (!that.model.scene.project.getOpsModel(targetId)) {
+          targetId = null;
+        }
+        _name = '<span class="name">' + data.get("username") + '</span>';
+        if (targetId) {
+          _target = '<a class="target route" href="/workspace/' + projectId + '/ops/' + targetId + '">' + target + '</a>';
+        } else {
+          _target = '<span class="target">' + target + ' </span>';
+        }
+        eventStr = lang.IDE["DASHBOARD_LOGS_" + (type.toUpperCase()) + "_" + (action.toUpperCase())];
+        if (eventStr) {
+          event = sprintf(eventStr, _name, _target, '');
+        }
+        return {
+          action_type: (action + '_' + type).toLowerCase(),
+          event: event || ("" + _name + " " + action + " " + type + " " + _target),
+          time: MC.intervalDate(new Date(data.get('time')))
+        };
+      });
+      if (dataAry.length) {
+        return $container.html(Template.activityList(dataAry));
+      } else {
+        return $container.html(Template.noActivity());
+      }
+    }
+  });
+});
+
+define('wspace/dashboard/Dashboard',["Workspace", "./DashboardView", 'i18n!/nls/lang.js', "CloudResources", "constant", "ApiRequest", "Credential"], function(Workspace, DashboardView, lang, CloudResources, constant, ApiRequest, Credential) {
+  return Workspace.extend({
+    type: "Dashboard",
+    isFixed: function() {
+      return true;
+    },
+    tabClass: function() {
+      return "icon-dashboard";
+    },
+    title: function() {
+      return lang.IDE.NAV_TIT_DASHBOARD;
+    },
+    url: function() {
+      return "/";
+    },
+    initialize: function() {
+      this.view = new DashboardView({
+        model: this
+      });
+      this.listenTo(this.scene.project, "change:myRole", function() {
+        return this.view.render();
+      });
+    },
+    isReadOnly: function() {
+      return this.scene.project.amIObserver();
+    },
+    isWorkingOn: function(attr) {
+      return attr.type === "Dashboard";
+    },
+    fetchAwsResources: function(region) {
+      var credentialId, self;
+      credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
+      self = this;
+      if (!region) {
+        CloudResources(credentialId, constant.RESTYPE.INSTANCE).fetch();
+        CloudResources(credentialId, constant.RESTYPE.EIP).fetch();
+        CloudResources(credentialId, constant.RESTYPE.VOL).fetch();
+        CloudResources(credentialId, constant.RESTYPE.ELB).fetch();
+        CloudResources(credentialId, constant.RESTYPE.VPN).fetch();
+        _.each(constant.REGION_KEYS, function(e) {
+          return CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).fetch();
         });
-        this.listenTo(this.model.scene.project, "update:credential", function() {
-          return self.updateDemoView();
-        });
-        this.listenTo(this.model.scene.project, "change:credential", function() {
-          return self.updateDemoView();
-        });
-        this.listenTo(this.model.scene.project.apps(), "change:progress", function(ops) {
-          return self.updateAppStackProgress(ops);
-        });
-        this.listenTo(this.model.scene.project.stacks(), "change:progress", function(ops) {
-          return self.updateAppStackProgress(ops);
-        });
-        this.listenTo(App.WS, "visualizeUpdate", this.onVisualizeUpdated);
-        credentialId = this.model.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
-        this.credentialAccount = this.model.scene.project.credOfProvider(Credential.PROVIDER.AWSGLOBAL).get("awsAccount");
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.INSTANCE), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.EIP), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.VOL), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.ELB), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.VPN), "update", this.onGlobalResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.VPC), "update", this.onRegionResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.ASG), "update", this.onRegionResChanged);
-        this.listenTo(CloudResources(credentialId, constant.RESTYPE.CW), "update", this.onRegionResChanged);
+        return;
+      }
+      CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region).fetch();
+      CloudResources(credentialId, constant.RESTYPE.VPC).fetch();
+      CloudResources(credentialId, constant.RESTYPE.DHCP, region).fetch();
+      CloudResources(credentialId, constant.RESTYPE.ASG).fetch();
+      CloudResources(credentialId, constant.RESTYPE.CW).fetch();
+      CloudResources(credentialId, constant.RESTYPE.ENI, region).fetch();
+      CloudResources(credentialId, constant.RESTYPE.CGW, region).fetch();
+      CloudResources(credentialId, constant.RESTYPE.VGW, region).fetch();
+    },
+    isAwsResReady: function(region, type) {
+      var credentialId, datasource, e, globalReady, i, _i, _j, _len, _len1, _ref;
+      credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
+      if (!region) {
+        globalReady = true;
+        datasource = [CloudResources(credentialId, constant.RESTYPE.INSTANCE), CloudResources(credentialId, constant.RESTYPE.EIP), CloudResources(credentialId, constant.RESTYPE.VOL), CloudResources(credentialId, constant.RESTYPE.ELB), CloudResources(credentialId, constant.RESTYPE.VPN)];
         _ref = constant.REGION_KEYS;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          region = _ref[_i];
-          this.listenTo(CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region), "update", this.onRegionResChanged);
-          this.listenTo(CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, region), "update", this.onGlobalResChanged);
-        }
-        MC.template.dashboardBubble = _.bind(this.dashboardBubble, this);
-        MC.template.dashboardBubbleSub = _.bind(this.dashboardBubbleSub, this);
-      },
-      render: function() {
-        var self;
-        this.updateDemoView();
-        this.updateGlobalResources();
-        this.model.fetchAwsResources();
-        this.initRegion();
-        this.updateLog();
-        self = this;
-        setInterval(function() {
-          if (!self.$el.find(".refreshResource").hasClass("reloading")) {
-            self.$el.find(".refreshResource").text(MC.intervalDate(self.lastUpdate / 1000));
+          e = _ref[_i];
+          if (!CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).isReady()) {
+            globalReady = false;
           }
-          self.updateLog();
-        }, 1000 * 60);
-        this.$el.toggleClass("observer", this.model.isReadOnly());
-      },
-      createStack: function(evt) {
-        var $tgt, opsModel, provider, region;
-        $tgt = $(evt.currentTarget);
-        provider = $tgt.closest("ul").attr("data-provider");
-        region = $tgt.attr("data-region");
-        opsModel = this.model.scene.project.createStack(region, provider);
-        this.model.scene.loadSpace(opsModel);
-      },
-      showCredential: function() {
-        return new CredentialFormView({
-          model: this.model.scene.project
-        }).render();
-      },
-      importStack: function(evt) {
-        new ImportDialog({
-          type: $(evt.currentTarget).attr("data-type"),
-          project: this.model.scene.project
-        });
-        return false;
-      },
-      importApp: function() {
-        return new AppAction({
-          project: this.model.scene.project
-        }).showPayment().then((function(_this) {
-          return function(result) {
-            return new VisualizeDialog({
-              model: _this.model.scene.project,
-              dialog: result != null ? result.modal : void 0
-            });
-          };
-        })(this));
-      },
-      updateDemoView: function() {
-        var newCredentialAccount;
-        if (!this.model.scene.project.isDemoMode()) {
-          this.$el.find("#dashboard-data-wrap").removeClass("demo");
-          this.$el.find("#VisualizeVPC").removeAttr("disabled").removeClass("tooltip").removeAttr("title");
-          newCredentialAccount = this.model.scene.project.credOfProvider(Credential.PROVIDER.AWSGLOBAL).get("awsAccount");
-          if (this.credentialAccount !== newCredentialAccount) {
-            this.reloadResource();
-            this.credentialAccount = newCredentialAccount;
-          }
-        } else {
-          this.$el.find("#VisualizeVPC").attr("disabled", "disabled").addClass("tooltip").attr("title", lang.IDE.PROVIDE_CRED_TO_VISUALIZE);
-          this.$el.find("#dashboard-data-wrap").toggleClass("demo", true);
         }
-      },
-      updateGlobalResources: function() {
-        var data;
-        if (!this.model.isAwsResReady()) {
-          this.__globalLoading = true;
+        for (_j = 0, _len1 = datasource.length; _j < _len1; _j++) {
+          i = datasource[_j];
+          if (!i.isReady()) {
+            globalReady = false;
+          }
+        }
+        return globalReady;
+      }
+      switch (type) {
+        case constant.RESTYPE.SUBSCRIPTION:
+          return CloudResources(credentialId, type, region).isReady();
+        case constant.RESTYPE.VPC:
+          return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.DHCP, region).isReady();
+        case constant.RESTYPE.INSTANCE:
+          return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.EIP, region).isReady();
+        case constant.RESTYPE.VPN:
+          return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.VGW, region).isReady() && CloudResources(credentialId, constant.RESTYPE.CGW, region).isReady();
+        case constant.RESTYPE.DBINSTANCE:
+          return CloudResources(credentialId, type, region).isReady();
+        default:
+          return CloudResources(credentialId, type).isReady();
+      }
+    },
+    getAwsResData: function(region, type) {
+      var DBInstances, DBInstancesCount, credentialId, data, e, filter, _i, _len, _ref;
+      credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
+      if (!region) {
+        filter = function(m) {
+          if (m.attributes.instanceState) {
+            return m.attributes.instanceState.name === "running";
+          } else {
+            return false;
+          }
+        };
+        DBInstancesCount = 0;
+        DBInstances = [];
+        _ref = constant.REGION_KEYS;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          e = _ref[_i];
           data = {
-            loading: true
+            region: e,
+            data: CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).models || [],
+            regionName: constant.REGION_SHORT_LABEL[e],
+            regionArea: constant.REGION_LABEL[e]
           };
-        } else {
-          this.__globalLoading = false;
-          data = this.model.getAwsResData();
+          DBInstancesCount += data.data.length;
+          DBInstances.push(data);
         }
-        this.$el.find("#GlobalView").html(dataTemplate.globalResources(data));
-        if (this.region === "global") {
-          this.$el.find("#GlobalView").removeAttr("style");
-          this.$el.find("#RegionViewWrap").hide();
-        }
-      },
-      onGlobalResChanged: function() {
-        this.updateGlobalResources();
-        return this.updateRegionResources();
-      },
-      onRegionResChanged: function() {
-        return this.updateRegionResources();
-      },
-      initRegion: function() {
-        this.updateRegionAppStack("stacks", "global");
-        this.updateRegionAppStack("apps", "global");
-        return this.updateRegionResources();
-      },
-      switchRegion: function(evt) {
-        var region, target, updateType;
-        if (evt && evt.currentTarget) {
-          target = evt.currentTarget;
-          region = $(target).data("region");
-          if (region !== "global") {
-            this.model.fetchAwsResources(region);
-          }
-          updateType = $(evt.currentTarget).parents(".dash-region-navigation").data("type");
-          if (updateType === "stacks" || updateType === "apps") {
-            this[updateType + "Region"] = region;
-            return this.updateRegionAppStack(updateType, region);
-          } else if (updateType === "resource") {
-            this.region = region;
-            return this.updateRegionResources();
-          }
-        }
-      },
-      switchGlobalResource: function(evt) {
-        var $elem, region, type;
-        console.log(evt);
-        $elem = $(evt.currentTarget);
-        region = $elem.data("region");
-        type = $elem.parent().parent().data("type");
-        $(".dash-resource-wrap").find("#region-switch-list").find("li[data-region=" + region + "]").click();
-        return $("#RegionViewWrap").find("nav>div[data-type='" + type + "']").click();
-      },
-      updateRegionResources: function() {
-        var tpl, type;
-        this.$el.find(".dash-resource-wrap .js-toggle-dropdown span").text(constant.REGION_SHORT_LABEL[this.region] || lang.IDE.DASH_BTN_GLOBAL);
-        if (this.region === "global") {
-          this.updateGlobalResources();
-          return;
-        }
-        this.$el.find("#RegionViewWrap").show();
-        this.$el.find("#GlobalView").hide();
-        this.updateRegionTabCount();
-        type = constant.RESTYPE[this.resourcesTab];
-        if (!this.model.isAwsResReady(this.region, type)) {
-          tpl = '<div class="dashboard-loading"><div class="loading-spinner"></div></div>';
-        } else {
-          tpl = dataTemplate["resource" + this.resourcesTab](this.model.getAwsResData(this.region, type));
-        }
-        return this.$el.find("#RegionResourceData").html(tpl);
-      },
-      updateAppStackProgress: function(ops) {
-        $("#region-resource-app-wrap, #region-resource-stack-wrap").children("li[data-id='" + ops.id + "']").find(".region-resource-progess").css("width", ops.get("progress") + "%");
-      },
-      updateRegionAppStack: function(updateType, region) {
-        var attr, data, filter, resources, self, tojson;
-        if (updateType == null) {
-          updateType = "stack";
-        }
-        if (updateType !== "stacks" && updateType !== "apps") {
-          return false;
-        }
-        if (!region) {
-          region = this[updateType + "Region"];
-        }
-        self = this;
-        attr = {
-          apps: [],
-          stacks: [],
-          region: this.region
+        DBInstances.totalCount = DBInstancesCount;
+        return {
+          instances: CloudResources(credentialId, constant.RESTYPE.INSTANCE).groupByCategory(void 0, filter),
+          eips: CloudResources(credentialId, constant.RESTYPE.EIP).groupByCategory(),
+          volumes: CloudResources(credentialId, constant.RESTYPE.VOL).groupByCategory(),
+          elbs: CloudResources(credentialId, constant.RESTYPE.ELB).groupByCategory(),
+          vpns: CloudResources(credentialId, constant.RESTYPE.VPN).groupByCategory(),
+          rds: DBInstances
         };
-        data = _.map(constant.REGION_LABEL, function(name, id) {
-          return {
-            id: id,
-            name: name,
-            count: 0,
-            shortName: constant.REGION_SHORT_LABEL[id]
-          };
-        });
-        if (region !== "global") {
-          filter = function(f) {
-            return f.get("region") === region && f.isExisting();
-          };
-        } else {
-          filter = function() {
-            return true;
-          };
-        }
-        tojson = {
-          thumbnail: true
-        };
-        resources = self.model.scene.project[updateType]();
-        resources.comparator = "updateTime";
-        resources.sort();
-        attr[updateType] = resources.filter(filter).map(function(m) {
-          return m.toJSON(tojson);
-        }).reverse();
-        attr.region = _.map(data, function(obj) {
-          var _ref;
-          obj.count = ((_ref = resources.groupBy("region")[obj.id]) != null ? _ref.length : void 0) || 0;
-          return obj;
-        });
-        attr.globalCount = resources.length;
-        attr.projectId = self.model.scene.project.id;
-        attr.currentRegion = _.find(data, function(e) {
-          return e.id === region;
-        }) || {
-          id: "global",
-          shortName: lang.IDE.DASH_BTN_GLOBAL
-        };
-        this.$el.find("#region-app-stack-wrap .dash-region-" + updateType + "-wrap").replaceWith(dataTemplate["region_" + updateType](attr));
-      },
-      updateRegionTabCount: function() {
-        var $nav, count, r, resourceCount;
-        resourceCount = this.model.getResourcesCount(this.region);
-        $nav = this.$el.find("#RegionResourceNav");
-        for (r in resourceCount) {
-          count = resourceCount[r];
-          $nav.children("." + r).children(".count-bubble").text(count === "" ? "-" : count);
-        }
-      },
-      switchResource: function(evt) {
-        this.$el.find("#RegionResourceNav").children().removeClass("on");
-        this.resourcesTab = $(evt.currentTarget).addClass("on").attr("data-type");
-        this.updateRegionResources();
-      },
-      deleteStack: function(event) {
-        var id;
-        event.preventDefault();
-        id = $(event.currentTarget).closest("li").attr("data-id");
-        (new AppAction({
-          model: this.model.scene.project.getOpsModel(id)
-        })).deleteStack();
-        return false;
-      },
-      duplicateStack: function(event) {
-        var id;
-        event.preventDefault();
-        id = $(event.currentTarget).closest("li").attr("data-id");
-        App.loadUrl(this.model.scene.project.stacks().get(id).duplicate().url());
-        return false;
-      },
-      startApp: function(event) {
-        var id;
-        event.preventDefault();
-        id = $(event.currentTarget).closest("li").attr("data-id");
-        (new AppAction({
-          model: this.model.scene.project.getOpsModel(id)
-        })).startApp();
-        return false;
-      },
-      stopApp: function(event) {
-        var id;
-        event.preventDefault();
-        id = $(event.currentTarget).closest("li").attr("data-id");
-        (new AppAction({
-          model: this.model.scene.project.getOpsModel(id)
-        })).stopApp();
-        return false;
-      },
-      terminateApp: function(event) {
-        var id;
-        event.preventDefault();
-        id = $(event.currentTarget).closest("li").attr("data-id");
-        (new AppAction({
-          model: this.model.scene.project.getOpsModel(id)
-        })).terminateApp();
-        return false;
-      },
-      reloadResource: function() {
-        if ($(".refreshResource").hasClass("reloading")) {
-          return;
-        }
-        $(".refreshResource").addClass("reloading").text("");
-        this.model.clearVisualizeData();
-        CloudResources.invalidate().done(function() {
-          return $(".refreshResource").removeClass("reloading").text(lang.IDE.DASH_TPL_JUST_NOW);
-        });
-      },
-      showResourceDetail: function(evt) {
-        var $tgt, formattedData, id, resModel, type;
-        $tgt = $(evt.currentTarget);
-        id = $tgt.attr("data-id");
-        type = constant.RESTYPE[this.resourcesTab];
-        resModel = this.model.getResourceData(this.region, type, id);
-        formattedData = this.formatDetail(this.resourcesTab, resModel.attributes);
-        if (formattedData.title) {
-          id = formattedData.title;
-          delete formattedData.title;
-        }
-        new Modal({
-          title: id,
-          width: "450",
-          template: dataTemplate.resourceDetail(formattedData),
-          disableFooter: true
-        });
-      },
-      formatDetail: function(type, data) {
-        var json, result, _ref, _ref1, _ref2;
-        switch (type) {
-          case "SUBSCRIPTION":
-            return {
-              DASH_LBL_TITLE: data.Endpoint,
-              DASH_LBL_ENDPOINT: data.Endpoint,
-              DASH_LBL_OWNER: data.Owner,
-              DASH_LBL_PROTOCOL: data.Protocol,
-              DASH_LBL_SUBSCRIPTION_ARN: data.SubscriptionArn,
-              DASH_LBL_TOPIC_ARN: data.TopicArn
-            };
-          case "VPC":
-            return {
-              DASH_LBL_STATE: data.state,
-              DASH_LBL_CIDR: data.cidrBlock,
-              DASH_LBL_TENANCY: data.instanceTenancy
-            };
-          case "ASG":
-            return {
-              DASH_LBL_TITLE: data.Name,
-              DASH_BUB_NAME: data.Name,
-              DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZones.join(", "),
-              DASH_LBL_CREATE_TIME: data.CreatedTime,
-              DASH_LBL_DEFAULT_COOLDOWN: data.DefaultCooldown,
-              DASH_LBL_DESIRED_CAPACITY: data.DesiredCapacity,
-              DASH_LBL_MAX_SIZE: data.MaxSize,
-              DASH_LBL_MIN_SIZE: data.MinSize,
-              DASH_LBL_HEALTH_CHECK_GRACE_PERIOD: data.HealthCheckGracePeriod,
-              DASH_LBL_HEALTH_CHECK_TYPE: data.HealthCheckType,
-              DASH_LBL_LAUNCH_CONFIGURATION_NAME: data.LaunchConfigurationName,
-              DASH_LBL_TERMINATION_POLICIES: data.TerminationPolicies.join(", "),
-              DASH_LBL_AUTOSCALING_GROUP_ARN: data.id
-            };
-          case "ELB":
-            return {
-              DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZones.join(", "),
-              DASH_LBL_CREATE_TIME: data.CreatedTime,
-              DASH_LBL_DNS_NAME: data.DNSName,
-              DASH_LBL_HEALTH_CHECK: this.formatData('HealthCheck', [data.HealthCheck], "Health Check", true),
-              DASH_LBL_INSTANCE: data.Instances.join(", "),
-              DASH_LBL_LISTENER_DESC: this.formatData('ListenerDescriptions', _.pluck(data.ListenerDescriptions.member, "Listener"), "Listener Descriptions", true),
-              DASH_LBL_SECURITY_GROUPS: data.SecurityGroups.join(", "),
-              DASH_LBL_SUBNETS: data.Subnets.join(", ")
-            };
-          case "VPN":
-            return {
-              DASH_LBL_STATE: data.state,
-              DASH_LBL_VGW_ID: data.vpnGatewayId,
-              DASH_LBL_CGW_ID: data.customerGatewayId,
-              DASH_LBL_TYPE: data.type
-            };
-          case "VOL":
-            return {
-              DASH_LBL_VOLUME_ID: data.id,
-              DASH_LBL_DEVICE_NAME: data.device,
-              DASH_LBL_SNAPSHOT_ID: data.snapshotId,
-              DASH_LBL_VOLUME_SIZE: data.size,
-              DASH_LBL_STATUS: data.status,
-              DASH_LBL_INSTANCE_ID: data.instanceId,
-              DASH_LBL_DELETE_ON_TERM: data.deleteOnTermination,
-              DASH_LBL_AVAILABILITY_ZONE: data.availabilityZone,
-              DASH_LBL_VOLUME_TYPE: data.volumeType,
-              DASH_LBL_CREATE_TIME: data.createTime,
-              DASH_LBL_ATTACH_TIME: data.attachTime
-            };
-          case "INSTANCE":
-            return {
-              DASH_LBL_STATUS: data.instanceState.name,
-              DASH_LBL_MONITORING: data.monitoring.state,
-              DASH_LBL_PRIMARY_PRIVATE_IP: data.privateIpAddress,
-              DASH_LBL_PRIVATE_DNS: data.privateDnsName,
-              DASH_LBL_LAUNCH_TIME: data.launchTime,
-              DASH_LBL_AVAILABILITY_ZONE: data.placement.availabilityZone,
-              DASH_LBL_AMI_LAUNCH_INDEX: data.amiLaunchIndex,
-              DASH_LBL_INSTANCE_TYPE: data.instanceType,
-              DASH_LBL_BLOCK_DEVICE_TYPE: data.rootDeviceType,
-              DASH_LBL_BLOCK_DEVICES: data.blockDeviceMapping ? this.formatData("BlockDevice", data.blockDeviceMapping, "deviceName") : null,
-              DASH_LBL_NETWORK_INTERFACE: data.networkInterfaceSet ? this.formatData("ENI", data.networkInterfaceSet, "networkInterfaceId") : null
-            };
-          case 'EIP':
-            result = {
-              DASH_LBL_PUBLIC_IP: data.publicIp,
-              DASH_LBL_DOMAIN: data.domain,
-              DASH_LBL_ALLOCATION_ID: data.id,
-              DASH_LBL_CATEGORY: data.category,
-              DASH_LBL_TITLE: data.publicIp
-            };
-            if (data.associationId) {
-              result.DASH_LBL_ASSOCIATION_ID = data.associationId;
-            }
-            if (data.networkInterfaceId) {
-              result.DASH_LBL_NETWORK_INTERFACE_ID = data.networkInterfaceId;
-            }
-            if (data.instanceId) {
-              result.DASH_LBL_INSTANCE_ID = data.instanceId;
-            }
-            if (data.privateIpAddresse) {
-              result.DASH_LBL_PRIVATE_IP_ADDRESS = data.privateIpAddresses;
-            }
-            return result;
-          case 'CW':
-            return {
-              DASH_LBL_ALARM_NAME: data.Name,
-              DASH_LBL_COMPARISON_OPERATOR: data.ComparisonOperator,
-              DASH_LBL_DIMENSIONS: this.formatData('Dimensions', data.Dimensions, 'Dimensions', true),
-              DASH_LBL_EVALUATION_PERIODS: data.EvaluationPeriods,
-              DASH_LBL_INSUFFICIENT_DATA_ACTIONS: data.InsufficientDataActions,
-              DASH_LBL_METRIC_NAME: data.MetricName,
-              DASH_LBL_NAMESPACE: data.Namespace,
-              DASH_LBL_OK_ACTIONS: data.OKActions,
-              DASH_LBL_PERIOD: data.Period,
-              DASH_LBL_STATE_REGION: data.StateReason,
-              DASH_LBL_STATE_UPDATED_TIMESTAMP: data.StateUpdatedTimestamp,
-              DASH_LBL_STATE_VALUE: data.StateValue,
-              DASH_LBL_STATISTIC: data.Statistic,
-              DASH_LBL_THRESHOLD: data.Threshold,
-              DASH_LBL_CATEGORY: data.category,
-              DASH_LBL_TITLE: data.Name,
-              DASH_LBL_ACTIONS_ENABLED: data.ActionsEnabled ? "true" : 'false',
-              DASH_LBL_ALARM_ACTIONS: data.AlarmActions.member,
-              DASH_LBL_ALARM_ARN: data.id
-            };
-          case "DBINSTANCE":
-            json = {
-              DASH_LBL_STATUS: data.DBInstanceStatus,
-              DASH_LBL_ENDPOINT: data.Endpoint.Address + "" + data.Endpoint.Port,
-              DASH_LBL_ENGINE: data.Engine,
-              DASH_LBL_DB_NAME: data.name || data.Name || data.DBName || "None",
-              DASH_LBL_OPTION_GROUP: ((_ref = data.OptionGroupMemberships) != null ? (_ref1 = _ref.OptionGroupMembership) != null ? _ref1.OptionGroupName : void 0 : void 0) || "None",
-              DASH_LBL_PARAMETER_GROUP: ((_ref2 = data.DBParameterGroups) != null ? _ref2.DBParameterGroupName : void 0) || "None",
-              DASH_LBL_AVAILABILITY_ZONE: data.AvailabilityZone,
-              DASH_LBL_SUBNET_GROUP: data.sbgId || "None",
-              DASH_LBL_PUBLICLY_ACCESSIBLE: data.PubliclyAccessible.toString(),
-              DASH_LBL_IOPS: data.Iops || "OFF",
-              DASH_LBL_MULTI_AZ: data.MultiAZ.toString(),
-              DASH_LBL_AUTOMATED_BACKUP: data.AutoMinorVersionUpgrade,
-              DASH_LBL_LATEST_RESTORE_TIME: data.LatestRestorableTime,
-              DASH_LBL_AUTO_MINOR_VERSION_UPGRADE: data.AutoMinorVersionUpgrade,
-              DASH_LBL_MAINTENANCE_WINDOW: data.PreferredMaintenanceWindow,
-              DASH_LBL_BACKUP_WINDOW: data.PreferredBackupWindow
-            };
-            return json;
-        }
-      },
-      formatData: function(type, array, key, force) {
-        var result;
-        if ((['BlockDevice', "AttachmentSet", "HealthCheck", "ListenerDescriptions", 'Dimensions', 'ENI'].indexOf(type)) > -1) {
-          _.map(array, function(blockDevice, index) {
-            _.map(blockDevice, function(e, key) {
-              if (key === "ebs") {
-                _.extend(blockDevice, e);
-              }
-              if (_.isObject(e)) {
-                return delete blockDevice[key];
-              }
-            });
-            return _.map(blockDevice, function(e, key) {
-              if (_.isBoolean(e)) {
-                blockDevice[key] = e.toString();
-                return null;
-              }
-            });
-          });
-          _.map(array, function(data) {
-            if (force) {
-              data._title = key;
-            } else {
-              data._title = data[key];
-            }
-            data.bubble = {
-              value: force ? key : data[key],
-              data: JSON.stringify(data),
-              template: "dashboardBubbleSub"
-            };
-            return data;
-          });
-          array.bubble = true;
-          return array;
-        } else {
-          result = _.map(array, function(i) {
-            i.bubble = {};
-            i.bubble.value = i[key];
-            i.bubble.data = JSON.stringify({
-              type: type,
-              id: i[key]
-            });
-            return i;
-          });
-          result.bubble = true;
-          return result;
-        }
-      },
-      dashboardBubbleSub: function(data) {
-        var formattedData, renderData;
-        renderData = {};
-        formattedData = {};
-        _.each(data, function(value, key) {
-          var newKey;
-          newKey = lang.IDE["BUBBLE_" + key.toUpperCase().split("-").join("_")] || key;
-          formattedData[newKey] = value;
-        });
-        renderData.data = formattedData;
-        renderData.title = data.id || data.name || data._title;
-        delete renderData.data._title;
-        return dataTemplate.bubbleResourceSub(renderData);
-      },
-      dashboardBubble: function(data) {
-        var d, formattedData, resourceData, _ref;
-        resourceData = (_ref = this.model.getAwsResDataById(this.region, constant.RESTYPE[data.type], data.id)) != null ? _ref.toJSON() : void 0;
-        formattedData = {};
-        _.each(resourceData, function(value, key) {
-          var newKey;
-          newKey = lang.IDE["BUBBLE_" + key.toUpperCase().split("-").join("_")] || key;
-          formattedData[newKey] = value;
-        });
-        d = {
-          id: data.id,
-          data: formattedData
-        };
-        _.each(d.data, function(e, key) {
-          if (_.isBoolean(e)) {
-            d.data[key] = e.toString();
-          }
-          if (e === "") {
-            d.data[key] = "None";
-          }
-          if ((_.isArray(e)) && e.length === 0) {
-            d.data[key] = ['None'];
-          }
-          if ((_.isObject(e)) && (!_.isArray(e))) {
-            return delete d.data[key];
-          }
-        });
-        return dataTemplate.bubbleResourceInfo(d);
-      },
-      updateLog: function(event) {
-        var $btn, $sidebar, myRole, that;
-        that = this;
-        if (event) {
-          $btn = $(event.currentTarget);
-          $sidebar = $btn.parents('.dashboard-sidebar');
-          $sidebar.find('.dashboard-nav-log').removeClass('selected');
-          $sidebar.find('.dashboard-log').addClass('hide');
-          $btn.addClass('selected');
-          if ($btn.hasClass('dashboard-nav-activity')) {
-            $sidebar.find('.dashboard-log-activity').removeClass('hide');
-          } else {
-            $sidebar.find('.dashboard-log-audit').removeClass('hide');
-          }
-        }
-        myRole = that.model.scene.project.get('myRole');
-        that.renderLog("activity");
-        if (myRole === 'admin') {
-          return that.renderLog("audit");
-        } else {
-          return that.renderLog("audit", true);
-        }
-      },
-      renderLog: function(type, empty) {
-        var $container, container, dataAry, models, projectId, that;
-        that = this;
-        if (type === 'activity') {
-          models = this.logCol.history();
-          container = '.dashboard-log-activity';
-        } else if (type === 'audit') {
-          models = this.logCol.audit();
-          container = '.dashboard-log-audit';
-        }
-        $container = this.$el.find('.dashboard-sidebar').find(container);
-        if (empty) {
-          $container.html(Template.noActivity());
-          return;
-        }
-        projectId = this.model.scene.project.id;
-        dataAry = _.filter(models, function(data) {
-          return data.get('success');
-        });
-        dataAry = _.map(models, function(data) {
-          var action, event, eventStr, target, targetId, _name, _target;
-          action = data.get('action') || '';
-          target = data.get('target') || '';
-          type = (data.get('type') || '').toLowerCase();
-          targetId = data.get('targetId') || '';
-          if (!that.model.scene.project.getOpsModel(targetId)) {
-            targetId = null;
-          }
-          _name = '<span class="name">' + data.get("username") + '</span>';
-          if (targetId) {
-            _target = '<a class="target route" href="/workspace/' + projectId + '/ops/' + targetId + '">' + target + '</a>';
-          } else {
-            _target = '<span class="target">' + target + ' </span>';
-          }
-          eventStr = lang.IDE["DASHBOARD_LOGS_" + (type.toUpperCase()) + "_" + (action.toUpperCase())];
-          if (eventStr) {
-            event = sprintf(eventStr, _name, _target, '');
-          }
-          return {
-            action_type: (action + '_' + type).toLowerCase(),
-            event: event || ("" + _name + " " + action + " " + type + " " + _target),
-            time: MC.intervalDate(new Date(data.get('time')))
-          };
-        });
-        if (dataAry.length) {
-          return $container.html(Template.activityList(dataAry));
-        } else {
-          return $container.html(Template.noActivity());
-        }
       }
-    });
-  });
-
-}).call(this);
-
-(function() {
-  define('wspace/dashboard/Dashboard',["Workspace", "./DashboardView", 'i18n!/nls/lang.js', "CloudResources", "constant", "ApiRequest", "Credential"], function(Workspace, DashboardView, lang, CloudResources, constant, ApiRequest, Credential) {
-    return Workspace.extend({
-      type: "Dashboard",
-      isFixed: function() {
-        return true;
-      },
-      tabClass: function() {
-        return "icon-dashboard";
-      },
-      title: function() {
-        return lang.IDE.NAV_TIT_DASHBOARD;
-      },
-      url: function() {
-        return "/";
-      },
-      initialize: function() {
-        this.view = new DashboardView({
-          model: this
-        });
-        this.listenTo(this.scene.project, "change:myRole", function() {
-          return this.view.render();
-        });
-      },
-      isReadOnly: function() {
-        return this.scene.project.amIObserver();
-      },
-      isWorkingOn: function(attr) {
-        return attr.type === "Dashboard";
-      },
-      fetchAwsResources: function(region) {
-        var credentialId, self;
-        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
-        self = this;
-        if (!region) {
-          CloudResources(credentialId, constant.RESTYPE.INSTANCE).fetch();
-          CloudResources(credentialId, constant.RESTYPE.EIP).fetch();
-          CloudResources(credentialId, constant.RESTYPE.VOL).fetch();
-          CloudResources(credentialId, constant.RESTYPE.ELB).fetch();
-          CloudResources(credentialId, constant.RESTYPE.VPN).fetch();
-          _.each(constant.REGION_KEYS, function(e) {
-            return CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).fetch();
-          });
-          return;
-        }
-        CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region).fetch();
-        CloudResources(credentialId, constant.RESTYPE.VPC).fetch();
-        CloudResources(credentialId, constant.RESTYPE.DHCP, region).fetch();
-        CloudResources(credentialId, constant.RESTYPE.ASG).fetch();
-        CloudResources(credentialId, constant.RESTYPE.CW).fetch();
-        CloudResources(credentialId, constant.RESTYPE.ENI, region).fetch();
-        CloudResources(credentialId, constant.RESTYPE.CGW, region).fetch();
-        CloudResources(credentialId, constant.RESTYPE.VGW, region).fetch();
-      },
-      isAwsResReady: function(region, type) {
-        var credentialId, datasource, e, globalReady, i, _i, _j, _len, _len1, _ref;
-        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
-        if (!region) {
-          globalReady = true;
-          datasource = [CloudResources(credentialId, constant.RESTYPE.INSTANCE), CloudResources(credentialId, constant.RESTYPE.EIP), CloudResources(credentialId, constant.RESTYPE.VOL), CloudResources(credentialId, constant.RESTYPE.ELB), CloudResources(credentialId, constant.RESTYPE.VPN)];
-          _ref = constant.REGION_KEYS;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            e = _ref[_i];
-            if (!CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).isReady()) {
-              globalReady = false;
-            }
-          }
-          for (_j = 0, _len1 = datasource.length; _j < _len1; _j++) {
-            i = datasource[_j];
-            if (!i.isReady()) {
-              globalReady = false;
-            }
-          }
-          return globalReady;
-        }
-        switch (type) {
-          case constant.RESTYPE.SUBSCRIPTION:
-            return CloudResources(credentialId, type, region).isReady();
-          case constant.RESTYPE.VPC:
-            return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.DHCP, region).isReady();
-          case constant.RESTYPE.INSTANCE:
-            return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.EIP, region).isReady();
-          case constant.RESTYPE.VPN:
-            return CloudResources(credentialId, type).isReady() && CloudResources(credentialId, constant.RESTYPE.VGW, region).isReady() && CloudResources(credentialId, constant.RESTYPE.CGW, region).isReady();
-          case constant.RESTYPE.DBINSTANCE:
-            return CloudResources(credentialId, type, region).isReady();
-          default:
-            return CloudResources(credentialId, type).isReady();
-        }
-      },
-      getAwsResData: function(region, type) {
-        var DBInstances, DBInstancesCount, credentialId, data, e, filter, _i, _len, _ref;
-        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
-        if (!region) {
-          filter = function(m) {
-            if (m.attributes.instanceState) {
-              return m.attributes.instanceState.name === "running";
-            } else {
-              return false;
-            }
-          };
-          DBInstancesCount = 0;
-          DBInstances = [];
-          _ref = constant.REGION_KEYS;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            e = _ref[_i];
-            data = {
-              region: e,
-              data: CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, e).models || [],
-              regionName: constant.REGION_SHORT_LABEL[e],
-              regionArea: constant.REGION_LABEL[e]
-            };
-            DBInstancesCount += data.data.length;
-            DBInstances.push(data);
-          }
-          DBInstances.totalCount = DBInstancesCount;
-          return {
-            instances: CloudResources(credentialId, constant.RESTYPE.INSTANCE).groupByCategory(void 0, filter),
-            eips: CloudResources(credentialId, constant.RESTYPE.EIP).groupByCategory(),
-            volumes: CloudResources(credentialId, constant.RESTYPE.VOL).groupByCategory(),
-            elbs: CloudResources(credentialId, constant.RESTYPE.ELB).groupByCategory(),
-            vpns: CloudResources(credentialId, constant.RESTYPE.VPN).groupByCategory(),
-            rds: DBInstances
-          };
-        }
-        if (type === constant.RESTYPE.SUBSCRIPTION) {
-          return CloudResources(credentialId, type, region).models;
-        } else {
-          return CloudResources(credentialId, type, region).where({
-            category: region
-          });
-        }
-      },
-      getAwsResDataById: function(region, type, id) {
-        return CloudResources(this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL), type, region).get(id);
-      },
-      getResourceData: function(region, type, id) {
-        return CloudResources(this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL), type, region).get(id);
-      },
-      clearVisualizeData: function() {
-        this.set("visualizeData", []);
-        this.__visRequest = null;
-      },
-      getResourcesCount: function(region) {
-        var collection, credentialId, d, data, filter, key, rdsCollection, type;
-        filter = {
+      if (type === constant.RESTYPE.SUBSCRIPTION) {
+        return CloudResources(credentialId, type, region).models;
+      } else {
+        return CloudResources(credentialId, type, region).where({
           category: region
-        };
-        data = {
-          instances: "INSTANCE",
-          eips: "EIP",
-          volumes: "VOL",
-          elbs: "ELB",
-          vpns: "VPN",
-          vpcs: "VPC",
-          asgs: "ASG",
-          cloudwatches: "CW"
-        };
-        d = {};
-        credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
-        for (key in data) {
-          type = data[key];
-          collection = CloudResources(credentialId, constant.RESTYPE[type]);
-          if (collection.isReady()) {
-            d[key] = collection.where(filter).length;
-          } else {
-            d[key] = "";
-          }
-        }
-        rdsCollection = CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, region);
-        if (rdsCollection.isReady()) {
-          d.rds = rdsCollection.models.length;
-        } else {
-          d.rds = "";
-        }
-        collection = CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region);
+        });
+      }
+    },
+    getAwsResDataById: function(region, type, id) {
+      return CloudResources(this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL), type, region).get(id);
+    },
+    getResourceData: function(region, type, id) {
+      return CloudResources(this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL), type, region).get(id);
+    },
+    clearVisualizeData: function() {
+      this.set("visualizeData", []);
+      this.__visRequest = null;
+    },
+    getResourcesCount: function(region) {
+      var collection, credentialId, d, data, filter, key, rdsCollection, type;
+      filter = {
+        category: region
+      };
+      data = {
+        instances: "INSTANCE",
+        eips: "EIP",
+        volumes: "VOL",
+        elbs: "ELB",
+        vpns: "VPN",
+        vpcs: "VPC",
+        asgs: "ASG",
+        cloudwatches: "CW"
+      };
+      d = {};
+      credentialId = this.scene.project.credIdOfProvider(Credential.PROVIDER.AWSGLOBAL);
+      for (key in data) {
+        type = data[key];
+        collection = CloudResources(credentialId, constant.RESTYPE[type]);
         if (collection.isReady()) {
-          d.snss = collection.models.length;
+          d[key] = collection.where(filter).length;
         } else {
-          d.snss = "";
+          d[key] = "";
         }
-        return d;
-      },
-      supportedProviders: function() {
-        return [
-          {
-            id: "aws::global",
-            regions: [
-              {
-                id: "us-east-1",
-                name: lang.IDE['IDE_LBL_REGION_NAME_us-east-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_us-east-1']
-              }, {
-                id: "us-west-1",
-                name: lang.IDE['IDE_LBL_REGION_NAME_us-west-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_us-west-1']
-              }, {
-                id: "us-west-2",
-                name: lang.IDE['IDE_LBL_REGION_NAME_us-west-2'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_us-west-2']
-              }, {
-                id: "eu-west-1",
-                name: lang.IDE['IDE_LBL_REGION_NAME_eu-west-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_eu-west-1']
-              }, {
-                id: 'eu-central-1',
-                name: lang.IDE['IDE_LBL_REGION_NAME_eu-central-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_eu-central-1']
-              }, {
-                id: 'ap-southeast-2',
-                name: lang.IDE['IDE_LBL_REGION_NAME_ap-southeast-2'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_ap-southeast-2']
-              }, {
-                id: 'ap-northeast-1',
-                name: lang.IDE['IDE_LBL_REGION_NAME_ap-northeast-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_ap-northeast-1']
-              }, {
-                id: 'ap-southeast-1',
-                name: lang.IDE['IDE_LBL_REGION_NAME_ap-southeast-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_ap-southeast-1']
-              }, {
-                id: 'sa-east-1',
-                name: lang.IDE['IDE_LBL_REGION_NAME_sa-east-1'],
-                alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_sa-east-1']
-              }
-            ]
-          }
-        ];
       }
-    }, {
-      canHandle: function(attr) {
-        return attr.type === "Dashboard";
+      rdsCollection = CloudResources(credentialId, constant.RESTYPE.DBINSTANCE, region);
+      if (rdsCollection.isReady()) {
+        d.rds = rdsCollection.models.length;
+      } else {
+        d.rds = "";
       }
-    });
+      collection = CloudResources(credentialId, constant.RESTYPE.SUBSCRIPTION, region);
+      if (collection.isReady()) {
+        d.snss = collection.models.length;
+      } else {
+        d.snss = "";
+      }
+      return d;
+    },
+    supportedProviders: function() {
+      return [
+        {
+          id: "aws::global",
+          regions: [
+            {
+              id: "us-east-1",
+              name: lang.IDE['IDE_LBL_REGION_NAME_us-east-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_us-east-1']
+            }, {
+              id: "us-west-1",
+              name: lang.IDE['IDE_LBL_REGION_NAME_us-west-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_us-west-1']
+            }, {
+              id: "us-west-2",
+              name: lang.IDE['IDE_LBL_REGION_NAME_us-west-2'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_us-west-2']
+            }, {
+              id: "eu-west-1",
+              name: lang.IDE['IDE_LBL_REGION_NAME_eu-west-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_eu-west-1']
+            }, {
+              id: 'eu-central-1',
+              name: lang.IDE['IDE_LBL_REGION_NAME_eu-central-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_eu-central-1']
+            }, {
+              id: 'ap-southeast-2',
+              name: lang.IDE['IDE_LBL_REGION_NAME_ap-southeast-2'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_ap-southeast-2']
+            }, {
+              id: 'ap-northeast-1',
+              name: lang.IDE['IDE_LBL_REGION_NAME_ap-northeast-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_ap-northeast-1']
+            }, {
+              id: 'ap-southeast-1',
+              name: lang.IDE['IDE_LBL_REGION_NAME_ap-southeast-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_ap-southeast-1']
+            }, {
+              id: 'sa-east-1',
+              name: lang.IDE['IDE_LBL_REGION_NAME_sa-east-1'],
+              alias: lang.IDE['IDE_LBL_REGION_NAME_SHORT_sa-east-1']
+            }
+          ]
+        }
+      ];
+    }
+  }, {
+    canHandle: function(attr) {
+      return attr.type === "Dashboard";
+    }
   });
-
-}).call(this);
+});
 

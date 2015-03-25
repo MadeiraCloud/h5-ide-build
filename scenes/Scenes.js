@@ -338,962 +338,953 @@ TEMPLATE.switchConfirm=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modalplus", "i18n!/nls/lang.js", "constant", "backbone", "jquerysort", "UI.parsley", "UI.errortip", "MC.validate"], function(ApiRequest, ProjectTpl, OpsModel, Modal, lang, constant) {
-    var AssetListPopup, HeaderPopup, NotificationPopup, ProjectCreation, ProjectListPopup, UserPopup;
-    ProjectCreation = Backbone.View.extend({
-      events: {
-        "click .new-project-cancel": "cancel",
-        "click .new-project-create": "create"
-      },
-      initialize: function() {
-        this.modal = new Modal({
-          template: ProjectTpl.newProject(),
-          title: lang.IDE.SETTINGS_CREATE_PROJECT_TITLE,
-          disableClose: true,
-          disableFooter: true,
-          width: "500px"
-        });
-        this.setElement(this.modal.tpl);
-      },
-      cancel: function() {
-        return this.modal.close();
-      },
-      create: function() {
-        var $create, $cvv, $email, $expire, $firstname, $lastname, $name, $number, expire, expireAry, modal, valid;
-        modal = this.modal;
-        modal.tpl.find(".new-project-err").hide();
-        $create = modal.tpl.find(".new-project-create");
-        $name = modal.tpl.find("#new-project-name");
-        $firstname = modal.tpl.find("#new-project-fn");
-        $lastname = modal.tpl.find("#new-project-ln");
-        $email = modal.tpl.find("#new-project-email");
-        $number = modal.tpl.find("#new-project-card");
-        $expire = modal.tpl.find("#new-project-date");
-        $cvv = modal.tpl.find("#new-project-cvv");
-        valid = true;
+define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modalplus", "i18n!/nls/lang.js", "constant", "backbone", "jquerysort", "UI.parsley", "UI.errortip", "MC.validate"], function(ApiRequest, ProjectTpl, OpsModel, Modal, lang, constant) {
+  var AssetListPopup, HeaderPopup, NotificationPopup, ProjectCreation, ProjectListPopup, UserPopup;
+  ProjectCreation = Backbone.View.extend({
+    events: {
+      "click .new-project-cancel": "cancel",
+      "click .new-project-create": "create"
+    },
+    initialize: function() {
+      this.modal = new Modal({
+        template: ProjectTpl.newProject(),
+        title: lang.IDE.SETTINGS_CREATE_PROJECT_TITLE,
+        disableClose: true,
+        disableFooter: true,
+        width: "500px"
+      });
+      this.setElement(this.modal.tpl);
+    },
+    cancel: function() {
+      return this.modal.close();
+    },
+    create: function() {
+      var $create, $cvv, $email, $expire, $firstname, $lastname, $name, $number, expire, expireAry, modal, valid;
+      modal = this.modal;
+      modal.tpl.find(".new-project-err").hide();
+      $create = modal.tpl.find(".new-project-create");
+      $name = modal.tpl.find("#new-project-name");
+      $firstname = modal.tpl.find("#new-project-fn");
+      $lastname = modal.tpl.find("#new-project-ln");
+      $email = modal.tpl.find("#new-project-email");
+      $number = modal.tpl.find("#new-project-card");
+      $expire = modal.tpl.find("#new-project-date");
+      $cvv = modal.tpl.find("#new-project-cvv");
+      valid = true;
+      $expire.parsley('custom', function(val) {
+        return null;
+      });
+      expire = $expire.val();
+      expireAry = expire.split('/');
+      if (expire.match(/^\d\d\/\d\d$/g)) {
+        expire = "" + expireAry[0] + "/20" + expireAry[1];
+      } else if (expire.match(/^\d\d\d\d$/g)) {
+        expire = "" + (expire.substr(0, 2)) + "/20" + (expire.substr(2, 2));
+      } else if (expire.match(/^\d\d\/\d\d\d\d$/g)) {
+        expire = expire;
+      } else if (expire.match(/^\d\d\d\d\d\d$/g)) {
+        expire = "" + (expire.substr(0, 2)) + "/" + (expire.substr(2, 4));
+      } else if (expire.match(/^\d\d\d$/g)) {
+        expire = "0" + (expire.substr(0, 1)) + "/20" + (expire.substr(1, 2));
+      } else {
         $expire.parsley('custom', function(val) {
+          if (val.indexOf('/') === -1) {
+            return lang.IDE.SETTINGS_CREATE_PROJECT_EXPIRE_FORMAT;
+          }
           return null;
         });
-        expire = $expire.val();
-        expireAry = expire.split('/');
-        if (expire.match(/^\d\d\/\d\d$/g)) {
-          expire = "" + expireAry[0] + "/20" + expireAry[1];
-        } else if (expire.match(/^\d\d\d\d$/g)) {
-          expire = "" + (expire.substr(0, 2)) + "/20" + (expire.substr(2, 2));
-        } else if (expire.match(/^\d\d\/\d\d\d\d$/g)) {
-          expire = expire;
-        } else if (expire.match(/^\d\d\d\d\d\d$/g)) {
-          expire = "" + (expire.substr(0, 2)) + "/" + (expire.substr(2, 4));
-        } else if (expire.match(/^\d\d\d$/g)) {
-          expire = "0" + (expire.substr(0, 1)) + "/20" + (expire.substr(1, 2));
+      }
+      modal.tpl.find("input").each(function(idx, dom) {
+        if (!$(dom).parsley('validate')) {
+          valid = false;
+          return false;
+        }
+      });
+      if (valid) {
+        $create.prop('disabled', true);
+        return App.model.createProject({
+          name: $name.val(),
+          firstname: $firstname.val(),
+          lastname: $lastname.val(),
+          email: $email.val(),
+          card: {
+            number: $number.val(),
+            expire: expire,
+            cvv: $cvv.val()
+          }
+        }).then(function(project) {
+          return modal.close(function() {
+            return App.loadUrl(project.url());
+          });
+        }).fail(function(error) {
+          var err, msgObj;
+          try {
+            msgObj = JSON.parse(error.result);
+            if (_.isArray(msgObj.errors)) {
+              modal.tpl.find(".new-project-err").show().html(msgObj.errors.join('<br/>'));
+            }
+          } catch (_error) {
+            err = _error;
+            notification('error', error.result || error.msg);
+          }
+        }).done(function() {
+          return $create.prop('disabled', false);
+        });
+      }
+    }
+  });
+  HeaderPopup = Backbone.View.extend({
+    constructor: function(attr) {
+      var key, value;
+      for (key in attr) {
+        value = attr[key];
+        this[key] = value;
+      }
+      this.setElement($("<div class='hp-popup-overlay'></div>").appendTo("body").on("click", (function(_this) {
+        return function(evt) {
+          return _this.closeOnClick(evt);
+        };
+      })(this)));
+      this.render();
+      Backbone.View.call(this);
+    },
+    closeOnEvent: function() {
+      return true;
+    },
+    closeOnClick: function(evt) {
+      if (evt.target === this.el || (this.closeOnEvent && this.closeOnEvent(evt))) {
+        return this.close();
+      }
+    },
+    close: function() {
+      this.remove();
+      if (this.onClose) {
+        this.onClose(this);
+      }
+    }
+  });
+  UserPopup = HeaderPopup.extend({
+    events: {
+      "click .logout": "logout"
+    },
+    render: function() {
+      return this.$el.html(ProjectTpl.usermenu());
+    },
+    logout: function() {
+      return App.logout();
+    }
+  });
+  AssetListPopup = HeaderPopup.extend({
+    events: {
+      "click .off-canvas-tab": "switchTab"
+    },
+    initialize: function() {
+      this.listenTo(this.project, "change:stack", this.render);
+      this.listenTo(this.project, "change:app", this.render);
+      this.listenTo(this.project, "update:stack", this.render);
+      this.listenTo(this.project, "update:app", this.render);
+    },
+    closeOnEvent: function(evt) {
+      return $(evt.target).hasClass("route");
+    },
+    switchTab: function(evt) {
+      var $tgt, id;
+      $tgt = $(evt.currentTarget);
+      $tgt.parent().children().removeClass("selected");
+      $tgt.addClass("selected");
+      id = $tgt.attr("data-id");
+      this.$el.find(".hp-asset-list-wrap").children().hide().filter("[data-id='" + id + "']").show();
+      this.showApp = id === "app";
+    },
+    render: function() {
+      return this.$el.html(ProjectTpl.assetList({
+        apps: this.project.apps().groupByRegion(),
+        stacks: this.project.stacks().groupByRegion(),
+        showApp: this.showApp
+      }));
+    }
+  });
+  ProjectListPopup = HeaderPopup.extend({
+    render: function() {
+      var p, projects, _i, _len, _ref;
+      projects = [];
+      _ref = App.model.projects().models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        projects.push({
+          id: p.id,
+          url: p.url(),
+          name: p.get("name"),
+          selected: p === this.project,
+          "private": p.isPrivate()
+        });
+      }
+      this.$el.html(ProjectTpl.projectList(projects));
+      this.$el.find(".create-new-project").on("click", _.bind(this.createProject, this));
+      return this;
+    },
+    createProject: function() {
+      return new ProjectCreation();
+    }
+  });
+  NotificationPopup = HeaderPopup.extend({
+    initialize: function() {
+      this.listenTo(App.model.notifications(), "change", this.renderPiece);
+      return this.listenTo(App.model.notifications(), "add", this.renderPiece);
+    },
+    pieceTpl: function(m) {
+      var duration, project, target;
+      target = m.target();
+      project = m.targetProject();
+      duration = m.get("duration");
+      if (duration) {
+        if (duration < 60) {
+          duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
         } else {
-          $expire.parsley('custom', function(val) {
-            if (val.indexOf('/') === -1) {
-              return lang.IDE.SETTINGS_CREATE_PROJECT_EXPIRE_FORMAT;
-            }
-            return null;
-          });
-        }
-        modal.tpl.find("input").each(function(idx, dom) {
-          if (!$(dom).parsley('validate')) {
-            valid = false;
-            return false;
-          }
-        });
-        if (valid) {
-          $create.prop('disabled', true);
-          return App.model.createProject({
-            name: $name.val(),
-            firstname: $firstname.val(),
-            lastname: $lastname.val(),
-            email: $email.val(),
-            card: {
-              number: $number.val(),
-              expire: expire,
-              cvv: $cvv.val()
-            }
-          }).then(function(project) {
-            return modal.close(function() {
-              return App.loadUrl(project.url());
-            });
-          }).fail(function(error) {
-            var err, msgObj;
-            try {
-              msgObj = JSON.parse(error.result);
-              if (_.isArray(msgObj.errors)) {
-                modal.tpl.find(".new-project-err").show().html(msgObj.errors.join('<br/>'));
-              }
-            } catch (_error) {
-              err = _error;
-              notification('error', error.result || error.msg);
-            }
-          }).done(function() {
-            return $create.prop('disabled', false);
-          });
+          duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
         }
       }
-    });
-    HeaderPopup = Backbone.View.extend({
-      constructor: function(attr) {
-        var key, value;
-        for (key in attr) {
-          value = attr[key];
-          this[key] = value;
-        }
-        this.setElement($("<div class='hp-popup-overlay'></div>").appendTo("body").on("click", (function(_this) {
-          return function(evt) {
-            return _this.closeOnClick(evt);
-          };
-        })(this)));
+      return ProjectTpl.notifyListItem({
+        name: target.get("name"),
+        id: target.id,
+        pname: project.get("name"),
+        pid: project.id,
+        time: MC.dateFormat(new Date(m.get("startTime") * 1000), "hh:mm yyyy-MM-dd"),
+        duration: duration,
+        error: m.get("error"),
+        desc: this.getNotifyDesc(m),
+        isNew: m.isNew(),
+        klass: ["processing", "success", "failure", "rollingback"][m.get("state")]
+      });
+    },
+    renderPiece: function(m) {
+      var item, tgt;
+      if (!m) {
         this.render();
-        Backbone.View.call(this);
-      },
-      closeOnEvent: function() {
-        return true;
-      },
-      closeOnClick: function(evt) {
-        if (evt.target === this.el || (this.closeOnEvent && this.closeOnEvent(evt))) {
-          return this.close();
-        }
-      },
-      close: function() {
-        this.remove();
-        if (this.onClose) {
-          this.onClose(this);
-        }
+        return;
       }
-    });
-    UserPopup = HeaderPopup.extend({
-      events: {
-        "click .logout": "logout"
-      },
-      render: function() {
-        return this.$el.html(ProjectTpl.usermenu());
-      },
-      logout: function() {
-        return App.logout();
+      tgt = this.$el.find("ul");
+      item = tgt.children("[data-id='" + m.id + "']");
+      if (!item.length) {
+        tgt.prepend(this.pieceTpl(m));
+      } else {
+        item.after(this.pieceTpl(m)).remove();
       }
-    });
-    AssetListPopup = HeaderPopup.extend({
-      events: {
-        "click .off-canvas-tab": "switchTab"
-      },
-      initialize: function() {
-        this.listenTo(this.project, "change:stack", this.render);
-        this.listenTo(this.project, "change:app", this.render);
-        this.listenTo(this.project, "update:stack", this.render);
-        this.listenTo(this.project, "update:app", this.render);
-      },
-      closeOnEvent: function(evt) {
-        return $(evt.target).hasClass("route");
-      },
-      switchTab: function(evt) {
-        var $tgt, id;
-        $tgt = $(evt.currentTarget);
-        $tgt.parent().children().removeClass("selected");
-        $tgt.addClass("selected");
-        id = $tgt.attr("data-id");
-        this.$el.find(".hp-asset-list-wrap").children().hide().filter("[data-id='" + id + "']").show();
-        this.showApp = id === "app";
-      },
-      render: function() {
-        return this.$el.html(ProjectTpl.assetList({
-          apps: this.project.apps().groupByRegion(),
-          stacks: this.project.stacks().groupByRegion(),
-          showApp: this.showApp
-        }));
+    },
+    render: function() {
+      var m, tpl, _i, _len, _ref;
+      tpl = "";
+      _ref = App.model.notifications().models;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        m = _ref[_i];
+        tpl += this.pieceTpl(m);
       }
-    });
-    ProjectListPopup = HeaderPopup.extend({
-      render: function() {
-        var p, projects, _i, _len, _ref;
-        projects = [];
-        _ref = App.model.projects().models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          p = _ref[_i];
-          projects.push({
-            id: p.id,
-            url: p.url(),
-            name: p.get("name"),
-            selected: p === this.project,
-            "private": p.isPrivate()
-          });
+      this.$el.html(ProjectTpl.notifyList());
+      if (tpl) {
+        this.$el.find("ul").html(tpl);
+      }
+    },
+    getNotifyDesc: function(n) {
+      var desc;
+      switch (n.get("action")) {
+        case constant.OPS_CODE_NAME.LAUNCH:
+          desc = ["is launching", "launched successfully", "failed to launch", "is rolling back"];
+          break;
+        case constant.OPS_CODE_NAME.STOP:
+          desc = ["is stopping", "stopped successfully", "failed to stop", "is rolling back"];
+          break;
+        case constant.OPS_CODE_NAME.START:
+          desc = ["is starting", "started successfully", "failed to start", "is rolling back"];
+          break;
+        case constant.OPS_CODE_NAME.TERMINATE:
+          desc = ["is terminating", "terminated successfully", "failed to terminate", "is rolling back"];
+          break;
+        case constant.OPS_CODE_NAME.UPDATE:
+        case constant.OPS_CODE_NAME.STATE_UPDATE:
+          desc = ["is updating", "updated successfully", "failed to update", "is rolling back"];
+      }
+      return desc[n.get("state")];
+    },
+    close: function() {
+      this.stopListening();
+      App.model.notifications().markAllAsRead();
+      return HeaderPopup.prototype.close.call(this);
+    }
+  });
+  return Backbone.View.extend({
+    initialize: function(attr) {
+      var $header, nfs, self;
+      this.scene = attr.scene;
+      this.tabsWidth = 0;
+      this.setElement($(ProjectTpl.frame()).appendTo("#scenes"));
+      this.render();
+      this.$tabbar = this.$el.find(".ws-tabbar");
+      this.$wsparent = this.$el.find(".ws-content");
+      self = this;
+      this.$el.find(".ws-tabs").dragsort({
+        horizontal: true,
+        dragSelectorExclude: ".fixed, .icon-close",
+        dragEnd: function() {
+          return self.updateTabOrder();
         }
-        this.$el.html(ProjectTpl.projectList(projects));
-        this.$el.find(".create-new-project").on("click", _.bind(this.createProject, this));
-        return this;
-      },
-      createProject: function() {
-        return new ProjectCreation();
-      }
-    });
-    NotificationPopup = HeaderPopup.extend({
-      initialize: function() {
-        this.listenTo(App.model.notifications(), "change", this.renderPiece);
-        return this.listenTo(App.model.notifications(), "add", this.renderPiece);
-      },
-      pieceTpl: function(m) {
-        var duration, project, target;
-        target = m.target();
-        project = m.targetProject();
-        duration = m.get("duration");
-        if (duration) {
-          if (duration < 60) {
-            duration = sprintf(lang.TOOLBAR.TOOK_XXX_SEC, duration);
-          } else {
-            duration = sprintf(lang.TOOLBAR.TOOK_XXX_MIN, Math.round(duration / 60));
-          }
+      });
+      $header = this.$header = this.$el.find(".project-header");
+      $header.on("click", ".ws-tabbar li", function(evt) {
+        return self.onTabClick(evt);
+      });
+      $header.on("click", ".ws-tabbar .icon-close", function(evt) {
+        return self.onTabClose(evt);
+      });
+      $header.on("click", ".popuptrigger", function(evt) {
+        return self[$(evt.currentTarget).attr("data-popup")](evt.currentTarget);
+      });
+      $header.on("click", ".icon-support", function() {
+        if (window.Intercom) {
+          window.Intercom('showNewMessage');
+          return false;
         }
-        return ProjectTpl.notifyListItem({
-          name: target.get("name"),
-          id: target.id,
-          pname: project.get("name"),
-          pid: project.id,
-          time: MC.dateFormat(new Date(m.get("startTime") * 1000), "hh:mm yyyy-MM-dd"),
-          duration: duration,
-          error: m.get("error"),
-          desc: this.getNotifyDesc(m),
-          isNew: m.isNew(),
-          klass: ["processing", "success", "failure", "rollingback"][m.get("state")]
-        });
-      },
-      renderPiece: function(m) {
-        var item, tgt;
-        if (!m) {
-          this.render();
+      });
+      nfs = App.model.notifications();
+      this.listenTo(nfs, "change", this.updateNotify);
+      this.listenTo(nfs, "add", this.updateNotify);
+      this.listenTo(nfs, "remove", this.updateNotify);
+      this.updateNotify();
+      this.listenTo(this.scene, "switchWorkspace", this.updateNotify);
+    },
+    render: function() {
+      this.$el.find(".project-list").text(this.scene.project.get("name"));
+      this.$el.find(".user-menu").text(App.user.get("username"));
+    },
+
+    /* -----------------
+     * Header Related
+    -----------------
+     */
+    showPopup: function(template, ignoreClicked) {
+      var $overlay, oneTimeClicked;
+      $overlay = $("<div class='hp-popup-overlay'>" + template + "</div>").appendTo("body");
+      oneTimeClicked = function(evt) {
+        if (ignoreClicked && ignoreClicked(evt.target)) {
           return;
         }
-        tgt = this.$el.find("ul");
-        item = tgt.children("[data-id='" + m.id + "']");
-        if (!item.length) {
-          tgt.prepend(this.pieceTpl(m));
-        } else {
-          item.after(this.pieceTpl(m)).remove();
+        console.log("popupclosed");
+        $("body")[0].removeEventListener("click", oneTimeClicked, true);
+        return $overlay.remove();
+      };
+      $("body")[0].addEventListener("click", oneTimeClicked, true);
+      return $overlay;
+    },
+    popupProject: function() {
+      return new ProjectListPopup({
+        project: this.scene.project
+      });
+    },
+    popupAsset: function() {
+      return new AssetListPopup({
+        project: this.scene.project
+      });
+    },
+    popupUser: function() {
+      return new UserPopup();
+    },
+    popupNotify: function() {
+      return new NotificationPopup();
+    },
+    updateNotify: function() {
+      var data, idx, n, unread, ws, _i, _len;
+      unread = App.model.notifications().where({
+        isNew: true
+      });
+      ws = this.scene.getAwakeSpace();
+      data = {
+        opsModel: null
+      };
+      for (idx = _i = 0, _len = unread.length; _i < _len; idx = ++_i) {
+        n = unread[idx];
+        data.opsModel = n.target();
+        if (ws && ws.isWorkingOn(data)) {
+          n.markAsRead();
+          unread.splice(idx, 1);
+          break;
         }
-      },
-      render: function() {
-        var m, tpl, _i, _len, _ref;
-        tpl = "";
-        _ref = App.model.notifications().models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          m = _ref[_i];
-          tpl += this.pieceTpl(m);
-        }
-        this.$el.html(ProjectTpl.notifyList());
-        if (tpl) {
-          this.$el.find("ul").html(tpl);
-        }
-      },
-      getNotifyDesc: function(n) {
-        var desc;
-        switch (n.get("action")) {
-          case constant.OPS_CODE_NAME.LAUNCH:
-            desc = ["is launching", "launched successfully", "failed to launch", "is rolling back"];
-            break;
-          case constant.OPS_CODE_NAME.STOP:
-            desc = ["is stopping", "stopped successfully", "failed to stop", "is rolling back"];
-            break;
-          case constant.OPS_CODE_NAME.START:
-            desc = ["is starting", "started successfully", "failed to start", "is rolling back"];
-            break;
-          case constant.OPS_CODE_NAME.TERMINATE:
-            desc = ["is terminating", "terminated successfully", "failed to terminate", "is rolling back"];
-            break;
-          case constant.OPS_CODE_NAME.UPDATE:
-          case constant.OPS_CODE_NAME.STATE_UPDATE:
-            desc = ["is updating", "updated successfully", "failed to update", "is rolling back"];
-        }
-        return desc[n.get("state")];
-      },
-      close: function() {
-        this.stopListening();
-        App.model.notifications().markAllAsRead();
-        return HeaderPopup.prototype.close.call(this);
       }
-    });
-    return Backbone.View.extend({
-      initialize: function(attr) {
-        var $header, nfs, self;
-        this.scene = attr.scene;
-        this.tabsWidth = 0;
-        this.setElement($(ProjectTpl.frame()).appendTo("#scenes"));
-        this.render();
-        this.$tabbar = this.$el.find(".ws-tabbar");
-        this.$wsparent = this.$el.find(".ws-content");
-        self = this;
-        this.$el.find(".ws-tabs").dragsort({
-          horizontal: true,
-          dragSelectorExclude: ".fixed, .icon-close",
-          dragEnd: function() {
-            return self.updateTabOrder();
-          }
-        });
-        $header = this.$header = this.$el.find(".project-header");
-        $header.on("click", ".ws-tabbar li", function(evt) {
-          return self.onTabClick(evt);
-        });
-        $header.on("click", ".ws-tabbar .icon-close", function(evt) {
-          return self.onTabClose(evt);
-        });
-        $header.on("click", ".popuptrigger", function(evt) {
-          return self[$(evt.currentTarget).attr("data-popup")](evt.currentTarget);
-        });
-        $header.on("click", ".icon-support", function() {
-          if (window.Intercom) {
-            window.Intercom('showNewMessage');
-            return false;
-          }
-        });
-        nfs = App.model.notifications();
-        this.listenTo(nfs, "change", this.updateNotify);
-        this.listenTo(nfs, "add", this.updateNotify);
-        this.listenTo(nfs, "remove", this.updateNotify);
-        this.updateNotify();
-        this.listenTo(this.scene, "switchWorkspace", this.updateNotify);
-      },
-      render: function() {
-        this.$el.find(".project-list").text(this.scene.project.get("name"));
-        this.$el.find(".user-menu").text(App.user.get("username"));
-      },
+      this.$header.find(".icon-notification").attr("data-count", unread.length || "");
+    },
 
-      /* -----------------
-       * Header Related
-      -----------------
-       */
-      showPopup: function(template, ignoreClicked) {
-        var $overlay, oneTimeClicked;
-        $overlay = $("<div class='hp-popup-overlay'>" + template + "</div>").appendTo("body");
-        oneTimeClicked = function(evt) {
-          if (ignoreClicked && ignoreClicked(evt.target)) {
-            return;
-          }
-          console.log("popupclosed");
-          $("body")[0].removeEventListener("click", oneTimeClicked, true);
-          return $overlay.remove();
-        };
-        $("body")[0].addEventListener("click", oneTimeClicked, true);
-        return $overlay;
-      },
-      popupProject: function() {
-        return new ProjectListPopup({
-          project: this.scene.project
-        });
-      },
-      popupAsset: function() {
-        return new AssetListPopup({
-          project: this.scene.project
-        });
-      },
-      popupUser: function() {
-        return new UserPopup();
-      },
-      popupNotify: function() {
-        return new NotificationPopup();
-      },
-      updateNotify: function() {
-        var data, idx, n, unread, ws, _i, _len;
-        unread = App.model.notifications().where({
-          isNew: true
-        });
-        ws = this.scene.getAwakeSpace();
-        data = {
-          opsModel: null
-        };
-        for (idx = _i = 0, _len = unread.length; _i < _len; idx = ++_i) {
-          n = unread[idx];
-          data.opsModel = n.target();
-          if (ws && ws.isWorkingOn(data)) {
-            n.markAsRead();
-            unread.splice(idx, 1);
-            break;
-          }
-        }
-        this.$header.find(".icon-notification").attr("data-count", unread.length || "");
-      },
-
-      /* ------------------
-       * Workspace Related
-      ------------------
-       */
-      getTabElementById: function(id) {
-        return this.$tabbar.find("[data-id='" + id + "']");
-      },
-      updateTabOrder: function() {
-        return this.trigger("wsOrderChanged");
-      },
-      spaceOrder: function() {
-        return _.map(this.$tabbar.find("li"), function(li) {
-          return $(li).attr("data-id");
-        });
-      },
-      moveSpace: function(id, isFixed, idx) {
-        var $after, $group, $tgt;
-        $tgt = this.getTabElementById(id);
-        if (!$tgt.length) {
-          return;
-        }
-        if (isFixed) {
-          $group = this.$tabbar.children(".ws-fixed-tabs");
-        } else {
-          $group = this.$tabbar.children(".ws-tabs");
-          idx -= this.$tabbar.children().length;
-        }
-        $after = $group.children().eq(idx);
-        if ($after.length) {
-          $tgt.insertBefore($after);
-        } else {
-          $group.append($tgt);
-        }
-      },
-      awakeSpace: function(id) {
-        this.$tabbar.find(".active").removeClass("active");
-        this.getTabElementById(id).addClass("active");
-      },
-      updateSpace: function(id, title, klass) {
-        var $tgt;
-        $tgt = this.getTabElementById(id);
-        if (title !== void 0 || title !== null) {
-          this.tabsWidth -= $tgt.outerWidth();
-          $tgt.attr("title", title);
-          $tgt.children("span").text(title);
-          this.tabsWidth += $tgt.outerWidth();
-          this.ensureTabSize();
-        }
-        if (klass !== void 0 || klass !== null) {
-          if ($tgt.hasClass("active")) {
-            klass += " active";
-          }
-          $tgt.attr("class", klass);
-        }
-      },
-      onTabClick: function(evt) {
-        this.trigger("wsClicked", $(evt.currentTarget).attr("data-id"));
-      },
-      onTabClose: function(evt) {
-        this.trigger("wsClosed", $(evt.currentTarget).closest("li").attr("data-id"));
-        return false;
-      },
-      removeSpace: function(id) {
-        var $tgt;
-        $tgt = this.getTabElementById(id);
+    /* ------------------
+     * Workspace Related
+    ------------------
+     */
+    getTabElementById: function(id) {
+      return this.$tabbar.find("[data-id='" + id + "']");
+    },
+    updateTabOrder: function() {
+      return this.trigger("wsOrderChanged");
+    },
+    spaceOrder: function() {
+      return _.map(this.$tabbar.find("li"), function(li) {
+        return $(li).attr("data-id");
+      });
+    },
+    moveSpace: function(id, isFixed, idx) {
+      var $after, $group, $tgt;
+      $tgt = this.getTabElementById(id);
+      if (!$tgt.length) {
+        return;
+      }
+      if (isFixed) {
+        $group = this.$tabbar.children(".ws-fixed-tabs");
+      } else {
+        $group = this.$tabbar.children(".ws-tabs");
+        idx -= this.$tabbar.children().length;
+      }
+      $after = $group.children().eq(idx);
+      if ($after.length) {
+        $tgt.insertBefore($after);
+      } else {
+        $group.append($tgt);
+      }
+    },
+    awakeSpace: function(id) {
+      this.$tabbar.find(".active").removeClass("active");
+      this.getTabElementById(id).addClass("active");
+    },
+    updateSpace: function(id, title, klass) {
+      var $tgt;
+      $tgt = this.getTabElementById(id);
+      if (title !== void 0 || title !== null) {
         this.tabsWidth -= $tgt.outerWidth();
-        $tgt.remove();
-        this.ensureTabSize();
-        return $tgt;
-      },
-      showLoading: function() {
-        return $("#GlobalLoading").show();
-      },
-      hideLoading: function() {
-        return $("#GlobalLoading").hide();
-      },
-      ensureTabSize: function() {
-        var availableSpace, children, flexibleTB, windowWidth;
-        flexibleTB = this.$tabbar.children(".ws-tabs");
-        windowWidth = $(window).width();
-        availableSpace = windowWidth - flexibleTB.offset().left - this.$tabbar.siblings("nav").width();
-        children = flexibleTB.children();
-        if (this.tabsWidth < availableSpace) {
-          children.css("max-width", "auto");
-        } else {
-          availableSpace = Math.floor(availableSpace / children.length);
-          children.css("max-width", availableSpace);
-        }
-      },
-      addSpace: function(data, index, fixed) {
-        var $parent, $tgt, tpl;
-        if (index == null) {
-          index = -1;
-        }
-        if (fixed == null) {
-          fixed = false;
-        }
-        if (fixed) {
-          $parent = this.$tabbar.children(".ws-fixed-tabs");
-        } else {
-          $parent = this.$tabbar.children(".ws-tabs");
-        }
-        tpl = "<li class='" + data.klass + "' data-id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
-        if (data.closable) {
-          tpl += '<i class="icon-close" title="' + lang.TOOLBAR.TIT_CLOSE_TAB + '"></i>';
-        }
-        $tgt = $parent.children().eq(index);
-        if ($tgt.length) {
-          $tgt = $(tpl + "</li>").insertAfter($tgt);
-        } else {
-          $tgt = $(tpl + "</li>").appendTo($parent);
-        }
+        $tgt.attr("title", title);
+        $tgt.children("span").text(title);
         this.tabsWidth += $tgt.outerWidth();
         this.ensureTabSize();
-        return $tgt;
       }
-    });
+      if (klass !== void 0 || klass !== null) {
+        if ($tgt.hasClass("active")) {
+          klass += " active";
+        }
+        $tgt.attr("class", klass);
+      }
+    },
+    onTabClick: function(evt) {
+      this.trigger("wsClicked", $(evt.currentTarget).attr("data-id"));
+    },
+    onTabClose: function(evt) {
+      this.trigger("wsClosed", $(evt.currentTarget).closest("li").attr("data-id"));
+      return false;
+    },
+    removeSpace: function(id) {
+      var $tgt;
+      $tgt = this.getTabElementById(id);
+      this.tabsWidth -= $tgt.outerWidth();
+      $tgt.remove();
+      this.ensureTabSize();
+      return $tgt;
+    },
+    showLoading: function() {
+      return $("#GlobalLoading").show();
+    },
+    hideLoading: function() {
+      return $("#GlobalLoading").hide();
+    },
+    ensureTabSize: function() {
+      var availableSpace, children, flexibleTB, windowWidth;
+      flexibleTB = this.$tabbar.children(".ws-tabs");
+      windowWidth = $(window).width();
+      availableSpace = windowWidth - flexibleTB.offset().left - this.$tabbar.siblings("nav").width();
+      children = flexibleTB.children();
+      if (this.tabsWidth < availableSpace) {
+        children.css("max-width", "auto");
+      } else {
+        availableSpace = Math.floor(availableSpace / children.length);
+        children.css("max-width", availableSpace);
+      }
+    },
+    addSpace: function(data, index, fixed) {
+      var $parent, $tgt, tpl;
+      if (index == null) {
+        index = -1;
+      }
+      if (fixed == null) {
+        fixed = false;
+      }
+      if (fixed) {
+        $parent = this.$tabbar.children(".ws-fixed-tabs");
+      } else {
+        $parent = this.$tabbar.children(".ws-tabs");
+      }
+      tpl = "<li class='" + data.klass + "' data-id='" + data.id + "' title='" + data.title + "'><span class='truncate'>" + data.title + "</span>";
+      if (data.closable) {
+        tpl += '<i class="icon-close" title="' + lang.TOOLBAR.TIT_CLOSE_TAB + '"></i>';
+      }
+      $tgt = $parent.children().eq(index);
+      if ($tgt.length) {
+        $tgt = $(tpl + "</li>").insertAfter($tgt);
+      } else {
+        $tgt = $(tpl + "</li>").appendTo($parent);
+      }
+      this.tabsWidth += $tgt.outerWidth();
+      this.ensureTabSize();
+      return $tgt;
+    }
   });
+});
 
-}).call(this);
+define('Workspace',["backbone"], function() {
+  var SubWorkspaces, Workspace, wsid;
+  wsid = 0;
+  SubWorkspaces = {};
+  Workspace = Backbone.Model.extend({
+    constructor: function(attr, option) {
+      console.assert(option && option.scene);
+      this.scene = option.scene;
+      Backbone.Model.apply(this, arguments);
+      this.set("id", "space_" + (++wsid));
+      this.scene.addSpace(this);
+    },
+    isAwake: function() {
+      return this.scene.getAwakeSpace() === this;
+    },
+    setIndex: function(idx) {
+      return this.scene.moveSpace(this, idx);
+    },
+    index: function() {
+      return this.scene.spaces().indexOf(this);
+    },
+    isRemoved: function() {
+      return !!this.__isRemoved;
+    },
+    remove: function() {
+      return this.scene.removeSpace(this, true);
+    },
+    updateUrl: function() {
+      return this.scene.updateSpace(this);
+    },
+    updateTab: function() {
+      return this.scene.updateSpace(this);
+    },
+    activate: function() {
+      return this.scene.awakeSpace(this);
+    },
 
-(function() {
-  define('Workspace',["backbone"], function() {
-    var SubWorkspaces, Workspace, wsid;
-    wsid = 0;
-    SubWorkspaces = {};
-    Workspace = Backbone.Model.extend({
-      constructor: function(attr, option) {
-        console.assert(option && option.scene);
-        this.scene = option.scene;
-        Backbone.Model.apply(this, arguments);
-        this.set("id", "space_" + (++wsid));
-        this.scene.addSpace(this);
-      },
-      isAwake: function() {
-        return this.scene.getAwakeSpace() === this;
-      },
-      setIndex: function(idx) {
-        return this.scene.moveSpace(this, idx);
-      },
-      index: function() {
-        return this.scene.spaces().indexOf(this);
-      },
-      isRemoved: function() {
-        return !!this.__isRemoved;
-      },
-      remove: function() {
-        return this.scene.removeSpace(this, true);
-      },
-      updateUrl: function() {
-        return this.scene.updateSpace(this);
-      },
-      updateTab: function() {
-        return this.scene.updateSpace(this);
-      },
-      activate: function() {
-        return this.scene.awakeSpace(this);
-      },
-
-      /*
-        Methods that should be override
-       */
-      initialize: function(attributes) {},
-      isFixed: function() {
-        return false;
-      },
-      isModified: function() {
-        return false;
-      },
-      tabClass: function() {
-        return "";
-      },
-      title: function() {
-        return "";
-      },
-      awake: function() {
-        if (this.view) {
-          return this.view.$el.show();
-        }
-      },
-      sleep: function() {
-        $(document.activeElement).filter("input, textarea").blur();
-        if (this.view) {
-          return this.view.$el.hide();
-        }
-      },
-      cleanup: function() {
-        if (this.view) {
-          this.view.remove();
-        } else {
-          console.warn("Cannot find @view when workspace is about to remove:", this);
-        }
-      },
-      isRemovable: function() {
-        return true;
-      },
-      isWorkingOn: function(attributes) {
-        return false;
+    /*
+      Methods that should be override
+     */
+    initialize: function(attributes) {},
+    isFixed: function() {
+      return false;
+    },
+    isModified: function() {
+      return false;
+    },
+    tabClass: function() {
+      return "";
+    },
+    title: function() {
+      return "";
+    },
+    awake: function() {
+      if (this.view) {
+        return this.view.$el.show();
       }
-    }, {
-      findSuitableSpace: function(data) {
-        var Space, s, type;
-        s = null;
-        for (type in SubWorkspaces) {
-          Space = SubWorkspaces[type];
-          if (Space.canHandle(data)) {
-            console.assert(!s, "There's multiple workspace that can handle this data:", data);
-            s = Space;
-          }
-        }
-        return s;
-      },
-      canHandle: function(data) {
-        return false;
-      },
-      extend: function(protoProps, staticProps) {
-        var subClass;
-        subClass = (window.__detailExtend || Backbone.Model.extend).call(this, protoProps, staticProps);
-        SubWorkspaces[protoProps.type] = subClass;
-        return subClass;
+    },
+    sleep: function() {
+      $(document.activeElement).filter("input, textarea").blur();
+      if (this.view) {
+        return this.view.$el.hide();
       }
-    });
-    return Workspace;
+    },
+    cleanup: function() {
+      if (this.view) {
+        this.view.remove();
+      } else {
+        console.warn("Cannot find @view when workspace is about to remove:", this);
+      }
+    },
+    isRemovable: function() {
+      return true;
+    },
+    isWorkingOn: function(attributes) {
+      return false;
+    }
+  }, {
+    findSuitableSpace: function(data) {
+      var Space, s, type;
+      s = null;
+      for (type in SubWorkspaces) {
+        Space = SubWorkspaces[type];
+        if (Space.canHandle(data)) {
+          console.assert(!s, "There's multiple workspace that can handle this data:", data);
+          s = Space;
+        }
+      }
+      return s;
+    },
+    canHandle: function(data) {
+      return false;
+    },
+    extend: function(protoProps, staticProps) {
+      var subClass;
+      subClass = (window.__detailExtend || Backbone.Model.extend).call(this, protoProps, staticProps);
+      SubWorkspaces[protoProps.type] = subClass;
+      return subClass;
+    }
   });
+  return Workspace;
+});
 
-}).call(this);
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+define('scenes/ProjectScene',["Scene", "./ProjectView", "./ProjectTpl", "Workspace", "UI.modalplus", "i18n!/nls/lang.js", "UI.notification"], function(Scene, ProjectView, ProjectTpl, Workspace, Modal, lang) {
+  var FIRST_PROJECT_NOT_LOADED, ProjectScene, SwitchConfirmView;
+  SwitchConfirmView = Backbone.View.extend({
+    events: {
+      "click .do-switch": "switch"
+    },
+    initialize: function(attr) {
+      this.toOpenProject = attr.project;
+      this.toOpenOpsModel = attr.opsmodel;
+      this.modal = new Modal({
+        template: ProjectTpl.switchConfirm(),
+        title: lang.IDE.SWITCH_WORKSPACE_UNSAVED_CHANGES,
+        disableClose: true,
+        disableFooter: true,
+        width: "500px"
+      });
+      return this.setElement(this.modal.tpl);
+    },
+    "switch": function() {
+      (new ProjectScene(this.toOpenProject, this.toOpenOpsModel, {
+        slient: true
+      })).activate();
+      this.modal.close();
+    }
+  });
+  FIRST_PROJECT_NOT_LOADED = true;
+  ProjectScene = (function(_super) {
+    __extends(ProjectScene, _super);
 
-  define('scenes/ProjectScene',["Scene", "./ProjectView", "./ProjectTpl", "Workspace", "UI.modalplus", "i18n!/nls/lang.js", "UI.notification"], function(Scene, ProjectView, ProjectTpl, Workspace, Modal, lang) {
-    var FIRST_PROJECT_NOT_LOADED, ProjectScene, SwitchConfirmView;
-    SwitchConfirmView = Backbone.View.extend({
-      events: {
-        "click .do-switch": "switch"
-      },
-      initialize: function(attr) {
-        this.toOpenProject = attr.project;
-        this.toOpenOpsModel = attr.opsmodel;
-        this.modal = new Modal({
-          template: ProjectTpl.switchConfirm(),
-          title: lang.IDE.SWITCH_WORKSPACE_UNSAVED_CHANGES,
-          disableClose: true,
-          disableFooter: true,
-          width: "500px"
-        });
-        return this.setElement(this.modal.tpl);
-      },
-      "switch": function() {
-        (new ProjectScene(this.toOpenProject, this.toOpenOpsModel, {
-          slient: true
-        })).activate();
-        this.modal.close();
+    ProjectScene.prototype.type = "ProjectScene";
+
+    function ProjectScene(projectId, opsmodelId, options) {
+      var scene, scenes, ss, _i, _j, _len, _len1;
+      ss = App.sceneManager.find(projectId);
+      if (ss) {
+        ss.activate();
+        ss.loadSpace(opsmodelId);
+        return ss;
       }
-    });
-    FIRST_PROJECT_NOT_LOADED = true;
-    ProjectScene = (function(_super) {
-      __extends(ProjectScene, _super);
-
-      ProjectScene.prototype.type = "ProjectScene";
-
-      function ProjectScene(projectId, opsmodelId, options) {
-        var scene, scenes, ss, _i, _j, _len, _len1;
-        ss = App.sceneManager.find(projectId);
-        if (ss) {
-          ss.activate();
-          ss.loadSpace(opsmodelId);
-          return ss;
+      options = options || {};
+      if (!options.slient) {
+        if (_.some(App.sceneManager.scenes(), (function(s) {
+          return s.type === "ProjectScene" && !s.isRemovable();
+        }))) {
+          App.sceneManager.activeScene().updateUrl();
+          new SwitchConfirmView({
+            project: projectId,
+            opsmodel: opsmodelId
+          });
+          return;
         }
-        options = options || {};
-        if (!options.slient) {
-          if (_.some(App.sceneManager.scenes(), (function(s) {
-            return s.type === "ProjectScene" && !s.isRemovable();
-          }))) {
-            App.sceneManager.activeScene().updateUrl();
-            new SwitchConfirmView({
-              project: projectId,
-              opsmodel: opsmodelId
-            });
-            return;
-          }
-        }
-        scenes = App.sceneManager.scenes().filter(function(m) {
-          return m.type === "ProjectScene";
-        });
-        for (_i = 0, _len = scenes.length; _i < _len; _i++) {
-          scene = scenes[_i];
-          scene.removeNotFixedSpaces();
-        }
-        Scene.call(this, {
-          pid: projectId,
-          opsid: opsmodelId
-        });
-        for (_j = 0, _len1 = scenes.length; _j < _len1; _j++) {
-          scene = scenes[_j];
-          scene.remove();
-        }
-        return this;
       }
+      scenes = App.sceneManager.scenes().filter(function(m) {
+        return m.type === "ProjectScene";
+      });
+      for (_i = 0, _len = scenes.length; _i < _len; _i++) {
+        scene = scenes[_i];
+        scene.removeNotFixedSpaces();
+      }
+      Scene.call(this, {
+        pid: projectId,
+        opsid: opsmodelId
+      });
+      for (_j = 0, _len1 = scenes.length; _j < _len1; _j++) {
+        scene = scenes[_j];
+        scene.remove();
+      }
+      return this;
+    }
 
-      ProjectScene.prototype.initialize = function(attr) {
-        var self;
-        self = this;
-        this.__spaces = [];
+    ProjectScene.prototype.initialize = function(attr) {
+      var self;
+      self = this;
+      this.__spaces = [];
+      this.__awakeSpace = null;
+      this.__spacesById = {};
+      if (FIRST_PROJECT_NOT_LOADED) {
+        FIRST_PROJECT_NOT_LOADED = false;
+        if (!attr.pid || !App.model.projects().get(attr.pid)) {
+          attr.pid = localStorage.getItem("lastws");
+        }
+      }
+      this.project = App.model.projects().get(attr.pid) || App.model.getPrivateProject();
+      this.view = new ProjectView({
+        scene: this
+      });
+      this.listenTo(this.view, "wsOrderChanged", function() {
+        return this.__updateSpaceOrder();
+      });
+      this.listenTo(this.view, "wsClicked", function(id) {
+        return this.awakeSpace(id);
+      });
+      this.listenTo(this.view, "wsClosed", function(id) {
+        return this.removeSpace(id);
+      });
+      this.listenTo(this.project, "destroy", this.onProjectDestroy);
+      this.activate();
+      self.loadDashboard();
+      self.loadSpace(attr.opsid);
+    };
+
+    ProjectScene.prototype.becomeActive = function() {
+      this.view.$el.show();
+      this.updateUrl();
+      this.updateTitle();
+      return localStorage.setItem("lastws", this.project.id);
+    };
+
+    ProjectScene.prototype.isRemovable = function() {
+      return _.all(this.__spaces, function(ws) {
+        return !ws.isModified();
+      });
+    };
+
+    ProjectScene.prototype.becomeInactive = function() {
+      return Scene.prototype.becomeInactive.call(this);
+    };
+
+    ProjectScene.prototype.cleanup = function() {
+      return Scene.prototype.cleanup.call(this);
+    };
+
+    ProjectScene.prototype.isWorkingOn = function(projectId) {
+      return this.project.id === projectId;
+    };
+
+    ProjectScene.prototype.title = function() {
+      var name;
+      name = this.project.get("name");
+      if (this.getAwakeSpace()) {
+        name = this.getAwakeSpace().title() + " on " + name;
+      }
+      return name;
+    };
+
+    ProjectScene.prototype.url = function() {
+      var basic;
+      basic = this.project.url() + "/";
+      if (this.getAwakeSpace()) {
+        basic += this.getAwakeSpace().url();
+      }
+      return basic.replace(/\/+$/, "");
+    };
+
+    ProjectScene.prototype.onProjectDestroy = function(p, c, options) {
+      if (!options.manualAction) {
+        notification("error", sprintf(lang.NOTIFY.INFO_PROJECT_REMOVED, p.get("name")));
+      }
+      this.remove();
+    };
+
+
+    /* -------------------------------
+     * Funtions to manage the workspaces.
+    ------------------------
+     */
+
+    ProjectScene.prototype.loadSpace = function(opsModelOrId) {
+      var attr, _ref;
+      if (!opsModelOrId) {
+        return this.loadDashboard();
+      }
+      attr = {
+        opsModel: _.isString(opsModelOrId) ? this.project.getOpsModel(opsModelOrId) : opsModelOrId
+      };
+      if (!attr.opsModel) {
+        return;
+      }
+      if ((_ref = this.createSpace(attr)) != null) {
+        _ref.activate();
+      }
+    };
+
+    ProjectScene.prototype.loadDashboard = function() {
+      console.assert(Workspace.findSuitableSpace({
+        type: "Dashboard"
+      }), "Dashboard is not found.");
+      return this.createSpace({
+        type: "Dashboard"
+      }).activate();
+    };
+
+    ProjectScene.prototype.createSpace = function(data) {
+      var SpaceClass, existing;
+      existing = this.findSpace(data);
+      if (existing) {
+        return existing;
+      }
+      SpaceClass = Workspace.findSuitableSpace(data);
+      if (!SpaceClass) {
+        console.warn("Cannot find suitable workspace to work with the data", data);
+        return null;
+      }
+      return new SpaceClass(data, {
+        scene: this
+      });
+    };
+
+    ProjectScene.prototype.spaceParentElement = function() {
+      return this.view.$wsparent;
+    };
+
+    ProjectScene.prototype.__updateSpaceOrder = function() {
+      var dict;
+      dict = this.__spacesById;
+      this.__spaces = this.view.spaceOrder().map(function(id) {
+        return dict[id];
+      });
+    };
+
+    ProjectScene.prototype.updateSpace = function(workspace) {
+      if (workspace === this.__awakeSpace) {
+        this.updateUrl();
+        this.updateTitle();
+      }
+      this.view.updateSpace(workspace.id, workspace.title(), workspace.tabClass());
+      return workspace;
+    };
+
+    ProjectScene.prototype.spaces = function() {
+      return this.__spaces.slice(0);
+    };
+
+    ProjectScene.prototype.getAwakeSpace = function() {
+      return this.__awakeSpace;
+    };
+
+    ProjectScene.prototype.getSpace = function(spaceId) {
+      return this.__spacesById[spaceId];
+    };
+
+    ProjectScene.prototype.findSpace = function(attribute) {
+      return _.find(this.__spaces, function(space) {
+        return space.isWorkingOn(attribute);
+      });
+    };
+
+    ProjectScene.prototype.moveSpace = function(workspace, idx) {
+      this.view.moveSpace(workspace.id, workspace.isFixed(), idx);
+      this.__updateSpaceOrder();
+    };
+
+    ProjectScene.prototype.addSpace = function(workspace) {
+      if (this.__spacesById[workspace.id]) {
+        return;
+      }
+      this.__spacesById[workspace.id] = workspace;
+      this.view.addSpace({
+        title: workspace.title(),
+        id: workspace.id,
+        closable: !workspace.isFixed(),
+        klass: workspace.tabClass()
+      }, -1, workspace.isFixed());
+      this.__updateSpaceOrder();
+      if (this.__spaces.length === 1) {
+        this.awakeSpace(workspace);
+      }
+      return workspace;
+    };
+
+    ProjectScene.prototype.awakeSpace = function(workspace) {
+      var promise;
+      if (!workspace) {
+        return;
+      }
+      if (_.isString(workspace)) {
+        workspace = this.__spacesById[workspace];
+      }
+      if (this.__awakeSpace === workspace) {
+        return;
+      }
+      if (workspace.isRemoved()) {
+        return;
+      }
+      if (this.__awakeSpace) {
+        this.__awakeSpace.sleep();
+      }
+      this.__awakeSpace = workspace;
+      this.updateTitle();
+      this.updateUrl();
+      this.view.awakeSpace(workspace.id);
+      promise = workspace.awake();
+      if (promise && promise.then && promise.isFulfilled && !promise.isFulfilled()) {
+        promise.then((function(_this) {
+          return function() {
+            return _this.view.hideLoading();
+          };
+        })(this));
+        this.view.showLoading();
+      } else {
+        this.view.hideLoading();
+      }
+      this.trigger("switchWorkspace", workspace);
+    };
+
+    ProjectScene.prototype.removeSpace = function(workspace, force) {
+      var id;
+      if (!workspace) {
+        return;
+      }
+      if (_.isString(workspace)) {
+        workspace = this.__spacesById[workspace];
+      }
+      if (!force && !workspace.isRemovable()) {
+        return;
+      }
+      if (workspace.__isRemoved) {
+        return;
+      }
+      workspace.__isRemoved = true;
+      id = workspace.id;
+      this.view.removeSpace(id);
+      delete this.__spacesById[id];
+      this.__spaces.splice(this.__spaces.indexOf(workspace), 1);
+      workspace.stopListening();
+      workspace.cleanup();
+      if (this.__awakeSpace === workspace) {
         this.__awakeSpace = null;
-        this.__spacesById = {};
-        if (FIRST_PROJECT_NOT_LOADED) {
-          FIRST_PROJECT_NOT_LOADED = false;
-          if (!attr.pid || !App.model.projects().get(attr.pid)) {
-            attr.pid = localStorage.getItem("lastws");
-          }
-        }
-        this.project = App.model.projects().get(attr.pid) || App.model.getPrivateProject();
-        this.view = new ProjectView({
-          scene: this
-        });
-        this.listenTo(this.view, "wsOrderChanged", function() {
-          return this.__updateSpaceOrder();
-        });
-        this.listenTo(this.view, "wsClicked", function(id) {
-          return this.awakeSpace(id);
-        });
-        this.listenTo(this.view, "wsClosed", function(id) {
-          return this.removeSpace(id);
-        });
-        this.listenTo(this.project, "destroy", this.onProjectDestroy);
-        this.activate();
-        self.loadDashboard();
-        self.loadSpace(attr.opsid);
-      };
+        this.awakeSpace(this.__spaces[this.__spaces.length - 1]);
+      }
+      return workspace;
+    };
 
-      ProjectScene.prototype.becomeActive = function() {
-        this.view.$el.show();
-        this.updateUrl();
-        this.updateTitle();
-        return localStorage.setItem("lastws", this.project.id);
-      };
+    ProjectScene.prototype.removeAllSpaces = function() {
+      var space, _i, _len, _ref;
+      _ref = this.spaces();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        space = _ref[_i];
+        this.removeSpace(space, true);
+      }
+    };
 
-      ProjectScene.prototype.isRemovable = function() {
-        return _.all(this.__spaces, function(ws) {
-          return !ws.isModified();
-        });
-      };
-
-      ProjectScene.prototype.becomeInactive = function() {
-        return Scene.prototype.becomeInactive.call(this);
-      };
-
-      ProjectScene.prototype.cleanup = function() {
-        return Scene.prototype.cleanup.call(this);
-      };
-
-      ProjectScene.prototype.isWorkingOn = function(projectId) {
-        return this.project.id === projectId;
-      };
-
-      ProjectScene.prototype.title = function() {
-        var name;
-        name = this.project.get("name");
-        if (this.getAwakeSpace()) {
-          name = this.getAwakeSpace().title() + " on " + name;
-        }
-        return name;
-      };
-
-      ProjectScene.prototype.url = function() {
-        var basic;
-        basic = this.project.url() + "/";
-        if (this.getAwakeSpace()) {
-          basic += this.getAwakeSpace().url();
-        }
-        return basic.replace(/\/+$/, "");
-      };
-
-      ProjectScene.prototype.onProjectDestroy = function(p, c, options) {
-        if (!options.manualAction) {
-          notification("error", sprintf(lang.NOTIFY.INFO_PROJECT_REMOVED, p.get("name")));
-        }
-        this.remove();
-      };
-
-
-      /* -------------------------------
-       * Funtions to manage the workspaces.
-      ------------------------
-       */
-
-      ProjectScene.prototype.loadSpace = function(opsModelOrId) {
-        var attr, _ref;
-        if (!opsModelOrId) {
-          return this.loadDashboard();
-        }
-        attr = {
-          opsModel: _.isString(opsModelOrId) ? this.project.getOpsModel(opsModelOrId) : opsModelOrId
-        };
-        if (!attr.opsModel) {
-          return;
-        }
-        if ((_ref = this.createSpace(attr)) != null) {
-          _ref.activate();
-        }
-      };
-
-      ProjectScene.prototype.loadDashboard = function() {
-        console.assert(Workspace.findSuitableSpace({
-          type: "Dashboard"
-        }), "Dashboard is not found.");
-        return this.createSpace({
-          type: "Dashboard"
-        }).activate();
-      };
-
-      ProjectScene.prototype.createSpace = function(data) {
-        var SpaceClass, existing;
-        existing = this.findSpace(data);
-        if (existing) {
-          return existing;
-        }
-        SpaceClass = Workspace.findSuitableSpace(data);
-        if (!SpaceClass) {
-          console.warn("Cannot find suitable workspace to work with the data", data);
-          return null;
-        }
-        return new SpaceClass(data, {
-          scene: this
-        });
-      };
-
-      ProjectScene.prototype.spaceParentElement = function() {
-        return this.view.$wsparent;
-      };
-
-      ProjectScene.prototype.__updateSpaceOrder = function() {
-        var dict;
-        dict = this.__spacesById;
-        this.__spaces = this.view.spaceOrder().map(function(id) {
-          return dict[id];
-        });
-      };
-
-      ProjectScene.prototype.updateSpace = function(workspace) {
-        if (workspace === this.__awakeSpace) {
-          this.updateUrl();
-          this.updateTitle();
-        }
-        this.view.updateSpace(workspace.id, workspace.title(), workspace.tabClass());
-        return workspace;
-      };
-
-      ProjectScene.prototype.spaces = function() {
-        return this.__spaces.slice(0);
-      };
-
-      ProjectScene.prototype.getAwakeSpace = function() {
-        return this.__awakeSpace;
-      };
-
-      ProjectScene.prototype.getSpace = function(spaceId) {
-        return this.__spacesById[spaceId];
-      };
-
-      ProjectScene.prototype.findSpace = function(attribute) {
-        return _.find(this.__spaces, function(space) {
-          return space.isWorkingOn(attribute);
-        });
-      };
-
-      ProjectScene.prototype.moveSpace = function(workspace, idx) {
-        this.view.moveSpace(workspace.id, workspace.isFixed(), idx);
-        this.__updateSpaceOrder();
-      };
-
-      ProjectScene.prototype.addSpace = function(workspace) {
-        if (this.__spacesById[workspace.id]) {
-          return;
-        }
-        this.__spacesById[workspace.id] = workspace;
-        this.view.addSpace({
-          title: workspace.title(),
-          id: workspace.id,
-          closable: !workspace.isFixed(),
-          klass: workspace.tabClass()
-        }, -1, workspace.isFixed());
-        this.__updateSpaceOrder();
-        if (this.__spaces.length === 1) {
-          this.awakeSpace(workspace);
-        }
-        return workspace;
-      };
-
-      ProjectScene.prototype.awakeSpace = function(workspace) {
-        var promise;
-        if (!workspace) {
-          return;
-        }
-        if (_.isString(workspace)) {
-          workspace = this.__spacesById[workspace];
-        }
-        if (this.__awakeSpace === workspace) {
-          return;
-        }
-        if (workspace.isRemoved()) {
-          return;
-        }
-        if (this.__awakeSpace) {
-          this.__awakeSpace.sleep();
-        }
-        this.__awakeSpace = workspace;
-        this.updateTitle();
-        this.updateUrl();
-        this.view.awakeSpace(workspace.id);
-        promise = workspace.awake();
-        if (promise && promise.then && promise.isFulfilled && !promise.isFulfilled()) {
-          promise.then((function(_this) {
-            return function() {
-              return _this.view.hideLoading();
-            };
-          })(this));
-          this.view.showLoading();
-        } else {
-          this.view.hideLoading();
-        }
-        this.trigger("switchWorkspace", workspace);
-      };
-
-      ProjectScene.prototype.removeSpace = function(workspace, force) {
-        var id;
-        if (!workspace) {
-          return;
-        }
-        if (_.isString(workspace)) {
-          workspace = this.__spacesById[workspace];
-        }
-        if (!force && !workspace.isRemovable()) {
-          return;
-        }
-        if (workspace.__isRemoved) {
-          return;
-        }
-        workspace.__isRemoved = true;
-        id = workspace.id;
-        this.view.removeSpace(id);
-        delete this.__spacesById[id];
-        this.__spaces.splice(this.__spaces.indexOf(workspace), 1);
-        workspace.stopListening();
-        workspace.cleanup();
-        if (this.__awakeSpace === workspace) {
-          this.__awakeSpace = null;
-          this.awakeSpace(this.__spaces[this.__spaces.length - 1]);
-        }
-        return workspace;
-      };
-
-      ProjectScene.prototype.removeAllSpaces = function() {
-        var space, _i, _len, _ref;
-        _ref = this.spaces();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          space = _ref[_i];
+    ProjectScene.prototype.removeNotFixedSpaces = function(filter) {
+      var space, _i, _len, _ref;
+      _ref = this.spaces();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        space = _ref[_i];
+        if (!space.isFixed() && (!filter || filter(space))) {
           this.removeSpace(space, true);
         }
-      };
+      }
+    };
 
-      ProjectScene.prototype.removeNotFixedSpaces = function(filter) {
-        var space, _i, _len, _ref;
-        _ref = this.spaces();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          space = _ref[_i];
-          if (!space.isFixed() && (!filter || filter(space))) {
-            this.removeSpace(space, true);
-          }
-        }
-      };
-
-      return ProjectScene;
-
-    })(Scene);
-    Scene.SetDefaultScene(ProjectScene);
     return ProjectScene;
-  });
 
-}).call(this);
+  })(Scene);
+  Scene.SetDefaultScene(ProjectScene);
+  return ProjectScene;
+});
 
 define('scenes/settings/template/TplProject',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -1518,338 +1509,332 @@ TEMPLATE.leave=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('scenes/settings/models/MemberCollection',['ApiRequest', 'backbone', 'crypto'], function(ApiRequest) {
-    var MemberCollection, MemberModel;
-    MemberModel = Backbone.Model.extend({
-      defaults: {
-        id: '',
-        avatar: '',
-        username: '',
-        email: '',
-        role: '',
-        state: '',
-        me: false,
-        _username: '',
-        _email: '',
-        projectId: ''
-      },
-      updateRole: function(newRole) {
-        var that;
-        that = this;
-        return ApiRequest('project_update_role', {
-          project_id: this.get('projectId'),
-          member_id: this.id,
-          new_role: newRole
-        }).then(function() {
-          return that.set('role', newRole);
-        });
-      },
-      cancelInvite: function() {
-        var that;
-        that = this;
-        return ApiRequest('project_cancel_invitation', {
-          project_id: this.get('projectId'),
-          member_id: this.id
-        }).then(function() {
-          var _ref;
-          return (_ref = that.collection) != null ? _ref.remove(that) : void 0;
-        });
-      },
-      isAdmin: function() {
-        return this.get('role') === 'admin';
-      },
-      isOnlyAdmin: function() {
-        var adminAry, data, that;
-        that = this;
-        data = that.collection.toJSON();
-        adminAry = [];
-        _.each(data, function(member) {
-          if (member.role === 'admin' && member.state === 'normal') {
-            adminAry.push(member.username);
-          }
-          return null;
-        });
-        if (adminAry.length === 1 && adminAry[0] === this.get('username')) {
-          return true;
+define('scenes/settings/models/MemberCollection',['ApiRequest', 'backbone', 'crypto'], function(ApiRequest) {
+  var MemberCollection, MemberModel;
+  MemberModel = Backbone.Model.extend({
+    defaults: {
+      id: '',
+      avatar: '',
+      username: '',
+      email: '',
+      role: '',
+      state: '',
+      me: false,
+      _username: '',
+      _email: '',
+      projectId: ''
+    },
+    updateRole: function(newRole) {
+      var that;
+      that = this;
+      return ApiRequest('project_update_role', {
+        project_id: this.get('projectId'),
+        member_id: this.id,
+        new_role: newRole
+      }).then(function() {
+        return that.set('role', newRole);
+      });
+    },
+    cancelInvite: function() {
+      var that;
+      that = this;
+      return ApiRequest('project_cancel_invitation', {
+        project_id: this.get('projectId'),
+        member_id: this.id
+      }).then(function() {
+        var _ref;
+        return (_ref = that.collection) != null ? _ref.remove(that) : void 0;
+      });
+    },
+    isAdmin: function() {
+      return this.get('role') === 'admin';
+    },
+    isOnlyAdmin: function() {
+      var adminAry, data, that;
+      that = this;
+      data = that.collection.toJSON();
+      adminAry = [];
+      _.each(data, function(member) {
+        if (member.role === 'admin' && member.state === 'normal') {
+          adminAry.push(member.username);
         }
-        return false;
+        return null;
+      });
+      if (adminAry.length === 1 && adminAry[0] === this.get('username')) {
+        return true;
       }
-    });
-    MemberCollection = Backbone.Collection.extend({
-      constructor: function(attr) {
-        Backbone.Collection.apply(this);
-        this.projectId = attr.projectId;
-      },
-      model: MemberModel,
-      projectId: '',
-      limit: 10,
-      fetch: function() {
-        var that;
-        that = this;
-        return ApiRequest('project_list_member', {
-          project_id: that.projectId
-        }).then(function(data) {
-          var members, models;
-          that.limit = data[0];
-          members = data[1];
-          models = _.map(members, function(member) {
-            var avatar, currentUserName, email, userName;
-            userName = Base64.decode(member.username);
-            currentUserName = App.user.get('username');
-            email = Base64.decode(member.email);
-            avatar = CryptoJS.MD5(email.trim().toLowerCase()).toString();
-            return new that.model({
-              id: member.id,
-              avatar: "https://www.gravatar.com/avatar/" + avatar,
-              username: userName,
-              email: email,
-              role: member.role,
-              state: member.state,
-              me: userName === currentUserName,
-              _username: member.username,
-              _email: member.email,
-              projectId: that.projectId
-            });
-          });
-          return that.reset(models);
-        });
-      },
-      removeMember: function(memIds) {
-        var that;
-        that = this;
-        return ApiRequest('project_remove_members', {
-          project_id: this.projectId,
-          member_ids: memIds
-        }).then(function() {
-          return that.remove(memIds);
-        });
-      },
-      inviteMember: function(email) {
-        var that;
-        that = this;
-        return ApiRequest('project_invite', {
-          project_id: this.projectId,
-          member_email: email,
-          member_role: 'collaborator'
-        }).then(function() {
-          return that.push(new that.model());
-        });
-      },
-      getCurrentMember: function() {
-        return this.findWhere({
-          username: App.user.get('username')
-        });
-      },
-      isLimitInvite: function() {
-        return this.models.length >= this.limit;
-      }
-    });
-    return MemberCollection;
+      return false;
+    }
   });
-
-}).call(this);
-
-(function() {
-  define('scenes/settings/views/BasicSettingsView',['i18n!/nls/lang.js', '../template/TplBasicSettings', 'UI.modalplus', '../models/MemberCollection', 'UI.notification', 'backbone'], function(lang, TplBasicSettings, Modal, MemberCollection) {
-    return Backbone.View.extend({
-      events: {
-        'click .edit-button': 'edit',
-        'click .cancel-button': 'cancelEdit',
-        'click #update-name': 'updateName',
-        'click #delete-project': 'confirmDelete',
-        'click #leave-project': 'confirmLeave',
-        'keyup #project-name': 'checkName',
-        'keyup #confirm-project-name': 'confirmProjectName',
-        'paste #confirm-project-name': 'deferConfirmProjectName',
-        'click #do-delete-project': 'doDelete',
-        'click #do-leave-project': 'doLeave',
-        'click .cancel-leave-confirm': 'cancelLeaveConfirm',
-        'click .cancel-delete-confirm': 'cancelDeleteConfirm'
-      },
-      className: 'basic-settings',
-      initialize: function(options) {
-        _.extend(this, options);
-        this.memberCol = new MemberCollection({
-          projectId: this.model.id
+  MemberCollection = Backbone.Collection.extend({
+    constructor: function(attr) {
+      Backbone.Collection.apply(this);
+      this.projectId = attr.projectId;
+    },
+    model: MemberModel,
+    projectId: '',
+    limit: 10,
+    fetch: function() {
+      var that;
+      that = this;
+      return ApiRequest('project_list_member', {
+        project_id: that.projectId
+      }).then(function(data) {
+        var members, models;
+        that.limit = data[0];
+        members = data[1];
+        models = _.map(members, function(member) {
+          var avatar, currentUserName, email, userName;
+          userName = Base64.decode(member.username);
+          currentUserName = App.user.get('username');
+          email = Base64.decode(member.email);
+          avatar = CryptoJS.MD5(email.trim().toLowerCase()).toString();
+          return new that.model({
+            id: member.id,
+            avatar: "https://www.gravatar.com/avatar/" + avatar,
+            username: userName,
+            email: email,
+            role: member.role,
+            state: member.state,
+            me: userName === currentUserName,
+            _username: member.username,
+            _email: member.email,
+            projectId: that.projectId
+          });
         });
-        return this.listenTo(this.model, 'change:name', this.changeNameOnView);
-      },
-      getRenderData: function() {
-        var data;
-        data = this.model.toJSON();
-        data.isAdmin = this.model.amIAdmin();
-        data.isMember = this.model.amIMeber();
-        data.isObserver = this.model.amIObserver();
-        data.failedToPay = this.model.shouldPay();
-        return data;
-      },
-      render: function() {
-        var data;
+        return that.reset(models);
+      });
+    },
+    removeMember: function(memIds) {
+      var that;
+      that = this;
+      return ApiRequest('project_remove_members', {
+        project_id: this.projectId,
+        member_ids: memIds
+      }).then(function() {
+        return that.remove(memIds);
+      });
+    },
+    inviteMember: function(email) {
+      var that;
+      that = this;
+      return ApiRequest('project_invite', {
+        project_id: this.projectId,
+        member_email: email,
+        member_role: 'collaborator'
+      }).then(function() {
+        return that.push(new that.model());
+      });
+    },
+    getCurrentMember: function() {
+      return this.findWhere({
+        username: App.user.get('username')
+      });
+    },
+    isLimitInvite: function() {
+      return this.models.length >= this.limit;
+    }
+  });
+  return MemberCollection;
+});
+
+define('scenes/settings/views/BasicSettingsView',['i18n!/nls/lang.js', '../template/TplBasicSettings', 'UI.modalplus', '../models/MemberCollection', 'UI.notification', 'backbone'], function(lang, TplBasicSettings, Modal, MemberCollection) {
+  return Backbone.View.extend({
+    events: {
+      'click .edit-button': 'edit',
+      'click .cancel-button': 'cancelEdit',
+      'click #update-name': 'updateName',
+      'click #delete-project': 'confirmDelete',
+      'click #leave-project': 'confirmLeave',
+      'keyup #project-name': 'checkName',
+      'keyup #confirm-project-name': 'confirmProjectName',
+      'paste #confirm-project-name': 'deferConfirmProjectName',
+      'click #do-delete-project': 'doDelete',
+      'click #do-leave-project': 'doLeave',
+      'click .cancel-leave-confirm': 'cancelLeaveConfirm',
+      'click .cancel-delete-confirm': 'cancelDeleteConfirm'
+    },
+    className: 'basic-settings',
+    initialize: function(options) {
+      _.extend(this, options);
+      this.memberCol = new MemberCollection({
+        projectId: this.model.id
+      });
+      return this.listenTo(this.model, 'change:name', this.changeNameOnView);
+    },
+    getRenderData: function() {
+      var data;
+      data = this.model.toJSON();
+      data.isAdmin = this.model.amIAdmin();
+      data.isMember = this.model.amIMeber();
+      data.isObserver = this.model.amIObserver();
+      data.failedToPay = this.model.shouldPay();
+      return data;
+    },
+    render: function() {
+      var data;
+      data = this.getRenderData();
+      this.$el.html(TplBasicSettings.basicSettings(data));
+      this.renderLeaveZone(data);
+      if (data.isAdmin) {
+        this.renderDeleteZone(data);
+      }
+      return this;
+    },
+    renderLeaveZone: function(data, confirm) {
+      var tpl;
+      if (data == null) {
         data = this.getRenderData();
-        this.$el.html(TplBasicSettings.basicSettings(data));
-        this.renderLeaveZone(data);
-        if (data.isAdmin) {
-          this.renderDeleteZone(data);
-        }
-        return this;
-      },
-      renderLeaveZone: function(data, confirm) {
-        var tpl;
-        if (data == null) {
-          data = this.getRenderData();
-        }
-        if (confirm == null) {
-          confirm = false;
-        }
-        if (confirm) {
-          tpl = TplBasicSettings.confirmToLeave;
-        } else {
-          tpl = TplBasicSettings.leave;
-        }
-        this.$('.leave-project-zone').html(tpl(data));
-        return this;
-      },
-      renderDeleteZone: function(data, confirm) {
-        var tpl;
-        if (data == null) {
-          data = this.getRenderData();
-        }
-        if (confirm == null) {
-          confirm = false;
-        }
-        if (confirm) {
-          tpl = TplBasicSettings.confirmToDelete;
-        } else {
-          tpl = TplBasicSettings["delete"];
-        }
-        this.$('.delete-project-zone').html(tpl(data));
-        return this;
-      },
-      renderLoading: function() {
-        return this.$el.html(TplBasicSettings.loading);
-      },
-      deferConfirmProjectName: function(e) {
-        return _.defer(_.bind(this.confirmProjectName, this, e));
-      },
-      confirmProjectName: function(e) {
-        if (e.currentTarget.value === this.model.get('name')) {
-          return this.$('#do-delete-project').prop('disabled', false);
-        } else {
-          return this.$('#do-delete-project').prop('disabled', true);
-        }
-      },
-      edit: function(e) {
-        return $(e.currentTarget).closest('.project-item').addClass('edit');
-      },
-      cancelEdit: function(e) {
-        return $(e.currentTarget).closest('.project-item').removeClass('edit');
-      },
-      checkName: function(e) {
-        var $updateBtn;
-        $updateBtn = this.$('#update-name');
-        if (e.currentTarget.value.length > 0) {
-          return $updateBtn.prop('disabled', false);
-        } else {
-          return $updateBtn.prop('disabled', true);
-        }
-      },
-      updateName: function(e) {
-        var newName, that;
-        that = this;
-        newName = this.$('#project-name').val();
-        this.updateNameLoading(e);
-        return this.model.updateName(newName).then(function() {
-          that.updateNameLoading(e, true);
-          return that.cancelEdit(e);
-        }, function() {
-          that.updateNameLoading(e, true);
-          return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_RENAME);
-        });
-      },
-      changeNameOnView: function() {
-        return this.$('.project-name').text(this.model.get('name'));
-      },
-      updateNameLoading: function(e, stop) {
-        var $editZone, $loadingZone, $projectItem;
-        if (stop == null) {
-          stop = false;
-        }
-        $projectItem = $(e.currentTarget).closest('.project-item');
-        $editZone = $projectItem.find('.edit-actions');
-        $loadingZone = $projectItem.find('.loading-spinner');
-        $editZone.toggle(stop);
-        return $loadingZone.toggle(!stop);
-      },
-      doDelete: function() {
-        var that;
-        that = this;
-        this.renderLoading();
-        return this.model.destroy().then(function() {
-          that.remove();
-          return that.settingsView.modal.close();
-        }, function(err) {
-          if (err.error === 134) {
-            notification('error', lang.NOTIFY.HAVE_ONGOINGREQUEST_DELETE_WORKSPACE);
-          } else {
-            notification('error', lang.NOTIFY.SETTINGS_ERR_PROJECT_REMOVE);
-          }
-          return that.render();
-        });
-      },
-      doLeave: function() {
-        var that;
-        that = this;
-        that.renderLoading();
-        if (!that.model.amIAdmin()) {
-          return that.toLeave();
-        } else {
-          return that.memberCol.fetch().then(function() {
-            var currentMember;
-            currentMember = that.memberCol.getCurrentMember();
-            if (currentMember.isAdmin()) {
-              if (!currentMember.isOnlyAdmin()) {
-                return that.toLeave();
-              } else {
-                that.render();
-                return notification('error', lang.IDE.LEAVING_WORKSPACE_WILL_ONLY_ONE_ADMIN);
-              }
-            } else {
-              return that.toLeave();
-            }
-          }).fail(function(data) {
-            that.render();
-            return notification('error', data.result || data.msg);
-          });
-        }
-      },
-      toLeave: function() {
-        var that;
-        that = this;
-        return that.model.leave().then(function() {
-          that.remove();
-          return that.settingsView.modal.close();
-        }, function() {
-          that.render();
-          return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_LEAVE);
-        });
-      },
-      confirmLeave: function() {
-        return this.renderLeaveZone(null, true);
-      },
-      cancelLeaveConfirm: function() {
-        return this.renderLeaveZone();
-      },
-      confirmDelete: function() {
-        return this.renderDeleteZone(null, true);
-      },
-      cancelDeleteConfirm: function() {
-        return this.renderDeleteZone();
       }
-    });
+      if (confirm == null) {
+        confirm = false;
+      }
+      if (confirm) {
+        tpl = TplBasicSettings.confirmToLeave;
+      } else {
+        tpl = TplBasicSettings.leave;
+      }
+      this.$('.leave-project-zone').html(tpl(data));
+      return this;
+    },
+    renderDeleteZone: function(data, confirm) {
+      var tpl;
+      if (data == null) {
+        data = this.getRenderData();
+      }
+      if (confirm == null) {
+        confirm = false;
+      }
+      if (confirm) {
+        tpl = TplBasicSettings.confirmToDelete;
+      } else {
+        tpl = TplBasicSettings["delete"];
+      }
+      this.$('.delete-project-zone').html(tpl(data));
+      return this;
+    },
+    renderLoading: function() {
+      return this.$el.html(TplBasicSettings.loading);
+    },
+    deferConfirmProjectName: function(e) {
+      return _.defer(_.bind(this.confirmProjectName, this, e));
+    },
+    confirmProjectName: function(e) {
+      if (e.currentTarget.value === this.model.get('name')) {
+        return this.$('#do-delete-project').prop('disabled', false);
+      } else {
+        return this.$('#do-delete-project').prop('disabled', true);
+      }
+    },
+    edit: function(e) {
+      return $(e.currentTarget).closest('.project-item').addClass('edit');
+    },
+    cancelEdit: function(e) {
+      return $(e.currentTarget).closest('.project-item').removeClass('edit');
+    },
+    checkName: function(e) {
+      var $updateBtn;
+      $updateBtn = this.$('#update-name');
+      if (e.currentTarget.value.length > 0) {
+        return $updateBtn.prop('disabled', false);
+      } else {
+        return $updateBtn.prop('disabled', true);
+      }
+    },
+    updateName: function(e) {
+      var newName, that;
+      that = this;
+      newName = this.$('#project-name').val();
+      this.updateNameLoading(e);
+      return this.model.updateName(newName).then(function() {
+        that.updateNameLoading(e, true);
+        return that.cancelEdit(e);
+      }, function() {
+        that.updateNameLoading(e, true);
+        return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_RENAME);
+      });
+    },
+    changeNameOnView: function() {
+      return this.$('.project-name').text(this.model.get('name'));
+    },
+    updateNameLoading: function(e, stop) {
+      var $editZone, $loadingZone, $projectItem;
+      if (stop == null) {
+        stop = false;
+      }
+      $projectItem = $(e.currentTarget).closest('.project-item');
+      $editZone = $projectItem.find('.edit-actions');
+      $loadingZone = $projectItem.find('.loading-spinner');
+      $editZone.toggle(stop);
+      return $loadingZone.toggle(!stop);
+    },
+    doDelete: function() {
+      var that;
+      that = this;
+      this.renderLoading();
+      return this.model.destroy().then(function() {
+        that.remove();
+        return that.settingsView.modal.close();
+      }, function(err) {
+        if (err.error === 134) {
+          notification('error', lang.NOTIFY.HAVE_ONGOINGREQUEST_DELETE_WORKSPACE);
+        } else {
+          notification('error', lang.NOTIFY.SETTINGS_ERR_PROJECT_REMOVE);
+        }
+        return that.render();
+      });
+    },
+    doLeave: function() {
+      var that;
+      that = this;
+      that.renderLoading();
+      if (!that.model.amIAdmin()) {
+        return that.toLeave();
+      } else {
+        return that.memberCol.fetch().then(function() {
+          var currentMember;
+          currentMember = that.memberCol.getCurrentMember();
+          if (currentMember.isAdmin()) {
+            if (!currentMember.isOnlyAdmin()) {
+              return that.toLeave();
+            } else {
+              that.render();
+              return notification('error', lang.IDE.LEAVING_WORKSPACE_WILL_ONLY_ONE_ADMIN);
+            }
+          } else {
+            return that.toLeave();
+          }
+        }).fail(function(data) {
+          that.render();
+          return notification('error', data.result || data.msg);
+        });
+      }
+    },
+    toLeave: function() {
+      var that;
+      that = this;
+      return that.model.leave().then(function() {
+        that.remove();
+        return that.settingsView.modal.close();
+      }, function() {
+        that.render();
+        return notification('error', lang.IDE.SETTINGS_ERR_PROJECT_LEAVE);
+      });
+    },
+    confirmLeave: function() {
+      return this.renderLeaveZone(null, true);
+    },
+    cancelLeaveConfirm: function() {
+      return this.renderLeaveZone();
+    },
+    confirmDelete: function() {
+      return this.renderDeleteZone(null, true);
+    },
+    cancelDeleteConfirm: function() {
+      return this.renderDeleteZone();
+    }
   });
-
-}).call(this);
+});
 
 define('scenes/settings/template/TplAccessToken',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -1887,196 +1872,193 @@ function program1(depth0,data) {
     + "</button>\n        </div>\n    </div>\n\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
-(function() {
-  define('scenes/settings/views/AccessTokenView',['backbone', "../template/TplAccessToken", 'i18n!/nls/lang.js', "ApiRequest", "UI.scrollbar"], function(Backbone, template, lang, ApiRequest) {
-    return Backbone.View.extend({
-      className: "access-token-view",
-      events: {
-        "click #TokenCreate": "createToken",
-        "click .tokenControl .icon-edit": "editToken",
-        "click .tokenControl .icon-delete": "removeToken",
-        "click .tokenControl .tokenDone": "doneEditToken",
-        "click #TokenRemove": "confirmRmToken",
-        "click #TokenRmCancel": "cancelRmToken"
-      },
-      initialize: function() {
-        this.tokens = [];
-        return this;
-      },
-      render: function() {
-        var project_id, self;
-        self = this;
-        this.$el.html(MC.template.loadingSpinner());
-        project_id = this.model.get("id");
-        ApiRequest("token_list", {
-          project_id: project_id
-        }).then(function(res) {
-          var isAdmin;
-          isAdmin = self.model.amIAdmin();
-          self.$el.html(template({
-            isAdmin: isAdmin
-          }));
-          self.tokens = res[0].tokens;
-          return self.updateTokenList();
-        });
-        return this;
-      },
-      editToken: function(evt) {
-        var $p, $t;
-        $t = $(evt.currentTarget);
-        $p = $t.closest("li").toggleClass("editing", true);
-        $p.children(".tokenName").removeAttr("readonly").focus().select();
-      },
-      removeToken: function(evt) {
-        var $p, name;
-        $p = $(evt.currentTarget).closest("li");
-        name = $p.children(".tokenName").val();
-        this.rmToken = $p.children(".tokenToken").text();
-        this.$el.find("#TokenManager").hide();
-        this.$el.find("#TokenRmConfirm").show();
-        this.$el.find("#TokenRmTit").text(sprintf(lang.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
-      },
-      createToken: function() {
-        var base, nameMap, project_id, self, t, tmpl, token_name, _i, _len, _ref;
-        this.$el.find("#TokenCreate").attr("disabled", "disabled");
-        self = this;
-        tmpl = "MyToken";
-        base = 1;
-        nameMap = {};
-        _ref = this.tokens;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          t = _ref[_i];
-          nameMap[t.name] = true;
-        }
-        while (true) {
-          token_name = tmpl + base;
-          if (nameMap[token_name]) {
-            base += 1;
-          } else {
-            break;
-          }
-        }
-        project_id = this.model.get("id");
-        ApiRequest("token_create", {
-          token_name: token_name,
-          project_id: project_id
-        }).then(function(res) {
-          var name, token;
-          name = res[0], token = res[1];
-          self.tokens.push({
-            name: name,
-            token: token
-          });
-          self.updateTokenList();
-          return self.$el.find("#TokenCreate").removeAttr("disabled");
-        }, function() {
-          notification("error", lang.NOTIFY.FAIL_TO_CREATE_TOKEN);
-          return self.$el.find("#TokenCreate").removeAttr("disabled");
-        });
-      },
-      doneEditToken: function(evt) {
-        var $p, duplicate, new_token_name, oldName, project_id, self, t, token, _i, _len, _ref;
-        self = this;
-        $p = $(evt.currentTarget).closest("li").removeClass("editing");
-        $p.children(".tokenName").attr("readonly", true);
-        token = $p.children(".tokenToken").text();
-        new_token_name = $p.children(".tokenName").val();
-        _ref = this.tokens;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          t = _ref[_i];
-          if (t.token === token) {
-            oldName = t.name;
-          } else if (t.name === new_token_name) {
-            duplicate = true;
-          }
-        }
-        if (!new_token_name || duplicate) {
-          $p.children(".tokenName").val(oldName);
-          return;
-        }
-        project_id = this.model.get("id");
-        ApiRequest("token_update", {
-          token: token,
-          new_token_name: new_token_name,
-          project_id: project_id
-        }).then(function(res) {
-          var idx, _j, _len1, _ref1, _results;
-          _ref1 = self.tokens;
-          _results = [];
-          for (idx = _j = 0, _len1 = _ref1.length; _j < _len1; idx = ++_j) {
-            t = _ref1[idx];
-            if (t.token === token) {
-              t.name = new_token_name;
-              break;
-            } else {
-              _results.push(void 0);
-            }
-          }
-          return _results;
-        }, function() {
-          oldName = "";
-          $p.children(".tokenName").val(oldName);
-          return notification("error", lang.NOTIFY.FAIL_TO_UPDATE_TOKEN);
-        });
-      },
-      confirmRmToken: function() {
-        var idx, project_id, self, t, token, token_name, _i, _len, _ref;
-        this.$el.find("#TokenRemove").attr("disabled", "disabled");
-        self = this;
-        _ref = this.tokens;
-        for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-          t = _ref[idx];
-          if (t.token === this.rmToken) {
-            break;
-          }
-        }
-        project_id = this.model.get("id");
-        token = this.rmToken;
-        token_name = t.name;
-        ApiRequest("token_remove", {
-          project_id: project_id,
-          token: token,
-          token_name: token_name
-        }).then(function(res) {
-          idx = self.tokens.indexOf(t);
-          if (idx >= 0) {
-            self.tokens.splice(idx, 1);
-            self.updateTokenList();
-            return self.cancelRmToken();
-          }
-        }, function() {
-          notification(lang.NOTIFY.FAIL_TO_DELETE_TOKEN);
-          return self.cancelRmToken();
-        });
-      },
-      cancelRmToken: function() {
-        this.rmToken = "";
-        this.$el.find("#TokenRemove").removeAttr("disabled");
-        this.$el.find("#TokenManager").show();
-        this.$el.find("#TokenRmConfirm").hide();
-      },
-      hasNoToken: function() {
-        return this.tokens.length === 0 || (this.tokens.length === 1 && !this.tokens[0].name);
-      },
-      updateTokenList: function() {
-        var hasNoToken, isAdmin, tokens;
-        tokens = this.tokens;
-        hasNoToken = this.hasNoToken();
-        this.$el.find("#TokenManager").find(".token-table").toggleClass("empty", hasNoToken);
-        if (!hasNoToken) {
-          isAdmin = this.model.amIAdmin();
-          this.$el.find("#TokenList").html(MC.template.accessTokenTable({
-            tokens: tokens,
-            isAdmin: isAdmin
-          }));
+define('scenes/settings/views/AccessTokenView',['backbone', "../template/TplAccessToken", 'i18n!/nls/lang.js', "ApiRequest", "UI.scrollbar"], function(Backbone, template, lang, ApiRequest) {
+  return Backbone.View.extend({
+    className: "access-token-view",
+    events: {
+      "click #TokenCreate": "createToken",
+      "click .tokenControl .icon-edit": "editToken",
+      "click .tokenControl .icon-delete": "removeToken",
+      "click .tokenControl .tokenDone": "doneEditToken",
+      "click #TokenRemove": "confirmRmToken",
+      "click #TokenRmCancel": "cancelRmToken"
+    },
+    initialize: function() {
+      this.tokens = [];
+      return this;
+    },
+    render: function() {
+      var project_id, self;
+      self = this;
+      this.$el.html(MC.template.loadingSpinner());
+      project_id = this.model.get("id");
+      ApiRequest("token_list", {
+        project_id: project_id
+      }).then(function(res) {
+        var isAdmin;
+        isAdmin = self.model.amIAdmin();
+        self.$el.html(template({
+          isAdmin: isAdmin
+        }));
+        self.tokens = res[0].tokens;
+        return self.updateTokenList();
+      });
+      return this;
+    },
+    editToken: function(evt) {
+      var $p, $t;
+      $t = $(evt.currentTarget);
+      $p = $t.closest("li").toggleClass("editing", true);
+      $p.children(".tokenName").removeAttr("readonly").focus().select();
+    },
+    removeToken: function(evt) {
+      var $p, name;
+      $p = $(evt.currentTarget).closest("li");
+      name = $p.children(".tokenName").val();
+      this.rmToken = $p.children(".tokenToken").text();
+      this.$el.find("#TokenManager").hide();
+      this.$el.find("#TokenRmConfirm").show();
+      this.$el.find("#TokenRmTit").text(sprintf(lang.IDE.SETTINGS_CONFIRM_TOKEN_RM_TIT, name));
+    },
+    createToken: function() {
+      var base, nameMap, project_id, self, t, tmpl, token_name, _i, _len, _ref;
+      this.$el.find("#TokenCreate").attr("disabled", "disabled");
+      self = this;
+      tmpl = "MyToken";
+      base = 1;
+      nameMap = {};
+      _ref = this.tokens;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        t = _ref[_i];
+        nameMap[t.name] = true;
+      }
+      while (true) {
+        token_name = tmpl + base;
+        if (nameMap[token_name]) {
+          base += 1;
         } else {
-          this.$el.find("#TokenList").empty();
+          break;
         }
       }
-    });
+      project_id = this.model.get("id");
+      ApiRequest("token_create", {
+        token_name: token_name,
+        project_id: project_id
+      }).then(function(res) {
+        var name, token;
+        name = res[0], token = res[1];
+        self.tokens.push({
+          name: name,
+          token: token
+        });
+        self.updateTokenList();
+        return self.$el.find("#TokenCreate").removeAttr("disabled");
+      }, function() {
+        notification("error", lang.NOTIFY.FAIL_TO_CREATE_TOKEN);
+        return self.$el.find("#TokenCreate").removeAttr("disabled");
+      });
+    },
+    doneEditToken: function(evt) {
+      var $p, duplicate, new_token_name, oldName, project_id, self, t, token, _i, _len, _ref;
+      self = this;
+      $p = $(evt.currentTarget).closest("li").removeClass("editing");
+      $p.children(".tokenName").attr("readonly", true);
+      token = $p.children(".tokenToken").text();
+      new_token_name = $p.children(".tokenName").val();
+      _ref = this.tokens;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        t = _ref[_i];
+        if (t.token === token) {
+          oldName = t.name;
+        } else if (t.name === new_token_name) {
+          duplicate = true;
+        }
+      }
+      if (!new_token_name || duplicate) {
+        $p.children(".tokenName").val(oldName);
+        return;
+      }
+      project_id = this.model.get("id");
+      ApiRequest("token_update", {
+        token: token,
+        new_token_name: new_token_name,
+        project_id: project_id
+      }).then(function(res) {
+        var idx, _j, _len1, _ref1, _results;
+        _ref1 = self.tokens;
+        _results = [];
+        for (idx = _j = 0, _len1 = _ref1.length; _j < _len1; idx = ++_j) {
+          t = _ref1[idx];
+          if (t.token === token) {
+            t.name = new_token_name;
+            break;
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }, function() {
+        oldName = "";
+        $p.children(".tokenName").val(oldName);
+        return notification("error", lang.NOTIFY.FAIL_TO_UPDATE_TOKEN);
+      });
+    },
+    confirmRmToken: function() {
+      var idx, project_id, self, t, token, token_name, _i, _len, _ref;
+      this.$el.find("#TokenRemove").attr("disabled", "disabled");
+      self = this;
+      _ref = this.tokens;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        t = _ref[idx];
+        if (t.token === this.rmToken) {
+          break;
+        }
+      }
+      project_id = this.model.get("id");
+      token = this.rmToken;
+      token_name = t.name;
+      ApiRequest("token_remove", {
+        project_id: project_id,
+        token: token,
+        token_name: token_name
+      }).then(function(res) {
+        idx = self.tokens.indexOf(t);
+        if (idx >= 0) {
+          self.tokens.splice(idx, 1);
+          self.updateTokenList();
+          return self.cancelRmToken();
+        }
+      }, function() {
+        notification(lang.NOTIFY.FAIL_TO_DELETE_TOKEN);
+        return self.cancelRmToken();
+      });
+    },
+    cancelRmToken: function() {
+      this.rmToken = "";
+      this.$el.find("#TokenRemove").removeAttr("disabled");
+      this.$el.find("#TokenManager").show();
+      this.$el.find("#TokenRmConfirm").hide();
+    },
+    hasNoToken: function() {
+      return this.tokens.length === 0 || (this.tokens.length === 1 && !this.tokens[0].name);
+    },
+    updateTokenList: function() {
+      var hasNoToken, isAdmin, tokens;
+      tokens = this.tokens;
+      hasNoToken = this.hasNoToken();
+      this.$el.find("#TokenManager").find(".token-table").toggleClass("empty", hasNoToken);
+      if (!hasNoToken) {
+        isAdmin = this.model.amIAdmin();
+        this.$el.find("#TokenList").html(MC.template.accessTokenTable({
+          tokens: tokens,
+          isAdmin: isAdmin
+        }));
+      } else {
+        this.$el.find("#TokenList").empty();
+      }
+    }
   });
-
-}).call(this);
+});
 
 define('scenes/settings/template/TplBilling',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -2335,276 +2317,273 @@ TEMPLATE.usageTable=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('scenes/settings/views/BillingView',['backbone', "../template/TplBilling", 'i18n!/nls/lang.js', "ApiRequest", "ApiRequestR", "scenes/ProjectTpl", "UI.parsley"], function(Backbone, template, lang, ApiRequest, ApiRequestR, projectTpl) {
-    return Backbone.View.extend({
-      events: {
-        'click #PaymentBody a.payment-receipt': "viewPaymentReceipt",
-        'click button.update-payment': "showUpdatePayment",
-        "click .update-payment-done": "updatePaymentDone",
-        "click .update-payment-cancel": "updatePaymentCancel",
-        "click .editEmailBtn": "updatePaymentEmail",
-        "click .editEmailDone": "updateEmailDone",
-        "click .editEmailCancel": "updateEmailCancel",
-        "change .billing-email-text>input": "emailInputChange",
-        "keyup .billing-email-text>input": "emailInputChange"
-      },
-      className: "billing-view",
-      initialize: function() {
-        return this;
-      },
-      render: function() {
-        var paymentState, that;
-        this.$el.html(template.billingLoadingFrame());
-        this.$el.find("#billing-status").append(MC.template.loadingSpinner());
-        that = this;
-        this.$el.find("#PaymentBody").remove();
-        paymentState = App.user.get("paymentState");
-        this.model.getPaymentState().then(function() {
-          var billingTemplate, paymentUpdate;
-          paymentUpdate = that.model.get("payment");
-          billingTemplate = template.billingTemplate({
-            paymentUpdate: paymentUpdate
-          });
-          that.$el.find("#billing-status").html(billingTemplate);
-          that.$el.find(".table-head-fix").replaceWith(MC.template.loadingSpinner());
-          return that.getPaymentHistory().then(function(paymentHistory) {
-            var hasPaymentHistory;
-            hasPaymentHistory = (_.keys(paymentHistory)).length;
-            paymentUpdate = that.model.get("payment");
-            billingTemplate = template.billingTemplate({
-              paymentUpdate: paymentUpdate,
-              paymentHistory: paymentHistory,
-              hasPaymentHistory: hasPaymentHistory
-            });
-            return that.$el.find(".billing-history").html($(billingTemplate).find(".billing-history").html());
-          }, function() {
-            return that.renderCache();
-          });
-        }, function(err) {
-          var billingTemplate, noSubscription;
-          if (err.error === -404) {
-            noSubscription = true;
-            billingTemplate = template.billingTemplate({
-              noSubscription: noSubscription
-            });
-            return that.$el.find("#billing-status").html(billingTemplate);
-          } else {
-            return notification('error', "Error while getting user payment info, please try again later.");
-          }
-        });
-        return this;
-      },
-      renderCache: function() {
-        var billingTemplate, paymentHistory, paymentUpdate, that;
-        that = this;
-        paymentHistory = this.model.get("paymentHistory") || [];
-        paymentUpdate = this.model.get("payment");
+define('scenes/settings/views/BillingView',['backbone', "../template/TplBilling", 'i18n!/nls/lang.js', "ApiRequest", "ApiRequestR", "scenes/ProjectTpl", "UI.parsley"], function(Backbone, template, lang, ApiRequest, ApiRequestR, projectTpl) {
+  return Backbone.View.extend({
+    events: {
+      'click #PaymentBody a.payment-receipt': "viewPaymentReceipt",
+      'click button.update-payment': "showUpdatePayment",
+      "click .update-payment-done": "updatePaymentDone",
+      "click .update-payment-cancel": "updatePaymentCancel",
+      "click .editEmailBtn": "updatePaymentEmail",
+      "click .editEmailDone": "updateEmailDone",
+      "click .editEmailCancel": "updateEmailCancel",
+      "change .billing-email-text>input": "emailInputChange",
+      "keyup .billing-email-text>input": "emailInputChange"
+    },
+    className: "billing-view",
+    initialize: function() {
+      return this;
+    },
+    render: function() {
+      var paymentState, that;
+      this.$el.html(template.billingLoadingFrame());
+      this.$el.find("#billing-status").append(MC.template.loadingSpinner());
+      that = this;
+      this.$el.find("#PaymentBody").remove();
+      paymentState = App.user.get("paymentState");
+      this.model.getPaymentState().then(function() {
+        var billingTemplate, paymentUpdate;
+        paymentUpdate = that.model.get("payment");
         billingTemplate = template.billingTemplate({
-          paymentUpdate: paymentUpdate,
-          paymentHistory: paymentHistory
+          paymentUpdate: paymentUpdate
         });
         that.$el.find("#billing-status").html(billingTemplate);
-        if (!paymentHistory.length) {
-          that.$el.find(".table-head-fix").replaceWith(MC.template.loadingSpinner());
-          this.getPaymentHistory().then(function() {
-            paymentHistory = that.model.get("paymentHistory");
-            billingTemplate = template.billingTemplate({
-              paymentUpdate: paymentUpdate,
-              paymentHistory: paymentHistory
-            });
-            return that.$el.find("#billing-status").empty().append(billingTemplate);
+        that.$el.find(".table-head-fix").replaceWith(MC.template.loadingSpinner());
+        return that.getPaymentHistory().then(function(paymentHistory) {
+          var hasPaymentHistory;
+          hasPaymentHistory = (_.keys(paymentHistory)).length;
+          paymentUpdate = that.model.get("payment");
+          billingTemplate = template.billingTemplate({
+            paymentUpdate: paymentUpdate,
+            paymentHistory: paymentHistory,
+            hasPaymentHistory: hasPaymentHistory
           });
-        }
-        return this;
-      },
-      getPaymentHistory: function() {
-        var historyDefer, projectId, that;
-        projectId = this.model.get("id");
-        historyDefer = new Q.defer();
-        that = this;
-        ApiRequestR("payment_statement", {
-          projectId: projectId
-        }).then(function(paymentHistory) {
-          var tempArray;
-          tempArray = [];
-          _.each(paymentHistory, function(e) {
-            e.ending_balance = e.ending_balance_in_cents / 100;
-            e.total_balance = e.total_in_cents / 100;
-            e.start_balance = e.starting_balance_in_cents / 100;
-            return tempArray.push(e);
-          });
-          tempArray.reverse();
-          paymentHistory = tempArray;
-          that.model.set("paymentHistory", paymentHistory);
-          return historyDefer.resolve(paymentHistory);
-        }, function(err) {
-          return historyDefer.reject(err);
+          return that.$el.find(".billing-history").html($(billingTemplate).find(".billing-history").html());
+        }, function() {
+          return that.renderCache();
         });
-        return historyDefer.promise;
-      },
-      showUpdatePayment: function(evt) {
-        $(".update-payment-ctrl").show();
-        this.$el.find(".billing-history").replaceWith(projectTpl.updateProject());
-        return $(evt.currentTarget).hide();
-      },
-      emailInputChange: function() {
-        var email;
-        email = this.$el.find(".billing-email-text input").val();
-        return this.isValidEmail(email);
-      },
-      updatePaymentDone: function() {
-        var $cvv, $expire, $firstname, $lastname, $number, $updateBtn, attributes, expire, expireAry, project_id, that, valid, wrap;
-        that = this;
-        wrap = this.$el.find(".update-payment-wrap");
-        wrap.find(".new-project-err").hide();
-        $updateBtn = that.$el.find(".update-payment-done");
-        $firstname = wrap.find("#new-project-fn");
-        $lastname = wrap.find("#new-project-ln");
-        $number = wrap.find("#new-project-card");
-        $expire = wrap.find("#new-project-date");
-        $cvv = wrap.find("#new-project-cvv");
-        valid = true;
+      }, function(err) {
+        var billingTemplate, noSubscription;
+        if (err.error === -404) {
+          noSubscription = true;
+          billingTemplate = template.billingTemplate({
+            noSubscription: noSubscription
+          });
+          return that.$el.find("#billing-status").html(billingTemplate);
+        } else {
+          return notification('error', "Error while getting user payment info, please try again later.");
+        }
+      });
+      return this;
+    },
+    renderCache: function() {
+      var billingTemplate, paymentHistory, paymentUpdate, that;
+      that = this;
+      paymentHistory = this.model.get("paymentHistory") || [];
+      paymentUpdate = this.model.get("payment");
+      billingTemplate = template.billingTemplate({
+        paymentUpdate: paymentUpdate,
+        paymentHistory: paymentHistory
+      });
+      that.$el.find("#billing-status").html(billingTemplate);
+      if (!paymentHistory.length) {
+        that.$el.find(".table-head-fix").replaceWith(MC.template.loadingSpinner());
+        this.getPaymentHistory().then(function() {
+          paymentHistory = that.model.get("paymentHistory");
+          billingTemplate = template.billingTemplate({
+            paymentUpdate: paymentUpdate,
+            paymentHistory: paymentHistory
+          });
+          return that.$el.find("#billing-status").empty().append(billingTemplate);
+        });
+      }
+      return this;
+    },
+    getPaymentHistory: function() {
+      var historyDefer, projectId, that;
+      projectId = this.model.get("id");
+      historyDefer = new Q.defer();
+      that = this;
+      ApiRequestR("payment_statement", {
+        projectId: projectId
+      }).then(function(paymentHistory) {
+        var tempArray;
+        tempArray = [];
+        _.each(paymentHistory, function(e) {
+          e.ending_balance = e.ending_balance_in_cents / 100;
+          e.total_balance = e.total_in_cents / 100;
+          e.start_balance = e.starting_balance_in_cents / 100;
+          return tempArray.push(e);
+        });
+        tempArray.reverse();
+        paymentHistory = tempArray;
+        that.model.set("paymentHistory", paymentHistory);
+        return historyDefer.resolve(paymentHistory);
+      }, function(err) {
+        return historyDefer.reject(err);
+      });
+      return historyDefer.promise;
+    },
+    showUpdatePayment: function(evt) {
+      $(".update-payment-ctrl").show();
+      this.$el.find(".billing-history").replaceWith(projectTpl.updateProject());
+      return $(evt.currentTarget).hide();
+    },
+    emailInputChange: function() {
+      var email;
+      email = this.$el.find(".billing-email-text input").val();
+      return this.isValidEmail(email);
+    },
+    updatePaymentDone: function() {
+      var $cvv, $expire, $firstname, $lastname, $number, $updateBtn, attributes, expire, expireAry, project_id, that, valid, wrap;
+      that = this;
+      wrap = this.$el.find(".update-payment-wrap");
+      wrap.find(".new-project-err").hide();
+      $updateBtn = that.$el.find(".update-payment-done");
+      $firstname = wrap.find("#new-project-fn");
+      $lastname = wrap.find("#new-project-ln");
+      $number = wrap.find("#new-project-card");
+      $expire = wrap.find("#new-project-date");
+      $cvv = wrap.find("#new-project-cvv");
+      valid = true;
+      $expire.parsley('custom', function(val) {
+        return null;
+      });
+      expire = $expire.val();
+      expireAry = expire.split('/');
+      if (expire.match(/^\d\d\/\d\d$/g)) {
+        expire = "" + expireAry[0] + "/20" + expireAry[1];
+      } else if (expire.match(/^\d\d\d\d$/g)) {
+        expire = "" + (expire.substr(0, 2)) + "/20" + (expire.substr(2, 2));
+      } else if (expire.match(/^\d\d\/\d\d\d\d$/g)) {
+        expire = expire;
+      } else if (expire.match(/^\d\d\d\d\d\d$/g)) {
+        expire = "" + (expire.substr(0, 2)) + "/" + (expire.substr(2, 4));
+      } else if (expire.match(/^\d\d\d$/g)) {
+        expire = "0" + (expire.substr(0, 1)) + "/20" + (expire.substr(1, 2));
+      } else {
         $expire.parsley('custom', function(val) {
+          if (val.indexOf('/') === -1) {
+            return lang.IDE.SETTINGS_CREATE_PROJECT_EXPIRE_FORMAT;
+          }
           return null;
         });
-        expire = $expire.val();
-        expireAry = expire.split('/');
-        if (expire.match(/^\d\d\/\d\d$/g)) {
-          expire = "" + expireAry[0] + "/20" + expireAry[1];
-        } else if (expire.match(/^\d\d\d\d$/g)) {
-          expire = "" + (expire.substr(0, 2)) + "/20" + (expire.substr(2, 2));
-        } else if (expire.match(/^\d\d\/\d\d\d\d$/g)) {
-          expire = expire;
-        } else if (expire.match(/^\d\d\d\d\d\d$/g)) {
-          expire = "" + (expire.substr(0, 2)) + "/" + (expire.substr(2, 4));
-        } else if (expire.match(/^\d\d\d$/g)) {
-          expire = "0" + (expire.substr(0, 1)) + "/20" + (expire.substr(1, 2));
-        } else {
-          $expire.parsley('custom', function(val) {
-            if (val.indexOf('/') === -1) {
-              return lang.IDE.SETTINGS_CREATE_PROJECT_EXPIRE_FORMAT;
-            }
-            return null;
-          });
-        }
-        wrap.find("input").each(function(idx, dom) {
-          if (!$(dom).parsley('validate')) {
-            valid = false;
-            return false;
-          }
-        });
-        if (valid) {
-          wrap.find("input, button").attr("disabled", "disabled");
-          project_id = that.model.get("id");
-          attributes = {
-            first_name: $firstname.val(),
-            last_name: $lastname.val(),
-            full_number: $number.val(),
-            expiration_month: expire.split("/")[0],
-            expiration_year: expire.split("/")[1],
-            cvv: $cvv.val()
-          };
-          return ApiRequest("project_update_payment", {
-            project_id: project_id,
-            attributes: attributes
-          }).then(function() {
-            return that.render();
-          }).fail(function(error) {
-            var err, msgObj;
-            wrap.find("input, button").prop("disabled", false);
-            try {
-              msgObj = JSON.parse(error.result);
-              if (_.isArray(msgObj.errors)) {
-                wrap.find(".update-payment-err").show().html(msgObj.errors.join('<br/>'));
-              }
-            } catch (_error) {
-              err = _error;
-              notification('error', error.result);
-            }
-          });
-        }
-      },
-      updatePaymentCancel: function() {
-        $(".parsley-error-list").remove();
-        return this.renderCache();
-      },
-      updatePaymentEmail: function() {
-        this.$el.find(".billing-email-text>p,.editEmailBtn").hide();
-        this.$el.find(".editEmailControl,.billing-email-text>input").show();
-        return this.$el.find(".billing-email-text>input").val(this.model.get("payment").email);
-      },
-      updateEmailCancel: function() {
-        return this.renderCache();
-      },
-      isValidEmail: function(email) {
-        var isValid, regExp;
-        regExp = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
-        isValid = regExp.test(email);
-        if (isValid) {
-          this.$el.find("#SettingErrorInfo").empty();
-        } else {
-          this.$el.find("#SettingErrorInfo").text(lang.IDE.SETTING_INVALID_EMAIL);
-        }
-        return isValid;
-      },
-      updateEmailDone: function() {
-        var attributes, email, project_id, that;
-        project_id = this.model.get("id");
-        that = this;
-        email = this.$el.find(".billing-email-text input").val();
-        if (!this.isValidEmail(email)) {
+      }
+      wrap.find("input").each(function(idx, dom) {
+        if (!$(dom).parsley('validate')) {
+          valid = false;
           return false;
         }
-        this.$el.find(".editEmailControl button").attr("disabled", "disabled");
-        this.$el.find(".billing-email-text>input").attr("disabled", "disabled");
-        this.$el.find(".editEmailControl .editEmailDone").text(lang.IDE.LBL_SAVING);
-        this.$el.find(".editEmailControl .editEmailCancel").hide();
+      });
+      if (valid) {
+        wrap.find("input, button").attr("disabled", "disabled");
+        project_id = that.model.get("id");
         attributes = {
-          email: email
+          first_name: $firstname.val(),
+          last_name: $lastname.val(),
+          full_number: $number.val(),
+          expiration_month: expire.split("/")[0],
+          expiration_year: expire.split("/")[1],
+          cvv: $cvv.val()
         };
         return ApiRequest("project_update_payment", {
           project_id: project_id,
           attributes: attributes
         }).then(function() {
-          that.model.set("payment", null);
-          that.model.set("paymentHistory", null);
           return that.render();
-        }, function(err) {
-          console.warn(err);
-          notification("error", "Error while updating user payment info, please try again later.");
-          return that.renderCache();
-        });
-      },
-      viewPaymentReceipt: function(event) {
-        var $target, cssToInsert, id, makeNewWindow, paymentHistory;
-        $target = $(event.currentTarget);
-        id = $target.parent().parent().data("id");
-        paymentHistory = this.model.get("paymentHistory")[id];
-        cssToInsert = ".billing_statement_section {\n    display: block;\n    position: relative;\n}\n.billing_statement_section h2 {\n    display: block;\n    background: #E6E6E6;\n    font-size: 16px;\n    padding: 10px;\n    font-weight: bold;\n    margin-bottom: 0;\n    border-bottom: 1px solid #727272;\n}\n.billing_statement_section_content {\n    display: block;\n    position: relative;\n    padding-top: 10px;\n}\ntable {\n    border-collapse: collapse;\n    width: 100%;\n}\ntable, td, th {\n    border: 1px solid #333;\n    padding: 7px;\n    text-align: left;\n    font-size: 14px;\n}\ntable thead {\n    background: #dedede;\n}\ntable tr.billing_statement_listing_tfoot {\n    font-weight: bold;\n    text-align: right;\n}\n#billing_statement {\n    width: 800px;\n    margin: 20px auto;\n    padding-bottom: 50px;\n}\n.billing_statement_section .billing_statement_section_content h3 {\n    font-size: 14px;\n    position: relative;\n    margin: 10px 0;\n    font-weight: bold;\n    margin-bottom: 14px;\n    background: #F3F3F3;\n    padding: 5px;\n}\ndiv#billing_statement_account_information_section {\n    width: 49%;\n    float: left;\n}\ndiv#billing_statement_summary_section {\n    width: 49%;\n    float: right;\n}\ndiv#billing_statement_detail_section {\n    clear: both;\n    padding-top: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_label {\n    font-weight: bold;\n    font-size: 16px;\n    width: 44%;\n    display: inline-block;\n    text-align: right;\n}\n.billing_statement_section_content> div {\n    margin-bottom: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_value {\n    text-align: right;\n    float: right;\n    color: #666;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_paid {\n    float: right;\n    font-size: 30px;\n    color: #50B816;\n    margin-top: 10px;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_unpaid {\n    float: right;\n    font-size: 30px;\n    color: #C70000;\n    margin-top: 10px;\n}\nbody {font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;}";
-        makeNewWindow = function() {
-          var content, headTag, newWindow, styleTag;
-          newWindow = window.open("", "");
-          newWindow.focus();
-          content = paymentHistory.html;
-          newWindow.document.write(content);
-          headTag = newWindow.document.head || newWindow.document.getElementsByTagName('head')[0];
-          styleTag = document.createElement('style');
-          styleTag.type = 'text/css';
-          if (styleTag.styleSheet) {
-            styleTag.styleSheet.cssText = cssToInsert;
-          } else {
-            styleTag.appendChild(document.createTextNode(cssToInsert));
+        }).fail(function(error) {
+          var err, msgObj;
+          wrap.find("input, button").prop("disabled", false);
+          try {
+            msgObj = JSON.parse(error.result);
+            if (_.isArray(msgObj.errors)) {
+              wrap.find(".update-payment-err").show().html(msgObj.errors.join('<br/>'));
+            }
+          } catch (_error) {
+            err = _error;
+            notification('error', error.result);
           }
-          headTag.appendChild(styleTag);
-          return newWindow.document.close();
-        };
-        return makeNewWindow();
+        });
       }
-    });
+    },
+    updatePaymentCancel: function() {
+      $(".parsley-error-list").remove();
+      return this.renderCache();
+    },
+    updatePaymentEmail: function() {
+      this.$el.find(".billing-email-text>p,.editEmailBtn").hide();
+      this.$el.find(".editEmailControl,.billing-email-text>input").show();
+      return this.$el.find(".billing-email-text>input").val(this.model.get("payment").email);
+    },
+    updateEmailCancel: function() {
+      return this.renderCache();
+    },
+    isValidEmail: function(email) {
+      var isValid, regExp;
+      regExp = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
+      isValid = regExp.test(email);
+      if (isValid) {
+        this.$el.find("#SettingErrorInfo").empty();
+      } else {
+        this.$el.find("#SettingErrorInfo").text(lang.IDE.SETTING_INVALID_EMAIL);
+      }
+      return isValid;
+    },
+    updateEmailDone: function() {
+      var attributes, email, project_id, that;
+      project_id = this.model.get("id");
+      that = this;
+      email = this.$el.find(".billing-email-text input").val();
+      if (!this.isValidEmail(email)) {
+        return false;
+      }
+      this.$el.find(".editEmailControl button").attr("disabled", "disabled");
+      this.$el.find(".billing-email-text>input").attr("disabled", "disabled");
+      this.$el.find(".editEmailControl .editEmailDone").text(lang.IDE.LBL_SAVING);
+      this.$el.find(".editEmailControl .editEmailCancel").hide();
+      attributes = {
+        email: email
+      };
+      return ApiRequest("project_update_payment", {
+        project_id: project_id,
+        attributes: attributes
+      }).then(function() {
+        that.model.set("payment", null);
+        that.model.set("paymentHistory", null);
+        return that.render();
+      }, function(err) {
+        console.warn(err);
+        notification("error", "Error while updating user payment info, please try again later.");
+        return that.renderCache();
+      });
+    },
+    viewPaymentReceipt: function(event) {
+      var $target, cssToInsert, id, makeNewWindow, paymentHistory;
+      $target = $(event.currentTarget);
+      id = $target.parent().parent().data("id");
+      paymentHistory = this.model.get("paymentHistory")[id];
+      cssToInsert = ".billing_statement_section {\n    display: block;\n    position: relative;\n}\n.billing_statement_section h2 {\n    display: block;\n    background: #E6E6E6;\n    font-size: 16px;\n    padding: 10px;\n    font-weight: bold;\n    margin-bottom: 0;\n    border-bottom: 1px solid #727272;\n}\n.billing_statement_section_content {\n    display: block;\n    position: relative;\n    padding-top: 10px;\n}\ntable {\n    border-collapse: collapse;\n    width: 100%;\n}\ntable, td, th {\n    border: 1px solid #333;\n    padding: 7px;\n    text-align: left;\n    font-size: 14px;\n}\ntable thead {\n    background: #dedede;\n}\ntable tr.billing_statement_listing_tfoot {\n    font-weight: bold;\n    text-align: right;\n}\n#billing_statement {\n    width: 800px;\n    margin: 20px auto;\n    padding-bottom: 50px;\n}\n.billing_statement_section .billing_statement_section_content h3 {\n    font-size: 14px;\n    position: relative;\n    margin: 10px 0;\n    font-weight: bold;\n    margin-bottom: 14px;\n    background: #F3F3F3;\n    padding: 5px;\n}\ndiv#billing_statement_account_information_section {\n    width: 49%;\n    float: left;\n}\ndiv#billing_statement_summary_section {\n    width: 49%;\n    float: right;\n}\ndiv#billing_statement_detail_section {\n    clear: both;\n    padding-top: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_label {\n    font-weight: bold;\n    font-size: 16px;\n    width: 44%;\n    display: inline-block;\n    text-align: right;\n}\n.billing_statement_section_content> div {\n    margin-bottom: 10px;\n}\n.billing_statement_section_content .billing_statement_summary_value {\n    text-align: right;\n    float: right;\n    color: #666;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_paid {\n    float: right;\n    font-size: 30px;\n    color: #50B816;\n    margin-top: 10px;\n}\ndiv#billing_statement_summary_balance_paid_stamp.billing_statement_balance_paid_stamp_unpaid {\n    float: right;\n    font-size: 30px;\n    color: #C70000;\n    margin-top: 10px;\n}\nbody {font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;}";
+      makeNewWindow = function() {
+        var content, headTag, newWindow, styleTag;
+        newWindow = window.open("", "");
+        newWindow.focus();
+        content = paymentHistory.html;
+        newWindow.document.write(content);
+        headTag = newWindow.document.head || newWindow.document.getElementsByTagName('head')[0];
+        styleTag = document.createElement('style');
+        styleTag.type = 'text/css';
+        if (styleTag.styleSheet) {
+          styleTag.styleSheet.cssText = cssToInsert;
+        } else {
+          styleTag.appendChild(document.createTextNode(cssToInsert));
+        }
+        headTag.appendChild(styleTag);
+        return newWindow.document.close();
+      };
+      return makeNewWindow();
+    }
   });
-
-}).call(this);
+});
 
 define('scenes/settings/template/TplTeam',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -3023,333 +3002,330 @@ TEMPLATE.defaultProject=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('scenes/settings/views/TeamView',['backbone', '../template/TplTeam', 'i18n!/nls/lang.js', 'UI.bubblepopup', 'ApiRequest', '../models/MemberCollection', 'UI.selectbox', 'UI.parsley', 'UI.errortip', 'UI.table', 'MC.validate'], function(Backbone, TplTeam, lang, bubblePopup, ApiRequest, MemberCollection) {
-    return Backbone.View.extend({
-      className: 'member-setting',
-      events: {
-        'change #t-m-select-all': '__checkAll',
-        'change .one-cb': '__checkOne',
-        'click #invite': 'inviteMember',
-        'click #delete': 'removeMember',
-        'click .done': 'doneModify',
-        'click .edit': 'enterModify',
-        'click .cancel': 'cancelInvite',
-        'focus #mail': 'focusMail',
-        'blur #mail': 'blurMail',
-        'keyup #mail': 'keyupMail',
-        'keypress #mail': 'keypressMail'
-      },
-      focusMail: function() {},
-      blurMail: function() {
-        return this.$el.find('.search').hide();
-      },
-      keyupMail: function() {
-        return this.keyupHandle();
-      },
-      keyupHandle: function() {
-        var $search, mail, that;
-        that = this;
-        mail = that.$el.find('#mail').val();
-        $search = that.$el.find('.search');
-        if (mail.length > 0) {
-          return ApiRequest('account_get_userinfo', {
-            user_email: mail
-          }).then(function(data) {
-            if (data) {
-              return $search.html(TplTeam.match({
-                name: Base64.decode(data.username),
-                mail: Base64.decode(data.email)
-              }));
-            } else {
-              return $search.html(TplTeam.nomatch({
-                name: mail
-              }));
-            }
-          }).done(function() {
-            return $search.show();
-          });
-        } else {
-          return $search.hide();
-        }
-      },
-      keypressMail: function(event) {
-        if (event.keyCode === 13) {
-          return this.$el.find('#invite').click();
-        }
-      },
-      initialize: function() {
-        this.keyupHandle = _.throttle(this.keyupHandle, 1000);
-        this.project = this.model;
-        this.memberCol = new MemberCollection({
-          projectId: this.project.id
-        });
-        this.projectId = this.model.get('id');
-        this.isAdmin = false;
-        return this.render();
-      },
-      render: function() {
-        var isPrivateProject;
-        isPrivateProject = this.model.get('private');
-        if (isPrivateProject) {
-          this.$el.html(TplTeam.defaultProject());
-        } else {
-          this.$el.html(TplTeam.loading());
-          this.loadMemList();
-        }
-        return this;
-      },
-      renderMain: function() {
-        var columns, that;
-        that = this;
-        columns = [
-          {
-            sortable: true,
-            name: lang.IDE.SETTINGS_MEMBER_COLUMN_MEMBER
-          }, {
-            sortable: true,
-            width: "20%",
-            name: lang.IDE.SETTINGS_MEMBER_COLUMN_ROLE
-          }, {
-            sortable: true,
-            width: "10%",
-            name: lang.IDE.SETTINGS_MEMBER_COLUMN_STATUS
+define('scenes/settings/views/TeamView',['backbone', '../template/TplTeam', 'i18n!/nls/lang.js', 'UI.bubblepopup', 'ApiRequest', '../models/MemberCollection', 'UI.selectbox', 'UI.parsley', 'UI.errortip', 'UI.table', 'MC.validate'], function(Backbone, TplTeam, lang, bubblePopup, ApiRequest, MemberCollection) {
+  return Backbone.View.extend({
+    className: 'member-setting',
+    events: {
+      'change #t-m-select-all': '__checkAll',
+      'change .one-cb': '__checkOne',
+      'click #invite': 'inviteMember',
+      'click #delete': 'removeMember',
+      'click .done': 'doneModify',
+      'click .edit': 'enterModify',
+      'click .cancel': 'cancelInvite',
+      'focus #mail': 'focusMail',
+      'blur #mail': 'blurMail',
+      'keyup #mail': 'keyupMail',
+      'keypress #mail': 'keypressMail'
+    },
+    focusMail: function() {},
+    blurMail: function() {
+      return this.$el.find('.search').hide();
+    },
+    keyupMail: function() {
+      return this.keyupHandle();
+    },
+    keyupHandle: function() {
+      var $search, mail, that;
+      that = this;
+      mail = that.$el.find('#mail').val();
+      $search = that.$el.find('.search');
+      if (mail.length > 0) {
+        return ApiRequest('account_get_userinfo', {
+          user_email: mail
+        }).then(function(data) {
+          if (data) {
+            return $search.html(TplTeam.match({
+              name: Base64.decode(data.username),
+              mail: Base64.decode(data.email)
+            }));
+          } else {
+            return $search.html(TplTeam.nomatch({
+              name: mail
+            }));
           }
-        ];
-        if (that.isAdmin) {
-          columns = columns.concat([
-            {
-              sortable: false,
-              width: "103px",
-              name: ""
-            }, {
-              sortable: false,
-              width: "55px",
-              name: lang.IDE.SETTINGS_MEMBER_COLUMN_EDIT
-            }
-          ]);
-        }
-        that.$el.html(TplTeam.main({
-          limit: that.memberCol.isLimitInvite(),
-          number: that.memberCol.limit,
-          columns: columns,
-          admin: that.isAdmin
-        }));
-        that.memList = that.$el.find('.t-m-content');
-      },
-      loadMemList: function(callback) {
-        var currentMember, currentUserName, data, that;
-        that = this;
-        data = [];
-        currentMember = null;
-        currentUserName = App.user.get('username');
-        return this.memberCol.fetch().then(function() {
-          var currentUsername;
-          currentMember = that.memberCol.getCurrentMember();
-          that.isAdmin = currentMember != null ? currentMember.isAdmin() : void 0;
-          currentUsername = currentMember != null ? currentMember.get('username') : void 0;
-          data = that.memberCol.toJSON();
-          data = _.sortBy(data, function(a, b) {
-            return currentUsername !== a.username || (a.state !== 'normal' || a.role !== 'admin');
-          });
-        }).fail(function(data) {
-          notification('error', data.result || data.msg);
-          return that.$el.find('.loading-spinner').addClass('hide');
         }).done(function() {
-          that.renderMain();
-          that.$el.find('.content').removeClass('hide');
-          that.$el.find('.loading-spinner').addClass('hide');
-          that.renderList(data);
-          that.__processDelBtn();
-          if (callback) {
-            return callback();
-          }
+          return $search.show();
         });
-      },
-      renderList: function(data) {
-        var that;
-        that = this;
-        this.memList.html(TplTeam.list({
-          admin: that.isAdmin,
-          memlist: data
-        }));
-        return this.$el.find('.memlist-count').text(data.length);
-      },
-      inviteMember: function() {
-        var $invite, $mail, mail, originTxt, that;
-        that = this;
-        $invite = this.$el.find('#invite');
-        if ($invite.prop('disabled') === false) {
-          $mail = this.$el.find('#mail');
-          mail = $.trim($mail.val());
-          if (!mail) {
-            return;
+      } else {
+        return $search.hide();
+      }
+    },
+    keypressMail: function(event) {
+      if (event.keyCode === 13) {
+        return this.$el.find('#invite').click();
+      }
+    },
+    initialize: function() {
+      this.keyupHandle = _.throttle(this.keyupHandle, 1000);
+      this.project = this.model;
+      this.memberCol = new MemberCollection({
+        projectId: this.project.id
+      });
+      this.projectId = this.model.get('id');
+      this.isAdmin = false;
+      return this.render();
+    },
+    render: function() {
+      var isPrivateProject;
+      isPrivateProject = this.model.get('private');
+      if (isPrivateProject) {
+        this.$el.html(TplTeam.defaultProject());
+      } else {
+        this.$el.html(TplTeam.loading());
+        this.loadMemList();
+      }
+      return this;
+    },
+    renderMain: function() {
+      var columns, that;
+      that = this;
+      columns = [
+        {
+          sortable: true,
+          name: lang.IDE.SETTINGS_MEMBER_COLUMN_MEMBER
+        }, {
+          sortable: true,
+          width: "20%",
+          name: lang.IDE.SETTINGS_MEMBER_COLUMN_ROLE
+        }, {
+          sortable: true,
+          width: "10%",
+          name: lang.IDE.SETTINGS_MEMBER_COLUMN_STATUS
+        }
+      ];
+      if (that.isAdmin) {
+        columns = columns.concat([
+          {
+            sortable: false,
+            width: "103px",
+            name: ""
+          }, {
+            sortable: false,
+            width: "55px",
+            name: lang.IDE.SETTINGS_MEMBER_COLUMN_EDIT
           }
-          originTxt = $invite.text();
-          $invite.prop('disabled', true);
-          $invite.text("" + originTxt);
-          return this.memberCol.inviteMember(mail).then(function() {
-            $mail.val('');
-            return that.loadMemList(function() {
-              $invite.text(originTxt);
-              return $invite.prop('disabled', false);
-            });
-          }).fail(function(data) {
-            if (data.error === ApiRequest.Errors.UserNoUser) {
-              notification('error', sprintf(lang.IDE.SETTING_MEMBER_LABEL_NO_USER, mail));
-            } else {
-              notification('error', data.result);
-            }
+        ]);
+      }
+      that.$el.html(TplTeam.main({
+        limit: that.memberCol.isLimitInvite(),
+        number: that.memberCol.limit,
+        columns: columns,
+        admin: that.isAdmin
+      }));
+      that.memList = that.$el.find('.t-m-content');
+    },
+    loadMemList: function(callback) {
+      var currentMember, currentUserName, data, that;
+      that = this;
+      data = [];
+      currentMember = null;
+      currentUserName = App.user.get('username');
+      return this.memberCol.fetch().then(function() {
+        var currentUsername;
+        currentMember = that.memberCol.getCurrentMember();
+        that.isAdmin = currentMember != null ? currentMember.isAdmin() : void 0;
+        currentUsername = currentMember != null ? currentMember.get('username') : void 0;
+        data = that.memberCol.toJSON();
+        data = _.sortBy(data, function(a, b) {
+          return currentUsername !== a.username || (a.state !== 'normal' || a.role !== 'admin');
+        });
+      }).fail(function(data) {
+        notification('error', data.result || data.msg);
+        return that.$el.find('.loading-spinner').addClass('hide');
+      }).done(function() {
+        that.renderMain();
+        that.$el.find('.content').removeClass('hide');
+        that.$el.find('.loading-spinner').addClass('hide');
+        that.renderList(data);
+        that.__processDelBtn();
+        if (callback) {
+          return callback();
+        }
+      });
+    },
+    renderList: function(data) {
+      var that;
+      that = this;
+      this.memList.html(TplTeam.list({
+        admin: that.isAdmin,
+        memlist: data
+      }));
+      return this.$el.find('.memlist-count').text(data.length);
+    },
+    inviteMember: function() {
+      var $invite, $mail, mail, originTxt, that;
+      that = this;
+      $invite = this.$el.find('#invite');
+      if ($invite.prop('disabled') === false) {
+        $mail = this.$el.find('#mail');
+        mail = $.trim($mail.val());
+        if (!mail) {
+          return;
+        }
+        originTxt = $invite.text();
+        $invite.prop('disabled', true);
+        $invite.text("" + originTxt);
+        return this.memberCol.inviteMember(mail).then(function() {
+          $mail.val('');
+          return that.loadMemList(function() {
             $invite.text(originTxt);
             return $invite.prop('disabled', false);
           });
-        }
-      },
-      removeMember: function(event) {
-        var $delete, memList, that;
-        that = this;
-        $delete = $(event.currentTarget);
-        if ($delete.prop('disabled') === false) {
-          memList = [];
-          _.each(that.$el.find('.memlist-item.selected'), function(item) {
-            var memId;
-            memId = $(item).data('id');
-            return memList.push(memId);
-          });
-          return bubblePopup($delete, TplTeam.deletePopup({
-            count: memList.length
-          }), {
-            '.confirm': function() {
-              var originTxt;
-              originTxt = $delete.text();
-              $delete.prop('disabled', true);
-              $delete.text("" + originTxt);
-              return that.memberCol.removeMember(memList).then(function() {
-                return that.loadMemList(function() {
-                  return $delete.text(originTxt);
-                });
-              }).fail(function(data) {
-                notification('error', data.result);
-                $delete.text(originTxt);
-                return $delete.prop('disabled', false);
-              });
-            }
-          });
-        }
-      },
-      enterModify: function(event) {
-        var $memItem;
-        $memItem = $(event.currentTarget).parents('.memlist-item');
-        return $memItem.addClass('edit');
-      },
-      doneModify: function(event) {
-        var $done, $memItem, currentMember, memId, memberModel, newRole, originTxt, that;
-        that = this;
-        $done = $(event.currentTarget);
-        if ($done.prop('disabled') === false) {
-          $memItem = $(event.currentTarget).parents('.memlist-item');
-          memId = $memItem.data('id');
-          newRole = $memItem.find('.memtype li.selected').data('id');
-          memberModel = that.memberCol.get(memId);
-          currentMember = that.memberCol.getCurrentMember();
-          if (memberModel === currentMember && currentMember.isAdmin() && newRole === 'collaborator' && currentMember.isOnlyAdmin()) {
-            notification('error', lang.IDE.SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN);
-            $memItem.removeClass('edit');
-            return;
-          }
-          if (memberModel.get('role') === newRole) {
-            $memItem.removeClass('edit');
-            return;
-          }
-          originTxt = $done.text();
-          $done.prop('disabled', true);
-          $done.text("" + originTxt);
-          return memberModel.updateRole(newRole).then(function() {
-            return that.loadMemList(function() {
-              $done.text(originTxt);
-              $done.prop('disabled', false);
-              return $memItem.removeClass('edit');
-            });
-          }).fail(function(data) {
+        }).fail(function(data) {
+          if (data.error === ApiRequest.Errors.UserNoUser) {
+            notification('error', sprintf(lang.IDE.SETTING_MEMBER_LABEL_NO_USER, mail));
+          } else {
             notification('error', data.result);
+          }
+          $invite.text(originTxt);
+          return $invite.prop('disabled', false);
+        });
+      }
+    },
+    removeMember: function(event) {
+      var $delete, memList, that;
+      that = this;
+      $delete = $(event.currentTarget);
+      if ($delete.prop('disabled') === false) {
+        memList = [];
+        _.each(that.$el.find('.memlist-item.selected'), function(item) {
+          var memId;
+          memId = $(item).data('id');
+          return memList.push(memId);
+        });
+        return bubblePopup($delete, TplTeam.deletePopup({
+          count: memList.length
+        }), {
+          '.confirm': function() {
+            var originTxt;
+            originTxt = $delete.text();
+            $delete.prop('disabled', true);
+            $delete.text("" + originTxt);
+            return that.memberCol.removeMember(memList).then(function() {
+              return that.loadMemList(function() {
+                return $delete.text(originTxt);
+              });
+            }).fail(function(data) {
+              notification('error', data.result);
+              $delete.text(originTxt);
+              return $delete.prop('disabled', false);
+            });
+          }
+        });
+      }
+    },
+    enterModify: function(event) {
+      var $memItem;
+      $memItem = $(event.currentTarget).parents('.memlist-item');
+      return $memItem.addClass('edit');
+    },
+    doneModify: function(event) {
+      var $done, $memItem, currentMember, memId, memberModel, newRole, originTxt, that;
+      that = this;
+      $done = $(event.currentTarget);
+      if ($done.prop('disabled') === false) {
+        $memItem = $(event.currentTarget).parents('.memlist-item');
+        memId = $memItem.data('id');
+        newRole = $memItem.find('.memtype li.selected').data('id');
+        memberModel = that.memberCol.get(memId);
+        currentMember = that.memberCol.getCurrentMember();
+        if (memberModel === currentMember && currentMember.isAdmin() && newRole === 'collaborator' && currentMember.isOnlyAdmin()) {
+          notification('error', lang.IDE.SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN);
+          $memItem.removeClass('edit');
+          return;
+        }
+        if (memberModel.get('role') === newRole) {
+          $memItem.removeClass('edit');
+          return;
+        }
+        originTxt = $done.text();
+        $done.prop('disabled', true);
+        $done.text("" + originTxt);
+        return memberModel.updateRole(newRole).then(function() {
+          return that.loadMemList(function() {
             $done.text(originTxt);
             $done.prop('disabled', false);
             return $memItem.removeClass('edit');
           });
-        }
-      },
-      cancelInvite: function(event) {
-        var $cancel, $memItem, memId, memberModel, originTxt, that;
-        that = this;
-        $cancel = $(event.currentTarget);
-        if ($cancel.prop('disabled') === false) {
-          $memItem = $(event.currentTarget).parents('.memlist-item');
-          memId = $memItem.data('id');
-          originTxt = $cancel.text();
-          $cancel.prop('disabled', true);
-          $cancel.text("" + originTxt);
-          memberModel = that.memberCol.get(memId);
-          return memberModel.cancelInvite().then(function() {
-            return that.loadMemList(function() {
-              $cancel.text(originTxt);
-              return $cancel.prop('disabled', false);
-            });
-          }).fail(function(data) {
-            notification('error', data.result);
+        }).fail(function(data) {
+          notification('error', data.result);
+          $done.text(originTxt);
+          $done.prop('disabled', false);
+          return $memItem.removeClass('edit');
+        });
+      }
+    },
+    cancelInvite: function(event) {
+      var $cancel, $memItem, memId, memberModel, originTxt, that;
+      that = this;
+      $cancel = $(event.currentTarget);
+      if ($cancel.prop('disabled') === false) {
+        $memItem = $(event.currentTarget).parents('.memlist-item');
+        memId = $memItem.data('id');
+        originTxt = $cancel.text();
+        $cancel.prop('disabled', true);
+        $cancel.text("" + originTxt);
+        memberModel = that.memberCol.get(memId);
+        return memberModel.cancelInvite().then(function() {
+          return that.loadMemList(function() {
             $cancel.text(originTxt);
             return $cancel.prop('disabled', false);
           });
-        }
-      },
-      __checkOne: function(event) {
-        var $target, cbAll, cbAmount, checkedAmount;
-        $target = $(event.currentTarget);
-        cbAll = this.$('#t-m-select-all');
-        cbAmount = this.$('.one-cb').length;
-        checkedAmount = this.$('.one-cb:checked').length;
-        $target.closest('tr').toggleClass('selected');
-        if (checkedAmount === cbAmount) {
-          cbAll.prop('checked', true);
-        } else if (cbAmount - checkedAmount === 1) {
-          cbAll.prop('checked', false);
-        }
-        return this.__processDelBtn();
-      },
-      __checkAll: function(event) {
-        if (event.currentTarget.checked) {
-          this.$('input[type="checkbox"]:not(:disabled)').prop('checked', true).parents('tr.item').addClass('selected');
-        } else {
-          this.$('input[type="checkbox"]').prop('checked', false);
-          this.$('tr.item').removeClass('selected');
-        }
-        return this.__processDelBtn();
-      },
-      __processDelBtn: function() {
-        var that;
-        that = this;
-        if (that.$('.one-cb:checked').length) {
-          return that.$('#delete').prop('disabled', false);
-        } else {
-          return that.$('#delete').prop('disabled', true);
-        }
-      },
-      getChecked: function() {
-        var allChecked, checkedInfo;
-        allChecked = this.$('.one-cb:checked');
-        checkedInfo = [];
-        allChecked.each(function() {
-          return checkedInfo.push({
-            id: this.id,
-            value: this.value,
-            data: $(this).data()
-          });
+        }).fail(function(data) {
+          notification('error', data.result);
+          $cancel.text(originTxt);
+          return $cancel.prop('disabled', false);
         });
-        return checkedInfo;
       }
-    });
+    },
+    __checkOne: function(event) {
+      var $target, cbAll, cbAmount, checkedAmount;
+      $target = $(event.currentTarget);
+      cbAll = this.$('#t-m-select-all');
+      cbAmount = this.$('.one-cb').length;
+      checkedAmount = this.$('.one-cb:checked').length;
+      $target.closest('tr').toggleClass('selected');
+      if (checkedAmount === cbAmount) {
+        cbAll.prop('checked', true);
+      } else if (cbAmount - checkedAmount === 1) {
+        cbAll.prop('checked', false);
+      }
+      return this.__processDelBtn();
+    },
+    __checkAll: function(event) {
+      if (event.currentTarget.checked) {
+        this.$('input[type="checkbox"]:not(:disabled)').prop('checked', true).parents('tr.item').addClass('selected');
+      } else {
+        this.$('input[type="checkbox"]').prop('checked', false);
+        this.$('tr.item').removeClass('selected');
+      }
+      return this.__processDelBtn();
+    },
+    __processDelBtn: function() {
+      var that;
+      that = this;
+      if (that.$('.one-cb:checked').length) {
+        return that.$('#delete').prop('disabled', false);
+      } else {
+        return that.$('#delete').prop('disabled', true);
+      }
+    },
+    getChecked: function() {
+      var allChecked, checkedInfo;
+      allChecked = this.$('.one-cb:checked');
+      checkedInfo = [];
+      allChecked.each(function() {
+        return checkedInfo.push({
+          id: this.id,
+          value: this.value,
+          data: $(this).data()
+        });
+      });
+      return checkedInfo;
+    }
   });
-
-}).call(this);
+});
 
 define('scenes/settings/template/TplCredential',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -3531,389 +3507,380 @@ TEMPLATE.runningAppConfirm=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-(function() {
-  define('scenes/settings/views/ProviderCredentialView',['constant', 'i18n!/nls/lang.js', '../template/TplCredential', 'Credential', 'ApiRequest', 'UI.modalplus', "credentialFormView", 'UI.tooltip', 'UI.notification', 'backbone'], function(constant, lang, TplCredential, Credential, ApiRequest, Modal, credentialFormView) {
-    var credentiaLoadingTips;
-    credentiaLoadingTips = {
-      add: lang.IDE.SETTINGS_CRED_ADDING,
-      update: lang.IDE.SETTINGS_CRED_UPDATING,
-      remove: lang.IDE.SETTINGS_CRED_REMOVING
-    };
-    return Backbone.View.extend({
-      events: {
-        'click .setup-credential': 'showAddForm',
-        'click .update-link': 'showUpdateForm',
-        'click .show-button-list': 'showButtonList',
-        'click .delete-link': 'showRemoveConfirmModel'
-      },
-      className: 'credential',
-      initialize: function() {
-        this.listenTo(this.model, 'update:credential', this.render);
-        return this.listenTo(this.model, 'change:credential', this.render);
-      },
-      render: function() {
-        var applist, credentials, data;
-        credentials = this.model.credentials().models;
-        data = this.model.toJSON();
-        data.isAdmin = this.model.amIAdmin();
-        if (data.isAdmin) {
-          if (credentials.length === 0) {
-            data.addable = true;
-          } else {
-            data.addable = !_.some(credentials, function(cred) {
-              return !cred.isDemo();
-            });
-          }
+define('scenes/settings/views/ProviderCredentialView',['constant', 'i18n!/nls/lang.js', '../template/TplCredential', 'Credential', 'ApiRequest', 'UI.modalplus', "credentialFormView", 'UI.tooltip', 'UI.notification', 'backbone'], function(constant, lang, TplCredential, Credential, ApiRequest, Modal, credentialFormView) {
+  var credentiaLoadingTips;
+  credentiaLoadingTips = {
+    add: lang.IDE.SETTINGS_CRED_ADDING,
+    update: lang.IDE.SETTINGS_CRED_UPDATING,
+    remove: lang.IDE.SETTINGS_CRED_REMOVING
+  };
+  return Backbone.View.extend({
+    events: {
+      'click .setup-credential': 'showAddForm',
+      'click .update-link': 'showUpdateForm',
+      'click .show-button-list': 'showButtonList',
+      'click .delete-link': 'showRemoveConfirmModel'
+    },
+    className: 'credential',
+    initialize: function() {
+      this.listenTo(this.model, 'update:credential', this.render);
+      return this.listenTo(this.model, 'change:credential', this.render);
+    },
+    render: function() {
+      var applist, credentials, data;
+      credentials = this.model.credentials().models;
+      data = this.model.toJSON();
+      data.isAdmin = this.model.amIAdmin();
+      if (data.isAdmin) {
+        if (credentials.length === 0) {
+          data.addable = true;
+        } else {
+          data.addable = !_.some(credentials, function(cred) {
+            return !cred.isDemo();
+          });
         }
-        applist = this.model.apps();
-        data.credentials = _.map(credentials, function(c) {
-          var json;
-          json = c.toJSON();
-          json.isAdmin = data.isAdmin;
-          json.providerName = c.getProviderName();
-          json.name = json.alias || json.providerName;
-          if (json.isDemo) {
-            data.hasDemo = true;
-          }
-          return json;
-        });
-        this.$el.html(TplCredential.credentialManagement(data));
-        return this;
-      },
-      showButtonList: function() {
-        this.$('.button-list').toggle();
-        return false;
-      },
-      getCredentialById: function(id) {
-        return this.model.credentials().findWhere({
-          id: id
-        });
-      },
-      makeModalLoading: function(modal, action) {
-        modal.setContent(MC.template.credentialLoading({
-          tip: credentiaLoadingTips[action]
-        })).toggleFooter(false);
-        return this;
-      },
-      stopModalLoading: function(modal, originContent) {
-        modal.setContent(originContent).toggleFooter(true);
-        return this;
-      },
-      showModalError: function(modal, message) {
-        return modal.$('.cred-setup-msg').text(message);
-      },
-      showAddForm: function() {
-        return this.showFormModal();
-      },
-      showUpdateForm: function(e) {
-        var credential, credentialId;
-        credentialId = $(e.currentTarget).data('id');
-        credential = this.getCredentialById(credentialId);
-        return this.showFormModal(credential);
-      },
-      removeCredential: function(credential) {
-        var that;
-        that = this;
-        this.makeModalLoading(this.removeConfirmView, 'Remove');
-        return credential.destroy().then(function() {
-          var _ref;
-          return (_ref = that.removeConfirmView) != null ? _ref.close() : void 0;
-        }, function(error) {
-          var credName, message;
-          if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
-            message = lang.IDE.CRED_REMOVE_FAILD_CAUSEDBY_EXIST_APP;
-          } else {
-            message = lang.IDE.SETTINGS_ERR_CRED_REMOVE;
-          }
-          credName = credential.getProviderName();
-          that.stopModalLoading(that.removeConfirmView, TplCredential.removeConfirm({
-            name: credName
-          }));
-          return that.showModalError(that.removeConfirmView, message);
-        });
-      },
-      showRemoveConfirmModel: function(e) {
-        var credName, credential, credentialId, _ref;
-        credentialId = $(e.currentTarget).data('id');
-        credential = this.getCredentialById(credentialId);
+      }
+      applist = this.model.apps();
+      data.credentials = _.map(credentials, function(c) {
+        var json;
+        json = c.toJSON();
+        json.isAdmin = data.isAdmin;
+        json.providerName = c.getProviderName();
+        json.name = json.alias || json.providerName;
+        if (json.isDemo) {
+          data.hasDemo = true;
+        }
+        return json;
+      });
+      this.$el.html(TplCredential.credentialManagement(data));
+      return this;
+    },
+    showButtonList: function() {
+      this.$('.button-list').toggle();
+      return false;
+    },
+    getCredentialById: function(id) {
+      return this.model.credentials().findWhere({
+        id: id
+      });
+    },
+    makeModalLoading: function(modal, action) {
+      modal.setContent(MC.template.credentialLoading({
+        tip: credentiaLoadingTips[action]
+      })).toggleFooter(false);
+      return this;
+    },
+    stopModalLoading: function(modal, originContent) {
+      modal.setContent(originContent).toggleFooter(true);
+      return this;
+    },
+    showModalError: function(modal, message) {
+      return modal.$('.cred-setup-msg').text(message);
+    },
+    showAddForm: function() {
+      return this.showFormModal();
+    },
+    showUpdateForm: function(e) {
+      var credential, credentialId;
+      credentialId = $(e.currentTarget).data('id');
+      credential = this.getCredentialById(credentialId);
+      return this.showFormModal(credential);
+    },
+    removeCredential: function(credential) {
+      var that;
+      that = this;
+      this.makeModalLoading(this.removeConfirmView, 'Remove');
+      return credential.destroy().then(function() {
+        var _ref;
+        return (_ref = that.removeConfirmView) != null ? _ref.close() : void 0;
+      }, function(error) {
+        var credName, message;
+        if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
+          message = lang.IDE.CRED_REMOVE_FAILD_CAUSEDBY_EXIST_APP;
+        } else {
+          message = lang.IDE.SETTINGS_ERR_CRED_REMOVE;
+        }
         credName = credential.getProviderName();
-        if ((_ref = this.removeConfirmView) != null) {
-          _ref.close();
-        }
-        this.removeConfirmView = new Modal({
-          title: lang.IDE.REMOVE_CREDENTIAL_CONFIRM_TITLE,
-          template: TplCredential.removeConfirm({
-            name: credName
-          }),
-          confirm: {
-            text: lang.IDE.REMOVE_CREDENTIAL_CONFIRM_BTN,
-            color: "red"
-          }
-        });
-        return this.removeConfirmView.on('confirm', function() {
-          return this.removeCredential(credential);
-        }, this);
-      },
-      showFormModal: function(credential, provider) {
-        this.formView = new credentialFormView({
-          provider: provider,
-          credential: credential,
-          model: this.model
-        }).render();
-        return this;
-      },
-      remove: function() {
-        var _ref, _ref1, _ref2;
-        if ((_ref = this.formView) != null) {
-          _ref.remove();
-        }
-        if ((_ref1 = this.updateConfirmView) != null) {
-          _ref1.close();
-        }
-        if ((_ref2 = this.removeConfirmView) != null) {
-          _ref2.close();
-        }
-        return Backbone.View.prototype.remove.apply(this, arguments);
-      }
-    });
-  });
-
-}).call(this);
-
-(function() {
-  define('scenes/settings/views/UsageReportView',['backbone', "../template/TplBilling", "ApiRequestR", 'i18n!/nls/lang.js'], function(Backbone, template, ApiRequestR, lang) {
-    return Backbone.View.extend({
-      events: {
-        "click .usage-pagination .nav-left": "prevUsage",
-        "click .usage-pagination .nav-right": "nextUsage"
-      },
-      className: "usage-report-view",
-      initialize: function() {
-        this.$el.html(template.billingLoadingFrame());
-        this.$el.find("#billing-status").html(MC.template.loadingSpinner());
-        return this;
-      },
-      render: function() {
-        var self;
-        self = this;
-        self.model.getPaymentState().then(function() {
-          var payment;
-          payment = self.model.get("payment");
-          self.$el.find("#billing-status").html(template.usage({
-            payment: payment
-          }));
-          return self.renderUsageData();
-        });
-        return this;
-      },
-      getUsage: function(date) {
-        var endDate, projectId, startDate, _ref;
-        date || (date = new Date());
-        _ref = this.getStartAndEnd(date), startDate = _ref[0], endDate = _ref[1];
-        projectId = this.model.get("id");
-        startDate = this.formatDate(new Date(startDate));
-        endDate = this.formatDate(new Date(endDate));
-        return ApiRequestR("payment_usage", {
-          projectId: projectId,
-          startDate: startDate,
-          endDate: endDate
-        });
-      },
-      getStartAndEnd: function(date) {
-        var firstDay, lastDay, month, year;
-        date = new Date(date);
-        month = date.getMonth();
-        year = date.getFullYear();
-        firstDay = new Date(year, month, 1);
-        lastDay = new Date(year, month + 1, -1);
-        console.log(firstDay.toLocaleString(), lastDay.toLocaleString());
-        return [firstDay, lastDay];
-      },
-      renderUsageData: function(dateString) {
-        var now, self;
-        self = this;
-        dateString || (dateString = now = new Date());
-        self.$el.find(".table-head-fix").html($(MC.template.loadingSpinner()).css({
-          "margin": "80px auto"
+        that.stopModalLoading(that.removeConfirmView, TplCredential.removeConfirm({
+          name: credName
         }));
-        self.$el.find(".usage-pagination button").prop("disabled", true);
-        this.getUsage(dateString).then(function(result) {
-          var date, elem, isDisabled, payment, project_id;
-          payment = self.model.get("payment");
-          if (!_.isEmpty(result != null ? result.history_usage : void 0)) {
-            project_id = self.model.get("id");
-            _.each(result.history_usage, function(value, key) {
-              delete result.history_usage[key];
-              key = key.replace("-" + project_id, "").replace("RDS-", "");
-              return result.history_usage[key] = value;
-            });
-            elem = template.usageTable({
-              result: result
-            });
-          } else {
-            elem = "<div class='full-space'>" + lang.IDE.NO_USAGE_REPORT + "</div>";
-          }
-          self.$el.find(".table-head-fix").html(elem);
-          date = self.formatDate2(dateString);
-          self.$el.find(".usage-date").text(date.string).data("date", dateString);
-          isDisabled = self.getNewDate(1) > new Date();
-          self.$el.find(".nav-left").prop("disabled", false);
-          return self.$el.find(".nav-right").prop('disabled', isDisabled);
-        }, function() {
-          return notification('error', "Error while getting user payment info, please try again later.");
-        });
-        return this;
-      },
-      formatDate: function(date) {
-        var day, hour, month, year;
-        year = date.getFullYear();
-        month = date.getMonth() + 1;
-        if (month < 10) {
-          month = "0" + month;
-        }
-        day = date.getDate();
-        if (day < 10) {
-          day = "0" + day;
-        }
-        hour = date.getHours();
-        if (hour < 10) {
-          hour = "0" + hour;
-        }
-        return "" + year + month + day + hour;
-      },
-      formatDate2: function(date) {
-        var month, months, string, year;
-        date = new Date(date);
-        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        month = months[date.getMonth() % 12];
-        year = date.getFullYear();
-        console.log(month, year);
-        string = "" + month + ", " + year;
-        return {
-          string: string,
-          date: date
-        };
-      },
-      getNewDate: function(offset) {
-        var month, oldDate, year;
-        oldDate = new Date($(".usage-date").data("date"));
-        year = oldDate.getFullYear();
-        month = oldDate.getMonth() + offset;
-        return new Date(year, month);
-      },
-      nextUsage: function() {
-        var newDate;
-        newDate = this.getNewDate(1);
-        return this.renderUsageData(newDate);
-      },
-      prevUsage: function() {
-        var newDate;
-        newDate = this.getNewDate(-1);
-        return this.renderUsageData(newDate);
+        return that.showModalError(that.removeConfirmView, message);
+      });
+    },
+    showRemoveConfirmModel: function(e) {
+      var credName, credential, credentialId, _ref;
+      credentialId = $(e.currentTarget).data('id');
+      credential = this.getCredentialById(credentialId);
+      credName = credential.getProviderName();
+      if ((_ref = this.removeConfirmView) != null) {
+        _ref.close();
       }
-    });
-  });
-
-}).call(this);
-
-(function() {
-  define('scenes/settings/ProjectSettings',['i18n!/nls/lang.js', './template/TplProject', './views/BasicSettingsView', './views/AccessTokenView', './views/BillingView', './views/TeamView', './views/ProviderCredentialView', './views/UsageReportView', 'backbone'], function(lang, TplProject, BasicSettingsView, AccessTokenView, BillingView, TeamView, ProviderCredentialView, UsageReportView) {
-    var SubViewMap, SubViewNameMap;
-    SubViewMap = {
-      basicsettings: BasicSettingsView,
-      accesstoken: AccessTokenView,
-      billing: BillingView,
-      team: TeamView,
-      credential: ProviderCredentialView,
-      usagereport: UsageReportView
-    };
-    SubViewNameMap = {
-      basicsettings: 'Basic Settings',
-      accesstoken: 'API Token',
-      billing: 'Billing',
-      team: 'Team',
-      credential: 'Cloud Access Credential',
-      usagereport: 'Usage Report'
-    };
-    return Backbone.View.extend({
-      events: {
-        'click .function-list a': 'loadSub'
-      },
-      initialize: function(options) {
-        var that;
-        that = this;
-        this.settingsView = options.settingsView;
-        this.listenTo(this.model, 'change:name', this.updateProjectName);
-        return this.listenTo(this.model, 'change:myRole', this.refresh, this);
-      },
-      render: function(tab) {
-        if (tab == null) {
-          tab = 'basicsettings';
+      this.removeConfirmView = new Modal({
+        title: lang.IDE.REMOVE_CREDENTIAL_CONFIRM_TITLE,
+        template: TplCredential.removeConfirm({
+          name: credName
+        }),
+        confirm: {
+          text: lang.IDE.REMOVE_CREDENTIAL_CONFIRM_BTN,
+          color: "red"
         }
-        this.setElement($(TplProject(_.extend(this.model.toJSON(), {
-          tab: tab,
-          admin: this.model.amIAdmin()
-        }))));
-        this.$('.project-subview').html(this.renderSub(tab).el);
-        return this;
-      },
-      setElement: function(element, delegate) {
-        if (this.$el) {
-          this.undelegateEvents();
-        }
-        this.$el = element instanceof Backbone.$ ? element : Backbone.$(element);
-        this.el = this.$el;
-        if (delegate !== false) {
-          this.delegateEvents();
-        }
-        return this;
-      },
-      refresh: function() {
-        var tab;
-        tab = this.$('.function-list a.active').data('id');
-        return this.settingsView.renderProject(this.model, tab);
-      },
-      loadSub: function(e) {
-        var tab;
-        tab = $(e.currentTarget).data('id');
-        this.settingsView.navigate(tab, this.model.id);
-        return this.$('.project-subview').html(this.renderSub(tab).el);
-      },
-      renderSub: function(tab) {
-        this.setTitle(tab);
-        this.activeTab(tab);
-        this.subView && this.subView.remove();
-        this.subView = new SubViewMap[tab]({
-          model: this.model,
-          settingsView: this.settingsView
-        });
-        return this.subView.render();
-      },
-      setTitle: function(tab) {
-        var projectName, tabName;
-        projectName = this.model.get('name');
-        tabName = SubViewNameMap[tab];
-        this.$('#title-project-name').text(projectName);
-        this.$('#title-tab-name').text(tabName);
-        return this;
-      },
-      activeTab: function(tab) {
-        return this.$('.function-list a').each(function() {
-          if ($(this).data('id') === tab) {
-            return $(this).addClass('active');
-          } else {
-            return $(this).removeClass('active');
-          }
-        });
-      },
-      updateProjectName: function() {
-        this.$('.settings-nav-project-title').text(this.model.get('name'));
-        return this.$('#title-project-name').text(this.model.get('name'));
+      });
+      return this.removeConfirmView.on('confirm', function() {
+        return this.removeCredential(credential);
+      }, this);
+    },
+    showFormModal: function(credential, provider) {
+      this.formView = new credentialFormView({
+        provider: provider,
+        credential: credential,
+        model: this.model
+      }).render();
+      return this;
+    },
+    remove: function() {
+      var _ref, _ref1, _ref2;
+      if ((_ref = this.formView) != null) {
+        _ref.remove();
       }
-    });
+      if ((_ref1 = this.updateConfirmView) != null) {
+        _ref1.close();
+      }
+      if ((_ref2 = this.removeConfirmView) != null) {
+        _ref2.close();
+      }
+      return Backbone.View.prototype.remove.apply(this, arguments);
+    }
   });
+});
 
-}).call(this);
+define('scenes/settings/views/UsageReportView',['backbone', "../template/TplBilling", "ApiRequestR", 'i18n!/nls/lang.js'], function(Backbone, template, ApiRequestR, lang) {
+  return Backbone.View.extend({
+    events: {
+      "click .usage-pagination .nav-left": "prevUsage",
+      "click .usage-pagination .nav-right": "nextUsage"
+    },
+    className: "usage-report-view",
+    initialize: function() {
+      this.$el.html(template.billingLoadingFrame());
+      this.$el.find("#billing-status").html(MC.template.loadingSpinner());
+      return this;
+    },
+    render: function() {
+      var self;
+      self = this;
+      self.model.getPaymentState().then(function() {
+        var payment;
+        payment = self.model.get("payment");
+        self.$el.find("#billing-status").html(template.usage({
+          payment: payment
+        }));
+        return self.renderUsageData();
+      });
+      return this;
+    },
+    getUsage: function(date) {
+      var endDate, projectId, startDate, _ref;
+      date || (date = new Date());
+      _ref = this.getStartAndEnd(date), startDate = _ref[0], endDate = _ref[1];
+      projectId = this.model.get("id");
+      startDate = this.formatDate(new Date(startDate));
+      endDate = this.formatDate(new Date(endDate));
+      return ApiRequestR("payment_usage", {
+        projectId: projectId,
+        startDate: startDate,
+        endDate: endDate
+      });
+    },
+    getStartAndEnd: function(date) {
+      var firstDay, lastDay, month, year;
+      date = new Date(date);
+      month = date.getMonth();
+      year = date.getFullYear();
+      firstDay = new Date(year, month, 1);
+      lastDay = new Date(year, month + 1, -1);
+      console.log(firstDay.toLocaleString(), lastDay.toLocaleString());
+      return [firstDay, lastDay];
+    },
+    renderUsageData: function(dateString) {
+      var now, self;
+      self = this;
+      dateString || (dateString = now = new Date());
+      self.$el.find(".table-head-fix").html($(MC.template.loadingSpinner()).css({
+        "margin": "80px auto"
+      }));
+      self.$el.find(".usage-pagination button").prop("disabled", true);
+      this.getUsage(dateString).then(function(result) {
+        var date, elem, isDisabled, payment, project_id;
+        payment = self.model.get("payment");
+        if (!_.isEmpty(result != null ? result.history_usage : void 0)) {
+          project_id = self.model.get("id");
+          _.each(result.history_usage, function(value, key) {
+            delete result.history_usage[key];
+            key = key.replace("-" + project_id, "").replace("RDS-", "");
+            return result.history_usage[key] = value;
+          });
+          elem = template.usageTable({
+            result: result
+          });
+        } else {
+          elem = "<div class='full-space'>" + lang.IDE.NO_USAGE_REPORT + "</div>";
+        }
+        self.$el.find(".table-head-fix").html(elem);
+        date = self.formatDate2(dateString);
+        self.$el.find(".usage-date").text(date.string).data("date", dateString);
+        isDisabled = self.getNewDate(1) > new Date();
+        self.$el.find(".nav-left").prop("disabled", false);
+        return self.$el.find(".nav-right").prop('disabled', isDisabled);
+      }, function() {
+        return notification('error', "Error while getting user payment info, please try again later.");
+      });
+      return this;
+    },
+    formatDate: function(date) {
+      var day, hour, month, year;
+      year = date.getFullYear();
+      month = date.getMonth() + 1;
+      if (month < 10) {
+        month = "0" + month;
+      }
+      day = date.getDate();
+      if (day < 10) {
+        day = "0" + day;
+      }
+      hour = date.getHours();
+      if (hour < 10) {
+        hour = "0" + hour;
+      }
+      return "" + year + month + day + hour;
+    },
+    formatDate2: function(date) {
+      var month, months, string, year;
+      date = new Date(date);
+      months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      month = months[date.getMonth() % 12];
+      year = date.getFullYear();
+      console.log(month, year);
+      string = "" + month + ", " + year;
+      return {
+        string: string,
+        date: date
+      };
+    },
+    getNewDate: function(offset) {
+      var month, oldDate, year;
+      oldDate = new Date($(".usage-date").data("date"));
+      year = oldDate.getFullYear();
+      month = oldDate.getMonth() + offset;
+      return new Date(year, month);
+    },
+    nextUsage: function() {
+      var newDate;
+      newDate = this.getNewDate(1);
+      return this.renderUsageData(newDate);
+    },
+    prevUsage: function() {
+      var newDate;
+      newDate = this.getNewDate(-1);
+      return this.renderUsageData(newDate);
+    }
+  });
+});
+
+define('scenes/settings/ProjectSettings',['i18n!/nls/lang.js', './template/TplProject', './views/BasicSettingsView', './views/AccessTokenView', './views/BillingView', './views/TeamView', './views/ProviderCredentialView', './views/UsageReportView', 'backbone'], function(lang, TplProject, BasicSettingsView, AccessTokenView, BillingView, TeamView, ProviderCredentialView, UsageReportView) {
+  var SubViewMap, SubViewNameMap;
+  SubViewMap = {
+    basicsettings: BasicSettingsView,
+    accesstoken: AccessTokenView,
+    billing: BillingView,
+    team: TeamView,
+    credential: ProviderCredentialView,
+    usagereport: UsageReportView
+  };
+  SubViewNameMap = {
+    basicsettings: 'Basic Settings',
+    accesstoken: 'API Token',
+    billing: 'Billing',
+    team: 'Team',
+    credential: 'Cloud Access Credential',
+    usagereport: 'Usage Report'
+  };
+  return Backbone.View.extend({
+    events: {
+      'click .function-list a': 'loadSub'
+    },
+    initialize: function(options) {
+      var that;
+      that = this;
+      this.settingsView = options.settingsView;
+      this.listenTo(this.model, 'change:name', this.updateProjectName);
+      return this.listenTo(this.model, 'change:myRole', this.refresh, this);
+    },
+    render: function(tab) {
+      if (tab == null) {
+        tab = 'basicsettings';
+      }
+      this.setElement($(TplProject(_.extend(this.model.toJSON(), {
+        tab: tab,
+        admin: this.model.amIAdmin()
+      }))));
+      this.$('.project-subview').html(this.renderSub(tab).el);
+      return this;
+    },
+    setElement: function(element, delegate) {
+      if (this.$el) {
+        this.undelegateEvents();
+      }
+      this.$el = element instanceof Backbone.$ ? element : Backbone.$(element);
+      this.el = this.$el;
+      if (delegate !== false) {
+        this.delegateEvents();
+      }
+      return this;
+    },
+    refresh: function() {
+      var tab;
+      tab = this.$('.function-list a.active').data('id');
+      return this.settingsView.renderProject(this.model, tab);
+    },
+    loadSub: function(e) {
+      var tab;
+      tab = $(e.currentTarget).data('id');
+      this.settingsView.navigate(tab, this.model.id);
+      return this.$('.project-subview').html(this.renderSub(tab).el);
+    },
+    renderSub: function(tab) {
+      this.setTitle(tab);
+      this.activeTab(tab);
+      this.subView && this.subView.remove();
+      this.subView = new SubViewMap[tab]({
+        model: this.model,
+        settingsView: this.settingsView
+      });
+      return this.subView.render();
+    },
+    setTitle: function(tab) {
+      var projectName, tabName;
+      projectName = this.model.get('name');
+      tabName = SubViewNameMap[tab];
+      this.$('#title-project-name').text(projectName);
+      this.$('#title-tab-name').text(tabName);
+      return this;
+    },
+    activeTab: function(tab) {
+      return this.$('.function-list a').each(function() {
+        if ($(this).data('id') === tab) {
+          return $(this).addClass('active');
+        } else {
+          return $(this).removeClass('active');
+        }
+      });
+    },
+    updateProjectName: function() {
+      this.$('.settings-nav-project-title').text(this.model.get('name'));
+      return this.$('#title-project-name').text(this.model.get('name'));
+    }
+  });
+});
 
 define('scenes/settings/template/TplSettings',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -3995,441 +3962,432 @@ function program1(depth0,data) {
     + "</span>\n        </div>\n    </div>\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
-(function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define('scenes/settings/GenericSettings',['i18n!/nls/lang.js', 'UI.modalplus', './ProjectSettings', './template/TplSettings', 'backbone'], function(lang, Modal, ProjectView, TplSettings) {
-    var SettingsView;
-    SettingsView = Backbone.View.extend({
-      events: {
-        'click .project-list a': 'renderProject',
-        'click .back-settings': 'backToSettings',
-        'click #AccountEmail': 'showEmail',
-        'click #AccountFullName': 'showFullName',
-        'click #AccountPwd': 'showPwd',
-        'click #AccountCancelPwd': 'hidePwd',
-        'click #AccountUpdatePwd': 'changePwd',
-        'click #AccountCancelEmail': 'hideEmail',
-        'click #AccountUpdateEmail': 'changeEmail',
-        'click #AccountCancelFullName': 'hideFullName',
-        'change #AccountNewEmail, #AccountEmailPwd': 'updateEmailBtn',
-        'keyup  #AccountNewEmail, #AccountEmailPwd': 'updateEmailBtn',
-        'click #AccountUpdateFullName': 'changeFullName',
-        'change #AccountFirstName, #AccountLastName': 'updateFullNameBtn',
-        'keyup #AccountFirstName, #AccountLastName': 'updateFullNameBtn',
-        'change #AccountCurrentPwd, #AccountNewPwd': 'updatePwdBtn',
-        'keyup  #AccountCurrentPwd, #AccountNewPwd': 'updatePwdBtn'
-      },
-      className: 'fullpage-settings',
-      initialize: function(attr, options) {
-        var tab, _ref;
-        if (attr) {
-          this.projectId = attr.projectId;
-          tab = (_ref = attr.tab) != null ? _ref.toLowerCase() : void 0;
-          if (this.projectId && !tab) {
-            tab = SettingsView.TAB.Project.BasicSettings;
-          }
+define('scenes/settings/GenericSettings',['i18n!/nls/lang.js', 'UI.modalplus', './ProjectSettings', './template/TplSettings', 'backbone'], function(lang, Modal, ProjectView, TplSettings) {
+  var SettingsView;
+  SettingsView = Backbone.View.extend({
+    events: {
+      'click .project-list a': 'renderProject',
+      'click .back-settings': 'backToSettings',
+      'click #AccountEmail': 'showEmail',
+      'click #AccountFullName': 'showFullName',
+      'click #AccountPwd': 'showPwd',
+      'click #AccountCancelPwd': 'hidePwd',
+      'click #AccountUpdatePwd': 'changePwd',
+      'click #AccountCancelEmail': 'hideEmail',
+      'click #AccountUpdateEmail': 'changeEmail',
+      'click #AccountCancelFullName': 'hideFullName',
+      'change #AccountNewEmail, #AccountEmailPwd': 'updateEmailBtn',
+      'keyup  #AccountNewEmail, #AccountEmailPwd': 'updateEmailBtn',
+      'click #AccountUpdateFullName': 'changeFullName',
+      'change #AccountFirstName, #AccountLastName': 'updateFullNameBtn',
+      'keyup #AccountFirstName, #AccountLastName': 'updateFullNameBtn',
+      'change #AccountCurrentPwd, #AccountNewPwd': 'updatePwdBtn',
+      'keyup  #AccountCurrentPwd, #AccountNewPwd': 'updatePwdBtn'
+    },
+    className: 'fullpage-settings',
+    initialize: function(attr, options) {
+      var tab, _ref;
+      if (attr) {
+        this.projectId = attr.projectId;
+        tab = (_ref = attr.tab) != null ? _ref.toLowerCase() : void 0;
+        if (this.projectId && !tab) {
+          tab = SettingsView.TAB.Project.BasicSettings;
         }
-        this.scene = options.scene;
-        this.projects = App.model.projects();
-        return this.render(tab);
-      },
-      render: function(tab) {
-        var renderResult, that;
-        if (tab == null) {
-          tab = SettingsView.TAB.Account;
-        }
-        that = this;
-        if (tab === SettingsView.TAB.Account) {
-          renderResult = this.renderSettings();
-        } else {
-          renderResult = this.renderProject(this.projects.get(this.projectId), tab);
-        }
-        if (!renderResult) {
+      }
+      this.scene = options.scene;
+      this.projects = App.model.projects();
+      return this.render(tab);
+    },
+    render: function(tab) {
+      var renderResult, that;
+      if (tab == null) {
+        tab = SettingsView.TAB.Account;
+      }
+      that = this;
+      if (tab === SettingsView.TAB.Account) {
+        renderResult = this.renderSettings();
+      } else {
+        renderResult = this.renderProject(this.projects.get(this.projectId), tab);
+      }
+      if (!renderResult) {
+        return false;
+      }
+      this.modal = new Modal({
+        template: that.el,
+        mode: 'fullscreen',
+        disableFooter: true,
+        compact: true
+      });
+      this.modal.on("close", function() {
+        return that.scene.remove();
+      });
+      return this;
+    },
+    renderSettings: function() {
+      var data;
+      data = _.extend({}, App.user.toJSON());
+      data.gravatar = App.user.gravatar();
+      data.projects = this.projects.toJSON();
+      this.$el.html(TplSettings(data));
+      return this;
+    },
+    backToSettings: function() {
+      this.navigate();
+      return this.renderSettings();
+    },
+    backToDefaultProject: function() {
+      var privateProject;
+      this.modal.close();
+      privateProject = App.model.getPrivateProject();
+      return Router.navigate("/workspace/" + privateProject.id, {
+        trigger: true
+      });
+    },
+    renderProject: function(project, tab) {
+      var projectId, _ref;
+      if (project && project.currentTarget) {
+        projectId = $(project.currentTarget).data('id');
+        project = this.projects.get(projectId);
+        this.navigate(SettingsView.TAB.Project.BasicSettings, projectId);
+      } else {
+        if ((!project) || (__indexOf.call(_.values(SettingsView.TAB.Project), tab) < 0) || (!this.auth(project, tab))) {
+          notification('error', lang.IDE.PAGE_NOT_FOUND_WORKSPACE_TAB_NOT_EXIST);
+          Router.navigate('/', {
+            trigger: true
+          });
           return false;
         }
-        this.modal = new Modal({
-          template: that.el,
-          mode: 'fullscreen',
-          disableFooter: true,
-          compact: true
-        });
-        this.modal.on("close", function() {
-          return that.scene.remove();
-        });
-        return this;
-      },
-      renderSettings: function() {
-        var data;
-        data = _.extend({}, App.user.toJSON());
-        data.gravatar = App.user.gravatar();
-        data.projects = this.projects.toJSON();
-        this.$el.html(TplSettings(data));
-        return this;
-      },
-      backToSettings: function() {
-        this.navigate();
-        return this.renderSettings();
-      },
-      backToDefaultProject: function() {
-        var privateProject;
-        this.modal.close();
-        privateProject = App.model.getPrivateProject();
-        return Router.navigate("/workspace/" + privateProject.id, {
-          trigger: true
-        });
-      },
-      renderProject: function(project, tab) {
-        var projectId, _ref;
-        if (project && project.currentTarget) {
-          projectId = $(project.currentTarget).data('id');
-          project = this.projects.get(projectId);
-          this.navigate(SettingsView.TAB.Project.BasicSettings, projectId);
-        } else {
-          if ((!project) || (__indexOf.call(_.values(SettingsView.TAB.Project), tab) < 0) || (!this.auth(project, tab))) {
-            notification('error', lang.IDE.PAGE_NOT_FOUND_WORKSPACE_TAB_NOT_EXIST);
-            Router.navigate('/', {
-              trigger: true
-            });
-            return false;
-          }
-        }
-        if ((_ref = this.projectView) != null) {
-          _ref.remove();
-        }
-        this.projectView = new ProjectView({
-          model: project,
-          settingsView: this
-        });
-        return this.$el.html(this.projectView.render(tab).el);
-      },
-      remove: function() {
-        var _ref, _ref1;
-        if ((_ref = this.projectView) != null) {
-          _ref.remove();
-        }
-        if ((_ref1 = this.modal) != null) {
-          _ref1.close();
-        }
-        return Backbone.View.prototype.remove.apply(this, arguments);
-      },
-      navigate: function(tab, projectId) {
-        var url;
-        url = this.url(tab, projectId);
-        return Router.navigate(url);
-      },
-      url: function(tab, projectId) {
-        if (!tab) {
-          return '/settings';
-        }
-        return "/settings/" + projectId + "/" + tab;
-      },
-      auth: function(project, tab) {
-        return project.amIAdmin() || (tab !== SettingsView.TAB.Project.Billing && tab !== SettingsView.TAB.Project.ProviderCredential);
-      },
-      showEmail: function() {
-        this.hideFullName();
-        $(".accountEmailRO").hide();
-        $("#AccountEmailWrap").show();
-        $("#AccountNewEmail").focus();
-      },
-      hideEmail: function() {
-        $(".accountEmailRO").show();
-        $("#AccountEmailWrap").hide();
-        $("#AccountNewEmail, #AccountEmailPwd").val("");
-        $("#SettingErrorInfo").empty();
-      },
-      showFullName: function() {
-        this.hideEmail();
-        $(".accountFullNameRO").hide();
-        $("#AccountFullNameWrap").show();
-        $("#AccountFirstName").val(App.user.get("firstName") || "").focus();
-        $("#AccountLastName").val(App.user.get("lastName") || "");
-      },
-      hideFullName: function() {
-        $(".accountFullNameRO").show();
-        $("#AccountFullNameWrap").hide();
-        $("#AccountFirstName, #AccountLastName").val("");
-        return $("#AccountUpdateFullName").attr("disabled", false);
-      },
-      showPwd: function() {
-        this.$("#AccountPwd").hide();
-        this.$("#AccountPwdWrap").show();
-        this.$("#AccountCurrentPwd").focus();
-      },
-      hidePwd: function() {
-        this.$("#AccountPwd").show();
-        this.$("#AccountPwdWrap").hide();
-        this.$("#AccountCurrentPwd, #AccountNewPwd").val("");
-        this.$("#AccountInfo").empty();
-      },
-      updatePwdBtn: function() {
-        var new_pwd, old_pwd;
-        old_pwd = this.$("#AccountCurrentPwd").val() || "";
-        new_pwd = this.$("#AccountNewPwd").val() || "";
-        if (old_pwd.length && new_pwd.length) {
-          this.$("#AccountUpdatePwd").removeAttr("disabled");
-        } else {
-          this.$("#AccountUpdatePwd").attr("disabled", "disabled");
-        }
-      },
-      updateEmailBtn: function() {
-        var isValidEmail, new_email, new_pwd, regExp;
-        new_email = $("#AccountNewEmail").val() || "";
-        new_pwd = $("#AccountEmailPwd").val() || "";
-        regExp = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
-        isValidEmail = regExp.test(new_email);
-        if (new_email.length && new_pwd.length >= 6 && isValidEmail) {
-          $("#AccountUpdateEmail").removeAttr("disabled");
-          $("#SettingErrorInfo").text("");
-        } else {
-          if (!isValidEmail) {
-            $("#SettingErrorInfo").text(lang.IDE.SETTING_INVALID_EMAIL);
-          } else {
-            $("#SettingErrorInfo").text("");
-          }
-          $("#AccountUpdateEmail").attr("disabled", "disabled");
-        }
-      },
-      updateFullNameBtn: function() {
-        var first_name, last_name;
-        first_name = $("#AccountFirstName").val() || "";
-        last_name = $("#AccountLastName").val() || "";
-        if (first_name.length && last_name.length) {
-          $("#AccountUpdateFullName").removeAttr("disabled");
-        } else {
-          $("#AccountUpdateFullName").attr("disabled", "disabled");
-        }
-      },
-      changeFullName: function() {
-        var first_name, last_name, that;
-        that = this;
-        first_name = $("#AccountFirstName").val() || "";
-        last_name = $("#AccountLastName").val() || "";
-        if (first_name && last_name) {
-          $("#AccountUpdateFullName").attr("disabled", true);
-          return App.user.changeName(first_name, last_name).then(function(result) {
-            that.hideFullName();
-            $(".fullNameText").text(first_name + " " + last_name);
-            if (result) {
-              notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
-              App.user.set("firstName", first_name);
-              return App.user.set("lastName", last_name);
-            }
-          }, function(err) {
-            notification("error", lang.NOTIFY.UPDATED_FULLNAME_FAIL);
-            $("#AccountUpdateFullName").attr("disabled", false);
-            return console.error("Change Full name Failed due to ->", err);
-          });
-        }
-      },
-      changeEmail: function() {
-        var email, pwd;
-        email = $("#AccountNewEmail").val() || "";
-        pwd = $("#AccountEmailPwd").val() || "";
-        $("#SettingErrorInfo").empty();
-        $("#AccountUpdateEmail").attr("disabled", "disabled");
-        App.user.changeEmail(email, pwd).then(function() {
-          notification('info', lang.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS);
-          $("#AccountCancelEmail").click();
-          $(".accountEmailRO").find(".email-view").text(App.user.get("email"));
-        }, function(err) {
-          var text;
-          switch (err.error) {
-            case 116:
-              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;
-              break;
-            case 117:
-              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;
-              break;
-            default:
-              text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL1;
-          }
-          $('#SettingErrorInfo').text(text);
-          return $("#AccountUpdateEmail").removeAttr("disabled");
-        });
-      },
-      changePwd: function() {
-        var new_pwd, old_pwd, that;
-        that = this;
-        old_pwd = this.$("#AccountCurrentPwd").val() || "";
-        new_pwd = this.$("#AccountNewPwd").val() || "";
-        if (new_pwd.length < 6) {
-          this.$('#AccountInfo').text(lang.IDE.SETTINGS_ERR_INVALID_PWD);
-          return;
-        }
-        this.$("#AccountInfo").empty();
+      }
+      if ((_ref = this.projectView) != null) {
+        _ref.remove();
+      }
+      this.projectView = new ProjectView({
+        model: project,
+        settingsView: this
+      });
+      return this.$el.html(this.projectView.render(tab).el);
+    },
+    remove: function() {
+      var _ref, _ref1;
+      if ((_ref = this.projectView) != null) {
+        _ref.remove();
+      }
+      if ((_ref1 = this.modal) != null) {
+        _ref1.close();
+      }
+      return Backbone.View.prototype.remove.apply(this, arguments);
+    },
+    navigate: function(tab, projectId) {
+      var url;
+      url = this.url(tab, projectId);
+      return Router.navigate(url);
+    },
+    url: function(tab, projectId) {
+      if (!tab) {
+        return '/settings';
+      }
+      return "/settings/" + projectId + "/" + tab;
+    },
+    auth: function(project, tab) {
+      return project.amIAdmin() || (tab !== SettingsView.TAB.Project.Billing && tab !== SettingsView.TAB.Project.ProviderCredential);
+    },
+    showEmail: function() {
+      this.hideFullName();
+      $(".accountEmailRO").hide();
+      $("#AccountEmailWrap").show();
+      $("#AccountNewEmail").focus();
+    },
+    hideEmail: function() {
+      $(".accountEmailRO").show();
+      $("#AccountEmailWrap").hide();
+      $("#AccountNewEmail, #AccountEmailPwd").val("");
+      $("#SettingErrorInfo").empty();
+    },
+    showFullName: function() {
+      this.hideEmail();
+      $(".accountFullNameRO").hide();
+      $("#AccountFullNameWrap").show();
+      $("#AccountFirstName").val(App.user.get("firstName") || "").focus();
+      $("#AccountLastName").val(App.user.get("lastName") || "");
+    },
+    hideFullName: function() {
+      $(".accountFullNameRO").show();
+      $("#AccountFullNameWrap").hide();
+      $("#AccountFirstName, #AccountLastName").val("");
+      return $("#AccountUpdateFullName").attr("disabled", false);
+    },
+    showPwd: function() {
+      this.$("#AccountPwd").hide();
+      this.$("#AccountPwdWrap").show();
+      this.$("#AccountCurrentPwd").focus();
+    },
+    hidePwd: function() {
+      this.$("#AccountPwd").show();
+      this.$("#AccountPwdWrap").hide();
+      this.$("#AccountCurrentPwd, #AccountNewPwd").val("");
+      this.$("#AccountInfo").empty();
+    },
+    updatePwdBtn: function() {
+      var new_pwd, old_pwd;
+      old_pwd = this.$("#AccountCurrentPwd").val() || "";
+      new_pwd = this.$("#AccountNewPwd").val() || "";
+      if (old_pwd.length && new_pwd.length) {
+        this.$("#AccountUpdatePwd").removeAttr("disabled");
+      } else {
         this.$("#AccountUpdatePwd").attr("disabled", "disabled");
-        App.user.changePassword(old_pwd, new_pwd).then(function() {
-          notification('info', lang.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS);
-          $("#AccountCancelPwd").click();
-        }, function(err) {
-          if (err.error === 2) {
-            that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
-          } else {
-            that.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_UPDATE_PWD_FAILURE);
-          }
-          return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
-        });
       }
-    });
-    SettingsView.TAB = {
-      Account: 'account',
-      Project: {
-        BasicSettings: 'basicsettings',
-        AccessToken: 'accesstoken',
-        Billing: 'billing',
-        Team: 'team',
-        ProviderCredential: 'credential',
-        UsageReport: 'usagereport'
-      }
-    };
-    return SettingsView;
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('scenes/Settings',["Scene", "./settings/GenericSettings"], function(Scene, SettingsView) {
-    var Settings;
-    Settings = (function(_super) {
-      __extends(Settings, _super);
-
-      function Settings() {
-        return Settings.__super__.constructor.apply(this, arguments);
-      }
-
-
-      /*
-        Methods that should be override
-       */
-
-      Settings.prototype.initialize = function(attributes) {
-        this.view = new SettingsView(attributes, {
-          scene: this
-        });
-        return this.activate();
-      };
-
-      Settings.prototype.isRemovable = function() {
-        return true;
-      };
-
-      Settings.prototype.becomeActive = function() {
-        return Scene.prototype.becomeActive.call(this);
-      };
-
-      Settings.prototype.becomeInactive = function() {
-        return Scene.prototype.remove.call(this);
-      };
-
-      Settings.prototype.cleanup = function() {};
-
-      Settings.prototype.isWorkingOn = function(info) {
-        return info === "AppSettings";
-      };
-
-      return Settings;
-
-    })(Scene);
-    return Settings;
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('scenes/StackStore',["ApiRequest", "Scene", "i18n!/nls/lang.js", "backbone", "UI.notification"], function(ApiRequest, Scene, lang) {
-    var SSView, StackStore;
-    SSView = Backbone.View.extend({
-      initialize: function() {
-        return this.setElement($("<div class='global-loading'></div>").appendTo("#scenes"));
-      }
-    });
-    StackStore = (function(_super) {
-      __extends(StackStore, _super);
-
-      function StackStore(attr) {
-        var ss;
-        ss = App.sceneManager.find(attr.id);
-        if (ss) {
-          ss.activate();
-          return ss;
+    },
+    updateEmailBtn: function() {
+      var isValidEmail, new_email, new_pwd, regExp;
+      new_email = $("#AccountNewEmail").val() || "";
+      new_pwd = $("#AccountEmailPwd").val() || "";
+      regExp = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
+      isValidEmail = regExp.test(new_email);
+      if (new_email.length && new_pwd.length >= 6 && isValidEmail) {
+        $("#AccountUpdateEmail").removeAttr("disabled");
+        $("#SettingErrorInfo").text("");
+      } else {
+        if (!isValidEmail) {
+          $("#SettingErrorInfo").text(lang.IDE.SETTING_INVALID_EMAIL);
+        } else {
+          $("#SettingErrorInfo").text("");
         }
-        return Scene.call(this, attr);
+        $("#AccountUpdateEmail").attr("disabled", "disabled");
       }
-
-
-      /*
-        Methods that should be override
-       */
-
-      StackStore.prototype.initialize = function(attributes) {
-        var self;
-        this.id = attributes.id;
-        this.view = new SSView();
-        this.activate();
-        self = this;
-        return ApiRequest('stackstore_fetch_stackstore', {
-          sub_path: "master/stack/" + this.id + "/" + this.id + ".json"
-        }).then(function(res) {
-          var e, j;
-          try {
-            j = JSON.parse(res);
-            delete j.id;
-            delete j.signature;
-          } catch (_error) {
-            e = _error;
-            j = null;
-            self.onParseError();
+    },
+    updateFullNameBtn: function() {
+      var first_name, last_name;
+      first_name = $("#AccountFirstName").val() || "";
+      last_name = $("#AccountLastName").val() || "";
+      if (first_name.length && last_name.length) {
+        $("#AccountUpdateFullName").removeAttr("disabled");
+      } else {
+        $("#AccountUpdateFullName").attr("disabled", "disabled");
+      }
+    },
+    changeFullName: function() {
+      var first_name, last_name, that;
+      that = this;
+      first_name = $("#AccountFirstName").val() || "";
+      last_name = $("#AccountLastName").val() || "";
+      if (first_name && last_name) {
+        $("#AccountUpdateFullName").attr("disabled", true);
+        return App.user.changeName(first_name, last_name).then(function(result) {
+          that.hideFullName();
+          $(".fullNameText").text(first_name + " " + last_name);
+          if (result) {
+            notification("info", lang.NOTIFY.UPDATED_FULLNAME_SUCCESS);
+            App.user.set("firstName", first_name);
+            return App.user.set("lastName", last_name);
           }
-          if (j) {
-            return self.onParseSuccess(j);
-          }
-        }, function() {
-          return self.onLoadError();
+        }, function(err) {
+          notification("error", lang.NOTIFY.UPDATED_FULLNAME_FAIL);
+          $("#AccountUpdateFullName").attr("disabled", false);
+          return console.error("Change Full name Failed due to ->", err);
         });
-      };
-
-      StackStore.prototype.title = function() {
-        return "Fetching Sample Stack";
-      };
-
-      StackStore.prototype.url = function() {
-        return "store/" + this.id;
-      };
-
-      StackStore.prototype.isWorkingOn = function(info) {
-        return info === this.id;
-      };
-
-      StackStore.prototype.onParseSuccess = function(j) {
-        App.loadUrl(App.model.getPrivateProject().createStackByJson(j).url());
-        return this.remove();
-      };
-
-      StackStore.prototype.onLoadError = function() {
-        notification("error", lang.NOTIFY.LOAD_SAMPLE_FAIL);
-        return this.remove();
-      };
-
-      StackStore.prototype.onParseError = function() {
-        notification("error", lang.NOTIFY.PARSE_SAMPLE_FAIL);
-        return this.remove();
-      };
-
-      return StackStore;
-
-    })(Scene);
-    return StackStore;
+      }
+    },
+    changeEmail: function() {
+      var email, pwd;
+      email = $("#AccountNewEmail").val() || "";
+      pwd = $("#AccountEmailPwd").val() || "";
+      $("#SettingErrorInfo").empty();
+      $("#AccountUpdateEmail").attr("disabled", "disabled");
+      App.user.changeEmail(email, pwd).then(function() {
+        notification('info', lang.NOTIFY.SETTINGS_UPDATE_EMAIL_SUCCESS);
+        $("#AccountCancelEmail").click();
+        $(".accountEmailRO").find(".email-view").text(App.user.get("email"));
+      }, function(err) {
+        var text;
+        switch (err.error) {
+          case 116:
+            text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL3;
+            break;
+          case 117:
+            text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL2;
+            break;
+          default:
+            text = lang.IDE.SETTINGS_UPDATE_EMAIL_FAIL1;
+        }
+        $('#SettingErrorInfo').text(text);
+        return $("#AccountUpdateEmail").removeAttr("disabled");
+      });
+    },
+    changePwd: function() {
+      var new_pwd, old_pwd, that;
+      that = this;
+      old_pwd = this.$("#AccountCurrentPwd").val() || "";
+      new_pwd = this.$("#AccountNewPwd").val() || "";
+      if (new_pwd.length < 6) {
+        this.$('#AccountInfo').text(lang.IDE.SETTINGS_ERR_INVALID_PWD);
+        return;
+      }
+      this.$("#AccountInfo").empty();
+      this.$("#AccountUpdatePwd").attr("disabled", "disabled");
+      App.user.changePassword(old_pwd, new_pwd).then(function() {
+        notification('info', lang.NOTIFY.SETTINGS_UPDATE_PWD_SUCCESS);
+        $("#AccountCancelPwd").click();
+      }, function(err) {
+        if (err.error === 2) {
+          that.modal.$('#AccountInfo').html("" + lang.IDE.SETTINGS_ERR_WRONG_PWD + " <a href='/reset/' target='_blank'>" + lang.IDE.SETTINGS_INFO_FORGET_PWD + "</a>");
+        } else {
+          that.modal.$('#AccountInfo').text(lang.IDE.SETTINGS_UPDATE_PWD_FAILURE);
+        }
+        return that.modal.$("#AccountUpdatePwd").removeAttr("disabled");
+      });
+    }
   });
+  SettingsView.TAB = {
+    Account: 'account',
+    Project: {
+      BasicSettings: 'basicsettings',
+      AccessToken: 'accesstoken',
+      Billing: 'billing',
+      Team: 'team',
+      ProviderCredential: 'credential',
+      UsageReport: 'usagereport'
+    }
+  };
+  return SettingsView;
+});
 
-}).call(this);
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+define('scenes/Settings',["Scene", "./settings/GenericSettings"], function(Scene, SettingsView) {
+  var Settings;
+  Settings = (function(_super) {
+    __extends(Settings, _super);
+
+    function Settings() {
+      return Settings.__super__.constructor.apply(this, arguments);
+    }
+
+
+    /*
+      Methods that should be override
+     */
+
+    Settings.prototype.initialize = function(attributes) {
+      this.view = new SettingsView(attributes, {
+        scene: this
+      });
+      return this.activate();
+    };
+
+    Settings.prototype.isRemovable = function() {
+      return true;
+    };
+
+    Settings.prototype.becomeActive = function() {
+      return Scene.prototype.becomeActive.call(this);
+    };
+
+    Settings.prototype.becomeInactive = function() {
+      return Scene.prototype.remove.call(this);
+    };
+
+    Settings.prototype.cleanup = function() {};
+
+    Settings.prototype.isWorkingOn = function(info) {
+      return info === "AppSettings";
+    };
+
+    return Settings;
+
+  })(Scene);
+  return Settings;
+});
+
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+define('scenes/StackStore',["ApiRequest", "Scene", "i18n!/nls/lang.js", "backbone", "UI.notification"], function(ApiRequest, Scene, lang) {
+  var SSView, StackStore;
+  SSView = Backbone.View.extend({
+    initialize: function() {
+      return this.setElement($("<div class='global-loading'></div>").appendTo("#scenes"));
+    }
+  });
+  StackStore = (function(_super) {
+    __extends(StackStore, _super);
+
+    function StackStore(attr) {
+      var ss;
+      ss = App.sceneManager.find(attr.id);
+      if (ss) {
+        ss.activate();
+        return ss;
+      }
+      return Scene.call(this, attr);
+    }
+
+
+    /*
+      Methods that should be override
+     */
+
+    StackStore.prototype.initialize = function(attributes) {
+      var self;
+      this.id = attributes.id;
+      this.view = new SSView();
+      this.activate();
+      self = this;
+      return ApiRequest('stackstore_fetch_stackstore', {
+        sub_path: "master/stack/" + this.id + "/" + this.id + ".json"
+      }).then(function(res) {
+        var e, j;
+        try {
+          j = JSON.parse(res);
+          delete j.id;
+          delete j.signature;
+        } catch (_error) {
+          e = _error;
+          j = null;
+          self.onParseError();
+        }
+        if (j) {
+          return self.onParseSuccess(j);
+        }
+      }, function() {
+        return self.onLoadError();
+      });
+    };
+
+    StackStore.prototype.title = function() {
+      return "Fetching Sample Stack";
+    };
+
+    StackStore.prototype.url = function() {
+      return "store/" + this.id;
+    };
+
+    StackStore.prototype.isWorkingOn = function(info) {
+      return info === this.id;
+    };
+
+    StackStore.prototype.onParseSuccess = function(j) {
+      App.loadUrl(App.model.getPrivateProject().createStackByJson(j).url());
+      return this.remove();
+    };
+
+    StackStore.prototype.onLoadError = function() {
+      notification("error", lang.NOTIFY.LOAD_SAMPLE_FAIL);
+      return this.remove();
+    };
+
+    StackStore.prototype.onParseError = function() {
+      notification("error", lang.NOTIFY.PARSE_SAMPLE_FAIL);
+      return this.remove();
+    };
+
+    return StackStore;
+
+  })(Scene);
+  return StackStore;
+});
 
 define('scenes/CheatsheetTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -4546,139 +4504,133 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "</div>\n      </li>\n    </ul>\n  </section>\n\n</div>\n<div class=\"icon-close-circle\"></div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('scenes/Cheatsheet',["./CheatsheetTpl", "Scene", "i18n!/nls/lang.js"], function(CheatsheetTpl, Scene, lang) {
-    var CSView, Cheatsheet;
-    CSView = Backbone.View.extend({
-      events: {
-        "click": "clickBg",
-        "click .icon-close-circle": "clickBtn"
-      },
-      initialize: function() {
-        return this.setElement($(CheatsheetTpl()).appendTo("#scenes"));
-      },
-      clickBg: function(evt) {
-        if ($(evt.target).hasClass("cheatsheet")) {
-          this.trigger("close");
-        }
-      },
-      clickBtn: function() {
-        return this.trigger("close");
+define('scenes/Cheatsheet',["./CheatsheetTpl", "Scene", "i18n!/nls/lang.js"], function(CheatsheetTpl, Scene, lang) {
+  var CSView, Cheatsheet;
+  CSView = Backbone.View.extend({
+    events: {
+      "click": "clickBg",
+      "click .icon-close-circle": "clickBtn"
+    },
+    initialize: function() {
+      return this.setElement($(CheatsheetTpl()).appendTo("#scenes"));
+    },
+    clickBg: function(evt) {
+      if ($(evt.target).hasClass("cheatsheet")) {
+        this.trigger("close");
       }
-    });
-    Cheatsheet = (function(_super) {
-      __extends(Cheatsheet, _super);
-
-      function Cheatsheet(attr) {
-        var ss;
-        ss = App.sceneManager.find("Cheatsheet");
-        if (ss) {
-          return ss;
-        }
-        return Scene.call(this, attr);
-      }
-
-      Cheatsheet.prototype.initialize = function() {
-        this.view = new CSView();
-        this.listenTo(this.view, "close", this.remove);
-      };
-
-      Cheatsheet.prototype.url = function() {
-        return "/cheatsheet";
-      };
-
-      Cheatsheet.prototype.isWorkingOn = function(info) {
-        return info === "Cheatsheet";
-      };
-
-      Cheatsheet.prototype.cleanup = function() {
-        Scene.prototype.cleanup.call(this);
-        App.sceneManager.activeScene().updateUrl();
-      };
-
-      return Cheatsheet;
-
-    })(Scene);
-    return Cheatsheet;
+    },
+    clickBtn: function() {
+      return this.trigger("close");
+    }
   });
+  Cheatsheet = (function(_super) {
+    __extends(Cheatsheet, _super);
 
-}).call(this);
+    function Cheatsheet(attr) {
+      var ss;
+      ss = App.sceneManager.find("Cheatsheet");
+      if (ss) {
+        return ss;
+      }
+      return Scene.call(this, attr);
+    }
 
-(function() {
-  define('scenes/Router',["scenes/ProjectScene", "scenes/Settings", "scenes/StackStore", "scenes/Cheatsheet", "backbone"], function(ProjectScene, Settings, StackStore, Cheatsheet) {
-    return Backbone.Router.extend({
-      routes: {
-        "": "openProject",
-        "workspace(/:project)": "openProject",
-        "workspace/:project/ops(/:ops)": "openProject",
-        "settings": "openSettings",
-        "settings/:projectId(/:tab)": "openSettings",
-        "store/:sampleId": "openStore",
-        "cheatsheet": "openCheatsheet"
-      },
-      openStore: function(id) {
-        return new StackStore({
-          id: id
-        });
-      },
-      openSettings: function(projectId, tab) {
-        return new Settings({
-          tab: tab,
-          projectId: projectId
-        });
-      },
-      openProject: function(projectId, opsModelId) {
-        return new ProjectScene(projectId, opsModelId);
-      },
-      openCheatsheet: function() {
-        return new Cheatsheet();
-      },
-      start: function() {
-        var self;
-        if (!Backbone.history.start({
-          pushState: true
-        })) {
-          console.warn("URL doesn't match any routes.");
-          this.navigate("/", {
-            replace: true,
-            trigger: true
-          });
-        }
-        self = this;
-        $(document).on("click", "a.route", function(evt) {
-          return self.onRouteClicked(evt);
-        });
-        this.route("workspace/:project/unsaved(/:ops)", "openProject");
-      },
-      onRouteClicked: function(evt) {
-        var currentUrl, href, lastChar, result;
-        href = $(evt.currentTarget).attr("href");
-        currentUrl = Backbone.history.fragment;
-        lastChar = href[href.length - 1];
-        if (lastChar === "/" || lastChar === "\\") {
-          href = href.substring(0, href.length - 1);
-        }
-        result = this.navigate(href, {
+    Cheatsheet.prototype.initialize = function() {
+      this.view = new CSView();
+      this.listenTo(this.view, "close", this.remove);
+    };
+
+    Cheatsheet.prototype.url = function() {
+      return "/cheatsheet";
+    };
+
+    Cheatsheet.prototype.isWorkingOn = function(info) {
+      return info === "Cheatsheet";
+    };
+
+    Cheatsheet.prototype.cleanup = function() {
+      Scene.prototype.cleanup.call(this);
+      App.sceneManager.activeScene().updateUrl();
+    };
+
+    return Cheatsheet;
+
+  })(Scene);
+  return Cheatsheet;
+});
+
+define('scenes/Router',["scenes/ProjectScene", "scenes/Settings", "scenes/StackStore", "scenes/Cheatsheet", "backbone"], function(ProjectScene, Settings, StackStore, Cheatsheet) {
+  return Backbone.Router.extend({
+    routes: {
+      "": "openProject",
+      "workspace(/:project)": "openProject",
+      "workspace/:project/ops(/:ops)": "openProject",
+      "settings": "openSettings",
+      "settings/:projectId(/:tab)": "openSettings",
+      "store/:sampleId": "openStore",
+      "cheatsheet": "openCheatsheet"
+    },
+    openStore: function(id) {
+      return new StackStore({
+        id: id
+      });
+    },
+    openSettings: function(projectId, tab) {
+      return new Settings({
+        tab: tab,
+        projectId: projectId
+      });
+    },
+    openProject: function(projectId, opsModelId) {
+      return new ProjectScene(projectId, opsModelId);
+    },
+    openCheatsheet: function() {
+      return new Cheatsheet();
+    },
+    start: function() {
+      var self;
+      if (!Backbone.history.start({
+        pushState: true
+      })) {
+        console.warn("URL doesn't match any routes.");
+        this.navigate("/", {
           replace: true,
           trigger: true
         });
-        if (result === true) {
-          $(document).trigger("urlroute");
-        } else if (result === false) {
-          console.log("URL doesn't match any routes.");
-          this.navigate(currentUrl, {
-            replace: true
-          });
-        }
-        return false;
       }
-    });
+      self = this;
+      $(document).on("click", "a.route", function(evt) {
+        return self.onRouteClicked(evt);
+      });
+      this.route("workspace/:project/unsaved(/:ops)", "openProject");
+    },
+    onRouteClicked: function(evt) {
+      var currentUrl, href, lastChar, result;
+      href = $(evt.currentTarget).attr("href");
+      currentUrl = Backbone.history.fragment;
+      lastChar = href[href.length - 1];
+      if (lastChar === "/" || lastChar === "\\") {
+        href = href.substring(0, href.length - 1);
+      }
+      result = this.navigate(href, {
+        replace: true,
+        trigger: true
+      });
+      if (result === true) {
+        $(document).trigger("urlroute");
+      } else if (result === false) {
+        console.log("URL doesn't match any routes.");
+        this.navigate(currentUrl, {
+          replace: true
+        });
+      }
+      return false;
+    }
   });
-
-}).call(this);
+});
 
 
 define("scenes/Scenes", function(){});
