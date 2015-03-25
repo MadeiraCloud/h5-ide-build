@@ -1,1 +1,1 @@
-(function(){define(["ConnectionModel","constant"],function(e,t){return e.extend({type:"OsSgAsso"})})}).call(this);
+define(["ConnectionModel","constant"],function(e,t){return e.extend({type:"OsSgAsso"})});

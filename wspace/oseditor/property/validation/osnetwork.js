@@ -1,1 +1,1 @@
-(function(){define(["constant","./ValidationBase"],function(e,t){return t.extend({},{handleTypes:[e.RESTYPE.OSNETWORK]})})}).call(this);
+define(["constant","./ValidationBase"],function(e,t){return t.extend({},{handleTypes:[e.RESTYPE.OSNETWORK]})});

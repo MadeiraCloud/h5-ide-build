@@ -1,1 +1,1 @@
-(function(){define(["CanvasLine","constant"],function(e,t){return e.extend({type:"OsListenerAsso"}),e.extend({type:"OsPortUsage"}),e.extend({type:"OsRouterAsso",appendLineToCanvas:function(e){return this.canvas.appendGroupLine(e)}}),e.extend({type:"OsPoolMembership"})})}).call(this);
+define(["CanvasLine","constant"],function(e,t){return e.extend({type:"OsListenerAsso"}),e.extend({type:"OsPortUsage"}),e.extend({type:"OsRouterAsso",appendLineToCanvas:function(e){return this.canvas.appendGroupLine(e)}}),e.extend({type:"OsPoolMembership"})});

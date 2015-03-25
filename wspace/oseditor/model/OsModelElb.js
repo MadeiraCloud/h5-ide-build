@@ -1,1 +1,1 @@
-(function(){define(["ComplexResModel","constant"],function(e,t){return e.extend({type:t.RESTYPE.OSELB,serialize:function(){}},{handleTypes:t.RESTYPE.OSELB,deserialize:function(){}})})}).call(this);
+define(["ComplexResModel","constant"],function(e,t){return e.extend({type:t.RESTYPE.OSELB,serialize:function(){}},{handleTypes:t.RESTYPE.OSELB,deserialize:function(){}})});
