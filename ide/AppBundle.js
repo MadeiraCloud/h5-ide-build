@@ -3457,21 +3457,21 @@ define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationMode
     return this.view.showSessionDialog();
   };
   VisualOps.prototype.logout = function() {
-    var that;
-    that = this;
-    return App.user.logout()["finally"](function() {
-      var p;
-      that.ignoreChangesWhenQuit();
-      p = window.location.pathname;
-      if (p === "/") {
-        p = window.location.hash.replace("#", "/");
-      }
-      if (p && p !== "/") {
-        window.location.href = "/login?ref=" + p;
-      } else {
-        window.location.href = "/login";
-      }
-    });
+    return App.user.logout()["finally"]((function(_this) {
+      return function() {
+        var p;
+        _this.ignoreChangesWhenQuit();
+        p = window.location.pathname;
+        if (p === "/") {
+          p = window.location.hash.replace("#", "/");
+        }
+        if (p && p !== "/") {
+          window.location.href = "/login?ref=" + p;
+        } else {
+          window.location.href = "/login";
+        }
+      };
+    })(this));
   };
   VisualOps.prototype.ignoreChangesWhenQuit = function() {
     this.__ICWQ = true;
