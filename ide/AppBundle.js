@@ -3459,7 +3459,7 @@ define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationMode
   VisualOps.prototype.logout = function() {
     var that;
     that = this;
-    return App.user.logout().done(function() {
+    return App.user.logout()["finally"](function() {
       var p;
       that.ignoreChangesWhenQuit();
       p = window.location.pathname;
