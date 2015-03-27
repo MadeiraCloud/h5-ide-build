@@ -2752,6 +2752,7 @@ define('ide/User',["ApiRequest", "backbone", "crypto"], function(ApiRequest) {
     },
     logout: function() {
       var cValue, ckey, def, domain, _ref;
+      $("#GlobalLoading").show();
       domain = {
         "domain": window.location.hostname.replace("ide", ""),
         "path": "/"
@@ -2765,6 +2766,7 @@ define('ide/User',["ApiRequest", "backbone", "crypto"], function(ApiRequest) {
         $.removeCookie(ckey, domain);
         $.removeCookie(ckey, def);
       }
+      return ApiRequest("session_logout");
     },
     changePassword: function(oldPwd, newPwd) {
       return ApiRequest("account_update_account", {
@@ -3455,18 +3457,21 @@ define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationMode
     return this.view.showSessionDialog();
   };
   VisualOps.prototype.logout = function() {
-    var p;
-    App.user.logout();
-    this.ignoreChangesWhenQuit();
-    p = window.location.pathname;
-    if (p === "/") {
-      p = window.location.hash.replace("#", "/");
-    }
-    if (p && p !== "/") {
-      window.location.href = "/login?ref=" + p;
-    } else {
-      window.location.href = "/login";
-    }
+    var that;
+    that = this;
+    return App.user.logout().done(function() {
+      var p;
+      that.ignoreChangesWhenQuit();
+      p = window.location.pathname;
+      if (p === "/") {
+        p = window.location.hash.replace("#", "/");
+      }
+      if (p && p !== "/") {
+        window.location.href = "/login?ref=" + p;
+      } else {
+        window.location.href = "/login";
+      }
+    });
   };
   VisualOps.prototype.ignoreChangesWhenQuit = function() {
     this.__ICWQ = true;

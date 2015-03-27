@@ -94,6 +94,7 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
     switchToDone: function() {
       var self;
       this.$el.find(".success").show();
+      this.$el.find(".process-detail").hide();
       self = this;
       setTimeout(function() {
         self.$el.find(".processing-wrap").addClass("fadeout");

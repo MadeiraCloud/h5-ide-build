@@ -26157,7 +26157,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       _ref = [asg].concat(asg.get("expandedList"));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         expanded = _ref[_i];
-        if (attributes.parent.parent() === expanded.parent().parent()) {
+        if (attributes.parent === expanded.parent()) {
           return;
         }
       }
@@ -26170,7 +26170,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       _ref = [asg].concat(asg.get("expandedList"));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         expanded = _ref[_i];
-        if (expanded !== this && newParent.parent() === expanded.parent().parent()) {
+        if (expanded !== this && newParent === expanded.parent()) {
           return false;
         }
       }

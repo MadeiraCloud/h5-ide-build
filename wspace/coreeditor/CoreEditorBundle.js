@@ -5891,8 +5891,14 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
     },
     updateProgress: function() {
       var $p, pp, pro;
-      pp = this.workspace.opsModel.get("progress");
+      if (!this.workspace.opsModel.isProcessing()) {
+        return;
+      }
       $p = this.$el.find(".ops-process");
+      if (!$p.length) {
+        return;
+      }
+      pp = this.workspace.opsModel.get("progress");
       $p.toggleClass("has-progess", !!pp);
       if (this.__progress > pp) {
         $p.toggleClass("rolling-back", true);
@@ -6060,6 +6066,12 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       return this.design && this.design.modeIsAppEdit() && this.design.isModified();
     },
     initEditor: function() {
+      var self;
+      self = this;
+      this.listenTo(this.opsModel, "change:progress", function() {
+        var _ref;
+        return (_ref = self.view) != null ? _ref.updateProgress() : void 0;
+      });
       if (this.opsModel.isImported()) {
         this.updateTab();
         this.view.canvas.autoLayout();
@@ -6166,7 +6178,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
       self = this;
-      this.view.listenTo(this.opsModel, "change:progress", this.view.updateProgress);
       this.opsModel.update(newJson, fastUpdate).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
@@ -6184,7 +6195,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = false;
-      this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
       if (err.error === ApiRequest.Errors.AppConflict) {
         msg = lang.NOTIFY.ERR_APP_UPDATE_FAILED_CONFLICT;
       } else {
@@ -6212,7 +6222,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = false;
-      this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
       this.view.showUpdateStatus();
       this.design.setMode(Design.MODE.App);
       this.design.reload();
