@@ -13,6 +13,9 @@ define('component/stateeditor/model',['MC', 'constant', 'CloudResources', "Desig
       that = this;
       resUID = options.resUID;
       resModel = Design.instance().component(resUID);
+      if (resModel && resModel.isMesos && resModel.isMesos()) {
+        resModel.setMesosState();
+      }
       if (!(resModel && resModel.serialize)) {
         return;
       }
@@ -1162,12 +1165,7 @@ function program3(depth0,data) {
 
   buffer += "<div id=\"state-editor-model\" class=\"se-model-"
     + escapeExpression(((stack1 = (depth0 && depth0.current_state)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n	<div class=\"selectbox state-editor-res-select\" data-res-name=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.res_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n		";
-  stack1 = self.invokePartial(partials.stateResSelectTpl, 'stateResSelectTpl', depth0, helpers, partials, data);
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n\n	<div id=\"state-editor-wrap\">\n		<div id=\"state-editor-body\">\n			<div id=\"state-editor\" spellcheck=\"false\" class=\"font-mono\">\n				";
+    + "\">\n\n	<div id=\"state-editor-wrap\">\n		<div id=\"state-editor-body\">\n			<div id=\"state-editor\" spellcheck=\"false\" class=\"font-mono\">\n				";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.supported_platform), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n				<div class=\"state-no-state-container font-normal\">\n					<div class=\"state-no-data-tip\">"
@@ -3521,7 +3519,9 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
           $keyInputs = $paraDictItem.find('.key');
           $valueInputs = $paraDictItem.find('.value');
           _.each($keyInputs, function(keyInput) {
-            return that.initCodeEditor(keyInput, {});
+            return that.initCodeEditor(keyInput, {
+              at: that.resAttrDataAry
+            });
           });
           return _.each($valueInputs, function(valueInput) {
             return that.initCodeEditor(valueInput, {
@@ -4076,6 +4076,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
             keyValue = that.getPlainText($keyInput);
             valueValue = that.getPlainText($valueInput);
             if (keyValue) {
+              keyValue = that.model.replaceParaNameToUID(keyValue);
               valueValue = that.model.replaceParaNameToUID(valueValue);
               dictObjAry.push({
                 key: keyValue,
@@ -4192,6 +4193,10 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
               renderParaValue = [];
               if (_.isArray(paraValue)) {
                 _.each(paraValue, function(paraValueObj) {
+                  paraValueObj.key = that.model.replaceParaUIDToName(paraValueObj.key);
+                  if (paraValueObj.key && paraValueObj.key.indexOf('@{unknown') !== -1) {
+                    renderObj.err_list.push('reference');
+                  }
                   paraValueObj.value = that.model.replaceParaUIDToName(paraValueObj.value);
                   if (paraValueObj.value && paraValueObj.value.indexOf('@{unknown') !== -1) {
                     renderObj.err_list.push('reference');

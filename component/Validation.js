@@ -4019,7 +4019,7 @@ function program11(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"validation-content\">\n	<ul class=\"tab\">\n		<li class=\"active ";
+  buffer += "<div class=\"validation-content mgt10\">\n	<ul class=\"tab\">\n		<li class=\"active ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-tab-target=\"#item-error\">"
@@ -4040,7 +4040,7 @@ function program11(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_NOTICE", {hash:{},data:data}))
     + "<span class=\"validation-counter validation-counter-notice\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"content_wrap scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
+    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"pos-r scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>"
@@ -4114,7 +4114,7 @@ define('component/trustedadvisor/gui/view',['event', 'i18n!/nls/lang.js', './tpl
       notice = this.model.get('notice_list');
       $tabs = $('.modal-box .tab li');
       $nutshell = $('.modal-box .nutshell');
-      $details = $nutshell.prev('details');
+      $details = $('.stack-validation details');
       $summary = $details.find('summary');
       processNutshell = function(notShow) {
         var content, contentArr;

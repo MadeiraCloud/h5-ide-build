@@ -3998,7 +3998,84 @@ define('cloudres/openstack/CrClnCommonRes',["../CrCollection", "../CrModel", "Ap
   });
 });
 
-define('cloudres/CrBundle',["CloudResources", "./CrOpsResource", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam", "./openstack/CrClnSharedRes", "./openstack/CrClnImage", "./openstack/CrClnNetwork", "./openstack/CrClnCommonRes"], function(CloudResources) {
+define('cloudres/mesos/CrModelDockerImage',["../CrModel", "CloudResources", "ApiRequest"], function(CrModel, CloudResources, ApiRequest) {
+  return CrModel.extend({
+
+    /* env:dev                                                  env:dev:end */
+    defaults: {
+      "is_automated": false,
+      "name": "",
+      "star_count": 0,
+      "is_trusted": false,
+      "is_official": true,
+      "description": ""
+    }
+  });
+});
+
+define('cloudres/mesos/CrClnDockerImage',["../CrCollection", "constant", "./CrModelDockerImage"], function(CrCollection, constant, CrRdsDockerImageModel) {
+
+  /* Snapshot */
+  return CrCollection.extend({
+
+    /* env:dev                                                       env:dev:end */
+    type: constant.RESTYPE.DOCKERIMAGE,
+    model: CrRdsDockerImageModel,
+    doFetch: function() {
+      return this.sendRequest("marathon_images");
+    },
+    parseFetchData: function(data) {
+      var i, _i, _len;
+      data = (data != null ? data.docker_hub : void 0) || [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        i = data[_i];
+        i.id = i.name;
+      }
+      return data;
+    }
+  });
+});
+
+define('cloudres/mesos/CrClnMarathonApp',["../CrCollection", "constant", "ApiRequest"], function(CrCollection, constant) {
+  return CrCollection.extend({
+
+    /* env:dev                                                       env:dev:end */
+    type: constant.RESTYPE.MRTHAPP,
+    __selfParseData: true,
+    doFetch: function() {
+      var self;
+      self = this;
+      return this.sendRequest("marathon_app_list", {
+        region_name: "us-east-1",
+        app_id: this.category
+      }).then(function(data) {
+        self.__fetchPromise = null;
+        return data[1].apps;
+      });
+    }
+  });
+});
+
+define('cloudres/mesos/CrClnMarathonGroup',["../CrCollection", "constant", "ApiRequest"], function(CrCollection, constant) {
+  return CrCollection.extend({
+
+    /* env:dev                                                         env:dev:end */
+    type: constant.RESTYPE.MRTHGROUP,
+    __selfParseData: true,
+    doFetch: function() {
+      var self;
+      self = this;
+      return this.sendRequest("marathon_group_list", {
+        region_name: "us-east-1",
+        app_id: this.category
+      }).then(function(data) {
+        return data[1].groups;
+      });
+    }
+  });
+});
+
+define('cloudres/CrBundle',["CloudResources", "./CrOpsResource", "./aws/CrClnSharedRes", "./aws/CrClnCommonRes", "./aws/CrClnAmi", "./aws/CrClnRds", "./aws/CrClnRdsParam", "./openstack/CrClnSharedRes", "./openstack/CrClnImage", "./openstack/CrClnNetwork", "./openstack/CrClnCommonRes", "./mesos/CrClnDockerImage", "./mesos/CrClnMarathonApp", "./mesos/CrClnMarathonGroup"], function(CloudResources) {
   return CloudResources;
 });
 

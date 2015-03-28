@@ -155,12 +155,9 @@ define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalpl
       return this.modal.toggleFooter(true);
     },
     remove: function() {
-      var _ref, _ref1;
-      if ((_ref = this.updateConfirmView) != null) {
+      var _ref;
+      if ((_ref = this.modal) != null) {
         _ref.close();
-      }
-      if ((_ref1 = this.modal) != null) {
-        _ref1.close();
       }
       return Backbone.View.prototype.remove.apply(this, arguments);
     },
@@ -220,16 +217,15 @@ define('credentialFormView',["constant", "ApiRequest", 'Credential', 'UI.modalpl
         _ref.close();
       }
       this.updateConfirmView = new Modal({
-        title: lang.IDE.UPDATE_CLOUD_CREDENTIAL,
+        title: 'Update Cloud Credential',
         template: MC.template.updateCredentialConfirm,
         confirm: {
-          text: lang.IDE.SETTINGS_LABEL_UPDATE_CONFIRM,
+          text: 'Confirm to Update',
           color: 'red'
         }
       });
       return this.updateConfirmView.on('confirm', function() {
-        this.updateCredential(true);
-        return this.updateConfirmView.close();
+        return this.updateCredential(true);
       }, this);
     },
     updateCredential: function(forceUpdate) {

@@ -188,7 +188,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
 
 
-  buffer += "<div class=\"option-group-head expand\">\n    Server Details<a href=\"#\" class=\"icon-syslog tooltip property-btn-get-system-log action-link\" data-tooltip=\"Get System Log\"></a>\n</div>\n<div class=\"option-group\">\n    <dl class=\"dl-vertical\">\n        <dt>Name</dt><dd>"
+  buffer += "<div class=\"option-group-head expand\">\n    Server Details<a href=\"#\" class=\"icon-syslog tooltip property-btn-get-system-log\" data-tooltip=\"Get System Log\"></a>\n</div>\n<div class=\"option-group\">\n    <dl class=\"dl-vertical\">\n        <dt>Name</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
     + "</dd>\n        <dt>ID</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))

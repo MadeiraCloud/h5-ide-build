@@ -77,7 +77,7 @@ function program9(depth0,data) {
 
   buffer += "<div class=\"modal-center-align-helper\">\n    <div class=\"modal-text-major\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_START_APP", {hash:{},data:data}))
-    + "</div>\n    <ul class=\"modal-list-items\">\n        ";
+    + "</div>\n    <ul class=\"mega-list-wraper-items\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
@@ -126,7 +126,7 @@ function program3(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.appName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_BODY_STOP_APP_RIGHT", {hash:{},data:data}))
-    + "</div>\n        <ul class=\"modal-list-items\">\n            ";
+    + "</div>\n        <ul class=\"mega-list-wraper-items\">\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasEC2Instance), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            ";
@@ -209,7 +209,7 @@ function program1(depth0,data) {
   stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "(<span class=\"db-stop-status\">"
+    + "(<span class=\"warning-text\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceStatus)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>)";
   return buffer;
@@ -305,7 +305,7 @@ function program8(depth0,data) {
   return ", ";
   }
 
-  buffer += "<div class=\"confirm-padding\">\n    ";
+  buffer += "<div class=\"mg20\">\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";

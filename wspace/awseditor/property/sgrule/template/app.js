@@ -6,11 +6,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n\n<div class=\"property-group-head truncate\"><span class=\"sg-color sg-color-rule-header\" style=\"background-color:"
+  buffer += "\n\n<div class=\"mega-list-wraper-header truncate\"><span class=\"sg-color sg-color-rule-header\" style=\"background-color:"
     + escapeExpression(((stack1 = (depth0 && depth0.sgColor)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></span>"
     + escapeExpression(((stack1 = (depth0 && depth0.groupName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n<div class=\"property-group\">\n  <ul class=\"sg-rule-list property-list\" id=\"sg-info-list\">\n    ";
+    + "</div>\n<div class=\"property-group\">\n  <ul class=\"mega-list-wraper\" id=\"sg-info-list\">\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.rules), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </ul>\n</div>\n";

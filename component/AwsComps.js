@@ -68,7 +68,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n            <label for=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\"></div>"
+    + "\"></label>\n        </div>\n    </td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n    <td>";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0['domain-name'])),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
@@ -3371,39 +3371,6 @@ define('component/awscomps/RdsPgTpl',['handlebars'], function(Handlebars){ var _
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <li class=\"item";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.DBParameterGroupFamily)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" tabindex=\"-1\">\n            <div class=\"manager-content-main\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.DBParameterGroupFamily)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.DBEngineVersionDescription)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n    </li>\n";
-  return buffer;
-  }
-function program2(depth0,data) {
-  
-  
-  return " selected";
-  }
-
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { return stack1; }
-  else { return ''; }
-  };
-TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
@@ -4855,9 +4822,9 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"one-cb\">\n            <label for=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n        </div>\n    </td>\n    <td><div class=\"manager-content-main\">"
+    + "\"></label>\n        </div>\n    </td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div></td>\n    <td>"
+    + "</td>\n    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.AllocatedStorage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " GiB</td>\n    <td>\n        <div class=\"manager-content-main\">";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.Status), "creating", {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
@@ -6275,7 +6242,7 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-required=\"true\" data-type=\"number\" autocomplete=\"off\" data-min=\"1150\" data-max=\"65535\"/>\n        </div>\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SECURITY_GROUP", {hash:{},data:data}))
-    + "</label>\n        <ul class=\"acl-sg-info-list property-list\" id=\"og-sg\">\n            ";
+    + "</label>\n        <ul class=\"acl-sg-info-list mega-list-wraper\" id=\"og-sg\">\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.sgs), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </ul>\n\n    </div>\n    ";
@@ -6284,7 +6251,7 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n            <li class=\"clearfix\">\n                <div class=\"checkbox-wrap col1\">\n                    <div class=\"checkbox\">\n                        <input type=\"checkbox\" ";
+  buffer += "\n            <li>\n                <div class=\"checkbox-wrap col1\">\n                    <div class=\"checkbox\">\n                        <input type=\"checkbox\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.used), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " data-uid=\""
@@ -7970,7 +7937,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		<header class=\"modal-list-header dbsgppp-az\">"
+  buffer += "\n		<header class=\"mega-list-wraper-header\">"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</header>\n		";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
@@ -7981,7 +7948,7 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		<section class=\"modal-list-body dbsgppp-subnet-list\">\n		  <div class=\"checkbox\">\n		   <input id=\"dbsgppp-"
+  buffer += "\n		<section class=\"mega-list-wraper-body\">\n		  <div class=\"checkbox dbsgppp-check\">\n		   <input id=\"dbsgppp-"
     + escapeExpression(((stack1 = (depth0 && depth0.idx)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"dbsgppp-subnet\" type=\"checkbox\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -7990,13 +7957,13 @@ function program2(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n		   <label for=\"dbsgppp-"
     + escapeExpression(((stack1 = (depth0 && depth0.idx)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n		  </div>\n		  <label class=\"dbsgppp-sbname\" for=\"dbsgppp-"
+    + "\"></label>\n		  </div>\n		  <div class=\"dbsgppp-sbname\" for=\"dbsgppp-"
     + escapeExpression(((stack1 = (depth0 && depth0.idx)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\n		  	<div class=\"dbsgppp-cidr\">("
     + escapeExpression(((stack1 = (depth0 && depth0.cidr)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</div>\n		  </label>\n\n		</section>\n		";
+    + ")</div>\n		  </div>\n\n		</section>\n		";
   return buffer;
   }
 function program3(depth0,data) {

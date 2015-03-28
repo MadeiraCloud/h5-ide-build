@@ -80,7 +80,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"text-center\">Attach the port to a server</div>";
+  return "<div>Attach the port to a server</div>";
   };
 TEMPLATE.unattached=Handlebars.template(__TEMPLATE__);
 

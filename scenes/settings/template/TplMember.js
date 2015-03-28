@@ -185,7 +185,7 @@ function program30(depth0,data) {
   buffer += "\n                                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.columns), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                            </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\">\n                        </tbody>\n                    </table>\n                    ";
+  buffer += "\n                            </tr>\n                        </thead>\n                        <tbody>\n                        </tbody>\n                    </table>\n                    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.useCustomScroll), {hash:{},inverse:self.program(30, program30, data),fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </div>\n</div>";

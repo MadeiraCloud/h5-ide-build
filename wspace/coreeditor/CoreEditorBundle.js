@@ -244,6 +244,9 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
     credentialId: function() {
       return this.__opsModel.credentialId();
     },
+    opsModel: function() {
+      return this.__opsModel;
+    },
     modeIsStack: function() {
       return this.__mode === Design.MODE.Stack;
     },
@@ -400,12 +403,15 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
         time_update: this.__opsModel.get("updateTime"),
         usage: this.__opsModel.get("usage"),
         version: OpsModel.LatestVersion,
+        host: attr.host,
         property: attr.property || {},
         description: attr.description,
         resource_diff: attr.resource_diff,
         agent: attr.agent,
         name: attr.name,
         stack_id: attr.stack_id,
+        type: attr.type,
+        framework: attr.framework,
         component: component_data,
         layout: layout_data
       };
@@ -499,13 +505,12 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
       return __modelClassMap[type];
     },
     modelClassForPorts: function(port1, port2) {
-      var type;
-      if (port1 < port2) {
-        type = port1 + ">" + port2;
-      } else {
-        type = port2 + ">" + port1;
+      var l;
+      l = __modelClassMap[port1 + ">" + port2];
+      if (l) {
+        return l;
       }
-      return __modelClassMap[type];
+      return __modelClassMap[port2 + ">" + port1];
     },
     lineModelClasses: function() {
       var cs, modelClass, type;
@@ -967,6 +972,7 @@ define('ComplexResModel',["Design", "ResourceModel", "constant"], function(Desig
      */
     type: "Framework_CR",
     constructor: function(attributes, options) {
+      var _base;
       if (attributes && attributes.parent) {
         attributes.__parent = attributes.parent;
         delete attributes.parent;
@@ -974,7 +980,9 @@ define('ComplexResModel',["Design", "ResourceModel", "constant"], function(Desig
       ResourceModel.call(this, attributes, options);
       if (attributes && attributes.__parent) {
         this.set('__parent', null);
-        attributes.__parent.addChild(this);
+        if (typeof (_base = attributes.__parent).addChild === "function") {
+          _base.addChild(this);
+        }
       }
       return null;
     },
@@ -1198,6 +1206,7 @@ define('ConnectionModel',["ResourceModel", "Design"], function(ResourceModel, De
   ConnectionModel = ResourceModel.extend({
     node_line: true,
     type: "Framework_CN",
+    directional: false,
     constructor: function(p1Comp, p2Comp, attr, option) {
 
       /* env:dev                                                                                                                                                                                                           env:dev:end */
@@ -1264,7 +1273,7 @@ define('ConnectionModel',["ResourceModel", "Design"], function(ResourceModel, De
             this.__port1Comp = p1Comp;
             this.__port2Comp = p2Comp;
             break;
-          } else if (def.port1.type === p2Comp.type && def.port2.type === p1Comp.type) {
+          } else if (!this.directional && def.port1.type === p2Comp.type && def.port2.type === p1Comp.type) {
             this.__portDef = def;
             this.__port1Comp = p2Comp;
             this.__port2Comp = p1Comp;
@@ -1382,7 +1391,7 @@ define('ConnectionModel',["ResourceModel", "Design"], function(ResourceModel, De
       return null;
     },
     extend: function(protoProps, staticProps) {
-      var child, def, t, tags, tmp, _i, _j, _len, _len1, _ref;
+      var child, def, t, tags, _i, _j, _len, _len1, _ref;
       tags = [];
       if (protoProps.portDefs) {
         if (!_.isArray(protoProps.portDefs)) {
@@ -1391,12 +1400,10 @@ define('ConnectionModel',["ResourceModel", "Design"], function(ResourceModel, De
         _ref = protoProps.portDefs;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           def = _ref[_i];
-          if (def.port1.name > def.port2.name) {
-            tmp = def.port1;
-            def.port1 = def.port2;
-            def.port2 = tmp;
-          }
           tags.push(def.port1.name + ">" + def.port2.name);
+          if (!protoProps.directional) {
+            tags.push(def.port2.name + ">" + def.port1.name);
+          }
         }
         if (!protoProps.type) {
           protoProps.type = tags[0];
@@ -1513,8 +1520,7 @@ define('GroupModel',["Design", "ComplexResModel"], function(Design, ComplexResMo
       children.splice(idx, 1);
       this.set("__children", children);
       child.off("destroy", this.removeChild, this);
-      child.attributes.__parent = null;
-      return null;
+      child.set("__parent", null);
     },
     children: function() {
       return this.get("__children") || [];
@@ -1636,7 +1642,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"string\" autofocus>\n</div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n    <label for=\"\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_USAGE", {hash:{},data:data}))
-    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">"
+    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\" id=\"importAsMesosWrap\">\n    <div class=\"checkbox\"><input id=\"importAsMesos\" type=\"checkbox\"><label for=\"importAsMesos\"></label></div>\n    <label for=\"importAsMesos\">Import as Mesos app</label>\n    <div class=\"modal-control-group import-as-mesos-wrap hide\">\n        <label for=\"\">Mesos Master Leader URL</label>\n        <input id=\"mesos-master-url\" class=\"input\" type=\"string\" autofocus=\"\">\n        <input class=\"input\" id=\"mesos-master-port\" type=\"text\" value=\"5050\"/>\n        <label for=\"\">Any Marathon Master URL</label>\n        <input id=\"marathon-master-url\" class=\"input\" type=\"string\" autofocus=\"\">\n        <input class=\"input\" id=\"marathon-master-port\" type=\"text\" value=\"8080\"/>\n    </div>\n\n</section>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.MONITOR_REPORT_EXTERNAL_RESOURCE", {hash:{},data:data}))
     + "</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.IF_RESOURCE_CHANGED_EMAIL_SENT", {hash:{},data:data}))
@@ -1727,26 +1733,6 @@ function program8(depth0,data) {
   return buffer;
   };
 TEMPLATE.appUpdateStatus=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this;
-
-function program1(depth0,data) {
-  
-  
-  return "<li><div class=\"pdr-3\"></div><div class=\"pdr-2\"></div></li>";
-  }
-
-  buffer += "<section class=\"process-detail\">\n  <header><div class=\"pdr-3\">STATUS</div><div class=\"pdr-1\">#</div><div class=\"pdr-2\">TASK</div></header>\n  <ul>";
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n</section>";
-  return buffer;
-  };
-TEMPLATE.detailFrame=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
@@ -2018,6 +2004,17 @@ define('CoreEditorView',["wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n
         children = children.children();
       }
       return null;
+    },
+    highLightModels: function(models) {
+      var oneTimeClicked, self;
+      self = this;
+      oneTimeClicked = function(evt) {
+        console.log("hide highlight.");
+        self.canvas.removeHighLight();
+        return $("body")[0].removeEventListener("click", oneTimeClicked, true);
+      };
+      $("body")[0].addEventListener("click", oneTimeClicked, true);
+      this.canvas.highLightModels(models);
     }
   });
 });
@@ -2277,7 +2274,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_3", {hash:{},data:data}))
     + "</tspan>\n    <tspan x=\"66\" y=\"107\">"
     + escapeExpression(helpers.i18n.call(depth0, "CANVAS.CVS_ASG_DROP_LC_4", {hash:{},data:data}))
-    + "</tspan>\n  </text>\n\n  <g id=\"asg_dragger\">\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\n  </g>\n\n  <g id=\"clone_indicator\" data-readonly=\"true\">\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\n  </g>\n\n  <g id=\"replica_dragger\">\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\n  </g>\n\n  <g id=\"restore_dragger\">\n    <rect x=\"34\" y=\"0\" width=\"22\" height=\"22\" rx=\"3\" class=\"restore-bg\"/>\n    <path d=\"M53.131,0C30.902,0,12.832,17.806,12.287,39.976H0l18.393,20.5l18.391-20.5H22.506C23.045,23.468,36.545,10.25,53.131,10.25  c16.93,0,30.652,13.767,30.652,30.75S70.061,71.75,53.131,71.75c-6.789,0-13.059-2.218-18.137-5.966l-7.029,7.521  C34.904,78.751,43.639,82,53.131,82C75.703,82,94,63.645,94,41S75.703,0,53.131,0z M49.498,19v23.45l15.027,15.024l4.949-4.949  L56.5,39.55V19H49.498z\" transform=\"scale(0.17) translate(215,28) rotate(0 822.5 296)\" stroke-width=\"0\" style=\"position: relative;\" />\n  </g>\n\n  <g id=\"sbg_info\" data-readonly=\"true\">\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\n  </g>\n\n  <g id=\"os_router\" data-readonly=\"true\">\n    <circle cx=\"40\" cy=\"40\" r=\"30\" fill=\"#D8DAF6\" stroke=\"#6A71BF\" stroke-width=\"1.5\"></circle>\n    <path d=\"M51.92 42.05l8.08 .03c1.1 0 2 -.88 2 -2 0 -1.1 -.9 -2 -2 -2l-7.82 -.03 2.3 -2.28c.78 -.78 .8 -2.04 0 -2.83 -.77 -.8 -2.04 -.8 -2.82 0L46 38.55c-.45 .43 -.65 1.02 -.6 1.6 -.05 .55 .14 1.14 .58 1.58l5.62 5.67c.78 .8 2.05 .8 2.84 .02 .8 -.78 .78 -2.05 0 -2.83l-2.52 -2.55zM28.07 37.95H20c-1.1 0 -2 .88 -2 2 0 1.1 .9 2 2 2h7.83l-2.3 2.28c-.77 .8 -.78 2.05 0 2.84 .8 .78 2.06 .77 2.84 0L34 41.4c.45 -.44 .65 -1.02 .6 -1.6 .05 -.56 -.15 -1.15 -.6 -1.6L28.38 32.6c-.78 -.8 -2.05 -.8 -2.83 -.02 -.8 .8 -.78 2.05 0 2.84l2.53 2.53zM38.12 24.54v8.07c0 1.1 .9 2 2 2s2 -.9 2 -2V24.8l2.3 2.3c.77 .77 2.04 .78 2.82 0 .78 -.8 .78 -2.06 0 -2.84L41.6 18.6c-.45 -.44 -1.03 -.64 -1.6 -.6 -.57 -.04 -1.15 .16 -1.6 .6l-5.64 5.64c-.78 .78 -.78 2.05 0 2.83 .78 .8 2.05 .78 2.83 0l2.52 -2.53zM41.88 55.46V47.4c0 -1.1 -.9 -2 -2 -2s-2 .9 -2 2v7.82l-2.3 -2.3c-.77 -.77 -2.04 -.78 -2.82 0 -.78 .8 -.78 2.06 0 2.84l5.65 5.65c.45 .44 1.03 .64 1.6 .6 .57 .04 1.15 -.16 1.6 -.6l5.64 -5.64c.78 -.78 .78 -2.05 0 -2.83 -.78 -.8 -2.05 -.78 -2.83 0l-2.52 2.53z\" fill=\"#6a71bf\"/>\n  </g>\n\n  <g id=\"os_pool\" data-readonly=\"true\">\n    <rect x=\"16\" y=\"16\" width=\"48\" height=\"48\" rx=\"6\" ry=\"6\" fill=\"#F8C775\" stroke=\"#F5A623\" stroke-width=\"2\"></rect>\n    <rect x=\"42\" y=\"42\" width=\"16\" height=\"16\" rx=\"2\" ry=\"2\" stroke-width=\"2\" stroke=\"#efaf47\" fill=\"none\"></rect>\n    <path d=\"M38 44c0-1.1-.9-2-2-2H24c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V44zm0-20c0-1.1-.9-2-2-2H24c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V24zm20 0c0-1.1-.9-2-2-2H44c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V24z\" fill=\"#f0b046\"/>\n  </g>\n\n  <path id=\"os_listener\" data-readonly=\"data-readonly\" d=\"M61.47 62.46c-.16.03-.3.04-.47.04-1.66 0-3-1.35-3-3v-18c0-9.94-8.06-18-18-18s-18 8.05-18 18v18c0 1.65-1.35 3-3 3-.16 0-.32 0-.47-.04-.17.03-.36.04-.54.04h-2c-2.2 0-4-1.8-4-4v-6c0-2.2 1.8-4 4-4v-7c0-13.26 10.75-24 24-24 13.26 0 24 10.74 24 24v7c2.22 0 4 1.8 4 4v6c0 2.2-1.8 4-4 4h-2c-.17 0-.36 0-.53-.04z\" fill=\"#f8c775\" stroke-width=\"2\" stroke=\"#f6a623\"/>\n\n  <g id=\"os_port\" data-readonly=\"data-readonly\">\n    <rect x=\"20\" y=\"22\" width=\"48\" height=\"32\" rx=\"2\" ry=\"2\" fill=\"#F1F6EC\" stroke=\"#a2c29c\" stroke-width=\"2\"></rect>\n    <path d=\"M50 53h12v6H50v-6zm-23 0h12v6H27v-6zM14 26h-3c-.55 0-1-.45-1-1v-2c0-.56.45-1 1-1h6c.55 0 1 .45 1 1v31c0 .55-.45 1-1 1h-2c-.56 0-1-.44-1-1V26z\" fill=\"#a2c29c\"/>\n  </g>\n\n  <g id=\"os_server\" data-readonly=\"data-readonly\">\n    <rect x=\"5\" y=\"5\" width=\"70\" height=\"70\" rx=\"12\" ry=\"12\" fill=\"#F0F3F8\" stroke=\"#4a90e2\" stroke-width=\"2\"></rect>\n    <path d=\"M5 44.5h70\" stroke=\"#4a90e2\" stroke-width=\"1\" fill=\"none\"/>\n  </g>\n\n</defs></svg>";
+    + "</tspan>\n  </text>\n\n  <g id=\"asg_dragger\">\n    <rect height=\"14\" width=\"14\" fill=\"transparent\" x=\"114\" y=\"3\"/>\n    <path d=\"M114.26 11.447 c-0.44 2.83 -0.252 5.113 -0.12 5.313 c0.204 0.398 4.473 0.24 5.512 -0.133 c0.86 -0.604 -0.623 -1.15 -1.094 -1.962 c0.471 -0.611 1.976 -2.352 2.324 -2.865 c-0.28 -1.65 -1.649 -1.818 -1.78 -1.76 c -0.13 0.06 -2.809 2.411 -2.809 2.411 c0 0 -0.925 -0.997 -1.292 -1.259 c-0.465 -0.322 -0.742 0.18 -0.742 0.254 l0 0z m13.482 -2.895 c0.437 -2.83 0.25 -5.115 0.118 -5.315 c-0.204 -0.396 -4.473 -0.227 -5.514 0.135 c-0.856 0.604 0.626 1.15 1.096 1.962 c-0.47 0.611 -1.976 2.352 -2.323 2.868 c0.293 1.648 1.648 1.815 1.778 1.758 c0.13 -0.06 2.805 -2.41 2.805 -2.41 c0.004 0 0.93 0.994 1.3 1.26 c0.461 0.32 0.74 -0.184 0.74 -0.26 l0 0Z\"/>\n  </g>\n\n  <g id=\"clone_indicator\" data-readonly=\"true\">\n    <rect fill=\"#000\" width=\"23\" height=\"23\" rx=\"4\" ry=\"4\"></rect>\n    <path d=\"M8 7c0-1.112.895-2 2-2h6c1.112 0 2 .895 2 2v6c0 1.112-.895 2-2 2v-6c0-1.103-.898-2-2-2h-6zm-1 1c-1.1 0-2 .887-2 2v6c0 1.1.887 2 2 2h6c1.1 0 2-.887 2-2v-6c0-1.1-.887-2-2-2h-6zm1 2c-.547 0-1 .451 -1 1v4c0 .547.45 1 1 1h4c.547 0 1 -.45 1-1v-4c0-.547-.45-1-1-1h-4z\" fill-rule=\"evenodd\" fill=\"#FFF\"></path>\n  </g>\n\n  <g id=\"replica_dragger\">\n    <rect x=\"34\" y=\"53\" width=\"22\" height=\"22\" rx=\"3\" class=\"replica-bg\"/>\n    <path d=\"M44.5 57c3.038 0 5.5 1.119 5.5 2.5s-2.462 2.5-5.5 2.5-5.5-1.119-5.5-2.5 2.462-2.5 5.5-2.5zm5.5 9h-3v2h3v2l4-3-4-3v2zm-1 3h-2c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h2c0-.552.448-1 1-1v-3h-.11c-.51 1.141-2.729 2-5.39 2-2.661 0-4.88-.859-5.39-2h-.11v8h.11c.51 1.141 2.729 2 5.39 2 2.069 0 3.859-.522 4.798-1.29-.184-.181-.298-.432-.298-.71z\"/>\n  </g>\n\n  <g id=\"restore_dragger\">\n    <rect x=\"34\" y=\"0\" width=\"22\" height=\"22\" rx=\"3\" class=\"restore-bg\"/>\n    <path d=\"M53.131,0C30.902,0,12.832,17.806,12.287,39.976H0l18.393,20.5l18.391-20.5H22.506C23.045,23.468,36.545,10.25,53.131,10.25  c16.93,0,30.652,13.767,30.652,30.75S70.061,71.75,53.131,71.75c-6.789,0-13.059-2.218-18.137-5.966l-7.029,7.521  C34.904,78.751,43.639,82,53.131,82C75.703,82,94,63.645,94,41S75.703,0,53.131,0z M49.498,19v23.45l15.027,15.024l4.949-4.949  L56.5,39.55V19H49.498z\" transform=\"scale(0.17) translate(215,28) rotate(0 822.5 296)\" stroke-width=\"0\" style=\"position: relative;\" />\n  </g>\n\n  <g id=\"sbg_info\" data-readonly=\"true\">\n    <circle cx=\"10\" cy=\"10\" r=\"6\"></circle>\n    <path fill=\"#fff\" d=\"M9,9 L9,14 L11,14 L11,9 L9,9 Z M10,8 C10.55,8 11,7.55 11,7 C11,6.448 10.55,6 10,6 C9.448,6 9,6.448 9,7 C9,7.55 9.448,8 10,8 Z\"></path>\n  </g>\n\n  <g id=\"os_router\" data-readonly=\"true\">\n    <circle cx=\"40\" cy=\"40\" r=\"30\" fill=\"#D8DAF6\" stroke=\"#6A71BF\" stroke-width=\"1.5\"></circle>\n    <path d=\"M51.92 42.05l8.08 .03c1.1 0 2 -.88 2 -2 0 -1.1 -.9 -2 -2 -2l-7.82 -.03 2.3 -2.28c.78 -.78 .8 -2.04 0 -2.83 -.77 -.8 -2.04 -.8 -2.82 0L46 38.55c-.45 .43 -.65 1.02 -.6 1.6 -.05 .55 .14 1.14 .58 1.58l5.62 5.67c.78 .8 2.05 .8 2.84 .02 .8 -.78 .78 -2.05 0 -2.83l-2.52 -2.55zM28.07 37.95H20c-1.1 0 -2 .88 -2 2 0 1.1 .9 2 2 2h7.83l-2.3 2.28c-.77 .8 -.78 2.05 0 2.84 .8 .78 2.06 .77 2.84 0L34 41.4c.45 -.44 .65 -1.02 .6 -1.6 .05 -.56 -.15 -1.15 -.6 -1.6L28.38 32.6c-.78 -.8 -2.05 -.8 -2.83 -.02 -.8 .8 -.78 2.05 0 2.84l2.53 2.53zM38.12 24.54v8.07c0 1.1 .9 2 2 2s2 -.9 2 -2V24.8l2.3 2.3c.77 .77 2.04 .78 2.82 0 .78 -.8 .78 -2.06 0 -2.84L41.6 18.6c-.45 -.44 -1.03 -.64 -1.6 -.6 -.57 -.04 -1.15 .16 -1.6 .6l-5.64 5.64c-.78 .78 -.78 2.05 0 2.83 .78 .8 2.05 .78 2.83 0l2.52 -2.53zM41.88 55.46V47.4c0 -1.1 -.9 -2 -2 -2s-2 .9 -2 2v7.82l-2.3 -2.3c-.77 -.77 -2.04 -.78 -2.82 0 -.78 .8 -.78 2.06 0 2.84l5.65 5.65c.45 .44 1.03 .64 1.6 .6 .57 .04 1.15 -.16 1.6 -.6l5.64 -5.64c.78 -.78 .78 -2.05 0 -2.83 -.78 -.8 -2.05 -.78 -2.83 0l-2.52 2.53z\" fill=\"#6a71bf\"/>\n  </g>\n\n  <g id=\"os_pool\" data-readonly=\"true\">\n    <rect x=\"16\" y=\"16\" width=\"48\" height=\"48\" rx=\"6\" ry=\"6\" fill=\"#F8C775\" stroke=\"#F5A623\" stroke-width=\"2\"></rect>\n    <rect x=\"42\" y=\"42\" width=\"16\" height=\"16\" rx=\"2\" ry=\"2\" stroke-width=\"2\" stroke=\"#efaf47\" fill=\"none\"></rect>\n    <path d=\"M38 44c0-1.1-.9-2-2-2H24c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V44zm0-20c0-1.1-.9-2-2-2H24c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V24zm20 0c0-1.1-.9-2-2-2H44c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V24z\" fill=\"#f0b046\"/>\n  </g>\n\n  <path id=\"os_listener\" data-readonly=\"true\" d=\"M61.47 62.46c-.16.03-.3.04-.47.04-1.66 0-3-1.35-3-3v-18c0-9.94-8.06-18-18-18s-18 8.05-18 18v18c0 1.65-1.35 3-3 3-.16 0-.32 0-.47-.04-.17.03-.36.04-.54.04h-2c-2.2 0-4-1.8-4-4v-6c0-2.2 1.8-4 4-4v-7c0-13.26 10.75-24 24-24 13.26 0 24 10.74 24 24v7c2.22 0 4 1.8 4 4v6c0 2.2-1.8 4-4 4h-2c-.17 0-.36 0-.53-.04z\" fill=\"#f8c775\" stroke-width=\"2\" stroke=\"#f6a623\"/>\n\n  <g id=\"os_port\" data-readonly=\"true\">\n    <rect x=\"20\" y=\"22\" width=\"48\" height=\"32\" rx=\"2\" ry=\"2\" fill=\"#F1F6EC\" stroke=\"#a2c29c\" stroke-width=\"2\"></rect>\n    <path d=\"M50 53h12v6H50v-6zm-23 0h12v6H27v-6zM14 26h-3c-.55 0-1-.45-1-1v-2c0-.56.45-1 1-1h6c.55 0 1 .45 1 1v31c0 .55-.45 1-1 1h-2c-.56 0-1-.44-1-1V26z\" fill=\"#a2c29c\"/>\n  </g>\n\n  <g id=\"os_server\" data-readonly=\"true\">\n    <rect x=\"5\" y=\"5\" width=\"70\" height=\"70\" rx=\"12\" ry=\"12\" fill=\"#F0F3F8\" stroke=\"#4a90e2\" stroke-width=\"2\"></rect>\n    <path d=\"M5 44.5h70\" stroke=\"#4a90e2\" stroke-width=\"1\" fill=\"none\"/>\n  </g>\n\n  <path id=\"marathon_app_title\" data-readonly=\"true\" d=\"M13 9l0 -1a3 3 0 0 1 3 -3l144 0a3 3 0 0 1 3 3l0 1z\"></path>\n\n  <path id=\"marathon_port\" d=\"M-6.953-5.975c0-1.106.637-1.366 1.41-.594l4.96 4.963C.195-.83.19.437-.583 1.21l-4.96 4.96c-.78.778-1.41.505-1.41-.593zM.76 6.27l5.015-4.86c.924-.663.92-1.977-.055-2.917L.76-6.467C-.014-7.24 5.652-1.47 5.652-1.47c.56.368.846 2.232.067 2.78z\"></path>\n\n</defs></svg>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('CanvasElement',["Design", "CanvasManager", "i18n!/nls/lang.js", "UI.modalplus", "backbone", "svg"], function(Design, CanvasManager, lang, Modal) {
@@ -2295,8 +2292,12 @@ define('CanvasElement',["Design", "CanvasManager", "i18n!/nls/lang.js", "UI.moda
       this.addView(this.create());
       this.render();
       this.listenTo(this.model, "change:name", this.render);
+      this.listenTo(this.model, "change:__parent", this.__updateTopLevel);
       this.listenModelEvents();
       this.ensureStickyPos();
+    },
+    __updateTopLevel: function() {
+      return this.canvas.markItemAsTopLevel(this, this.isTopLevel());
     },
     listenModelEvents: function() {},
     addView: function(dom) {
@@ -2740,7 +2741,10 @@ define('CanvasElement',["Design", "CanvasManager", "i18n!/nls/lang.js", "UI.moda
     },
     changeParent: function(newParent, x, y) {
       var parentModel, res;
-      if (newParent === this.parent() || newParent === null) {
+      if (!newParent) {
+        newParent = this.canvas.getSvgItem();
+      }
+      if (newParent === this.parent()) {
         if (this.model.x() === x && this.model.y() === y) {
           return;
         }
@@ -2751,9 +2755,6 @@ define('CanvasElement',["Design", "CanvasManager", "i18n!/nls/lang.js", "UI.moda
         notification("error", lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET);
         return;
       }
-      if (!this.parent() && newParent) {
-        return;
-      }
       parentModel = newParent.model;
       res = this.model.isReparentable(parentModel);
       if (_.isString(res)) {
@@ -2761,7 +2762,11 @@ define('CanvasElement',["Design", "CanvasManager", "i18n!/nls/lang.js", "UI.moda
         return;
       }
       if (res === true) {
-        parentModel.addChild(this.model);
+        if (parentModel) {
+          parentModel.addChild(this.model);
+        } else {
+          this.model.parent().removeChild(this.model);
+        }
         this.moveBy(x - this.model.x(), y - this.model.y());
       }
     },
@@ -3328,6 +3333,9 @@ define('CanvasView',["wspace/coreeditor/TplSvgDef", "CanvasElement", "CanvasMana
       }
       this.__toAddLines = null;
     },
+    items: function() {
+      return _.uniq(_.values(this.__itemMap));
+    },
     addSvgItem: function() {
       var SvgItemClass, item;
       SvgItemClass = CanvasElement.getClassByType("SVG");
@@ -3369,9 +3377,7 @@ define('CanvasView',["wspace/coreeditor/TplSvgDef", "CanvasElement", "CanvasMana
       }
       this.__itemMap[resourceModel.id] = item;
       this.__itemMap[item.cid] = item;
-      if (item.isTopLevel()) {
-        this.__itemTopLevel[item.isGroup() ? "push" : "unshift"](item);
-      }
+      this.markItemAsTopLevel(item, item.isTopLevel());
       if (resourceModel.node_line) {
         this.__itemLineMap[item.cid] = item;
       } else if (!resourceModel.node_group) {
@@ -3379,7 +3385,7 @@ define('CanvasView',["wspace/coreeditor/TplSvgDef", "CanvasElement", "CanvasMana
       }
     },
     removeItem: function(resourceModel) {
-      var idx, item;
+      var item;
       item = this.getItem(resourceModel.id);
       if (!item) {
         return;
@@ -3391,12 +3397,22 @@ define('CanvasView',["wspace/coreeditor/TplSvgDef", "CanvasElement", "CanvasMana
       delete this.__itemMap[item.cid];
       delete this.__itemLineMap[item.cid];
       delete this.__itemNodeMap[item.cid];
-      idx = this.__itemTopLevel.indexOf(item);
-      if (idx >= 0) {
-        this.__itemTopLevel.splice(idx, 1);
-      }
+      this.markItemAsTopLevel(item, false);
       item.remove();
       item.canvas = null;
+    },
+    markItemAsTopLevel: function(item, toplevel) {
+      var idx;
+      idx = this.__itemTopLevel.indexOf(item);
+      if (toplevel) {
+        if (idx < 0) {
+          this.__itemTopLevel[item.isGroup() ? "push" : "unshift"](item);
+        }
+      } else {
+        if (idx >= 0) {
+          this.__itemTopLevel.splice(idx, 1);
+        }
+      }
     },
     getItem: function(id) {
       return this.__itemMap[id];
@@ -3554,8 +3570,8 @@ define('CanvasView',["wspace/coreeditor/TplSvgDef", "CanvasElement", "CanvasMana
 
     /*
      * Highlight some items ( Implemented in CavasViewEffect )
-    hightLightItems  : ( items )->
-    removeHightLight : ()->
+    highLightItems  : ( items )->
+    removeHighLight : ()->
      */
   }, {
     GRID_WIDTH: 10,
@@ -4066,6 +4082,7 @@ define('wspace/coreeditor/CeSvg',["CanvasElement", "constant", "CanvasManager", 
 
     /* env:dev                                     env:dev:end */
     type: "SVG",
+    model: null,
     initialize: function(options) {
       this.canvas = options.canvas;
     },
@@ -4161,7 +4178,7 @@ define('wspace/coreeditor/CanvasViewConnect',["CanvasView", "Design", "CanvasMan
     $(document).off(".drawline");
     data = evt.data;
     data.context.__clearDragScroll();
-    data.context.removeHightLight();
+    data.context.removeHighLight();
     data.context.hideHintMessage();
     if (data.marker) {
       data.marker.remove();
@@ -4233,7 +4250,7 @@ define('wspace/coreeditor/CanvasViewConnect',["CanvasView", "Design", "CanvasMan
       x2: co.left + this.$el.outerWidth(),
       y2: co.top + this.$el.outerHeight()
     };
-    this.hightLightItems(targetItems);
+    this.highLightItems(targetItems);
     this.showHintMessage($port.attr("data-tooltip"));
     $.extend(d, {
       marker: marker,
@@ -5449,7 +5466,19 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
     }
     return rects.concat(cleanRects);
   };
-  CanvasViewProto.hightLightItems = function(items) {
+  CanvasViewProto.highLightModels = function(models) {
+    var items, self;
+    this.removeHighLight();
+    if (!_.isArray(models)) {
+      models = [models];
+    }
+    self = this;
+    items = _.map(models, function(m) {
+      return self.getItem(m.id);
+    });
+    this.highLightItems(items);
+  };
+  CanvasViewProto.highLightItems = function(items) {
     var canvasSize, filler, h, path, polygons, rects, w;
     rects = getNonOverlapRects(_.uniq(items));
     polygons = getPolygonsFromRect(rects);
@@ -5459,13 +5488,17 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
     h = canvasSize[1] * 10;
     filler = "M0,0L" + w + ",0L" + w + "," + h + "L0," + h + "Z";
     this.__highLightCliper = this.svg.clip().attr("id", "hlClipper").add(this.svg.path(filler + path).attr("clip-rule", "evenodd"));
-    this.__highLightRect = this.svg.rect(0, 0).attr({
-      id: "hlArea",
-      width: "100%",
-      height: "100%"
-    }).clipWith(this.__highLightCliper);
+    this.__highLightRect = this.svg.group().add([
+      this.svg.rect(0, 0).attr({
+        id: "hlArea",
+        width: "100%",
+        height: "100%"
+      }), this.svg.path(path).attr({
+        id: "hlAreaBorder"
+      })
+    ]).clipWith(this.__highLightCliper);
   };
-  CanvasViewProto.removeHightLight = function(items) {
+  CanvasViewProto.removeHighLight = function(items) {
     if (this.__highLightRect) {
       this.__highLightRect.remove();
     }
@@ -5778,21 +5811,43 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
   return StackView.extend({
     initialize: function() {
       StackView.prototype.initialize.apply(this, arguments);
-      this.$el.find(".OEPanelLeft").addClass("force-hidden").empty();
+      this.updateResourcePanel();
       this.toggleProcessing();
       this.updateProgress();
       this.listenTo(this.workspace.design, "change:mode", this.switchMode);
     },
+    updateResourcePanel: function() {
+      if (this.workspace.opsModel.type === OpsModel.Type.Mesos) {
+        return this.removeLeftPanel();
+      } else {
+        return this.renderMarathonApp();
+      }
+    },
+    renderMarathonApp: function() {
+      var _base;
+      if (typeof (_base = this.resourcePanel).switchPanel === "function") {
+        _base.switchPanel();
+      }
+      this.$('.sidebar-nav-resource').remove();
+      if (this.workspace.opsModel.id) {
+        return this.resourcePanel.loadMarathon(this.workspace.opsModel.getMarathonStackId());
+      }
+    },
     switchMode: function(mode) {
       this.toolbar.updateTbBtns();
-      this.statusbar.update();
+      if (this.statusbar.update) {
+        this.statusbar.update();
+      }
       if (mode === "appedit") {
         this.$el.find(".OEPanelLeft").removeClass("force-hidden");
         this.resourcePanel.render();
       } else {
-        this.$el.find(".OEPanelLeft").addClass("force-hidden").empty();
+        this.updateResourcePanel();
       }
       this.propertyPanel.openPanel();
+    },
+    removeLeftPanel: function() {
+      return this.$el.find(".OEPanelLeft").addClass("force-hidden").empty();
     },
     confirmImport: function() {
       var modal, self;
@@ -5811,7 +5866,13 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
           self.workspace.remove();
         },
         onConfirm: function() {
-          var $ipt, json;
+          var $ipt, json, newName;
+          newName = modal.tpl.find("#ImportSaveAppName").val();
+          $("ul.ws-tabs li.active").remove();
+          App.loadUrl("workspace/0f1bd360-c866-4852-94ec-a5c781f6a86f/ops/app-503dbed0");
+          $("ul.ws-tabs li").last().find("span").text(newName + " - app");
+          modal.close();
+          return false;
           $ipt = modal.tpl.find("#ImportSaveAppName");
           $ipt.parsley('custom', function(val) {
             var apps;
@@ -5840,6 +5901,7 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
             design.set("name", json.name);
             design.set("resource_diff", json.resource_diff);
             design.set("usage", json.usage);
+            self.updateResourcePanel();
             $("#OEPanelRight").trigger("REFRESH");
             return modal.close();
           }, function(err) {
@@ -5854,13 +5916,18 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
           });
         }
       });
+      modal.find("#importAsMesos").click(function() {
+        return $(".import-as-mesos-wrap").toggle($(this).is(":checked"));
+      });
     },
     toggleProcessing: function() {
       var opsModel, text;
       if (!this.$el) {
         return;
       }
-      this.statusbar.update();
+      if (this.statusbar.update) {
+        this.statusbar.update();
+      }
       this.$el.children(".ops-process").remove();
       opsModel = this.workspace.opsModel;
       if (!opsModel.isProcessing()) {
@@ -5891,14 +5958,8 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
     },
     updateProgress: function() {
       var $p, pp, pro;
-      if (!this.workspace.opsModel.isProcessing()) {
-        return;
-      }
-      $p = this.$el.find(".ops-process");
-      if (!$p.length) {
-        return;
-      }
       pp = this.workspace.opsModel.get("progress");
+      $p = this.$el.find(".ops-process");
       $p.toggleClass("has-progess", !!pp);
       if (this.__progress > pp) {
         $p.toggleClass("rolling-back", true);
@@ -5909,54 +5970,6 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
       $p.find(".bar").css({
         width: pro
       });
-      this.updateDetail();
-    },
-    updateDetail: function() {
-      var $children, $detail, $processEl, classMap, idx, notification, rawRequest, self, step, text, _i, _len, _ref;
-      $processEl = this.$el.find(".ops-process");
-      if (!$processEl.length) {
-        return;
-      }
-      notification = App.model.notifications().get(this.workspace.opsModel.id);
-      if (!notification) {
-        self = this;
-        App.model.notifications().once("add", function() {
-          return self.updateDetail();
-        });
-        return;
-      }
-      rawRequest = notification.raw();
-      $detail = $processEl.children(".process-detail");
-      if ($detail.length === 0) {
-        $detail = $(OpsEditorTpl.detailFrame(rawRequest.step || [])).appendTo($processEl);
-      }
-      $children = $detail.children("ul").children();
-      if (rawRequest.state === "Rollback") {
-        classMap = {
-          done: "pdr-3 done icon-success",
-          running: "pdr-3 rolling icon-pending",
-          pending: "pdr-3 rolledback icon-warning"
-        };
-      } else {
-        classMap = {
-          done: "pdr-3 done icon-success",
-          running: "pdr-3 running icon-pending",
-          pending: "pdr-3 pending"
-        };
-      }
-      _ref = rawRequest.step;
-      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-        step = _ref[idx];
-        if (step.length < 5) {
-          continue;
-        }
-        text = step[2] + " " + step[4];
-        if (step[3]) {
-          text += " (" + step[3] + ")";
-        }
-        $children.eq(idx).children(".pdr-2").text(text);
-        $children.eq(idx).children(".pdr-3").attr("class", classMap[step[1]]);
-      }
     },
     showUpdateStatus: function(error, loading) {
       var self;
@@ -6066,12 +6079,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       return this.design && this.design.modeIsAppEdit() && this.design.isModified();
     },
     initEditor: function() {
-      var self;
-      self = this;
-      this.listenTo(this.opsModel, "change:progress", function() {
-        var _ref;
-        return (_ref = self.view) != null ? _ref.updateProgress() : void 0;
-      });
       if (this.opsModel.isImported()) {
         this.updateTab();
         this.view.canvas.autoLayout();
@@ -6139,7 +6146,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.view.toggleProcessing();
       if (!this.diff()) {
         this.view.canvas.update();
-        this.view.propertyPanel.refresh();
       }
     },
     loadVpcResource: function() {
@@ -6178,6 +6184,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
       self = this;
+      this.view.listenTo(this.opsModel, "change:progress", this.view.updateProgress);
       this.opsModel.update(newJson, fastUpdate).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
@@ -6195,6 +6202,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = false;
+      this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
       if (err.error === ApiRequest.Errors.AppConflict) {
         msg = lang.NOTIFY.ERR_APP_UPDATE_FAILED_CONFLICT;
       } else {
@@ -6222,6 +6230,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = false;
+      this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
       this.view.showUpdateStatus();
       this.design.setMode(Design.MODE.App);
       this.design.reload();
@@ -6273,7 +6282,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
   });
 });
 
-define('CanvasLine',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
+define('CanvasLine',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang, SGRulePopup) {
   var CeLine, LineMaskToClear, determineAngle, flipRect, offsetRect, rotate, rotateRect, __determineAngle;
   LineMaskToClear = null;
   rotate = function(point, angle) {

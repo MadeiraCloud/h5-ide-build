@@ -112,9 +112,9 @@ function program10(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_TIT_RULE", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.component)),stack1 == null || stack1 === false ? stack1 : stack1.rule_number)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</span></header>\n  <article class=\"option-group\">\n    <div class=\"rule-list-sort property-control-group\">\n      <h5>"
+    + ")</span></header>\n  <article class=\"option-group\">\n    <div class=\"rule-list-sort property-control-group\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_RULE_SORT_BY", {hash:{},data:data}))
-    + "</h5>\n      <div class=\"selectbox\" id=\"acl-sort-rule-select\">\n        <div class=\"selection\">"
+    + "</label>\n      <div class=\"selectbox\" id=\"acl-sort-rule-select\">\n        <div class=\"selection\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_RULE_SORT_BY_NUMBER", {hash:{},data:data}))
     + "</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n          <li data-id=\"number\" class=\"item selected\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_RULE_SORT_BY_NUMBER", {hash:{},data:data}))
@@ -124,14 +124,14 @@ function program10(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_RULE_SORT_BY_DIRECTION", {hash:{},data:data}))
     + "</li>\n          <li data-id=\"source/destination\" class=\"item\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_RULE_SORT_BY_SRC_DEST", {hash:{},data:data}))
-    + "</li>\n        </ul>\n      </div>\n    </div>\n\n    <ul class=\"property-list acl-rule-list\" id=\"acl-rule-list\" >\n      ";
+    + "</li>\n        </ul>\n      </div>\n    </div>\n\n    <ul class=\"mega-list-wraper acl-rule-list\" id=\"acl-rule-list\" >\n      ";
   stack1 = helpers.each.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.component)),stack1 == null || stack1 === false ? stack1 : stack1.entrySet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n  </article>\n\n\n  <header class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_TIT_ASSOC", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.component)),stack1 == null || stack1 === false ? stack1 : stack1.asso_number)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</span></header>\n  <ul class=\"option-group property-list\">\n    ";
+    + ")</span></header>\n  <ul class=\"option-group mega-list-wraper\">\n    ";
   stack1 = helpers.each.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.component)),stack1 == null || stack1 === false ? stack1 : stack1.associationSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </ul>\n\n</article>";

@@ -1581,6 +1581,7 @@ var multiinputbox = {
     if ( !tmpl ) {
       var $clone = $("<p>").append($wrapper.children().eq(0).clone());
       $clone.find("input").removeAttr("value");
+      $clone.find(".multi-ipt-row").removeClass('template');
       tmpl = $clone.html();
       $wrapper.data("row-tmpl", tmpl);
     }
@@ -10310,12 +10311,9 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
       }
       this.tpl.find(".modal-body").html(this.option.$template);
       this.setElement(this.tpl);
-      this.isReady = false;
-      if (modals.length && !modals[modals.length - 1].isReady) {
+      if (modals.length && modals[modals.length - 1].isMoving && this.option.force) {
         console.warn("Sorry, But we are moving...");
-        if (this.option.force) {
-          modals[modals.length - 1].nextOptions.push(this.option);
-        }
+        modals[modals.length - 1].nextOptions.push(this.option);
         return this;
       }
       this.tpl.appendTo(this.wrap);
@@ -10343,9 +10341,8 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
         }, 300);
       }
       _.delay(function() {
-        self.resize();
-        return self.isReady = true;
-      }, 300);
+        return self.resize();
+      }, 400);
       _.delay(function() {
         return self.nextOptions.forEach(function(option) {
           return new Modal(option);

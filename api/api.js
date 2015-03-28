@@ -761,7 +761,33 @@ define('api/define/openstack/os',['ApiRequestDefs'], function( ApiRequestDefs ){
 
 });
 
-define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define/aws/aws', './define/aws/cloudwatch', './define/aws/ec2', './define/aws/elb', './define/aws/iam', './define/aws/opsworks', './define/aws/rds', './define/aws/sdb', './define/aws/sns', './define/aws/vpc', './define/openstack/cinder', './define/openstack/neutron', './define/openstack/nova', './define/openstack/glance', './define/openstack/os' ],function(){})
+define('api/define/marathon',['ApiRequestDefs'], function( ApiRequestDefs ){
+	var Apis = {
+		'marathon_app_list'                 : { type:'marathon', url:'/marathon/app/',	method:'list',	params:['username', 'session_id', 'app_id', 'marathon_app_id']   },
+		'marathon_app_list_version'         : { type:'marathon', url:'/marathon/app/',	method:'list_version',	params:['username', 'session_id', 'app_id', 'marathon_app_id', 'version']   },
+		'marathon_deployment_list'          : { type:'marathon', url:'/marathon/deployment/',	method:'list',	params:['username', 'session_id', 'app_id']   },
+		'marathon_deployment_delete'        : { type:'marathon', url:'/marathon/deployment/',	method:'delete',	params:['username', 'session_id', 'deployment_id']   },
+		'marathon_group_list'               : { type:'marathon', url:'/marathon/group/',	method:'list',	params:['username', 'session_id', 'app_id', 'group_id']   },
+		'marathon_images'                   : { type:'marathon', url:'/marathon/',	method:'images',	params:['username', 'session_id', 'sources', 'fields']   },
+		'marathon_marathon_info'            : { type:'marathon', url:'/marathon/marathon/',	method:'info',	params:['username', 'session_id', 'key_id', 'app_id']   },
+		'marathon_server_info'              : { type:'marathon', url:'/marathon/server/',	method:'info',	params:['username', 'session_id', 'app_id']   },
+		'marathon_server_leader'            : { type:'marathon', url:'/marathon/server/',	method:'leader',	params:['username', 'session_id', 'app_id', 'new_election']   },
+		'marathon_subscription_list'        : { type:'marathon', url:'/marathon/subscription/',	method:'list',	params:['username', 'session_id', 'app_id']   },
+		'marathon_subscription_register'    : { type:'marathon', url:'/marathon/subscription/',	method:'register',	params:['username', 'session_id', 'app_id', 'callback_url']   },
+		'marathon_task_list'                : { type:'marathon', url:'/marathon/task/',	method:'list',	params:['username', 'session_id', 'app_id', 'marathon_app_id', 'task_id']   },
+		'marathon_task_kill'                : { type:'marathon', url:'/marathon/task/',	method:'kill',	params:['username', 'session_id', 'app_id', 'marathon_app_id', 'task_id']   },
+		'marathon_task_queue'               : { type:'marathon', url:'/marathon/task/',	method:'queue',	params:['username', 'session_id', 'app_id']   },
+	}
+
+	for ( var i in Apis ) {
+		/* env:dev                                                                                       nv:dev:end */
+		ApiRequestDefs.Defs[ i ] = Apis[ i ];
+	}
+
+});
+
+define('api/ApiBundle',[ './define/forge', './define/aws/autoscaling', './define/aws/aws', './define/aws/cloudwatch', './define/aws/ec2', './define/aws/elb', './define/aws/iam', './define/aws/opsworks', './define/aws/rds', './define/aws/sdb', './define/aws/sns', './define/aws/vpc', './define/openstack/cinder', './define/openstack/neutron', './define/openstack/nova', './define/openstack/glance', './define/openstack/os', './define/marathon' ],function(){})
+
 ;
 define('ApiRequest',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHandlers", "api/ApiBundle", "MC"], function(ApiDefination, ApiErrors, ApiHandlers) {
 
@@ -872,7 +898,7 @@ define('ApiRequest',["ApiRequestDefs", "api/ApiRequestErrors", "api/ApiRequestHa
       console.error("Cannot find defination of the api:", apiName);
       return;
     }
-    if (ApiDef.type !== "aws" && ApiDef.type !== "forge") {
+    if (ApiDef.type !== "aws" && ApiDef.type !== "forge" && ApiDef.type !== "marathon") {
       console.error("Cannot send non-aws request(" + apiName + ") by using `ApiRequest`");
       return;
     }

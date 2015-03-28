@@ -258,7 +258,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RESOURCES_APP_CHANGED", {hash:{},data:data}))
     + "</p>\n	<h5>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.WHAT_HAVE_BEEN_CHANGED", {hash:{},data:data}))
-    + "</h5>\n	<div class=\"scroll-wrap scroll-wrap-res-diff\" style=\"max-height: 350px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<article class=\"content_wrap scroll-content\"></article>\n	</div>\n</div>";
+    + "</h5>\n	<div class=\"scroll-wrap scroll-wrap-res-diff\" style=\"max-height: 350px;\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<article class=\"content-wrap scroll-content\"></article>\n	</div>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);

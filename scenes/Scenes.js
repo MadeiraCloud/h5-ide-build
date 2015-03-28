@@ -114,11 +114,11 @@ function program14(depth0,data) {
   return buffer;
   }
 
-  buffer += "<aside class=\"header-popup hp-asset-list\">\n  <nav>\n    <button class=\"off-canvas-tab\" data-id=\"app\">"
+  buffer += "<aside class=\"header-popup ph-asset-list\">\n  <nav>\n    <button class=\"off-canvas-tab\" data-id=\"app\">"
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_APPS", {hash:{},data:data}))
     + "</button>\n    <button class=\"off-canvas-tab selected\" data-id=\"stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "NAV_TIT_STACKS", {hash:{},data:data}))
-    + "</button>\n  </nav>\n  <div class=\"hp-asset-list-wrap\">\n    <ul data-id=\"app\" class=\"hide\">\n      ";
+    + "</button>\n  </nav>\n  <div class=\"ph-asset-list-wrap\">\n    <ul data-id=\"app\" class=\"hide\">\n      ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n    <ul data-id=\"stack\">\n      ";
@@ -156,7 +156,7 @@ function program2(depth0,data) {
   return " selected";
   }
 
-  buffer += "<ul class=\"header-popup hp-project-list\">\n  ";
+  buffer += "<ul class=\"header-popup ph-project-list\">\n  ";
   stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  <li class=\"create-new-project padding icon-add\">Create New Workspace</li>\n</ul>";
@@ -171,7 +171,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"header-popup hp-notify-list\">\n  <ul></ul>\n  <div class=\"hp-notify-list-empty\">No news is good news.</div>\n</div>";
+  return "<div class=\"header-popup ph-notify-list\">\n  <ul></ul>\n  <div class=\"ph-notify-list-empty\">No news is good news.</div>\n</div>";
   };
 TEMPLATE.notifyList=Handlebars.template(__TEMPLATE__);
 
@@ -190,7 +190,7 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += " <p class=\"hp-notify-error\">"
+  buffer += " <p class=\"ph-notify-error\">"
     + escapeExpression(((stack1 = (depth0 && depth0.error)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</p> ";
   return buffer;
@@ -226,7 +226,7 @@ function program5(depth0,data) {
     + "</a></p>\n\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.error), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  <p class=\"hp-notify-timestamp\">"
+  buffer += "\n  <p class=\"ph-notify-timestamp\">"
     + escapeExpression(((stack1 = (depth0 && depth0.time)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " <span>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.duration), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
@@ -258,29 +258,29 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_NAME", {hash:{},data:data}))
     + "</label>\n  <input type=\"text\" class=\"input\" id=\"new-project-name\" data-required=\"true\" required>\n  <div class=\"new-project-billing-wrap\">\n    <h4>"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING", {hash:{},data:data}))
-    + "</h4>\n    <span class=\"new-project-support tooltip icon-password\" data-tooltip=\""
+    + "</h4>\n    <span class=\"billing-info-tip tooltip icon-password\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT_TIT", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT", {hash:{},data:data}))
     + "</span>\n    <div class=\"new-project-info\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_TIP", {hash:{},data:data}))
-    + "</div>\n    <div class=\"new-project-err warning-red\"></div>\n    <div class=\"new-project-item new-project-item-owner\">\n      <label for=\"new-project-fn\">"
+    + "</div>\n    <div class=\"billing-info-err warning-red\"></div>\n    <div class=\"billing-info-item billing-info-item-owner\">\n      <label for=\"new-project-fn\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_OWNER", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-fn\" type=\"text\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_FIRST_NAME", {hash:{},data:data}))
     + "\" data-required=\"true\">\n      <input class=\"input\" id=\"new-project-ln\" type=\"text\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_LAST_NAME", {hash:{},data:data}))
-    + "\" data-required=\"true\">\n    </div>\n    <div class=\"new-project-item new-project-item-email\">\n      <label for=\"new-project-email\">"
+    + "\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-email\">\n      <label for=\"new-project-email\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_EMAIL", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-email\" type=\"text\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_PL_EMAIL", {hash:{},data:data}))
-    + "\" data-required=\"true\">\n    </div>\n    <div class=\"new-project-item new-project-item-card\">\n      <label for=\"new-project-card\">"
+    + "\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-card\">\n      <label for=\"new-project-card\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CARD_NAME", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-card\" type=\"text\" data-required=\"true\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_PL_CARD_NAME", {hash:{},data:data}))
-    + "\">\n    </div>\n    <div class=\"new-project-item new-project-item-cvv\">\n      <label for=\"new-project-cvv\">"
+    + "\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-cvv\">\n      <label for=\"new-project-cvv\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CARD_CVV", {hash:{},data:data}))
-    + "</label>\n      <input class=\"input\" id=\"new-project-cvv\"  type=\"text\" data-required=\"true\">\n    </div>\n    <div class=\"new-project-item new-project-item-date\">\n      <label for=\"new-project-date\">"
+    + "</label>\n      <input class=\"input\" id=\"new-project-cvv\"  type=\"text\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-date\">\n      <label for=\"new-project-date\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_EXPRIATION", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-date\" type=\"text\" placeholder=\"MM/YYYY\" data-required=\"true\">\n    </div>\n  </div>\n  <div class=\"modal-footer\">\n    <button class=\"btn new-project-create btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "LBL_CREATE", {hash:{},data:data}))
@@ -298,23 +298,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<section class=\"update-payment-wrap\" data-bind=\"true\">\n    <div class=\"update-payment-err warning-red\"></div>\n    <span class=\"new-project-support tooltip icon-password\" data-tooltip=\""
+  buffer += "<section class=\"update-payment-wrap\" data-bind=\"true\">\n    <div class=\"update-payment-err billing-info-err warning-red\"></div>\n    <span class=\"billing-info-tip tooltip icon-password\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT_TIT", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CHARGIFY_SUPPORT", {hash:{},data:data}))
-    + "</span>\n    <div class=\"new-project-item new-project-item-owner\">\n      <label for=\"new-project-fn\">"
+    + "</span>\n    <div class=\"billing-info-item billing-info-item-owner\">\n      <label for=\"new-project-fn\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_BILLING_OWNER", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-fn\" type=\"text\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_FIRST_NAME", {hash:{},data:data}))
     + "\" data-required=\"true\">\n      <input class=\"input\" id=\"new-project-ln\" type=\"text\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_LAST_NAME", {hash:{},data:data}))
-    + "\" data-required=\"true\">\n    </div>\n    <div class=\"new-project-item new-project-item-card\">\n      <label for=\"new-project-card\">"
+    + "\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-card\">\n      <label for=\"new-project-card\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CARD_NAME", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-card\" type=\"text\" data-required=\"true\" placeholder=\""
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_PL_CARD_NAME", {hash:{},data:data}))
-    + "\">\n    </div>\n    <div class=\"new-project-item new-project-item-cvv\">\n      <label for=\"new-project-cvv\">"
+    + "\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-cvv\">\n      <label for=\"new-project-cvv\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_CARD_CVV", {hash:{},data:data}))
-    + "</label>\n      <input class=\"input\" id=\"new-project-cvv\"  type=\"text\" data-required=\"true\">\n    </div>\n    <div class=\"new-project-item new-project-item-date\">\n      <label for=\"new-project-date\">"
+    + "</label>\n      <input class=\"input\" id=\"new-project-cvv\"  type=\"text\" data-required=\"true\">\n    </div>\n    <div class=\"billing-info-item billing-info-item-date\">\n      <label for=\"new-project-date\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_CREATE_PROJECT_EXPRIATION", {hash:{},data:data}))
     + "</label>\n      <input class=\"input\" id=\"new-project-date\" type=\"text\" placeholder=\"MM/YYYY\" data-required=\"true\">\n    </div>\n    <div class=\"update-payment-ctrl\">\n        <button class=\"btn btn-blue update-payment-done\">"
     + escapeExpression(helpers.i18n.call(depth0, "LBL_DONE", {hash:{},data:data}))
@@ -361,7 +361,7 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
     create: function() {
       var $create, $cvv, $email, $expire, $firstname, $lastname, $name, $number, expire, expireAry, modal, valid;
       modal = this.modal;
-      modal.tpl.find(".new-project-err").hide();
+      modal.tpl.find(".billing-info-err").hide();
       $create = modal.tpl.find(".new-project-create");
       $name = modal.tpl.find("#new-project-name");
       $firstname = modal.tpl.find("#new-project-fn");
@@ -421,7 +421,7 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
           try {
             msgObj = JSON.parse(error.result);
             if (_.isArray(msgObj.errors)) {
-              modal.tpl.find(".new-project-err").show().html(msgObj.errors.join('<br/>'));
+              modal.tpl.find(".billing-info-err").show().html(msgObj.errors.join('<br/>'));
             }
           } catch (_error) {
             err = _error;
@@ -493,7 +493,7 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       $tgt.parent().children().removeClass("selected");
       $tgt.addClass("selected");
       id = $tgt.attr("data-id");
-      this.$el.find(".hp-asset-list-wrap").children().hide().filter("[data-id='" + id + "']").show();
+      this.$el.find(".ph-asset-list-wrap").children().hide().filter("[data-id='" + id + "']").show();
       this.showApp = id === "app";
     },
     render: function() {
@@ -702,7 +702,7 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       for (idx = _i = 0, _len = unread.length; _i < _len; idx = ++_i) {
         n = unread[idx];
         data.opsModel = n.target();
-        if (ws && ws.isWorkingOn(data)) {
+        if (ws.isWorkingOn(data)) {
           n.markAsRead();
           unread.splice(idx, 1);
           break;
@@ -2160,7 +2160,7 @@ function program16(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "STATUS", {hash:{},data:data}))
     + "</th>\n                            <th data-row-type=\"string\" style=\"width:25%;\">"
     + escapeExpression(helpers.i18n.call(depth0, "ACTION", {hash:{},data:data}))
-    + "</th>\n                        </tr>\n                        </thead>\n                    </table>\n                    <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <table class=\"table\">\n                                <thead>\n                                <tr>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                </tr>\n                                </thead>\n                                <tbody class=\"t-m-content\">\n                                ";
+    + "</th>\n                        </tr>\n                        </thead>\n                    </table>\n                    <div class=\"scroll-wrap\" style=\"max-height:200px;\">\n                        <div class=\"scrollbar-veritical-wrap\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n                        <div class=\"scroll-content\">\n                            <table class=\"table\">\n                                <thead>\n                                <tr>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                    <th style=\"width: 25%\">\n                                        <div class=\"th-inner\"></div>\n                                    </th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.paymentHistory), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                                </tbody>\n                            </table>\n                        </div>\n                    </dd>\n                ";
@@ -2178,7 +2178,7 @@ function program17(depth0,data) {
     + "</td>\n                                        <td>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.success), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n                                        <td>\n                                            <a class=\"payment-receipt link-blue\" href=\"#\">"
+  buffer += "</td>\n                                        <td>\n                                            <a class=\"payment-receipt\" href=\"#\">"
     + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_VIEW_RECEIPT", {hash:{},data:data}))
     + "</a></td>\n                                    </tr>\n                                ";
   return buffer;
@@ -2220,7 +2220,7 @@ function program22(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_CANCEL", {hash:{},data:data}))
     + "</button>\n            </div>\n        </dd>\n    </dl>\n    <dl class=\"settings-item credit-card-info\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "CREDIT_CARD_INFORMATION", {hash:{},data:data}))
-    + "</dt>\n        <dd>\n            <div class=\"payment-credit-middle\">\n\n            </div>\n            <div class=\"credit-meta\">\n                <p class=\"payment-number\">";
+    + "</dt>\n        <dd>\n            <div class=\"payment-credit-middle payment-credit-card\">\n\n            </div>\n            <div class=\"credit-meta\">\n                <p class=\"payment-number\">";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.paymentUpdate)),stack1 == null || stack1 === false ? stack1 : stack1.cardNumber), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</p>\n                ";
@@ -2438,7 +2438,7 @@ define('scenes/settings/views/BillingView',['backbone', "../template/TplBilling"
       var $cvv, $expire, $firstname, $lastname, $number, $updateBtn, attributes, expire, expireAry, project_id, that, valid, wrap;
       that = this;
       wrap = this.$el.find(".update-payment-wrap");
-      wrap.find(".new-project-err").hide();
+      wrap.find(".billing-info-err").hide();
       $updateBtn = that.$el.find(".update-payment-done");
       $firstname = wrap.find("#new-project-fn");
       $lastname = wrap.find("#new-project-ln");
@@ -3355,7 +3355,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <li class=\"aws-credential\">\n\n            <div class=\"credential-name\">";
+  buffer += "\n        <li class=\"aws-credential\">\n            \n            <div class=\"credential-name\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isDemo), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n            <div class=\"credential-describe\">\n                ";
@@ -3416,15 +3416,24 @@ function program15(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ">"
     + escapeExpression(helpers.i18n.call(depth0, "HEAD_BTN_UPDATE", {hash:{},data:data}))
-    + "</li>\n                <li class=\"delete-link icon-delete\" data-id="
+    + "</li>\n                ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.needed), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </ul>\n            ";
+  return buffer;
+  }
+function program16(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <li class=\"delete-link icon-delete\" data-id="
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ">"
     + escapeExpression(helpers.i18n.call(depth0, "CFM_BTN_REMOVE", {hash:{},data:data}))
-    + "</li>\n            </ul>\n            ";
+    + "</li>\n                ";
   return buffer;
   }
 
-function program17(depth0,data) {
+function program18(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <button class=\"btn btn-primary setup-credential\">"
@@ -3433,7 +3442,7 @@ function program17(depth0,data) {
   return buffer;
   }
 
-function program19(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <div class=\"demo-note\">\n        "
@@ -3449,10 +3458,10 @@ function program19(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.credentials), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.addable), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.addable), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDemo), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasDemo), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
   return buffer;
@@ -3468,7 +3477,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"cred-setup-msg warning-red empty-hide\"></div>\n<div class=\"modal-text-major\">\n    "
     + escapeExpression(helpers.i18n.call(depth0, "ARE_YOU_SURE_YOU_WANT_TO_REMOVE_XXX", (depth0 && depth0.name), {hash:{},data:data}))
-    + "\n    <p class=\"warning-text mgt-10px\">\n       "
+    + "\n    <p class=\"warning-text mgt10\">\n       "
     + escapeExpression(helpers.i18n.call(depth0, "REMOVE_CREDENTIAL_CONFIRM_TIPS", {hash:{},data:data}))
     + "\n    </p>\n</div>";
   return buffer;
@@ -3547,6 +3556,9 @@ define('scenes/settings/views/ProviderCredentialView',['constant', 'i18n!/nls/la
         json.isAdmin = data.isAdmin;
         json.providerName = c.getProviderName();
         json.name = json.alias || json.providerName;
+        json.needed = applist.some(function(app) {
+          return (app != null ? app.get('provider') : void 0) === json.provider;
+        });
         if (json.isDemo) {
           data.hasDemo = true;
         }
@@ -3594,17 +3606,12 @@ define('scenes/settings/views/ProviderCredentialView',['constant', 'i18n!/nls/la
         var _ref;
         return (_ref = that.removeConfirmView) != null ? _ref.close() : void 0;
       }, function(error) {
-        var credName, message;
-        if (error.error === ApiRequest.Errors.ChangeCredConfirm) {
-          message = lang.IDE.CRED_REMOVE_FAILD_CAUSEDBY_EXIST_APP;
-        } else {
-          message = lang.IDE.SETTINGS_ERR_CRED_REMOVE;
-        }
+        var credName;
         credName = credential.getProviderName();
         that.stopModalLoading(that.removeConfirmView, TplCredential.removeConfirm({
           name: credName
         }));
-        return that.showModalError(that.removeConfirmView, message);
+        return that.showModalError(that.removeConfirmView, lang.IDE.SETTINGS_ERR_CRED_REMOVE);
       });
     },
     showRemoveConfirmModel: function(e) {

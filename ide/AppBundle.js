@@ -48,7 +48,7 @@ define('ide/Websocket',["Meteor", "backbone", "event", "MC"], function(Meteor, B
     setTimeout((function(_this) {
       return function() {
         _this.shouldNotify = true;
-        if (!_this.connection.status().connected) {
+        if (!_this.connection.status.connected) {
           return _this.statusChanged();
         }
       };
@@ -489,7 +489,8 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
   KnownOpsModelClass = {};
   OpsModelType = {
     OpenStack: "OpenstackOps",
-    Amazon: "AwsOps"
+    Amazon: "AwsOps",
+    Mesos: "Mesos"
   };
   OpsModelState = {
     UnRun: 0,
@@ -545,6 +546,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       return Backbone.Model.apply(this, arguments);
     },
     initialize: function(attr, options) {
+      this.__setJsonType(options || {});
       if (options && options.jsonData) {
         this.__setJsonData(options.jsonData);
       }
@@ -645,6 +647,9 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
     getMsrId: function() {
       return this.get("importMsrId") || void 0;
     },
+    getMarathonStackId: function() {
+      return 'stack-334a97bd';
+    },
     getThumbnail: function() {
       return ThumbUtil.fetch(this.get("id"));
     },
@@ -657,7 +662,8 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       }
     },
     getJsonData: function() {
-      return {
+      var base;
+      base = {
         id: this.get("id") || "",
         name: this.get("name"),
         region: this.get("region"),
@@ -668,13 +674,20 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         description: this.get("description"),
         property: {
           stoppable: this.get("stoppable")
-        },
-        resource_diff: this.__jsonData.resource_diff,
-        component: this.__jsonData.component,
-        layout: this.__jsonData.layout,
-        agent: this.__jsonData.agent,
-        stack_id: this.__jsonData.stack_id
+        }
       };
+      if (this.__jsonData) {
+        return _.extend(base, {
+          resource_diff: this.__jsonData.resource_diff,
+          component: this.__jsonData.component,
+          layout: this.__jsonData.layout,
+          agent: this.__jsonData.agent,
+          stack_id: this.__jsonData.stack_id,
+          host: this.__jsonData.host,
+          type: this.__jsonData.type,
+          framework: this.__jsonData.framework
+        });
+      }
     },
     fetchJsonData: function() {
       return this.__fjdImport(this) || this.__fdjLocalInit(this) || this.__fjdStack(this) || this.__fjdApp(this);
@@ -772,6 +785,9 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
           tag: App.user.get("tag")
         };
       }
+      if (json.type) {
+        this.__setJsonType(json);
+      }
       if (!json.property) {
         json.property = {
           stoppable: true
@@ -807,7 +823,10 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         resource_diff: json.resource_diff,
         component: json.component,
         layout: json.layout,
-        agent: json.agent
+        agent: json.agent,
+        host: json.host,
+        type: this.__jsonType,
+        framework: this.__jsonFramework
       };
       stoppable = ((_ref = json.property) != null ? _ref.stoppable : void 0) || true;
       this.set({
@@ -819,6 +838,22 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         updateTime: json.time_update
       });
       return this;
+    },
+    __setJsonType: function(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      this.__jsonType = opts.type || "aws";
+      this.__jsonFramework = opts.framework || null;
+    },
+    getJsonType: function() {
+      return this.__jsonType;
+    },
+    getJsonFramework: function() {
+      return this.__jsonFramework;
+    },
+    isMesos: function() {
+      return this.getJsonType() === "mesos";
     },
     save: function(newJson, thumbnail) {
       var d, nameClash, self;
@@ -1296,17 +1331,6 @@ define('ide/submodels/Notification',["OpsModel", "constant", "backbone"], functi
     isNew: function() {
       return this.get("isNew");
     },
-    raw: function() {
-      var key, req, _ref;
-      _ref = App.WS.collection.request._collection.docs || {};
-      for (key in _ref) {
-        req = _ref[key];
-        if (req.id === this.requestId) {
-          return req.dag;
-        }
-      }
-      return null;
-    },
     markAsRead: function() {
       this.attributes.isNew = false;
     },
@@ -1322,7 +1346,6 @@ define('ide/submodels/Notification',["OpsModel", "constant", "backbone"], functi
     updateWithRequest: function(req) {
       var ab, duration, error, i, progress, state, step, toStateIndex, totalSteps, _i, _len, _ref;
       console.info("Updating notification", this, req);
-      this.requestId = req.id;
       if (req.time_submit < this.get("startTime")) {
         console.info("Ingore notification since the req is old", this, req);
         return;
@@ -2229,14 +2252,17 @@ define('Project',["ApiRequest", "ProjectLog", "ide/submodels/OpsCollection", "Op
         throw err;
       });
     },
-    createStack: function(region, provider) {
+    createStack: function(region, provider, attr) {
       if (provider == null) {
         provider = Credential.PROVIDER.AWSGLOBAL;
+      }
+      if (attr == null) {
+        attr = {};
       }
       return this.stacks().add(new OpsModel({
         region: region,
         provider: provider
-      }));
+      }, attr));
     },
     createStackByJson: function(json, updateLayout) {
       if (updateLayout == null) {
@@ -2752,7 +2778,6 @@ define('ide/User',["ApiRequest", "backbone", "crypto"], function(ApiRequest) {
     },
     logout: function() {
       var cValue, ckey, def, domain, _ref;
-      $("#GlobalLoading").show();
       domain = {
         "domain": window.location.hostname.replace("ide", ""),
         "path": "/"
@@ -2766,7 +2791,6 @@ define('ide/User',["ApiRequest", "backbone", "crypto"], function(ApiRequest) {
         $.removeCookie(ckey, domain);
         $.removeCookie(ckey, def);
       }
-      return ApiRequest("session_logout");
     },
     changePassword: function(oldPwd, newPwd) {
       return ApiRequest("account_update_account", {
@@ -3095,6 +3119,15 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
       return void 0;
     },
     __defaultJson: function() {
+      var jsonType;
+      jsonType = this.getJsonType();
+      if (jsonType === "aws") {
+        return this.___defaultJson();
+      } else {
+        return this.___mesosJson();
+      }
+    },
+    ___defaultJson: function() {
       var comp, component, id, json, l, layout, vpcId, vpcRef;
       json = OpsModel.prototype.__defaultJson.call(this);
       vpcId = MC.guid();
@@ -3267,6 +3300,942 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
         }
       }
       return json;
+    },
+    ___mesosJson: function() {
+      var amiForEachRegion, component, componentJson, componentKeys, framework, imageId, json, keys, layout, layoutJson, layoutKeys, regionName;
+      json = OpsModel.prototype.__defaultJson.call(this);
+      amiForEachRegion = [
+        {
+          "region": "us-east-1",
+          "imageId": "ami-9ef278f6"
+        }, {
+          "region": "us-west-1",
+          "imageId": "ami-353f2970"
+        }, {
+          "region": "eu-west-1",
+          "imageId": "ami-1a92266d"
+        }, {
+          "region": "us-west-2",
+          "imageId": "ami-fba3e8cb"
+        }, {
+          "region": "eu-central-1",
+          "imageId": "ami-929caa8f"
+        }, {
+          "region": "ap-southeast-2",
+          "imageId": "ami-5fe28d65"
+        }, {
+          "region": "ap-northeast-1",
+          "imageId": "ami-9d7f479c"
+        }, {
+          "region": "ap-southeast-1",
+          "imageId": "ami-a6a083f4"
+        }, {
+          "region": "sa-east-1",
+          "imageId": "ami-c79e28da"
+        }
+      ];
+      framework = this.getJsonFramework() ? ["marathon"] : [];
+      imageId = (_.findWhere(amiForEachRegion, {
+        region: this.get("region")
+      })).imageId;
+      regionName = this.get("region");
+      component = {
+        "157BD2E2-F118-42F9-B705-63A98411707A": {
+          "name": "RT-0",
+          "description": "",
+          "type": "AWS.VPC.RouteTable",
+          "uid": "157BD2E2-F118-42F9-B705-63A98411707A",
+          "resource": {
+            "PropagatingVgwSet": [],
+            "RouteTableId": "",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "AssociationSet": [
+              {
+                "Main": "true",
+                "RouteTableAssociationId": "",
+                "SubnetId": ""
+              }
+            ],
+            "RouteSet": [
+              {
+                "Origin": "CreateRouteTable",
+                "DestinationCidrBlock": "10.0.0.0/16",
+                "InstanceId": "",
+                "NetworkInterfaceId": "",
+                "GatewayId": "local"
+              }, {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "Origin": "",
+                "InstanceId": "",
+                "NetworkInterfaceId": "",
+                "GatewayId": "@{7E732F1C-63ED-47AE-AAD4-958A6BC0D9F6.resource.InternetGatewayId}"
+              }
+            ],
+            "Tags": [
+              {
+                "Key": "visops_default",
+                "Value": "true"
+              }
+            ]
+          }
+        },
+        "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB": {
+          "name": "mesos",
+          "description": "",
+          "type": "AWS.VPC.VPC",
+          "uid": "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB",
+          "resource": {
+            "EnableDnsSupport": true,
+            "InstanceTenancy": "default",
+            "EnableDnsHostnames": false,
+            "DhcpOptionsId": "",
+            "VpcId": "",
+            "CidrBlock": "10.0.0.0/16"
+          }
+        },
+        "A642D229-6533-499C-BCDF-DEE06CB16C65": {
+          "name": "DefaultACL",
+          "type": "AWS.VPC.NetworkAcl",
+          "uid": "A642D229-6533-499C-BCDF-DEE06CB16C65",
+          "resource": {
+            "AssociationSet": [
+              {
+                "NetworkAclAssociationId": "",
+                "SubnetId": "@{C02C9B48-51D2-4981-AD49-8A3A6AF59845.resource.SubnetId}"
+              }, {
+                "NetworkAclAssociationId": "",
+                "SubnetId": "@{E66C8CBE-D907-42A5-87BD-A59514BDB3BE.resource.SubnetId}"
+              }, {
+                "NetworkAclAssociationId": "",
+                "SubnetId": "@{490511EA-C1E0-4242-82B6-440430D38497.resource.SubnetId}"
+              }, {
+                "NetworkAclAssociationId": "",
+                "SubnetId": "@{7EE3C44B-4F77-477D-91FD-4C7BB6F978D4.resource.SubnetId}"
+              }
+            ],
+            "Default": true,
+            "EntrySet": [
+              {
+                "Egress": true,
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 100,
+                "CidrBlock": "0.0.0.0/0",
+                "IcmpTypeCode": {
+                  "Code": "",
+                  "Type": ""
+                },
+                "PortRange": {
+                  "From": "",
+                  "To": ""
+                }
+              }, {
+                "Egress": false,
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 100,
+                "CidrBlock": "0.0.0.0/0",
+                "IcmpTypeCode": {
+                  "Code": "",
+                  "Type": ""
+                },
+                "PortRange": {
+                  "From": "",
+                  "To": ""
+                }
+              }, {
+                "Egress": true,
+                "Protocol": -1,
+                "RuleAction": "deny",
+                "RuleNumber": 32767,
+                "CidrBlock": "0.0.0.0/0",
+                "IcmpTypeCode": {
+                  "Code": "",
+                  "Type": ""
+                },
+                "PortRange": {
+                  "From": "",
+                  "To": ""
+                }
+              }, {
+                "Egress": false,
+                "Protocol": -1,
+                "RuleAction": "deny",
+                "RuleNumber": 32767,
+                "CidrBlock": "0.0.0.0/0",
+                "IcmpTypeCode": {
+                  "Code": "",
+                  "Type": ""
+                },
+                "PortRange": {
+                  "From": "",
+                  "To": ""
+                }
+              }
+            ],
+            "NetworkAclId": "",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "Tags": [
+              {
+                "Key": "visops_default",
+                "Value": "true"
+              }
+            ]
+          }
+        },
+        "382C7D37-3D53-42BA-B7D7-F34E1D87378A": {
+          "uid": "382C7D37-3D53-42BA-B7D7-F34E1D87378A",
+          "name": "us-east-1b",
+          "type": "AWS.EC2.AvailabilityZone",
+          "resource": {
+            "ZoneName": "us-east-1b",
+            "RegionName": "us-east-1"
+          }
+        },
+        "C02C9B48-51D2-4981-AD49-8A3A6AF59845": {
+          "name": "sched-b",
+          "description": "",
+          "type": "AWS.VPC.Subnet",
+          "uid": "C02C9B48-51D2-4981-AD49-8A3A6AF59845",
+          "resource": {
+            "AvailabilityZone": "@{382C7D37-3D53-42BA-B7D7-F34E1D87378A.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "",
+            "CidrBlock": "10.0.3.0/24"
+          }
+        },
+        "4A088968-344E-4FB6-AD33-F9A4848D7C47": {
+          "type": "AWS.EC2.Instance",
+          "uid": "4A088968-344E-4FB6-AD33-F9A4848D7C47",
+          "name": "master-2",
+          "description": "",
+          "index": 0,
+          "number": 1,
+          "serverGroupUid": "4A088968-344E-4FB6-AD33-F9A4848D7C47",
+          "serverGroupName": "master-2",
+          "state": [
+            {
+              "id": "master-2",
+              "module": "linux.mesos.master",
+              "parameter": {
+                "cluster_name": "untitled-26",
+                "master_ip": "@{self.PrivateIpAddress}",
+                "server_id": "master-2",
+                "masters_addresses": [
+                  {
+                    "key": "@{4A088968-344E-4FB6-AD33-F9A4848D7C47.PrivateIpAddress}",
+                    "value": "master-2"
+                  }, {
+                    "key": "@{0199BC30-7F88-4329-A598-DAAF4E68B1B0.PrivateIpAddress}",
+                    "value": "master-0"
+                  }, {
+                    "key": "@{71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8.PrivateIpAddress}",
+                    "value": "master-1"
+                  }
+                ],
+                "hostname": "master-2",
+                "framework": ["marathon"]
+              }
+            }
+          ],
+          "resource": {
+            "UserData": {
+              "Base64Encoded": false,
+              "Data": ""
+            },
+            "BlockDeviceMapping": [
+              {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                  "SnapshotId": "snap-00fc3bbc",
+                  "VolumeSize": 8,
+                  "VolumeType": "gp2"
+                }
+              }
+            ],
+            "Placement": {
+              "Tenancy": "",
+              "AvailabilityZone": "@{382C7D37-3D53-42BA-B7D7-F34E1D87378A.resource.ZoneName}"
+            },
+            "InstanceId": "",
+            "ImageId": "ami-9ef278f6",
+            "KeyName": "@{A7F19316-752C-4EB1-939F-94FFE0A462A2.resource.KeyName}",
+            "EbsOptimized": false,
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "@{C02C9B48-51D2-4981-AD49-8A3A6AF59845.resource.SubnetId}",
+            "Monitoring": "disabled",
+            "NetworkInterface": [],
+            "InstanceType": "t2.micro",
+            "DisableApiTermination": false,
+            "ShutdownBehavior": "terminate",
+            "SecurityGroup": [],
+            "SecurityGroupId": []
+          }
+        },
+        "6143DDAB-B73A-43A6-9158-C25E3D857498": {
+          "index": 0,
+          "uid": "6143DDAB-B73A-43A6-9158-C25E3D857498",
+          "type": "AWS.VPC.NetworkInterface",
+          "name": "master-2-eni0",
+          "serverGroupUid": "6143DDAB-B73A-43A6-9158-C25E3D857498",
+          "serverGroupName": "eni0",
+          "number": 1,
+          "resource": {
+            "SourceDestCheck": true,
+            "Description": "",
+            "NetworkInterfaceId": "",
+            "AvailabilityZone": "@{382C7D37-3D53-42BA-B7D7-F34E1D87378A.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "@{C02C9B48-51D2-4981-AD49-8A3A6AF59845.resource.SubnetId}",
+            "AssociatePublicIpAddress": false,
+            "PrivateIpAddressSet": [
+              {
+                "PrivateIpAddress": "10.0.3.4",
+                "AutoAssign": true,
+                "Primary": true
+              }
+            ],
+            "GroupSet": [
+              {
+                "GroupName": "@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupName}",
+                "GroupId": "@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupId}"
+              }
+            ],
+            "Attachment": {
+              "InstanceId": "@{4A088968-344E-4FB6-AD33-F9A4848D7C47.resource.InstanceId}",
+              "DeviceIndex": "0",
+              "AttachmentId": ""
+            }
+          }
+        },
+        "A7F19316-752C-4EB1-939F-94FFE0A462A2": {
+          "name": "DefaultKP",
+          "type": "AWS.EC2.KeyPair",
+          "uid": "A7F19316-752C-4EB1-939F-94FFE0A462A2",
+          "resource": {
+            "KeyFingerprint": "",
+            "KeyName": "DefaultKP"
+          }
+        },
+        "B7FFFF8A-3E12-4022-844B-0B39075D676A": {
+          "name": "DefaultSG",
+          "type": "AWS.EC2.SecurityGroup",
+          "uid": "B7FFFF8A-3E12-4022-844B-0B39075D676A",
+          "resource": {
+            "Default": true,
+            "GroupId": "",
+            "GroupName": "DefaultSG",
+            "GroupDescription": "default VPC security group",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "IpPermissions": [
+              {
+                "FromPort": "22",
+                "ToPort": "22",
+                "IpRanges": "0.0.0.0/0",
+                "IpProtocol": "tcp"
+              }
+            ],
+            "IpPermissionsEgress": [
+              {
+                "FromPort": "0",
+                "ToPort": "65535",
+                "IpRanges": "0.0.0.0/0",
+                "IpProtocol": "-1"
+              }
+            ],
+            "Tags": [
+              {
+                "Key": "visops_default",
+                "Value": "true"
+              }
+            ]
+          }
+        },
+        "E66C8CBE-D907-42A5-87BD-A59514BDB3BE": {
+          "name": "web-b",
+          "description": "",
+          "type": "AWS.VPC.Subnet",
+          "uid": "E66C8CBE-D907-42A5-87BD-A59514BDB3BE",
+          "resource": {
+            "AvailabilityZone": "@{382C7D37-3D53-42BA-B7D7-F34E1D87378A.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "",
+            "CidrBlock": "10.0.1.0/24"
+          }
+        },
+        "88EA511C-92B9-448B-9662-6241D417F9E1": {
+          "uid": "88EA511C-92B9-448B-9662-6241D417F9E1",
+          "name": "us-east-1a",
+          "type": "AWS.EC2.AvailabilityZone",
+          "resource": {
+            "ZoneName": "us-east-1a",
+            "RegionName": "us-east-1"
+          }
+        },
+        "490511EA-C1E0-4242-82B6-440430D38497": {
+          "name": "web-a",
+          "description": "",
+          "type": "AWS.VPC.Subnet",
+          "uid": "490511EA-C1E0-4242-82B6-440430D38497",
+          "resource": {
+            "AvailabilityZone": "@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "",
+            "CidrBlock": "10.0.0.0/24"
+          }
+        },
+        "7EE3C44B-4F77-477D-91FD-4C7BB6F978D4": {
+          "name": "sched-a",
+          "description": "",
+          "type": "AWS.VPC.Subnet",
+          "uid": "7EE3C44B-4F77-477D-91FD-4C7BB6F978D4",
+          "resource": {
+            "AvailabilityZone": "@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "",
+            "CidrBlock": "10.0.2.0/24"
+          }
+        },
+        "0199BC30-7F88-4329-A598-DAAF4E68B1B0": {
+          "type": "AWS.EC2.Instance",
+          "uid": "0199BC30-7F88-4329-A598-DAAF4E68B1B0",
+          "name": "master-0",
+          "description": "",
+          "index": 0,
+          "number": 1,
+          "serverGroupUid": "0199BC30-7F88-4329-A598-DAAF4E68B1B0",
+          "serverGroupName": "master-0",
+          "state": [
+            {
+              "id": "master-0",
+              "module": "linux.mesos.master",
+              "parameter": {
+                "cluster_name": "untitled-26",
+                "master_ip": "@{self.PrivateIpAddress}",
+                "server_id": "master-0",
+                "masters_addresses": [
+                  {
+                    "key": "@{4A088968-344E-4FB6-AD33-F9A4848D7C47.PrivateIpAddress}",
+                    "value": "master-2"
+                  }, {
+                    "key": "@{0199BC30-7F88-4329-A598-DAAF4E68B1B0.PrivateIpAddress}",
+                    "value": "master-0"
+                  }, {
+                    "key": "@{71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8.PrivateIpAddress}",
+                    "value": "master-1"
+                  }
+                ],
+                "hostname": "master-0",
+                "framework": ["marathon"]
+              }
+            }
+          ],
+          "resource": {
+            "UserData": {
+              "Base64Encoded": false,
+              "Data": ""
+            },
+            "BlockDeviceMapping": [
+              {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                  "SnapshotId": "snap-00fc3bbc",
+                  "VolumeSize": 8,
+                  "VolumeType": "gp2"
+                }
+              }
+            ],
+            "Placement": {
+              "Tenancy": "",
+              "AvailabilityZone": "@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}"
+            },
+            "InstanceId": "",
+            "ImageId": "ami-9ef278f6",
+            "KeyName": "@{A7F19316-752C-4EB1-939F-94FFE0A462A2.resource.KeyName}",
+            "EbsOptimized": false,
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "@{7EE3C44B-4F77-477D-91FD-4C7BB6F978D4.resource.SubnetId}",
+            "Monitoring": "disabled",
+            "NetworkInterface": [],
+            "InstanceType": "t2.micro",
+            "DisableApiTermination": false,
+            "ShutdownBehavior": "terminate",
+            "SecurityGroup": [],
+            "SecurityGroupId": []
+          }
+        },
+        "9B23CCFB-6EF9-48F7-B5A7-23FE02D4D94B": {
+          "index": 0,
+          "uid": "9B23CCFB-6EF9-48F7-B5A7-23FE02D4D94B",
+          "type": "AWS.VPC.NetworkInterface",
+          "name": "master-0-eni0",
+          "serverGroupUid": "9B23CCFB-6EF9-48F7-B5A7-23FE02D4D94B",
+          "serverGroupName": "eni0",
+          "number": 1,
+          "resource": {
+            "SourceDestCheck": true,
+            "Description": "",
+            "NetworkInterfaceId": "",
+            "AvailabilityZone": "@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "@{7EE3C44B-4F77-477D-91FD-4C7BB6F978D4.resource.SubnetId}",
+            "AssociatePublicIpAddress": false,
+            "PrivateIpAddressSet": [
+              {
+                "PrivateIpAddress": "10.0.2.4",
+                "AutoAssign": true,
+                "Primary": true
+              }
+            ],
+            "GroupSet": [
+              {
+                "GroupName": "@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupName}",
+                "GroupId": "@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupId}"
+              }
+            ],
+            "Attachment": {
+              "InstanceId": "@{0199BC30-7F88-4329-A598-DAAF4E68B1B0.resource.InstanceId}",
+              "DeviceIndex": "0",
+              "AttachmentId": ""
+            }
+          }
+        },
+        "7E732F1C-63ED-47AE-AAD4-958A6BC0D9F6": {
+          "name": "Internet-gateway",
+          "type": "AWS.VPC.InternetGateway",
+          "uid": "7E732F1C-63ED-47AE-AAD4-958A6BC0D9F6",
+          "resource": {
+            "InternetGatewayId": "",
+            "AttachmentSet": [
+              {
+                "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}"
+              }
+            ]
+          }
+        },
+        "CC8D8DBE-8536-4F3A-9EB3-D6657E20B36E": {
+          "name": "MesosSG",
+          "type": "AWS.EC2.SecurityGroup",
+          "uid": "CC8D8DBE-8536-4F3A-9EB3-D6657E20B36E",
+          "resource": {
+            "Default": false,
+            "GroupId": "",
+            "GroupName": "MesosSG",
+            "GroupDescription": "Custom Security Group",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "IpPermissions": [
+              {
+                "FromPort": "5050",
+                "ToPort": "5050",
+                "IpRanges": "0.0.0.0/0",
+                "IpProtocol": "tcp"
+              }, {
+                "FromPort": "8080",
+                "ToPort": "8080",
+                "IpRanges": "0.0.0.0/0",
+                "IpProtocol": "tcp"
+              }, {
+                "FromPort": "0",
+                "ToPort": "65535",
+                "IpRanges": "@{CC8D8DBE-8536-4F3A-9EB3-D6657E20B36E.resource.GroupId}",
+                "IpProtocol": "-1"
+              }
+            ],
+            "IpPermissionsEgress": [
+              {
+                "FromPort": "0",
+                "ToPort": "65535",
+                "IpRanges": "0.0.0.0/0",
+                "IpProtocol": "-1"
+              }
+            ],
+            "Tags": [
+              {
+                "Key": "visops_default",
+                "Value": "false"
+              }
+            ]
+          }
+        },
+        "71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8": {
+          "type": "AWS.EC2.Instance",
+          "uid": "71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8",
+          "name": "master-1",
+          "description": "",
+          "index": 0,
+          "number": 1,
+          "serverGroupUid": "71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8",
+          "serverGroupName": "master-1",
+          "state": [
+            {
+              "id": "master-1",
+              "module": "linux.mesos.master",
+              "parameter": {
+                "cluster_name": "untitled-26",
+                "master_ip": "@{self.PrivateIpAddress}",
+                "server_id": "master-1",
+                "masters_addresses": [
+                  {
+                    "key": "@{4A088968-344E-4FB6-AD33-F9A4848D7C47.PrivateIpAddress}",
+                    "value": "master-2"
+                  }, {
+                    "key": "@{0199BC30-7F88-4329-A598-DAAF4E68B1B0.PrivateIpAddress}",
+                    "value": "master-0"
+                  }, {
+                    "key": "@{71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8.PrivateIpAddress}",
+                    "value": "master-1"
+                  }
+                ],
+                "hostname": "master-1",
+                "framework": ["marathon"]
+              }
+            }
+          ],
+          "resource": {
+            "UserData": {
+              "Base64Encoded": false,
+              "Data": ""
+            },
+            "BlockDeviceMapping": [
+              {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                  "SnapshotId": "snap-00fc3bbc",
+                  "VolumeSize": 8,
+                  "VolumeType": "gp2"
+                }
+              }
+            ],
+            "Placement": {
+              "Tenancy": "",
+              "AvailabilityZone": "@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}"
+            },
+            "InstanceId": "",
+            "ImageId": "ami-9ef278f6",
+            "KeyName": "@{A7F19316-752C-4EB1-939F-94FFE0A462A2.resource.KeyName}",
+            "EbsOptimized": false,
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "@{7EE3C44B-4F77-477D-91FD-4C7BB6F978D4.resource.SubnetId}",
+            "Monitoring": "disabled",
+            "NetworkInterface": [],
+            "InstanceType": "t2.micro",
+            "DisableApiTermination": false,
+            "ShutdownBehavior": "terminate",
+            "SecurityGroup": [],
+            "SecurityGroupId": []
+          }
+        },
+        "6BEEFE93-0224-4450-B828-9726270532EF": {
+          "index": 0,
+          "uid": "6BEEFE93-0224-4450-B828-9726270532EF",
+          "type": "AWS.VPC.NetworkInterface",
+          "name": "master-1-eni0",
+          "serverGroupUid": "6BEEFE93-0224-4450-B828-9726270532EF",
+          "serverGroupName": "eni0",
+          "number": 1,
+          "resource": {
+            "SourceDestCheck": true,
+            "Description": "",
+            "NetworkInterfaceId": "",
+            "AvailabilityZone": "@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}",
+            "VpcId": "@{2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB.resource.VpcId}",
+            "SubnetId": "@{7EE3C44B-4F77-477D-91FD-4C7BB6F978D4.resource.SubnetId}",
+            "AssociatePublicIpAddress": false,
+            "PrivateIpAddressSet": [
+              {
+                "PrivateIpAddress": "10.0.2.5",
+                "AutoAssign": true,
+                "Primary": true
+              }
+            ],
+            "GroupSet": [
+              {
+                "GroupName": "@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupName}",
+                "GroupId": "@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupId}"
+              }
+            ],
+            "Attachment": {
+              "InstanceId": "@{71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8.resource.InstanceId}",
+              "DeviceIndex": "0",
+              "AttachmentId": ""
+            }
+          }
+        },
+        "674999A7-8CBA-4D63-B85B-F8A550D869D9": {
+          "uid": "674999A7-8CBA-4D63-B85B-F8A550D869D9",
+          "name": "asg0",
+          "description": "",
+          "type": "AWS.AutoScaling.Group",
+          "resource": {
+            "AvailabilityZones": ["@{88EA511C-92B9-448B-9662-6241D417F9E1.resource.ZoneName}"],
+            "VPCZoneIdentifier": "@{490511EA-C1E0-4242-82B6-440430D38497.resource.SubnetId}",
+            "LoadBalancerNames": [],
+            "AutoScalingGroupARN": "",
+            "DefaultCooldown": "300",
+            "MinSize": "1",
+            "MaxSize": "2",
+            "HealthCheckType": "EC2",
+            "HealthCheckGracePeriod": "300",
+            "TerminationPolicies": ["Default"],
+            "AutoScalingGroupName": "asg0",
+            "DesiredCapacity": "1",
+            "LaunchConfigurationName": "@{632AC5BE-C331-45BA-8338-E6FA0B2447C9.resource.LaunchConfigurationName}"
+          }
+        },
+        "632AC5BE-C331-45BA-8338-E6FA0B2447C9": {
+          "type": "AWS.AutoScaling.LaunchConfiguration",
+          "uid": "632AC5BE-C331-45BA-8338-E6FA0B2447C9",
+          "name": "slave-lc-0",
+          "description": "",
+          "state": [
+            {
+              "id": "slave-lc-0",
+              "module": "linux.mesos.slave",
+              "parameter": {
+                "attributes": [],
+                "masters_addresses": [
+                  {
+                    "key": "@{4A088968-344E-4FB6-AD33-F9A4848D7C47.PrivateIpAddress}",
+                    "value": "master-2"
+                  }, {
+                    "key": "@{0199BC30-7F88-4329-A598-DAAF4E68B1B0.PrivateIpAddress}",
+                    "value": "master-0"
+                  }, {
+                    "key": "@{71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8.PrivateIpAddress}",
+                    "value": "master-1"
+                  }
+                ],
+                "slave_ip": "@{self.PrivateIpAddress}"
+              }
+            }
+          ],
+          "resource": {
+            "UserData": "",
+            "LaunchConfigurationARN": "",
+            "InstanceMonitoring": false,
+            "ImageId": "ami-9ef278f6",
+            "KeyName": "@{A7F19316-752C-4EB1-939F-94FFE0A462A2.resource.KeyName}",
+            "EbsOptimized": false,
+            "BlockDeviceMapping": [
+              {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                  "SnapshotId": "snap-00fc3bbc",
+                  "VolumeSize": 8,
+                  "VolumeType": "gp2"
+                }
+              }
+            ],
+            "SecurityGroups": ["@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupId}"],
+            "LaunchConfigurationName": "slave-lc-0",
+            "InstanceType": "t2.micro",
+            "AssociatePublicIpAddress": false
+          }
+        },
+        "9243FEDE-FF98-4947-8F68-8139D5032FEA": {
+          "uid": "9243FEDE-FF98-4947-8F68-8139D5032FEA",
+          "name": "asg1",
+          "description": "",
+          "type": "AWS.AutoScaling.Group",
+          "resource": {
+            "AvailabilityZones": ["@{382C7D37-3D53-42BA-B7D7-F34E1D87378A.resource.ZoneName}"],
+            "VPCZoneIdentifier": "@{E66C8CBE-D907-42A5-87BD-A59514BDB3BE.resource.SubnetId}",
+            "LoadBalancerNames": [],
+            "AutoScalingGroupARN": "",
+            "DefaultCooldown": "300",
+            "MinSize": "1",
+            "MaxSize": "2",
+            "HealthCheckType": "EC2",
+            "HealthCheckGracePeriod": "300",
+            "TerminationPolicies": ["Default"],
+            "AutoScalingGroupName": "asg1",
+            "DesiredCapacity": "1",
+            "LaunchConfigurationName": "@{70DBD117-FF47-4D97-B272-2617A371C887.resource.LaunchConfigurationName}"
+          }
+        },
+        "70DBD117-FF47-4D97-B272-2617A371C887": {
+          "type": "AWS.AutoScaling.LaunchConfiguration",
+          "uid": "70DBD117-FF47-4D97-B272-2617A371C887",
+          "name": "slave-lc-1",
+          "description": "",
+          "state": [
+            {
+              "id": "slave-lc-1",
+              "module": "linux.mesos.slave",
+              "parameter": {
+                "attributes": [],
+                "masters_addresses": [
+                  {
+                    "key": "@{4A088968-344E-4FB6-AD33-F9A4848D7C47.PrivateIpAddress}",
+                    "value": "master-2"
+                  }, {
+                    "key": "@{0199BC30-7F88-4329-A598-DAAF4E68B1B0.PrivateIpAddress}",
+                    "value": "master-0"
+                  }, {
+                    "key": "@{71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8.PrivateIpAddress}",
+                    "value": "master-1"
+                  }
+                ],
+                "slave_ip": "@{self.PrivateIpAddress}"
+              }
+            }
+          ],
+          "resource": {
+            "UserData": "",
+            "LaunchConfigurationARN": "",
+            "InstanceMonitoring": false,
+            "ImageId": "ami-9ef278f6",
+            "KeyName": "@{A7F19316-752C-4EB1-939F-94FFE0A462A2.resource.KeyName}",
+            "EbsOptimized": false,
+            "BlockDeviceMapping": [
+              {
+                "DeviceName": "/dev/sda1",
+                "Ebs": {
+                  "SnapshotId": "snap-00fc3bbc",
+                  "VolumeSize": 8,
+                  "VolumeType": "gp2"
+                }
+              }
+            ],
+            "SecurityGroups": ["@{B7FFFF8A-3E12-4022-844B-0B39075D676A.resource.GroupId}"],
+            "LaunchConfigurationName": "slave-lc-1",
+            "InstanceType": "t2.micro",
+            "AssociatePublicIpAddress": false
+          }
+        }
+      };
+      layout = {
+        "157BD2E2-F118-42F9-B705-63A98411707A": {
+          "coordinate": [76, 8],
+          "uid": "157BD2E2-F118-42F9-B705-63A98411707A",
+          "groupUId": "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB"
+        },
+        "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB": {
+          "coordinate": [8, 7],
+          "uid": "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB",
+          "size": [83, 64]
+        },
+        "382C7D37-3D53-42BA-B7D7-F34E1D87378A": {
+          "coordinate": [14, 43],
+          "uid": "382C7D37-3D53-42BA-B7D7-F34E1D87378A",
+          "groupUId": "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB",
+          "size": [55, 24]
+        },
+        "C02C9B48-51D2-4981-AD49-8A3A6AF59845": {
+          "coordinate": [17, 46],
+          "uid": "C02C9B48-51D2-4981-AD49-8A3A6AF59845",
+          "groupUId": "382C7D37-3D53-42BA-B7D7-F34E1D87378A",
+          "size": [28, 18]
+        },
+        "4A088968-344E-4FB6-AD33-F9A4848D7C47": {
+          "coordinate": [21, 51],
+          "uid": "4A088968-344E-4FB6-AD33-F9A4848D7C47",
+          "groupUId": "C02C9B48-51D2-4981-AD49-8A3A6AF59845",
+          "osType": "ubuntu",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs"
+        },
+        "E66C8CBE-D907-42A5-87BD-A59514BDB3BE": {
+          "coordinate": [47, 46],
+          "uid": "E66C8CBE-D907-42A5-87BD-A59514BDB3BE",
+          "groupUId": "382C7D37-3D53-42BA-B7D7-F34E1D87378A",
+          "size": [19, 18]
+        },
+        "88EA511C-92B9-448B-9662-6241D417F9E1": {
+          "coordinate": [14, 14],
+          "uid": "88EA511C-92B9-448B-9662-6241D417F9E1",
+          "groupUId": "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB",
+          "size": [55, 25]
+        },
+        "490511EA-C1E0-4242-82B6-440430D38497": {
+          "coordinate": [47, 17],
+          "uid": "490511EA-C1E0-4242-82B6-440430D38497",
+          "groupUId": "88EA511C-92B9-448B-9662-6241D417F9E1",
+          "size": [19, 19]
+        },
+        "7EE3C44B-4F77-477D-91FD-4C7BB6F978D4": {
+          "coordinate": [17, 17],
+          "uid": "7EE3C44B-4F77-477D-91FD-4C7BB6F978D4",
+          "groupUId": "88EA511C-92B9-448B-9662-6241D417F9E1",
+          "size": [27, 19]
+        },
+        "0199BC30-7F88-4329-A598-DAAF4E68B1B0": {
+          "coordinate": [21, 22],
+          "uid": "0199BC30-7F88-4329-A598-DAAF4E68B1B0",
+          "groupUId": "7EE3C44B-4F77-477D-91FD-4C7BB6F978D4",
+          "osType": "ubuntu",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs"
+        },
+        "7E732F1C-63ED-47AE-AAD4-958A6BC0D9F6": {
+          "coordinate": [4, 8],
+          "uid": "7E732F1C-63ED-47AE-AAD4-958A6BC0D9F6",
+          "groupUId": "2252668C-0A82-4BFF-8FA3-F2D58DC9FFFB"
+        },
+        "71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8": {
+          "coordinate": [32, 22],
+          "uid": "71ECF9B2-B8CA-43C3-9CDF-9A0BD6C8CDF8",
+          "groupUId": "7EE3C44B-4F77-477D-91FD-4C7BB6F978D4",
+          "osType": "ubuntu",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs"
+        },
+        "674999A7-8CBA-4D63-B85B-F8A550D869D9": {
+          "coordinate": [50, 20],
+          "uid": "674999A7-8CBA-4D63-B85B-F8A550D869D9",
+          "groupUId": "490511EA-C1E0-4242-82B6-440430D38497"
+        },
+        "632AC5BE-C331-45BA-8338-E6FA0B2447C9": {
+          "coordinate": [0, 0],
+          "uid": "632AC5BE-C331-45BA-8338-E6FA0B2447C9",
+          "osType": "ubuntu",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs"
+        },
+        "9243FEDE-FF98-4947-8F68-8139D5032FEA": {
+          "coordinate": [50, 49],
+          "uid": "9243FEDE-FF98-4947-8F68-8139D5032FEA",
+          "groupUId": "E66C8CBE-D907-42A5-87BD-A59514BDB3BE"
+        },
+        "70DBD117-FF47-4D97-B272-2617A371C887": {
+          "coordinate": [0, 0],
+          "uid": "70DBD117-FF47-4D97-B272-2617A371C887",
+          "osType": "ubuntu",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs"
+        },
+        "size": [240, 240]
+      };
+      componentKeys = _.keys(component);
+      layoutKeys = _.keys(layout);
+      keys = _.without(_.union(componentKeys, layoutKeys), "size");
+      layoutJson = JSON.stringify(layout);
+      componentJson = JSON.stringify(component);
+      _.each(keys, function(key) {
+        var guid;
+        guid = MC.guid();
+        componentJson = componentJson.replace(new RegExp(key, "g"), guid);
+        return layoutJson = layoutJson.replace(new RegExp(key, "g"), guid);
+      });
+      _.each(_.pluck(amiForEachRegion, "region"), function(region) {
+        return componentJson = componentJson.replace(new RegExp(region, "g"), regionName);
+      });
+      componentJson = componentJson.replace(/ami-\w{8}/g, imageId);
+      component = JSON.parse(componentJson);
+      layout = JSON.parse(layoutJson);
+      _.each(component, function(comp) {
+        if (comp.type === constant.RESTYPE.INSTANCE) {
+          return _.each(comp.state, function(st) {
+            if (st.module === "linux.mesos.master") {
+              return st.parameter.framework = framework;
+            }
+          });
+        }
+      });
+      json.component = component;
+      json.layout = layout;
+      console.log(json);
+      return json;
     }
   }, {
     supportedProviders: ["aws::global", "aws::china"]
@@ -3392,13 +4361,33 @@ define('ide/submodels/OpsModelOs',["OpsModel", "ApiRequest", "constant"], functi
 
 /*
 ----------------------------
+  The Model for stack / app
+----------------------------
+
+  This model represent a stack or an app. It contains serveral methods to manipulate the stack / app
+ */
+define('ide/submodels/OpsModelMarathon',["OpsModel", "ApiRequest", "constant"], function(OpsModel, ApiRequest, constant) {
+  return OpsModel.extend({
+    type: OpsModel.Type.Mesos,
+    credential: function() {
+      return this.project().credentials().models[0];
+    },
+    getMsrId: function() {}
+  }, {
+    supportedProviders: ["docker::marathon"]
+  });
+});
+
+
+/*
+----------------------------
   This is the core / entry point / controller of the whole IDE.
 ----------------------------
 
   It contains some basical logics to maintain the IDE. And it holds other components
   to provide other functionality
  */
-define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./SceneManager", "ApiRequest", "i18n!/nls/lang.js", "UI.notification", "./submodels/OpsModelAws", "./submodels/OpsModelOs"], function(Websocket, ApplicationView, ApplicationModel, User, SceneManager, ApiRequest, lang) {
+define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationModel", "./User", "./SceneManager", "ApiRequest", "i18n!/nls/lang.js", "UI.notification", "./submodels/OpsModelAws", "./submodels/OpsModelOs", "./submodels/OpsModelMarathon"], function(Websocket, ApplicationView, ApplicationModel, User, SceneManager, ApiRequest, lang) {
   var VisualOps;
   VisualOps = function() {
     if (window.App) {
@@ -3457,21 +4446,18 @@ define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationMode
     return this.view.showSessionDialog();
   };
   VisualOps.prototype.logout = function() {
-    return App.user.logout()["finally"]((function(_this) {
-      return function() {
-        var p;
-        _this.ignoreChangesWhenQuit();
-        p = window.location.pathname;
-        if (p === "/") {
-          p = window.location.hash.replace("#", "/");
-        }
-        if (p && p !== "/") {
-          window.location.href = "/login?ref=" + p;
-        } else {
-          window.location.href = "/login";
-        }
-      };
-    })(this));
+    var p;
+    App.user.logout();
+    this.ignoreChangesWhenQuit();
+    p = window.location.pathname;
+    if (p === "/") {
+      p = window.location.hash.replace("#", "/");
+    }
+    if (p && p !== "/") {
+      window.location.href = "/login?ref=" + p;
+    } else {
+      window.location.href = "/login";
+    }
   };
   VisualOps.prototype.ignoreChangesWhenQuit = function() {
     this.__ICWQ = true;
