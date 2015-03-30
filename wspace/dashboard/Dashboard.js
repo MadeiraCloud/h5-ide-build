@@ -3103,14 +3103,15 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
           return f.get("provider") !== "docker::marathon";
         });
       }
+      attr.region = _.map(data, function(obj) {
+        obj.count = _.filter(resources, function(resource) {
+          return resource.get("region") === obj.id;
+        }).length;
+        return obj;
+      });
       attr[updateType] = resources.filter(filter).map(function(m) {
         return m.toJSON(tojson);
       }).reverse();
-      attr.region = _.map(data, function(obj) {
-        var _ref;
-        obj.count = ((_ref = _.groupBy(attr[updateType], "region")[obj.id]) != null ? _ref.length : void 0) || 0;
-        return obj;
-      });
       attr.globalCount = resources.length;
       attr.projectId = self.model.scene.project.id;
       attr.currentRegion = _.find(data, function(e) {

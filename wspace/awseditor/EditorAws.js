@@ -366,7 +366,7 @@ define('wspace/awseditor/property/stack/model',['../base/model', 'constant', "De
   var StackModel;
   StackModel = PropertyModel.extend({
     init: function() {
-      var agentData, design, vpc;
+      var agentData, design, mesosData, vpc;
       design = Design.instance();
       if (!design.get("name")) {
         return null;
@@ -386,6 +386,13 @@ define('wspace/awseditor/property/stack/model',['../base/model', 'constant', "De
         isResDiff: design.get('resource_diff'),
         opsEnable: agentData.enabled
       });
+      if (Design.instance().opsModel().isMesos()) {
+        mesosData = {
+          isMesos: true,
+          marathonOn: this.getMarathon()
+        };
+        this.set(mesosData);
+      }
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).theVPC();
       if (vpc) {
         this.set("vpcid", vpc.get("appId"));
@@ -656,10 +663,13 @@ function program1(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  ";
   return buffer;
@@ -689,20 +699,35 @@ function program4(depth0,data) {
 function program6(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <span>\n        <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n        <label class=\"switch toolbar-visual-ops-switch narrow ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n          <span class=\"switch-handle\"></span>\n        </label>\n      </span>\n    </section>\n    ";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  
+  return "on";
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n    <dl class=\"dl-vertical\">\n      <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_INSTANCE_STATE", {hash:{},data:data}))
     + "</label></dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.opsEnable), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.opsEnable), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF_VIEW", {hash:{},data:data}))
     + "</label></dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dl>\n\n    ";
   return buffer;
   }
-function program7(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "";
   buffer += "\n      <dd>"
@@ -711,7 +736,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "";
   buffer += "\n      <dd>"
@@ -720,11 +745,11 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <section class=\"property-control-group resdiff-switch\">\n      <div class=\"checkbox\">\n        <input id=\"property-app-resdiff\" type=\"checkbox\" name=\"resdiff\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " >\n        <label for=\"property-app-resdiff\"></label>\n      </div>\n      <label for=\"property-app-resdiff\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF", {hash:{},data:data}))
@@ -733,13 +758,13 @@ function program11(depth0,data) {
     + "\"></i>\n    </section>\n    ";
   return buffer;
   }
-function program12(depth0,data) {
+function program15(depth0,data) {
   
   
   return "checked";
   }
 
-function program14(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-stack-name\">"
@@ -762,28 +787,23 @@ function program14(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_ID", {hash:{},data:data}))
     + "</label></dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n	</dl>\n\n  <section class=\"property-control-group\" data-bind=\"true\">\n  <!-- Mesos Settings -->\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+    + "</dd>\n	</dl>\n\n  <!-- Mesos Settings -->\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </section>\n\n  ";
+  buffer += "\n\n  ";
   return buffer;
   }
-function program15(depth0,data) {
+function program18(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <span>\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch narrow ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  buffer += "\n  <section class=\"property-control-group\" data-bind=\"true\">\n    <span>\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </span>\n    ";
+  buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </span>\n  </section>\n  ";
   return buffer;
   }
-function program16(depth0,data) {
-  
-  
-  return "on";
-  }
 
-function program18(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<div class=\"option-group-head pos-r\">"
@@ -791,12 +811,12 @@ function program18(depth0,data) {
     + "<span class=\"acl-info-list-num property-head-num-wrap\">("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.networkAcls)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span>\n	</div>\n	<div class=\"option-group\">\n    <ul class=\"acl-sg-info-list acl-info-list mega-list-wraper\" id=\"stack-property-acl-list\"></ul>\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </div>\n	";
   return buffer;
   }
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "";
   buffer += "<a href=\"#\" class=\"add-to-list\" id=\"stack-property-new-acl\">"
@@ -805,7 +825,7 @@ function program19(depth0,data) {
   return buffer;
   }
 
-function program21(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.currency)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -817,7 +837,7 @@ function program21(depth0,data) {
   return buffer;
   }
 
-function program23(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <tr> <td>"
@@ -831,17 +851,17 @@ function program23(depth0,data) {
   }
 
   buffer += "<article>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(14, program14, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(17, program17, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n\n\n	<!-- SG, ACL, COST -->\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n  <div class=\"option-group sg-group\"></div>\n\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n	<div class=\"option-group-head\">\n		"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_COST_ESTIMATION", {hash:{},data:data}))
     + "\n		<span class=\"cost-counter right\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</span>\n	</div>\n	<div class=\"option-group\">\n		<table class=\"table cost-estimation-table\">\n			<thead> <tr>\n					<th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_RESOURCE", {hash:{},data:data}))
@@ -850,7 +870,7 @@ function program23(depth0,data) {
     + "</th>\n          <th style=\"min-width:60px;\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_FEE", {hash:{},data:data}))
     + "</th>\n			</tr> </thead>\n			<tbody> ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_AWS_EC2_PRICING", {hash:{},data:data}))
@@ -954,24 +974,16 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
       'click #stack-property-acl-list .edit': 'openAcl',
       'click .acl-info-list .sg-list-delete-btn': 'deleteAcl',
       'click #property-app-resdiff': 'toggleResDiff',
-      'click .toolbar-visual-ops-switch': 'toggleMarathon'
+      'click .marathon-switch': 'toggleMarathon'
     },
     render: function() {
-      var data, mesosData, title;
+      var title;
       if (this.model.isApp || this.model.isAppEdit) {
         title = "App - " + (this.model.get('name'));
       } else {
         title = "Stack - " + (this.model.get('name'));
       }
-      data = this.model.toJSON();
-      if (Design.instance().opsModel().isMesos()) {
-        mesosData = {
-          isMesos: true,
-          marathonOn: this.model.getMarathon()
-        };
-        _.extend(data, mesosData);
-      }
-      this.$el.html(template(data));
+      this.$el.html(template(this.model.toJSON()));
       if (title) {
         this.setTitle(title);
       }
@@ -1096,15 +1108,11 @@ define('wspace/awseditor/property/sglist/model',["Design", "constant"], function
   var SGListModel;
   SGListModel = Backbone.Model.extend({
     getSGInfoList: function() {
-      var SgAssoModel, SgRuleSetModel, asso, assos, deletable, design, enabledSG, enabledSGArr, isELBParent, isStackParent, needShow, parent, parent_model, readonly, resource, resource_id, ruleSets, ruleset, sg, sgChecked, sgRuleAry, sg_list, usedSG, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+      var SgAssoModel, SgRuleSetModel, asso, assos, deletable, design, disableCheck, enabledSG, enabledSGArr, hideCheck, isELBParent, isStackParent, needShow, parent_model, readonly, resource, resource_id, ruleSets, ruleset, sg, sgChecked, sgRuleAry, sg_list, usedSG, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
       design = Design.instance();
       parent_model = this.parent_model;
       readonly = false;
       if (design.modeIsApp() || design.modeIsAppView()) {
-        readonly = true;
-      }
-      parent = design.component(parent_model.get("id"));
-      if (parent && ((_ref = parent.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC) && parent.isMesos()) {
         readonly = true;
       } else if (design.modeIsAppEdit()) {
         if (parent_model.isSGListReadOnly) {
@@ -1126,9 +1134,9 @@ define('wspace/awseditor/property/sglist/model',["Design", "constant"], function
       enabledSG = {};
       enabledSGArr = [];
       SgAssoModel = Design.modelClassForType("SgAsso");
-      _ref1 = Design.modelClassForType(constant.RESTYPE.SG).allObjects();
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        sg = _ref1[_i];
+      _ref = Design.modelClassForType(constant.RESTYPE.SG).allObjects();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        sg = _ref[_i];
         if (sg.isElbSg() && !(isELBParent || isStackParent)) {
           continue;
         }
@@ -1142,6 +1150,7 @@ define('wspace/awseditor/property/sglist/model',["Design", "constant"], function
         } else {
           deletable = true;
         }
+        hideCheck = readonly || isStackParent;
         assos = sg.connections("SgAsso");
         for (_j = 0, _len1 = assos.length; _j < _len1; _j++) {
           asso = assos[_j];
@@ -1151,6 +1160,10 @@ define('wspace/awseditor/property/sglist/model',["Design", "constant"], function
             break;
           }
         }
+        if (design.opsModel().isMesos() && sg.isMesos()) {
+          deletable = false;
+          disableCheck = true;
+        }
         sg_list.push({
           uid: sg.id,
           color: sg.color,
@@ -1158,8 +1171,9 @@ define('wspace/awseditor/property/sglist/model',["Design", "constant"], function
           desc: sg.get("description"),
           ruleCount: sg.ruleCount(),
           memberCount: sg.getMemberList().length,
-          hideCheck: readonly || isStackParent,
+          hideCheck: hideCheck,
           deletable: deletable,
+          disableCheck: disableCheck,
           used: enabledSG[sg.id]
         });
       }
@@ -1296,7 +1310,7 @@ function program3(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.memberCount)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SGLIST_LBL_MEMBER", {hash:{},data:data}));
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.deletable), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.deletable), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n				</div>\n				<div class=\"col3 sg-edit-icon tooltip icon-btn-details\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SGLIST_TIP_VIEW_DETAIL", {hash:{},data:data}))
@@ -1311,7 +1325,10 @@ function program4(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " id=\"sg-list-"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n							<label for=\"sg-list-"
+    + "\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableCheck), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n							<label for=\"sg-list-"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></label>\n						</div>\n					</div>\n				";
   return buffer;
@@ -1324,6 +1341,12 @@ function program5(depth0,data) {
 
 function program7(depth0,data) {
   
+  
+  return "disabled";
+  }
+
+function program9(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += " | <a class=\"sg-list-delete-btn\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1335,7 +1358,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "";
   buffer += "<a href=\"javascript:void(0)\" class=\"add-to-list\" id=\"add-sg-btn\">"
@@ -1350,7 +1373,7 @@ function program9(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.sg_list), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</ul>\n		";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n\n	<div id=\"item-rule\" class=\"tab-item\">\n		<div class=\"rule-list-sort property-control-group\">\n			<label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SG_RULE_SORT_BY", {hash:{},data:data}))
@@ -1553,7 +1576,7 @@ define('wspace/awseditor/property/instance/model',['../base/model', 'constant', 
   var InstanceModel;
   InstanceModel = PropertyModel.extend({
     init: function(uid) {
-      var agentData, attr, component, design, eni, vpc;
+      var agentData, attr, component, design, eni, mesosData, vpc;
       component = Design.instance().component(uid);
       attr = component != null ? component.toJSON() : void 0;
       attr.uid = uid;
@@ -1563,6 +1586,15 @@ define('wspace/awseditor/property/instance/model',['../base/model', 'constant', 
       attr.tenancy = component.isDefaultTenancy();
       attr.displayCount = attr.count - 1;
       attr.description = component.get("description");
+      if (component.isMesos()) {
+        mesosData = {
+          isMesosMaster: component.isMesosMaster(),
+          isMesosSlave: component.isMesosSlave(),
+          mesosAttr: typeof component.getMesosAttributes === "function" ? component.getMesosAttributes() : void 0,
+          defaultMesosAttr: typeof component.getDefaultMesosAttributes === "function" ? component.getDefaultMesosAttributes() : void 0
+        };
+        _.extend(attr, mesosData);
+      }
       eni = component.getEmbedEni();
       attr.number_disable = eni && eni.connections('RTB_Route').length > 0;
       vpc = Design.modelClassForType(constant.RESTYPE.VPC).allObjects()[0];
@@ -2212,12 +2244,12 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input\" type=\"text\" data-name=\"key\" value=\""
+  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"key\" value=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " required/>\n                        <label>value</label><input class=\"input\" type=\"text\" data-name=\"value\" value=\""
+  buffer += " required/>\n                        <label>value</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"value\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
@@ -2511,7 +2543,10 @@ function program49(depth0,data) {
     + "</label>\n		</section>\n		<section ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.multi_enis), {hash:{},inverse:self.program(56, program56, data),fn:self.program(54, program54, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n			<div class=\"checkbox\">\n				<input id=\"property-instance-public-ip\" type=\"checkbox\" disabled=\"disabled\" checked=\"checked\" value=\"None\" name=\"property-instance-public-ip\" />\n				<label for=\"property-instance-public-ip\"></label>\n			</div>\n			<label for=\"property-instance-public-ip\">"
+  buffer += ">\n			<div class=\"checkbox\">\n				<input id=\"property-instance-public-ip\" type=\"checkbox\" disabled=\"disabled\" ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.assoPublicIp), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " value=\"None\" name=\"property-instance-public-ip\" />\n				<label for=\"property-instance-public-ip\"></label>\n			</div>\n			<label for=\"property-instance-public-ip\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_AUTO_PUBLIC_IP", {hash:{},data:data}))
     + "</label>\n		</section>\n		<section class=\"property-control-group\">\n			<div class=\"network-list-wrap\">\n				<div class=\"network-list-header clearfix\">\n					"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_IP_ADDRESS", {hash:{},data:data}))
@@ -2658,19 +2693,9 @@ define('wspace/awseditor/property/instance/view',['../base/view', './template/st
       'click #add-ma-item-outside': 'addMesosAttrItem'
     },
     render: function() {
-      var data, kpDropdown, me, mesosData, tpl, _base, _base1;
+      var kpDropdown, me, tpl;
       tpl = getTemplate(this.resModel.subType);
-      data = this.model.toJSON();
-      if (this.resModel.isMesos()) {
-        mesosData = {
-          isMesosMaster: this.resModel.isMesosMaster(),
-          isMesosSlave: this.resModel.isMesosSlave(),
-          mesosAttr: typeof (_base = this.resModel).getMesosAttributes === "function" ? _base.getMesosAttributes() : void 0,
-          defaultMesosAttr: typeof (_base1 = this.resModel).getDefaultMesosAttributes === "function" ? _base1.getDefaultMesosAttributes() : void 0
-        };
-        _.extend(data, mesosData);
-      }
-      this.$el.html(tpl(data));
+      this.$el.html(tpl(this.model.toJSON()));
       kpDropdown = new kp({
         resModel: this.resModel
       });
@@ -3188,44 +3213,50 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
+  
+  return "\n  <div class=\"option-group-head expand\">Mesos Details</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <dl class=\"dl-vertical\">\n        <dt>Cluster Leader</dt>\n        <dd>Placeholder</dd>\n      </dl>\n    </section>\n  </div>\n  ";
+  }
+
+function program3(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n      <dd>";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n      ";
   return buffer;
   }
-function program2(depth0,data) {
+function program4(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = (depth0 && depth0.keyName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program4(depth0,data) {
+function program6(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_NO_KP", {hash:{},data:data}));
   }
 
-function program6(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dd>\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(12, program12, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.keyName), {hash:{},inverse:self.program(14, program14, data),fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dd>\n      ";
   return buffer;
   }
-function program7(depth0,data) {
+function program9(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.windows), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.windows), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
   return buffer;
   }
-function program8(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                "
@@ -3236,7 +3267,7 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <a href=\"#\" id=\"property-app-keypair\">"
@@ -3245,7 +3276,7 @@ function program10(depth0,data) {
   return buffer;
   }
 
-function program12(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "";
   buffer += "\n          "
@@ -3254,7 +3285,7 @@ function program12(depth0,data) {
   return buffer;
   }
 
-function program14(depth0,data) {
+function program16(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -3282,7 +3313,7 @@ function program14(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.readableVt.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.volumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
@@ -3291,10 +3322,10 @@ function program14(depth0,data) {
     + " GB</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</dt>\n        <dd>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(19, program19, data),fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ATTACHMENT_STATE", {hash:{},data:data}))
@@ -3311,7 +3342,7 @@ function program14(depth0,data) {
     + "</dd>\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program15(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3322,19 +3353,19 @@ function program15(depth0,data) {
   return buffer;
   }
 
-function program17(depth0,data) {
+function program19(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_NOT_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
-function program21(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3345,7 +3376,7 @@ function program21(depth0,data) {
   return buffer;
   }
 
-function program23(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -3365,7 +3396,7 @@ function program23(depth0,data) {
     + "\"></i>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_SOURCE_DEST_CHECK_DISP", {hash:{},data:data}))
@@ -3384,32 +3415,32 @@ function program23(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.subnetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_MAC_ADDRESS", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.macAddress), {hash:{},data:data}))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </div>\n    <table class=\"table table-small\">\n      <tr>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_IP_ADDRESS", {hash:{},data:data}))
     + "</th>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_PUBLIC_IP", {hash:{},data:data}))
     + "</th>\n      </tr>\n      ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </table>\n\n  </div>\n  ";
   return buffer;
   }
-function program24(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dt>"
@@ -3420,7 +3451,7 @@ function program24(depth0,data) {
   return buffer;
   }
 
-function program26(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3439,7 +3470,7 @@ function program26(depth0,data) {
   return buffer;
   }
 
-function program28(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3450,7 +3481,7 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program32(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3461,7 +3492,7 @@ function program30(depth0,data) {
   return buffer;
   }
 
-function program32(depth0,data) {
+function program34(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3472,20 +3503,20 @@ function program32(depth0,data) {
   return buffer;
   }
 
-function program34(depth0,data) {
+function program36(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <tr>\n        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.privateIpAddress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n        <td>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(39, program39, data),fn:self.program(37, program37, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(41, program41, data),fn:self.program(39, program39, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n      </tr>\n      ";
   return buffer;
   }
-function program35(depth0,data) {
+function program37(depth0,data) {
   
   var buffer = "";
   buffer += "<span>("
@@ -3494,19 +3525,22 @@ function program35(depth0,data) {
   return buffer;
   }
 
-function program37(depth0,data) {
+function program39(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program39(depth0,data) {
+function program41(depth0,data) {
   
   
   return "-";
   }
 
-  buffer += "<article class=\"property-app\">\n  <div class=\"option-group-head expand\">"
+  buffer += "<article class=\"property-app\">\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_DETAIL", {hash:{},data:data}))
     + "\n  <a href=\"#\" class=\"icon-syslog tooltip property-btn-get-system-log\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TIP_GET_SYSTEM_LOG", {hash:{},data:data}))
@@ -3565,7 +3599,7 @@ function program39(depth0,data) {
     + "</dd>\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(8, program8, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_CLOUDWATCH_DETAILED_MONITORING", {hash:{},data:data}))
@@ -3588,10 +3622,10 @@ function program39(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.blockDevice), {hash:{},data:data}))
     + "</dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -4983,7 +5017,7 @@ define('wspace/awseditor/property/sg/model',['../base/model', "Design", 'constan
     init: function(uid) {
       var component, inputReadOnly, members, rule, rules, _i, _len, _ref;
       this.component = component = Design.instance().component(uid);
-      if (this.isReadOnly) {
+      if (this.modeIsApp) {
         this.appInit(uid);
         return;
       }
@@ -5003,7 +5037,8 @@ define('wspace/awseditor/property/sg/model',['../base/model', "Design", 'constan
         members: members,
         rules: rules,
         color: component.color,
-        ruleEditable: true
+        ruleEditable: !this.readonly(),
+        readonly: this.readonly()
       });
       this.sortSGRule();
       if (component.isElbSg()) {
@@ -5101,6 +5136,9 @@ define('wspace/awseditor/property/sg/model',['../base/model', "Design", 'constan
       this.set(sg_app_detail);
       this.sortSGRule();
       return null;
+    },
+    readonly: function() {
+      return this.component.isMesos();
     }
   });
   return new SgModel();
@@ -5144,12 +5182,18 @@ function program5(depth0,data) {
     + "</span>\n			<input class=\"input\"  type=\"text\" id=\"securitygroup-name\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.nameReadOnly), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n		</div>\n		<div class=\"property-control-group\">\n			<label for=\"securitygroup-description\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
     + "</label>\n			<input class=\"input\" type=\"text\" id=\"securitygroup-description\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.descReadOnly), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -5246,7 +5290,7 @@ define('wspace/awseditor/property/sg/view',['../base/view', './template/stack', 
     },
     render: function() {
       var tpl;
-      tpl = this.model.isReadOnly ? app_template : template;
+      tpl = this.model.modeIsApp ? app_template : template;
       this.$el.html(tpl(this.model.toJSON()));
       this.refreshSgruleList();
       this.setTitle(this.model.get("name"));
@@ -5472,21 +5516,21 @@ define('wspace/awseditor/property/sg/main',['../base/main', './model', './view']
     subPanelID: "SG",
     initStack: function() {
       this.model = model;
-      this.model.isReadOnly = false;
+      this.model.modeIsApp = false;
       this.model.isAppEdit = false;
       this.view = view;
       return null;
     },
     initApp: function() {
       this.model = model;
-      this.model.isReadOnly = true;
+      this.model.modeIsApp = true;
       this.model.isAppEdit = false;
       this.view = view;
       return null;
     },
     initAppEdit: function() {
       this.model = model;
-      this.model.isReadOnly = false;
+      this.model.modeIsApp = false;
       this.model.isAppEdit = true;
       this.view = view;
       return null;
@@ -12630,7 +12674,7 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
       });
     },
     init: function(uid) {
-      var agentData, data, design, kp, rootDevice;
+      var agentData, data, design, kp, mesosData, rootDevice;
       this.lc = Design.instance().component(uid);
       if (!this.lc) {
         return false;
@@ -12639,6 +12683,14 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
       data.uid = uid;
       data.isEditable = this.isAppEdit;
       data.app_view = Design.instance().modeIsAppView();
+      if (this.lc.isMesos()) {
+        mesosData = {
+          isMesos: true,
+          mesosAttr: this.lc.getMesosAttributes(),
+          defaultMesosAttr: this.lc.getDefaultMesosAttributes()
+        };
+        _.extend(data, mesosData);
+      }
       this.set(data);
       this.set("displayAssociatePublicIp", true);
       this.set("monitorEnabled", true);
@@ -13114,12 +13166,12 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input\" type=\"text\" data-name=\"key\" value=\""
+  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"key\" value=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " required/>\n                        <label>value</label><input class=\"input\" type=\"text\" data-name=\"value\" value=\""
+  buffer += " required/>\n                        <label>value</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"value\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
@@ -13219,7 +13271,7 @@ function program18(depth0,data) {
 function program20(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			<section class=\"property-control-group\">\n				<div class=\"checkbox\">\n					<input id=\"property-instance-public-ip\" type=\"checkbox\" ";
+  buffer += "\n			<section class=\"property-control-group\">\n				<div class=\"checkbox\">\n					<input id=\"property-instance-public-ip\" type=\"checkbox\"  disabled=\"disabled\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.publicIp), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-instance-public-ip\" />\n					<label for=\"property-instance-public-ip\"></label>\n				</div>\n				<label for=\"property-instance-public-ip\">"
@@ -13426,18 +13478,9 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
       'click #add-ma-item-outside': 'addMesosAttrItem'
     },
     render: function() {
-      var data, kpDropdown, me, mesosData, tpl;
+      var kpDropdown, me, tpl;
       tpl = this.resModel.isMesos() ? TplMesos : TplLc;
-      data = this.model.toJSON();
-      if (this.resModel.isMesos()) {
-        mesosData = {
-          isMesos: true,
-          mesosAttr: this.resModel.getMesosAttributes(),
-          defaultMesosAttr: this.resModel.getDefaultMesosAttributes()
-        };
-        _.extend(data, mesosData);
-      }
-      this.$el.html(tpl(data));
+      this.$el.html(tpl(this.model.toJSON()));
       kpDropdown = new kp({
         resModel: this.resModel
       });
@@ -13607,9 +13650,29 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
 define('wspace/awseditor/property/launchconfig/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head expand\">Mesos Details</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>Attributes</label>\n      <table class=\"table\">\n        <tr>\n          <th>Key</th><th>Value</th>\n        </tr>\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.attr), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </table>\n    </section>\n  </div>\n  ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <tr>\n          <td>"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n          <td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td>\n        </tr>\n        ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <section class=\"property-control-group\" data-bind=\"true\">\n      <label class=\"left\" for=\"property-instance-name\" >"
@@ -13626,7 +13689,7 @@ function program1(depth0,data) {
   return buffer;
   }
 
-function program3(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dt>"
@@ -13641,7 +13704,7 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
+function program8(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dd>"
@@ -13650,7 +13713,7 @@ function program5(depth0,data) {
   return buffer;
   }
 
-function program7(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -13664,7 +13727,7 @@ function program7(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.readableVt.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.VolumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.SnapshotId), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
@@ -13673,15 +13736,15 @@ function program7(depth0,data) {
     + " GB</dd>\n<!--         <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</dt>\n        <dd>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd> -->\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.Ebs)),stack1 == null || stack1 === false ? stack1 : stack1.Iops), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program8(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -13692,19 +13755,19 @@ function program8(depth0,data) {
   return buffer;
   }
 
-function program10(depth0,data) {
+function program13(depth0,data) {
   
   
   return "Yes";
   }
 
-function program12(depth0,data) {
+function program15(depth0,data) {
   
   
   return "No";
   }
 
-function program14(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>IOPS</dt>\n        <dd>"
@@ -13713,13 +13776,16 @@ function program14(depth0,data) {
   return buffer;
   }
 
-  buffer += "<article class=\"property-app\" data-bind=\"true\">\n  <div class=\"option-group-head expand\">"
+  buffer += "<article class=\"property-app\" data-bind=\"true\">\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_TITLE", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    <dl class=\"dl-vertical\">\n      ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_CREATE_TIME", {hash:{},data:data}))
@@ -13736,14 +13802,14 @@ function program14(depth0,data) {
     + "</dd>\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(5, program5, data),fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.app_view), {hash:{},inverse:self.program(8, program8, data),fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.ebsOptimized)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -21949,7 +22015,7 @@ function program11(depth0,data) {
 
   buffer += "<button class=\"tooltip sidebar-hider icon-caret-left HideOEPanelLeft\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_TOGGLE_RESOURCE_PANEL", {hash:{},data:data}))
-    + "'></button>\n\n<nav class=\"sidebar-title clearfix\">\n    <button class=\"sidebar-nav-resource selected\">"
+    + "'></button>\n\n<nav class=\"sidebar-title clearfix\">\n    <button class=\"sidebar-nav-resource\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
     + "</button>\n    <button class=\"sidebar-nav-container\">Container</button>\n</nav>\n\n<div class=\"resource-panel\">\n  <div class=\"sidebar-tool\">\n    <button class=\"refresh-resource-panel\"><i class=\"icon-refresh tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_REFRESH_RESOURCE_LIST", {hash:{},data:data}))
@@ -23000,8 +23066,6 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         return;
       }
       $button = $(event.currentTarget);
-      $button.parents('nav').find('button').removeClass('selected');
-      $button.addClass('selected');
       this.$el.find('.container-panel').addClass('hide');
       this.$el.find('.resource-panel').addClass('hide');
       if ($button.hasClass('sidebar-nav-resource')) {
@@ -23041,19 +23105,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         return this.marathonModal.close();
       }, this);
     },
-    loadMarathon: function(opsModelId) {
-      var data, opsModel, that;
-      that = this;
-      opsModel = App.model.getOpsModelById(opsModelId);
-      data = opsModel.getJsonData();
-      if (data) {
-        return this.renderMarathonApp(data);
-      } else {
-        return opsModel.fetchJsonData().then(function() {
-          return that.renderMarathonApp(opsModel.getJsonData());
-        });
-      }
-    },
+    loadMarathon: function(opsModelId) {},
     renderMarathonApp: function(data) {
       var $appList, $createPanel, json;
       json = $.extend(true, {}, data);
@@ -28841,6 +28893,9 @@ define('wspace/awseditor/model/SgModel',["ComplexResModel", "ResourceModel", "./
     isVisual: function() {
       return false;
     },
+    isMesos: function() {
+      return this.attributes.name === "MesosSG";
+    },
     createIpTarget: function(ipAddress) {
       return new SgTargetModel(MC.getValidCIDR(ipAddress));
     },
@@ -29300,7 +29355,7 @@ define('wspace/awseditor/model/SslCertModel',["constant", "ComplexResModel", "Co
   return SslCertModel;
 });
 
-define('wspace/awseditor/model/connection/ElbAsso',["constant", "ConnectionModel", "i18n!/nls/lang.js", "Design", "SGRulePopup"], function(constant, ConnectionModel, lang, Design, SGRulePopup) {
+define('wspace/awseditor/model/connection/ElbAsso',["constant", "ConnectionModel", "i18n!/nls/lang.js", "Design"], function(constant, ConnectionModel, lang, Design) {
   var ElbAmiAsso, ElbSubnetAsso;
   ElbSubnetAsso = ConnectionModel.extend({
     type: "ElbSubnetAsso",
@@ -30129,6 +30184,9 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         }
         blockDevice.push(vd);
       }
+      if (InstanceModel.isMesosMaster(this.attributes) || InstanceModel.isMesosSlave(this.attributes)) {
+        this.setMesosState();
+      }
       component = {
         type: this.type,
         uid: this.id,
@@ -30576,11 +30634,11 @@ define('wspace/awseditor/model/connection/Route',["constant", "ConnectionModel",
         }
       }, {
         port1: {
-          name: "",
+          name: "rtb-tgt",
           type: constant.RESTYPE.RT
         },
         port2: {
-          name: "",
+          name: "vpc-route",
           type: "ExternalVpcRouteTarget"
         }
       }
@@ -33131,8 +33189,14 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
         return this.setMesosState();
       }
     },
+    initialize: function(attr, option) {
+      InstanceModel.prototype.initialize.apply(this, arguments);
+      if (option.createByUser || option.cloneSource) {
+        return this.getEmbedEni().set("assoPublicIp", true);
+      }
+    },
     setMesosState: function(marathon) {
-      var masterMapAry, masterModels, stackName;
+      var masterMapAry, masterModels, mesosState, stackName, states;
       if (marathon === void 0) {
         marathon = this._getMarathon();
       }
@@ -33149,7 +33213,7 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
           });
         }
       });
-      return this.set('state', [
+      mesosState = [
         {
           id: this.get('name'),
           module: 'linux.mesos.master',
@@ -33162,7 +33226,16 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
             framework: marathon ? ['marathon'] : []
           }
         }
-      ]);
+      ];
+      states = this.get('state') || [];
+      states = _.filter(states, function(state) {
+        var _ref;
+        if ((_ref = state.module) === 'linux.mesos.master' || _ref === 'linux.mesos.slave') {
+          return false;
+        }
+        return true;
+      });
+      return this.set('state', mesosState.concat(states));
     },
     getMesosState: function() {
       var states;
@@ -33248,8 +33321,14 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
         return this.setMesosState();
       }
     },
+    initialize: function(attr, option) {
+      InstanceModel.prototype.initialize.apply(this, arguments);
+      if (option.createByUser || option.cloneSource) {
+        return this.getEmbedEni().set("assoPublicIp", true);
+      }
+    },
     setMesosState: function(attr) {
-      var attributes, masterMapAry, masterModels;
+      var attributes, masterMapAry, masterModels, mesosState, states;
       attributes = attr || this._getMesosAttributes() || this.getDefaultMesosAttributes();
       if (attributes['az']) {
         delete attributes['az'];
@@ -33272,7 +33351,7 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
           });
         }
       });
-      return this.set('state', [
+      mesosState = [
         {
           id: this.get('name'),
           module: 'linux.mesos.slave',
@@ -33282,7 +33361,16 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
             slave_ip: '@{self.PrivateIpAddress}'
           }
         }
-      ]);
+      ];
+      states = this.get('state') || [];
+      states = _.filter(states, function(state) {
+        var _ref;
+        if ((_ref = state.module) === 'linux.mesos.master' || _ref === 'linux.mesos.slave') {
+          return false;
+        }
+        return true;
+      });
+      return this.set('state', mesosState.concat(states));
     },
     getMesosState: function() {
       var states;
@@ -33373,7 +33461,8 @@ define('wspace/awseditor/model/MesosLcModel',["./LcModel", "./MesosSlaveModel", 
         rdSize: 0,
         rdIops: "",
         rdType: 'gp2',
-        attributes: {}
+        attributes: {},
+        publicIp: true
       };
     },
     constructor: function(attributes, options) {
@@ -36309,7 +36398,7 @@ define('wspace/awseditor/AwsViewApp',["CoreEditorViewApp", "./subviews/ResourceP
   });
 });
 
-define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./model/DesignAws", "./AwsEditorStack", "OpsModel", "CloudResources", "constant", "./AwsDeps"], function(CoreEditorApp, AppView, DesignAws, StackEditor, OpsModel, CloudResources, constant) {
+define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./model/DesignAws", "./AwsEditorStack", "OpsModel", "CloudResources", "constant", "ApiRequest", "./AwsDeps"], function(CoreEditorApp, AppView, DesignAws, StackEditor, OpsModel, CloudResources, constant, ApiRequest) {
   return CoreEditorApp.extend({
     type: "AwsEditorApp",
     viewClass: AppView,
@@ -36336,9 +36425,54 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
       }
       throw err;
     },
+    initEditor: function() {
+      CoreEditorApp.prototype.initEditor.call(this);
+      this.mesosJobs();
+    },
+    cleanup: function() {
+      CoreEditorApp.prototype.cleanup.call(this);
+      this.cleanupMesosJobs();
+    },
     fetchAmiData: StackEditor.prototype.fetchAmiData,
     fetchRdsData: StackEditor.prototype.fetchRdsData,
-    isRdsDisabled: StackEditor.prototype.isRdsDisabled
+    isRdsDisabled: StackEditor.prototype.isRdsDisabled,
+
+    /* Mesos */
+    mesosJobs: function() {
+      var self;
+      self = this;
+      this.updateMesosInfo().then(function() {
+        if (self.isRemoved()) {
+          return;
+        }
+        return self.trigger("mesosInfoUpdate");
+      }).fin(function() {
+        if (self.isRemoved()) {
+          return;
+        }
+        return self.mesosSchedule = setTimeout(function() {
+          return self.mesosJobs();
+        }, 1000 * 10);
+      });
+    },
+    updateMesosInfo: function() {
+      var jobs;
+      this.mesosSchedule = null;
+      jobs = [];
+      jobs.push(ApiRequest("marathon_info", {
+        "key_id": this.opsModel.credentialId(),
+        "app_id": this.opsModel.id
+      }).then(function(data) {
+        return console.log(data);
+      }));
+      return Q.all(jobs);
+    },
+    cleanupMesosJobs: function() {
+      if (this.mesosSchedule) {
+        clearTimeout(this.mesosSchedule);
+        this.mesosSchedule = null;
+      }
+    }
   }, {
     canHandle: function(data) {
       if (!data.opsModel) {

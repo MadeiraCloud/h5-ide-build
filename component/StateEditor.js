@@ -729,29 +729,28 @@ define('component/stateeditor/template',['handlebars'], function(Handlebars){ va
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); partials = this.merge(partials, Handlebars.partials); data = data || {};
-  var stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
+  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	<li class=\"state-item view ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.cmd_value), "#", {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  buffer += "\n	<li class=\"state-item ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " view ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.cmd_value), "#", {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" data-command=\""
     + escapeExpression(((stack1 = (depth0 && depth0.cmd_value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-id=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n		<div class=\"state-toolbar\">\n			<div class=\"state-action-wrap\">\n				<div class=\"state-remove icon-del tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_DELETE_STATE", {hash:{},data:data}))
-    + "\"></div>\n				<div class=\"state-check tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SELECT_STATE", {hash:{},data:data}))
-    + "\">\n					<div class=\"checkbox\">\n						<input id=\"state-check-"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"checkbox\" name=\"state-check-"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n						<label for=\"state-check-"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n					</div>\n				</div>\n			</div>\n			<i class=\"state-status-icon status status-yellow\"></i>\n			<i class=\"state-drag\"></i>\n			<div class=\"state-view\">\n				<div class=\"command-view-value\"></div>\n				<div class=\"parameter-view-list\">\n					";
+    + "\">\n		<div class=\"state-toolbar\">\n			";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			<i class=\"state-status-icon status status-yellow\"></i>\n			";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			<div class=\"state-view\">\n				<div class=\"command-view-value\"></div>\n				<div class=\"parameter-view-list\">\n					";
   stack1 = self.invokePartial(partials.paraViewListTpl, 'paraViewListTpl', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				</div>\n			</div>\n		</div>\n		<div class=\"state-edit clearfix\">\n			<div class=\"command-value editable-area line\">"
@@ -765,7 +764,36 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   
+  return "disabled";
+  }
+
+function program4(depth0,data) {
+  
+  
   return "comment";
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			<div class=\"state-action-wrap\">\n				<div class=\"state-remove icon-del tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_DELETE_STATE", {hash:{},data:data}))
+    + "\"></div>\n				<div class=\"state-check tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "STATE_TIP_SELECT_STATE", {hash:{},data:data}))
+    + "\">\n					<div class=\"checkbox\">\n						<input id=\"state-check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" name=\"state-check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n						<label for=\"state-check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n					</div>\n				</div>\n			</div>\n			";
+  return buffer;
+  }
+
+function program8(depth0,data) {
+  
+  
+  return "<i class=\"state-drag\"></i>";
   }
 
   stack1 = helpers.each.call(depth0, (depth0 && depth0.state_list), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -3321,12 +3349,16 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
     refreshStateViewList: function($stateItemList) {
       var $lastArrayInputListAry, $lastDictInputList, $lastInputListAry, $lastStateInputListAry, that;
       that = this;
-      _.each($stateItemList, function(stateItem) {
+      $stateItemList = _.filter($stateItemList, function(stateItem) {
         var $stateItem;
         $stateItem = $(stateItem);
         that.refreshStateView($stateItem);
-        return null;
+        if ($stateItem.hasClass('disabled')) {
+          return false;
+        }
+        return true;
       });
+      $stateItemList = $($stateItemList);
       if (!that.readOnlyMode) {
         $lastDictInputList = $stateItemList.find('.parameter-item.dict .parameter-dict-item .key');
         _.each($lastDictInputList, function(lastDictInput) {
@@ -4111,7 +4143,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       return stateItemObj;
     },
     saveStateData: function() {
-      var $stateItemList, stateObjAry, that;
+      var $stateItemList, mesosState, originStateData, stateObjAry, that, _ref;
       that = this;
       if (!that.$stateList) {
         return null;
@@ -4119,14 +4151,24 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       $stateItemList = that.$stateList.find('.state-item');
       stateObjAry = [];
       _.each($stateItemList, function(stateItem, idx) {
-        var $stateItem, stateItemObj;
+        var $stateItem, stateItemObj, _ref;
         $stateItem = $(stateItem);
         stateItemObj = that.genStateItemData($stateItem);
         if (stateItemObj && stateItemObj.module && stateItemObj.id) {
-          stateObjAry.push(stateItemObj);
+          if (!((_ref = stateItemObj.module) === 'linux.mesos.master' || _ref === 'linux.mesos.slave')) {
+            stateObjAry.push(stateItemObj);
+          }
         }
         return null;
       });
+      originStateData = that.model.getStateData();
+      mesosState = [];
+      if (originStateData && _.isArray(originStateData) && originStateData[0]) {
+        if ((_ref = originStateData[0].module) === 'linux.mesos.master' || _ref === 'linux.mesos.slave') {
+          mesosState = [originStateData[0]];
+        }
+      }
+      stateObjAry = mesosState.concat(stateObjAry);
       return stateObjAry;
     },
     loadStateData: function(stateObjAry) {
@@ -4156,7 +4198,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
             parameter_list: []
           };
           _.each(paraModelObj, function(paraModelValue, paraModelName) {
-            var paraListAry, paraModelRequired, paraModelType, paraValue, renderParaObj, renderParaValue;
+            var paraListAry, paraModelRequired, paraModelType, paraValue, renderParaObj, renderParaValue, _ref1;
             paraModelType = paraModelValue.type;
             paraModelRequired = paraModelValue.required;
             renderParaObj = {
@@ -4256,6 +4298,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
             stateRenderObj.parameter_list.push(renderParaObj);
             paraListAry = stateRenderObj.parameter_list;
             stateRenderObj.parameter_list = that.model.sortParaList(paraListAry, 'para_name');
+            stateRenderObj.disabled = ((_ref1 = state.module) === 'linux.mesos.master' || _ref1 === 'linux.mesos.slave');
             return null;
           });
           renderObj.state_list.push(stateRenderObj);
@@ -4445,7 +4488,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
         option = {};
       }
       _initEditor = function() {
-        var editColumn, editRow, editSession, editor, editorSingleLine, enableTab, maxLines, resRefModeAry, tk;
+        var $stateItem, editColumn, editRow, editSession, editor, editorSingleLine, enableTab, maxLines, resRefModeAry, tk;
         editor = ace.edit(editorElem);
         $editorElem.data('editor', editor);
         editor.hintObj = hintObj;
@@ -4639,7 +4682,8 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
             }
           }
         });
-        if (that.readOnlyMode) {
+        $stateItem = $editorElem.parents('.state-item');
+        if (that.readOnlyMode || $stateItem.hasClass('disabled') || (option != null ? option.disabled : void 0)) {
           return editor.setReadOnly(true);
         }
       };
@@ -5417,16 +5461,23 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       return true;
     },
     moveState: function(direction) {
-      var focused_index, item, new_index, next_item, prev_item, state_id, that;
+      var focused_index, item, items, new_index, next_item, prev_item, state_id, that;
       that = this;
+      items = $('#OpsEditor').find('#state-editor .state-item');
       item = $('#OpsEditor').find('#state-editor .state-item.focused');
       focused_index = $('#OpsEditor').find('#state-editor .state-item.focused').index('#OpsEditor #state-editor .state-list > li');
       if (direction === 'down') {
         next_item = item.next();
         if (next_item.length > 0) {
+          if (next_item.hasClass('disabled')) {
+            return false;
+          }
           item.insertAfter(next_item);
           new_index = focused_index + 1;
         } else {
+          if (items.eq(0).hasClass('disabled')) {
+            return false;
+          }
           item.parent().prepend(item);
           new_index = 0;
         }
@@ -5434,9 +5485,15 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       if (direction === 'up') {
         prev_item = item.prev();
         if (prev_item.length > 0) {
+          if (prev_item.hasClass('disabled')) {
+            return false;
+          }
           item.insertBefore(prev_item);
           new_index = focused_index - 1;
         } else {
+          if (items.eq(items.length - 1).hasClass('disabled')) {
+            return false;
+          }
           item.parent().append(item);
           new_index = $('#OpsEditor').find('#state-editor .state-item').length;
         }
@@ -5470,6 +5527,9 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       var item, that;
       that = this;
       item = $('#OpsEditor').find('#state-editor .state-item.focused');
+      if (item.hasClass('disabled')) {
+        return;
+      }
       if (item.hasClass('selected')) {
         item.removeClass('selected');
         item.find('.checkbox input').prop('checked', false);
@@ -5655,7 +5715,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
     selectAll: function() {
       var that;
       that = this;
-      $('#OpsEditor').find('#state-editor .state-item').addClass('selected').find('.checkbox input').prop('checked', true);
+      $('#OpsEditor').find('#state-editor .state-item:not(.disabled)').addClass('selected').find('.checkbox input').prop('checked', true);
       that.updateToolbar();
       return true;
     },
@@ -5704,7 +5764,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       } else {
         that.$('#state-toolbar-paste').addClass('disabled');
       }
-      if (selected_length > 0 && selected_length === that.$('#state-editor .state-item').length) {
+      if (selected_length > 0 && selected_length === that.$('#state-editor .state-item:not(.disabled)').length) {
         that.$('#state-toolbar-selectAll').find('input').prop('checked', true);
       } else {
         that.$('#state-toolbar-selectAll').find('input').prop('checked', false);
@@ -5846,7 +5906,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       }
     },
     openStateTextEditor: function(cmdName, paraName, extName, originEditor) {
-      var $codeArea, codeEditor, textContent, that;
+      var $codeArea, codeEditor, disabled, textContent, that;
       that = this;
       textContent = originEditor.getValue();
       that.editorModal = new modalPlus({
@@ -5863,12 +5923,14 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       that.editorModal.tpl.attr("id", "modal-state-text-expand");
       $('#modal-state-text-expand').data('origin-editor', originEditor);
       $codeArea = $('#modal-state-text-expand .editable-area');
+      disabled = $(originEditor.container).parents('.state-item').hasClass('disabled');
       that.initCodeEditor($codeArea[0], {
         at: that.resAttrDataAry
       }, {
         showGutter: true,
         isCodeEditor: true,
-        extName: extName
+        extName: extName,
+        disabled: disabled
       });
       codeEditor = $codeArea.data('editor');
       if (codeEditor) {

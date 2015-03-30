@@ -5817,21 +5817,19 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
       this.listenTo(this.workspace.design, "change:mode", this.switchMode);
     },
     updateResourcePanel: function() {
-      if (this.workspace.opsModel.type === OpsModel.Type.Mesos) {
-        return this.removeLeftPanel();
+      if (this.workspace.opsModel.isMesos()) {
+        return this.renderMesosPanel();
       } else {
-        return this.renderMarathonApp();
+        return this.removeLeftPanel();
       }
     },
-    renderMarathonApp: function() {
+    renderMesosPanel: function() {
       var _base;
       if (typeof (_base = this.resourcePanel).switchPanel === "function") {
         _base.switchPanel();
       }
-      this.$('.sidebar-nav-resource').remove();
-      if (this.workspace.opsModel.id) {
-        return this.resourcePanel.loadMarathon(this.workspace.opsModel.getMarathonStackId());
-      }
+      this.$('.sidebar-nav-resource').hide();
+      return this.$('.sidebar-nav-container').show();
     },
     switchMode: function(mode) {
       this.toolbar.updateTbBtns();
@@ -6282,7 +6280,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
   });
 });
 
-define('CanvasLine',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang, SGRulePopup) {
+define('CanvasLine',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
   var CeLine, LineMaskToClear, determineAngle, flipRect, offsetRect, rotate, rotateRect, __determineAngle;
   LineMaskToClear = null;
   rotate = function(point, angle) {
