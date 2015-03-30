@@ -21969,7 +21969,7 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "";
-  buffer += "\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head\">"
+  buffer += "\n  <section class=\"accordion-group\">\n    <header class=\"fixedaccordion-head ami-header\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_AMI", {hash:{},data:data}))
     + "\n      <nav class=\"selectbox AmiTypeSelect js-toggle-dropdown\">\n        <div class=\"selection\">"
     + escapeExpression(helpers.i18n.call(depth0, "RES_LBL_QUICK_START_AMI", {hash:{},data:data}))
@@ -23002,8 +23002,6 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       'click .resources-dropdown-wrapper li': 'resourcesMenuClick',
       'OPTION_CHANGE #resource-list-sort-select-snapshot': 'resourceListSortSelectSnapshotEvent',
       'OPTION_CHANGE #resource-list-sort-select-rds-snapshot': 'resourceListSortSelectRdsEvent',
-      'click .apply': 'popApplyMarathonModal',
-      'click .container-change': 'popApplyMarathonModal',
       'click .container-item': 'toggleConstraint',
       'keyup #filter-containers': 'filterContainers',
       'change #filter-containers': 'filterContainers',
@@ -23074,38 +23072,6 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         return this.$el.find('.container-panel').removeClass('hide');
       }
     },
-    popApplyMarathonModal: function() {
-      var data, isApp, modalOptions, model, _i, _len, _ref, _ref1;
-      data = [];
-      _ref = this.workspace.scene.project.stacks().filter(function(a) {
-        return a.type === OpsModel.Type.Mesos;
-      });
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        model = _ref[_i];
-        data.push({
-          name: model.get("name"),
-          id: model.id
-        });
-      }
-      isApp = ((_ref1 = Design.instance().mode()) === 'appedit' || _ref1 === 'app');
-      data.isApp = isApp;
-      modalOptions = {
-        template: MC.template.applyMarathonStack(data),
-        title: 'Apply Marathon Stack ',
-        confirm: {
-          text: 'Apply'
-        }
-      };
-      this.marathonModal = new Modal(modalOptions);
-      return this.marathonModal.on('confirm', function() {
-        if (!$('#app-usage-selectbox .selected').length) {
-          return;
-        }
-        this.loadMarathon($('#app-usage-selectbox .selected').attr("data-value"));
-        return this.marathonModal.close();
-      }, this);
-    },
-    loadMarathon: function(opsModelId) {},
     renderMarathonApp: function(data) {
       var $appList, $createPanel, json;
       json = $.extend(true, {}, data);
@@ -25698,7 +25664,9 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
         layout: layout
       });
       if (Model.isMesosMaster(this.attributes) || Model.isMesosSlave(this.attributes)) {
-        this.setMesosState();
+        if (this.setMesosState) {
+          this.setMesosState();
+        }
       }
       instances = [this.generateJSON()];
       i = instances.length;
@@ -33184,8 +33152,7 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
       InstanceModel.call(this, attributes, _.extend({}, options, {
         createBySubClass: true
       }));
-      Model = Design.modelClassForType(constant.RESTYPE.INSTANCE);
-      if (!Model.isMesosMaster(attributes)) {
+      if (!InstanceModel.isMesosMaster(attributes)) {
         return this.setMesosState();
       }
     },
@@ -33197,6 +33164,7 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
     },
     setMesosState: function(marathon) {
       var masterMapAry, masterModels, mesosState, stackName, states;
+      Model.getMasterIPs();
       if (marathon === void 0) {
         marathon = this._getMarathon();
       }
@@ -33282,6 +33250,14 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
         return null;
       });
       return haveMarathon;
+    },
+    getMasterIPs: function() {
+      var masterModels;
+      masterModels = Design.modelClassForType(constant.RESTYPE.MESOSMASTER).allObjects();
+      _.each(masterModels, function(master) {
+        return master;
+      });
+      return [];
     }
   });
   Model.prototype.classId = InstanceModel.prototype.classId;
@@ -33316,8 +33292,7 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
       InstanceModel.call(this, attributes, _.extend({}, options, {
         createBySubClass: true
       }));
-      Model = Design.modelClassForType(constant.RESTYPE.INSTANCE);
-      if (!Model.isMesosSlave(attributes)) {
+      if (!InstanceModel.isMesosSlave(attributes)) {
         return this.setMesosState();
       }
     },

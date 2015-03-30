@@ -4143,7 +4143,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       return stateItemObj;
     },
     saveStateData: function() {
-      var $stateItemList, mesosState, originStateData, stateObjAry, that, _ref;
+      var $stateItemList, stateObjAry, that;
       that = this;
       if (!that.$stateList) {
         return null;
@@ -4151,24 +4151,14 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       $stateItemList = that.$stateList.find('.state-item');
       stateObjAry = [];
       _.each($stateItemList, function(stateItem, idx) {
-        var $stateItem, stateItemObj, _ref;
+        var $stateItem, stateItemObj;
         $stateItem = $(stateItem);
         stateItemObj = that.genStateItemData($stateItem);
         if (stateItemObj && stateItemObj.module && stateItemObj.id) {
-          if (!((_ref = stateItemObj.module) === 'linux.mesos.master' || _ref === 'linux.mesos.slave')) {
-            stateObjAry.push(stateItemObj);
-          }
+          stateObjAry.push(stateItemObj);
         }
         return null;
       });
-      originStateData = that.model.getStateData();
-      mesosState = [];
-      if (originStateData && _.isArray(originStateData) && originStateData[0]) {
-        if ((_ref = originStateData[0].module) === 'linux.mesos.master' || _ref === 'linux.mesos.slave') {
-          mesosState = [originStateData[0]];
-        }
-      }
-      stateObjAry = mesosState.concat(stateObjAry);
       return stateObjAry;
     },
     loadStateData: function(stateObjAry) {
