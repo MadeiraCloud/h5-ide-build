@@ -1022,6 +1022,7 @@ define({
         "DASHBOARD_LOGS_TOKEN_RENAME": "%s renamed API token %s",
         "CREATE_STACK_TITLE": "Create Stack",
         "CREATE_STACK_CONFIRM": "Create Stack",
+        "CANT_ATTACH_ENI_TO_MESOS_INSTANCE": "ENI cannot be attached to a mesos master or slave instance.",
         "STATE_TIP_DELETE_STATE": "Delete State",
         "STATE_TIP_SELECT_STATE": "Select State",
         "STATE_TIP_DESCRIPTION": "Help",
@@ -2357,7 +2358,9 @@ define({
         "ERROR_POOL_XXX_MUST_BE_CONNECTED_TO_A_LISTENER": "Pool <span class='validation-tag tag-pool'>%s</span> must be connected to a listener",
         "ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL": "Listener <span class='validation-tag tag-oslistener'>%s</span> must be connected to a pool",
         "ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED": "Load Balancer's Pool <span class='validation-tag tag-ospool'>%s</span> and Member %s must belong to the same subnet or subnets interconnected by the same router. ",
-        "ERROR_STACK_RESOURCE_EXCCED_LIMIT": "Resource %s does not have enough quota. %s/%s used."
+        "ERROR_STACK_RESOURCE_EXCCED_LIMIT": "Resource %s does not have enough quota. %s/%s used.",
+        "IS_MESOS_MASTER_MORE_THAN_3": "The total number of <span class='validation-tag tag-mesos-master'>Master Node</span> must be greater than or equal to 3.",
+        "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack need a <span class='validation-tag tag-mesos-slave'>Slave Node</span> at least."
     },
     "TOOLBAR": {
         "LOADING_DATA": "Loading data...",

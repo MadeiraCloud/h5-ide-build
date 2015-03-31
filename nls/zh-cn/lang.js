@@ -1022,6 +1022,7 @@ define({
         "DASHBOARD_LOGS_TOKEN_RENAME": "%s 重命名API令牌 %s",
         "CREATE_STACK_TITLE": "创建 Stack",
         "CREATE_STACK_CONFIRM": "创建 Stack",
+        "CANT_ATTACH_ENI_TO_MESOS_INSTANCE": "Eni 不能附加到 Mesos Master 或 Mesos Slave 实例上。",
         "STATE_TIP_DELETE_STATE": "删除 State",
         "STATE_TIP_SELECT_STATE": "选择 State",
         "STATE_TIP_DESCRIPTION": "帮助",
@@ -2357,7 +2358,9 @@ define({
         "ERROR_POOL_XXX_MUST_BE_CONNECTED_TO_A_LISTENER": "Pool <span class='validation-tag tag-pool'>%s</span> must be connected to a listener",
         "ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL": "Listener <span class='validation-tag tag-oslistener'>%s</span> must be connected to a pool",
         "ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED": "Load Balancer's Pool <span class='validation-tag tag-ospool'>%s</span> and Member %s must belong to the same subnet or subnets interconnected by the same router. ",
-        "ERROR_STACK_RESOURCE_EXCCED_LIMIT": "Resource %s does not have enough quota. %s/%s used."
+        "ERROR_STACK_RESOURCE_EXCCED_LIMIT": "Resource %s does not have enough quota. %s/%s used.",
+        "IS_MESOS_MASTER_MORE_THAN_3": "Master节点数必须大于等于3个。",
+        "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack 至少需要一个 Slave 节点。"
     },
     "TOOLBAR": {
         "LOADING_DATA": "加载数据中...",

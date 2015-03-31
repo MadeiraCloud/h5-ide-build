@@ -411,7 +411,6 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
         name: attr.name,
         stack_id: attr.stack_id,
         type: attr.type,
-        framework: attr.framework,
         component: component_data,
         layout: layout_data
       };
@@ -5807,7 +5806,7 @@ define('CoreEditor',["Workspace", "CoreEditorView", "wspace/coreeditor/TplOpsEdi
   });
 });
 
-define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "ApiRequest", "AppAction"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang, ApiRequest, AppAction) {
+define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "ApiRequest", "AppAction", "constant"], function(StackView, OpsModel, OpsEditorTpl, Modal, lang, ApiRequest, AppAction, constant) {
   return StackView.extend({
     initialize: function() {
       StackView.prototype.initialize.apply(this, arguments);
@@ -5817,7 +5816,7 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
       this.listenTo(this.workspace.design, "change:mode", this.switchMode);
     },
     updateResourcePanel: function() {
-      if (this.workspace.opsModel.isMesos()) {
+      if (this.workspace.opsModel.isMesos() && Design.modelClassForType(constant.RESTYPE.MESOSMASTER).getMarathon()) {
         return this.renderMesosPanel();
       } else {
         return this.removeLeftPanel();

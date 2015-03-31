@@ -1091,20 +1091,20 @@ function program12(depth0,data,depth2) {
   
   var buffer = "", stack1;
   buffer += "\n                ";
-  stack1 = helpers.unless.call(depth0, (depth2 && depth2.isMarathon), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth2 && depth2.isMarathon), {hash:{},inverse:self.program(16, program16, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                <div class=\"thumbnail app-thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    <i class=\"icon-terminate terminate-app tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_TERMINATE_APP", {hash:{},data:data}))
     + "\"></i>\n                    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    <span class=\"";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(26, program26, data),fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " truncate\" title=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -1116,34 +1116,42 @@ function program12(depth0,data,depth2) {
 function program13(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<i class=\"icon-app-type-"
+  buffer += "\n                    <i class=\"icon-app-type-"
     + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></i>\n                ";
+    + "\"></i>\n                    ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "mesos", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                ";
   return buffer;
   }
+function program14(depth0,data) {
+  
+  
+  return " <i class=\"icon-app-type-mesos\"></i> ";
+  }
 
-function program15(depth0,data) {
+function program16(depth0,data) {
   
   
   return "\n                    <i class=\"icon-app-type-marathon\"></i>\n                ";
   }
 
-function program17(depth0,data) {
+function program18(depth0,data) {
   
   
   return "class=\"hide\"";
   }
 
-function program19(depth0,data) {
+function program20(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(22, program22, data),fn:self.program(20, program20, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                    ";
   return buffer;
   }
-function program20(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "";
   buffer += "<i class=\"icon-stop stop-app tooltip\"  data-tooltip=\""
@@ -1152,25 +1160,25 @@ function program20(depth0,data) {
   return buffer;
   }
 
-function program22(depth0,data) {
+function program23(depth0,data) {
   
   
   return "<i class=\"icon-play start-app\"></i>";
   }
 
-function program24(depth0,data) {
+function program25(depth0,data) {
   
   
   return "running";
   }
 
-function program26(depth0,data) {
+function program27(depth0,data) {
   
   
   return "stopped";
   }
 
-function program28(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "";
   buffer += "\n            <div class=\"blank-widget\"><div>"
@@ -1197,7 +1205,7 @@ function program28(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </ul>\n        </nav>\n    </header>\n\n    <ul id=\"region-resource-app-wrap\" class=\"region-resource-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(28, program28, data),fn:self.programWithDepth(9, program9, data, depth0),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.program(29, program29, data),fn:self.programWithDepth(9, program9, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>";
   return buffer;
@@ -1250,16 +1258,22 @@ function program9(depth0,data,depth1) {
     + escapeExpression(((stack1 = (depth1 && depth1.projectId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "/ops/"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">\n                    <div class=\"thumbnail\"><img src=\""
+    + "\">\n                    ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "mesos", {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                    <div class=\"thumbnail\"><img src=\""
     + escapeExpression(((stack1 = (depth0 && depth0.thumbnail)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/></div>\n                    <div class=\"region-resource-info\">\n                        <i class=\"icon-delete delete-stack tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DEL_STACK", {hash:{},data:data}))
     + "\"></i>\n                        <i class=\"icon-duplicate duplicate-stack tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DUPLICATE_STACK", {hash:{},data:data}))
-    + "\"></i>\n                        <span class=\"truncate\">"
+    + "\"></i>\n                        <span class=\"";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "mesos", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n                    </div>\n                </a>\n            </li>\n        ";
   return buffer;
@@ -1267,10 +1281,22 @@ function program9(depth0,data,depth1) {
 function program10(depth0,data) {
   
   
-  return "class=\"hide\"";
+  return " <i class=\"icon-stack-type-mesos\"></i> ";
   }
 
 function program12(depth0,data) {
+  
+  
+  return "class=\"hide\"";
+  }
+
+function program14(depth0,data) {
+  
+  
+  return "upper-compact ";
+  }
+
+function program16(depth0,data) {
   
   var buffer = "";
   buffer += "\n            <div class=\"blank-widget\"><div>"
@@ -1297,7 +1323,7 @@ function program12(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.region), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </ul>\n        </nav>\n    </header>\n    <ul id=\"region-resource-stack-wrap\" class=\"region-resource-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.program(12, program12, data),fn:self.programWithDepth(9, program9, data, depth0),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.stacks), {hash:{},inverse:self.program(16, program16, data),fn:self.programWithDepth(9, program9, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n</div>";
   return buffer;
@@ -3091,7 +3117,7 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
       tojson = {
         thumbnail: true
       };
-      resources = self.model.scene.project[updateType]();
+      resources = _.clone(self.model.scene.project[updateType]());
       resources.comparator = "updateTime";
       resources.sort();
       if (isMarathon) {

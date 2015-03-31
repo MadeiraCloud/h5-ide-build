@@ -37,7 +37,8 @@ define('component/trustedadvisor/lib/TA.Config',{
       vpc: ['isVPCAbleConnectToOutside'],
       stack: ['~isHaveNotExistAMI'],
       kp: ['longLiveNotice'],
-      dbinstance: ['isOgValid', 'isHaveEnoughIPForDB']
+      dbinstance: ['isOgValid', 'isHaveEnoughIPForDB'],
+      instance: ['isMesosMasterMoreThan3', 'isMesosHasSlave']
     },
     openstack: {
       ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
@@ -484,7 +485,7 @@ define('TaHelper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
-  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isNatCheckedSourceDest, _getSGCompRuleLength;
+  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isMesosHasSlave, isMesosMasterMoreThan3, isNatCheckedSourceDest, _getSGCompRuleLength;
   i18n = Helper.i18n.short();
   isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
     var amiId, haveProvisionedVolume, instanceComp, instanceName, instanceType, instanceUIDRef, isInstanceComp, lsgName, tipInfo, _ref;
@@ -661,11 +662,46 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     }
     return null;
   };
+  isMesosHasSlave = function() {
+    var hasSlave, hasSlaveLc;
+    if (!Design.instance().opsModel().isMesos()) {
+      return null;
+    }
+    hasSlave = Design.modelClassForType(constant.RESTYPE.INSTANCE).some(function(i) {
+      return i.isMesosSlave();
+    });
+    hasSlaveLc = Design.modelClassForType(constant.RESTYPE.LC).some(function(i) {
+      return i.isMesosSlave();
+    });
+    if (hasSlave || hasSlaveLc) {
+      return null;
+    }
+    return Helper.message.error(null, i18n.MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST);
+  };
+  isMesosMasterMoreThan3 = function() {
+    var masterCount;
+    if (!Design.instance().opsModel().isMesos()) {
+      return null;
+    }
+    masterCount = Design.modelClassForType(constant.RESTYPE.INSTANCE).reduce(function(memo, i) {
+      if (i.isMesosMaster()) {
+        return memo + 1;
+      } else {
+        return memo;
+      }
+    }, 0);
+    if (masterCount >= 3) {
+      return null;
+    }
+    return Helper.message.error(null, i18n.IS_MESOS_MASTER_MORE_THAN_3);
+  };
   return {
     isEBSOptimizedForAttachedProvisionedVolume: isEBSOptimizedForAttachedProvisionedVolume,
     isAssociatedSGRuleExceedFitNum: isAssociatedSGRuleExceedFitNum,
     isConnectRoutTableButNoEIP: isConnectRoutTableButNoEIP,
-    isNatCheckedSourceDest: isNatCheckedSourceDest
+    isNatCheckedSourceDest: isNatCheckedSourceDest,
+    isMesosHasSlave: isMesosHasSlave,
+    isMesosMasterMoreThan3: isMesosMasterMoreThan3
   };
 });
 
