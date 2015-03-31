@@ -3715,13 +3715,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <table class=\"table\">\n      <tr>\n        <th>Key</th><th>Value</th>\n      </tr>\n      ";
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  buffer += "\n  <dt>ID</dt><dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n  <dt>Active</dt><dd>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.active), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </table>\n    ";
+  buffer += "</dd>\n  <dt></dt><dd></dd>\n  <dt>Attributes</dt>\n  <dd>\n    <table class=\"table\">\n      <tr>\n        <th>Key</th><th>Value</th>\n      </tr>\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.attributes), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </table>\n  </dd>\n  <dt>Resources</dt>\n  <dd>\n    <table class=\"table\">\n      <tr>\n        <th>Key</th><th>Value</th>\n      </tr>\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.resources), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </table>\n  </dd>\n  ";
   return buffer;
   }
 function program2(depth0,data) {
+  
+  
+  return "true";
+  }
+
+function program4(depth0,data) {
+  
+  
+  return "false";
+  }
+
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <tr>\n        <td>"
@@ -3732,16 +3752,16 @@ function program2(depth0,data) {
   return buffer;
   }
 
-function program4(depth0,data) {
+function program8(depth0,data) {
   
   
-  return "\n    Mesos Data is not ready yet...\n    ";
+  return "\n  <dt>Mesos Data is not ready yet...</dt>\n  <dd></dd>\n  ";
   }
 
-  buffer += "<dl class=\"dl-vertical\">\n  <dt>Attributes</dt>\n  <dd>\n    ";
-  stack1 = helpers['if'].call(depth0, depth0, {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
+  buffer += "<dl class=\"dl-vertical\">\n  ";
+  stack1 = helpers['if'].call(depth0, depth0, {hash:{},inverse:self.program(8, program8, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </dd>\n</dl>";
+  buffer += "\n</dl>";
   return buffer;
   };
 TEMPLATE.mesosData=Handlebars.template(__TEMPLATE__);
@@ -3787,9 +3807,9 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
       return this.model.attributes.name;
     },
     renderMesosData: function() {
-      var attrs;
-      attrs = this.resModel.getMesosAppAttributes(this.model.get('instanceId'));
-      return this.$('#mesos-data-area').html(template.mesosData(attrs));
+      var slaveAttr;
+      slaveAttr = this.resModel.getMesosAppAttributes(this.model.get('instanceId'));
+      return this.$('#mesos-data-area').html(template.mesosData(slaveAttr));
     },
     keyPairClick: function(event) {
       return this.proccessKpStuff();
@@ -33559,14 +33579,14 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
       return _.pick.apply(null, customKeys);
     },
     getMesosAppAttributes: function(appId) {
-      var allInstance, privateIp, thisAppDataModel, _ref, _ref1, _ref2;
+      var allInstance, privateIp, thisAppDataModel, _ref, _ref1;
       if (appId == null) {
         appId = this.get('appId');
       }
       allInstance = CloudResources(Design.instance().credentialId(), constant.RESTYPE.INSTANCE, Design.instance().region());
       thisAppDataModel = allInstance != null ? allInstance.get(appId) : void 0;
       privateIp = thisAppDataModel != null ? (_ref = thisAppDataModel.get('networkInterfaceSet')) != null ? (_ref1 = _ref[0]) != null ? _ref1.privateIpAddress : void 0 : void 0 : void 0;
-      return (_ref2 = this.design().opsModel().getMesosData().getSlave(privateIp)) != null ? _ref2.attributes : void 0;
+      return this.design().opsModel().getMesosData().getSlave(privateIp);
     }
   }, {
     handleTypes: constant.RESTYPE.MESOSSLAVE,
