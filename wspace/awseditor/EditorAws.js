@@ -22537,19 +22537,27 @@ function program6(depth0,data) {
 TEMPLATE.ami=Handlebars.template(__TEMPLATE__);
 
 
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data,depth2) {
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data,depth1,depth2) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
-
-  buffer += "<li class=\"resource-item instance\" data-bubble-template=\"resPanelAmiInfo\" data-bubble-data='{\"region\":\""
+function program1(depth0,data,depth2) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li class=\"resource-item instance mesos\" data-bubble-template=\"resPanelAmiInfo\" data-bubble-data='{\"region\":\""
     + escapeExpression(((stack1 = (depth2 && depth2.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"imageId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"}' data-type=\"INSTANCE\" data-option='{\"imageId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\", \"subType\": \"MESOSMASTER\"}'>\n  <div class=\"resource-icon-instance\"></div>Master\n</li>\n<li class=\"resource-item instance\" data-bubble-template=\"resPanelAmiInfo\" data-bubble-data='{\"region\":\""
+    + "\", \"subType\": \"MESOSMASTER\"}'>\n  <div class=\"resource-icon-instance\"></div>Master\n</li>\n";
+  return buffer;
+  }
+
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.programWithDepth(1, program1, data, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n<li class=\"resource-item instance mesos\" data-bubble-template=\"resPanelAmiInfo\" data-bubble-data='{\"region\":\""
     + escapeExpression(((stack1 = (depth2 && depth2.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\",\"imageId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -23493,7 +23501,8 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       var data, html;
       data = {
         region: this.workspace.opsModel.get("region"),
-        imageId: constant.MESOS_IMAGEID
+        imageId: constant.MESOS_IMAGEID,
+        isAppEdit: Design.instance().modeIsAppEdit()
       };
       html = LeftPanelTpl.mesos(data);
       return this.$(".resource-list-ami").html(html);
@@ -23727,18 +23736,28 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       Backbone.View.prototype.remove.call(this);
     },
     getContainerList: function(leaderIp) {
-      var mesosData, reqLoop, that;
+      var dataApps, dataTasks, mesosData, reqLoop, that;
       that = this;
       mesosData = this.workspace.opsModel.getMesosData();
       leaderIp = "52.4.252.105";
+      dataApps = null;
+      dataTasks = null;
       reqLoop = function() {
-        return setTimeout(function() {
-          return that.getMarathonAppList(leaderIp).then(function(data) {
-            return that.renderContainerList(data);
-          }).done(function() {
+        return Q.all([
+          that.getMarathonAppList(leaderIp).then(function(data) {
+            return dataApps = data;
+          }, that.getMarathonTaskList(leaderIp).then(function(data) {
+            return dataTasks = data;
+          }))
+        ]).then(function(data) {
+          if (dataApps) {
+            return that.renderContainerList(dataApps, dataTasks);
+          }
+        }).done(function() {
+          return setTimeout(function() {
             return reqLoop();
-          });
-        }, 1000 * 10);
+          }, 1000 * 10);
+        });
       };
       return reqLoop();
     },
@@ -31048,6 +31067,15 @@ define('wspace/awseditor/model/SubnetModel',["constant", "Design", "GroupModel",
       new AclAsso(this, Design.instance().component(uid));
       return null;
     },
+    isPublic: function() {
+      var igw, rtb, rtbConn;
+      rtb = this.connectionTargets('RTB_Asso')[0];
+      rtbConn = rtb.connectionTargets('RTB_Route');
+      igw = _.where(rtbConn, {
+        type: constant.RESTYPE.IGW
+      });
+      return igw.length > 0;
+    },
     isReparentable: function(newParent) {
       var attach, child, _i, _j, _len, _len1, _ref, _ref1;
       _ref = this.children();
@@ -33326,7 +33354,7 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
         }
       });
       masterIds = masterIds.sort();
-      serverId = String(masterIds.indexOf(this.get('name')));
+      serverId = String(masterIds.indexOf(this.get('name')) + 1);
       mesosState = [
         {
           id: "state-" + this.get('name'),
@@ -33349,7 +33377,7 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
         }
         return true;
       });
-      return this.set('state', mesosState.concat(states));
+      return this.set('state', states.concat(mesosState));
     },
     getMesosState: function() {
       var states;
@@ -33412,21 +33440,42 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
       return ipMap;
     },
     getCompByIp: function(ip) {
-      var eniData, targetEni, targetInstance;
+      var asgResList, design, eniData, instanceData, targetAsg, targetAsgId, targetEni, targetInstance, vpcId;
       if (Design.instance().mode() === "stack") {
         return null;
       }
-      eniData = Design.instance().componentsOfType(constant.RESTYPE.ENI);
+      design = Design.instance();
+      eniData = design.componentsOfType(constant.RESTYPE.ENI);
       targetEni = _.find(eniData, function(eni) {
         return _.some(eni.getIpArray(), function(ipObj) {
           return ipObj.ip === ip;
         });
       });
       if (!targetEni) {
-        return null;
+        vpcId = design.componentsOfType(constant.RESTYPE.VPC)[0].get("appId");
+        instanceData = CloudResources(design.credentialId(), constant.RESTYPE.INSTANCE, design.region());
+        targetInstance = _.find(instanceData.where({
+          "vpcId": vpcId
+        }), function(instance) {
+          return instance.get("privateIpAddress") === ip;
+        });
+        if (!targetInstance) {
+          return null;
+        }
+        asgResList = CloudResources(design.credentialId(), constant.RESTYPE.ASG, design.region());
+        targetAsgId = _.find(asgResList.toJSON(), function(asg) {
+          return _.some(asg.Instances, function(instance) {
+            return instance.InstanceId === targetInstance.get("instanceId");
+          });
+        }).id;
+        targetAsg = _.find(design.componentsOfType(constant.RESTYPE.ASG), function(asg) {
+          return asg.get("appId") === targetAsgId;
+        });
+        return targetAsg.getLc();
+      } else {
+        targetInstance = targetEni.attachedInstance();
+        return targetInstance;
       }
-      targetInstance = targetEni.attachedInstance();
-      return targetInstance;
     }
   });
   Model.prototype.classId = InstanceModel.prototype.classId;
@@ -33514,7 +33563,7 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
         }
         return true;
       });
-      return this.set('state', mesosState.concat(states));
+      return this.set('state', states.concat(mesosState));
     },
     getMesosState: function() {
       var states;
@@ -33546,7 +33595,7 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
         return {
           'az': this.parent().parent().get('name'),
           'subnet': this.parent().get('name'),
-          'subnet-position': 'public'
+          'subnet-position': this.parent().isPublic() ? 'public' : 'private'
         };
       }
     },

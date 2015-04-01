@@ -747,8 +747,11 @@ function program1(depth0,data) {
     + "\">\n		<div class=\"state-toolbar\">\n			";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n			<i class=\"state-status-icon status status-yellow\"></i>\n			";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disabled), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n			<div class=\"state-view\">\n				<div class=\"command-view-value\"></div>\n				<div class=\"parameter-view-list\">\n					";
   stack1 = self.invokePartial(partials.paraViewListTpl, 'paraViewListTpl', depth0, helpers, partials, data);
@@ -791,6 +794,12 @@ function program6(depth0,data) {
   }
 
 function program8(depth0,data) {
+  
+  
+  return "<i class=\"state-disabled-icon icon-del\"></i>";
+  }
+
+function program10(depth0,data) {
   
   
   return "<i class=\"state-drag\"></i>";
@@ -3970,11 +3979,15 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
           }
         ]
       }));
-      $focusState = that.$stateList.find('.state-item.focused');
+      $focusState = that.$stateList.find('.state-item.focused:not(.disabled)');
       if ($focusState.length) {
         $newStateItem = $(newStateHTML).insertAfter($focusState);
       } else {
-        $newStateItem = $(newStateHTML).appendTo(that.$stateList);
+        if ($stateItem.length && $stateItem.hasClass('disabled')) {
+          $newStateItem = $(newStateHTML).insertBefore($stateItem);
+        } else {
+          $newStateItem = $(newStateHTML).appendTo(that.$stateList);
+        }
       }
       that.clearFocusedItem();
       $cmdValueItem = $newStateItem.find('.command-value');
@@ -5261,7 +5274,7 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       return stateDataAry;
     },
     addStateItemByData: function(stateDataAry, insertPos) {
-      var $currentStateItems, $newStateItems, $stateItems, newStateItems, parseErrList, returnInsertPos, stateListObj, that;
+      var $currentItem, $currentStateItems, $lastStateItem, $newStateItems, $stateItems, newStateItems, parseErrList, returnInsertPos, stateListObj, that;
       that = this;
       stateListObj = that.loadStateData(stateDataAry);
       parseErrList = stateListObj.err_list;
@@ -5276,21 +5289,35 @@ define('StateEditorView',['component/stateeditor/model', 'event', 'i18n!/nls/lan
       newStateItems = $.trim(template.stateListTpl(stateListObj));
       $currentStateItems = that.$stateList.find('.state-item');
       returnInsertPos = null;
+      $lastStateItem = that.$stateList.find('.state-item:last');
       if (_.isNumber(insertPos)) {
         if (insertPos <= -1) {
           $newStateItems = $(newStateItems).prependTo(that.$stateList);
           returnInsertPos = -1;
         } else {
-          if ($currentStateItems[insertPos]) {
-            $newStateItems = $(newStateItems).insertAfter($currentStateItems[insertPos]);
+          $currentItem = $($currentStateItems[insertPos]);
+          if ($currentItem) {
+            if ($currentItem.hasClass('disabled')) {
+              $newStateItems = $(newStateItems).insertBefore($currentItem);
+            } else {
+              $newStateItems = $(newStateItems).insertAfter($currentItem);
+            }
             returnInsertPos = insertPos;
           } else {
-            $newStateItems = $(newStateItems).appendTo(that.$stateList);
+            if ($lastStateItem.hasClass('disabled')) {
+              $newStateItems = $(newStateItems).insertAfter($lastStateItem);
+            } else {
+              $newStateItems = $(newStateItems).appendTo(that.$stateList);
+            }
             returnInsertPos = that.$stateList.length - 1;
           }
         }
       } else {
-        $newStateItems = $(newStateItems).appendTo(that.$stateList);
+        if ($lastStateItem.hasClass('disabled')) {
+          $newStateItems = $(newStateItems).insertBefore($lastStateItem);
+        } else {
+          $newStateItems = $(newStateItems).appendTo(that.$stateList);
+        }
         returnInsertPos = that.$stateList.length - 1;
       }
       that.bindStateListEvent($newStateItems);

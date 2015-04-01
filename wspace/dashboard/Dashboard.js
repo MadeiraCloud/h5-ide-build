@@ -2918,19 +2918,21 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
         }
       });
       return createStackModal.on("confirm", function() {
-        var framework, opsModel, provider, region, type;
+        var framework, opsModel, provider, region, scale, type;
         createStackModal.close();
         provider = "aws::global";
         type = createStackModal.find(".tab-aws-stack").hasClass("active") ? "aws" : "mesos";
         region = createStackModal.find("#create-" + type + "-stack-region li.item.selected").data("value");
         framework = type === "mesos" ? createStackModal.find(".create-mesos-use-marathon").hasClass("on") : false;
+        scale = createStackModal.find("#mesos-scale li.item.selected").data("value");
         console.log("Creating Stack: ", region, provider, {
           type: type,
           framework: framework
         });
         opsModel = self.model.scene.project.createStack(region, provider, {
           type: type,
-          framework: framework
+          framework: framework,
+          scale: scale
         });
         return self.model.scene.loadSpace(opsModel);
       });
@@ -2989,7 +2991,7 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
           orderedList = _.sortBy(resList, function(res) {
             return -res.data.length;
           });
-          return data[key] = orderedList;
+          data[key] = orderedList;
         });
       }
       this.$el.find("#GlobalView").html(dataTemplate.globalResources(data));
