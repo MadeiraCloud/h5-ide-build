@@ -555,6 +555,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       if (options.type) {
         this.__jsonFramework = options.framework;
         this.__jsonScale = options.scale;
+        this.__amiId = options.amiId;
       }
       if (options && options.jsonData) {
         if (options.jsonData.type) {
@@ -865,6 +866,9 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
     },
     getStackFramework: function() {
       return this.__jsonFramework;
+    },
+    getAmiId: function() {
+      return this.__amiId;
     },
     isMesos: function() {
       return this.getStackType() === "mesos";
@@ -4424,7 +4428,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
         }
       ];
       framework = this.getStackFramework() ? ["marathon"] : [];
-      imageId = (_.findWhere(amiForEachRegion, {
+      imageId = this.getAmiId() || (_.findWhere(amiForEachRegion, {
         region: this.get("region")
       })).imageId;
       regionName = this.get("region");

@@ -2769,7 +2769,9 @@ define('wspace/dashboard/VisualizeDialog',["Credential", "ApiRequest", "UI.modal
   });
 });
 
-define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "Credential", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, AppAction, Modal, lang, ProjectLog, Credential, CredentialFormView) {
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./DashboardTplData", "constant", "./VisualizeDialog", "CloudResources", "ApiRequest", "AppAction", "UI.modalplus", "i18n!/nls/lang.js", "ProjectLog", "Credential", "credentialFormView", "UI.bubble", "backbone"], function(Template, ImportDialog, dataTemplate, constant, VisualizeDialog, CloudResources, ApiRequest, AppAction, Modal, lang, ProjectLog, Credential, CredentialFormView) {
   Handlebars.registerHelper("awsAmiIcon", function(credentialId, amiId, region) {
     var ami;
     ami = CloudResources(credentialId, constant.RESTYPE.AMI, region).get(amiId);
@@ -2918,23 +2920,52 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
         }
       });
       return createStackModal.on("confirm", function() {
-        var framework, opsModel, provider, region, scale, type;
-        createStackModal.close();
-        provider = "aws::global";
+        var amiId, framework, provider, region, scale, type;
+        createStackModal.toggleFooter(false);
         type = createStackModal.find(".tab-aws-stack").hasClass("active") ? "aws" : "mesos";
         region = createStackModal.find("#create-" + type + "-stack-region li.item.selected").data("value");
         framework = type === "mesos" ? createStackModal.find(".create-mesos-use-marathon").hasClass("on") : false;
         scale = createStackModal.find("#mesos-scale li.item.selected").data("value");
-        console.log("Creating Stack: ", region, provider, {
-          type: type,
-          framework: framework
+        provider = "aws::global";
+        amiId = null;
+        createStackModal.setContent(MC.template.loadingSpinner());
+        return self.getPreBakedAmiId(region).then(function(result) {
+          return amiId = result;
+        })["finally"](function() {
+          var opsModel;
+          console.log("Creating Stack: ", region, provider, {
+            type: type,
+            framework: framework,
+            scale: scale,
+            amiId: amiId
+          });
+          createStackModal.close();
+          opsModel = self.model.scene.project.createStack(region, provider, {
+            type: type,
+            framework: framework,
+            scale: scale,
+            amiId: amiId
+          });
+          return self.model.scene.loadSpace(opsModel);
         });
-        opsModel = self.model.scene.project.createStack(region, provider, {
-          type: type,
-          framework: framework,
-          scale: scale
-        });
-        return self.model.scene.loadSpace(opsModel);
+      });
+    },
+    getPreBakedAmiId: function(region) {
+      return ApiRequest("aws_aws", {
+        region_names: [region],
+        fields: ["prebaked_ami", "quickstart"]
+      }).then(function(result) {
+        var amiId, targetAmi;
+        amiId = null;
+        result = result[0];
+        if (result.quickstart && result.prebaked_ami) {
+          targetAmi = _.find(result.quickstart, function(ami) {
+            var _ref;
+            return (_ref = ami.id, __indexOf.call(result.prebaked_ami, _ref) >= 0) && ami.osType === "ubuntu" && ami.virtualizationType === "hvm";
+          });
+          amiId = targetAmi.id;
+          return amiId;
+        }
       });
     },
     showCredential: function() {
