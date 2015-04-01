@@ -33339,13 +33339,15 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
             key: ipRef,
             value: master.get('name')
           });
-          return masterIds.push(master.get('name'));
+          return masterIds.push(master.id);
         }
       });
       masterIds = masterIds.sort();
-      serverId = String(masterIds.indexOf(this.get('name')) + 1);
+      serverId = String(masterIds.indexOf(this.id) + 1);
       masterMapAry = _.sortBy(masterMapAry, function(masterMap) {
-        return masterIds.indexOf(masterMap.value);
+        var uid;
+        uid = MC.extractID(masterMap.key);
+        return masterIds.indexOf(uid);
       });
       mesosState = [
         {
@@ -33513,7 +33515,7 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
       }
     },
     setMesosState: function(attr) {
-      var attributes, masterMapAry, masterModels, mesosState, states;
+      var attributes, masterIds, masterMapAry, masterModels, mesosState, serverId, states;
       attributes = attr || this._getMesosAttributes() || this.getDefaultMesosAttributes();
       if (attributes['az']) {
         delete attributes['az'];
@@ -33526,15 +33528,24 @@ define('wspace/awseditor/model/MesosSlaveModel',["./InstanceModel", "Design", "c
       });
       masterModels = Design.modelClassForType(constant.RESTYPE.MESOSMASTER).allObjects();
       masterMapAry = [];
+      masterIds = [];
       _.each(masterModels, function(master) {
         var ipRef;
         if (master.isMesosMaster()) {
           ipRef = '@{' + master.id + '.PrivateIpAddress}';
-          return masterMapAry.push({
+          masterMapAry.push({
             key: ipRef,
             value: master.get('name')
           });
+          return masterIds.push(master.id);
         }
+      });
+      masterIds = masterIds.sort();
+      serverId = String(masterIds.indexOf(this.id) + 1);
+      masterMapAry = _.sortBy(masterMapAry, function(masterMap) {
+        var uid;
+        uid = MC.extractID(masterMap.key);
+        return masterIds.indexOf(uid);
       });
       mesosState = [
         {
