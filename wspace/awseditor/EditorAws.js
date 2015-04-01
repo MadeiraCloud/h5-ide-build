@@ -22551,7 +22551,7 @@ function program1(depth0,data,depth2) {
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"}' data-type=\"INSTANCE\" data-option='{\"imageId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\", \"subType\": \"MESOSMASTER\"}'>\n  <div class=\"resource-icon-instance\"></div>Master\n</li>\n";
+    + "\", \"subType\": \"MESOSMASTER\"}'>\n  <div class=\"resource-icon-instance\">\n    <img src=\"/assets/images/ide/ami/mesos-master.png\" width='39' height='27' />\n  </div>\n  Master\n</li>\n";
   return buffer;
   }
 
@@ -22563,7 +22563,7 @@ function program1(depth0,data,depth2) {
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"' data-type=\"INSTANCE\" data-option='{\"imageId\":\""
     + escapeExpression(((stack1 = (depth0 && depth0.imageId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\", \"subType\": \"MESOSSLAVE\"}'>\n  <div class=\"resource-icon-instance\"></div>Slave\n</li>\n<li class=\"resource-item asg\" data-type=\"ASG\" data-option='{\"lcId\": \"MESOS.LC\"}'><div class=\"resource-icon-instance\">\n  Slave\n</div>Slave Auto Scaling Group</li>";
+    + "\", \"subType\": \"MESOSSLAVE\"}'>\n  <div class=\"resource-icon-instance\">\n    <img src=\"/assets/images/ide/ami/mesos-slave.png\" width='39' height='27' />\n  </div>\n  Slave\n</li>\n<li class=\"resource-item asg\" data-type=\"ASG\" data-option='{\"lcId\": \"MESOS.LC\"}'>\n  <div class=\"resource-icon-instance\"><img src=\"/assets/images/ide/ami/mesos-slave.png\" /></div>\nSlave Auto Scaling Group\n</li>";
   return buffer;
   };
 TEMPLATE.mesos=Handlebars.template(__TEMPLATE__);
@@ -22626,7 +22626,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <li class=\"container-item tooltip\" data-tooltip=\"Click to view service placement on canvas\" data-name=\""
+  buffer += "\n  <li class=\"container-item tooltip\" data-tooltip=\"Click to view app placement on canvas\" data-hosts=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.hosts)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-name=\""
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n      <div class=\"task tooltip\">"
     + escapeExpression(((stack1 = (depth0 && depth0.task)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -23253,52 +23255,23 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       return this.highlightCanvas(e);
     },
     highlightCanvas: function(event) {
-      var $container, json, modelIds, models, name, nameMap, prodModelNames1, prodModelNames2, prodModelNames3, qaModelNames1, qaModelNames2, qaModelNames3;
-      nameMap = {};
-      json = Design.instance().serialize();
-      _.each(json.component, function(comp) {
-        return nameMap[comp.name] = comp.uid;
+      var $item, MasterModel, hostAry, hosts, models;
+      $item = $(event.currentTarget);
+      hosts = $item.data('hosts');
+      hostAry = hosts.split(',');
+      models = [];
+      MasterModel = Design.modelClassForType(constant.RESTYPE.MESOSMASTER);
+      _.each(hostAry, function(host) {
+        var model;
+        if (host) {
+          model = MasterModel.getCompByIp(host);
+          if (model) {
+            return models.push(model);
+          }
+        }
       });
-      prodModelNames1 = ['subne-web-prod-1a', 'subnet--web-4prod-1b'];
-      prodModelNames2 = ['app-prod-1a-0', 'app-prod-1b-0'];
-      prodModelNames3 = ['subnet-db-prod-1a', 'subnet-db-prod-10b'];
-      qaModelNames1 = ['subne-web-staging-1a', 'subne-web-staging-1b'];
-      qaModelNames2 = ['subnet-qa-1a', 'subnet-qa-1b'];
-      qaModelNames3 = ['subnet-db-qa-1a', 'subnet-db-qa-1b'];
-      if (event) {
-        $container = $(event.currentTarget);
-        name = $container.data('name');
-        if (name === 'prod_nginx') {
-          modelIds = _.map(prodModelNames1, function(name) {
-            return nameMap[name];
-          });
-        } else if (name === 'prod_requestworker' || name === 'prod_mongos') {
-          modelIds = _.map(prodModelNames2, function(name) {
-            return nameMap[name];
-          });
-        } else if (name === 'prod_mongodb' || name === 'prod_mongo-config' || name === 'prod_zookeeper') {
-          modelIds = _.map(prodModelNames3, function(name) {
-            return nameMap[name];
-          });
-        } else if (name === 'qa_nginx') {
-          modelIds = _.map(qaModelNames1, function(name) {
-            return nameMap[name];
-          });
-        } else if (name === 'qa_requestworker' || name === 'qa_mongos') {
-          modelIds = _.map(qaModelNames2, function(name) {
-            return nameMap[name];
-          });
-        } else if (name === 'qa_mongodb' || name === 'qa_mongo-config' || name === 'qa_zookeeper') {
-          modelIds = _.map(qaModelNames3, function(name) {
-            return nameMap[name];
-          });
-        }
-        if (modelIds) {
-          models = _.map(modelIds, function(id) {
-            return Design.instance().component(id);
-          });
-          return this.workspace.view.highLightModels(models);
-        }
+      if (models.length) {
+        return this.workspace.view.highLightModels(models);
       }
     },
     resourceListSortSelectRdsEvent: function(event) {
@@ -23736,22 +23709,22 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       Backbone.View.prototype.remove.call(this);
     },
     getContainerList: function(leaderIp) {
-      var dataApps, dataTasks, mesosData, reqLoop, that;
+      var appData, mesosData, reqLoop, taskData, that;
       that = this;
       mesosData = this.workspace.opsModel.getMesosData();
       leaderIp = "52.4.252.105";
-      dataApps = null;
-      dataTasks = null;
+      appData = null;
+      taskData = null;
       reqLoop = function() {
         return Q.all([
           that.getMarathonAppList(leaderIp).then(function(data) {
-            return dataApps = data;
+            return appData = data;
           }, that.getMarathonTaskList(leaderIp).then(function(data) {
-            return dataTasks = data;
+            return taskData = data;
           }))
         ]).then(function(data) {
-          if (dataApps) {
-            return that.renderContainerList(dataApps, dataTasks);
+          if (appData) {
+            return that.renderContainerList(appData, taskData);
           }
         }).done(function() {
           return setTimeout(function() {
@@ -23759,7 +23732,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
           }, 1000 * 10);
         });
       };
-      return reqLoop();
+      if (leaderIp) {
+        return reqLoop();
+      }
     },
     getMarathonAppList: function(leaderIp) {
       return ApiRequest("marathon_app_list", {
@@ -23773,10 +23748,23 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         "leader_ip": leaderIp
       });
     },
-    renderContainerList: function(data) {
-      var dataApps, that, viewData, _ref;
+    renderContainerList: function(appData, taskData) {
+      var dataApps, dataTasks, hostAppMap, that, viewData, _ref, _ref1;
       that = this;
-      dataApps = (_ref = data[1]) != null ? _ref.apps : void 0;
+      dataApps = (_ref = appData[1]) != null ? _ref.apps : void 0;
+      dataTasks = (_ref1 = taskData[1]) != null ? _ref1.tasks : void 0;
+      hostAppMap = {};
+      if (dataTasks && dataTasks.length) {
+        _.each(dataTasks, function(task) {
+          var appId, host;
+          appId = task.appId;
+          host = task.host;
+          if (!hostAppMap[appId]) {
+            hostAppMap[appId] = [];
+          }
+          return hostAppMap[appId].push(host);
+        });
+      }
       if (dataApps && dataApps.length) {
         that.$('.marathon-app-list').show();
         that.$('.marathon-app-ready').hide();
@@ -23787,7 +23775,8 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
             task: app.tasksRunning,
             instance: app.instances,
             cpu: app.cpus,
-            memory: app.mem
+            memory: app.mem,
+            hosts: (hostAppMap[app.id] || []).join(',')
           });
         });
         that.$('.marathon-app-list').html(LeftPanelTpl.containerList(viewData));
@@ -33355,6 +33344,9 @@ define('wspace/awseditor/model/MesosMasterModel',["./InstanceModel", "Design", "
       });
       masterIds = masterIds.sort();
       serverId = String(masterIds.indexOf(this.get('name')) + 1);
+      masterMapAry = _.sortBy(masterMapAry, function(masterMap) {
+        return masterIds.indexOf(masterMap.value);
+      });
       mesosState = [
         {
           id: "state-" + this.get('name'),
@@ -35301,22 +35293,28 @@ define('wspace/awseditor/canvas/CeInstance',["CanvasElement", "constant", "Canva
     },
     iconUrl: function() {
       var ami, instance, m, url;
-      ami = this.model.getAmi() || this.model.get("cachedAmi");
-      if (!ami) {
-        m = this.model;
-        instance = CloudResources(m.design().credentialId(), m.type, m.design().region()).get(m.get("appId"));
-        if (instance) {
-          instance = instance.attributes;
-          if (instance.platform && instance.platform === "windows") {
-            url = "ide/ami/windows." + instance.architecture + "." + instance.rootDeviceType + ".png";
+      if (this.model.isMesosMaster()) {
+        url = 'ide/ami/mesos-master.png';
+      } else if (this.model.isMesosSlave()) {
+        url = 'ide/ami/mesos-slave.png';
+      } else {
+        ami = this.model.getAmi() || this.model.get("cachedAmi");
+        if (!ami) {
+          m = this.model;
+          instance = CloudResources(m.design().credentialId(), m.type, m.design().region()).get(m.get("appId"));
+          if (instance) {
+            instance = instance.attributes;
+            if (instance.platform && instance.platform === "windows") {
+              url = "ide/ami/windows." + instance.architecture + "." + instance.rootDeviceType + ".png";
+            } else {
+              url = "ide/ami/linux-other." + instance.architecture + "." + instance.rootDeviceType + ".png";
+            }
           } else {
-            url = "ide/ami/linux-other." + instance.architecture + "." + instance.rootDeviceType + ".png";
+            url = "ide/ami/ami-not-available.png";
           }
         } else {
-          url = "ide/ami/ami-not-available.png";
+          url = "ide/ami/" + ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png";
         }
-      } else {
-        url = "ide/ami/" + ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png";
       }
       return url;
     },
@@ -35734,6 +35732,9 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
     },
     iconUrl: function() {
       var ami;
+      if (this.model.isMesos()) {
+        return 'ide/ami/mesos-slave.png';
+      }
       ami = this.model.getAmi() || this.model.get("cachedAmi");
       if (!ami) {
         return "ide/ami/ami-not-available.png";

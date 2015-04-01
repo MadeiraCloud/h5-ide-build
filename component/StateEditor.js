@@ -796,7 +796,7 @@ function program6(depth0,data) {
 function program8(depth0,data) {
   
   
-  return "<i class=\"state-disabled-icon icon-del\"></i>";
+  return "<i class=\"state-disabled-icon icon-remove\"></i>";
   }
 
 function program10(depth0,data) {

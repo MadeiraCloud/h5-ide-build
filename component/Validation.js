@@ -38,7 +38,7 @@ define('component/trustedadvisor/lib/TA.Config',{
       stack: ['~isHaveNotExistAMI'],
       kp: ['longLiveNotice'],
       dbinstance: ['isOgValid', 'isHaveEnoughIPForDB'],
-      instance: ['isMesosMasterMoreThan3', 'isMesosHasSlave']
+      instance: ['isMesosMasterMoreThan3', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet']
     },
     openstack: {
       ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
@@ -485,7 +485,7 @@ define('TaHelper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
-  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isMesosHasSlave, isMesosMasterMoreThan3, isNatCheckedSourceDest, _getSGCompRuleLength;
+  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isMesosHasSlave, isMesosMasterMoreThan3, isMesosMasterPlacedInPublicSubnet, isNatCheckedSourceDest, _getSGCompRuleLength;
   i18n = Helper.i18n.short();
   isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
     var amiId, haveProvisionedVolume, instanceComp, instanceName, instanceType, instanceUIDRef, isInstanceComp, lsgName, tipInfo, _ref;
@@ -695,13 +695,30 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     }
     return Helper.message.error(null, i18n.IS_MESOS_MASTER_MORE_THAN_3);
   };
+  isMesosMasterPlacedInPublicSubnet = function() {
+    var master, nameStr, privateMasters, _i, _len;
+    privateMasters = Design.modelClassForType(constant.RESTYPE.INSTANCE).filter(function(i) {
+      return i.isMesosMaster() && !i.parent().isPublic();
+    });
+    if (!privateMasters.length) {
+      return null;
+    }
+    nameStr = '';
+    for (_i = 0, _len = privateMasters.length; _i < _len; _i++) {
+      master = privateMasters[_i];
+      nameStr += "<span class='validation-tag tag-mesos-master'>" + (master.get('name')) + "</span>, ";
+    }
+    nameStr = nameStr.slice(0, -2);
+    return Helper.message.error(null, i18n.MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET, nameStr);
+  };
   return {
     isEBSOptimizedForAttachedProvisionedVolume: isEBSOptimizedForAttachedProvisionedVolume,
     isAssociatedSGRuleExceedFitNum: isAssociatedSGRuleExceedFitNum,
     isConnectRoutTableButNoEIP: isConnectRoutTableButNoEIP,
     isNatCheckedSourceDest: isNatCheckedSourceDest,
     isMesosHasSlave: isMesosHasSlave,
-    isMesosMasterMoreThan3: isMesosMasterMoreThan3
+    isMesosMasterMoreThan3: isMesosMasterMoreThan3,
+    isMesosMasterPlacedInPublicSubnet: isMesosMasterPlacedInPublicSubnet
   };
 });
 
