@@ -64,7 +64,8 @@ define({
         "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "The Network Interface is attached to the instance. No need to connect them by security group rule.",
         "LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL": "Launch Configuration must be created from AMI in Resource Panel",
         "DETACH_ELASTIC_IP_FROM_PRIMARY_IP": "Detach Elastic IP from primary IP",
-        "ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP": "Associate Elastic IP to primary IP"
+        "ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP": "Associate Elastic IP to primary IP",
+        "MASTER_NODE_CANNOT_BE_DELETED": "Master node cannot be deleted."
     },
     "IDE": {
         "COMPONENT_CREATE_KEYPAIR": "Create Key Pair",

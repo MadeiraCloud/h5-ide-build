@@ -64,7 +64,8 @@ define({
         "NETWORK_INTERFACE_ATTACHED_INTERFACE_NO_NEED_FOR_SG_RULE": "此网络接口已连接到实例，不必用安全组连接。",
         "LAUNCH_CONFIGURATION_MUST_BE_CREATED_FROM_AMI_IN_RESOURCE_PANEL": "启动配置只能从通过资源面板拖拽 AMI 来创建",
         "DETACH_ELASTIC_IP_FROM_PRIMARY_IP": "取消关联弹性 IP",
-        "ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP": "关联弹性 IP"
+        "ASSOCIATE_ELASTIC_IP_TO_PRIMARY_IP": "关联弹性 IP",
+        "MASTER_NODE_CANNOT_BE_DELETED": "Master node 不能删除。"
     },
     "IDE": {
         "COMPONENT_CREATE_KEYPAIR": "创建密钥对",

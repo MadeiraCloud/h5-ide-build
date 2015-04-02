@@ -23680,12 +23680,13 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       Backbone.View.prototype.remove.call(this);
     },
     getContainerList: function(leaderIp) {
-      var appData, mesosData, reqLoop, taskData, that;
+      var appData, interval, mesosData, reqLoop, taskData, that;
       that = this;
       mesosData = this.workspace.opsModel.getMesosData();
       leaderIp = mesosData.get('leaderIp');
       appData = null;
       taskData = null;
+      interval = 30 * 1000;
       reqLoop = function() {
         return Q.all([
           that.getMarathonAppList(leaderIp).then(function(data) {
@@ -23700,7 +23701,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         })["finally"](function() {
           return setTimeout(function() {
             return reqLoop();
-          }, 1000 * 10);
+          }, interval);
         });
       };
       if (leaderIp) {
@@ -25565,6 +25566,11 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
     },
     isRemovable: function() {
       var state;
+      if (this.design().modeIsAppEdit() && this.isMesosMaster()) {
+        return {
+          error: lang.CANVAS.MASTER_NODE_CANNOT_BE_DELETED
+        };
+      }
       state = this.get("state");
       if ((state && _.isArray(state) && state.length > 0) || ($('#state-editor-model').is(':visible') && $('#state-editor-model .state-list .state-item').length >= 1)) {
         return MC.template.NodeStateRemoveConfirmation({
@@ -36657,10 +36663,11 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
 
     /* Mesos */
     mesosJobs: function() {
-      var self;
+      var interval, self;
       if (!this.opsModel.isMesos()) {
         return;
       }
+      interval = 30 * 1000;
       self = this;
       this.updateMesosInfo().then(function() {
         if (self.isRemoved()) {
@@ -36675,7 +36682,7 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
         }
         self.mesosSchedule = setTimeout(function() {
           return self.mesosJobs();
-        }, 1000 * 10);
+        }, interval);
         return null;
       });
     },

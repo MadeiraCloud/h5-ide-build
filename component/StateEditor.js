@@ -796,7 +796,7 @@ function program6(depth0,data) {
 function program8(depth0,data) {
   
   
-  return "<i class=\"state-disabled-icon icon-remove tooltip\" data-tooltip=\"Readonly\"></i>";
+  return "<i class=\"state-disabled-icon icon-password tooltip\" data-tooltip=\"Readonly\"></i>";
   }
 
 function program10(depth0,data) {
