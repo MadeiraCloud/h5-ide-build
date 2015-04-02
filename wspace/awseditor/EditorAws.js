@@ -906,9 +906,9 @@ function program2(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<dt>Marathon Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
-    + escapeExpression(((stack1 = (depth0 && depth0.leaderIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.marathonIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
-    + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(((stack1 = (depth0 && depth0.marathonPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.marathonIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
@@ -920,7 +920,7 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  return "\nMesos Data is not ready yet...\n";
+  return "\n<dl class=\"dl-vertical\"><dt>Mesos Data is not ready yet...</dt></dl>\n";
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.leaderIp), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
@@ -23179,7 +23179,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       this.updateSnapshot();
       if (isMesos) {
         this.updateMesos();
-        this.workspace.opsModel.getMesosData().on('change', this.getContainerList, this);
+        if (this.workspace.design.modeIsApp()) {
+          this.workspace.opsModel.getMesosData().on('change', this.getContainerList, this);
+        }
       } else {
         this.updateAmi();
       }
@@ -23683,11 +23685,14 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       var appData, interval, mesosData, reqLoop, taskData, that;
       that = this;
       mesosData = this.workspace.opsModel.getMesosData();
-      leaderIp = mesosData.get('leaderIp');
       appData = null;
       taskData = null;
       interval = 30 * 1000;
       reqLoop = function() {
+        leaderIp = mesosData.get('leaderIp');
+        if (!leaderIp) {
+          return;
+        }
         return Q.all([
           that.getMarathonAppList(leaderIp).then(function(data) {
             return appData = data;
@@ -23704,9 +23709,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
           }, interval);
         });
       };
-      if (leaderIp) {
-        return reqLoop();
-      }
+      return reqLoop();
     },
     getMarathonAppList: function(leaderIp) {
       return ApiRequest("marathon_app_list", {
@@ -23722,6 +23725,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
     },
     renderContainerList: function(appData, taskData) {
       var dataApps, dataTasks, hostAppMap, task, that, viewData, _ref, _ref1;
+      if (!this.workspace.isAwake()) {
+        return;
+      }
       that = this;
       dataApps = (_ref = appData[1]) != null ? _ref.apps : void 0;
       dataTasks = (_ref1 = taskData[1]) != null ? _ref1.tasks : void 0;
@@ -23748,7 +23754,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
             instance: app.instances,
             cpu: app.cpus,
             memory: app.mem,
-            hosts: (hostAppMap[app.id] || []).join(',')
+            hosts: (_.uniq(hostAppMap[app.id] || [])).join(',')
           });
         });
         that.tempTaskFlag = that.$el.find("li.container-item.selected").data("name");

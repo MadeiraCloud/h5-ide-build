@@ -3519,7 +3519,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     }
                   }
                 ],
-                "SecurityGroups": ["@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"],
+                "SecurityGroups": ["@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"],
                 "LaunchConfigurationName": "slave-lc-0",
                 "InstanceType": "t2.small",
                 "AssociatePublicIpAddress": true
@@ -3653,8 +3653,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -3873,8 +3873,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -3882,50 +3882,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   "DeviceIndex": "0",
                   "AttachmentId": ""
                 }
-              }
-            },
-            "CDBBEFDF-513B-415C-A875-0C54E6C44963": {
-              "name": "DefaultSG",
-              "type": "AWS.EC2.SecurityGroup",
-              "uid": "CDBBEFDF-513B-415C-A875-0C54E6C44963",
-              "resource": {
-                "Default": true,
-                "GroupId": "",
-                "GroupName": "DefaultSG",
-                "GroupDescription": "default VPC security group",
-                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
-                "IpPermissions": [
-                  {
-                    "FromPort": "22",
-                    "ToPort": "22",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "5050",
-                    "ToPort": "5050",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}",
-                    "IpProtocol": "-1"
-                  }
-                ],
-                "IpPermissionsEgress": [
-                  {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "-1"
-                  }
-                ],
-                "Tags": [
-                  {
-                    "Key": "visops_default",
-                    "Value": "true"
-                  }
-                ]
               }
             },
             "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF": {
@@ -3968,6 +3924,40 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "Key": "visops_default",
                     "Value": "false"
+                  }
+                ]
+              }
+            },
+            "CDBBEFDF-513B-415C-A875-0C54E6C44963": {
+              "name": "DefaultSG",
+              "type": "AWS.EC2.SecurityGroup",
+              "uid": "CDBBEFDF-513B-415C-A875-0C54E6C44963",
+              "resource": {
+                "Default": true,
+                "GroupId": "",
+                "GroupName": "DefaultSG",
+                "GroupDescription": "default VPC security group",
+                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
+                "IpPermissions": [
+                  {
+                    "FromPort": "22",
+                    "ToPort": "22",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }
+                ],
+                "IpPermissionsEgress": [
+                  {
+                    "FromPort": "0",
+                    "ToPort": "65535",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "Tags": [
+                  {
+                    "Key": "visops_default",
+                    "Value": "true"
                   }
                 ]
               }
@@ -4077,8 +4067,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4283,7 +4273,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     }
                   }
                 ],
-                "SecurityGroups": ["@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"],
+                "SecurityGroups": ["@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"],
                 "LaunchConfigurationName": "slave-lc-0",
                 "InstanceType": "c4.large",
                 "AssociatePublicIpAddress": true
@@ -4513,8 +4503,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4666,8 +4656,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4677,31 +4667,31 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 }
               }
             },
-            "CDBBEFDF-513B-415C-A875-0C54E6C44963": {
-              "name": "DefaultSG",
+            "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF": {
+              "name": "MesosSG",
               "type": "AWS.EC2.SecurityGroup",
-              "uid": "CDBBEFDF-513B-415C-A875-0C54E6C44963",
+              "uid": "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF",
               "resource": {
-                "Default": true,
+                "Default": false,
                 "GroupId": "",
-                "GroupName": "DefaultSG",
-                "GroupDescription": "default VPC security group",
+                "GroupName": "MesosSG",
+                "GroupDescription": "Custom Security Group",
                 "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
                 "IpPermissions": [
                   {
-                    "FromPort": "22",
-                    "ToPort": "22",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
                     "FromPort": "5050",
                     "ToPort": "5050",
                     "IpRanges": "0.0.0.0/0",
                     "IpProtocol": "tcp"
                   }, {
+                    "FromPort": "8080",
+                    "ToPort": "8080",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }, {
                     "FromPort": "0",
                     "ToPort": "65535",
-                    "IpRanges": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}",
+                    "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
                     "IpProtocol": "-1"
                   }
                 ],
@@ -4716,7 +4706,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "Tags": [
                   {
                     "Key": "visops_default",
-                    "Value": "true"
+                    "Value": "false"
                   }
                 ]
               }
@@ -4820,8 +4810,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4829,50 +4819,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   "DeviceIndex": "0",
                   "AttachmentId": ""
                 }
-              }
-            },
-            "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF": {
-              "name": "MesosSG",
-              "type": "AWS.EC2.SecurityGroup",
-              "uid": "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF",
-              "resource": {
-                "Default": false,
-                "GroupId": "",
-                "GroupName": "MesosSG",
-                "GroupDescription": "Custom Security Group",
-                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
-                "IpPermissions": [
-                  {
-                    "FromPort": "5050",
-                    "ToPort": "5050",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "8080",
-                    "ToPort": "8080",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
-                    "IpProtocol": "-1"
-                  }
-                ],
-                "IpPermissionsEgress": [
-                  {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "-1"
-                  }
-                ],
-                "Tags": [
-                  {
-                    "Key": "visops_default",
-                    "Value": "false"
-                  }
-                ]
               }
             },
             "364B215C-F322-4F82-90EE-C6944452499A": {
@@ -4974,8 +4920,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5016,6 +4962,40 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "AutoScalingGroupName": "asg0",
                 "DesiredCapacity": "10",
                 "LaunchConfigurationName": "@{614019C2-FE77-47FE-8688-E4BB1E362D54.resource.LaunchConfigurationName}"
+              }
+            },
+            "CDBBEFDF-513B-415C-A875-0C54E6C44963": {
+              "name": "DefaultSG",
+              "type": "AWS.EC2.SecurityGroup",
+              "uid": "CDBBEFDF-513B-415C-A875-0C54E6C44963",
+              "resource": {
+                "Default": true,
+                "GroupId": "",
+                "GroupName": "DefaultSG",
+                "GroupDescription": "default VPC security group",
+                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
+                "IpPermissions": [
+                  {
+                    "FromPort": "22",
+                    "ToPort": "22",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }
+                ],
+                "IpPermissionsEgress": [
+                  {
+                    "FromPort": "0",
+                    "ToPort": "65535",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "Tags": [
+                  {
+                    "Key": "visops_default",
+                    "Value": "true"
+                  }
+                ]
               }
             },
             "DB9AB38A-4571-4F56-8FC5-1F2C4119C2A5": {
@@ -5129,8 +5109,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5391,7 +5371,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     }
                   }
                 ],
-                "SecurityGroups": ["@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"],
+                "SecurityGroups": ["@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"],
                 "LaunchConfigurationName": "slave-lc-0",
                 "InstanceType": "c4.2xlarge",
                 "AssociatePublicIpAddress": true
@@ -5621,8 +5601,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5774,8 +5754,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5785,31 +5765,31 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 }
               }
             },
-            "CDBBEFDF-513B-415C-A875-0C54E6C44963": {
-              "name": "DefaultSG",
+            "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF": {
+              "name": "MesosSG",
               "type": "AWS.EC2.SecurityGroup",
-              "uid": "CDBBEFDF-513B-415C-A875-0C54E6C44963",
+              "uid": "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF",
               "resource": {
-                "Default": true,
+                "Default": false,
                 "GroupId": "",
-                "GroupName": "DefaultSG",
-                "GroupDescription": "default VPC security group",
+                "GroupName": "MesosSG",
+                "GroupDescription": "Custom Security Group",
                 "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
                 "IpPermissions": [
                   {
-                    "FromPort": "22",
-                    "ToPort": "22",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
                     "FromPort": "5050",
                     "ToPort": "5050",
                     "IpRanges": "0.0.0.0/0",
                     "IpProtocol": "tcp"
                   }, {
+                    "FromPort": "8080",
+                    "ToPort": "8080",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }, {
                     "FromPort": "0",
                     "ToPort": "65535",
-                    "IpRanges": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}",
+                    "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
                     "IpProtocol": "-1"
                   }
                 ],
@@ -5824,7 +5804,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "Tags": [
                   {
                     "Key": "visops_default",
-                    "Value": "true"
+                    "Value": "false"
                   }
                 ]
               }
@@ -5928,8 +5908,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5937,50 +5917,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   "DeviceIndex": "0",
                   "AttachmentId": ""
                 }
-              }
-            },
-            "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF": {
-              "name": "MesosSG",
-              "type": "AWS.EC2.SecurityGroup",
-              "uid": "2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF",
-              "resource": {
-                "Default": false,
-                "GroupId": "",
-                "GroupName": "MesosSG",
-                "GroupDescription": "Custom Security Group",
-                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
-                "IpPermissions": [
-                  {
-                    "FromPort": "5050",
-                    "ToPort": "5050",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "8080",
-                    "ToPort": "8080",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
-                    "IpProtocol": "-1"
-                  }
-                ],
-                "IpPermissionsEgress": [
-                  {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "-1"
-                  }
-                ],
-                "Tags": [
-                  {
-                    "Key": "visops_default",
-                    "Value": "false"
-                  }
-                ]
               }
             },
             "364B215C-F322-4F82-90EE-C6944452499A": {
@@ -6082,8 +6018,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -6124,6 +6060,40 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "AutoScalingGroupName": "asg0",
                 "DesiredCapacity": "10",
                 "LaunchConfigurationName": "@{614019C2-FE77-47FE-8688-E4BB1E362D54.resource.LaunchConfigurationName}"
+              }
+            },
+            "CDBBEFDF-513B-415C-A875-0C54E6C44963": {
+              "name": "DefaultSG",
+              "type": "AWS.EC2.SecurityGroup",
+              "uid": "CDBBEFDF-513B-415C-A875-0C54E6C44963",
+              "resource": {
+                "Default": true,
+                "GroupId": "",
+                "GroupName": "DefaultSG",
+                "GroupDescription": "default VPC security group",
+                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
+                "IpPermissions": [
+                  {
+                    "FromPort": "22",
+                    "ToPort": "22",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }
+                ],
+                "IpPermissionsEgress": [
+                  {
+                    "FromPort": "0",
+                    "ToPort": "65535",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "Tags": [
+                  {
+                    "Key": "visops_default",
+                    "Value": "true"
+                  }
+                ]
               }
             },
             "DB9AB38A-4571-4F56-8FC5-1F2C4119C2A5": {
@@ -6237,8 +6207,8 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ],
                 "GroupSet": [
                   {
-                    "GroupName": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupName}",
-                    "GroupId": "@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"
+                    "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
+                    "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
