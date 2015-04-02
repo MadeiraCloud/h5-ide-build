@@ -2921,16 +2921,17 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
       });
       return createStackModal.on("confirm", function() {
         var amiId, framework, provider, region, scale, type;
-        createStackModal.toggleFooter(false);
         type = createStackModal.find(".tab-aws-stack").hasClass("active") ? "aws" : "mesos";
         region = createStackModal.find("#create-" + type + "-stack-region li.item.selected").data("value");
         framework = type === "mesos" ? createStackModal.find(".create-mesos-use-marathon").hasClass("on") : false;
         scale = createStackModal.find("#mesos-scale li.item.selected").data("value");
         provider = "aws::global";
         amiId = null;
-        createStackModal.setContent(MC.template.loadingSpinner());
-        return self.getPreBakedAmiId(region).then(function(result) {
+        createStackModal.loading();
+        return self.getPreBakedAmiId(region, type).then(function(result) {
           return amiId = result;
+        }, function(err) {
+          return console.log(err);
         })["finally"](function() {
           var opsModel;
           console.log("Creating Stack: ", region, provider, {
@@ -2950,7 +2951,13 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
         });
       });
     },
-    getPreBakedAmiId: function(region) {
+    getPreBakedAmiId: function(region, type) {
+      var defer;
+      defer = new Q.defer();
+      if (type === "aws") {
+        defer.resolve();
+        return defer.promise;
+      }
       return ApiRequest("aws_aws", {
         region_names: [region],
         fields: ["prebaked_ami", "quickstart"]
