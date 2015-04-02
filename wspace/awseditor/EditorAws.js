@@ -23164,6 +23164,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       if (Design.instance().region() === 'cn-north-1') {
         hasVGW = hasCGW = false;
       }
+      if (Design.instance().get('state') === "Stopped") {
+        return false;
+      }
       this.$el.html(LeftPanelTpl.panel({
         rdsDisabled: this.workspace.isRdsDisabled(),
         hasVGW: hasVGW,
@@ -23205,15 +23208,8 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       var $constraint, $item, amimationDuration;
       amimationDuration = 150;
       $item = $(e.currentTarget);
-      this.$('.container-item').each(function() {
-        var $c;
-        $c = $(this);
-        if ($c[0] === $item[0]) {
-          return $c.addClass('selected');
-        } else {
-          return $c.removeClass('selected');
-        }
-      });
+      this.$('.container-item').removeClass('selected');
+      $item.addClass("selected");
       $constraint = $item.next('.constraint-list');
       if ($constraint.is(':visible')) {
 
@@ -23724,7 +23720,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       });
     },
     renderContainerList: function(appData, taskData) {
-      var dataApps, dataTasks, hostAppMap, that, viewData, _ref, _ref1;
+      var dataApps, dataTasks, hostAppMap, task, that, viewData, _ref, _ref1;
       that = this;
       dataApps = (_ref = appData[1]) != null ? _ref.apps : void 0;
       dataTasks = (_ref1 = taskData[1]) != null ? _ref1.tasks : void 0;
@@ -23754,9 +23750,19 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
             hosts: (hostAppMap[app.id] || []).join(',')
           });
         });
+        that.tempTaskFlag = that.$el.find("li.container-item.selected").data("name");
         that.$('.marathon-app-list').html(LeftPanelTpl.containerList(viewData));
-        return that.recalcAccordion();
+        that.recalcAccordion();
+        task = that.$el.find(".container-item[data-name='" + that.tempTaskFlag + "']");
+        if (that.tempTaskFlag && task) {
+          return task.addClass("selected");
+        } else {
+          return this.workspace.view.removeHighlight();
+        }
       }
+    },
+    removeHighlight: function() {
+      return this.$(".container-item.selected").removeClass("selected");
     },
     toggleGroup: function(event) {
       var $container, $header;
@@ -25830,7 +25836,8 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       return this.subType === constant.RESTYPE.MESOSMASTER;
     },
     isMesosSlave: function() {
-      return this.subType === constant.RESTYPE.MESOSSLAVE;
+      var _ref;
+      return (_ref = this.subType) === constant.RESTYPE.MESOSSLAVE || _ref === constant.RESTYPE.MESOSLC;
     },
     isMesos: function() {
       return !!this.subType;
@@ -36624,11 +36631,25 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
     },
     initEditor: function() {
       CoreEditorApp.prototype.initEditor.call(this);
-      this.mesosJobs();
+      if (this.opsModel.isMesos()) {
+        this.mesosJobs();
+      }
     },
     cleanup: function() {
       CoreEditorApp.prototype.cleanup.call(this);
       this.cleanupMesosJobs();
+    },
+    awake: function() {
+      CoreEditorApp.prototype.awake.call(this);
+      if (this.__inited) {
+        this.mesosJobs();
+      }
+      return null;
+    },
+    sleep: function() {
+      CoreEditorApp.prototype.sleep.call(this);
+      this.cleanupMesosJobs();
+      return null;
     },
     fetchAmiData: StackEditor.prototype.fetchAmiData,
     fetchRdsData: StackEditor.prototype.fetchRdsData,
@@ -36637,6 +36658,9 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
     /* Mesos */
     mesosJobs: function() {
       var self;
+      if (!this.opsModel.isMesos()) {
+        return;
+      }
       self = this;
       this.updateMesosInfo().then(function() {
         if (self.isRemoved()) {
@@ -36646,9 +36670,13 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
         if (self.isRemoved()) {
           return;
         }
-        return self.mesosSchedule = setTimeout(function() {
+        if (!self.isAwake()) {
+          return;
+        }
+        self.mesosSchedule = setTimeout(function() {
           return self.mesosJobs();
         }, 1000 * 10);
+        return null;
       });
     },
     setMesosData: function(data) {

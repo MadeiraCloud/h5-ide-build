@@ -3514,7 +3514,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 50,
                       "VolumeType": "gp2"
                     }
                   }
@@ -3604,7 +3604,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 50,
                       "VolumeType": "gp2"
                     }
                   }
@@ -3824,7 +3824,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 50,
                       "VolumeType": "gp2"
                     }
                   }
@@ -4028,7 +4028,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 50,
                       "VolumeType": "gp2"
                     }
                   }
@@ -4228,6 +4228,67 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ]
               }
             },
+            "614019C2-FE77-47FE-8688-E4BB1E362D54": {
+              "type": "AWS.AutoScaling.LaunchConfiguration",
+              "uid": "614019C2-FE77-47FE-8688-E4BB1E362D54",
+              "name": "slave-lc-0",
+              "description": "",
+              "state": [
+                {
+                  "id": "slave-lc-0",
+                  "module": "linux.mesos.slave",
+                  "parameter": {
+                    "masters_addresses": [
+                      {
+                        "key": "@{364B215C-F322-4F82-90EE-C6944452499A.PrivateIpAddress}",
+                        "value": "master-3"
+                      }, {
+                        "key": "@{5370F073-C8FA-4780-8020-F028EAB99F6B.PrivateIpAddress}",
+                        "value": "master-0"
+                      }, {
+                        "key": "@{71962761-6E11-48EB-9C72-5862B14D6274.PrivateIpAddress}",
+                        "value": "master-1"
+                      }, {
+                        "key": "@{A66EF8E5-CBCB-49B3-97B2-2B73BE541292.PrivateIpAddress}",
+                        "value": "master-2"
+                      }, {
+                        "key": "@{BF743DF0-1730-4135-BFC1-652A13066B96.PrivateIpAddress}",
+                        "value": "master-4"
+                      }
+                    ],
+                    "attributes": [
+                      {
+                        "key": "asg",
+                        "value": "slave-asg"
+                      }
+                    ],
+                    "slave_ip": "@{self.PrivateIpAddress}"
+                  }
+                }
+              ],
+              "resource": {
+                "UserData": "",
+                "LaunchConfigurationARN": "",
+                "InstanceMonitoring": false,
+                "ImageId": "ami-9ef278f6",
+                "KeyName": "@{73391D87-F983-4796-B787-932600747F7D.resource.KeyName}",
+                "EbsOptimized": false,
+                "BlockDeviceMapping": [
+                  {
+                    "DeviceName": "/dev/sda1",
+                    "Ebs": {
+                      "SnapshotId": "snap-00fc3bbc",
+                      "VolumeSize": 100,
+                      "VolumeType": "gp2"
+                    }
+                  }
+                ],
+                "SecurityGroups": ["@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"],
+                "LaunchConfigurationName": "slave-lc-0",
+                "InstanceType": "c4.large",
+                "AssociatePublicIpAddress": true
+              }
+            },
             "37C8D4D4-5FE0-41A9-8E83-47AA9FF87DF9": {
               "name": "DefaultACL",
               "type": "AWS.VPC.NetworkAcl",
@@ -4318,67 +4379,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 ]
               }
             },
-            "614019C2-FE77-47FE-8688-E4BB1E362D54": {
-              "type": "AWS.AutoScaling.LaunchConfiguration",
-              "uid": "614019C2-FE77-47FE-8688-E4BB1E362D54",
-              "name": "slave-lc-0",
-              "description": "",
-              "state": [
-                {
-                  "id": "slave-lc-0",
-                  "module": "linux.mesos.slave",
-                  "parameter": {
-                    "masters_addresses": [
-                      {
-                        "key": "@{364B215C-F322-4F82-90EE-C6944452499A.PrivateIpAddress}",
-                        "value": "master-3"
-                      }, {
-                        "key": "@{5370F073-C8FA-4780-8020-F028EAB99F6B.PrivateIpAddress}",
-                        "value": "master-0"
-                      }, {
-                        "key": "@{71962761-6E11-48EB-9C72-5862B14D6274.PrivateIpAddress}",
-                        "value": "master-1"
-                      }, {
-                        "key": "@{A66EF8E5-CBCB-49B3-97B2-2B73BE541292.PrivateIpAddress}",
-                        "value": "master-2"
-                      }, {
-                        "key": "@{BF743DF0-1730-4135-BFC1-652A13066B96.PrivateIpAddress}",
-                        "value": "master-4"
-                      }
-                    ],
-                    "attributes": [
-                      {
-                        "key": "asg",
-                        "value": "slave-asg"
-                      }
-                    ],
-                    "slave_ip": "@{self.PrivateIpAddress}"
-                  }
-                }
-              ],
-              "resource": {
-                "UserData": "",
-                "LaunchConfigurationARN": "",
-                "InstanceMonitoring": false,
-                "ImageId": "ami-9ef278f6",
-                "KeyName": "@{73391D87-F983-4796-B787-932600747F7D.resource.KeyName}",
-                "EbsOptimized": false,
-                "BlockDeviceMapping": [
-                  {
-                    "DeviceName": "/dev/sda1",
-                    "Ebs": {
-                      "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
-                      "VolumeType": "gp2"
-                    }
-                  }
-                ],
-                "SecurityGroups": ["@{CDBBEFDF-513B-415C-A875-0C54E6C44963.resource.GroupId}"],
-                "LaunchConfigurationName": "slave-lc-0",
-                "InstanceType": "c4.large",
-                "AssociatePublicIpAddress": true
-              }
-            },
             "734547B2-25A5-41F3-A0E4-AA8A842A7173": {
               "name": "mesos",
               "description": "",
@@ -4464,7 +4464,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 100,
                       "VolumeType": "gp2"
                     }
                   }
@@ -4617,7 +4617,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 100,
                       "VolumeType": "gp2"
                     }
                   }
@@ -4771,7 +4771,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 100,
                       "VolumeType": "gp2"
                     }
                   }
@@ -4925,7 +4925,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 100,
                       "VolumeType": "gp2"
                     }
                   }
@@ -5080,7 +5080,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 100,
                       "VolumeType": "gp2"
                     }
                   }
@@ -5386,7 +5386,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 500,
                       "VolumeType": "gp2"
                     }
                   }
@@ -5572,7 +5572,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 500,
                       "VolumeType": "gp2"
                     }
                   }
@@ -5725,7 +5725,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 500,
                       "VolumeType": "gp2"
                     }
                   }
@@ -5879,7 +5879,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 500,
                       "VolumeType": "gp2"
                     }
                   }
@@ -6033,7 +6033,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 500,
                       "VolumeType": "gp2"
                     }
                   }
@@ -6188,7 +6188,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     "DeviceName": "/dev/sda1",
                     "Ebs": {
                       "SnapshotId": "snap-00fc3bbc",
-                      "VolumeSize": 8,
+                      "VolumeSize": 500,
                       "VolumeType": "gp2"
                     }
                   }

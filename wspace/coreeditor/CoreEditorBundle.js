@@ -2010,10 +2010,16 @@ define('CoreEditorView',["wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n
       oneTimeClicked = function(evt) {
         console.log("hide highlight.");
         self.canvas.removeHighLight();
+        self.resourcePanel.removeHighlight();
         return $("body")[0].removeEventListener("click", oneTimeClicked, true);
       };
       $("body")[0].addEventListener("click", oneTimeClicked, true);
       this.canvas.highLightModels(models);
+    },
+    removeHighlight: function() {
+      var self;
+      self = this;
+      return self.canvas.removeHighLight();
     }
   });
 });
@@ -5816,7 +5822,7 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
       this.listenTo(this.workspace.design, "change:mode", this.switchMode);
     },
     updateResourcePanel: function() {
-      if (this.workspace.opsModel.isMesos() && Design.modelClassForType(constant.RESTYPE.MESOSMASTER).getMarathon()) {
+      if (this.workspace.opsModel.isMesos() && Design.modelClassForType(constant.RESTYPE.MESOSMASTER).getMarathon() && Design.instance().get('state') !== "Stopped") {
         return this.renderMesosPanel();
       } else {
         return this.removeLeftPanel();
