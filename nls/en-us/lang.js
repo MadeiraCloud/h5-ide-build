@@ -2360,9 +2360,10 @@ define({
         "ERROR_LISTENER_XXX_MUST_BE_CONNECTED_TO_A_POOL": "Listener <span class='validation-tag tag-oslistener'>%s</span> must be connected to a pool",
         "ERROR_POOL_AND_MEMBER_SUBNET_NOT_CONNECTED": "Load Balancer's Pool <span class='validation-tag tag-ospool'>%s</span> and Member %s must belong to the same subnet or subnets interconnected by the same router. ",
         "ERROR_STACK_RESOURCE_EXCCED_LIMIT": "Resource %s does not have enough quota. %s/%s used.",
-        "IS_MESOS_MASTER_MORE_THAN_3": "The total number of <span class='validation-tag tag-mesos-master'>Master node</span> must be greater than or equal to 3.",
-        "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack need a <span class='validation-tag tag-mesos-slave'>Slave node</span> at least.",
-        "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master node %s must be placed in a public subnet."
+        "IS_MESOS_MASTER_MORE_THAN_3": "The total number of Master node must be greater than or equal to 3.",
+        "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack need a Slave node at least.",
+        "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master node <span class='validation-tag tag-mesos-master'>%s</span> must be placed in a public subnet.",
+        "MASTER_NUMBER_MUST_BE_ODD": "The total number of Master node must be odd."
     },
     "TOOLBAR": {
         "LOADING_DATA": "Loading data...",

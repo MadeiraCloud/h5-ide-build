@@ -38,7 +38,7 @@ define('component/trustedadvisor/lib/TA.Config',{
       stack: ['~isHaveNotExistAMI'],
       kp: ['longLiveNotice'],
       dbinstance: ['isOgValid', 'isHaveEnoughIPForDB'],
-      instance: ['isMesosMasterMoreThan3', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet']
+      instance: ['isMesosMasterCountLegal', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet']
     },
     openstack: {
       ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
@@ -485,7 +485,7 @@ define('TaHelper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
-  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isMesosHasSlave, isMesosMasterMoreThan3, isMesosMasterPlacedInPublicSubnet, isNatCheckedSourceDest, _getSGCompRuleLength;
+  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isMesosHasSlave, isMesosMasterCountLegal, isMesosMasterPlacedInPublicSubnet, isNatCheckedSourceDest, _getSGCompRuleLength;
   i18n = Helper.i18n.short();
   isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
     var amiId, haveProvisionedVolume, instanceComp, instanceName, instanceType, instanceUIDRef, isInstanceComp, lsgName, tipInfo, _ref;
@@ -678,11 +678,12 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     }
     return Helper.message.error(null, i18n.MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST);
   };
-  isMesosMasterMoreThan3 = function() {
-    var masterCount;
+  isMesosMasterCountLegal = function() {
+    var errors, masterCount;
     if (!Design.instance().opsModel().isMesos()) {
       return null;
     }
+    errors = [];
     masterCount = Design.modelClassForType(constant.RESTYPE.INSTANCE).reduce(function(memo, i) {
       if (i.isMesosMaster()) {
         return memo + 1;
@@ -690,10 +691,13 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
         return memo;
       }
     }, 0);
-    if (masterCount >= 3) {
-      return null;
+    if (masterCount < 3) {
+      errors.push(Helper.message.error('IS_MESOS_MASTER_MORE_THAN_3', i18n.IS_MESOS_MASTER_MORE_THAN_3));
     }
-    return Helper.message.error(null, i18n.IS_MESOS_MASTER_MORE_THAN_3);
+    if (masterCount % 2 === 0) {
+      errors.push(Helper.message.error('MASTER_NUMBER_MUST_BE_ODD', i18n.MASTER_NUMBER_MUST_BE_ODD));
+    }
+    return errors;
   };
   isMesosMasterPlacedInPublicSubnet = function() {
     var master, nameStr, privateMasters, _i, _len;
@@ -717,7 +721,7 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     isConnectRoutTableButNoEIP: isConnectRoutTableButNoEIP,
     isNatCheckedSourceDest: isNatCheckedSourceDest,
     isMesosHasSlave: isMesosHasSlave,
-    isMesosMasterMoreThan3: isMesosMasterMoreThan3,
+    isMesosMasterCountLegal: isMesosMasterCountLegal,
     isMesosMasterPlacedInPublicSubnet: isMesosMasterPlacedInPublicSubnet
   };
 });

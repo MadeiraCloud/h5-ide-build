@@ -2362,7 +2362,8 @@ define({
         "ERROR_STACK_RESOURCE_EXCCED_LIMIT": "Resource %s does not have enough quota. %s/%s used.",
         "IS_MESOS_MASTER_MORE_THAN_3": "Master节点数必须大于等于3个。",
         "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack 至少需要一个 Slave 节点。",
-        "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master 节点 %s 必须放在公开的subnet中。"
+        "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master 节点 <span class='validation-tag tag-mesos-master'>%s</span> 必须放在公开的subnet中。",
+        "MASTER_NUMBER_MUST_BE_ODD": "Master node 的数量必须是奇数。"
     },
     "TOOLBAR": {
         "LOADING_DATA": "加载数据中...",
