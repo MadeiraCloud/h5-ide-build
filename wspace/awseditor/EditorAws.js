@@ -3146,7 +3146,7 @@ define('wspace/awseditor/property/instance/app_model',['../base/model', 'constan
       if (this.effective) {
         this.set('uid', this.effective.uid);
         this.set('mid', this.effective.mid);
-        appId = this.effective.mid;
+        appId = instanceId;
       } else {
         appId = this.resModel.get('appId');
       }
@@ -23179,7 +23179,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       this.updateSnapshot();
       if (isMesos) {
         this.updateMesos();
-        if (this.workspace.design.modeIsApp()) {
+        if (this.workspace.design.modeIsApp() && Design.modelClassForType(constant.RESTYPE.MESOSMASTER).getMarathon()) {
           this.workspace.opsModel.getMesosData().on('change', this.getContainerList, this);
         }
       } else {
