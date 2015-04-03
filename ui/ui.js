@@ -10318,9 +10318,12 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
       }
       this.tpl.find(".modal-body").html(this.option.$template);
       this.setElement(this.tpl);
-      if (modals.length && modals[modals.length - 1].isMoving && this.option.force) {
+      this.isReady = false;
+      if (modals.length && !modals[modals.length - 1].isReady) {
         console.warn("Sorry, But we are moving...");
-        modals[modals.length - 1].nextOptions.push(this.option);
+        if (this.option.force) {
+          modals[modals.length - 1].nextOptions.push(this.option);
+        }
         return this;
       }
       this.tpl.appendTo(this.wrap);
@@ -10348,8 +10351,9 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
         }, 300);
       }
       _.delay(function() {
-        return self.resize();
-      }, 400);
+        self.resize();
+        return self.isReady = true;
+      }, 300);
       _.delay(function() {
         return self.nextOptions.forEach(function(option) {
           return new Modal(option);

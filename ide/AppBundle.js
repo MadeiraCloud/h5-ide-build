@@ -48,7 +48,7 @@ define('ide/Websocket',["Meteor", "backbone", "event", "MC"], function(Meteor, B
     setTimeout((function(_this) {
       return function() {
         _this.shouldNotify = true;
-        if (!_this.connection.status.connected) {
+        if (!_this.connection.status().connected) {
           return _this.statusChanged();
         }
       };
@@ -1350,6 +1350,17 @@ define('ide/submodels/Notification',["OpsModel", "constant", "backbone"], functi
     isNew: function() {
       return this.get("isNew");
     },
+    raw: function() {
+      var key, req, _ref;
+      _ref = App.WS.collection.request._collection.docs || {};
+      for (key in _ref) {
+        req = _ref[key];
+        if (req.id === this.requestId) {
+          return req.dag;
+        }
+      }
+      return null;
+    },
     markAsRead: function() {
       this.attributes.isNew = false;
     },
@@ -1365,6 +1376,7 @@ define('ide/submodels/Notification',["OpsModel", "constant", "backbone"], functi
     updateWithRequest: function(req) {
       var ab, duration, error, i, progress, state, step, toStateIndex, totalSteps, _i, _len, _ref;
       console.info("Updating notification", this, req);
+      this.requestId = req.id;
       if (req.time_submit < this.get("startTime")) {
         console.info("Ingore notification since the req is old", this, req);
         return;

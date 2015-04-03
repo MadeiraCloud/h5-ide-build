@@ -1,4 +1,6 @@
-define('wspace/progress/PVTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
+define('wspace/progress/PVTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
@@ -39,15 +41,37 @@ function program5(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
     + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
-    + "</header>\n    <p class=\"sub-title\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
-    + "</p>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROC_ERR_INFO", {hash:{},data:data}))
-    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n    <button class=\"btn btn-silver btn-close-process right\">"
+    + " <button class=\"btn btn-silver btn-close-process\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
-    + "</button>\n  </section>\n</div>";
+    + "</button></header>\n    <div class=\"result-error-info\">\n      <p class=\"title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_FAILED_SUB_TITLE", {hash:{},data:data}))
+    + "</p>\n      <p class=\"detail\"></p>\n    </div>\n  </section>\n</div>";
   return buffer;
-  }; return Handlebars.template(TEMPLATE); });
+  };
+TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "<li><div class=\"pdr-3\"></div><div class=\"pdr-2\"></div></li>";
+  }
+
+  buffer += "<section class=\"process-detail\">\n  <header><div class=\"pdr-3\">STATUS</div><div class=\"pdr-1\">#</div><div class=\"pdr-2\">TASK</div></header>\n  <ul>";
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</ul>\n</section>";
+  return buffer;
+  };
+TEMPLATE.detailFrame=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
 define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], function(OpsModel, Workspace, ProgressTpl) {
   var OpsProgressView;
   OpsProgressView = Backbone.View.extend({
@@ -65,11 +89,12 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
       if (!this.model.testState(OpsModel.State.Initializing)) {
         data.title = this.model.getStateDesc() + " your app...";
       }
-      this.setElement($(ProgressTpl(data)).appendTo(attr.workspace.scene.spaceParentElement()));
+      this.setElement($(ProgressTpl.frame(data)).appendTo(attr.workspace.scene.spaceParentElement()));
     },
     switchToDone: function() {
       var self;
       this.$el.find(".success").show();
+      this.$el.find(".process-detail").hide();
       self = this;
       setTimeout(function() {
         self.$el.find(".processing-wrap").addClass("fadeout");
@@ -99,6 +124,7 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
           }
           this.$el.children().hide();
           this.$el.find(".fail").show();
+          this.$el.find(".process-detail").show();
           this.$el.find(".detail").html(this.model.get("opsActionError").replace(/\n/g, "<br/>"));
           break;
         default:
@@ -113,6 +139,50 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
       this.$el.find(".bar").css({
         width: pro
       });
+      this.updateDetail();
+    },
+    updateDetail: function() {
+      var $children, $detail, classMap, idx, notification, rawRequest, self, step, text, _i, _len, _ref;
+      notification = App.model.notifications().get(this.model.id);
+      if (!notification) {
+        self = this;
+        App.model.notifications().once("add", function() {
+          return self.updateDetail();
+        });
+        return;
+      }
+      rawRequest = notification.raw();
+      $detail = this.$el.children(".process-detail");
+      if ($detail.length === 0) {
+        $detail = $(ProgressTpl.detailFrame(rawRequest.step || [])).appendTo(this.$el);
+      }
+      $children = $detail.children("ul").children();
+      if (rawRequest.state === "Rollback") {
+        classMap = {
+          done: "pdr-3 done icon-success",
+          running: "pdr-3 rolling icon-pending",
+          pending: "pdr-3 rolledback icon-warning"
+        };
+      } else {
+        classMap = {
+          done: "pdr-3 done icon-success",
+          running: "pdr-3 running icon-pending",
+          pending: "pdr-3 pending"
+        };
+      }
+      _ref = rawRequest.step;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        step = _ref[idx];
+        if (step.length < 5) {
+          continue;
+        }
+        text = step[2] + " " + step[4];
+        if (step[3]) {
+          text += " (" + step[3] + ")";
+        }
+        $children.eq(idx).children(".pdr-2").text(text);
+        $children.eq(idx).children(".pdr-3").attr("class", classMap[step[1]]);
+      }
     },
     close: function() {
       return this.trigger("close");

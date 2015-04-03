@@ -1734,6 +1734,26 @@ function program8(depth0,data) {
 TEMPLATE.appUpdateStatus=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "<li><div class=\"pdr-3\"></div><div class=\"pdr-2\"></div></li>";
+  }
+
+  buffer += "<section class=\"process-detail\">\n  <header><div class=\"pdr-3\">STATUS</div><div class=\"pdr-1\">#</div><div class=\"pdr-2\">TASK</div></header>\n  <ul>";
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</ul>\n</section>";
+  return buffer;
+  };
+TEMPLATE.detailFrame=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 define('CoreEditorView',["wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n!/nls/lang.js", "AppAction", "backbone", "UI.selectbox", "backbone", "UI.selectbox"], function(OpsEditorTpl, Modal, lang, AppAction) {
 
@@ -5303,7 +5323,7 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
     return !(rect1.x1 >= rect2.x2 || rect1.x2 <= rect2.x1 || rect1.y1 >= rect2.y2 || rect1.y2 <= rect2.y1);
   };
   getNonOverlapRects = function(items) {
-    var cleanRects, currentRect, groupRects, i, it, j, otherRect, overlap, rects, _i, _j, _len, _len1;
+    var cleanRects, currentRect, el, groupRects, i, it, j, otherRect, overlap, rects, _i, _j, _k, _len, _len1, _len2, _ref;
     rects = [];
     groupRects = [];
     for (_i = 0, _len = items.length; _i < _len; _i++) {
@@ -5311,7 +5331,11 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
       if (it.isGroup()) {
         groupRects.push(it.effectiveRect());
       } else {
-        rects.push(it.rect());
+        _ref = it.$el;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          el = _ref[_j];
+          rects.push(it.rect(el));
+        }
       }
     }
     if (!groupRects.length) {
@@ -5323,8 +5347,8 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
       j = i;
       currentRect = groupRects[i];
       overlap = false;
-      for (_j = 0, _len1 = cleanRects.length; _j < _len1; _j++) {
-        otherRect = cleanRects[_j];
+      for (_k = 0, _len2 = cleanRects.length; _k < _len2; _k++) {
+        otherRect = cleanRects[_k];
         if (!__isOverlap(currentRect, otherRect)) {
           continue;
         }
@@ -5961,8 +5985,14 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
     },
     updateProgress: function() {
       var $p, pp, pro;
-      pp = this.workspace.opsModel.get("progress");
+      if (!this.workspace.opsModel.isProcessing()) {
+        return;
+      }
       $p = this.$el.find(".ops-process");
+      if (!$p.length) {
+        return;
+      }
+      pp = this.workspace.opsModel.get("progress");
       $p.toggleClass("has-progess", !!pp);
       if (this.__progress > pp) {
         $p.toggleClass("rolling-back", true);
@@ -5973,6 +6003,54 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
       $p.find(".bar").css({
         width: pro
       });
+      this.updateDetail();
+    },
+    updateDetail: function() {
+      var $children, $detail, $processEl, classMap, idx, notification, rawRequest, self, step, text, _i, _len, _ref;
+      $processEl = this.$el.find(".ops-process");
+      if (!$processEl.length) {
+        return;
+      }
+      notification = App.model.notifications().get(this.workspace.opsModel.id);
+      if (!notification) {
+        self = this;
+        App.model.notifications().once("add", function() {
+          return self.updateDetail();
+        });
+        return;
+      }
+      rawRequest = notification.raw();
+      $detail = $processEl.children(".process-detail");
+      if ($detail.length === 0) {
+        $detail = $(OpsEditorTpl.detailFrame(rawRequest.step || [])).appendTo($processEl);
+      }
+      $children = $detail.children("ul").children();
+      if (rawRequest.state === "Rollback") {
+        classMap = {
+          done: "pdr-3 done icon-success",
+          running: "pdr-3 rolling icon-pending",
+          pending: "pdr-3 rolledback icon-warning"
+        };
+      } else {
+        classMap = {
+          done: "pdr-3 done icon-success",
+          running: "pdr-3 running icon-pending",
+          pending: "pdr-3 pending"
+        };
+      }
+      _ref = rawRequest.step;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        step = _ref[idx];
+        if (step.length < 5) {
+          continue;
+        }
+        text = step[2] + " " + step[4];
+        if (step[3]) {
+          text += " (" + step[3] + ")";
+        }
+        $children.eq(idx).children(".pdr-2").text(text);
+        $children.eq(idx).children(".pdr-3").attr("class", classMap[step[1]]);
+      }
     },
     showUpdateStatus: function(error, loading) {
       var self;
@@ -6082,6 +6160,12 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       return this.design && this.design.modeIsAppEdit() && this.design.isModified();
     },
     initEditor: function() {
+      var self;
+      self = this;
+      this.listenTo(this.opsModel, "change:progress", function() {
+        var _ref;
+        return (_ref = self.view) != null ? _ref.updateProgress() : void 0;
+      });
       if (this.opsModel.isImported()) {
         this.updateTab();
         this.view.canvas.autoLayout();
@@ -6149,6 +6233,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.view.toggleProcessing();
       if (!this.diff()) {
         this.view.canvas.update();
+        this.view.propertyPanel.refresh();
       }
     },
     loadVpcResource: function() {
@@ -6187,7 +6272,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
       self = this;
-      this.view.listenTo(this.opsModel, "change:progress", this.view.updateProgress);
       this.opsModel.update(newJson, fastUpdate).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
@@ -6205,7 +6289,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = false;
-      this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
       if (err.error === ApiRequest.Errors.AppConflict) {
         msg = lang.NOTIFY.ERR_APP_UPDATE_FAILED_CONFLICT;
       } else {
@@ -6233,7 +6316,6 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = false;
-      this.view.stopListening(this.opsModel, "change:progress", this.view.updateProgress);
       this.view.showUpdateStatus();
       this.design.setMode(Design.MODE.App);
       this.design.reload();

@@ -2054,7 +2054,7 @@ function program35(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
     + "</label>\n      <div class=\"ranged-number-input\">\n          <label for=\"volume-size-ranged\"></label>\n          <input id=\"volume-size-ranged\" type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-property-ranged-number\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label>"
+    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"5\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-property-ranged-number\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE", {hash:{},data:data}))
     + "</label>\n      <div id=\"volume-type-radios\">\n\n      <div>\n      	<div class=\"radio\">\n          <input id=\"radio-standard\" type=\"radio\" name=\"volume-type\" ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isStandard), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
@@ -2722,10 +2722,11 @@ function program57(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/instance/view',['../base/view', './template/stack', './template/stack_mesos', 'i18n!/nls/lang.js', 'constant', 'kp_dropdown'], function(PropertyView, TplInstance, TplMesos, lang, constant, kp) {
-  var InstanceView, getTemplate, noop;
+  var InstanceView, getTemplate, iopsMax, noop;
   noop = function() {
     return null;
   };
+  iopsMax = 20000;
   getTemplate = function(type) {
     switch (type) {
       case constant.RESTYPE.MESOSMASTER:
@@ -2777,7 +2778,7 @@ define('wspace/awseditor/property/instance/view',['../base/view', './template/st
       me = this;
       $('#volume-size-ranged').parsley('custom', function(val) {
         val = +val;
-        if (!val || val > 1024 || val < me.model.attributes.min_volume_size) {
+        if (!val || val > 16384 || val < me.model.attributes.min_volume_size) {
           return sprintf(lang.PARSLEY.VOLUME_SIZE_OF_ROOTDEVICE_MUST_IN_RANGE, me.model.attributes.min_volume_size);
         }
       });
@@ -2785,7 +2786,7 @@ define('wspace/awseditor/property/instance/view',['../base/view', './template/st
         var volume_size;
         val = +val;
         volume_size = parseInt($('#volume-size-ranged').val(), 10);
-        if (val > 4000 || val < 100) {
+        if (val > iopsMax || val < 100) {
           return lang.PARSLEY.IOPS_MUST_BETWEEN_100_4000;
         } else if (val > 10 * volume_size) {
           return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
@@ -2822,6 +2823,9 @@ define('wspace/awseditor/property/instance/view',['../base/view', './template/st
       if (type === "io1") {
         volumeSize = parseInt($('#volume-size-ranged').val(), 10);
         iops = volumeSize * 10;
+        if (iops > iopsMax) {
+          iops = iopsMax;
+        }
         $("#iops-ranged").val(iops).keyup();
       } else {
         this.model.setIops("");
@@ -6109,7 +6113,7 @@ function program20(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
     + "</label>\n        <div class=\"ranged-number-input\">\n            <label for=\"volume-size-ranged\"></label>\n            <input id=\"volume-size-ranged\" type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.volume_size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-required=\"true\" data-type=\"number\" ";
+    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"5\" data-required=\"true\" data-required=\"true\" data-type=\"number\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n        <label for=\"volume-property-ranged-number\" >GB</label>\n        </div>\n    </section>\n\n    ";
@@ -6160,7 +6164,8 @@ function program20(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/volume/view',['../base/view', './template/stack', 'event', 'i18n!/nls/lang.js'], function(PropertyView, template, ide_event, lang) {
-  var VolumeView;
+  var VolumeView, iopsMax;
+  iopsMax = 20000;
   VolumeView = PropertyView.extend({
     events: {
       'click #volume-type-radios input': 'volumeTypeChecked',
@@ -6177,7 +6182,7 @@ define('wspace/awseditor/property/volume/view',['../base/view', './template/stac
       }, this.model.toJSON())));
       $('#volume-size-ranged').parsley('custom', function(val) {
         val = +val;
-        if (!val || val > 1024 || val < 1) {
+        if (!val || val > 16384 || val < 1) {
           return lang.PARSLEY.VOLUME_SIZE_MUST_IN_1_1024;
         }
       });
@@ -6185,7 +6190,7 @@ define('wspace/awseditor/property/volume/view',['../base/view', './template/stac
         var volume_size;
         val = +val;
         volume_size = parseInt($('#volume-size-ranged').val(), 10);
-        if (val > 4000 || val < 100) {
+        if (val > iopsMax || val < 100) {
           return lang.PARSLEY.IOPS_MUST_BETWEEN_100_4000;
         } else if (val > 10 * volume_size) {
           return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
@@ -6194,14 +6199,20 @@ define('wspace/awseditor/property/volume/view',['../base/view', './template/stac
       return this.model.attributes.volume_detail.name;
     },
     volumeTypeChecked: function(event) {
-      var iops, type;
+      var iops, type, volumeSize;
       this.processIops();
       type = $('#volume-type-radios input:checked').val();
-      iops = type === 'io1' ? $('#iops-ranged').val() : '';
-      if (type !== 'io1') {
-        $('#iops-group').hide();
-      } else {
+      if (type === 'io1') {
         $('#iops-group').show();
+        volumeSize = parseInt($('#volume-size-ranged').val(), 10);
+        iops = volumeSize * 10;
+        if (iops > iopsMax) {
+          iops = iopsMax;
+        }
+        $("#iops-ranged").val(iops);
+      } else {
+        iops = '';
+        $('#iops-group').hide();
       }
       this.model.setVolumeType(type, iops);
       return this.sizeChanged();
@@ -12603,7 +12614,7 @@ define('wspace/awseditor/property/acl/view',['../base/view', 'Design', 'constant
           };
         })
       };
-      new modalPlus({
+      this.modal = new modalPlus({
         title: lang.IDE.POP_ACLRULE_TITLE_ADD,
         width: 450,
         template: rulePopupTpl(data),
@@ -12611,7 +12622,8 @@ define('wspace/awseditor/property/acl/view',['../base/view', 'Design', 'constant
           text: lang.IDE.POP_ACLRULE_BTN_SAVE
         },
         compact: true
-      }).on("confirm", _.bind(this.saveRule, this)).tpl.attr("id", "modal-acl-rule");
+      });
+      this.modal.on("confirm", _.bind(this.saveRule, this)).tpl.attr("id", "modal-acl-rule");
       $("#acl-add-model-source-select").on("OPTION_CHANGE", this.modalRuleSourceSelected);
       $("#modal-protocol-select").on("OPTION_CHANGE", this.modalRuleProtocolSelected);
       $("#protocol-icmp-main-select").on("OPTION_CHANGE", this.modalRuleICMPSelected);
@@ -12725,7 +12737,7 @@ define('wspace/awseditor/property/acl/view',['../base/view', 'Design', 'constant
         protocol: protocol,
         port: port
       });
-      modal.close();
+      this.modal.close();
       return null;
     },
     modalRuleSourceSelected: function(event) {
@@ -13194,7 +13206,7 @@ function program25(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
     + "</label>\n      <div class=\"ranged-number-input\">\n          <label for=\"volume-size-ranged\"></label>\n          <input id=\"volume-size-ranged\" type=\"text\" class=\"input\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.size)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"4\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-size-ranged\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n        <label>"
+    + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"5\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-size-ranged\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE", {hash:{},data:data}))
     + "</label>\n        <div id=\"volume-type-radios\">\n          <div>\n             <div class=\"radio\">\n                  <input id=\"radio-standard\" type=\"radio\" name=\"volume-type\" ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isStandard), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
@@ -13622,7 +13634,8 @@ function program36(depth0,data) {
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/launchconfig/view',['../base/view', './template/stack', './template/stack_mesos', 'event', 'constant', 'i18n!/nls/lang.js', 'kp_dropdown'], function(PropertyView, TplLc, TplMesos, ide_event, constant, lang, kp) {
-  var LanchConfigView;
+  var LanchConfigView, iopsMax;
+  iopsMax = 20000;
   LanchConfigView = PropertyView.extend({
     events: {
       'change .launch-configuration-name': 'lcNameChange',
@@ -13656,7 +13669,7 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
       me = this;
       $('#volume-size-ranged').parsley('custom', function(val) {
         val = +val;
-        if (!val || val > 1024 || val < me.model.attributes.min_volume_size) {
+        if (!val || val > 16384 || val < me.model.attributes.min_volume_size) {
           return sprintf(lang.PARSLEY.VOLUME_SIZE_OF_ROOTDEVICE_MUST_IN_RANGE, me.model.attributes.min_volume_size);
         }
       });
@@ -13664,7 +13677,7 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
         var volume_size;
         val = +val;
         volume_size = parseInt($('#volume-size-ranged').val(), 10);
-        if (val > 4000 || val < 100) {
+        if (val > iopsMax || val < 100) {
           return lang.PARSLEY.IOPS_MUST_BETWEEN_100_4000;
         } else if (val > 10 * volume_size) {
           return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
@@ -13704,6 +13717,9 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
       if (type === "io1") {
         volumeSize = parseInt($('#volume-size-ranged').val(), 10);
         iops = volumeSize * 10;
+        if (iops > iopsMax) {
+          iops = iopsMax;
+        }
         $("#iops-ranged").val(iops).keyup();
       } else {
         this.model.setIops("");
@@ -16738,14 +16754,11 @@ function program11(depth0,data) {
   buffer += "\n\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.snapshotId), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n        <section class=\"property-control-group clearfix\">\n            <label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
-    + "</label>\n            <div>"
-    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.PendingModifiedValues)),stack1 == null || stack1 === false ? stack1 : stack1.DbinstanceIdentifier), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n        </section>\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DATABASE_NAME", {hash:{},data:data}))
+  buffer += "\n\n        <section class=\"property-control-group\" >\n            <label class=\"left\" for=\"property-dbinstance-name\" >"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
     + "</label>\n            <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_REQUIRE", {hash:{},data:data}))
     + "</span>\n            <input class=\"input\" type=\"text\" value=\""
@@ -16817,8 +16830,13 @@ function program16(depth0,data) {
 
 function program18(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_PENDING_APPLY", {hash:{},data:data}));
+  var buffer = "", stack1;
+  buffer += "\n        <section class=\"property-control-group clearfix\">\n            <label>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_APP_DBINSTANCE_ID", {hash:{},data:data}))
+    + "</label>\n            <div>"
+    + escapeExpression(((stack1 = (depth0 && depth0.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        </section>\n        ";
+  return buffer;
   }
 
 function program20(depth0,data) {
@@ -19110,8 +19128,9 @@ define('wspace/awseditor/property/dbinstance/view',['ApiRequest', 'ResDiff', '..
       var $target, that, value;
       that = this;
       $target = $(event.currentTarget);
+      value = $target.val().toLowerCase();
+      $target.val(value);
       if (MC.aws.aws.checkResName(this.resModel.get('id'), $target, 'DBInstance')) {
-        value = $target.val().toLowerCase();
         $target.parsley('custom', function(val) {
           var errTip, max, min;
           val = val.toLowerCase();
@@ -20615,7 +20634,7 @@ function program2(depth0,data) {
   }
 
   buffer += "<article class=\"property-app property-subnet-group\">\n    <div class=\"option-group-head expand\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DBINSTANCE_TIT_DETAIL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_GROUP_DETAILS", {hash:{},data:data}))
     + "</div>\n    <div class=\"option-group\">\n        <dl class=\"dl-vertical\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.NAME", {hash:{},data:data}))
     + "</dt>\n            <dd>"
@@ -22869,13 +22888,14 @@ define('wspace/awseditor/subviews/AmiBrowser',['../template/TplAmiBrowser', 'i18
       return null;
     },
     toggleFav: function(event) {
-      var amiElem, data, favAmis, id, promise, that;
+      var actionUnfav, amiElem, data, favAmis, id, promise, that;
       amiElem = $(event.target);
       that = this;
       favAmis = CloudResources(this.credential, "FavoriteAmi", this.region);
       promise = null;
       id = amiElem.closest("tr").attr("data-id");
-      if (amiElem.hasClass('fav')) {
+      actionUnfav = amiElem.hasClass('fav');
+      if (actionUnfav) {
         promise = favAmis.unfav(id);
       } else {
         data = $.extend({
@@ -22884,7 +22904,10 @@ define('wspace/awseditor/subviews/AmiBrowser',['../template/TplAmiBrowser', 'i18
         promise = favAmis.fav(data);
       }
       return promise.then(function() {
-        return amiElem.toggleClass('fav');
+        var message;
+        amiElem.toggleClass('fav');
+        message = actionUnfav ? lang.IDE.AMI_IS_REMOVED_FROM_FAVOURITE_AMI : lang.IDE.AMI_IS_ADDED_TO_FAVOURITE_AMI;
+        return notification('info', sprintf(message, id));
       });
     },
     doSearch: function(pageNum, perPage) {
@@ -27653,7 +27676,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       _ref = [asg].concat(asg.get("expandedList"));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         expanded = _ref[_i];
-        if (attributes.parent.parent() === expanded.parent().parent()) {
+        if (attributes.parent === expanded.parent()) {
           return;
         }
       }
@@ -27666,7 +27689,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       _ref = [asg].concat(asg.get("expandedList"));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         expanded = _ref[_i];
-        if (expanded !== this && newParent.parent() === expanded.parent().parent()) {
+        if (expanded !== this && newParent === expanded.parent()) {
           return false;
         }
       }
@@ -30428,8 +30451,8 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
   return Model;
 });
 
-define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "ConnectionModel"], function(constant, ComplexResModel, ConnectionModel) {
-  var KeypairModel, KeypairUsage;
+define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "ConnectionModel", "Design"], function(constant, ComplexResModel, ConnectionModel, Design) {
+  var DefaultKpName, KeypairModel, KeypairUsage;
   KeypairUsage = ConnectionModel.extend({
     type: "KeypairUsage",
     oneToMany: constant.RESTYPE.KP,
@@ -30455,6 +30478,7 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
       return null;
     }
   });
+  DefaultKpName = 'DefaultKP';
   KeypairModel = ComplexResModel.extend({
     type: constant.RESTYPE.KP,
     defaults: {
@@ -30465,7 +30489,7 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
       return false;
     },
     isDefault: function() {
-      return this.get('name') === 'DefaultKP';
+      return this.get('name') === DefaultKpName;
     },
     remove: function() {
       var defaultKp, i, _i, _len, _ref;
@@ -30507,10 +30531,10 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
         });
       }
       return _.sortBy(kps, function(a, b) {
-        if (a.name === "DefaultKP") {
+        if (a.name === DefaultKpName) {
           return -1;
         }
-        if (b.name === "DefaultKP") {
+        if (b.name === "DefaultKpName") {
           return 1;
         }
         if (a.name > b.name) {
@@ -30539,18 +30563,24 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
     }
   }, {
     getDefaultKP: function() {
-      return _.find(KeypairModel.allObjects(), function(obj) {
-        return obj.get("name") === "DefaultKP";
+      var allKp, defaultKp;
+      allKp = KeypairModel.allObjects();
+      defaultKp = _.find(allKp, function(obj) {
+        return obj.get("name") === DefaultKpName;
       });
+      return defaultKp;
     },
     setDefaultKP: function(keyName, fingerprint) {
       var defaultKP;
-      defaultKP = _.find(KeypairModel.allObjects(), function(obj) {
-        return obj.get("name") === "DefaultKP";
-      });
+      defaultKP = this.getDefaultKP();
       defaultKP.set('appId', keyName || '');
       defaultKP.set('fingerprint', fingerprint || '');
       return defaultKP.set('isSet', true);
+    },
+    ensureDefaultKp: function() {
+      return this.getDefaultKP() || new KeypairModel({
+        'name': DefaultKpName
+      });
     },
     handleTypes: constant.RESTYPE.KP,
     deserialize: function(data, layout_data, resolve) {
@@ -30563,6 +30593,7 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
       return null;
     }
   });
+  Design.on(Design.EVENT.Deserialized, KeypairModel.ensureDefaultKp, KeypairModel);
   return KeypairModel;
 });
 
@@ -32361,11 +32392,17 @@ define('wspace/awseditor/model/DBOgModel',["ComplexResModel", "Design", "constan
   }, {
     handleTypes: constant.RESTYPE.DBOG,
     deserialize: function(data, layout_data, resolve) {
+      var createdBy;
+      if (Design.instance().modeIsStack()) {
+        createdBy = "";
+      } else {
+        createdBy = data.resource.CreatedBy;
+      }
       return new Model({
         id: data.uid,
         name: data.name,
         appId: data.resource.OptionGroupName,
-        createdBy: data.resource.CreatedBy,
+        createdBy: createdBy,
         engineName: data.resource.EngineName,
         engineVersion: data.resource.MajorEngineVersion,
         options: data.resource.Options,
@@ -34189,7 +34226,8 @@ define('wspace/awseditor/model/serializeVisitor/AppToStack',["../DesignAws"], fu
           _results.push(compo.resource.DBSubnetGroupName = "");
           break;
         case 'AWS.RDS.OptionGroup':
-          _results.push(compo.resource.OptionGroupName = "");
+          compo.resource.OptionGroupName = "";
+          _results.push(compo.resource.CreatedBy = "");
           break;
       }
     }
@@ -35762,6 +35800,7 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
       this.listenTo(this.model, "change:volumeList", this.render);
       this.listenTo(this.model, "change:imageId", this.render);
       this.listenTo(this.canvas, "switchMode", this.render);
+      this.listenTo(this.canvas, "change:externalData", this.render);
       this.listenTo(this.model, "change:expandedList", function() {
         var self;
         self = this;

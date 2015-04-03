@@ -930,11 +930,6 @@ define('JsonExporter',['component/exporter/Download', 'i18n!/nls/lang.js', "cryp
   genericExport = function(aTag, contentJsonObject, fileName) {
     var j, space, ua;
     space = 4;
-
-    /* env:prod */
-    space = void 0;
-
-    /* env:prod:end */
     j = JSON.stringify(contentJsonObject, void 0, space);
     ua = window.navigator.userAgent;
     if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) {
