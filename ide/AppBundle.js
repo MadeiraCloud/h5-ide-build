@@ -3530,7 +3530,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                     }
                   }
                 ],
-                "SecurityGroups": ["@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"],
+                "SecurityGroups": ["@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}", "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupId}"],
                 "LaunchConfigurationName": "slave-lc-0",
                 "InstanceType": "t2.small",
                 "AssociatePublicIpAddress": true
@@ -3666,6 +3666,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupName}",
+                    "GroupId": "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -3730,7 +3733,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "ComparisonOperator": ">=",
                 "EvaluationPeriods": "2",
                 "MetricName": "CPUUtilization",
-                "Namespace": "AWS/AutoScaling",
+                "Namespace": "AWS/EC2",
                 "Period": 300,
                 "Statistic": "Average",
                 "Threshold": "80",
@@ -3886,6 +3889,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupName}",
+                    "GroupId": "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -3907,20 +3913,49 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
                 "IpPermissions": [
                   {
-                    "FromPort": "5050",
-                    "ToPort": "5050",
+                    "FromPort": "0",
+                    "ToPort": "65535",
+                    "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "IpPermissionsEgress": [
+                  {
+                    "FromPort": "0",
+                    "ToPort": "65535",
                     "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "Tags": [
+                  {
+                    "Key": "visops_default",
+                    "Value": "false"
+                  }
+                ]
+              }
+            },
+            "95DF941D-217B-485E-94F0-8A6CEB1DD4D1": {
+              "name": "MesosMaster",
+              "type": "AWS.EC2.SecurityGroup",
+              "uid": "95DF941D-217B-485E-94F0-8A6CEB1DD4D1",
+              "resource": {
+                "Default": false,
+                "GroupId": "",
+                "GroupName": "MesosMaster",
+                "GroupDescription": "MesosMaster Security Group",
+                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
+                "IpPermissions": [
+                  {
                     "FromPort": "8080",
                     "ToPort": "8080",
                     "IpRanges": "0.0.0.0/0",
                     "IpProtocol": "tcp"
                   }, {
-                    "FromPort": "0",
-                    "ToPort": "65535",
-                    "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
-                    "IpProtocol": "-1"
+                    "FromPort": "5050",
+                    "ToPort": "5050",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
                   }
                 ],
                 "IpPermissionsEgress": [
@@ -4080,6 +4115,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupName}",
+                    "GroupId": "@{95DF941D-217B-485E-94F0-8A6CEB1DD4D1.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4516,6 +4554,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupName}",
+                    "GroupId": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4669,6 +4710,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupName}",
+                    "GroupId": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4690,16 +4734,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
                 "IpPermissions": [
                   {
-                    "FromPort": "5050",
-                    "ToPort": "5050",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "8080",
-                    "ToPort": "8080",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
                     "FromPort": "0",
                     "ToPort": "65535",
                     "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
@@ -4823,6 +4857,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupName}",
+                    "GroupId": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4830,6 +4867,45 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   "DeviceIndex": "0",
                   "AttachmentId": ""
                 }
+              }
+            },
+            "435254DA-02AE-48DC-B44B-A133AB7F561D": {
+              "name": "MesosMaster",
+              "type": "AWS.EC2.SecurityGroup",
+              "uid": "435254DA-02AE-48DC-B44B-A133AB7F561D",
+              "resource": {
+                "Default": false,
+                "GroupId": "",
+                "GroupName": "MesosMaster",
+                "GroupDescription": "MesosMaster Security Group",
+                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
+                "IpPermissions": [
+                  {
+                    "FromPort": "8080",
+                    "ToPort": "8080",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }, {
+                    "FromPort": "5050",
+                    "ToPort": "5050",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }
+                ],
+                "IpPermissionsEgress": [
+                  {
+                    "FromPort": "0",
+                    "ToPort": "65535",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "Tags": [
+                  {
+                    "Key": "visops_default",
+                    "Value": "false"
+                  }
+                ]
               }
             },
             "364B215C-F322-4F82-90EE-C6944452499A": {
@@ -4933,6 +5009,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupName}",
+                    "GroupId": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -4971,7 +5050,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "HealthCheckGracePeriod": "300",
                 "TerminationPolicies": ["Default"],
                 "AutoScalingGroupName": "asg0",
-                "DesiredCapacity": "10",
+                "DesiredCapacity": "50",
                 "LaunchConfigurationName": "@{614019C2-FE77-47FE-8688-E4BB1E362D54.resource.LaunchConfigurationName}"
               }
             },
@@ -5122,6 +5201,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupName}",
+                    "GroupId": "@{435254DA-02AE-48DC-B44B-A133AB7F561D.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5155,7 +5237,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "ComparisonOperator": ">=",
                 "EvaluationPeriods": "2",
                 "MetricName": "CPUUtilization",
-                "Namespace": "AWS/AutoScaling",
+                "Namespace": "AWS/EC2",
                 "Period": 300,
                 "Statistic": "Average",
                 "Threshold": "80",
@@ -5614,6 +5696,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupName}",
+                    "GroupId": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5767,6 +5852,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupName}",
+                    "GroupId": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5788,16 +5876,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
                 "IpPermissions": [
                   {
-                    "FromPort": "5050",
-                    "ToPort": "5050",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
-                    "FromPort": "8080",
-                    "ToPort": "8080",
-                    "IpRanges": "0.0.0.0/0",
-                    "IpProtocol": "tcp"
-                  }, {
                     "FromPort": "0",
                     "ToPort": "65535",
                     "IpRanges": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}",
@@ -5921,6 +5999,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupName}",
+                    "GroupId": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -5928,6 +6009,45 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   "DeviceIndex": "0",
                   "AttachmentId": ""
                 }
+              }
+            },
+            "A90E4784-BCF5-41FD-9C74-0937A9D8CFBA": {
+              "name": "MesosMaster",
+              "type": "AWS.EC2.SecurityGroup",
+              "uid": "A90E4784-BCF5-41FD-9C74-0937A9D8CFBA",
+              "resource": {
+                "Default": false,
+                "GroupId": "",
+                "GroupName": "MesosMaster",
+                "GroupDescription": "MesosMaster Security Group",
+                "VpcId": "@{734547B2-25A5-41F3-A0E4-AA8A842A7173.resource.VpcId}",
+                "IpPermissions": [
+                  {
+                    "FromPort": "8080",
+                    "ToPort": "8080",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }, {
+                    "FromPort": "5050",
+                    "ToPort": "5050",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "tcp"
+                  }
+                ],
+                "IpPermissionsEgress": [
+                  {
+                    "FromPort": "0",
+                    "ToPort": "65535",
+                    "IpRanges": "0.0.0.0/0",
+                    "IpProtocol": "-1"
+                  }
+                ],
+                "Tags": [
+                  {
+                    "Key": "visops_default",
+                    "Value": "false"
+                  }
+                ]
               }
             },
             "364B215C-F322-4F82-90EE-C6944452499A": {
@@ -6031,6 +6151,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupName}",
+                    "GroupId": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -6069,7 +6192,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "HealthCheckGracePeriod": "300",
                 "TerminationPolicies": ["Default"],
                 "AutoScalingGroupName": "asg0",
-                "DesiredCapacity": "10",
+                "DesiredCapacity": "200",
                 "LaunchConfigurationName": "@{614019C2-FE77-47FE-8688-E4BB1E362D54.resource.LaunchConfigurationName}"
               }
             },
@@ -6220,6 +6343,9 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                   {
                     "GroupName": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupName}",
                     "GroupId": "@{2FF8AA56-2F7E-4CA1-B967-8C2F8918D9EF.resource.GroupId}"
+                  }, {
+                    "GroupName": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupName}",
+                    "GroupId": "@{A90E4784-BCF5-41FD-9C74-0937A9D8CFBA.resource.GroupId}"
                   }
                 ],
                 "Attachment": {
@@ -6253,7 +6379,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
                 "ComparisonOperator": ">=",
                 "EvaluationPeriods": "2",
                 "MetricName": "CPUUtilization",
-                "Namespace": "AWS/AutoScaling",
+                "Namespace": "AWS/EC2",
                 "Period": 300,
                 "Statistic": "Average",
                 "Threshold": "80",

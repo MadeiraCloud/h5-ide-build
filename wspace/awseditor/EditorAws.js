@@ -754,19 +754,19 @@ function program12(depth0,data) {
 function program14(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n      ";
+  buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n<!--       ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      <section class=\"property-control-group\" id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
+  buffer += "\n -->      <section class=\"property-control-group\" id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
   return buffer;
   }
 function program15(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <section class=\"property-control-group\" data-bind=\"true\">\n    <div class=\"mesos-marathon-switch\">\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
+  buffer += "\n      <section class=\"property-control-group\" data-bind=\"true\">\n        <div class=\"mesos-marathon-switch\">\n          <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n          <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </div>\n  </section>\n      ";
+  buffer += "\">\n            <span class=\"switch-handle\"></span>\n          </label>\n        </div>\n      </section>\n      ";
   return buffer;
   }
 function program16(depth0,data) {
@@ -894,15 +894,14 @@ TEMPLATE.main=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<dl class=\"dl-vertical\">\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  <dt>Mesos Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
+  buffer += "\n<dl class=\"dl-vertical\">\n  <dt>Framework</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.framework), {hash:{},data:data}))
+    + "</dd>\n  <dt>Mesos Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -911,21 +910,12 @@ function program1(depth0,data) {
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</a></dd>\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.framework), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.framework), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</dl>\n";
   return buffer;
   }
 function program2(depth0,data) {
-  
-  var buffer = "";
-  buffer += "\n  <dt>Framework</dt><dd>"
-    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.framework), {hash:{},data:data}))
-    + "</dd>\n  ";
-  return buffer;
-  }
-
-function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<dt>Marathon Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
@@ -940,13 +930,13 @@ function program4(depth0,data) {
   return buffer;
   }
 
-function program6(depth0,data) {
+function program4(depth0,data) {
   
   
   return "\n<dl class=\"dl-vertical\"><dt>Mesos Data is not ready yet...</dt></dl>\n";
   }
 
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.leaderIp), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.leaderIp), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
@@ -32060,7 +32050,7 @@ define('wspace/awseditor/model/ScalingPolicyModel',["ResourceModel", "ComplexRes
         alarmData: {
           id: MC.guid(),
           alarmName: "",
-          namespace: "AWS/AutoScaling",
+          namespace: "AWS/EC2",
           metricName: "CPUUtilization",
           comparisonOperator: ">=",
           evaluationPeriods: "2",
@@ -32084,7 +32074,7 @@ define('wspace/awseditor/model/ScalingPolicyModel',["ResourceModel", "ComplexRes
     setAlarm: function(alarmData) {
       this.set("alarmData", $.extend({
         id: this.attributes.alarmData.id,
-        namespace: "AWS/AutoScaling",
+        namespace: "AWS/EC2",
         unit: "",
         appId: this.attributes.alarmData.appId,
         alarmName: this.attributes.alarmData.alarmName
@@ -32098,7 +32088,7 @@ define('wspace/awseditor/model/ScalingPolicyModel',["ResourceModel", "ComplexRes
       var alarmData, asgSize, fee, p, period, _i, _len, _ref;
       alarmData = this.get("alarmData");
       period = parseInt(alarmData.period, 10);
-      if (!(period <= 300 && alarmData.namespace === "AWS/AutoScaling")) {
+      if (!(period <= 300 && alarmData.namespace === "AWS/EC2")) {
         return null;
       }
       _ref = priceMap.cloudwatch.types;
