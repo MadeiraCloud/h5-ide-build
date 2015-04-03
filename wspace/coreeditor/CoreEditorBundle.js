@@ -1641,7 +1641,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" type=\"string\" autofocus>\n</div>\n<div class=\"modal-control-group app-usage-group clearfix\">\n    <label for=\"\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APP_USAGE", {hash:{},data:data}))
-    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\" id=\"importAsMesosWrap\">\n    <div class=\"checkbox\"><input id=\"importAsMesos\" type=\"checkbox\"><label for=\"importAsMesos\"></label></div>\n    <label for=\"importAsMesos\">Import as Mesos app</label>\n    <div class=\"modal-control-group import-as-mesos-wrap hide\">\n        <label for=\"\">Mesos Master Leader URL</label>\n        <input id=\"mesos-master-url\" class=\"input\" type=\"string\" autofocus=\"\">\n        <input class=\"input\" id=\"mesos-master-port\" type=\"text\" value=\"5050\"/>\n        <label for=\"\">Any Marathon Master URL</label>\n        <input id=\"marathon-master-url\" class=\"input\" type=\"string\" autofocus=\"\">\n        <input class=\"input\" id=\"marathon-master-port\" type=\"text\" value=\"8080\"/>\n    </div>\n\n</section>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">"
+    + "</label>\n    <div id=\"app-usage-selectbox\" class=\"selectbox\">\n        <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n        <ul class=\"dropdown\" tabindex=\"-1\">\n            <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n            <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n            <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n            <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n        </ul>\n    </div>\n</div>\n\n<section style=\"margin:5px 5px 20px 8px;\">\n  <div class=\"checkbox\"><input id=\"MonitorImportApp\" type=\"checkbox\" checked=\"checked\"><label for=\"MonitorImportApp\"></label></div>\n  <label for=\"MonitorImportApp\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.MONITOR_REPORT_EXTERNAL_RESOURCE", {hash:{},data:data}))
     + "</label>\n  <i class=\"icon-info tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.IF_RESOURCE_CHANGED_EMAIL_SENT", {hash:{},data:data}))
@@ -5893,13 +5893,7 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
           self.workspace.remove();
         },
         onConfirm: function() {
-          var $ipt, json, newName;
-          newName = modal.tpl.find("#ImportSaveAppName").val();
-          $("ul.ws-tabs li.active").remove();
-          App.loadUrl("workspace/0f1bd360-c866-4852-94ec-a5c781f6a86f/ops/app-503dbed0");
-          $("ul.ws-tabs li").last().find("span").text(newName + " - app");
-          modal.close();
-          return false;
+          var $ipt, json;
           $ipt = modal.tpl.find("#ImportSaveAppName");
           $ipt.parsley('custom', function(val) {
             var apps;
@@ -5942,9 +5936,6 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
             }
           });
         }
-      });
-      modal.find("#importAsMesos").click(function() {
-        return $(".import-as-mesos-wrap").toggle($(this).is(":checked"));
       });
     },
     toggleProcessing: function() {
@@ -6128,6 +6119,12 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
           modal.close();
         }
       });
+    },
+    showMarathonNotReady: function() {
+      if (this.workspace.__marathonIsReady) {
+        return false;
+      }
+      return this.resourcePanel.renderMarathonNotReady();
     }
   });
 });

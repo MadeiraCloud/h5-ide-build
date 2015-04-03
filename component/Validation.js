@@ -1353,6 +1353,9 @@ define('component/trustedadvisor/validation/aws/elb/elb',['constant', 'MC', 'i18
     var elb, elbName, limit;
     limit = 23;
     elb = Design.instance().component(uid);
+    if (elb.get('appId')) {
+      return null;
+    }
     elbName = elb.get('name');
     if (elbName && elbName.length > limit) {
       return Helper.message.error(uid, i18n.ERROR_ELB_NAME_EXCEED_LIMIT, elbName, limit);

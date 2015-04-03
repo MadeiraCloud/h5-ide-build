@@ -50,7 +50,7 @@ function program7(depth0,data) {
     + "\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.apps), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</ul>\n		</sectio\n		";
+  buffer += "\n			</ul>\n		</section>\n		";
   return buffer;
   }
 function program8(depth0,data) {

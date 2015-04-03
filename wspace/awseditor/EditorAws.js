@@ -753,11 +753,29 @@ function program12(depth0,data) {
 
 function program14(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      <section class=\"property-control-group\" id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
+  return buffer;
+  }
+function program15(depth0,data) {
   
-  return "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n      <section class=\"property-control-group\" id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
+  var buffer = "", stack1;
+  buffer += "\n      <section class=\"property-control-group\" data-bind=\"true\">\n    <div class=\"mesos-marathon-switch\">\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </div>\n  </section>\n      ";
+  return buffer;
+  }
+function program16(depth0,data) {
+  
+  
+  return "on";
   }
 
-function program16(depth0,data) {
+function program18(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-stack-name\">"
@@ -781,27 +799,22 @@ function program16(depth0,data) {
     + "</label></dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n	</dl>\n\n  <!-- Mesos Settings -->\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
   return buffer;
   }
-function program17(depth0,data) {
+function program19(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <section class=\"property-control-group\" data-bind=\"true\">\n    <div class=\"mesos-marathon-switch\">\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </div>\n  </section>\n  ";
   return buffer;
   }
-function program18(depth0,data) {
-  
-  
-  return "on";
-  }
 
-function program20(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<div class=\"option-group-head pos-r\">"
@@ -809,12 +822,12 @@ function program20(depth0,data) {
     + "<span class=\"acl-info-list-num property-head-num-wrap\">("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.networkAcls)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span>\n	</div>\n	<div class=\"option-group\">\n    <ul class=\"acl-sg-info-list acl-info-list mega-list-wraper\" id=\"stack-property-acl-list\"></ul>\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </div>\n	";
   return buffer;
   }
-function program21(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "";
   buffer += "<a href=\"#\" class=\"add-to-list\" id=\"stack-property-new-acl\">"
@@ -823,7 +836,7 @@ function program21(depth0,data) {
   return buffer;
   }
 
-function program23(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.currency)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -835,7 +848,7 @@ function program23(depth0,data) {
   return buffer;
   }
 
-function program25(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <tr> <td>"
@@ -849,17 +862,17 @@ function program25(depth0,data) {
   }
 
   buffer += "<article>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(16, program16, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(18, program18, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n\n\n	<!-- SG, ACL, COST -->\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n  <div class=\"option-group sg-group\"></div>\n\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n	<div class=\"option-group-head\">\n		"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_COST_ESTIMATION", {hash:{},data:data}))
     + "\n		<span class=\"cost-counter right\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</span>\n	</div>\n	<div class=\"option-group\">\n		<table class=\"table cost-estimation-table\">\n			<thead> <tr>\n					<th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_RESOURCE", {hash:{},data:data}))
@@ -868,7 +881,7 @@ function program25(depth0,data) {
     + "</th>\n          <th style=\"min-width:60px;\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_FEE", {hash:{},data:data}))
     + "</th>\n			</tr> </thead>\n			<tbody> ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_AWS_EC2_PRICING", {hash:{},data:data}))
@@ -881,14 +894,15 @@ TEMPLATE.main=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<dl class=\"dl-vertical\">\n  <dt>Framework</dt><dd>"
-    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.framework), {hash:{},data:data}))
-    + "</dd>\n  <dt>Mesos Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
+  buffer += "\n<dl class=\"dl-vertical\">\n  ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  <dt>Mesos Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -897,12 +911,21 @@ function program1(depth0,data) {
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</a></dd>\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.framework), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.framework), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</dl>\n";
   return buffer;
   }
 function program2(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n  <dt>Framework</dt><dd>"
+    + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.framework), {hash:{},data:data}))
+    + "</dd>\n  ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "<dt>Marathon Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
@@ -917,13 +940,13 @@ function program2(depth0,data) {
   return buffer;
   }
 
-function program4(depth0,data) {
+function program6(depth0,data) {
   
   
   return "\n<dl class=\"dl-vertical\"><dt>Mesos Data is not ready yet...</dt></dl>\n";
   }
 
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.leaderIp), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.leaderIp), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
@@ -1052,7 +1075,9 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
       if (dataModel == null) {
         dataModel = Design.instance().opsModel().getMesosData();
       }
-      return this.$('#mesos-data-area').html(template.mesosData(dataModel.toJSON()));
+      return this.$('#mesos-data-area').html(template.mesosData(_.extend({
+        isAppEdit: this.model.isAppEdit
+      }, dataModel.toJSON())));
     },
     toggleMarathon: function(e) {
       var $switch, marathonOn;
@@ -5320,7 +5345,7 @@ define('wspace/awseditor/property/sg/model',['../base/model', "Design", 'constan
       return null;
     },
     readonly: function() {
-      return this.component.isMesos();
+      return this.component.isMesos() && Design.instance().opsModel().isMesos();
     }
   });
   return new SgModel();
@@ -22327,7 +22352,7 @@ function program17(depth0,data) {
   buffer += "\n\n      ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </ul>\n  </section>\n</div>\n</div>\n\n\n<div class=\"panel container-panel hide\">\n    <div class=\"marathon-app-ready\">\n        <img class=\"logo\" src=\"/assets/images/ide/marathon.png\" />\n        <div class=\"desc\">When marathon framework ready and deployed app on Mesos cluster, will show app list at here.</div>\n    </div>\n    <div class=\"marathon-app-list\" class=\"hide\"></div>\n</div>";
+  buffer += "\n\n    </ul>\n  </section>\n</div>\n</div>\n\n\n<div class=\"panel container-panel hide\">\n    <div class=\"marathon-app-ready\">\n        <div class=\"loading-bounce\"><div class=\"bounce-one\"></div><div class=\"bounce-two\"></div></div>\n        <div class=\"desc\">Trying to load marathon apps list...</div>\n        <div class=\"desc\">When marathon framework ready and deployed app on Mesos cluster, will show app list at here.</div>\n    </div>\n    <div class=\"marathon-app-list\" class=\"hide\"></div>\n</div>";
   return buffer;
   };
 TEMPLATE.panel=Handlebars.template(__TEMPLATE__);
@@ -22735,6 +22760,28 @@ function program10(depth0,data) {
   return buffer;
   };
 TEMPLATE.containerList=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<img class=\"logo\" src=\"/assets/images/ide/marathon.png\">\n<div class=\"desc\">Marathon framework is ready now, but no app is deployed on Mesos cluster</div>\n<div class=\"desc\">App list will show here when deployed on Mesos cluster.</div>";
+  };
+TEMPLATE.emptyContainer=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<img class=\"logo\" src=\"/assets/images/ide/marathon.png\">\n<div class=\"desc\">Marathon framework is not ready yet.</div>\n<div class=\"desc\">When marathon framework ready and deployed app on Mesos cluster, will show app list at here.</div>";
+  };
+TEMPLATE.mesosNotReady=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
@@ -23223,6 +23270,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       this.updateAZ();
       this.updateSnapshot();
       if (isMesos) {
+        if (this.workspace.opsModel.getMesosData()) {
+          this.getContainerList();
+        }
         this.updateMesos();
         if (this.workspace.design.modeIsApp() && Design.modelClassForType(constant.RESTYPE.MESOSMASTER).getMarathon()) {
           this.workspace.opsModel.getMesosData().on('change', this.getContainerList, this);
@@ -23739,7 +23789,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       this.subViews = null;
       Backbone.View.prototype.remove.call(this);
     },
-    getContainerList: function(leaderIp) {
+    getContainerList: function() {
       var appData, interval, mesosData, reqLoop, taskData, that;
       that = this;
       mesosData = this.workspace.opsModel.getMesosData();
@@ -23747,7 +23797,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       taskData = null;
       interval = 30 * 1000;
       reqLoop = function() {
-        var deferArray;
+        var deferArray, leaderIp;
         leaderIp = mesosData.get('leaderIp');
         if (!leaderIp) {
           return;
@@ -23767,6 +23817,8 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
           if (appData) {
             return that.renderContainerList(appData, taskData);
           }
+        }).fail(function() {
+          return that.renderMarathonNotReady();
         })["finally"](function() {
           clearTimeout(that.timeOutLoop);
           return that.timeOutLoop = setTimeout(function() {
@@ -23788,12 +23840,19 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         "leader_ip": leaderIp
       });
     },
+    renderMarathonNotReady: function() {
+      if (this.workspace.__mesosIsReady) {
+        return false;
+      }
+      return this.$('.marathon-app-ready').show().html(LeftPanelTpl.mesosNotReady);
+    },
     renderContainerList: function(appData, taskData) {
       var dataApps, dataTasks, hostAppMap, task, that, viewData, _ref, _ref1;
       if (!this.workspace.isAwake()) {
         return;
       }
       that = this;
+      this.workspace.__mesosIsReady = true;
       dataApps = (_ref = appData[1]) != null ? _ref.apps : void 0;
       dataTasks = (_ref1 = taskData[1]) != null ? _ref1.tasks : void 0;
       hostAppMap = {};
@@ -23831,6 +23890,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         } else {
           return this.workspace.view.removeHighlight();
         }
+      } else {
+        that.$('.marathon-app-list').hide();
+        return that.$('.marathon-app-ready').show().html(LeftPanelTpl.emptyContainer());
       }
     },
     removeHighlight: function() {
@@ -36800,6 +36862,7 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
         marathonPort: marathonPort,
         slaves: data.slaves
       };
+      this.view.workspace.__marathonIsReady = true;
       return this.opsModel.setMesosData(data);
     },
     updateMesosInfo: function() {
@@ -36812,6 +36875,8 @@ define('wspace/awseditor/AwsEditorApp',["CoreEditorApp", "./AwsViewApp", "./mode
         "master_ips": MesosMasterModel.getMasterIPs()
       }).then(function(data) {
         return that.setMesosData(data);
+      }, function(err) {
+        return that.view.showMarathonNotReady();
       }));
       return Q.all(jobs);
     },
