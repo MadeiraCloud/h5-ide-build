@@ -23497,11 +23497,16 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       return this.$el.find(".resource-list-ami").html(html);
     },
     updateMesos: function() {
-      var data, html;
+      var data, html, imageId, isAppEdit, region;
+      region = this.workspace.design.region();
+      imageId = (_.findWhere(constant.MESOS_AMI_IDS, {
+        region: region
+      })).imageId;
+      isAppEdit = Design.instance().modeIsAppEdit();
       data = {
-        region: this.workspace.opsModel.get("region"),
-        imageId: constant.MESOS_IMAGEID,
-        isAppEdit: Design.instance().modeIsAppEdit()
+        region: region,
+        imageId: imageId,
+        isAppEdit: isAppEdit
       };
       html = LeftPanelTpl.mesos(data);
       return this.$(".resource-list-ami").html(html);
