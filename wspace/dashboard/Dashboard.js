@@ -2920,35 +2920,24 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
         }
       });
       return createStackModal.on("confirm", function() {
-        var amiId, framework, provider, region, scale, type;
+        var framework, opsModel, provider, region, scale, type;
         type = createStackModal.find(".tab-aws-stack").hasClass("active") ? "aws" : "mesos";
         region = createStackModal.find("#create-" + type + "-stack-region li.item.selected").data("value");
         framework = type === "mesos" ? createStackModal.find(".create-mesos-use-marathon").hasClass("on") : false;
         scale = createStackModal.find("#mesos-scale li.item.selected").data("value");
         provider = "aws::global";
-        amiId = null;
-        createStackModal.loading();
-        return self.getPreBakedAmiId(region, type).then(function(result) {
-          return amiId = result;
-        }, function(err) {
-          return console.log(err);
-        })["finally"](function() {
-          var opsModel;
-          console.log("Creating Stack: ", region, provider, {
-            type: type,
-            framework: framework,
-            scale: scale,
-            amiId: amiId
-          });
-          createStackModal.close();
-          opsModel = self.model.scene.project.createStack(region, provider, {
-            type: type,
-            framework: framework,
-            scale: scale,
-            amiId: amiId
-          });
-          return self.model.scene.loadSpace(opsModel);
+        console.log("Creating Stack: ", region, provider, {
+          type: type,
+          framework: framework,
+          scale: scale
         });
+        createStackModal.close();
+        opsModel = self.model.scene.project.createStack(region, provider, {
+          type: type,
+          framework: framework,
+          scale: scale
+        });
+        return self.model.scene.loadSpace(opsModel);
       });
     },
     getPreBakedAmiId: function(region, type) {

@@ -497,9 +497,19 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       this.showApp = id === "app";
     },
     render: function() {
+      var apps, mapper, stacks;
+      mapper = function(region) {
+        region.data = _.filter(region.data, function(app) {
+          var _ref;
+          return (_ref = app.provider) === "aws::global" || _ref === "aws::china" || _ref === "os::awcloud_bj";
+        });
+        return region;
+      };
+      apps = _.map(this.project.apps().groupByRegion(), mapper);
+      stacks = _.map(this.project.stacks().groupByRegion(), mapper);
       return this.$el.html(ProjectTpl.assetList({
-        apps: this.project.apps().groupByRegion(),
-        stacks: this.project.stacks().groupByRegion(),
+        apps: apps,
+        stacks: stacks,
         showApp: this.showApp
       }));
     }

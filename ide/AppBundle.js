@@ -555,7 +555,6 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       if (options.type) {
         this.__jsonFramework = options.framework;
         this.__jsonScale = options.scale;
-        this.__amiId = options.amiId;
       }
       if (options && options.jsonData) {
         if (options.jsonData.type) {
@@ -866,9 +865,6 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
     },
     getStackFramework: function() {
       return this.__jsonFramework;
-    },
-    getAmiId: function() {
-      return this.__amiId;
     },
     isMesos: function() {
       return this.getStackType() === "mesos";
@@ -3352,7 +3348,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
       return json;
     },
     ___mesosJson: function(scale) {
-      var amiForEachRegion, component, componentJson, componentKeys, defaultStack, framework, imageId, json, keys, layout, layoutJson, layoutKeys, regionName, simpleMesosMap;
+      var component, componentJson, componentKeys, defaultStack, framework, imageId, json, keys, layout, layoutJson, layoutKeys, regionName, simpleMesosMap;
       simpleMesosMap = {
         small: {
           component: {
@@ -6391,41 +6387,11 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
       };
       defaultStack = simpleMesosMap[scale];
       json = OpsModel.prototype.__defaultJson.call(this);
-      amiForEachRegion = [
-        {
-          "region": "us-east-1",
-          "imageId": "ami-9ef278f6"
-        }, {
-          "region": "us-west-1",
-          "imageId": "ami-353f2970"
-        }, {
-          "region": "eu-west-1",
-          "imageId": "ami-1a92266d"
-        }, {
-          "region": "us-west-2",
-          "imageId": "ami-fba3e8cb"
-        }, {
-          "region": "eu-central-1",
-          "imageId": "ami-929caa8f"
-        }, {
-          "region": "ap-southeast-2",
-          "imageId": "ami-5fe28d65"
-        }, {
-          "region": "ap-northeast-1",
-          "imageId": "ami-9d7f479c"
-        }, {
-          "region": "ap-southeast-1",
-          "imageId": "ami-a6a083f4"
-        }, {
-          "region": "sa-east-1",
-          "imageId": "ami-c79e28da"
-        }
-      ];
       framework = this.getStackFramework() ? ["marathon"] : [];
-      imageId = this.getAmiId() || (_.findWhere(amiForEachRegion, {
-        region: this.get("region")
-      })).imageId;
       regionName = this.get("region");
+      imageId = (_.findWhere(constant.MESOS_AMI_IDS, {
+        region: regionName
+      })).imageId;
       component = defaultStack.component;
       layout = defaultStack.layout;
       componentKeys = _.keys(component);
@@ -6439,7 +6405,7 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
         componentJson = componentJson.replace(new RegExp(key, "g"), guid);
         return layoutJson = layoutJson.replace(new RegExp(key, "g"), guid);
       });
-      _.each(_.pluck(amiForEachRegion, "region"), function(region) {
+      _.each(_.pluck(constant.MESOS_AMI_IDS, "region"), function(region) {
         return componentJson = componentJson.replace(new RegExp(region, "g"), regionName);
       });
       componentJson = componentJson.replace(/ami-\w{8}/g, imageId);

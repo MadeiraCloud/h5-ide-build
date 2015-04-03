@@ -27795,11 +27795,14 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       return new LcUsage(this, lc);
     },
     createMesosLc: function() {
-      var MesosLcModel, attributes;
+      var MesosLcModel, attributes, regionName;
       MesosLcModel = Design.modelClassForType(constant.RESTYPE.MESOSLC);
+      regionName = this.design().region();
       attributes = {
         parent: this,
-        imageId: constant.MESOS_IMAGEID
+        imageId: (_.findWhere(constant.MESOS_AMI_IDS, {
+          region: regionName
+        })).imageId
       };
       return CanvasElement.createResource(constant.RESTYPE.MESOSLC, attributes, {
         createByUser: true
