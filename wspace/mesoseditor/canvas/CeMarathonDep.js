@@ -1,0 +1,1 @@
+define(["CanvasLine","constant","CanvasManager","i18n!/nls/lang.js"],function(e,t,n,r){return e.extend({type:"MarathonDepOut"}),e.extend({type:"MarathonDepIn"})});

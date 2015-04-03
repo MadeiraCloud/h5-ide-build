@@ -1,0 +1,1 @@
+define(["backbone","Design","constant"],function(e,t,n){var r;return r=e.Model.extend({init:function(){return null},setName:function(e){var n;return n=this.get("uid"),void 0,t.instance().component(n).setName(e),this.set("name",e),null},setDesc:function(e){var n;return n=this.get("uid"),void 0,t.instance().component(n).setDesc(e)}}),r});

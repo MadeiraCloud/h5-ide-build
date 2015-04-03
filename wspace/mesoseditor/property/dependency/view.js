@@ -1,0 +1,1 @@
+define(["../base/view","./template","i18n!/nls/lang.js","constant","UI.modalplus"],function(e,t,n,r){var i;return i=e.extend({initialize:function(e){},render:function(){var e,n;return e=this.model.port1Comp(),n=this.model.port2Comp(),this.$el.html(t.stack({before:n.get("name"),after:e.get("name")})),"Dependency"}}),new i});
