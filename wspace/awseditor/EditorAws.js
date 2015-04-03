@@ -1201,6 +1201,7 @@ define('wspace/awseditor/property/sglist/model',["Design", "constant"], function
         if (sg.isElbSg() && !(isELBParent || isStackParent)) {
           continue;
         }
+        disableCheck = false;
         sgChecked = !!SgAssoModel.findExisting(sg, resource);
         needShow = isStackParent || (!readonly) || sgChecked;
         if (!needShow) {

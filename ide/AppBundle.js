@@ -3127,6 +3127,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
   });
   AwsOpsModel = OpsModel.extend({
     type: OpsModel.Type.Amazon,
+    initialize: function(attr, options) {
+      OpsModel.prototype.initialize.apply(this, arguments);
+      this.__mesosData = new MesosDataModel();
+    },
     getMsrId: function() {
       var comp, msrId, uid, _ref;
       msrId = OpsModel.prototype.getMsrId.call(this);
@@ -3145,7 +3149,6 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
       }
       return void 0;
     },
-    __mesosData: new MesosDataModel(),
     setMesosData: function(data) {
       return this.__mesosData.set(data);
     },
