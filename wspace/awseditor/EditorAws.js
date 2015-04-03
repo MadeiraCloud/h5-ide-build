@@ -22342,7 +22342,7 @@ function program17(depth0,data) {
   buffer += "\n\n      ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.program(17, program17, data),fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </ul>\n  </section>\n</div>\n</div>\n\n\n<div class=\"panel container-panel hide\">\n    <div class=\"marathon-app-ready\">\n        <div class=\"loading-bounce\"><div class=\"bounce-one\"></div><div class=\"bounce-two\"></div></div>\n        <div class=\"desc\">Trying to load marathon apps list...</div>\n        <div class=\"desc\">When marathon framework ready and deployed app on Mesos cluster, will show app list at here.</div>\n    </div>\n    <div class=\"marathon-app-list\" class=\"hide\"></div>\n</div>";
+  buffer += "\n\n    </ul>\n  </section>\n</div>\n</div>\n\n\n<div class=\"panel container-panel hide\">\n    <div class=\"marathon-app-ready\">\n        <div class=\"loading-bounce\"><div class=\"bounce-one\"></div><div class=\"bounce-two\"></div></div>\n        <div class=\"desc\">Trying to load marathon apps list...</div>\n        <div class=\"desc\">App list will be available once marathon framework and the apps are ready on the Mesos cluster.</div>\n    </div>\n    <div class=\"marathon-app-list\" class=\"hide\"></div>\n</div>";
   return buffer;
   };
 TEMPLATE.panel=Handlebars.template(__TEMPLATE__);
@@ -22758,7 +22758,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<img class=\"logo\" src=\"/assets/images/ide/marathon.png\">\n<div class=\"desc\">Marathon framework is ready now, but no app is deployed on Mesos cluster</div>\n<div class=\"desc\">App list will show here when deployed on Mesos cluster.</div>";
+  return "<img class=\"logo\" src=\"/assets/images/ide/marathon.png\">\n<div class=\"desc\">Marathon framework is ready, but there's no app deployed on Mesos cluster.</div>";
   };
 TEMPLATE.emptyContainer=Handlebars.template(__TEMPLATE__);
 
@@ -22769,7 +22769,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<img class=\"logo\" src=\"/assets/images/ide/marathon.png\">\n<div class=\"desc\">Marathon framework is not ready yet.</div>\n<div class=\"desc\">When marathon framework ready and deployed app on Mesos cluster, will show app list at here.</div>";
+  return "<img class=\"logo\" src=\"/assets/images/ide/marathon.png\">\n<div class=\"desc\">Marathon framework is not ready yet.</div>\n<div class=\"desc\">App list will be available once marathon framework and the apps are ready on the Mesos cluster.</div>";
   };
 TEMPLATE.mesosNotReady=Handlebars.template(__TEMPLATE__);
 
@@ -23837,7 +23837,7 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       return this.$('.marathon-app-ready').show().html(LeftPanelTpl.mesosNotReady);
     },
     renderContainerList: function(appData, taskData) {
-      var dataApps, dataTasks, hostAppMap, task, that, viewData, _ref, _ref1;
+      var dataApps, dataTasks, hostAppMap, task, that, viewData, __tempFilterWord, _ref, _ref1;
       if (!this.workspace.isAwake()) {
         return;
       }
@@ -23872,7 +23872,10 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
           });
         });
         that.tempTaskFlag = that.$el.find("li.container-item.selected").data("name");
+        __tempFilterWord = that.$("#filter-containers").val();
         that.$('.marathon-app-list').html(LeftPanelTpl.containerList(viewData));
+        that.$("#filter-containers").val(__tempFilterWord);
+        that.filterContainers();
         that.recalcAccordion();
         task = that.$el.find(".container-item[data-name='" + that.tempTaskFlag + "']");
         if (that.tempTaskFlag && task) {
@@ -23899,9 +23902,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
         return $container.addClass('hide');
       }
     },
-    filterContainers: function(evt) {
+    filterContainers: function() {
       var keyword;
-      keyword = $(evt.currentTarget).val().toLowerCase();
+      keyword = this.$("#filter-containers").val().toLowerCase();
       return $(".container-list .container-item").each(function(index, item) {
         var containerName, shouldShow;
         containerName = $(item).data("name").toLowerCase();
@@ -29110,7 +29113,8 @@ define('wspace/awseditor/model/SgModel',["ComplexResModel", "ResourceModel", "./
       return false;
     },
     isMesos: function() {
-      return this.attributes.name === "MesosSG";
+      var _ref;
+      return (_ref = this.attributes.name) === 'MesosSG' || _ref === 'MesosMaster';
     },
     createIpTarget: function(ipAddress) {
       return new SgTargetModel(MC.getValidCIDR(ipAddress));
