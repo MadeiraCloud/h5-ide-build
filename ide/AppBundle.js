@@ -3552,10 +3552,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
             },
             "7CB6402A-2A9D-47D2-8C52-D82F40F779CF": {
               "uid": "7CB6402A-2A9D-47D2-8C52-D82F40F779CF",
-              "name": "us-east-1e",
+              "name": "us-east-1b",
               "type": "AWS.EC2.AvailabilityZone",
               "resource": {
-                "ZoneName": "us-east-1e",
+                "ZoneName": "us-east-1b",
                 "RegionName": "us-east-1"
               }
             },
@@ -3689,10 +3689,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
             },
             "408ECAC2-5785-4179-AF16-2A8D28711314": {
               "uid": "408ECAC2-5785-4179-AF16-2A8D28711314",
-              "name": "us-east-1d",
+              "name": "us-east-1a",
               "type": "AWS.EC2.AvailabilityZone",
               "resource": {
-                "ZoneName": "us-east-1d",
+                "ZoneName": "us-east-1a",
                 "RegionName": "us-east-1"
               }
             },
@@ -4434,10 +4434,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
             },
             "7CB6402A-2A9D-47D2-8C52-D82F40F779CF": {
               "uid": "7CB6402A-2A9D-47D2-8C52-D82F40F779CF",
-              "name": "us-east-1e",
+              "name": "us-east-1b",
               "type": "AWS.EC2.AvailabilityZone",
               "resource": {
-                "ZoneName": "us-east-1e",
+                "ZoneName": "us-east-1b",
                 "RegionName": "us-east-1"
               }
             },
@@ -4577,10 +4577,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
             },
             "408ECAC2-5785-4179-AF16-2A8D28711314": {
               "uid": "408ECAC2-5785-4179-AF16-2A8D28711314",
-              "name": "us-east-1d",
+              "name": "us-east-1a",
               "type": "AWS.EC2.AvailabilityZone",
               "resource": {
-                "ZoneName": "us-east-1d",
+                "ZoneName": "us-east-1a",
                 "RegionName": "us-east-1"
               }
             },
@@ -5576,10 +5576,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
             },
             "7CB6402A-2A9D-47D2-8C52-D82F40F779CF": {
               "uid": "7CB6402A-2A9D-47D2-8C52-D82F40F779CF",
-              "name": "us-east-1e",
+              "name": "us-east-1b",
               "type": "AWS.EC2.AvailabilityZone",
               "resource": {
-                "ZoneName": "us-east-1e",
+                "ZoneName": "us-east-1b",
                 "RegionName": "us-east-1"
               }
             },
@@ -5719,10 +5719,10 @@ define('ide/submodels/OpsModelAws',["OpsModel", "ApiRequest", "constant"], funct
             },
             "408ECAC2-5785-4179-AF16-2A8D28711314": {
               "uid": "408ECAC2-5785-4179-AF16-2A8D28711314",
-              "name": "us-east-1d",
+              "name": "us-east-1a",
               "type": "AWS.EC2.AvailabilityZone",
               "resource": {
-                "ZoneName": "us-east-1d",
+                "ZoneName": "us-east-1a",
                 "RegionName": "us-east-1"
               }
             },
