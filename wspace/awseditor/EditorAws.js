@@ -8438,7 +8438,7 @@ define('wspace/awseditor/property/subnet/view',['../base/view', './template/stac
     render: function() {
       this.$el.html(template(this.model.attributes));
       this.refreshACLList();
-      this.focusCidr();
+      this.validateCidr(true);
       return this.model.attributes.name;
     },
     onChangeName: function(event) {
@@ -8459,24 +8459,12 @@ define('wspace/awseditor/property/subnet/view',['../base/view', './template/stac
       }
       return null;
     },
-    focusCidr: function() {
-      var that;
-      that = this;
-      return _.defer(function() {
-        var $cidr, len;
-        $cidr = that.$('#property-cidr-block');
-        $cidr.focus();
-        len = $cidr.val().length;
-        return $cidr[0].setSelectionRange(len, len);
-      });
-    },
     onFocusCIDR: function(event) {
       this.disabledAllOperabilityArea(true);
       return null;
     },
-    onBlurCIDR: function(event) {
-      var cidrModal, cidrPrefix, cidrSuffix, descContent, error, inputElem, mainContent, modal, removeInfo, subnetCIDR, that, _ref;
-      inputElem = $(event.currentTarget);
+    validateCidr: function(init) {
+      var cidrModal, cidrPrefix, cidrSuffix, descContent, error, mainContent, modal, removeInfo, subnetCIDR, that, _ref;
       cidrPrefix = $("#property-cidr-prefix").html();
       cidrSuffix = $("#property-cidr-block").val();
       subnetCIDR = cidrPrefix + cidrSuffix;
@@ -8497,45 +8485,66 @@ define('wspace/awseditor/property/subnet/view',['../base/view', './template/stac
           }
         }
       }
-      if (mainContent) {
-        if (!((_ref = this.modal) != null ? _ref.isOpen() : void 0)) {
-          that = this;
-          cidrModal = MC.template.setupCIDRConfirm({
-            main_content: mainContent,
-            desc_content: descContent,
-            remove_content: removeInfo
-          });
-          this.modal = new modalPlus({
-            title: lang.IDE.SET_UP_CIDR_BLOCK,
-            width: 420,
-            template: cidrModal,
-            confirm: {
-              text: "OK",
-              color: "blue"
-            },
-            disableClose: true,
-            cancel: {
-              hide: true
-            }
-          });
-          modal = this.modal;
-          $("<a id=\"cidr-removed\" class=\"link-red left link-modal-danger\">" + removeInfo + "</a>").appendTo(modal.find(".modal-footer"));
-          modal.on("close", function() {
-            return inputElem.focus();
-          });
-          modal.on("confirm", function() {
-            return modal.close();
-          });
-          return modal.find("#cidr-removed").on("click", function() {
-            Design.instance().component(that.model.get("uid")).remove();
-            that.disabledAllOperabilityArea(false);
-            return modal.close();
-          });
-        }
-      } else {
-        this.model.setCidr(subnetCIDR);
-        return this.disabledAllOperabilityArea(false);
+      if (!mainContent) {
+        return subnetCIDR;
       }
+      if (init) {
+        this.focusCidrFirsttime();
+        return false;
+      }
+      if (!((_ref = this.modal) != null ? _ref.isOpen() : void 0)) {
+        that = this;
+        cidrModal = MC.template.setupCIDRConfirm({
+          main_content: mainContent,
+          desc_content: descContent,
+          remove_content: removeInfo
+        });
+        this.modal = new modalPlus({
+          title: lang.IDE.SET_UP_CIDR_BLOCK,
+          width: 420,
+          template: cidrModal,
+          confirm: {
+            text: "OK",
+            color: "blue"
+          },
+          disableClose: true,
+          cancel: {
+            hide: true
+          }
+        });
+        modal = this.modal;
+        $("<a id=\"cidr-removed\" class=\"link-red left link-modal-danger\">" + removeInfo + "</a>").appendTo(modal.find(".modal-footer"));
+        modal.on("close", function() {
+          return that.$('#property-cidr-block').focus();
+        });
+        modal.on("confirm", function() {
+          return modal.close();
+        });
+        modal.find("#cidr-removed").on("click", function() {
+          Design.instance().component(that.model.get("uid")).remove();
+          that.disabledAllOperabilityArea(false);
+          return modal.close();
+        });
+      }
+      return false;
+    },
+    focusCidrFirsttime: function() {
+      return _.defer(function() {
+        var $cidr, len;
+        $cidr = this.$('#property-cidr-block');
+        $cidr.focus();
+        len = $cidr.val().length;
+        return $cidr[0].setSelectionRange(len, len);
+      });
+    },
+    onBlurCIDR: function(event) {
+      var subnetCidr;
+      subnetCidr = this.validateCidr();
+      if (!subnetCidr) {
+        return;
+      }
+      this.model.setCidr(subnetCidr);
+      return this.disabledAllOperabilityArea(false);
     },
     createAcl: function() {
       return this.trigger("OPEN_ACL", this.model.createAcl());
