@@ -2366,7 +2366,8 @@ define({
         "IS_MESOS_MASTER_MORE_THAN_3": "The total number of Master node must be greater than or equal to 3.",
         "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack need a Slave node at least.",
         "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master node <span class='validation-tag tag-mesos-master'>%s</span> must be placed in a public subnet.",
-        "MASTER_NUMBER_MUST_BE_ODD": "The total number of Master node must be odd."
+        "MASTER_NUMBER_MUST_BE_ODD": "The total number of Master node must be odd.",
+        "SUBNET_CONNECTIVITY": "%s must associate with a Route Table which routes to Internet Gateway so that EIP and Public IP within the subnets can work."
     },
     "TOOLBAR": {
         "LOADING_DATA": "Loading data...",

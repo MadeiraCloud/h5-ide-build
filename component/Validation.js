@@ -38,7 +38,7 @@ define('component/trustedadvisor/lib/TA.Config',{
       stack: ['~isHaveNotExistAMI'],
       kp: ['longLiveNotice'],
       dbinstance: ['isOgValid', 'isHaveEnoughIPForDB'],
-      instance: ['isMesosMasterCountLegal', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet']
+      instance: ['isMesosMasterCountLegal', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet', 'isInstanceOrLcConnectable']
     },
     openstack: {
       ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
@@ -485,7 +485,7 @@ define('TaHelper',['constant', 'MC', 'i18n!/nls/lang.js', 'Design', 'underscore'
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC', 'Design', 'TaHelper'], function(constant, MC, Design, Helper) {
-  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isMesosHasSlave, isMesosMasterCountLegal, isMesosMasterPlacedInPublicSubnet, isNatCheckedSourceDest, _getSGCompRuleLength;
+  var i18n, isAssociatedSGRuleExceedFitNum, isConnectRoutTableButNoEIP, isEBSOptimizedForAttachedProvisionedVolume, isInstanceOrLcConnectable, isMesosHasSlave, isMesosMasterCountLegal, isMesosMasterPlacedInPublicSubnet, isNatCheckedSourceDest, _getSGCompRuleLength;
   i18n = Helper.i18n.short();
   isEBSOptimizedForAttachedProvisionedVolume = function(instanceUID) {
     var amiId, haveProvisionedVolume, instanceComp, instanceName, instanceType, instanceUIDRef, isInstanceComp, lsgName, tipInfo, _ref;
@@ -715,6 +715,45 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     nameStr = nameStr.slice(0, -2);
     return Helper.message.error(null, i18n.MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET, nameStr);
   };
+  isInstanceOrLcConnectable = function() {
+    var lonelySb, nameStr, sb, _i, _len;
+    lonelySb = [];
+    Design.modelClassForType(constant.RESTYPE.INSTANCE).each(function(i) {
+      var sb;
+      sb = i.parent();
+      if (i.isPublic() && !sb.isPublic()) {
+        return lonelySb.push(sb);
+      }
+    });
+    Design.modelClassForType(constant.RESTYPE.LC).each(function(lc) {
+      var asg, asgs, sb, _i, _len, _results;
+      if (lc.isPublic()) {
+        asgs = lc.getAsgsIncludeExpanded();
+        _results = [];
+        for (_i = 0, _len = asgs.length; _i < _len; _i++) {
+          asg = asgs[_i];
+          sb = asg.parent();
+          if (!sb.isPublic()) {
+            _results.push(lonelySb.push(sb));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    });
+    lonelySb = _.uniq(lonelySb);
+    if (!lonelySb.length) {
+      return null;
+    }
+    nameStr = '';
+    for (_i = 0, _len = lonelySb.length; _i < _len; _i++) {
+      sb = lonelySb[_i];
+      nameStr += "Subnet <span class='validation-tag tag-subnet'>" + (sb.get('name')) + "</span>, ";
+    }
+    nameStr = nameStr.slice(0, -2);
+    return Helper.message.error(null, i18n.SUBNET_CONNECTIVITY, nameStr);
+  };
   return {
     isEBSOptimizedForAttachedProvisionedVolume: isEBSOptimizedForAttachedProvisionedVolume,
     isAssociatedSGRuleExceedFitNum: isAssociatedSGRuleExceedFitNum,
@@ -722,7 +761,8 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     isNatCheckedSourceDest: isNatCheckedSourceDest,
     isMesosHasSlave: isMesosHasSlave,
     isMesosMasterCountLegal: isMesosMasterCountLegal,
-    isMesosMasterPlacedInPublicSubnet: isMesosMasterPlacedInPublicSubnet
+    isMesosMasterPlacedInPublicSubnet: isMesosMasterPlacedInPublicSubnet,
+    isInstanceOrLcConnectable: isInstanceOrLcConnectable
   };
 });
 

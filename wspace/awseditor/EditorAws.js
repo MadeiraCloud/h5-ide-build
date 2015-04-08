@@ -9981,6 +9981,9 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
         modal.on("close", function() {
           return inputElem.focus();
         });
+        modal.on("closed", function() {
+          return inputElem.focus();
+        });
         return modal.find("#cidr-removed").on("click", function() {
           var _ref1;
           if ((_ref1 = Design.instance().component(dataRef)) != null) {
@@ -25421,6 +25424,9 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
     hasAutoAssignPublicIp: function() {
       return this.getEmbedEni().get('assoPublicIp');
     },
+    isPublic: function() {
+      return this.hasAutoAssignPublicIp() || this.getEmbedEni().hasEip();
+    },
     setCount: function(count) {
       var c, eni, route, _i, _j, _len, _len1, _ref, _ref1;
       this.set("count", count);
@@ -30343,6 +30349,9 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       }
       return true;
     },
+    isPublic: function() {
+      return this.get('publicIp');
+    },
     isDefaultTenancy: function() {
       return true;
     },
@@ -30366,6 +30375,18 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         }
       }
       return amis || [];
+    },
+    getAsgs: function() {
+      return this.connectionTargets("LcUsage");
+    },
+    getAsgsIncludeExpanded: function() {
+      var asgs, asgsIncludeExpanded;
+      asgsIncludeExpanded = [];
+      asgs = this.getAsgs();
+      _.each(asgs, function(asg) {
+        return asgsIncludeExpanded = asgsIncludeExpanded.concat(asg.get("expandedList"));
+      });
+      return asgsIncludeExpanded.concat(asgs);
     },
     remove: function() {
       var v, _i, _len, _ref;

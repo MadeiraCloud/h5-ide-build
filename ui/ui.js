@@ -10400,6 +10400,7 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
         modal.tpl.remove();
         modal.trigger("closed", this);
         modal.pending = false;
+        modal.isClosed = true;
         if (modals.length > 1) {
           modals.length = modals.length - number;
         } else {
@@ -10416,7 +10417,6 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
           return modalToClose.close();
         });
       }, (modal.option.delay || 300) + 10);
-      modal.isClosed = true;
       return this;
     },
     confirm: function(evt) {
@@ -10451,7 +10451,12 @@ define('UI.modalplus',['backbone', 'i18n!/nls/lang.js'], function(Backbone, lang
       if (!disableClose) {
         this.wrap.off("click");
         this.wrap.on("click", function(e) {
+          var modal;
           if (e.target === e.currentTarget) {
+            modal = modals[modals.length - 1];
+            if (modal.pending) {
+              return false;
+            }
             return self.close();
           }
         });

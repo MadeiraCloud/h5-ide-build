@@ -2366,7 +2366,8 @@ define({
         "IS_MESOS_MASTER_MORE_THAN_3": "Master节点数必须大于等于3个。",
         "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack 至少需要一个 Slave 节点。",
         "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master 节点 <span class='validation-tag tag-mesos-master'>%s</span> 必须放在公开的subnet中。",
-        "MASTER_NUMBER_MUST_BE_ODD": "Master node 的数量必须是奇数。"
+        "MASTER_NUMBER_MUST_BE_ODD": "Master node 的数量必须是奇数。",
+        "SUBNET_CONNECTIVITY": "%s 必须连接到一个能够路由到互联网网关的路由表，才能使这些 Subnet 中的弹性 IP 和 公网 IP 正常工作。"
     },
     "TOOLBAR": {
         "LOADING_DATA": "加载数据中...",
