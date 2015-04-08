@@ -8517,6 +8517,9 @@ define('wspace/awseditor/property/subnet/view',['../base/view', './template/stac
         modal.on("close", function() {
           return that.$('#property-cidr-block').focus();
         });
+        modal.on("closed", function() {
+          return that.$('#property-cidr-block').focus();
+        });
         modal.on("confirm", function() {
           return modal.close();
         });
@@ -8577,10 +8580,16 @@ define('wspace/awseditor/property/subnet/view',['../base/view', './template/stac
             color: "red"
           }
         });
-        return modal.on("confirm", function() {
+        modal.on("confirm", function() {
           that.model.removeAcl(aclUID);
           that.refreshACLList();
           return modal.close();
+        });
+        modal.on("close", function() {
+          return $('#property-cidr-block').focus();
+        });
+        return modal.on("closed", function() {
+          return $('#property-cidr-block').focus();
         });
       } else {
         this.model.removeAcl(aclUID);
@@ -10623,6 +10632,9 @@ define('wspace/awseditor/property/cgw/view',['i18n!/nls/lang.js', '../base/view'
         modal.on("close", function() {
           return $('#property-cgw-ip').focus();
         });
+        modal.on("closed", function() {
+          return $('#property-cgw-ip').focus();
+        });
         return modal.find("#cidr-removed").on("click", function(e) {
           e.preventDefault();
           console.log("Not Work.....");
@@ -11261,6 +11273,9 @@ define('wspace/awseditor/property/vpn/view',['../base/view', './template/stack',
           return modal.close();
         });
         modal.on("close", function() {
+          return inputElem.focus();
+        });
+        modal.on("closed", function() {
           return inputElem.focus();
         });
         return modal.find("#cidr-removed").on("click", function() {
