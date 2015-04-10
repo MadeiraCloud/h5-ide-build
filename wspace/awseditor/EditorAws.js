@@ -757,7 +757,7 @@ function program14(depth0,data) {
   buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n<!--       ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n -->      <section class=\"property-control-group\" id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
+  buffer += "\n -->      <section id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
   return buffer;
   }
 function program15(depth0,data) {
@@ -3306,7 +3306,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "\n  <div class=\"option-group-head expand\">Mesos Details</div>\n  <div class=\"option-group\">\n    <section class=\"property-control-group\" id=\"mesos-data-area\">\n    </section>\n  </div>\n  ";
+  return "\n  <div class=\"option-group-head expand\">Mesos Details</div>\n  <div class=\"option-group\" id=\"mesos-data-area\">\n  </div>\n  ";
   }
 
 function program3(depth0,data) {
@@ -22278,9 +22278,9 @@ function program17(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIT_RESOURCES", {hash:{},data:data}))
     + "</button>\n    <button class=\"sidebar-nav-container\">Container</button>\n</nav>\n\n<div class=\"resource-panel\">\n  <div class=\"sidebar-tool\">\n    <button class=\"refresh-resource-panel\"><i class=\"icon-refresh tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_REFRESH_RESOURCE_LIST", {hash:{},data:data}))
-    + "\"></i>Refresh</button>\n    <button>\n        <i class=\"icon-resources js-toggle-dropdown menu-manage-shard-res tooltip\" data-tooltip=\""
+    + "\"></i>Refresh</button>\n    <button class=\"js-toggle-dropdown menu-manage-shard-res tooltip\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "RES_TIP_SHARED_RESOURCES", {hash:{},data:data}))
-    + "\">Manage...</i>\n        <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n          <li data-action=\"keypair\" class=\"icon-kp\"><span>"
+    + "\">\n        <i class=\"icon-resources\">Manage...</i>\n        <ul class=\"dropdown-menu resources-dropdown-wrapper\">\n          <li data-action=\"keypair\" class=\"icon-kp\"><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_KEY_PAIR", {hash:{},data:data}))
     + "</span></li>\n          <li data-action=\"snapshot\" class=\"icon-ebs-snap\"><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_EBS_SNAPSHOT", {hash:{},data:data}))

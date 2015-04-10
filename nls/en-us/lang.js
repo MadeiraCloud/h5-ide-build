@@ -575,6 +575,7 @@ define({
         "POP_CONFIRM_STOP_PROD_APP_MSG": " Stopping it will make your service unavailable.",
         "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL": "Please type in the name of this app to confirm stopping it.",
         "POP_CONFIRM_TERMINATE_PROD_APP_MSG": " Terminating it will make your service unavailable. Any auto scaling group will be deleted when application is stopped.",
+        "POP_CONFIRM_FORGET_PROD_APP_INPUT_LBL": "Please type in the name of this app to confirm forgetting it.",
         "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL": "Please type in the name of this app to confirm terminating it.",
         "POP_IMPORT_JSON_TIT": "Import Stack from JSON file",
         "POP_IMPORT_CF_TIT": "Import CloudFormation",

@@ -742,6 +742,15 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
         return _results;
       }
     });
+    Design.modelClassForType(constant.RESTYPE.ENI).each(function(eni) {
+      var sb;
+      if (!eni.embedInstance() && eni.hasEip()) {
+        sb = eni.parent();
+        if (!sb.isPublic()) {
+          return lonelySb.push(sb);
+        }
+      }
+    });
     lonelySb = _.uniq(lonelySb);
     if (!lonelySb.length) {
       return null;

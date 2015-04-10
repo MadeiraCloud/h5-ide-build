@@ -7604,7 +7604,7 @@ function program11(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ADD_RULE", {hash:{},data:data}))
     + "</button>\n  </section>\n\n  <section class=\"sg-rule-create-done-wrap\">\n    <div>\n      <p id=\"sg-rule-create-msg\" class=\"modal-text-major\"></p>\n      <p id=\"sg-rule-self-ref\" class=\"hide\"><i class=\"icon-info icon-label\"></i>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RULE_REF_ITS_OWN_SG", {hash:{},data:data}))
-    + "</p>\n    </div>\n    <button class=\"btn sg-rule-create-readd\">"
+    + "</p>\n    </div>\n    <button class=\"btn btn-blue sg-rule-create-readd\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CREATE_ANOTHER_RULE", {hash:{},data:data}))
     + "</button>\n    <button class=\"btn btn-silver btn-modal-close\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CLOSE", {hash:{},data:data}))

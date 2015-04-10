@@ -575,6 +575,7 @@ define({
         "POP_CONFIRM_STOP_PROD_APP_MSG": " 停止此 App 将导致服务不可用。",
         "POP_CONFIRM_STOP_PROD_APP_INPUT_LBL": "请输入此 App 的名字来确认停止。",
         "POP_CONFIRM_TERMINATE_PROD_APP_MSG": " 终止此 App 将导致服务不可用， 所有的Auto Scaling 组都将被删除。",
+        "POP_CONFIRM_FORGET_PROD_APP_INPUT_LBL": "请输入此 APP 的名字来确认释放。",
         "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL": "请输入此 APP 的名字来确认终止。",
         "POP_IMPORT_JSON_TIT": "从 JSON 文件导入 Stack",
         "POP_IMPORT_CF_TIT": "导入CloudFormation",

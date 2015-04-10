@@ -350,7 +350,7 @@ function program4(depth0,data) {
     + "</b>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.FORGET_CONFIRM_INSTRUCTION", {hash:{},data:data}))
     + "</p>\n            <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_TERMINATE_PROD_APP_INPUT_LBL", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_FORGET_PROD_APP_INPUT_LBL", {hash:{},data:data}))
     + "</p>\n            <div><input class=\"input\" style=\"width:390px;\" id=\"appNameConfirmIpt\"/></div>\n        ";
   return buffer;
   }

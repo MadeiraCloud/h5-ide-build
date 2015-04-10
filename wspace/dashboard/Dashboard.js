@@ -424,22 +424,15 @@ define('wspace/dashboard/ImportDialog',['./ImportDialogTpl', "UI.modalplus", "co
       return null;
     },
     onReaderLoader: function(evt) {
-      var error, opsModel, result;
+      var opsModel, result;
       result = JsonExporter.importJson(this.reader.result);
       if (_.isString(result)) {
         $("#import-json-error").html(result);
         return;
       }
-      if (this.type === "stack" && result.AWSTemplateFormatVersion) {
-        error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
-      } else if (this.type === "cf" && !result.AWSTemplateFormatVersion) {
-        error = lang.IDE.POP_IMPORT_FORMAT_ERROR;
-      }
-      if (!error) {
-        if (result.AWSTemplateFormatVersion) {
-          this.handleCFTemplate(result);
-          return;
-        }
+      if (this.type === "cf") {
+        this.handleCFTemplate(result);
+        return;
       }
       opsModel = this.project.createStackByJson(result);
       App.loadUrl(opsModel.url());
