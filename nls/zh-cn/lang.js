@@ -2274,6 +2274,7 @@ define({
         "LAUNCH_CONFIGURATION": "启动配置",
         "WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE": "在VPC中没有实例有弹性 IP 或自动分配的公网 IP，这意味着此 VPC 只能通过 VPN 来连入。",
         "ERROR_CIDR_ERROR_CONNECT_TO_ELB": "子网 <span class='validation-tag tag-subnet'>%s</span> 被附加了一个负载均衡器．它的子网掩码必须小于 /27。",
+        "ERROR_CIDR_CONFLICT": "子网 <span class='validation-tag'>%s</span> 的CIDR(%s)与子网 <span class='validation-tag'>%s</span> 的CIDR(%s)冲突",
         "NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME": "实例 <span class='validation-tag tag-instance'>%s</span> 被附加了一个预配置的 IOPS 卷，但该实例并不是 EBS优化的。",
         "WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM": "实例 <span class='validation-tag tag-instance'>%s</span> 有超过 %s 条的安全组规则，如果一个实例有大量安全组规则，性能会有所下降。",
         "ERROR_INSTANCE_NAT_CHECKED_SOURCE_DEST": "要允许路由工作正常，实例 <span class='validation-tag tag-instance'>%s</span> 应该在网卡设置中禁用源/目的检查。",

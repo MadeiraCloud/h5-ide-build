@@ -2274,6 +2274,7 @@ define({
         "LAUNCH_CONFIGURATION": "Launch Configuration",
         "WARNING_NOT_VPC_CAN_CONNECT_OUTSIDE": "No instance in VPC has Elastic IP or auto-assigned public IP, which means this VPC can only connect to outside via VPN.",
         "ERROR_CIDR_ERROR_CONNECT_TO_ELB": "Subnet <span class='validation-tag tag-subnet'>%s</span> is attached with a Load Balancer. Its mask must be smaller than /27.",
+        "ERROR_CIDR_CONFLICT": "Subnet <span class='validation-tag'>%s</span>'s CIDR(%s) conflict with subnet <span class='validation-tag'>%s</span>'s CIDR(%s)",
         "NOTICE_INSTANCE_NOT_EBS_OPTIMIZED_FOR_ATTACHED_PROVISIONED_VOLUME": "Instance <span class='validation-tag tag-instance'>%s</span> has an attached Provisioned IOPS volume but is not EBS-Optimized.",
         "WARNING_INSTANCE_SG_RULE_EXCEED_FIT_NUM": "Instance <span class='validation-tag tag-instance'>%s</span> has more than %s security group rules, If a Instance has a large number of security group rules, performance can be degraded.",
         "ERROR_INSTANCE_NAT_CHECKED_SOURCE_DEST": "To allow routing to work properly, instance <span class='validation-tag tag-instance'>%s</span> should disabled Source/Destination Checking in \"Network Interface Details\"",

@@ -38,7 +38,8 @@ define('component/trustedadvisor/lib/TA.Config',{
       stack: ['~isHaveNotExistAMI'],
       kp: ['longLiveNotice'],
       dbinstance: ['isOgValid', 'isHaveEnoughIPForDB'],
-      instance: ['isMesosMasterCountLegal', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet', 'isInstanceOrLcConnectable']
+      instance: ['isMesosMasterCountLegal', 'isMesosHasSlave', 'isMesosMasterPlacedInPublicSubnet', 'isInstanceOrLcConnectable'],
+      subnet: ['isCidrConflict']
     },
     openstack: {
       ossubnet: ['subnetHasPortShouldConncectedOut', 'isSubnetCIDRConflict'],
@@ -775,10 +776,24 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
   };
 });
 
-define('component/trustedadvisor/validation/aws/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js'], function(constant, $, MC, lang) {
+define('component/trustedadvisor/validation/aws/vpc/subnet',['constant', 'jquery', 'MC', 'i18n!/nls/lang.js', 'TaHelper'], function(constant, $, MC, lang, Helper) {
   return {
     getAllAWSENIForAppEditAndDefaultVPC: function(callback) {
       return callback(null);
+    },
+    isCidrConflict: function() {
+      var Model, results, subnets;
+      Model = Design.modelClassForType(constant.RESTYPE.SUBNET);
+      subnets = Model.allObjects();
+      results = [];
+      subnets.sort(function(sb1, sb2) {
+        var conflict;
+        conflict = Model.isCidrConflict(sb1.get("cidr"), sb2.get("cidr"));
+        if (conflict) {
+          return results.push(Helper.message.error(null, lang.TA.ERROR_CIDR_CONFLICT, sb1.get('name'), sb1.get('cidr'), sb2.get('name'), sb2.get('cidr')));
+        }
+      });
+      return results;
     }
   };
 });
