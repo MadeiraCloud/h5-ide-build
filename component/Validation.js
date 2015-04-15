@@ -4257,7 +4257,7 @@ define('component/trustedadvisor/gui/view',['event', 'i18n!/nls/lang.js', './tpl
         var content, contentArr;
         contentArr = [];
         if (error.length) {
-          contentArr.push(sprintf(lang.IDE.LENGTH_ERROR, error.len));
+          contentArr.push(sprintf(lang.IDE.LENGTH_ERROR, error.length));
           _.defer(function() {
             return modal.position();
           });

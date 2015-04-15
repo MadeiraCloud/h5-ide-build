@@ -411,7 +411,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       }
     },
     runStack: function(paymentUpdate, paymentModal) {
-      var appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, that, _ref;
+      var appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, taPassed, that, _ref;
       cloudType = this.workspace.opsModel.type;
       that = this;
       paymentState = this.workspace.opsModel.project().get("billingState");
@@ -450,11 +450,19 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       }
       this.modal.find("#label-total-fee").find('b').text(costString);
       this.modal.find("#label-visualops-fee").find('b').text("$" + cost.visualOpsFee);
+      taPassed = false;
       TA.loadModule('stack').then((function(_this) {
         return function() {
-          var _ref1;
-          _this.modal.resize();
-          return (_ref1 = _this.modal) != null ? _ref1.toggleConfirm(false) : void 0;
+          taPassed = true;
+          return _this.modal.resize();
+        };
+      })(this))["catch"]((function(_this) {
+        return function() {
+          return _this.modal.find('.modal-confirm').addClass('disabled').addClass('tooltip').attr('data-tooltip', lang.TOOLBAR.FIX_THE_ERROR_TO_LAUNCH_APP);
+        };
+      })(this)).fin((function(_this) {
+        return function() {
+          return _this.modal.toggleConfirm(false);
         };
       })(this));
       appNameDom = this.modal.tpl.find('#app-name');
@@ -466,6 +474,9 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       this.modal.on('confirm', (function(_this) {
         return function() {
           var appNameRepeated;
+          if (!taPassed) {
+            return;
+          }
           _this.hideError();
           if (Design.instance().project().isDemoMode()) {
             if (Design.instance().project().amIAdmin()) {

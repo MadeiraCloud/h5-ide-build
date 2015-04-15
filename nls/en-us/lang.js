@@ -839,7 +839,7 @@ define({
         "GOOD_JOB_NO_NOTICE_HERE": "Good job! No notice here.",
         "GREAT_JOB_NO_ERROR_WARNING_NOTICE_HERE": "Great job! No error, warning or notice here.",
         "NO_ERROR_WARNING_OR_NOTICE": "No error, warning or notice.",
-        "LENGTH_ERROR": "%s error(s), ",
+        "LENGTH_ERROR": "%s error(s)",
         "LENGTH_WARNING": "%s warning(s)",
         "LENGTH_NOTICE": "%s notice(s)",
         "SOME_ERROR_VALIDATION_ONLY_HAPPENS_AT_THE_TIME_TO_RUN_STACK": "Some error validation only happens at the time to run stack.",
@@ -2558,6 +2558,8 @@ define({
         "UPDATE": "update",
         "TERMINATE": "terminate",
         "TOOK_XXX_SEC": "Took %s sec.",
-        "TOOK_XXX_MIN": "Took %s min."
+        "TOOK_XXX_MIN": "Took %s min.",
+        "FIX_THE_ERROR_TO_LAUNCH_APP": "Fix the error to launch app",
+        "FIX_THE_ERROR_TO_UPDATE": "Fix the error to update"
     }
 })

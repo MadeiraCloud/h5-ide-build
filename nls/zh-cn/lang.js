@@ -2558,6 +2558,8 @@ define({
         "UPDATE": "更新",
         "TERMINATE": "终结",
         "TOOK_XXX_SEC": "花费 %s 秒",
-        "TOOK_XXX_MIN": "花费 %s 分钟"
+        "TOOK_XXX_MIN": "花费 %s 分钟",
+        "FIX_THE_ERROR_TO_LAUNCH_APP": "启动 App 之前请先修复所有错误",
+        "FIX_THE_ERROR_TO_UPDATE": "Update 之前请先修复所有错误"
     }
 })

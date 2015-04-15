@@ -21985,8 +21985,9 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
       return checkDB.promise;
     },
     applyAppEdit: function() {
-      var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, that;
+      var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, taPassed, that;
       that = this;
+      taPassed = false;
       oldJson = this.workspace.opsModel.getJsonData();
       newJson = this.workspace.design.serialize({
         usage: 'updateApp'
@@ -22073,6 +22074,9 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         }
         that.updateModal.on('confirm', function() {
           var _ref;
+          if (!taPassed) {
+            return;
+          }
           if (!Design.instance().credential()) {
             Design.instance().project().showCredential();
             return false;
@@ -22092,15 +22096,20 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         }
         that.appAction.renderKpDropdown(that.updateModal);
         TA.loadModule('stack').then(function() {
-          var _ref;
-          that.updateModal && that.updateModal.toggleConfirm(false);
-          return (_ref = that.updateModal) != null ? _ref.resize() : void 0;
-        }, function(err) {
-          var _ref;
+          return taPassed = true;
+        })["catch"](function(err) {
+          var _ref, _ref1;
           console.log(err);
-          that.updateModal && that.updateModal.toggleConfirm(true);
-          that.updateModal && that.updateModal.tpl.find("#take-rds-snapshot").off('change');
-          return (_ref = that.updateModal) != null ? _ref.resize() : void 0;
+          if ((_ref = that.updateModal) != null) {
+            _ref.tpl.find("#take-rds-snapshot").off('change');
+          }
+          return (_ref1 = that.updateModal) != null ? _ref1.find('.modal-confirm').addClass('disabled').addClass('tooltip').attr('data-tooltip', lang.TOOLBAR.FIX_THE_ERROR_TO_UPDATE) : void 0;
+        }).fin(function() {
+          var _ref, _ref1;
+          if ((_ref = that.updateModal) != null) {
+            _ref.resize();
+          }
+          return (_ref1 = that.updateModal) != null ? _ref1.toggleConfirm(false) : void 0;
         });
       });
     },
