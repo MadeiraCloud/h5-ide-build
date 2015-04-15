@@ -2284,6 +2284,7 @@ define({
         "ERROR_VPC_HAVE_INTERNET_ELB_AND_NO_HAVE_IGW": "Load Balancer <span class='validation-tag tag-elb'>%s</span> is internet-facing but VPC no have an Internet Gateway.",
         "ERROR_ELB_INTERNET_SHOULD_ATTACH_TO_PUBLIC_SB": "Internet-facing Load Balancer <span class='validation-tag tag-elb'>%s</span> should attach to a public subnet.",
         "ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG": "Load Balancer <span class='validation-tag tag-elb'>%s</span> has no instance or auto scaling group added to it.",
+        "ERROR_ELB_NO_ATTACH_SUBNET": "Load Balancer <span class='validation-tag tag-elb'>%s</span> has no subnet associated with it.",
         "WARNING_ELB_NO_ATTACH_TO_MULTI_AZ": "Load Balancer <span class='validation-tag tag-elb'>%s</span> is attached to only 1 availability zone. Attach load balancer to multiple availability zones can improve fault tolerance.",
         "NOTICE_ELB_REDIRECT_PORT_443_TO_443": "Load Balancer <span class='validation-tag tag-elb'>%s</span> redirects <span class='validation-tag tag-port'>443</span> to <span class='validation-tag tag-port'>443</span>. Suggest to use load balancer to decrypt and redirect to port <span class='validation-tag tag-port'>80</span>.",
         "ERROR_ELB_HAVE_REPEAT_LISTENER_ITEM": "Load Balancer <span class='validation-tag tag-elb'>%s</span> has duplicate load balancer ports.",

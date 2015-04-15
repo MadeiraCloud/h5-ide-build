@@ -944,7 +944,7 @@ define('component/trustedadvisor/validation/aws/vpc/vpc',['constant', 'MC', 'i18
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define('component/trustedadvisor/validation/aws/elb/elb',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
-  var i18n, isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isInternetElbRouteOut, isNameExceedLimit, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
+  var i18n, isAttachELBToMultiAZ, isELBSubnetCIDREnough, isHaveIGWForInternetELB, isHaveInstanceAttached, isHaveRepeatListener, isHaveSSLCert, isHaveSubnetAttached, isInternetElbRouteOut, isNameExceedLimit, isRedirectPortHttpsToHttp, isRuleInboundInstanceForELBListener, isRuleInboundToELBListener, isRuleInboundToELBPingPort, isRuleOutboundToInstanceListener, isSSLCertExist;
   i18n = Helper.i18n.short();
   isHaveIGWForInternetELB = function(elbUID) {
     var elbComp, elbName, haveIGW, isInternetELB, tipInfo;
@@ -994,11 +994,23 @@ define('component/trustedadvisor/validation/aws/elb/elb',['constant', 'MC', 'i18
       elbName = elbComp.name;
       tipInfo = sprintf(lang.TA.ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG, elbName);
       return {
-        level: constant.TA.ERROR,
+        level: constant.TA.WARNING,
         info: tipInfo,
         uid: elbUID
       };
     }
+  };
+  isHaveSubnetAttached = function(elbUID) {
+    var elbComp;
+    elbComp = Design.instance().component(elbUID);
+    if (elbComp.connections('ElbSubnetAsso').length === 0) {
+      return {
+        level: constant.TA.ERROR,
+        info: sprintf(lang.TA.ERROR_ELB_NO_ATTACH_SUBNET, elbComp.get('name')),
+        uid: elbUID
+      };
+    }
+    return null;
   };
   isAttachELBToMultiAZ = function(elbUID) {
     var attachedAZAry, elbComp, elbName, tipInfo;
@@ -1440,7 +1452,8 @@ define('component/trustedadvisor/validation/aws/elb/elb',['constant', 'MC', 'i18
     isELBSubnetCIDREnough: isELBSubnetCIDREnough,
     isSSLCertExist: isSSLCertExist,
     isInternetElbRouteOut: isInternetElbRouteOut,
-    isNameExceedLimit: isNameExceedLimit
+    isNameExceedLimit: isNameExceedLimit,
+    isHaveSubnetAttached: isHaveSubnetAttached
   };
 });
 
@@ -2228,7 +2241,7 @@ define('component/trustedadvisor/validation/aws/vpc/eni',['constant', 'MC', 'i18
       eniName = eniComp.name;
       tipInfo = sprintf(lang.TA.ERROR_ENI_NOT_ATTACH_TO_INSTANCE, eniName);
       return {
-        level: constant.TA.ERROR,
+        level: constant.TA.WARNING,
         info: tipInfo,
         uid: eniUID
       };

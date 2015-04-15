@@ -2284,6 +2284,7 @@ define({
         "ERROR_VPC_HAVE_INTERNET_ELB_AND_NO_HAVE_IGW": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 是 Internet-facing 的，但 VPC 中没有 Internet 网关。",
         "ERROR_ELB_INTERNET_SHOULD_ATTACH_TO_PUBLIC_SB": "Internet-facing 的负载均衡器 <span class='validation-tag tag-elb'>%s</span> 应该关联到一个公有子网上。",
         "ERROR_ELB_NO_ATTACH_INSTANCE_OR_ASG": "没有实例或Auto Scaling 组被关联到负载均衡器 <span class='validation-tag tag-elb'>%s</span> 上。",
+        "ERROR_ELB_NO_ATTACH_SUBNET": "没有子网被关联到负载均衡器 <span class='validation-tag tag-elb'>%s</span> 上。",
         "WARNING_ELB_NO_ATTACH_TO_MULTI_AZ": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 只关联到了一个可用区域上，若关联到多个可用区域上能够提升容错性。",
         "NOTICE_ELB_REDIRECT_PORT_443_TO_443": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 重定向 <span class='validation-tag tag-port'>443</span> 到 <span class='validation-tag tag-port'>443</span>，建议使用负载均衡解密并重定向到端口 <span class='validation-tag tag-port'>80</span>。",
         "ERROR_ELB_HAVE_REPEAT_LISTENER_ITEM": "负载均衡器 <span class='validation-tag tag-elb'>%s</span> 的侦听端口重复。",
