@@ -50,7 +50,7 @@ function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <div class=\"modal-shrink\">\n            <div class=\"sub-gray\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_WARNNING", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_WARNING", {hash:{},data:data}))
     + "</div>\n            <div class=\"error\">\n                "
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_START_MISSING_SNAPSHOT_1", {hash:{},data:data}))
     + " ";

@@ -164,7 +164,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar tooltip icon-refresh seperator\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_REFRESH_REOURCES", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_REFRESH_RESOURCES", {hash:{},data:data}))
     + "\"></button>";
   return buffer;
   };

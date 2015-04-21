@@ -3158,7 +3158,7 @@ define('wspace/awseditor/property/instance/app_model',['../base/model', 'constan
       return this.set('loginCmd', cmd_line);
     },
     init: function(instanceId) {
-      var appId, app_data, component, deviceName, i, instance, mesosData, monitoringState, rdName, rootDevice, volume, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var appId, app_data, deviceName, i, instance, mesosData, monitoringState, rdName, rootDevice, volume, _i, _len, _ref, _ref1, _ref2, _ref3;
       if (!this.resModel) {
         console.warn("instance.app_model.init(): can not find InstanceModel");
       }
@@ -3173,12 +3173,11 @@ define('wspace/awseditor/property/instance/app_model',['../base/model', 'constan
       }
       if (this.resModel) {
         this.set("userData", this.resModel.get("userData"));
-        component = Design.instance().component(instanceId);
-        this.set("userDataEnabled", !Design.instance().get("agent").enabled && component.getAmi().rootDeviceType === "ebs");
       }
       app_data = CloudResources(Design.instance().credentialId(), constant.RESTYPE.INSTANCE, Design.instance().region());
       if (app_data != null ? (_ref = app_data.get(appId)) != null ? _ref.toJSON() : void 0 : void 0) {
         instance = $.extend(true, {}, (_ref1 = app_data.get(appId)) != null ? _ref1.toJSON() : void 0);
+        this.set("userDataEnabled", !Design.instance().get("agent").enabled && instance.rootDeviceType === "ebs");
         instance.name = this.resModel ? this.resModel.get('name') : appId;
         rdName = this.resModel.getAmiRootDeviceName();
         if (this.resModel.isMesosSlave()) {
@@ -21322,7 +21321,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<button class=\"btn-toolbar tooltip icon-refresh seperator\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_REFRESH_REOURCES", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_REFRESH_RESOURCES", {hash:{},data:data}))
     + "\"></button>";
   return buffer;
   };
@@ -21398,7 +21397,7 @@ function program1(depth0,data) {
   
   var buffer = "";
   buffer += "\n            <div class=\"modal-text-highlight\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_CLOUDFORMATION_WARNNING", {hash:{},data:data}))
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EXPORT_CLOUDFORMATION_WARNING", {hash:{},data:data}))
     + "</div>";
   return buffer;
   }
