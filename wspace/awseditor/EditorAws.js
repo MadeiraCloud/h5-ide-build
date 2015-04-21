@@ -3994,7 +3994,7 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
         that.refreshSysLog((_ref = data.GetConsoleOutputResponse) != null ? _ref.output : void 0);
         return that.sysLogModal.resize();
       }, function() {
-        that.refreshSysLog();
+        that.refreshSysLog(null, lang.IDE.SYSTEM_LOG_NOT_READY);
         return that.sysLogModal.resize();
       });
       return false;
@@ -4024,7 +4024,7 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
         var _ref, _ref1;
         console.log(data);
         userData = data != null ? (_ref = data.DescribeInstanceAttributeResponse) != null ? (_ref1 = _ref.userData) != null ? _ref1.value : void 0 : void 0 : void 0;
-        self.refreshSysLog(userData, lang.IDE.USER_DATA_FETCH_FAILED);
+        self.refreshSysLog(userData);
         return self.userDataLog.resize();
       }, function() {
         self.refreshSysLog(null, lang.IDE.USER_DATA_FETCH_FAILED);
@@ -4033,19 +4033,17 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
     },
     refreshSysLog: function(result, errMessage) {
       var $contentElem, logContent;
+      $('#modal-instance-sys-log .instance-sys-log-loading').hide();
       if (errMessage) {
         $("#modal-instance-sys-log .instance-sys-log-info").text(errMessage);
-      }
-      $('#modal-instance-sys-log .instance-sys-log-loading').hide();
-      if (result) {
+        return $('#modal-instance-sys-log .instance-sys-log-info').show();
+      } else {
         logContent = Base64.decode(result);
         $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
         $contentElem.html(MC.template.convertBreaklines({
           content: logContent
         }));
         return $contentElem.show();
-      } else {
-        return $('#modal-instance-sys-log .instance-sys-log-info').show();
       }
     }
   });
