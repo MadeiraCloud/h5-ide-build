@@ -1684,6 +1684,7 @@ define('wspace/awseditor/property/instance/model',['../base/model', 'constant', 
       design = Design.instance();
       agentData = design.get('agent');
       attr.stackAgentEnable = agentData.enabled;
+      attr.userData = component.get("userData");
       this.set(attr);
       this.getAmi();
       this.getKeyPair();
@@ -3157,7 +3158,7 @@ define('wspace/awseditor/property/instance/app_model',['../base/model', 'constan
       return this.set('loginCmd', cmd_line);
     },
     init: function(instanceId) {
-      var appId, app_data, deviceName, i, instance, mesosData, monitoringState, rdName, rootDevice, volume, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var appId, app_data, component, deviceName, i, instance, mesosData, monitoringState, rdName, rootDevice, volume, _i, _len, _ref, _ref1, _ref2, _ref3;
       if (!this.resModel) {
         console.warn("instance.app_model.init(): can not find InstanceModel");
       }
@@ -3169,6 +3170,11 @@ define('wspace/awseditor/property/instance/app_model',['../base/model', 'constan
         appId = instanceId;
       } else {
         appId = this.resModel.get('appId');
+      }
+      if (this.resModel) {
+        this.set("userData", this.resModel.get("userData"));
+        component = Design.instance().component(instanceId);
+        this.set("userDataEnabled", !Design.instance().get("agent").enabled && component.getAmi().rootDeviceType === "ebs");
       }
       app_data = CloudResources(Design.instance().credentialId(), constant.RESTYPE.INSTANCE, Design.instance().region());
       if (app_data != null ? (_ref = app_data.get(appId)) != null ? _ref.toJSON() : void 0 : void 0) {
@@ -3379,6 +3385,17 @@ function program14(depth0,data) {
 
 function program16(depth0,data) {
   
+  var buffer = "";
+  buffer += "\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_USER_DATA", {hash:{},data:data}))
+    + "</dt>\n      <dd><a href=\"#\" id=\"property-user-data-detail\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_USER_DATA_DETAIL", {hash:{},data:data}))
+    + "</a></dd>\n      ";
+  return buffer;
+  }
+
+function program18(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ROOT_DEVICE", {hash:{},data:data}))
@@ -3405,7 +3422,7 @@ function program16(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.readableVt.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.volumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
@@ -3414,10 +3431,10 @@ function program16(depth0,data) {
     + " GB</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</dt>\n        <dd>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ATTACHMENT_STATE", {hash:{},data:data}))
@@ -3434,7 +3451,7 @@ function program16(depth0,data) {
     + "</dd>\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program17(depth0,data) {
+function program19(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3445,19 +3462,19 @@ function program17(depth0,data) {
   return buffer;
   }
 
-function program19(depth0,data) {
+function program21(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
-function program21(depth0,data) {
+function program23(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_NOT_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
-function program23(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3468,7 +3485,7 @@ function program23(depth0,data) {
   return buffer;
   }
 
-function program25(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -3488,7 +3505,7 @@ function program25(depth0,data) {
     + "\"></i>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_SOURCE_DEST_CHECK_DISP", {hash:{},data:data}))
@@ -3507,32 +3524,32 @@ function program25(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.subnetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_MAC_ADDRESS", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.macAddress), {hash:{},data:data}))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </div>\n    <table class=\"table table-small\">\n      <tr>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_IP_ADDRESS", {hash:{},data:data}))
     + "</th>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_PUBLIC_IP", {hash:{},data:data}))
     + "</th>\n      </tr>\n      ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </table>\n\n  </div>\n  ";
   return buffer;
   }
-function program26(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dt>"
@@ -3543,7 +3560,7 @@ function program26(depth0,data) {
   return buffer;
   }
 
-function program28(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3562,7 +3579,7 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program32(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3573,7 +3590,7 @@ function program30(depth0,data) {
   return buffer;
   }
 
-function program32(depth0,data) {
+function program34(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3584,7 +3601,7 @@ function program32(depth0,data) {
   return buffer;
   }
 
-function program34(depth0,data) {
+function program36(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3595,20 +3612,20 @@ function program34(depth0,data) {
   return buffer;
   }
 
-function program36(depth0,data) {
+function program38(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <tr>\n        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.privateIpAddress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n        <td>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(41, program41, data),fn:self.program(39, program39, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(43, program43, data),fn:self.program(41, program41, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n      </tr>\n      ";
   return buffer;
   }
-function program37(depth0,data) {
+function program39(depth0,data) {
   
   var buffer = "";
   buffer += "<span>("
@@ -3617,13 +3634,13 @@ function program37(depth0,data) {
   return buffer;
   }
 
-function program39(depth0,data) {
+function program41(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program41(depth0,data) {
+function program43(depth0,data) {
   
   
   return "-";
@@ -3697,7 +3714,10 @@ function program41(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_CLOUDWATCH_DETAILED_MONITORING", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.monitoringState)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
+    + "</dd>\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.userDataEnabled), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.ebsOptimized), {hash:{},data:data}))
@@ -3714,10 +3734,10 @@ function program41(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.blockDevice), {hash:{},data:data}))
     + "</dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -3814,7 +3834,8 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
     events: {
       "click #property-app-keypair": "keyPairClick",
       "click #property-app-ami": "openAmiPanel",
-      "click .property-btn-get-system-log": "openSysLogModal"
+      "click .property-btn-get-system-log": "openSysLogModal",
+      "click #property-user-data-detail": "viewUserDataDetail"
     },
     render: function() {
       var data;
@@ -3969,26 +3990,63 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
         region_name: Design.instance().region(),
         instance_id: instanceId
       }).then(function(data) {
-        return that.refreshSysLog(data.GetConsoleOutputResponse);
+        var _ref;
+        that.refreshSysLog((_ref = data.GetConsoleOutputResponse) != null ? _ref.output : void 0);
+        return that.sysLogModal.resize();
       }, function() {
-        return that.refreshSysLog();
+        that.refreshSysLog();
+        return that.sysLogModal.resize();
       });
       return false;
     },
-    refreshSysLog: function(result) {
+    viewUserDataDetail: function() {
+      var self, userData;
+      userData = this.model.get("userData");
+      self = this;
+      this.userDataLog = new modalPlus({
+        template: MC.template.modalInstanceSysLog({
+          log_content: MC.template.convertBreaklines({
+            content: userData
+          })
+        }),
+        width: 900,
+        title: lang.PROP.INSTANCE_USER_DATA,
+        confirm: {
+          hide: true
+        }
+      }).tpl.attr("id", "modal-instance-sys-log");
+      return ApiRequest("ins_DescribeInstanceAttribute", {
+        key_id: Design.instance().credentialId(),
+        region_name: Design.instance().region(),
+        instance_id: self.model.get("id"),
+        attribute_name: "userData"
+      }).then(function(data) {
+        var _ref, _ref1;
+        console.log(data);
+        userData = data != null ? (_ref = data.DescribeInstanceAttributeResponse) != null ? (_ref1 = _ref.userData) != null ? _ref1.value : void 0 : void 0 : void 0;
+        self.refreshSysLog(userData, lang.IDE.USER_DATA_FETCH_FAILED);
+        return self.userDataLog.resize();
+      }, function() {
+        self.refreshSysLog(null, lang.IDE.USER_DATA_FETCH_FAILED);
+        return self.userDataLog.resize();
+      });
+    },
+    refreshSysLog: function(result, errMessage) {
       var $contentElem, logContent;
+      if (errMessage) {
+        $("#modal-instance-sys-log .instance-sys-log-info").text(errMessage);
+      }
       $('#modal-instance-sys-log .instance-sys-log-loading').hide();
-      if (result && result.output) {
-        logContent = Base64.decode(result.output);
+      if (result) {
+        logContent = Base64.decode(result);
         $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
         $contentElem.html(MC.template.convertBreaklines({
           content: logContent
         }));
-        $contentElem.show();
+        return $contentElem.show();
       } else {
-        $('#modal-instance-sys-log .instance-sys-log-info').show();
+        return $('#modal-instance-sys-log .instance-sys-log-info').show();
       }
-      return this.sysLogModal.resize();
     }
   });
   return new InstanceAppView();
@@ -4078,7 +4136,8 @@ define('wspace/awseditor/property/servergroup/app_model',['../base/model', '../i
         this.set('ami', {
           id: ami_id,
           name: ami.name || ami.description || ami.id,
-          icon: "" + ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png"
+          icon: "" + ami.osType + "." + ami.architecture + "." + ami.rootDeviceType + ".png",
+          type: ami.rootDeviceType
         });
         this.set('type_editable', ami.rootDeviceType !== "instance-store");
       } else {
@@ -4101,6 +4160,7 @@ define('wspace/awseditor/property/servergroup/app_model',['../base/model', '../i
       this.set('monitoring', this.resModel.get('monitoring'));
       this.set('description', this.resModel.get('description'));
       this.set('displayCount', this.resModel.get('count') - 1);
+      this.set('userData', this.resModel.get("userData"));
       this.getGroupList();
       this.getEni();
       return null;
@@ -4184,7 +4244,8 @@ define('wspace/awseditor/property/servergroup/app_model',['../base/model', '../i
     removeIp: instance_model.removeIp,
     attachEip: instance_model.attachEip,
     setMonitoring: instance_model.setMonitoring,
-    setSourceCheck: instance_model.setSourceCheck
+    setSourceCheck: instance_model.setSourceCheck,
+    setUserData: instance_model.setUserData
   });
   return new ServerGroupModel();
 });
@@ -4661,6 +4722,7 @@ define('wspace/awseditor/property/servergroup/app_view',['../base/view', '../ins
       $("#prop-appedit-ami-list").html(ami_list_template(this.model.attributes));
       return null;
     },
+    updateUserData: instance_view.userdataChange,
     countChange: function(event) {
       var target, val;
       target = $(event.currentTarget);
