@@ -4035,9 +4035,9 @@ define('wspace/awseditor/property/instance/app_view',['../base/view', './templat
       var $contentElem, logContent;
       $('#modal-instance-sys-log .instance-sys-log-loading').hide();
       if (errMessage) {
-        $("#modal-instance-sys-log .instance-sys-log-info").text(errMessage);
-        return $('#modal-instance-sys-log .instance-sys-log-info').show();
+        return $("#modal-instance-sys-log .instance-sys-log-info").text(errMessage).show();
       } else {
+        result = result || "";
         logContent = Base64.decode(result);
         $contentElem = $('#modal-instance-sys-log .instance-sys-log-content');
         $contentElem.html(MC.template.convertBreaklines({
