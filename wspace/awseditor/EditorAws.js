@@ -12823,6 +12823,37 @@ function program8(depth0,data) {
   return buffer;
   }
 
+function program10(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program11(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program13(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
   buffer += "<article>\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.appId), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -12854,7 +12885,10 @@ function program8(depth0,data) {
     + "</span>)</span>\n  </div>\n\n  <ul class=\"option-group mega-list-wraper\">";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.associations), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</ul>\n</article>";
+  buffer += "</ul>\n\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/acl/template/rule_item',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
