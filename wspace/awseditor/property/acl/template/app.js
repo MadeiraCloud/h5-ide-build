@@ -96,6 +96,37 @@ function program10(depth0,data) {
   return buffer;
   }
 
+function program12(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program15(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
   buffer += "<article class=\"property-app\">\n\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ACL_APP_ID", {hash:{},data:data}))
     + "</dt>\n    <dd>"
@@ -134,6 +165,9 @@ function program10(depth0,data) {
     + ")</span></header>\n  <ul class=\"option-group mega-list-wraper\">\n    ";
   stack1 = helpers.each.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.component)),stack1 == null || stack1 === false ? stack1 : stack1.associationSet)),stack1 == null || stack1 === false ? stack1 : stack1.item), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </ul>\n\n</article>";
+  buffer += "\n  </ul>\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });

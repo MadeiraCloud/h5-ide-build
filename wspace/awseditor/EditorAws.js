@@ -3396,6 +3396,37 @@ function program16(depth0,data) {
 function program18(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <table class=\"table cost-estimation-table\">\n            <tbody>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </tbody>\n        </table>\n    </div>\n    ";
+  return buffer;
+  }
+function program19(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n            ";
+  return buffer;
+  }
+
+function program21(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n            ";
+  return buffer;
+  }
+
+function program23(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ROOT_DEVICE", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n    <article class=\"property-app\">\n      <dl class=\"dl-vertical\">\n        <dt>"
@@ -3421,7 +3452,7 @@ function program18(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.readableVt.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.volumeType), {hash:{},data:data}))
     + "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.snapshotId), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_SIZE", {hash:{},data:data}))
@@ -3430,10 +3461,10 @@ function program18(depth0,data) {
     + " GB</dd>\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</dt>\n        <dd>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(28, program28, data),fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</dd>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ATTACHMENT_STATE", {hash:{},data:data}))
@@ -3450,7 +3481,7 @@ function program18(depth0,data) {
     + "</dd>\n      </dl>\n    </article>\n  </div>\n  ";
   return buffer;
   }
-function program19(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3461,19 +3492,19 @@ function program19(depth0,data) {
   return buffer;
   }
 
-function program21(depth0,data) {
+function program26(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
-function program23(depth0,data) {
+function program28(depth0,data) {
   
   
   return escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_NOT_ENCRYPTED_STATE", {hash:{},data:data}));
   }
 
-function program25(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3484,7 +3515,7 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program32(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">"
@@ -3504,7 +3535,7 @@ function program27(depth0,data) {
     + "\"></i>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n      ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.description), {hash:{},inverse:self.noop,fn:self.program(33, program33, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_SOURCE_DEST_CHECK_DISP", {hash:{},data:data}))
@@ -3523,32 +3554,32 @@ function program27(depth0,data) {
     + "</dt>\n        <dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.subnetId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.attachment), {hash:{},inverse:self.noop,fn:self.program(35, program35, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n      <dl class=\"dl-vertical\">\n        <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_MAC_ADDRESS", {hash:{},data:data}))
     + "</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.macAddress), {hash:{},data:data}))
     + "</dd>\n\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicDnsName), {hash:{},inverse:self.noop,fn:self.program(37, program37, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateDnsName), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(36, program36, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.ownerId), {hash:{},inverse:self.noop,fn:self.program(41, program41, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </dl>\n    </div>\n    <table class=\"table table-small\">\n      <tr>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_IP_ADDRESS", {hash:{},data:data}))
     + "</th>\n        <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_PUBLIC_IP", {hash:{},data:data}))
     + "</th>\n      </tr>\n      ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.eni)),stack1 == null || stack1 === false ? stack1 : stack1.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(43, program43, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </table>\n\n  </div>\n  ";
   return buffer;
   }
-function program28(depth0,data) {
+function program33(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <dt>"
@@ -3559,7 +3590,7 @@ function program28(depth0,data) {
   return buffer;
   }
 
-function program30(depth0,data) {
+function program35(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3578,7 +3609,7 @@ function program30(depth0,data) {
   return buffer;
   }
 
-function program32(depth0,data) {
+function program37(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3589,7 +3620,7 @@ function program32(depth0,data) {
   return buffer;
   }
 
-function program34(depth0,data) {
+function program39(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3600,7 +3631,7 @@ function program34(depth0,data) {
   return buffer;
   }
 
-function program36(depth0,data) {
+function program41(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <dt>"
@@ -3611,20 +3642,20 @@ function program36(depth0,data) {
   return buffer;
   }
 
-function program38(depth0,data) {
+function program43(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <tr>\n        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.privateIpAddress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(39, program39, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.primary), {hash:{},inverse:self.noop,fn:self.program(44, program44, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n        <td>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(43, program43, data),fn:self.program(41, program41, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp), {hash:{},inverse:self.program(48, program48, data),fn:self.program(46, program46, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n      </tr>\n      ";
   return buffer;
   }
-function program39(depth0,data) {
+function program44(depth0,data) {
   
   var buffer = "";
   buffer += "<span>("
@@ -3633,13 +3664,13 @@ function program39(depth0,data) {
   return buffer;
   }
 
-function program41(depth0,data) {
+function program46(depth0,data) {
   
   var stack1;
   return escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.association)),stack1 == null || stack1 === false ? stack1 : stack1.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
-function program43(depth0,data) {
+function program48(depth0,data) {
   
   
   return "-";
@@ -3716,7 +3747,11 @@ function program43(depth0,data) {
     + "</dd>\n      ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.userDataEnabled), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
+  buffer += "\n      <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "</dt>\n      <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.resourceTags)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n    </dl>\n\n    <dl class=\"dl-vertical\">\n      <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.ebsOptimized), {hash:{},data:data}))
@@ -3732,11 +3767,14 @@ function program43(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_BLOCK_DEVICE", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.blockDevice), {hash:{},data:data}))
-    + "</dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+    + "</dd>\n    </dl>\n  </div>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.eni), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  <div class=\"option-group-head\"> "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -5386,6 +5424,7 @@ define('wspace/awseditor/property/sg/model',['../base/model', "Design", 'constan
         groupId: currentAppSG.groupId,
         ownerId: currentAppSG.ownerId,
         vpcId: currentAppSG.vpcId,
+        tagSet: currentAppSG.tagSet,
         members: members,
         rules: rules
       };
@@ -5494,6 +5533,37 @@ function program1(depth0,data) {
   return buffer;
   }
 
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
   buffer += "<article>\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SG_APP_SG_NAME", {hash:{},data:data}))
     + "</dt>\n    <dd>"
@@ -5531,7 +5601,10 @@ function program1(depth0,data) {
     + "</span>)</span>\n  </div>\n  <div class=\"option-group\">\n    <ul class=\"sg-member-list mega-list-wraper\">\n      ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.members), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </ul>\n  </div>\n</article>";
+  buffer += "\n    </ul>\n  </div>\n\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/sg/view',['../base/view', './template/stack', './template/app', 'constant', 'i18n!/nls/lang.js', "UI.modalplus"], function(PropertyView, template, app_template, constant, lang, modalPlus) {
@@ -6461,6 +6534,37 @@ function program7(depth0,data) {
   return buffer;
   }
 
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
   buffer += "<article class=\"property-app\">\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ID", {hash:{},data:data}))
     + "</dt>\n    <dd>"
@@ -6510,7 +6614,10 @@ function program7(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ATTACHMENT_TIME", {hash:{},data:data}))
     + "</dt>\n    <dd>"
     + escapeExpression(helpers.timeStr.call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.attachmentSet)),stack1 == null || stack1 === false ? stack1 : stack1[0])),stack1 == null || stack1 === false ? stack1 : stack1.attachTime), {hash:{},data:data}))
-    + "</dd>\n  </dl>\n</article>";
+    + "</dd>\n  </dl>\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/volume/app_view',['../base/view', './template/app'], function(PropertyView, template) {
@@ -8711,9 +8818,40 @@ define('wspace/awseditor/property/subnet/app_model',['../base/model', 'constant'
 define('wspace/awseditor/property/subnet/template/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function", self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head expand\">"
@@ -8772,8 +8910,11 @@ function program1(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.SUBNET_APP_RT_ID", {hash:{},data:data}))
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.routeTable)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n  </div>\n\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.acl), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+    + "</dd>\n    </dl>\n  </div>\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.acl), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</article>";
   return buffer;
@@ -9421,6 +9562,37 @@ function program20(depth0,data) {
   return buffer;
   }
 
+function program22(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program23(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program25(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
   buffer += "<article class=\"property-app\">\n\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPC_TIT_DETAIL", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n    <dl class=\"dl-vertical\">\n      <dt>"
@@ -9465,7 +9637,10 @@ function program20(depth0,data) {
   buffer += "\n\n  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.defaultDhcp), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>\n\n\n</article>";
+  buffer += "\n  </div>\n\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/vpc/app_view',['../base/view', './template/app'], function(PropertyView, template) {
@@ -10207,14 +10382,17 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_VPC_ID", {hash:{},data:data}))
     + "</dt>\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.vpcId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n  </dl>\n\n  <div class=\"option-group-head expand\">"
+    + "</dd>\n  </dl>\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  <div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LBL_ROUTE", {hash:{},data:data}))
     + "</div>\n  <div class=\"option-group\">\n    <table class=\"table table-small\">\n      <thead>\n        <tr>\n          <th></th>\n          <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
     + "</th>\n          <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_TARGET", {hash:{},data:data}))
     + "</th>\n          <th></th>\n        </tr>\n      </thead>\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.routeSet), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.routeSet), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </table>\n  </div>\n  ";
   return buffer;
@@ -10222,20 +10400,51 @@ function program3(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n      <tr>\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.active), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.active), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.destinationCidrBlock)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n        <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.target)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td>\n        ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.propagate), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.propagate), {hash:{},inverse:self.program(16, program16, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      </tr>\n      ";
   return buffer;
   }
-function program5(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <td><i class=\"status status-green tooltip\" data-tooltip=\""
@@ -10244,7 +10453,7 @@ function program5(depth0,data) {
   return buffer;
   }
 
-function program7(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <td><i class=\"status status-red tooltip\" data-tooltip=\""
@@ -10253,7 +10462,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <td><i class=\"icon-info tooltip\" data-tooltip=\""
@@ -10262,7 +10471,7 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program16(depth0,data) {
   
   
   return "\n        <td></td>\n        ";
@@ -10442,9 +10651,42 @@ function program15(depth0,data) {
   return buffer;
   }
 
+function program17(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<div class=\"option-group-head\">\n  "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n</div>\n<div class=\"option-group\">\n  <table class=\"table cost-estimation-table\">\n      <tbody>\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </tbody>\n  </table>\n</div>\n";
+  return buffer;
+  }
+function program18(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n      <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n      ";
+  return buffer;
+  }
+
+function program20(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n      <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n      ";
+  return buffer;
+  }
+
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readOnly), {hash:{},inverse:self.program(12, program12, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</article>";
+  buffer += "\n</article>\n";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/static/view',['../base/view', './template/stack'], function(PropertyView, template) {
@@ -10765,6 +11007,37 @@ function program3(depth0,data) {
   return buffer;
   }
 
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <table class=\"table cost-estimation-table\">\n            <tbody>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </tbody>\n        </table>\n    </div>\n    ";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n            ";
+  return buffer;
+  }
+
+function program8(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n            <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n            ";
+  return buffer;
+  }
+
   buffer += "<article class=\"property-app\">\n  <dl class=\"dl-vertical\">\n    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_APP_CGW_LBL_ID", {hash:{},data:data}))
     + "</dt>\n    <dd>"
@@ -10793,7 +11066,10 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CGW_LBL_BGP_ASN", {hash:{},data:data}))
     + "</dt>\n    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.bgpAsn)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n  </dl>\n</article>";
+    + "</dd>\n  </dl>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/cgw/app_view',['../base/view', './template/app'], function(PropertyView, template) {
@@ -11016,7 +11292,10 @@ function program1(depth0,data) {
   buffer += "\n\n\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n";
+  buffer += "\n\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -11127,13 +11406,44 @@ function program16(depth0,data) {
 function program18(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n  <div class=\"option-group-head\">\n      "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(21, program21, data),fn:self.program(19, program19, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  return buffer;
+  }
+function program19(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n          ";
+  return buffer;
+  }
+
+function program21(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n          <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n          ";
+  return buffer;
+  }
+
+function program23(depth0,data) {
+  
+  var buffer = "", stack1;
   buffer += "\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dynamic), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dynamic), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n";
   return buffer;
   }
-function program19(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "";
   buffer += "\n    <section class=\"property-control-group\">"
@@ -11142,35 +11452,35 @@ function program19(depth0,data) {
   return buffer;
   }
 
-function program21(depth0,data) {
+function program26(depth0,data) {
   
   var buffer = "", stack1;
   buffer += " ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.dynamic), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.dynamic), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
   return buffer;
   }
-function program22(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  <section class=\"property-control-group\">\n    <div class=\"clearfix\">\n      <label class=\"left\" for=\"property-vpc-ips\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VPN_LBL_IP_PREFIX", {hash:{},data:data}))
     + "</label>\n      <span class=\"required-input right\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_REQUIRED", {hash:{},data:data}))
     + "</span>\n    </div>\n    <div id=\"property-vpn-ips\" class=\"multi-input\" data-max-row=\"100\" data-bind=\"true\">\n      ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.ips), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.ips), {hash:{},inverse:self.program(32, program32, data),fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </div>\n  </section>\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.noop,fn:self.program(34, program34, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n";
   return buffer;
   }
-function program23(depth0,data) {
+function program28(depth0,data) {
   
   var buffer = "";
   buffer += "\n  <div class=\"option-group-head expand\">"
@@ -11179,7 +11489,7 @@ function program23(depth0,data) {
   return buffer;
   }
 
-function program25(depth0,data) {
+function program30(depth0,data) {
   
   var buffer = "";
   buffer += "\n      <div class=\"multi-ipt-row\">\n        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n        <span class=\"ipt-wrapper\"><input data-ignore=\"true\" data-ignore-regexp=\"^[0-9./]*$\" class=\"input tooltip\" data-tooltip=\""
@@ -11192,7 +11502,7 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program32(depth0,data) {
   
   var buffer = "";
   buffer += "\n      <div class=\"multi-ipt-row\">\n        <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n        <span class=\"ipt-wrapper\"><input data-ignore=\"true\" data-empty-remove=\"true\" data-ignore-regexp=\"^[0-9./]*$\" class=\"input tooltip\" data-tooltip=\""
@@ -11203,17 +11513,17 @@ function program27(depth0,data) {
   return buffer;
   }
 
-function program29(depth0,data) {
+function program34(depth0,data) {
   
   
   return " </div> ";
   }
 
   buffer += "<article>\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.program(18, program18, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.program(23, program23, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>";
   return buffer;
@@ -12020,7 +12330,10 @@ function program1(depth0,data) {
     + "</th>\n      </tr>\n      ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.privateIpAddressesSet), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </table>\n  </div>\n\n\n  <div class=\"option-group-head\">"
+  buffer += "\n    </table>\n  </div>\n\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.ENI_SG_DETAIL", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n  <div class=\"option-group sg-group\"></div>\n\n  ";
   return buffer;
@@ -12111,6 +12424,37 @@ function program15(depth0,data) {
   return "-";
   }
 
+function program17(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <table class=\"table cost-estimation-table\">\n            <tbody>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(20, program20, data),fn:self.program(18, program18, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </tbody>\n        </table>\n    </div>\n    ";
+  return buffer;
+  }
+function program18(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n            ";
+  return buffer;
+  }
+
+function program20(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n            <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n            ";
+  return buffer;
+  }
+
   buffer += "<article class=\"property-app\">\n  <div id=\"prop-appedit-eni-list\" class=\"expand\"></div>\n\n  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isGroupMode), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -12184,7 +12528,7 @@ define('wspace/awseditor/property/eni/main',["../base/main", "./model", "./view"
   return null;
 });
 
-define('wspace/awseditor/property/acl/model',['../base/model', "Design", 'constant', 'i18n!/nls/lang.js'], function(PropertyModel, Design, constant, lang) {
+define('wspace/awseditor/property/acl/model',['../base/model', "Design", 'constant', 'CloudResources', 'i18n!/nls/lang.js'], function(PropertyModel, Design, constant, CloudResources, lang) {
   var ACLModel, icmpCodeMap, icmpTypeMap;
   icmpTypeMap = {
     "0": "Echo Reply(0)",
@@ -12255,15 +12599,19 @@ define('wspace/awseditor/property/acl/model',['../base/model', "Design", 'consta
   };
   ACLModel = PropertyModel.extend({
     init: function(uid) {
-      var aclObj, assos;
+      var aclObj, acl_data, app_data, assos, datas, _ref;
       aclObj = Design.instance().component(uid);
+      acl_data = {};
+      if (aclObj.get("appId")) {
+        acl_data = (_ref = CloudResources(Design.instance().credentialId(), constant.RESTYPE.ACL, Design.instance().region()).get(aclObj.get('appId'))) != null ? _ref.toJSON() : void 0;
+      }
       assos = _.map(aclObj.connectionTargets("AclAsso"), function(subnet) {
         return {
           name: subnet.get('name'),
           cidr: subnet.get('cidr')
         };
       });
-      this.set({
+      datas = {
         uid: uid,
         isDefault: aclObj.isDefault(),
         appId: aclObj.get("appId"),
@@ -12272,7 +12620,9 @@ define('wspace/awseditor/property/acl/model',['../base/model', "Design", 'consta
         rules: null,
         isApp: this.isApp,
         associations: _.sortBy(assos, name)
-      });
+      };
+      app_data = $.extend(true, datas, acl_data);
+      this.set(app_data);
       this.getRules();
       this.sortRules();
       return null;
@@ -15363,6 +15713,7 @@ define('wspace/awseditor/property/asg/app_model',['../base/model', 'constant', '
         this.set('awsResName', asg_data.AutoScalingGroupName);
         this.set('arn', asg_data.id);
         this.set('createTime', asg_data.CreatedTime);
+        this.set("tagSet", asg_data.tagSet);
         if (asg_data.TerminationPolicies && asg_data.TerminationPolicies) {
           this.set('term_policy_brief', asg_data.TerminationPolicies.join(" > "));
         }
@@ -16168,6 +16519,46 @@ function program53(depth0,data) {
   return "checked=\"checked\"";
   }
 
+function program55(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(56, program56, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    ";
+  return buffer;
+  }
+function program56(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"option-group-head\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <table class=\"table cost-estimation-table\">\n            <tbody>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(59, program59, data),fn:self.program(57, program57, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </tbody>\n        </table>\n    </div>\n    ";
+  return buffer;
+  }
+function program57(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n            ";
+  return buffer;
+  }
+
+function program59(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n            <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n            ";
+  return buffer;
+  }
+
   buffer += "<article class=\"property-app\" data-bind=\"true\">\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasData), {hash:{},inverse:self.program(10, program10, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -16187,7 +16578,10 @@ function program53(depth0,data) {
     + "</div>\n  <div class=\"option-group\" id=\"property-asg-sns\">\n\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.program(52, program52, data),fn:self.program(38, program38, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  </div>\n\n</article>";
+  buffer += "\n  </div>\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(55, program55, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/asg/app_view',['../base/view', './template/app', './template/policy', './template/term', 'i18n!/nls/lang.js', 'sns_dropdown', 'UI.modalplus'], function(PropertyView, template, policy_template, term_template, lang, snsDropdown, modalPlus) {
@@ -20166,7 +20560,9 @@ function program71(depth0,data) {
   buffer += "\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.PreferredMaintenanceWindow), {hash:{},inverse:self.noop,fn:self.program(71, program71, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        </dl>\n    </div>\n\n    <div class=\"option-group-head\">"
+  buffer += "\n        </dl>\n    </div>\n    <div class=\"option-group-head\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <div class=\"tagTable\">\n            <div class=\"loading-spinner\"></div>\n        </div>\n    </div>\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n    <div class=\"option-group sg-group\"></div>\n</article>";
   return buffer;
@@ -20294,6 +20690,40 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 TEMPLATE.list_empty=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n    ";
+  return buffer;
+  }
+
+  buffer += "<table class=\"table cost-estimation-table\">\n    <tbody>\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </tbody>\n</table>";
+  return buffer;
+  };
+TEMPLATE.tagSets=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 define('wspace/awseditor/property/dbinstance/app_view',['../base/view', './template/app', 'og_manage_app', 'constant', 'toolbar_modal', 'ApiRequest', 'JsonExporter', "i18n!/nls/lang.js"], function(PropertyView, template, ogManageApp, constant, toolbar_modal, ApiRequest, JsonExporter, lang) {
   var CGWAppView;
@@ -20325,7 +20755,46 @@ define('wspace/awseditor/property/dbinstance/app_view',['../base/view', './templ
       data.description = this.resModel.get("description");
       data.name = this.resModel.get('name');
       this.$el.html(template.appView(data));
+      this.renderTagSet();
       return this.resModel.get('name');
+    },
+    renderTagSet: function(failed) {
+      var accountNumber, arn, name, region, resourceType, that;
+      if (failed) {
+        this.$el.find(".tagTable").html("<p>Failed to fetch database Instance tags, please try again later.</p>");
+        return false;
+      }
+      if (this.tagSet) {
+        return this.$el.find(".tagTable").html(template.tagSets({
+          tagSet: this.tagSet
+        }));
+      } else {
+        that = this;
+        region = this.resModel.design().region();
+        accountNumber = Design.instance().credential().get("awsAccount").split("-").join("");
+        resourceType = "db";
+        name = this.model.get("id");
+        arn = "arn:aws:rds:" + region + ":" + accountNumber + ":" + resourceType + ":" + name;
+        return ApiRequest("rds_ListTagsForResource", {
+          key_id: Design.instance().credentialId(),
+          region_name: region,
+          resource_name: arn
+        }).then(function(result) {
+          var tagSet, tags;
+          tagSet = {};
+          tags = result.ListTagsForResourceResponse.ListTagsForResourceResult.TagList.Tag || [];
+          if (!tags.length && !_.isArray(tags)) {
+            tags = [tags];
+          }
+          _.each(tags, function(value) {
+            return tagSet[value.Key] = value.Value;
+          });
+          that.tagSet = tagSet;
+          return that.renderTagSet();
+        }, function() {
+          return that.renderTagSet(true);
+        });
+      }
     },
     renderLogList: function(logList) {
       var that;
@@ -20765,14 +21234,50 @@ function program2(depth0,data) {
     + "</div>\n    <div class=\"option-group\">\n        ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.azSb), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </div>\n</article>";
+  buffer += "\n    </div>\n    <div class=\"option-group-head\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <div class=\"tagTable\">\n            <div class=\"loading-spinner\"></div>\n        </div>\n    </div>\n</article>";
   return buffer;
   };
 TEMPLATE.app=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n        <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "</td> </tr>\n    ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n        <tr>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</tr>\n    ";
+  return buffer;
+  }
+
+  buffer += "<table class=\"table cost-estimation-table\">\n    <tbody>\n    ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </tbody>\n</table>";
+  return buffer;
+  };
+TEMPLATE.tagSets=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
-define('wspace/awseditor/property/subnetgroup/app_view',['../base/view', './template/app', 'i18n!/nls/lang.js', 'constant', 'Design', 'CloudResources'], function(PropertyView, template, lang, constant, Design, CloudResources) {
+define('wspace/awseditor/property/subnetgroup/app_view',['../base/view', './template/app', 'i18n!/nls/lang.js', 'constant', 'Design', 'CloudResources', 'ApiRequest'], function(PropertyView, template, lang, constant, Design, CloudResources, ApiRequest) {
   var SubnetGroupView;
   SubnetGroupView = PropertyView.extend({
     render: function() {
@@ -20785,7 +21290,46 @@ define('wspace/awseditor/property/subnetgroup/app_view',['../base/view', './temp
       data.sbCount = ((_ref = this.appModel.get('Subnets')) != null ? _ref.length : void 0) || 0;
       data.name = this.model.get('name');
       this.$el.html(template.app(data));
+      this.renderTagSet();
       return data.name;
+    },
+    renderTagSet: function(failed) {
+      var accountNumber, arn, name, region, resourceType, that;
+      if (failed) {
+        this.$el.find(".tagTable").html("<p>Failed to fetch database Instance tags, please try again later.</p>");
+        return false;
+      }
+      if (this.tagSet) {
+        return this.$el.find(".tagTable").html(template.tagSets({
+          tagSet: this.tagSet
+        }));
+      } else {
+        that = this;
+        region = Design.instance().region();
+        accountNumber = Design.instance().credential().get("awsAccount").split("-").join("");
+        resourceType = "subgrp";
+        name = this.appModel.get("id");
+        arn = "arn:aws:rds:" + region + ":" + accountNumber + ":" + resourceType + ":" + name;
+        return ApiRequest("rds_ListTagsForResource", {
+          key_id: Design.instance().credentialId(),
+          region_name: region,
+          resource_name: arn
+        }).then(function(result) {
+          var tagSet, tags;
+          tagSet = {};
+          tags = result.ListTagsForResourceResponse.ListTagsForResourceResult.TagList.Tag || [];
+          if (!tags.length && !_.isArray(tags)) {
+            tags = [tags];
+          }
+          _.each(tags, function(value) {
+            return tagSet[value.Key] = value.Value;
+          });
+          that.tagSet = tagSet;
+          return that.renderTagSet();
+        }, function() {
+          return that.renderTagSet(true);
+        });
+      }
     },
     getAzSb: function() {
       var azSb, sbAppResources;

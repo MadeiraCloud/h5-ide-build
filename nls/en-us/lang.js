@@ -1435,6 +1435,8 @@ define({
         "INSTANCE_CW_ENABLED": "Enable CloudWatch Detailed Monitoring",
         "INSTANCE_ADVANCED_DETAIL": "Advanced Details",
         "INSTANCE_USER_DATA": "User Data",
+        "RESOURCE_TAGS": "Tags",
+        "RESOURCE_NO_TAGS": "This resource has no tags",
         "INSTANCE_USER_DATA_DETAIL": "View User Data Detail",
         "INSTANCE_USER_DATA_DISABLE": "Can't edit user data when instance state exist",
         "INSTANCE_CW_WARN": "Data is available in 1-minute periods at an additional cost. For information about pricing, go to the ",
