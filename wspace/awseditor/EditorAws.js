@@ -10077,7 +10077,7 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
     render: function() {
       var attr;
       attr = this.model.attributes;
-      attr.canSetMain = !this.model.isMain && !Design.instance().opsModel().isMesos();
+      attr.canSetMain = !attr.isMain && !Design.instance().opsModel().isMesos();
       this.$el.html(template(this.model.attributes));
       return this.model.attributes.title;
     },
@@ -20767,7 +20767,7 @@ define('wspace/awseditor/property/dbinstance/app_view',['../base/view', './templ
       'click .property-btn-get-system-log': 'openModal'
     },
     initialize: function() {
-      return this.isSafari = $("body").hasClass("safari");
+      this.isSafari = $("body").hasClass("safari");
     },
     render: function() {
       var data;
@@ -20792,10 +20792,10 @@ define('wspace/awseditor/property/dbinstance/app_view',['../base/view', './templ
       this.renderTagSet();
       return this.resModel.get('name');
     },
-    renderTagSet: function(failed) {
+    renderTagSet: function(failed, reason) {
       var accountNumber, arn, name, region, resourceType, that;
-      if (failed) {
-        this.$el.find(".tagTable").html("<p>Failed to fetch database Instance tags, please try again later.</p>");
+      if (failed && reason) {
+        this.$el.find(".tagTable").html("<div class='dl-vertical'>" + reason + "</div>");
         return false;
       }
       if (this.tagSet) {
@@ -20806,6 +20806,10 @@ define('wspace/awseditor/property/dbinstance/app_view',['../base/view', './templ
         that = this;
         region = this.resModel.design().region();
         accountNumber = Design.instance().credential().get("awsAccount").split("-").join("");
+        if (/^\d+$/.test(accountNumber) === false) {
+          that.renderTagSet(true, lang.PROP.DB_SNAPSHOT_ACCOUNT_NUMBER_INVALID);
+          return false;
+        }
         resourceType = "db";
         name = this.model.get("id");
         arn = "arn:aws:rds:" + region + ":" + accountNumber + ":" + resourceType + ":" + name;
@@ -20821,12 +20825,13 @@ define('wspace/awseditor/property/dbinstance/app_view',['../base/view', './templ
             tags = [tags];
           }
           _.each(tags, function(value) {
-            return tagSet[value.Key] = value.Value;
+            tagSet[value.Key] = value.Value;
+            return null;
           });
           that.tagSet = tagSet;
           return that.renderTagSet();
         }, function() {
-          return that.renderTagSet(true);
+          return that.renderTagSet(true, lang.PROP.DB_DB_SUBGROUP_FAILED_FETCHING_TAGS);
         });
       }
     },
@@ -21327,10 +21332,10 @@ define('wspace/awseditor/property/subnetgroup/app_view',['../base/view', './temp
       this.renderTagSet();
       return data.name;
     },
-    renderTagSet: function(failed) {
+    renderTagSet: function(failed, reason) {
       var accountNumber, arn, name, region, resourceType, that;
-      if (failed) {
-        this.$el.find(".tagTable").html("<p>Failed to fetch database Instance tags, please try again later.</p>");
+      if (failed && reason) {
+        this.$el.find(".tagTable").html("<div class='dl-vertical'>" + reason + "</div>");
         return false;
       }
       if (this.tagSet) {
@@ -21341,6 +21346,10 @@ define('wspace/awseditor/property/subnetgroup/app_view',['../base/view', './temp
         that = this;
         region = Design.instance().region();
         accountNumber = Design.instance().credential().get("awsAccount").split("-").join("");
+        if (/^\d+$/.test(accountNumber) === false) {
+          that.renderTagSet(true, lang.PROP.DB_SNAPSHOT_ACCOUNT_NUMBER_INVALID);
+          return false;
+        }
         resourceType = "subgrp";
         name = this.appModel.get("id");
         arn = "arn:aws:rds:" + region + ":" + accountNumber + ":" + resourceType + ":" + name;
@@ -21356,12 +21365,13 @@ define('wspace/awseditor/property/subnetgroup/app_view',['../base/view', './temp
             tags = [tags];
           }
           _.each(tags, function(value) {
-            return tagSet[value.Key] = value.Value;
+            tagSet[value.Key] = value.Value;
+            return null;
           });
           that.tagSet = tagSet;
           return that.renderTagSet();
         }, function() {
-          return that.renderTagSet(true);
+          return that.renderTagSet(true, lang.PROP.DB_DB_SUBGROUP_FAILED_FETCHING_TAGS);
         });
       }
     },
