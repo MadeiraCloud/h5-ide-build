@@ -4,19 +4,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1;
 
 
-  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\n  <nav class=\"OEPanelTop\"></nav>\n  <aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\n\n<div class=\"OEMiddleWrap\">\n  <div class=\"OEPanelBottom\"></div>\n\n  <section class=\"OEPanelCenter nano\"> <div class=\"nano-content\">\n    <div class=\"canvas-view\">\n      <button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
+  buffer += "<div id=\"OpsEditor\" class=\"pos-r\">\r\n  <nav class=\"OEPanelTop\"></nav>\r\n  <aside class=\"OEPanelRight\" id=\"OEPanelRight\"></aside>\r\n\r\n<div class=\"OEMiddleWrap\">\r\n  <div class=\"OEPanelBottom\"></div>\r\n\r\n  <section class=\"OEPanelCenter nano\"> <div class=\"nano-content\">\r\n    <div class=\"canvas-view\">\r\n      <button class=\"svg_resizer icon-resize-down tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_EXPAND_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n      <button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
+  buffer += "'></button>\r\n      <button class=\"svg_resizer icon-resize-up tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_SHRINK_H", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n      <button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
+  buffer += "'></button>\r\n      <button class=\"svg_resizer icon-resize-right tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_EXPAND_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n      <button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
+  buffer += "'></button>\r\n      <button class=\"svg_resizer icon-resize-left tooltip\" data-tooltip='";
   stack1 = helpers.i18n.call(depth0, "CANVAS.CVS_TIP_SHRINK_W", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'></button>\n      <svg width=\"100%\" height=\"100%\"></svg>\n    </div> </div>\n    <q class=\"canvas-message\"></q>\n  </section>\n</div>\n</div>";
+  buffer += "'></button>\r\n      <svg width=\"100%\" height=\"100%\"></svg>\r\n    </div> </div>\r\n    <q class=\"canvas-message\"></q>\r\n  </section>\r\n</div>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/template/TplPanel',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -25,7 +25,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<article class=\"panel-body\"></article>\n<article class=\"panel-float hidden\"></article>";
+  return "<article class=\"panel-body\"></article>\r\n<article class=\"panel-float hidden\"></article>";
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/subviews/panels/template/TplResourcePanel',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
@@ -498,26 +498,26 @@ function program3(depth0,data) {
   return "Stack";
   }
 
-  buffer += "<section class=\"group required\">\n    <label class=\"name\">";
+  buffer += "<section class=\"group required\">\r\n    <label class=\"name\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " Name</label>\n    <input data-target=\"name\" class=\"selection string\" value=\""
+  buffer += " Name</label>\r\n    <input data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group\">\n    <label class=\"name\">";
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <label class=\"name\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " Description</label>\n    <input data-target=\"description\" class=\"selection string\" value=\""
+  buffer += " Description</label>\r\n    <input data-target=\"description\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group\">\n    <dl class=\"dl-horizontal\">\n        <dt>Platform</dt><dd>"
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <dl class=\"dl-horizontal\">\r\n        <dt>Platform</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.platform)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Region</dt><dd>"
+    + "</dd>\r\n        <dt>Region</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>";
+    + "</dd>\r\n        <dt>";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n</section>";
+    + "</dd>\r\n    </dl>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/property/globalconfig/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -528,39 +528,39 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "";
-  buffer += "\n            <dd>"
+  buffer += "\r\n            <dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ENABLED", {hash:{},data:data}))
-    + "</dd>\n        ";
+    + "</dd>\r\n        ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\n            <dd>"
+  buffer += "\r\n            <dd>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DISABLED", {hash:{},data:data}))
-    + "</dd>\n        ";
+    + "</dd>\r\n        ";
   return buffer;
   }
 
-  buffer += "<section class=\"group\">\n    <dl class=\"dl-horizontal\">\n        <dt>Platform</dt><dd>"
+  buffer += "<section class=\"group\">\r\n    <dl class=\"dl-horizontal\">\r\n        <dt>Platform</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.platform), {hash:{},data:data}))
-    + "</dd>\n        <dt>Region</dt><dd>"
+    + "</dd>\r\n        <dt>Region</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.region), {hash:{},data:data}))
-    + "</dd>\n        <dt>App ID</dt><dd>"
+    + "</dd>\r\n        <dt>App ID</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
-    + "</dd>\n        <dt>Usage</dt><dd>"
+    + "</dd>\r\n        <dt>Usage</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.usage), {hash:{},data:data}))
-    + "</dd>\n    </dl>\n</section>\n\n<section class=\"group\">\n    <dl class=\"dl-vertical\">\n        <dt>Description</dt><dd>"
+    + "</dd>\r\n    </dl>\r\n</section>\r\n\r\n<section class=\"group\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Description</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
-    + "</dd>\n        <dt>Instance State</dt><dd>"
+    + "</dd>\r\n        <dt>Instance State</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, ((stack1 = (depth0 && depth0.agent)),stack1 == null || stack1 === false ? stack1 : stack1.enabled), {hash:{},data:data}))
-    + "</dd>\n        <!-- <dt>"
+    + "</dd>\r\n        <!-- <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF_VIEW", {hash:{},data:data}))
-    + "</dt>\n        ";
+    + "</dt>\r\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.resource_diff), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " -->\n    </dl>\n</section>";
+  buffer += " -->\r\n    </dl>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/property/ossglist/template',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -2784,11 +2784,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is a connection of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ", working as load balancer.\n</div>";
+    + ", working as load balancer.\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -2818,13 +2818,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is a connection of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
     + escapeExpression(((stack1 = (depth0 && depth0.poolName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.memberName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ", registering "
     + escapeExpression(((stack1 = (depth0 && depth0.memberName)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " as member of load balancer.\n</div>";
+    + " as member of load balancer.\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3036,24 +3036,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n";
+  buffer += "\r\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.appId), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\r\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <dl class=\"dl-vertical\"><dt>ID</dt><dd>"
+  buffer += "\r\n    <dl class=\"dl-vertical\"><dt>ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.appId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Status</dt><dd class=\"os-status os-status-"
+    + "</dd>\r\n        <dt>Status</dt><dd class=\"os-status os-status-"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Subnet ID</dt><dd>"
+    + "</dd>\r\n        <dt>Subnet ID</dt><dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.subnet_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd></dl>\n";
+    + "</dd></dl>\r\n";
   return buffer;
   }
 
@@ -3065,21 +3065,21 @@ function program4(depth0,data) {
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n<div class=\"option-group-head expand\">\n    Listener Details\n</div>\n<div class=\"option-group\" data-model=\"listener\">\n    <section class=\"group required\">\n        <label class=\"name\">Name</label>\n        <input data-id=\"listener-name\" data-target=\"name\" class=\"selection string\" value=\""
+  buffer += "\r\n<div class=\"option-group-head expand\">\r\n    Listener Details\r\n</div>\r\n<div class=\"option-group\" data-model=\"listener\">\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Name</label>\r\n        <input data-id=\"listener-name\" data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Connection Limit</label>\n        <input data-id=\"listener-limit\" data-target=\"limit\" class=\"selection string\" value=\""
+    + "\"/>\r\n    </section>\r\n\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Connection Limit</label>\r\n        <input data-id=\"listener-limit\" data-target=\"limit\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.limit)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Protocol</label>\n        <select class=\"selection option\" value=\""
+    + "\"/>\r\n    </section>\r\n\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Protocol</label>\r\n        <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"protocol\" data-id=\"listener-protocol\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n            <option value='HTTP'>HTTP</option>\n            <option value='HTTPS'>HTTPS</option>\n            <option value='TCP'>TCP</option>\n        </select>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Protocol Port</label>\n        <input data-id=\"listener-port\" data-target=\"port\" class=\"selection string\" value=\""
+  buffer += ">\r\n            <option value='HTTP'>HTTP</option>\r\n            <option value='HTTPS'>HTTPS</option>\r\n            <option value='TCP'>TCP</option>\r\n        </select>\r\n    </section>\r\n\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Protocol Port</label>\r\n        <input data-id=\"listener-port\" data-target=\"port\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/>\n    </section>\n</div>";
+  buffer += "/>\r\n    </section>\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3122,27 +3122,27 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"option-group-head expand\">\n    Listener Details\n</div>\n<div class=\"option-group\">\n    <dl class=\"dl-vertical\">\n        <dt>Name</dt><dd>"
+  buffer += "<div class=\"option-group-head expand\">\r\n    Listener Details\r\n</div>\r\n<div class=\"option-group\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Name</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>ID</dt><dd>"
+    + "</dd>\r\n        <dt>ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Status</dt><dd class=\"os-status os-status-"
+    + "</dd>\r\n        <dt>Status</dt><dd class=\"os-status os-status-"
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Subnet ID</dt><dd>"
+    + "</dd>\r\n        <dt>Subnet ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.subnet_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Address</dt><dd>"
+    + "</dd>\r\n        <dt>Address</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.address)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Connection Limit</dt><dd>"
+    + "</dd>\r\n        <dt>Connection Limit</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.connection_limit)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Protocol</dt><dd>"
+    + "</dd>\r\n        <dt>Protocol</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Protocol Port</dt><dd>"
+    + "</dd>\r\n        <dt>Protocol Port</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.protocol_port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Pool ID</dt><dd>"
+    + "</dd>\r\n        <dt>Pool ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.pool_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n</div>\n\n<div class=\"option-group-head expand\">\n    Port Details\n</div>\n<div class=\"option-group\">\n\n</div>";
+    + "</dd>\r\n    </dl>\r\n</div>\r\n\r\n<div class=\"option-group-head expand\">\r\n    Port Details\r\n</div>\r\n<div class=\"option-group\">\r\n\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3178,15 +3178,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<dl class=\"dl-vertical\">ID<dt></dt><dd>"
+  buffer += "\r\n<dl class=\"dl-vertical\">ID<dt></dt><dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    Status<dt></dt><dd class=\"os-status os-status-"
+    + "</dd>\r\n    Status<dt></dt><dd class=\"os-status os-status-"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    <dt>Subnet ID</dt><dd>"
+    + "</dd>\r\n    <dt>Subnet ID</dt><dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.subnet_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd></dl>\n";
+    + "</dd></dl>\r\n";
   return buffer;
   }
 
@@ -3199,45 +3199,45 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <header>"
+  buffer += "\r\n    <header>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.osport)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</header>\n    <section class=\"group required\">\n        <label class=\"name\">Weight</label>\n        <input data-id=\"mem-weight\" data-index=\""
+    + "</header>\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Weight</label>\r\n        <input data-id=\"mem-weight\" data-index=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"weight\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.weight)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Protocol Port</label>\n        <input data-id=\"mem-port\" data-target=\"port\" data-index=\""
+    + "\"/>\r\n    </section>\r\n\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Protocol Port</label>\r\n        <input data-id=\"mem-port\" data-target=\"port\" data-index=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.index)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.port)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n    ";
+    + "\"/>\r\n    </section>\r\n    ";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   
-  return "\n    <div class=\"os-property-message\">\n        <h5>No Member</h5>\n        Connect Pool with Port or Server to register as Member\n    </div>\n    ";
+  return "\r\n    <div class=\"os-property-message\">\r\n        <h5>No Member</h5>\r\n        Connect Pool with Port or Server to register as Member\r\n    </div>\r\n    ";
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n<div class=\"option-group-head expand\">\n    Pool\n</div>\n<div class=\"option-group pool-details\">\n    <section class=\"group required\">\n        <label class=\"name\">Name</label>\n        <input data-id=\"pool-name\" data-target=\"name\" class=\"selection string\" value=\""
+  buffer += "\r\n\r\n<div class=\"option-group-head expand\">\r\n    Pool\r\n</div>\r\n<div class=\"option-group pool-details\">\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Name</label>\r\n        <input data-id=\"pool-name\" data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n\n    <section class=\"group\">\n        <label class=\"name\">Description</label>\n        <input data-target=\"description\" class=\"selection string\" value=\""
+    + "\"/>\r\n    </section>\r\n\r\n    <section class=\"group\">\r\n        <label class=\"name\">Description</label>\r\n        <input data-target=\"description\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Protocol</label>\n        <select class=\"selection option\" value=\""
+    + "\"/>\r\n    </section>\r\n\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Protocol</label>\r\n        <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.protocol)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"protocol\" data-id=\"pool-protocol\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n            <option value='HTTP'>HTTP</option>\n            <option value='HTTPS'>HTTPS</option>\n            <option value='TCP'>TCP</option>\n        </select>\n    </section>\n\n    <section class=\"group required\">\n        <label class=\"name\">Load Balancing Method</label>\n        <select class=\"selection option\" value=\""
+  buffer += ">\r\n            <option value='HTTP'>HTTP</option>\r\n            <option value='HTTPS'>HTTPS</option>\r\n            <option value='TCP'>TCP</option>\r\n        </select>\r\n    </section>\r\n\r\n    <section class=\"group required\">\r\n        <label class=\"name\">Load Balancing Method</label>\r\n        <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.method)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" data-target=\"method\" data-id=\"listener-method\">\n            <option value='ROUND_ROBIN'>Round Robin</option>\n            <option value='LEAST_CONNECTIONS'>Least Connections</option>\n            <option value='SOURCE_IP'>Source IP</option>\n        </select>\n    </section>\n</div>\n\n<div class=\"option-group-head expand\">\n    Member("
+    + "\" data-target=\"method\" data-id=\"listener-method\">\r\n            <option value='ROUND_ROBIN'>Round Robin</option>\r\n            <option value='LEAST_CONNECTIONS'>Least Connections</option>\r\n            <option value='SOURCE_IP'>Source IP</option>\r\n        </select>\r\n    </section>\r\n</div>\r\n\r\n<div class=\"option-group-head expand\">\r\n    Member("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.mems)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")\n</div>\n<div class=\"option-group\" data-model=\"mem\">\n    ";
+    + ")\r\n</div>\r\n<div class=\"option-group\" data-model=\"mem\">\r\n    ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.mems), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
+  buffer += "\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/property/oshmlist/stack',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
@@ -3401,24 +3401,24 @@ function program1(depth0,data) {
 
   buffer += "<h1 class=\"title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h1>\n<section class=\"group required\">\n    <label class=\"name\">Name</label>\n    <input data-id=\"hm-name\" data-target=\"name\" class=\"selection string\" value=\""
+    + "</h1>\r\n<section class=\"group required\">\r\n    <label class=\"name\">Name</label>\r\n    <input data-id=\"hm-name\" data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n<section class=\"group required\">\n    <label class=\"name\">Type</label>\n    <select class=\"selection option\" value=\""
+    + "\"/>\r\n</section>\r\n<section class=\"group required\">\r\n    <label class=\"name\">Type</label>\r\n    <select class=\"selection option\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-target=\"type\" data-id=\"hm-method\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n        <option value='PING'>PING</option>\n        <option value='HTTP'>HTTP</option>\n        <option value='HTTPS'>HTTPS</option>\n        <option value='TCP'>TCP</option>\n    </select>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Delay</label>\n    <input data-id=\"hm-delay\" data-target=\"delay\" class=\"selection string\" value=\""
+  buffer += ">\r\n        <option value='PING'>PING</option>\r\n        <option value='HTTP'>HTTP</option>\r\n        <option value='HTTPS'>HTTPS</option>\r\n        <option value='TCP'>TCP</option>\r\n    </select>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Delay</label>\r\n    <input data-id=\"hm-delay\" data-target=\"delay\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.delay)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Timeout</label>\n    <input data-id=\"hm-timeout\" data-target=\"timeout\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Timeout</label>\r\n    <input data-id=\"hm-timeout\" data-target=\"timeout\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.timeout)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Max Retries</label>\n    <input data-id=\"hm-maxretries\" data-target=\"maxRetries\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Max Retries</label>\r\n    <input data-id=\"hm-maxretries\" data-target=\"maxRetries\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.maxRetries)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">URL Path</label>\n    <input data-id=\"hm-urlpath\" data-target=\"urlPath\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">URL Path</label>\r\n    <input data-id=\"hm-urlpath\" data-target=\"urlPath\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.urlPath)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n\n<section class=\"group required\">\n    <label class=\"name\">Expected Codes</label>\n    <input data-id=\"hm-expectedcodes\" data-target=\"expectedCodes\" class=\"selection string\" value=\""
+    + "\"/>\r\n</section>\r\n\r\n<section class=\"group required\">\r\n    <label class=\"name\">Expected Codes</label>\r\n    <input data-id=\"hm-expectedcodes\" data-target=\"expectedCodes\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.expectedCodes)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>";
+    + "\"/>\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('workspaces/oseditor/property/oshm/app',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
@@ -3429,42 +3429,42 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <dt>URL Path</dt><dd>"
+  buffer += "\r\n        <dt>URL Path</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.url_path)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    ";
+    + "</dd>\r\n    ";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <dt>Expected Codes</dt><dd>"
+  buffer += "\r\n        <dt>Expected Codes</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.expected_codes)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd></dl>\n    ";
+    + "</dd></dl>\r\n    ";
   return buffer;
   }
 
   buffer += "<h1 class=\"title\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h1>\n<section class=\"group\">\n    <dl class=\"dl-vertical\">\n        <dt>Name</dt><dd>"
+    + "</h1>\r\n<section class=\"group\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Name</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>ID</dt><dd>"
+    + "</dd>\r\n        <dt>ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Type</dt><dd>"
+    + "</dd>\r\n        <dt>Type</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Delay</dt><dd>"
+    + "</dd>\r\n        <dt>Delay</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.delay)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Timeout</dt><dd>"
+    + "</dd>\r\n        <dt>Timeout</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.timeout)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n        <dt>Max Retries</dt><dd>"
+    + "</dd>\r\n        <dt>Max Retries</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.max_retries)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    ";
+    + "</dd>\r\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.url_path), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
+  buffer += "\r\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.expected_codes), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</section>";
+  buffer += "\r\n</section>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -3752,50 +3752,50 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <header>"
+  buffer += "\r\n    <header>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " ("
     + escapeExpression(((stack1 = (depth0 && depth0.address)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</header>\n    <section class=\"group\">\n        <dl class=\"dl-vertical\">\n            <dt>Status</dt><dd class=\"os-status os-status-"
+    + ")</header>\r\n    <section class=\"group\">\r\n        <dl class=\"dl-vertical\">\r\n            <dt>Status</dt><dd class=\"os-status os-status-"
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.status), {hash:{},data:data}))
-    + "</dd>\n            <dt>Weight</dt><dd>"
+    + "</dd>\r\n            <dt>Weight</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.weight), {hash:{},data:data}))
-    + "</dd>\n        </dl>\n    </section>\n";
+    + "</dd>\r\n        </dl>\r\n    </section>\r\n";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   
-  return "\n    <div class=\"os-property-message\">\n        No Member\n    </div>\n";
+  return "\r\n    <div class=\"os-property-message\">\r\n        No Member\r\n    </div>\r\n";
   }
 
-  buffer += "<div class=\"option-group-head expand\">\n    Pool Details\n</div>\n<div class=\"option-group pool-details\">\n    <dl class=\"dl-vertical\">\n        <dt>Name</dt><dd>"
+  buffer += "<div class=\"option-group-head expand\">\r\n    Pool Details\r\n</div>\r\n<div class=\"option-group pool-details\">\r\n    <dl class=\"dl-vertical\">\r\n        <dt>Name</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.name), {hash:{},data:data}))
-    + "</dd>\n        <dt>Description</dt><dd>"
+    + "</dd>\r\n        <dt>Description</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.description), {hash:{},data:data}))
-    + "</dd>\n        <dt>ID</dt><dd>"
+    + "</dd>\r\n        <dt>ID</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.id), {hash:{},data:data}))
-    + "</dd>\n        <dt>Status</dt><dd class=\"os-status os-status-"
+    + "</dd>\r\n        <dt>Status</dt><dd class=\"os-status os-status-"
     + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.status), {hash:{},data:data}))
-    + "</dd>\n        <dt>Subnet ID</dt><dd>"
+    + "</dd>\r\n        <dt>Subnet ID</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.subnet_id), {hash:{},data:data}))
-    + "</dd>\n        <dt>Protocol</dt><dd>"
+    + "</dd>\r\n        <dt>Protocol</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.protocol), {hash:{},data:data}))
-    + "</dd>\n        <dt>LB Method</dt><dd>"
+    + "</dd>\r\n        <dt>LB Method</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.lb_method), {hash:{},data:data}))
-    + "</dd>\n        <dt>Provider</dt><dd>"
+    + "</dd>\r\n        <dt>Provider</dt><dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.provider), {hash:{},data:data}))
-    + "</dd>\n    </dl>\n</div>\n\n<div class=\"option-group-head expand\">\n    Member("
+    + "</dd>\r\n    </dl>\r\n</div>\r\n\r\n<div class=\"option-group-head expand\">\r\n    Member("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.members)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")\n</div>\n<div class=\"option-group \">\n";
+    + ")\r\n</div>\r\n<div class=\"option-group \">\r\n";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.members), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
+  buffer += "\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -4024,31 +4024,31 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n";
+  buffer += "\r\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.modeIsAppEdit), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n<section class=\"group required\">\n    <label class=\"name\">Name</label>\n    <input data-target=\"name\" class=\"selection string\" value=\""
+  buffer += "\r\n<section class=\"group required\">\r\n    <label class=\"name\">Name</label>\r\n    <input data-target=\"name\" class=\"selection string\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"/>\n</section>\n";
+    + "\"/>\r\n</section>\r\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<dl class=\"dl-vertical\"><dt>ID</dt><dd>"
+  buffer += "\r\n<dl class=\"dl-vertical\"><dt>ID</dt><dd>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.app)),stack1 == null || stack1 === false ? stack1 : stack1.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd></dl>\n";
+    + "</dd></dl>\r\n";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<dl class=\"dl-vertical\"><dt>Name</dt><dd>"
+  buffer += "\r\n<dl class=\"dl-vertical\"><dt>Name</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd><dt>ID</dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd></dl>\n";
+    + "</dd></dl>\r\n";
   return buffer;
   }
 
@@ -4077,11 +4077,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is a connection of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is a connection of "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".\n</div>";
+    + ".\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -4111,11 +4111,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"os-property-message\">\n    This is an association of "
+  buffer += "<div class=\"os-property-message\">\r\n    This is an association of "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort1)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " and "
     + escapeExpression(((stack1 = (depth0 && depth0.namePort2)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ".\n</div>";
+    + ".\r\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 (function() {
@@ -8504,7 +8504,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeNetwork',["CanvasElement", "constant", "CanvasManager", "CanvasView"], function(CanvasElement, constant, CanvasManager, CanvasView) {
     return CanvasElement.extend({
 
-      /* env:dev                                           env:dev:end */
+      /* env:dev                                             env:dev:end */
       type: constant.RESTYPE.OSNETWORK,
       parentType: ["SVG"],
       defaultSize: [60, 60],
@@ -8526,7 +8526,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeSubnet',["CanvasElement", "constant", "CanvasManager", "CanvasView", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, CanvasView, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                          env:dev:end */
+      /* env:dev                                            env:dev:end */
       type: constant.RESTYPE.OSSUBNET,
       parentType: [constant.RESTYPE.OSNETWORK],
       defaultSize: [19, 19],
@@ -8598,7 +8598,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeRt',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                      env:dev:end */
+      /* env:dev                                        env:dev:end */
       type: constant.RESTYPE.OSRT,
       parentType: ["SVG"],
       defaultSize: [8, 8],
@@ -8651,7 +8651,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CePool',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                        env:dev:end */
+      /* env:dev                                          env:dev:end */
       type: constant.RESTYPE.OSPOOL,
       parentType: [constant.RESTYPE.OSSUBNET],
       defaultSize: [8, 8],
@@ -8714,7 +8714,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeListener',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       type: constant.RESTYPE.OSLISTENER,
       parentType: [constant.RESTYPE.OSSUBNET],
       defaultSize: [8, 8],
@@ -8785,7 +8785,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeElb',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                       env:dev:end */
+      /* env:dev                                         env:dev:end */
       type: constant.RESTYPE.OSELB,
       parentType: [constant.RESTYPE.OSSUBNET],
       defaultSize: [17, 8]
@@ -8811,7 +8811,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeServer',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js", "CloudResources", "./CpVolume"], function(CanvasElement, constant, CanvasManager, lang, CloudResources, VolumePopup) {
     return CanvasElement.extend({
 
-      /* env:dev                                          env:dev:end */
+      /* env:dev                                            env:dev:end */
       type: constant.RESTYPE.OSSERVER,
       parentType: [constant.RESTYPE.OSSUBNET],
       defaultSize: [8, 8],
@@ -8970,7 +8970,7 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CePort',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
     return CanvasElement.extend({
 
-      /* env:dev                                        env:dev:end */
+      /* env:dev                                          env:dev:end */
       type: constant.RESTYPE.OSPORT,
       parentType: [constant.RESTYPE.OSSUBNET],
       defaultSize: [8, 8],
@@ -9061,17 +9061,17 @@ return TEMPLATE; });
   define('workspaces/oseditor/canvas/CeOsLine',["CanvasLine", "constant"], function(CeLine, constant) {
     CeLine.extend({
 
-      /* env:dev                                              env:dev:end */
+      /* env:dev                                                env:dev:end */
       type: "OsListenerAsso"
     });
     CeLine.extend({
 
-      /* env:dev                                           env:dev:end */
+      /* env:dev                                             env:dev:end */
       type: "OsPortUsage"
     });
     CeLine.extend({
 
-      /* env:dev                                            env:dev:end */
+      /* env:dev                                              env:dev:end */
       type: "OsRouterAsso",
       appendLineToCanvas: function(svgEl) {
         return this.canvas.appendGroupLine(svgEl);
@@ -9079,7 +9079,7 @@ return TEMPLATE; });
     });
     return CeLine.extend({
 
-      /* env:dev                                                env:dev:end */
+      /* env:dev                                                  env:dev:end */
       type: "OsPoolMembership"
     });
   });
