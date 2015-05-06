@@ -26651,9 +26651,14 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       return allResourceArray;
     },
     assignMesosSg: function() {
-      var SgAsso, mesosSg;
+      var SgAsso, isMesosMaster, mesosSg;
+      isMesosMaster = this.isMesosMaster();
       mesosSg = Design.modelClassForType(constant.RESTYPE.SG).find(function(sg) {
-        return sg.isMesos();
+        if (isMesosMaster) {
+          return sg.isMesosMaster();
+        } else {
+          return sg.isMesosSlave();
+        }
       });
       if (mesosSg) {
         SgAsso = Design.modelClassForType("SgAsso");
@@ -29813,6 +29818,12 @@ define('wspace/awseditor/model/SgModel',["ComplexResModel", "ResourceModel", "./
     isMesos: function() {
       var _ref;
       return (_ref = this.attributes.name) === 'MesosSG' || _ref === 'MesosMaster';
+    },
+    isMesosSlave: function() {
+      return this.attributes.name === 'MesosSG';
+    },
+    isMesosMaster: function() {
+      return this.attributes.name === 'MesosMaster';
     },
     createIpTarget: function(ipAddress) {
       return new SgTargetModel(MC.getValidCIDR(ipAddress));
