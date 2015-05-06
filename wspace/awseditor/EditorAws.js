@@ -25923,16 +25923,17 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
         } else {
           console.error("No DefaultKP found when initialize InstanceModel");
         }
-        SgModel = Design.modelClassForType(constant.RESTYPE.SG);
-        defaultSg = SgModel.getDefaultSg();
-        if (defaultSg) {
-          SgAsso = Design.modelClassForType("SgAsso");
-          new SgAsso(this, defaultSg);
-        } else {
-          console.error("No DefaultSG found when initialize InstanceModel");
-        }
         if (this.isMesos()) {
           this.assignMesosSg();
+        } else {
+          SgModel = Design.modelClassForType(constant.RESTYPE.SG);
+          defaultSg = SgModel.getDefaultSg();
+          if (defaultSg) {
+            SgAsso = Design.modelClassForType("SgAsso");
+            new SgAsso(this, defaultSg);
+          } else {
+            console.error("No DefaultSG found when initialize InstanceModel");
+          }
         }
       }
       tenancy = this.get("tenancy");
@@ -26651,18 +26652,21 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       return allResourceArray;
     },
     assignMesosSg: function() {
-      var SgAsso, isMesosMaster, mesosSg;
-      isMesosMaster = this.isMesosMaster();
-      mesosSg = Design.modelClassForType(constant.RESTYPE.SG).find(function(sg) {
-        if (isMesosMaster) {
-          return sg.isMesosMaster();
-        } else {
-          return sg.isMesosSlave();
-        }
+      var SgAsso, mesosBaseSg, mesosMasterSg;
+      SgAsso = Design.modelClassForType("SgAsso");
+      mesosBaseSg = Design.modelClassForType(constant.RESTYPE.SG).find(function(sg) {
+        return sg.isMesosBase();
       });
-      if (mesosSg) {
-        SgAsso = Design.modelClassForType("SgAsso");
-        return new SgAsso(this, mesosSg);
+      if (mesosBaseSg) {
+        new SgAsso(this, mesosBaseSg);
+        if (this.isMesosMaster()) {
+          mesosMasterSg = Design.modelClassForType(constant.RESTYPE.SG).find(function(sg) {
+            return sg.isMesosMaster();
+          });
+          if (mesosMasterSg) {
+            return new SgAsso(this, mesosMasterSg);
+          }
+        }
       } else {
         return console.error("No MesosSG found when initialize InstanceModel");
       }
@@ -29819,7 +29823,7 @@ define('wspace/awseditor/model/SgModel',["ComplexResModel", "ResourceModel", "./
       var _ref;
       return (_ref = this.attributes.name) === 'MesosSG' || _ref === 'MesosMaster';
     },
-    isMesosSlave: function() {
+    isMesosBase: function() {
       return this.attributes.name === 'MesosSG';
     },
     isMesosMaster: function() {
@@ -34548,7 +34552,12 @@ define('wspace/awseditor/model/MesosLcModel',["./LcModel", "./MesosSlaveModel", 
     _getMesosAttributes: MesosSlaveModel.prototype._getMesosAttributes,
     getMesosAttributes: MesosSlaveModel.prototype.getMesosAttributes,
     getMesosAppAttributes: MesosSlaveModel.prototype.getMesosAppAttributes,
-    assignMesosSg: MesosSlaveModel.prototype.assignMesosSg
+    assignMesosSg: MesosSlaveModel.prototype.assignMesosSg,
+    isRemovable: function() {
+      return {
+        error: lang.CANVAS.ERR_DEL_LC
+      };
+    }
   }, {
     handleTypes: constant.RESTYPE.MESOSLC
   });
