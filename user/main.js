@@ -371,7 +371,7 @@ init = function() {
       invitationCode = getParams().invitation || "";
       inviteEmail = invitationCode ? atob(invitationCode).split("&")[1] : "";
       if (inviteEmail && invitationCode) {
-        $email.val(atob(inviteEmail));
+        $email.val(atob(inviteEmail)).attr("disabled", "disabled");
       }
       $password = $('#register-password');
       usernameTimeout = void 0;
