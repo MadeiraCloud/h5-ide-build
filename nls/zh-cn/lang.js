@@ -939,6 +939,7 @@ define({
         "SETTINGS_MEMBER_LABEL_LIMIT": "该工作空间已经达到 %s 个成员的标准上限，如果你想要邀请更多协作成员，请联系：",
         "SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN": "你是该工作空间唯一的管理员，角色不可更改。",
         "SETTING_MEMBER_LABEL_NO_USER": "未找到用户 “%s”",
+        "SETTING_MEMBER_USER_INVITED": "邀请邮件已经发送给 \"%s\"",
         "WORKSPACE_DEMO_TIP": "当前工作空间处于测试模式，您需要设置证书才能运行 Stack 和导入已有资源。",
         "CREDENTIAL_LINKED_TO_THIS_WORKSPACE": "连接到此工作空间的证书：",
         "PARENTHESES_DEMO": "测试模式",

@@ -1,4 +1,4 @@
-var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkInviteKey, checkPassKey, checkUserExist, deepth, getRef, getSearch, goto500, gotoRef, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
+var ajaxChangePassword, ajaxLogin, ajaxRegister, api, checkAllCookie, checkInviteKey, checkPassKey, checkUserExist, deepth, getParams, getRef, getSearch, goto500, gotoRef, guid, handleErrorCode, handleNetError, i18n, init, langType, loadLang, loadPageVar, render, sendEmail, setCredit, showErrorMessage, timezone, userRoute, validPassword, xhr;
 
 (function() {
   var MC_DOMAIN, hosts, location;
@@ -113,6 +113,21 @@ gotoRef = function() {
   return location.href = "/login?ref=" + ref;
 };
 
+getParams = function() {
+  var params, queryString;
+  params = {};
+  queryString = window.location.search || "";
+  queryString.split("?")[1].split("&").forEach(function(value) {
+    var array;
+    if (!value) {
+      return false;
+    }
+    array = value.split("=");
+    return params[array[0]] = array[1];
+  });
+  return params;
+};
+
 getSearch = function() {
   return window.location.search || "";
 };
@@ -187,10 +202,6 @@ init = function() {
   return userRoute({
     "invite": function(pathArray, hashArray) {
       var hashTarget;
-      if (!checkAllCookie()) {
-        gotoRef();
-        return;
-      }
       deepth = 'INVITE';
       hashTarget = hashArray[0];
       if (hashTarget !== 'member') {
@@ -206,6 +217,10 @@ init = function() {
           return render('#expire-template', {
             other_user: true
           });
+        } else if (retCode === 110) {
+          return gotoRef();
+        } else if (retCode === 115) {
+          return location.href = "/register?invitation=" + hashArray[1];
         } else {
           return render('#expire-template');
         }
@@ -326,11 +341,18 @@ init = function() {
       });
     },
     'register': function(pathArray, hashArray) {
-      var $email, $firstName, $form, $lastName, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkFullname, checkPassword, checkUsername, emailTimeout, resetRegForm, usernameTimeout;
+      var $email, $firstName, $form, $lastName, $password, $username, ajaxCheckEmail, ajaxCheckUsername, checkEmail, checkFullname, checkPassword, checkUsername, emailTimeout, invitationCode, inviteEmail, resetRegForm, usernameTimeout;
       deepth = 'REGISTER';
       if (hashArray[0] === 'success') {
         render("#success-template");
         $('#register-get-start').click(function() {
+          var invitationCode, projectId;
+          invitationCode = getParams().invitation;
+          if (invitationCode) {
+            projectId = atob(invitationCode).split("&")[0];
+            window.location = "/workspace/" + projectId;
+            return;
+          }
           window.location = getRef();
         });
         return false;
@@ -346,6 +368,11 @@ init = function() {
       $lastName = $("#register-lastname");
       $username = $('#register-username');
       $email = $('#register-email');
+      invitationCode = getParams().invitation || "";
+      inviteEmail = invitationCode ? atob(invitationCode).split("&")[1] : "";
+      if (inviteEmail && invitationCode) {
+        $email.val(atob(inviteEmail));
+      }
       $password = $('#register-password');
       usernameTimeout = void 0;
       emailTimeout = void 0;
@@ -575,18 +602,24 @@ init = function() {
               return false;
             }
             return checkPassword(e, function(passwordAvl) {
+              var invitation, params;
               if (!passwordAvl) {
                 resetRegForm();
                 return false;
               }
               if (usernameAvl && emailAvl && passwordAvl) {
-                return ajaxRegister([
+                params = [
                   $username.val(), $password.val(), $email.val(), {
                     first_name: $firstName.val(),
                     last_name: $lastName.val(),
                     timezone: timezone
                   }
-                ], function(statusCode) {
+                ];
+                invitation = getParams().invitation;
+                if (invitation) {
+                  params[3].invitation_key = invitation;
+                }
+                return ajaxRegister(params, function(statusCode) {
                   resetRegForm(true);
                   $("#register-status").show().text(langsrc.SERVICE['ERROR_CODE_' + statusCode + '_MESSAGE']);
                   return false;
@@ -655,7 +688,7 @@ checkInviteKey = function(key) {
   return api({
     url: '/project/',
     method: 'check_invitation',
-    data: [$.cookie('session_id'), key]
+    data: [key, $.cookie('session_id')]
   });
 };
 

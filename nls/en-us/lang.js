@@ -939,6 +939,7 @@ define({
         "SETTINGS_MEMBER_LABEL_LIMIT": "Your workspace has reached the limit of %s. If you'd like invite more members to collaborate, contact us at",
         "SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN": "You are the only admin in this workspace. Cannot change your role to member.",
         "SETTING_MEMBER_LABEL_NO_USER": "There is no user \"%s\"",
+        "SETTING_MEMBER_USER_INVITED": "Invitation Email has been sent to \"%s\"",
         "WORKSPACE_DEMO_TIP": "This workspace is currently in Demo mode. Set up your own cloud credential to run stack into live resources, or import existing infrastructures.",
         "CREDENTIAL_LINKED_TO_THIS_WORKSPACE": "Following Cloud Access Credential is linked to this workspace:",
         "PARENTHESES_DEMO": "(Demo)",
