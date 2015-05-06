@@ -117,7 +117,7 @@ getParams = function() {
   var params, queryString;
   params = {};
   queryString = window.location.search || "";
-  queryString.split("?")[1].split("&").forEach(function(value) {
+  (queryString.split("?")[1] || "").split("&").forEach(function(value) {
     var array;
     if (!value) {
       return false;
