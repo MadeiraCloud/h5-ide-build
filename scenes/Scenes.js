@@ -1600,7 +1600,7 @@ define('scenes/settings/models/MemberCollection',['ApiRequest', 'backbone', 'cry
           email = Base64.decode(member.email);
           avatar = CryptoJS.MD5(email.trim().toLowerCase()).toString();
           return new that.model({
-            id: member.id,
+            id: member.id || ("fake-" + Math.round(Math.random() * 100000)),
             avatar: "https://www.gravatar.com/avatar/" + avatar,
             username: userName,
             email: email,
