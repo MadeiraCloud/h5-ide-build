@@ -220,7 +220,13 @@ init = function() {
         } else if (retCode === 110) {
           return gotoRef();
         } else if (retCode === 115) {
-          return location.href = "/register?invitation=" + hashArray[1];
+          if ($.cookie("session_id")) {
+            return render('#expire-template', {
+              other_user: true
+            });
+          } else {
+            return location.href = "/register?invitation=" + hashArray[1];
+          }
         } else {
           return render('#expire-template');
         }
