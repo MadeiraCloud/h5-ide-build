@@ -291,7 +291,7 @@ init = function() {
       }
     },
     'login': function(pathArray, hashArray) {
-      var $password, $user, checkValid, submitBtn;
+      var $password, $user, checkValid, invitationCode, inviteEmail, submitBtn;
       if (checkAllCookie()) {
         window.location = getRef();
       }
@@ -301,8 +301,13 @@ init = function() {
       $("#login-register").find("a").attr("href", "/register/" + getSearch());
       $user = $("#login-user");
       $password = $("#login-password");
+      invitationCode = getParams().invitation || "";
+      inviteEmail = invitationCode ? atob(invitationCode).split("&")[1] : "";
+      if (inviteEmail && invitationCode) {
+        $user.val(atob(inviteEmail)).attr("disabled", "disabled");
+      }
       submitBtn = $("#login-btn").attr('disabled', false);
-      $("#login-form input").eq(0).focus();
+      $("#login-form input").not(":disabled").eq(0).focus();
       checkValid = function() {
         if ($(this).val().trim()) {
           return $(this).parent().removeClass('error');
