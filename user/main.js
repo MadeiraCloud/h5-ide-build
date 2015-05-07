@@ -301,7 +301,7 @@ init = function() {
       $("#login-register").find("a").attr("href", "/register/" + getSearch());
       $user = $("#login-user");
       $password = $("#login-password");
-      invitationCode = getParams().invitation || "";
+      invitationCode = hashArray[1] || "";
       inviteEmail = invitationCode ? atob(invitationCode).split("&")[1] : "";
       if (inviteEmail && invitationCode) {
         $user.val(atob(inviteEmail)).attr("disabled", "disabled");
