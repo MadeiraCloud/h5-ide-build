@@ -26301,10 +26301,21 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
         "c3.xlarge": true,
         "c3.2xlarge": true,
         "c3.4xlarge": true,
+        "c4.large": true,
+        "c4.xlarge": true,
+        "c4.4xlarge": true,
+        "c4.8xlarge": true,
         "g2.2xlarge": true,
         "i2.xlarge": true,
         "i2.2xlarge": true,
-        "i2.4xlarge": true
+        "i2.4xlarge": true,
+        "r3.xlarge": true,
+        "r3.2xlarge": true,
+        "r3.4xlarge": true,
+        "d2.xlarge": true,
+        "d2.2xlarge": true,
+        "d2.4xlarge": true,
+        "d2.8xlarge": true
       };
       return !!EbsMap[this.get("instanceType")];
     },

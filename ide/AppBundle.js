@@ -849,7 +849,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
           }
         });
       }
-      stoppable = ((_ref = json.property) != null ? _ref.stoppable : void 0) || true;
+      stoppable = ((_ref = json.property) != null ? _ref.stoppable : void 0) != null ? json.property.stoppable : true;
       this.set({
         name: json.name || this.get("name"),
         version: json.version || OpsModelLastestVersion,
