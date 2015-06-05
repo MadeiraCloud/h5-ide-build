@@ -24621,7 +24621,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<ul class=\"status-bar\"></ul>\n<div class=\"status-bar-modal\" style=\"display: none;\"></div>";
+  return "<ul class=\"status-bar\"></ul>\n<div class=\"status-bar-modal\"></div>";
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 

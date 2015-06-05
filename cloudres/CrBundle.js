@@ -3092,6 +3092,9 @@ define('cloudres/aws/CrClnRds',["../CrCollection", "constant", "./CrModelRdsSnap
         if (!_.isArray(data)) {
           data = [data];
         }
+        data = _.reject(data, function(d) {
+          return d.Engine === 'aurora';
+        });
         engines = {};
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           d = data[_i];

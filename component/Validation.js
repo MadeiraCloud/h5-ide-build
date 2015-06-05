@@ -728,7 +728,7 @@ define('component/trustedadvisor/validation/aws/ec2/instance',['constant', 'MC',
     });
     Design.modelClassForType(constant.RESTYPE.LC).each(function(lc) {
       var asg, asgs, sb, _i, _len, _results;
-      if (lc.isPublic()) {
+      if (lc.isPublic() && !lc.get('appId')) {
         asgs = lc.getAsgsIncludeExpanded();
         _results = [];
         for (_i = 0, _len = asgs.length; _i < _len; _i++) {
@@ -1775,7 +1775,7 @@ define('component/trustedadvisor/validation/aws/ec2/securitygroup',['constant', 
 });
 
 define('component/trustedadvisor/validation/aws/asg/asg',['constant', 'MC', 'i18n!/nls/lang.js', 'TaHelper', 'CloudResources'], function(constant, MC, lang, Helper, CloudResources) {
-  var i18n, isELBHasHealthCheck, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
+  var i18n, isHasLaunchConfiguration, isNotificationNotHasTopic, isPolicyNotHasTopic, isTopicNonexist;
   i18n = Helper.i18n.short();
   isHasLaunchConfiguration = function(uid) {
     var asg, tipInfo;
@@ -1786,20 +1786,6 @@ define('component/trustedadvisor/validation/aws/asg/asg',['constant', 'MC', 'i18
     tipInfo = sprintf(lang.TA.ERROR_ASG_HAS_NO_LAUNCH_CONFIG, asg.name);
     return {
       level: constant.TA.ERROR,
-      info: tipInfo,
-      uid: uid
-    };
-  };
-  isELBHasHealthCheck = function(uid) {
-    var asg, isConnectELB, tipInfo;
-    asg = MC.canvas_data.component[uid];
-    isConnectELB = MC.canvas_data.component[uid].resource.LoadBalancerNames.length > 0;
-    if (!isConnectELB || isConnectELB && asg.resource.HealthCheckType === 'ELB') {
-      return null;
-    }
-    tipInfo = sprintf(lang.TA.WARNING_ELB_HEALTH_NOT_CHECK, asg.name);
-    return {
-      level: constant.TA.WARNING,
       info: tipInfo,
       uid: uid
     };
@@ -1886,7 +1872,6 @@ define('component/trustedadvisor/validation/aws/asg/asg',['constant', 'MC', 'i18
   };
   return {
     isHasLaunchConfiguration: isHasLaunchConfiguration,
-    isELBHasHealthCheck: isELBHasHealthCheck,
     isNotificationNotHasTopic: isNotificationNotHasTopic,
     isPolicyNotHasTopic: isPolicyNotHasTopic,
     isTopicNonexist: isTopicNonexist
@@ -4159,33 +4144,45 @@ function program11(depth0,data) {
   buffer += "<div class=\"validation-content mgt10\">\n	<ul class=\"tab\">\n		<li class=\"active ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-tab-target=\"#item-error\">"
+  buffer += "\" data-tab-target=\"#item-error-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ERROR", {hash:{},data:data}))
     + "<span class=\"validation-counter validation-counter-error\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.error_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n		<li data-tab-target=\"#item-warning\" class=\"";
+    + "</span></li>\n		<li data-tab-target=\"#item-warning-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_WARNING", {hash:{},data:data}))
     + "<span class=\"validation-counter validation-counter-warning\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.warning_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n		<li data-tab-target=\"#item-notice\" class=\"";
+    + "</span></li>\n		<li data-tab-target=\"#item-notice-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_NOTICE", {hash:{},data:data}))
     + "<span class=\"validation-counter validation-counter-notice\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.notice_list)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"pos-r scroll-content\">\n\n			<div id=\"item-error\" class=\"content active\">\n\n				";
+    + "</span></li>\n	</ul>\n	<div class=\"scroll-wrap scroll-wrap-validation\">\n		<div class=\"scrollbar-veritical-wrap\" style=\"display: block;\"><div class=\"scrollbar-veritical-thumb\"></div></div>\n		<div class=\"pos-r scroll-content\">\n\n			<div id=\"item-error-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"content active\">\n\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.error_list), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n				<div class=\"item-error-tip\"><i class=\"icon-info\"></i>"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.SOME_ERROR_VALIDATION_ONLY_HAPPENS_AT_THE_TIME_TO_RUN_STACK", {hash:{},data:data}))
-    + "</div>\n\n			</div>\n			<div id=\"item-warning\" class=\"content\">\n				";
+    + "</div>\n\n			</div>\n			<div id=\"item-warning-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"content\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.warning_list), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n			</div>\n			<div id=\"item-notice\" class=\"content\">\n				";
+  buffer += "\n			</div>\n			<div id=\"item-notice-"
+    + escapeExpression(((stack1 = (depth0 && depth0.timestamp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"content\">\n				";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.notice_list), {hash:{},inverse:self.program(11, program11, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n			</div>\n		</div>\n	</div>\n</div>";
@@ -4199,28 +4196,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"modal-header\">\n	<h3>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_VALIDATION", {hash:{},data:data}))
-    + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div id=\"modal-validation-statusbar\">\n	</div>\n</div>";
+    + "</h3>\n	<i class=\"modal-close\">×</i>\n</div>\n<div class=\"modal-body\">\n	<div class=\"modal-validation-statusbar\">\n	</div>\n</div>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('component/trustedadvisor/gui/view',['event', 'i18n!/nls/lang.js', './tpl/template', './tpl/modal_template', 'backbone', 'jquery', 'handlebars'], function(ide_event, lang, template, modal_template) {
   var TrustedAdvisorView;
   TrustedAdvisorView = Backbone.View.extend({
-    el: '.status-bar-modal',
     events: {
       'click .modal-close': 'closedPopup'
     },
     render: function(type, status) {
-      console.log('pop-up:trusted advisor run render', status);
+      var data;
       if (type === 'stack') {
         $('#stack-run-validation-container').html(template(this.model.attributes));
         $('.validating').hide();
         this.processDetails();
         $('.stack-validation details').show();
       } else if (type === 'statusbar') {
+        this.setElement($('#OpsEditor .status-bar-modal'));
         this.$el.html(modal_template());
-        this.$el.find('#modal-validation-statusbar').html(template(this.model.attributes));
+        data = _.extend({
+          timestamp: Date.now()
+        }, this.model.attributes);
+        this.$('.modal-validation-statusbar').html(template(data));
         this.processStatusBarDetails();
-        $('.status-bar-modal').show();
       } else if (type === 'openstack') {
         $('.validating').hide();
         false;
@@ -4310,10 +4309,8 @@ define('component/trustedadvisor/gui/view',['event', 'i18n!/nls/lang.js', './tpl
     },
     closedPopup: function() {
       if (this.$el.html()) {
-        console.log('closedPopup');
         this.$el.empty();
-        this.trigger('CLOSE_POPUP');
-        return $('.status-bar-modal').hide();
+        return this.trigger('CLOSE_POPUP');
       }
     }
   });

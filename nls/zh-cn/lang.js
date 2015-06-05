@@ -2309,7 +2309,6 @@ define({
         "WARNING_SG_RULE_HAVE_FULL_ZERO_OUTBOUND": "安全组 <span class='validation-tag tag-sg'>%s</span> 有指向 <span class='validation-tag tag-ip'>0.0.0.0/0</span> 的出口规则，建议更改到更明确的范围。",
         "ERROR_RESOURCE_ASSOCIATED_SG_EXCEED_LIMIT": "%s <span class='validation-tag tag-%s'>%s</span> 分配的安全组超过最大 %s 条限制。",
         "ERROR_ASG_HAS_NO_LAUNCH_CONFIG": "Auto Scaling 组 <span class='validation-tag tag-asg'>%s</span> 没有启动配置。",
-        "WARNING_ELB_HEALTH_NOT_CHECK": "Auto Scaling 组 <span class='validation-tag tag-asg'>%s</span> 连接到的负载均衡器的健康检查没有被启用。",
         "ERROR_HAS_EIP_NOT_HAS_IGW": "VPC 中有分配了弹性 IP 的实例，但 VPC 没有 Internet 网关。",
         "NOTICE_RT_ROUTE_NAT": "实例 <span class='validation-tag tag-instance'>%s</span> 是路由表 <span class='validation-tag tag-rtb'>%s</span> 中配置的一个目标，要确保该路由可用，<span class='validation-tag tag-instance'>%s</span> 应该有允许来自关联 <span class='validation-tag tag-rtb'>%s</span> 的子网的流量的安全组规则。",
         "NOTICE_INSTANCE_HAS_RTB_NO_ELB": "路由表 <span class='validation-tag tag-rtb'>%s</span> 连接到了实例 <span class='validation-tag tag-instance'>%s</span>, 如果 <span class='validation-tag tag-instance'>%s</span> 正作为 NAT 实例，那么它应该被分配一个弹性 IP。",

@@ -2309,7 +2309,6 @@ define({
         "WARNING_SG_RULE_HAVE_FULL_ZERO_OUTBOUND": "Security Group <span class='validation-tag tag-sg'>%s</span> has outbound rule towards <span class='validation-tag tag-ip'>0.0.0.0/0</span>. Suggest to change to more specific range.",
         "ERROR_RESOURCE_ASSOCIATED_SG_EXCEED_LIMIT": "%s <span class='validation-tag tag-%s'>%s</span>'s associated Security Group exceed max %s limit.",
         "ERROR_ASG_HAS_NO_LAUNCH_CONFIG": "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span> has no launch configuration.",
-        "WARNING_ELB_HEALTH_NOT_CHECK": "Auto Scaling Group <span class='validation-tag tag-asg'>%s</span> has connected to Load Balancer but the Load Balancer health check is not enabled.",
         "ERROR_HAS_EIP_NOT_HAS_IGW": "VPC has instance with Elastic IP must have an Internet Gateway.",
         "NOTICE_RT_ROUTE_NAT": "Instance <span class='validation-tag tag-instance'>%s</span> is a target of Route Table <span class='validation-tag tag-rtb'>%s</span>. To make sure the routing works, <span class='validation-tag tag-instance'>%s</span> should have security group rule to allow traffic from subnets assciated with <span class='validation-tag tag-rtb'>%s</span>.",
         "NOTICE_INSTANCE_HAS_RTB_NO_ELB": "Route Table <span class='validation-tag tag-rtb'>%s</span> has route to Instance <span class='validation-tag tag-instance'>%s</span>. If <span class='validation-tag tag-instance'>%s</span> is working as NAT instance, it should be assigned with an Elastic IP.",
