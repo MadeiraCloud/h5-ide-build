@@ -2967,7 +2967,7 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
         type: $(evt.currentTarget).attr("data-type"),
         project: this.model.scene.project
       });
-      return false;
+      return true;
     },
     importApp: function() {
       return new AppAction({

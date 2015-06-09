@@ -349,7 +349,7 @@ define(["Scene", "./DebuggerTpl", "ApiRequest", "ApiRequestOs", "ApiRequestDefs"
       });
     },
     onApiChange: function() {
-      var apiDef, p, phtml, v, val, _i, _len, _ref;
+      var apiDef, p, phtml, project, v, val, _i, _j, _len, _len1, _ref, _ref1;
       val = $("#ApiSelect").select2("val");
       apiDef = ApiRequestDefs.Defs[val];
       $("#ApiResult").empty();
@@ -365,13 +365,26 @@ define(["Scene", "./DebuggerTpl", "ApiRequest", "ApiRequestOs", "ApiRequestDefs"
         if (v === null) {
           v = "";
         }
-        phtml += "<input placeholder='" + p + "' class='tooltip' value='" + v + "' data-tooltip='" + p + "'/>";
+        if (p === "key_id") {
+          v = App.model.projects().where({
+            name: "My Workspace"
+          })[0].credentials().models[0].id;
+          phtml += "<select placeholder='" + p + "' class='tooltip' value='" + v + "' data-tooltip='" + p + "'>";
+          _ref1 = App.model.projects().models;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            project = _ref1[_j];
+            phtml += "<option value ='" + (project.credentials().models[0].id) + "'>" + (project.credentials().models[0].id) + "(" + (project.get('name')) + ")</option>";
+          }
+          phtml += "</select>";
+        } else {
+          phtml += "<input placeholder='" + p + "' class='tooltip' value='" + v + "' data-tooltip='" + p + "'/>";
+        }
       }
       $("#ApiParamsWrap").html(phtml);
       return this.trigger("apiChanged", val);
     },
     onSendClick: function() {
-      var api, apiDef, ch, e, k, params, v, _i, _len, _ref;
+      var api, apiDef, ch, e, k, params, v, _i, _j, _len, _len1, _ref, _ref1;
       api = $("#ApiSelect").select2("val");
       apiDef = ApiRequestDefs.Defs[api];
       if (!apiDef) {
@@ -393,10 +406,25 @@ define(["Scene", "./DebuggerTpl", "ApiRequest", "ApiRequestOs", "ApiRequestDefs"
           params[k] = v;
         }
       }
+      _ref1 = $("#ApiParamsWrap").children("select");
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        ch = _ref1[_j];
+        v = ch.value;
+        if (!v) {
+          continue;
+        }
+        k = $(ch).attr("placeholder");
+        try {
+          params[k] = JSON.parse(v);
+        } catch (_error) {
+          e = _error;
+          params[k] = v;
+        }
+      }
       $("#ApiDebugSend").attr("disabled", "disabled");
       $("#ApiResult").text("Loading...").attr("finish", "false");
       (apiDef.type === "openstack" ? ApiRequestOs : ApiRequest)(api, params).then(function(result) {
-        var c, i, idx, item, _j, _k, _len1, _len2;
+        var c, i, idx, item, _k, _l, _len2, _len3;
         if (apiDef.url.indexOf("/aws/") === 0 && apiDef.url.length > 5 && (typeof result[1] === "string")) {
           try {
             result[1] = $.xml2json($.parseXML(result[1]));
@@ -405,11 +433,11 @@ define(["Scene", "./DebuggerTpl", "ApiRequest", "ApiRequestOs", "ApiRequestDefs"
           }
         } else if (apiDef.url.indexOf("/os/") === 0) {
           if (apiDef.method === "Info") {
-            for (idx = _j = 0, _len1 = result.length; _j < _len1; idx = ++_j) {
+            for (idx = _k = 0, _len2 = result.length; _k < _len2; idx = ++_k) {
               item = result[idx];
               try {
                 if ($.type(result) === 'array') {
-                  for (i = _k = 0, _len2 = item.length; _k < _len2; i = ++_k) {
+                  for (i = _l = 0, _len3 = item.length; _l < _len3; i = ++_l) {
                     c = item[i];
                     result[idx][i] = JSON.parse(c);
                   }

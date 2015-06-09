@@ -1,7 +1,7 @@
 define(["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js"], function(CanvasElement, constant, CanvasManager, lang) {
   return CanvasElement.extend({
 
-    /* env:dev                                      env:dev:end */
+    /* env:dev                                        env:dev:end */
     type: constant.RESTYPE.OSRT,
     parentType: ["SVG"],
     defaultSize: [8, 8],

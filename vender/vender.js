@@ -19366,7 +19366,7 @@ define('svg',[], function() {
         element = element.node;
         if ( element.remove ) {
           element.remove();
-        } else {
+        } else if (element.parent) {
           element.parent.removeChild( element );
         }
         return this
@@ -19939,8 +19939,16 @@ define('svg',[], function() {
 
   // Event constructor
   SVG.registerEvent = function(event) {
-    if (!SVG.events[event])
-      SVG.events[event] = new Event(event)
+    if (!SVG.events[event]) {
+      try {
+        SVG.events[event] = new Event(event)
+      } catch(e) {
+        var eo = document.createEvent('Event');
+        eo.initEvent(event, true, true);
+        SVG.events[event] = eo;
+
+      }
+    }
   }
 
   // Add event binder in the SVG namespace
