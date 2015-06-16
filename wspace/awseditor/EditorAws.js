@@ -30537,18 +30537,7 @@ define('wspace/awseditor/model/connection/ElbAsso',["constant", "ConnectionModel
       return null;
     }
   }, {
-    isConnectable: function(comp1, comp2) {
-      var lc;
-      if (comp1.design().modeIsAppEdit()) {
-        if (comp1.type === constant.RESTYPE.LC) {
-          lc = comp1;
-        } else if (comp2.type === constant.RESTYPE.LC) {
-          lc = comp2;
-        }
-        if (lc && lc.get("appId")) {
-          return lang.NOTIFY.WARN_ASG_CAN_ONLY_CONNECT_TO_ELB_ON_LAUNCH;
-        }
-      }
+    isConnectable: function() {
       return true;
     }
   });
