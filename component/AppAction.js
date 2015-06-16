@@ -411,7 +411,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       }
     },
     runStack: function(paymentUpdate, paymentModal) {
-      var appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, taPassed, that, _ref;
+      var $selectbox, appNameDom, checkAppNameRepeat, cloudType, cost, costString, paymentState, self, taPassed, that, _ref;
       cloudType = this.workspace.opsModel.type;
       that = this;
       paymentState = this.workspace.opsModel.project().get("billingState");
@@ -450,6 +450,10 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       }
       this.modal.find("#label-total-fee").find('b').text(costString);
       this.modal.find("#label-visualops-fee").find('b').text("$" + cost.visualOpsFee);
+      $selectbox = this.modal.find("#app-usage-selectbox.selectbox");
+      $selectbox.on("OPTION_CHANGE", function(evt, _, result) {
+        return $selectbox.parent().find("input.custom-app-usage").toggleClass("show", result.value === "custom");
+      });
       taPassed = false;
       TA.loadModule('stack').then((function(_this) {
         return function() {
@@ -473,7 +477,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       self = this;
       this.modal.on('confirm', (function(_this) {
         return function() {
-          var appNameRepeated;
+          var appNameRepeated, usage;
           if (!taPassed) {
             return;
           }
@@ -496,7 +500,11 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           _this.json = _this.workspace.design.serialize({
             usage: 'runStack'
           });
-          _this.json.usage = $("#app-usage-selectbox").find(".dropdown .item.selected").data('value');
+          usage = $("#app-usage-selectbox").find(".dropdown .item.selected").data('value');
+          if (usage === "custom") {
+            usage = $.trim($selectbox.parent().find("input.custom-app-usage").val()) || "custom";
+          }
+          _this.json.usage = usage;
           _this.json.name = appNameDom.val();
           return _this.workspace.opsModel.run(_this.json, appNameDom.val()).then(function(ops) {
             self.modal.close();

@@ -1,7 +1,7 @@
 define(["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js", "CloudResources", "./CpVolume"], function(CanvasElement, constant, CanvasManager, lang, CloudResources, VolumePopup) {
   return CanvasElement.extend({
 
-    /* env:dev                                            env:dev:end */
+    /* env:dev                                          env:dev:end */
     type: constant.RESTYPE.OSSERVER,
     parentType: [constant.RESTYPE.OSSUBNET],
     defaultSize: [8, 8],

@@ -1111,6 +1111,8 @@ function program13(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n                    <i class=\"icon-app-type-"
     + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"></i>\n                    ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "mesos", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
