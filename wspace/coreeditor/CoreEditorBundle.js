@@ -401,7 +401,7 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
         region: this.__opsModel.get("region"),
         provider: this.__opsModel.get("provider"),
         time_update: this.__opsModel.get("updateTime"),
-        usage: this.__opsModel.get("usage"),
+        usage: attr.usage,
         version: OpsModel.LatestVersion,
         host: attr.host,
         property: attr.property || {},

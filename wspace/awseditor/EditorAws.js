@@ -665,13 +665,13 @@ function program1(depth0,data) {
     + "</dt>\n      <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n    </dl>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n  ";
   return buffer;
@@ -690,31 +690,51 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <dt>"
+  buffer += "\n          ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      ";
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n              <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_USAGE", {hash:{},data:data}))
-    + "</dt>\n      <dd class=\"capitalize\">"
+    + "</dt>\n              <dd><input class=\"input\" maxlength=\"32\" data-required-rollback=\"true\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      ";
+    + "\" type=\"text\" id=\"property-app-usage\"/></dd>\n          ";
   return buffer;
   }
 
-function program6(depth0,data) {
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n              <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_USAGE", {hash:{},data:data}))
+    + "</dt>\n              <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n          ";
+  return buffer;
+  }
+
+function program9(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <dl class=\"dl-vertical\">\n      <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_INSTANCE_STATE", {hash:{},data:data}))
     + "</label></dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.opsEnable), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.opsEnable), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n      <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF_VIEW", {hash:{},data:data}))
     + "</label></dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </dl>\n\n    ";
   return buffer;
   }
-function program7(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "";
   buffer += "\n      <dd>"
@@ -723,7 +743,7 @@ function program7(depth0,data) {
   return buffer;
   }
 
-function program9(depth0,data) {
+function program12(depth0,data) {
   
   var buffer = "";
   buffer += "\n      <dd>"
@@ -732,11 +752,11 @@ function program9(depth0,data) {
   return buffer;
   }
 
-function program11(depth0,data) {
+function program14(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <section class=\"property-control-group resdiff-switch\">\n      <div class=\"checkbox\">\n        <input id=\"property-app-resdiff\" type=\"checkbox\" name=\"resdiff\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " >\n        <label for=\"property-app-resdiff\"></label>\n      </div>\n      <label for=\"property-app-resdiff\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF", {hash:{},data:data}))
@@ -745,37 +765,37 @@ function program11(depth0,data) {
     + "\"></i>\n    </section>\n    ";
   return buffer;
   }
-function program12(depth0,data) {
+function program15(depth0,data) {
   
   
   return "checked";
   }
 
-function program14(depth0,data) {
+function program17(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n<!--       ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n -->      <section id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
   return buffer;
   }
-function program15(depth0,data) {
+function program18(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      <section class=\"property-control-group\" data-bind=\"true\">\n        <div class=\"mesos-marathon-switch\">\n          <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n          <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n            <span class=\"switch-handle\"></span>\n          </label>\n        </div>\n      </section>\n      ";
   return buffer;
   }
-function program16(depth0,data) {
+function program19(depth0,data) {
   
   
   return "on";
   }
 
-function program18(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-stack-name\">"
@@ -799,22 +819,22 @@ function program18(depth0,data) {
     + "</label></dt><dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</dd>\n	</dl>\n\n  <!-- Mesos Settings -->\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  ";
   return buffer;
   }
-function program19(depth0,data) {
+function program22(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <section class=\"property-control-group\" data-bind=\"true\">\n    <div class=\"mesos-marathon-switch\">\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </div>\n  </section>\n  ";
   return buffer;
   }
 
-function program21(depth0,data) {
+function program24(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n	<div class=\"option-group-head pos-r\">"
@@ -822,12 +842,12 @@ function program21(depth0,data) {
     + "<span class=\"acl-info-list-num property-head-num-wrap\">("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.networkAcls)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ")</span>\n	</div>\n	<div class=\"option-group\">\n    <ul class=\"acl-sg-info-list acl-info-list mega-list-wraper\" id=\"stack-property-acl-list\"></ul>\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  </div>\n	";
   return buffer;
   }
-function program22(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "";
   buffer += "<a href=\"#\" class=\"add-to-list\" id=\"stack-property-new-acl\">"
@@ -836,7 +856,7 @@ function program22(depth0,data) {
   return buffer;
   }
 
-function program24(depth0,data) {
+function program27(depth0,data) {
   
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.currency)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -848,7 +868,7 @@ function program24(depth0,data) {
   return buffer;
   }
 
-function program26(depth0,data) {
+function program29(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        <tr> <td>"
@@ -862,17 +882,17 @@ function program26(depth0,data) {
   }
 
   buffer += "<article>\n\n  ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(18, program18, data),fn:self.program(1, program1, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(21, program21, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n\n\n	<!-- SG, ACL, COST -->\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))
     + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n  <div class=\"option-group sg-group\"></div>\n\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n\n	<div class=\"option-group-head\">\n		"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_COST_ESTIMATION", {hash:{},data:data}))
     + "\n		<span class=\"cost-counter right\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</span>\n	</div>\n	<div class=\"option-group\">\n		<table class=\"table cost-estimation-table\">\n			<thead> <tr>\n					<th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_RESOURCE", {hash:{},data:data}))
@@ -881,7 +901,7 @@ function program26(depth0,data) {
     + "</th>\n          <th style=\"min-width:60px;\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_FEE", {hash:{},data:data}))
     + "</th>\n			</tr> </thead>\n			<tbody> ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_AWS_EC2_PRICING", {hash:{},data:data}))
@@ -1037,6 +1057,7 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
       'change #property-stack-name': 'stackNameChanged',
       'change #property-stack-description': 'stackDescriptionChanged',
       'change #property-app-name': 'changeAppName',
+      'change #property-app-usage': 'changeUsage',
       'click #stack-property-new-acl': 'createAcl',
       'click #stack-property-acl-list .edit': 'openAcl',
       'click .acl-info-list .sg-list-delete-btn': 'deleteAcl',
@@ -1092,6 +1113,13 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
       $target = $(e.currentTarget);
       if ($target.parsley('validate')) {
         return Design.instance().set('name', $target.val());
+      }
+    },
+    changeUsage: function(e) {
+      var $target;
+      $target = $(e.currentTarget);
+      if ($target.parsley("validate")) {
+        return Design.instance().set("usage", $target.val());
       }
     },
     toggleResDiff: function(e) {
@@ -22632,7 +22660,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
       return checkDB.promise;
     },
     applyAppEdit: function() {
-      var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, taPassed, that;
+      var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, taPassed, that, usageChanged;
       that = this;
       taPassed = false;
       oldJson = this.workspace.opsModel.getJsonData();
@@ -22644,7 +22672,8 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         "new": newJson
       });
       result = differ.getDiffInfo();
-      if (!result.compChange && !result.layoutChange && !result.stateChange) {
+      usageChanged = oldJson.usage !== newJson.usage;
+      if (!result.compChange && !result.layoutChange && !result.stateChange && !usageChanged) {
         return this.workspace.applyAppEdit();
       }
       removes = differ.removedComps;
@@ -22723,11 +22752,11 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         $selectbox.on("OPTION_CHANGE", function(evt, _, result) {
           return $selectbox.parent().find("input.custom-app-usage").toggleClass("show", result.value === "custom");
         });
-        if ((_ref = oldJson.usage) === "testing" || _ref === "development" || _ref === "production" || _ref === "others") {
-          $selectbox.find(".dropdown li.item[data-value='" + oldJson.usage + "']").click();
+        if ((_ref = newJson.usage) === "testing" || _ref === "development" || _ref === "production" || _ref === "others") {
+          $selectbox.find(".dropdown li.item[data-value='" + newJson.usage + "']").click();
         } else {
           $selectbox.find(".dropdown li.item[data-value='custom']").click();
-          $selectbox.parent().find("input.custom-app-usage").val(oldJson.usage);
+          $selectbox.parent().find("input.custom-app-usage").val(newJson.usage);
         }
         that.updateModal.on('confirm', function() {
           var usage, _ref1;
