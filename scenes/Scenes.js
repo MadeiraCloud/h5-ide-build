@@ -2195,15 +2195,15 @@ function program17(depth0,data) {
   }
 function program18(depth0,data) {
   
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PAYMENT_PAID", {hash:{},data:data}));
+  var stack1;
+  return escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
   }
 
 function program20(depth0,data) {
   
-  var buffer = "";
+  var buffer = "", stack1;
   buffer += "<span class=\"link-red\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PAYMENT_FAILED", {hash:{},data:data}))
+    + escapeExpression(((stack1 = (depth0 && depth0.status)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>";
   return buffer;
   }
@@ -2426,7 +2426,19 @@ define('scenes/settings/views/BillingView',['backbone', "../template/TplBilling"
           return tempArray.push(e);
         });
         tempArray.reverse();
-        paymentHistory = tempArray;
+        paymentHistory = _.map(tempArray, function(paymentObj) {
+          var $tempTpl;
+          $tempTpl = $("<div>").html(paymentObj.html);
+          paymentObj.status = $tempTpl.find("#billing_statement_summary_balance_paid_stamp").text();
+          paymentObj.status || (paymentObj.status = $tempTpl.find("#billing_statement_summary_balance_paid_date").find(".billing_statement_summary_value").text());
+          $tempTpl.remove();
+          if (paymentObj.success) {
+            paymentObj.status || (paymentObj.status = "Not yet due");
+          } else {
+            paymentObj.status || (paymentObj.status = "Unpaid");
+          }
+          return paymentObj;
+        });
         that.model.set("paymentHistory", paymentHistory);
         return historyDefer.resolve(paymentHistory);
       }, function(err) {
