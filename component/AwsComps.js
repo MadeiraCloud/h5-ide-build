@@ -5569,8 +5569,10 @@ function program3(depth0,data) {
     + " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteEip), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETE", {hash:{},data:data}))
+  buffer += "</div>\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_RELEASE_EIP_NOTE", {hash:{},data:data}))
+    + "</p>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_BTN", {hash:{},data:data}))
     + "</button>\n        <button class=\"btn btn-silver cancel\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
     + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
@@ -5744,7 +5746,7 @@ define('eip_manager',['toolbar_modal', 'UI.modalplus', 'component/awscomps/EipMa
         that.cancel();
         if (success.length === 1) {
           console.debug(success);
-          notification('info', sprintf(lang.NOTIFY.XXX_IS_DELETED, success[0].attributes.id));
+          notification('info', sprintf(lang.NOTIFY.EIP_XXX_IS_RELEASED, success[0].attributes.id));
           return;
         } else if (success.length > 1) {
           notification('info', sprintf(lang.NOTIFY.SELECTED_EIP_ARE_DELETED, success.length));
@@ -5917,7 +5919,7 @@ define('eip_selector',['combo_dropdown', 'UI.modalplus', 'component/awscomps/Eip
       var self;
       self = this;
       this.modal = new Modal({
-        title: "Please Select a eip to assign",
+        title: lang.PROP.EIP_SELECTOR_CONFIRM_TITLE,
         template: template.selector,
         confirm: lang.PROP.EIP_SELECTOR_CONFIRM_LABEL
       });
