@@ -344,7 +344,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"guide-overlay\"></div>\n<img class=\"guide-logo\" src=\"/assets/images/login/logo.svg\" />\n<div class=\"guide-close icon-close\"></div>\n<div class=\"guide-video\">\n	<div class=\"guide-video-tip\">Tutorial</div>\n	<div class=\"box-loading box-wrapper\">\n		<div class=\"loading-spinner\"></div>\n	</div>\n	<video class=\"guide-video\"><source src=\"https://s3.amazonaws.com/visualops-guide/Kazam_screencast_00003.mp4\" type=\"video/mp4\"></video>\n</div>\n<div class=\"guide-list custom-scrollbar\">\n	<!-- <div class=\"guide-title\"><div>VisualOps Guide</div></div> -->\n	<ul class=\"guide-cards\">\n		<li class=\"guide-card color1\">\n			<div class=\"head\"><i class=\"guideicon guideicon-drag\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Design Your Infrastructure</div>\n		</li>\n		<span class=\"guide-head\">Workflow</span>\n		<li class=\"guide-card color2\">\n			<div class=\"head\"><i class=\"guideicon guideicon-config\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Configure & Deploy App</div>\n		</li>\n		<li class=\"guide-card color3\">\n			<div class=\"head\"><i class=\"guideicon guideicon-run\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Launch & Update App</div>\n		</li>\n		<li class=\"guide-card color6\">\n			<div class=\"head\"><i class=\"guideicon guideicon-eye\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">AWS Resource Monitor</div>\n		</li>\n		<li class=\"guide-card color4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-picture-o\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Export Image & CloudFormation</div>\n		</li>\n		<span class=\"guide-head\">Import & Export</span>\n		<li class=\"guide-card color5\">\n			<div class=\"head\"><i class=\"guideicon guideicon-cloud-download\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Import From AWS</div>\n		</li>\n		<li class=\"guide-card color7\">\n			<div class=\"head\"><i class=\"guideicon guideicon-code\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Import CloudFormation</div>\n		</li>\n		<li class=\"guide-card color9\">\n			<div class=\"head\"><i class=\"guideicon guideicon-columns\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">AWS Resource Manage</div>\n		</li>\n		<span class=\"guide-head\">Manage</span>\n		<li class=\"guide-card color8\">\n			<div class=\"head\"><i class=\"guideicon guideicon-users\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Team Collaboration</div>\n		</li>\n	</ul>\n</div>";
+  return "<div class=\"guide-overlay\"></div>\n<img class=\"guide-logo\" src=\"/assets/images/login/logo.svg\" />\n<div class=\"guide-view icon-menu\"></div>\n<div class=\"guide-close icon-close\"></div>\n<div class=\"guide-video\">\n	<div class=\"guide-video-tip\">Tutorial</div>\n	<div class=\"box-loading box-wrapper\">\n		<div class=\"loading-spinner\"></div>\n	</div>\n	<video class=\"guide-video\"><source src=\"https://s3.amazonaws.com/visualops-guide/Kazam_screencast_00003.mp4\" type=\"video/mp4\"></video>\n</div>\n<div class=\"guide-list custom-scrollbar\">\n	<!-- <div class=\"guide-title\"><div>VisualOps Guide</div></div> -->\n	<ul class=\"guide-cards\">\n		<li class=\"guide-card color1\">\n			<div class=\"head\"><i class=\"guideicon guideicon-drag\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Design Your Infrastructure</div>\n		</li>\n		<span class=\"guide-head\">Workflow</span>\n		<li class=\"guide-card color2\">\n			<div class=\"head\"><i class=\"guideicon guideicon-config\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Configure & Deploy App</div>\n		</li>\n		<li class=\"guide-card color3\">\n			<div class=\"head\"><i class=\"guideicon guideicon-run\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Launch & Update App</div>\n		</li>\n		<li class=\"guide-card color6\">\n			<div class=\"head\"><i class=\"guideicon guideicon-eye\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">AWS Resource Monitor</div>\n		</li>\n		<li class=\"guide-card color4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-picture-o\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Export Image & CloudFormation</div>\n		</li>\n		<span class=\"guide-head\">Import & Export</span>\n		<li class=\"guide-card color5\">\n			<div class=\"head\"><i class=\"guideicon guideicon-cloud-download\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Import From AWS</div>\n		</li>\n		<li class=\"guide-card color7\">\n			<div class=\"head\"><i class=\"guideicon guideicon-code\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Import CloudFormation</div>\n		</li>\n		<li class=\"guide-card color9\">\n			<div class=\"head\"><i class=\"guideicon guideicon-columns\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">AWS Resource Manage</div>\n		</li>\n		<span class=\"guide-head\">Manage</span>\n		<li class=\"guide-card color8\">\n			<div class=\"head\"><i class=\"guideicon guideicon-users\"></i></div>\n			<div class=\"info\">15<span>s</span></div>\n			<div class=\"intro\">Team Collaboration</div>\n		</li>\n	</ul>\n</div>";
   }; return Handlebars.template(TEMPLATE); });
 define('scenes/userguide/userguide',['constant', 'i18n!/nls/lang.js', './userguideTpl'], function(constant, lang, template) {
   return Backbone.View.extend({
@@ -357,6 +357,7 @@ define('scenes/userguide/userguide',['constant', 'i18n!/nls/lang.js', './usergui
       'click .guide-card': 'playVideo',
       'click .guide-video': 'closeVideo',
       'click .guide-close': 'closeGuide',
+      'click .guide-view': 'switchView',
       'mousewheel .guide-list': 'scrollHorizontally'
     },
     render: function() {
@@ -398,11 +399,21 @@ define('scenes/userguide/userguide',['constant', 'i18n!/nls/lang.js', './usergui
         return that.remove();
       });
     },
+    switchView: function(event) {
+      var $target;
+      $target = $(event.currentTarget);
+      if ($target.hasClass('icon-menu')) {
+        $target.removeClass('icon-menu').addClass('icon-resources');
+        return this.$el.find('.guide-cards').addClass('cube');
+      } else {
+        $target.removeClass('icon-resources').addClass('icon-menu');
+        return this.$el.find('.guide-cards').removeClass('cube');
+      }
+    },
     scrollHorizontally: function(event) {
       var delta;
       delta = Math.max(-1, Math.min(1, event.originalEvent.wheelDelta || -event.originalEvent.detail));
-      event.currentTarget.scrollLeft -= delta * 150;
-      return event.preventDefault();
+      return event.currentTarget.scrollLeft -= delta * 150;
     }
   });
 });
