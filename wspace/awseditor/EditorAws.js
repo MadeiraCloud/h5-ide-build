@@ -9916,9 +9916,9 @@ function program3(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LOCAL", {hash:{},data:data}))
     + "</td>\n			  </tr>\n			  <tr>\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
-    + "</td>\n			    <td class=\"route-destination-input\"> <div class=\"route-readonly\">"
+    + "</td>\n			    <td class=\"route-destination-input\"> <input class=\"input route-readonly\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.local_route)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div> </td>\n			  </tr>\n			</table></li>\n\n			";
+    + "\" disabled /> </td>\n			  </tr>\n			</table></li>\n\n			";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.routes), {hash:{},inverse:self.noop,fn:self.programWithDepth(12, program12, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</ul>\n	</div>\n";
@@ -10230,14 +10230,9 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
       } else {
         for (idx = _i = 0, _len = allCidrAry.length; _i < _len; idx = ++_i) {
           cidr = allCidrAry[idx];
-          if (inputValue === cidr) {
+          if (inputValue === cidr || (cidr !== "0.0.0.0/0" && this.model.isCidrConflict(inputValue, cidr))) {
             mainContent = sprintf(lang.PROP.RTB_CIDR_BLOCK_CONFLICTS, inputValue);
             descContent = lang.PROP.RTB_CIDR_BLOCK_CONFLICTS_DESC;
-            break;
-          }
-          if (idx === 0 && cidr !== "0.0.0.0/0" && this.model.isCidrConflict(inputValue, cidr)) {
-            mainContent = sprintf(lang.PROP.RTB_CIDR_BLOCK_CONFLICTS_LOCAL, inputValue);
-            descContent = lang.PROP.RTB_CIDR_BLOCK_CONFLICTS_LOCAL_DESC;
             break;
           }
         }
@@ -10276,6 +10271,7 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
           return modal.close();
         });
         modal.on("close", function() {
+          that.disabledAllOperabilityArea(false);
           return inputElem.focus();
         });
         modal.on("closed", function() {
@@ -10287,7 +10283,8 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
             _ref1.remove();
           }
           that.disabledAllOperabilityArea(false);
-          return modal.close();
+          modal.close();
+          return that.render();
         });
       }
     },
