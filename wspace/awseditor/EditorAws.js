@@ -10268,6 +10268,7 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
         modal = this.modal;
         $("<a id=\"cidr-removed\" class=\"link-red left link-modal-danger\">" + lang.PROP.REMOVE_ROUTE + "</a>").appendTo(modal.find(".modal-footer"));
         modal.on("confirm", function() {
+          that.disabledAllOperabilityArea(false);
           return modal.close();
         });
         modal.on("close", function() {
@@ -10275,6 +10276,7 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
           return inputElem.focus();
         });
         modal.on("closed", function() {
+          that.disabledAllOperabilityArea(false);
           return inputElem.focus();
         });
         return modal.find("#cidr-removed").on("click", function() {
@@ -26671,6 +26673,9 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
     isDefaultKey: function() {
       var kp;
       kp = this.connectionTargets("KeypairUsage")[0];
+      if (!kp) {
+        return true;
+      }
       return kp && kp.isDefault();
     },
     isNoKey: function() {
@@ -26951,7 +26956,13 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       if (KP) {
         KP.assignTo(model);
       } else {
-        model.set('keyName', data.resource.KeyName);
+        if (data.resource.KeyName) {
+          model.set('keyName', data.resource.KeyName);
+        } else {
+          _.defer(function() {
+            return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
+          });
+        }
       }
       return null;
     }
@@ -31363,7 +31374,13 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       if (KP) {
         KP.assignTo(model);
       } else {
-        model.set('keyName', data.resource.KeyName);
+        if (data.resource.KeyName) {
+          model.set('keyName', data.resource.KeyName);
+        } else {
+          _.defer(function() {
+            return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
+          });
+        }
       }
       return null;
     }
