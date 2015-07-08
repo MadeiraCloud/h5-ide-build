@@ -22916,8 +22916,11 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
       this.listenTo(this.workspace.opsModel, "change:state", this.updateTbBtns);
     },
     initFilter: function() {
+      this.filter = new FilterInput({
+        isVisual: true
+      });
 
-      /* env:dev                                                                                                                                                                  env:dev:end */
+      /* env:dev                                                                                       env:dev:end */
       this.listenTo(this.filter, 'change:filter', this.highlightCanvas);
       this.listenTo(this.filter, 'focus', this.highlightCanvas);
       return this.$('.btn-toolbar').last().after(this.filter.render().el);
