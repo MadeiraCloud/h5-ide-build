@@ -2356,7 +2356,7 @@ function program62(depth0,data) {
     + "\n	</div>\n	<div class=\"option-group\">\n		";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(62, program62, data),fn:self.program(59, program59, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		<div class=\"tags-action\">\n			<button class=\"tag-large icon-info\"></button>\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n		<div class=\"tags-action\">\n			\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n		</div>\n	</div>\n</article>";
   return buffer;
@@ -3718,7 +3718,7 @@ function program45(depth0,data) {
     + "\n      </div>\n      <div class=\"option-group\">\n          ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(49, program49, data),fn:self.program(46, program46, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          <div class=\"tags-action\">\n              <button class=\"tag-large icon-info\"></button>\n          </div>\n      </div>\n  ";
+  buffer += "\n          <div class=\"tags-action\">\n              \n          </div>\n      </div>\n  ";
   return buffer;
   }
 function program46(depth0,data) {
@@ -4427,7 +4427,7 @@ function program3(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(44, program44, data),fn:self.program(41, program41, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"tags-action\">\n      <button class=\"tag-large icon-info\"></button>\n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n    <div class=\"tags-action\">\n      \n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n    </div>\n  </div>\n  ";
   return buffer;
@@ -5662,7 +5662,7 @@ function program10(depth0,data) {
     + "\n	</div>\n	<div class=\"option-group\">\n		";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(10, program10, data),fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		<div class=\"tags-action\">\n			<button class=\"tag-large icon-info\"></button>\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n		<div class=\"tags-action\">\n			\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n		</div>\n	</div>\n\n</article>";
   return buffer;
@@ -6499,7 +6499,7 @@ function program25(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n        ";
   stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(25, program25, data),fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n        <div class=\"tags-action\">\n            \n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n        </div>\n    </div>\n</article>";
   return buffer;
@@ -6738,7 +6738,7 @@ function program9(depth0,data) {
     + "\n        </div>\n        <div class=\"option-group\">\n            ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(13, program13, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <div class=\"tags-action\">\n                <button class=\"tag-large icon-info\"></button>\n                <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n            <div class=\"tags-action\">\n                \n                <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n            </div>\n        </div>\n    ";
   return buffer;
@@ -6789,7 +6789,7 @@ function program16(depth0,data) {
     + "\n        </div>\n        <div class=\"option-group\">\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(13, program13, data),fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <div class=\"tags-action\">\n                <button class=\"tag-large icon-info\"></button>\n            </div>\n        </div>\n        ";
+  buffer += "\n            <div class=\"tags-action\">\n                \n            </div>\n        </div>\n        ";
   return buffer;
   }
 function program17(depth0,data) {
@@ -8811,7 +8811,7 @@ function program8(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(8, program8, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"tags-action\">\n      <button class=\"tag-large icon-info\"></button>\n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n    <div class=\"tags-action\">\n      \n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n    </div>\n  </div>\n</article>";
   return buffer;
@@ -9114,7 +9114,7 @@ function program1(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n        </div>\n    </div>\n    ";
+  buffer += "\n        <div class=\"tags-action\">\n            \n        </div>\n    </div>\n    ";
   return buffer;
   }
 function program2(depth0,data) {
@@ -9554,7 +9554,7 @@ function program14(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(14, program14, data),fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"tags-action\">\n      <button class=\"tag-large icon-info\"></button>\n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n    <div class=\"tags-action\">\n      \n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n    </div>\n  </div>\n</article>";
   return buffer;
@@ -9902,7 +9902,7 @@ function program22(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n      ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(26, program26, data),fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      <div class=\"tags-action\">\n        <button class=\"tag-large icon-info\"></button>\n      </div>\n  </div>\n  ";
+  buffer += "\n      <div class=\"tags-action\">\n        \n      </div>\n  </div>\n  ";
   return buffer;
   }
 function program23(depth0,data) {
@@ -10408,7 +10408,7 @@ function program30(depth0,data) {
     + "\n        </div>\n        <div class=\"option-group\">\n            ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(34, program34, data),fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <div class=\"tags-action\">\n                <button class=\"tag-large icon-info\"></button>\n                <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n            <div class=\"tags-action\">\n                \n                <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n            </div>\n        </div>\n        ";
   return buffer;
@@ -10844,7 +10844,7 @@ function program13(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(17, program17, data),fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n        </div>\n    </div>\n    ";
+  buffer += "\n        <div class=\"tags-action\">\n            \n        </div>\n    </div>\n    ";
   return buffer;
   }
 function program14(depth0,data) {
@@ -11038,7 +11038,7 @@ function program12(depth0,data) {
     + "\n        </div>\n        <div class=\"option-group\">\n            ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(16, program16, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <div class=\"tags-action\">\n                <button class=\"tag-large icon-info\"></button>\n                ";
+  buffer += "\n            <div class=\"tags-action\">\n                \n                ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </div>\n    ";
@@ -11093,7 +11093,7 @@ function program20(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n        ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(28, program28, data),fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n        <div class=\"tags-action\">\n            \n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n        </div>\n    </div>\n";
   return buffer;
@@ -11311,7 +11311,7 @@ function program8(depth0,data) {
     + "\n	</div>\n	<div class=\"option-group\">\n		";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(8, program8, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		<div class=\"tags-action\">\n			<button class=\"tag-large icon-info\"></button>\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n		<div class=\"tags-action\">\n			\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n		</div>\n	</div>\n\n</article>";
   return buffer;
@@ -11551,7 +11551,7 @@ function program9(depth0,data) {
 function program11(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n        <div class=\"tags-action\">\n            \n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n        </div>\n        ";
   return buffer;
@@ -11560,7 +11560,7 @@ function program11(depth0,data) {
 function program13(depth0,data) {
   
   
-  return "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n        </div>\n        ";
+  return "\n        <div class=\"tags-action\">\n            \n        </div>\n        ";
   }
 
   buffer += "<article class=\"property-app\">\n  <dl class=\"dl-vertical\">\n    <dt>"
@@ -12407,7 +12407,7 @@ function program3(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n        ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(13, program13, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"tag-large icon-info\"></button>\n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n        <div class=\"tags-action\">\n            \n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n        </div>\n    </div>\n</article>\n\n";
   return buffer;
@@ -13003,7 +13003,7 @@ function program17(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(21, program21, data),fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"tags-action\">\n      <button class=\"tag-large icon-info\"></button>\n    </div>\n  </div>\n  ";
+  buffer += "\n    <div class=\"tags-action\">\n      \n    </div>\n  </div>\n  ";
   return buffer;
   }
 function program18(depth0,data) {
@@ -13421,7 +13421,7 @@ function program11(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(15, program15, data),fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"tags-action\">\n      <button class=\"tag-large icon-info\"></button>\n    </div>\n\n  </div>\n  ";
+  buffer += "\n    <div class=\"tags-action\">\n\n    </div>\n\n  </div>\n  ";
   return buffer;
   }
 function program12(depth0,data) {
@@ -13461,7 +13461,7 @@ function program17(depth0,data) {
     + "\n  </div>\n  <div class=\"option-group\">\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(15, program15, data),fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"tags-action\">\n      <button class=\"tag-large icon-info\"></button>\n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n    <div class=\"tags-action\">\n      \n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n    </div>\n  </div>\n  ";
   return buffer;
@@ -15613,7 +15613,7 @@ function program23(depth0,data) {
     + "\n	</div>\n	<div class=\"option-group\">\n		";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(23, program23, data),fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n		<div class=\"tags-action\">\n			<button class=\"tag-large icon-info\"></button>\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n\n		<div class=\"tags-action\">\n			\n			<button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n		</div>\n	</div>\n</article>";
   return buffer;
@@ -17240,7 +17240,7 @@ function program56(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n      ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(60, program60, data),fn:self.program(57, program57, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n          <button class=\"tag-large icon-info\"></button>\n        </div>\n    </div>\n    ";
+  buffer += "\n        <div class=\"tags-action\">\n          \n        </div>\n    </div>\n    ";
   return buffer;
   }
 function program57(depth0,data) {
@@ -17280,7 +17280,7 @@ function program62(depth0,data) {
     + "\n    </div>\n    <div class=\"option-group\">\n      ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(60, program60, data),fn:self.program(63, program63, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      <div class=\"tags-action\">\n        <button class=\"tag-large icon-info\"></button>\n        <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n      <div class=\"tags-action\">\n        \n        <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n      </div>\n    </div>\n    ";
   return buffer;
