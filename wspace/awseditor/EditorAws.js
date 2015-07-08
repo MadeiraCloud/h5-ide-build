@@ -26518,7 +26518,7 @@ define('wspace/awseditor/model/connection/VPNConnection',["constant", "Connectio
       return false;
     },
     createRef: function() {
-      return ComplexResModel.prototype.createRef.call(this.getRealBody(), 'VpnGatewayId');
+      return ComplexResModel.prototype.createRef.call(this.getRealBody(), 'VpnConnectionId');
     },
     setRealBody: function(realbody) {
       return this.__realbody = realbody;
@@ -26586,6 +26586,10 @@ define('wspace/awseditor/model/connection/VPNConnection',["constant", "Connectio
         }
       };
       return null;
+    },
+    remove: function() {
+      this.getResourceModel().remove();
+      return ConnectionModel.prototype.remove.apply(this, arguments);
     }
   }, {
     handleTypes: constant.RESTYPE.VPN,

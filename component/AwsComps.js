@@ -5492,7 +5492,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"tag-manager-wrap\">\n    <div class=\"tag-resource-list\">\n        <input type=\"text\" class=\"input filter-bar\" placeholder=\"Filter Bar\"/>\n        <button class=\"btn edit-tags btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
-    + "</button>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\">\n            <ul>\n                <li data-id=\"checked\" class=\"active\">Checked (<span>0</span>)</li>\n                <li data-id=\"selected\">Selected</li>\n            </ul>\n        </div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n           <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n    </div>\n</div>";
+    + "</button>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\">\n            <ul>\n                <li data-id=\"checked\" class=\"active\">Checked (<span>0</span>)</li>\n                <li data-id=\"selected\">Selected <span></span></li>\n            </ul>\n        </div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n           <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.modalTemplate=Handlebars.template(__TEMPLATE__);
@@ -5537,7 +5537,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "\n    <div class=\"tag-empty\">Please select or check resource in left sidebar for tag details.</div>\n";
+  return "\n    <div class=\"tag-empty\">Please select or check resource in resource list for tag details.</div>\n";
   }
 
 function program3(depth0,data) {
@@ -6555,7 +6555,9 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       $row.addClass("selected");
       this.$el.find(".tabs-navs ul li[data-id='selected']").click();
       this.renderTagsContent($row.data("id"));
-      return evt.stopPropagation();
+      if (evt.stopPropagation) {
+        return evt.stopPropagation();
+      }
     },
     selectAllInput: function(e) {
       var isChecked;
@@ -6771,10 +6773,13 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
         empty: !checkedComps.length
       }));
       this.$el.find(".tabs-navs li[data-id='checked'] span").text(checkedComps.length + checkedAsgComps.length);
+      if (selectedComp && selectedComp.get('name')) {
+        this.$el.find(".tabs-navs li[data-id='selected'] span").text("" + (selectedComp.get('name')));
+      }
       return this.changeTagInput();
     },
     filterResourceList: function(resModels) {
-      var models;
+      var firstItem, models;
       models = _.map(resModels, function(model) {
         return {
           name: model.get("name"),
@@ -6786,6 +6791,12 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       this.modal.tpl.find(".t-m-content").html(template.filterResource({
         models: models
       }));
+      firstItem = this.$el.find('tbody tr.item')[0];
+      if (firstItem) {
+        this.selectTableRow({
+          currentTarget: firstItem
+        });
+      }
       return _.delay((function(_this) {
         return function() {
           return _this.renderTagsContent();
