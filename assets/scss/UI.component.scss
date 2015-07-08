@@ -1,6 +1,7 @@
 @charset "UTF-8";
 @import "utility";
 @import "component/toolbar-modal";
+@import "component/tag-manager";
 @import "component/combo-dropdown";
 @import "component/drop-zone";
 @import "component/modal";
@@ -8,7 +9,7 @@
 @import "component/select2";
 @import "component/image";
 @import "component/timepicker";
-@import "component/userguide";
+@import "component/filter-input";
 
 
 /* Table */
@@ -1303,6 +1304,8 @@ select.select3.disabled {
 
 	padding: 6px;
 	color  : #d0d0d0;
+	overflow-x: hidden;
+  	text-overflow: ellipsis;
 
 	background : lighten($bg-p,5%);
 
@@ -1548,12 +1551,6 @@ select.select3.disabled {
 	display    : block;
 	width      : 100% !important;
 	box-sizing : border-box;
-}
-
-.multi-ipt-row .ipt-wrapper input.ipt-half {
-	display: inline-block;
-	width: 45% !important;
-	margin-right: 10px;
 }
 
 .multi-ipt-row:first-child:last-child .icon-del {
@@ -1977,26 +1974,26 @@ input.parsley-error {
 
 /* custom scrollbar */
 
-.custom-scrollbar {
-	&::-webkit-scrollbar {
-		width    : 8px;
-		height   : 8px;
-	}
-	&::-webkit-scrollbar-track {
-		background: none;
-	}
-	&::-webkit-scrollbar-thumb {
-		background: rgba(100,100,100,.3);
-		border-radius: 8px;
+// * {
+// 	&::-webkit-scrollbar {
+// 		width    : 8px;
+// 		height   : 8px;
+// 	}
+// 	&::-webkit-scrollbar-track {
+// 		background: none;
+// 	}
+// 	&::-webkit-scrollbar-thumb {
+// 		background: rgba(100,100,100,.3);
+// 		border-radius: 8px;
 
-		&:hover {
-			background: rgba(100,100,100,.5);
-		}
-	}
-  	&::-webkit-scrollbar-corner {
-		background: none;
-  	}
-}
+// 		&:hover {
+// 			background: rgba(100,100,100,.5);
+// 		}
+// 	}
+//   	&::-webkit-scrollbar-corner {
+// 		background: none;
+//   	}
+// }
 
 
 .dropdown-menu { display: none; }

@@ -1416,7 +1416,7 @@ define('cloudres/aws/CrCommonCollection',["../CrCollection", "../CrModel", "cons
       param[this.type] = {};
       self = this;
       return this.sendRequest("aws_resource", {
-        region_name: self.region || null,
+        region_name: null,
         resources: param,
         addition: "all",
         retry_times: 1
@@ -1497,63 +1497,7 @@ define('cloudres/aws/CrModelElb',["../CrModel"], function(CrModel) {
   });
 });
 
-define('cloudres/aws/CrModelEip',["../CrModel", "ApiRequest"], function(CrModel, ApiRequest) {
-  return CrModel.extend({
-
-    /* env:dev                                          env:dev:end */
-    defaults: {
-      "publicIp": "",
-      "allocationId": "",
-      "domain": "",
-      "instanceId": "",
-      "associationId": "",
-      "networkInterfaceId": "",
-      "networkInterfaceOwnerId": "",
-      "privateIpAddress": "",
-      "canRelease": false
-    },
-    idAttribute: "publicIp",
-    taggable: false,
-    doCreate: function() {
-      var self;
-      self = this;
-      return this.sendRequest("eip_AllocateAddress", {
-        domain: this.get("domain"),
-        region_name: this.get("region")
-      }).then(function(res) {
-        var e, publicIp;
-        try {
-          res = res.AllocateAddressResponse;
-          self.set(res);
-          publicIp = res.publicIp;
-        } catch (_error) {
-          e = _error;
-          throw McError(ApiRequest.Errors.InvalidAwsReturn, "Elastic IP created but aws returns invalid data.");
-        }
-        self.set('publicIp', publicIp);
-        self.set('id', publicIp);
-        self.set('category', self.get("region"));
-        self.set("canRelease", !res.associationId);
-        console.log("Created EIP resource", self);
-        return self;
-      });
-    },
-    doDestroy: function() {
-      var allocation_id, ip;
-      ip = this.get("id");
-      allocation_id = this.get("allocationId");
-      if (allocation_id) {
-        ip = void 0;
-      }
-      return this.sendRequest("eip_ReleaseAddress", {
-        ip: ip,
-        allocation_id: allocation_id
-      });
-    }
-  });
-});
-
-define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "./CrModelEip", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, CrEipModel, constant, CloudResources) {
+define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection", "../CrModel", "./CrModelElb", "constant", "CloudResources"], function(CrCommonCollection, CrCollection, CrModel, CrElbModel, constant, CloudResources) {
 
   /* Elb */
   CrCommonCollection.extend({
@@ -1652,7 +1596,6 @@ define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection",
 
     /* env:dev                                               env:dev:end */
     type: constant.RESTYPE.EIP,
-    model: CrEipModel,
     trAwsXml: function(data) {
       var _ref;
       return (_ref = data.DescribeAddressesResponse.addressesSet) != null ? _ref.item : void 0;
@@ -1661,8 +1604,7 @@ define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection",
       var eip, _i, _len;
       for (_i = 0, _len = eips.length; _i < _len; _i++) {
         eip = eips[_i];
-        eip.id = eip.publicIp;
-        eip.canRelease = !eip.associationId;
+        eip.id = eip.allocationId;
       }
       return eips;
     },
@@ -1671,7 +1613,7 @@ define('cloudres/aws/CrClnCommonRes',["./CrCommonCollection", "../CrCollection",
       this.unifyApi(data, this.type);
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         eip = data[_i];
-        eip.id = eip.publicIp;
+        eip.id = eip.allocationId;
       }
       return data;
     }

@@ -694,9 +694,14 @@ $bp-2: 1280px;
     }
 
     .region-resource-info {
+      display       : inline-block;
       font-size     : 16px;
+      // font-weight   : 300;
       position      : relative;
+      padding-right : 80px;
       margin-left   : 60px;
+      width         : 100%;
+      box-sizing    : border-box;
 
       span {
         width : 20vw;
@@ -704,9 +709,11 @@ $bp-2: 1280px;
       }
 
       i {
-        color : lighten($dark-grey, 20%);
-        float : right;
-        margin-left : 10px;
+        position : absolute;
+        color    : lighten($dark-grey, 20%);
+
+        &:first-of-type { right: 90px; }
+        &:last-of-type { right: 60px; }
 
         &:hover { color: $base-b; }
 
@@ -845,7 +852,7 @@ $bp-2: 1280px;
   // padding       : 5px;
   box-sizing    : border-box;
   box-shadow    : 0 2px 0 #eeeef0;
-  width         : 77.2vw;
+  width         : 77.7vw;
   margin-left   : 1vw;
 
   .dash-region-header {

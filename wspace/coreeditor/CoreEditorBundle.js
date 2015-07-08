@@ -304,6 +304,9 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
       }
       return null;
     },
+    getAllComponents: function() {
+      return _.values(this.__componentMap);
+    },
     isModified: function() {
       var backing, newData;
       if (this.modeIsApp()) {
@@ -317,9 +320,7 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
       newData = this.serialize();
       if (_.isEqual(backing.component, newData.component)) {
         if (_.isEqual(backing.layout, newData.layout)) {
-          if (_.isEqual(backing.usage, newData.usage) && _.isEqual(backing.description, newData.description)) {
-            return false;
-          }
+          return false;
         }
       }
       return true;
@@ -737,6 +738,18 @@ define('ResourceModel',["Design", 'CloudResources', "constant", "backbone"], fun
       } else {
         return true;
       }
+    },
+    getTagModel: function() {
+      return Design.modelClassForType(constant.RESTYPE.TAG).getCustom();
+    },
+    addTag: function(key, value, inherit) {
+      return this.getTagModel().addTag(this, key, value, inherit);
+    },
+    removeTag: function(tagItem) {
+      return this.getTagModel().removeTag(this, tagItem);
+    },
+    tags: function() {
+      return (typeof this.connectionTargets === "function" ? this.connectionTargets('TagUsage') : void 0) || [];
     },
     isDesignAwake: function() {
       return Design.instance() === this.__design;
@@ -2026,16 +2039,24 @@ define('CoreEditorView',["wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n
       }
       return null;
     },
-    highLightModels: function(models) {
+    highLightModels: function(models, hold) {
       var oneTimeClicked, self;
+      if (hold == null) {
+        hold = false;
+      }
       self = this;
       oneTimeClicked = function(evt) {
+        if (evt.target && $(evt.target).closest('.filter-input').size()) {
+          return;
+        }
         console.log("hide highlight.");
         self.canvas.removeHighLight();
         self.resourcePanel.removeHighlight();
-        return $("body")[0].removeEventListener("click", oneTimeClicked, true);
+        return $("body")[0].removeEventListener("mousedown", oneTimeClicked, true);
       };
-      $("body")[0].addEventListener("click", oneTimeClicked, true);
+      if (!hold) {
+        $("body")[0].addEventListener("mousedown", oneTimeClicked, true);
+      }
       this.canvas.highLightModels(models);
     },
     removeHighlight: function() {
@@ -2124,7 +2145,7 @@ define('CanvasManager',['CloudResources', 'constant', 'i18n!/nls/lang.js'], func
       return this;
     },
     updateEip: function(node, targetModel) {
-      var detach, imgUrl, ip, tootipStr, _ref;
+      var imgUrl, ip, toggle, tootipStr, _ref;
       if (node.length) {
         node = node[0];
       }
@@ -2136,8 +2157,8 @@ define('CanvasManager',['CloudResources', 'constant', 'i18n!/nls/lang.js'], func
           $(node).show();
         }
       }
-      detach = targetModel.hasPrimaryEip();
-      if (detach) {
+      toggle = targetModel.hasPrimaryEip();
+      if (toggle) {
         tootipStr = lang.CANVAS.DETACH_ELASTIC_IP_FROM_PRIMARY_IP;
         imgUrl = 'ide/icon/icn-eipon.png';
       } else {
@@ -5149,8 +5170,10 @@ define('wspace/coreeditor/CanvasViewGResizer',["CanvasView"], function(CanvasVie
   };
 });
 
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
 define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "CanvasManager", "constant", "i18n!/nls/lang.js"], function(CanvasView, CanvasElement, CanvasManager, constant, lang) {
-  var CanvasViewProto, getElbowPathFromPoints, getNonOverlapRects, getPathFromPolygons, getPolygonsFromRect, trackMMoveForHint, xThenY, yThenX, __isOverlap;
+  var CanvasViewProto, getElbowPathFromPoints, getIndividualModel, getNonOverlapRects, getPathFromPolygons, getPolygonsFromRect, isIncest, trackMMoveForHint, xThenY, yThenX, __isOverlap;
   CanvasViewProto = CanvasView.prototype;
   xThenY = function(a, b) {
     if (a[0] < b[0]) {
@@ -5497,9 +5520,31 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
     }
     return rects.concat(cleanRects);
   };
+  isIncest = function(m, models) {
+    var parent;
+    if (m.type === constant.RESTYPE.LC) {
+      return _.some(m.getAsgs(), function(asg) {
+        return isIncest(asg, models) || __indexOf.call(models, asg) >= 0;
+      });
+    }
+    parent = m.parent();
+    if (!parent) {
+      return false;
+    }
+    if (__indexOf.call(models, parent) >= 0) {
+      return true;
+    }
+    return isIncest(parent, models);
+  };
+  getIndividualModel = function(models) {
+    return _.filter(models, function(m) {
+      return !isIncest(m, models);
+    });
+  };
   CanvasViewProto.highLightModels = function(models) {
     var items, self;
     this.removeHighLight();
+    models = getIndividualModel(models);
     if (!_.isArray(models)) {
       models = [models];
     }
@@ -6269,7 +6314,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       }
       return true;
     },
-    applyAppEdit: function(newJson, fastUpdate, attributes) {
+    applyAppEdit: function(newJson, fastUpdate) {
       var self;
       console.assert(this.isAppEditMode(), "Cannot apply app update while it's not in app edit mode.");
       if (!newJson) {
@@ -6279,7 +6324,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
       self = this;
-      this.opsModel.update(newJson, fastUpdate, attributes).then(function() {
+      this.opsModel.update(newJson, fastUpdate).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
         } else {

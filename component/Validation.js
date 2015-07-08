@@ -2274,7 +2274,7 @@ define('component/trustedadvisor/validation/aws/vpc/rtb',['constant', 'MC', 'TaH
       _.each(routeDesAry, function(routeDes) {
         var SubnetModel, tipInfo;
         SubnetModel = Design.modelClassForType(CONST.RESTYPE.SUBNET);
-        if ((currentRouteDes === routeDes) || SubnetModel.isCidrConflict(currentRouteDes, routeDes)) {
+        if ((currentRouteDes === routeDes) || (idx === 0 && SubnetModel.isCidrConflict(currentRouteDes, routeDes))) {
           tipInfo = sprintf(i18n.ERROR_RT_HAVE_CONFLICT_DESTINATION, rtbName);
           return notices.push({
             level: CONST.TA.ERROR,

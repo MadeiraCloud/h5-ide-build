@@ -266,58 +266,31 @@ function program3(depth0,data) {
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <section class=\"release-eip checkbox-wrap\">\n            <div class=\"checkbox\">\n                <input type=\"checkbox\" id=\"release-eip-checkbox\" />\n                <label for=\"release-eip-checkbox\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"release-eip-checkbox\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_RELEASE_EIP_LABEL", {hash:{},data:data}))
-    + "(";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.eipsToRelease), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  buffer += "\n        <section class=\"check-final-snapshot checkbox-wrap\">\n            <div class=\"checkbox\">\n                <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n                <label for=\"take-rds-snapshot\"></label>\n            </div>\n            <label for=\"take-rds-snapshot\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_TAKE_DB_SNAPSHOT", {hash:{},data:data}))
+    + "</label>\n        </section>\n        ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ")</label>\n            <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_RELEASE_EIP_NOTE", {hash:{},data:data}))
-    + "</p>\n        </section>\n    ";
+  buffer += "\n    ";
   return buffer;
   }
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.resource)),stack1 == null || stack1 === false ? stack1 : stack1.PublicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1));
-  return buffer;
-  }
-function program7(depth0,data) {
-  
-  
-  return ", ";
-  }
-
-function program9(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n        <section class=\"check-final-snapshot checkbox-wrap\">\n            <div class=\"checkbox\">\n                <input id=\"take-rds-snapshot\" type=\"checkbox\" checked=\"checked\" name=\"dns-resolution\">\n                <label for=\"take-rds-snapshot\"></label>\n            </div>\n            <label class=\"modal-text-minor\" for=\"take-rds-snapshot\">"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_TAKE_DB_SNAPSHOT", {hash:{},data:data}))
-    + "</label>\n        </section>\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.notReadyDB)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  return buffer;
-  }
-function program10(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n            <p class=\"cant-snapshot\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_CANT_TAKE_SNAPSHOT_1", {hash:{},data:data}))
     + "\n                ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.notReadyDB), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                "
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_CANT_TAKE_SNAPSHOT_2", {hash:{},data:data}))
     + "</p>\n        ";
   return buffer;
   }
-function program11(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
-  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (data == null || data === false ? data : data.index), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "<span class=\"resource-tag\">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.DBInstanceIdentifier)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -326,15 +299,17 @@ function program11(depth0,data) {
     + "</span>)";
   return buffer;
   }
+function program8(depth0,data) {
+  
+  
+  return ", ";
+  }
 
   buffer += "<div class=\"mg20\">\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.eipsToRelease)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.hasDBInstance)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
   return buffer;
@@ -945,7 +920,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       });
     },
     __terminateApp: function(id, resourceList, terminateConfirm, hasJsonData) {
-      var app, cloudType, eipsToRelease, fetchJsonData, hasDBInstance, name, notReadyDB, production;
+      var app, cloudType, fetchJsonData, name, production;
       app = this.model || this.workspace.opsModel.project().apps().get(id);
       name = app.get("name");
       production = app.get("usage") === 'production';
@@ -963,11 +938,8 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           return app.fetchJsonData();
         }
       };
-      hasDBInstance = null;
-      notReadyDB = [];
-      eipsToRelease = [];
       return fetchJsonData().then(function() {
-        var comp, dbInstanceName;
+        var comp, dbInstanceName, hasDBInstance, notReadyDB;
         if (cloudType === OpsModel.Type.OpenStack) {
           hasDBInstance = null;
           notReadyDB = [];
@@ -975,9 +947,6 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           comp = app.getJsonData().component;
           hasDBInstance = _.filter(comp, function(e) {
             return e.type === constant.RESTYPE.DBINSTANCE;
-          });
-          eipsToRelease = _.filter(comp, function(e) {
-            return e.type === constant.RESTYPE.EIP;
           });
           dbInstanceName = _.map(hasDBInstance, function(e) {
             return e.resource.DBInstanceIdentifier;
@@ -991,8 +960,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           production: production,
           name: name,
           hasDBInstance: hasDBInstance,
-          notReadyDB: notReadyDB,
-          eipsToRelease: eipsToRelease
+          notReadyDB: notReadyDB
         }));
         terminateConfirm.tpl.find('.modal-footer').show();
         terminateConfirm.resize();
@@ -1009,13 +977,11 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           }
         });
         terminateConfirm.on("confirm", function() {
-          var create_snapshot, release_eip;
+          var takeSnapshot;
           terminateConfirm.close();
-          create_snapshot = terminateConfirm.tpl.find("#take-rds-snapshot").is(':checked');
-          release_eip = terminateConfirm.tpl.find("#release-eip-checkbox").is(":checked");
+          takeSnapshot = terminateConfirm.tpl.find("#take-rds-snapshot").is(':checked');
           app.terminate(null, {
-            create_snapshot: create_snapshot,
-            release_eip: release_eip
+            create_snapshot: takeSnapshot
           }).fail(function(err) {
             var error;
             error = err.awsError ? err.error + "." + err.awsError : err.error;

@@ -675,10 +675,7 @@ define('ResDiff',['UI.modalplus', 'DiffTree', 'component/resdiff/resDiffTpl', 'c
       that.modifiedComps = {};
       unionOldComps = {};
       unionNewComps = {};
-      ignoreDiffMap = {
-        'AWS.EC2.Tag': true,
-        'AWS.AutoScaling.Tag': true
-      };
+      ignoreDiffMap = {};
       _.each(oldComps, function(comp, uid) {
         if (comp && !ignoreDiffMap[comp.type]) {
           if (newComps[uid]) {

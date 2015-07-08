@@ -6,9 +6,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn cloudfielder-btn\" href=\"http://cloudfielder.com/\" target=\"_blank\"><img src=\"http://cloudfielder.com/favicon.ico\" /> CloudFielder<span>NEW</span></a>\n      <button class=\"ph-nav-btn user-guide-btn popuptrigger truncate\" data-popup=\"popupGuide\">Guide</button>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
-    + "</a>\n      <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button>\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
+    + "</a><button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button><button class=\"ph-nav-btn user-menu popuptrigger truncate\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -338,93 +338,7 @@ TEMPLATE.switchConfirm=Handlebars.template(__TEMPLATE__);
 
 
 return TEMPLATE; });
-define('scenes/userguide/userguideTpl',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
-
-
-  return "<div class=\"guide-overlay\"></div>\n<img class=\"guide-logo guide-ui\" src=\"/assets/images/login/logo.svg\" />\n<div class=\"guide-view icon-menu guide-ui\"></div>\n<div class=\"guide-close icon-close guide-ui\"></div>\n<div class=\"guide-video\">\n	<div class=\"guide-video-tip\">Tutorial</div>\n	<div class=\"guide-video-title\"></div>\n	<div class=\"box-loading box-wrapper\">\n		<div class=\"loading-spinner\"></div>\n	</div>\n	<video class=\"guide-video\" controls><source type=\"video/mp4\"></video>\n</div>\n<div class=\"guide-list custom-scrollbar guide-ui\">\n	<!-- <div class=\"guide-title\"><div>VisualOps Guide</div></div> -->\n	<ul class=\"guide-cards\">\n		<li class=\"guide-card color1\" data-src=\"https://s3.amazonaws.com/visualopsguide/design_your_infrastructure_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-drag\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">Design Your Infrastructure</div>\n		</li>\n		<span class=\"guide-head\">Workflow</span>\n		<li class=\"guide-card color2\" data-src=\"https://s3.amazonaws.com/visualopsguide/configure_deploy_app_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-config\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">Configure & Deploy App</div>\n		</li>\n		<li class=\"guide-card color3\" data-src=\"https://s3.amazonaws.com/visualopsguide/launch_update_app_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-run\"></i></div>\n			<div class=\"info\">2<span>m</span></div>\n			<div class=\"intro\">Launch & Update App</div>\n		</li>\n		<li class=\"guide-card color6\" data-src=\"https://s3.amazonaws.com/visualopsguide/aws_resource_monitor_1.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-eye\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">AWS Resource Monitor</div>\n		</li>\n		<li class=\"guide-card color4\" data-src=\"https://s3.amazonaws.com/visualopsguide/export_image_cloudformation.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-picture-o\"></i></div>\n			<div class=\"info\">50<span>s</span></div>\n			<div class=\"intro\">Export Image & CloudFormation</div>\n		</li>\n		<span class=\"guide-head\">Import & Export</span>\n		<li class=\"guide-card color5\" data-src=\"https://s3.amazonaws.com/visualopsguide/import_from_aws.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-cloud-download\"></i></div>\n			<div class=\"info\">58<span>s</span></div>\n			<div class=\"intro\">Import From AWS</div>\n		</li>\n		<li class=\"guide-card color7\" data-src=\"https://s3.amazonaws.com/visualopsguide/import_cloudformation.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-code\"></i></div>\n			<div class=\"info\">23<span>s</span></div>\n			<div class=\"intro\">Import CloudFormation</div>\n		</li>\n		<li class=\"guide-card color9\" data-src=\"https://s3.amazonaws.com/visualopsguide/aws_resource_manage.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-columns\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">AWS Resource Manage</div>\n		</li>\n		<span class=\"guide-head\">Manage</span>\n		<li class=\"guide-card color8\" data-src=\"https://s3.amazonaws.com/visualopsguide/team_collaboration.mp4\">\n			<div class=\"head\"><i class=\"guideicon guideicon-users\"></i></div>\n			<div class=\"info\">1<span>m</span></div>\n			<div class=\"intro\">Team Collaboration</div>\n		</li>\n	</ul>\n</div>";
-  }; return Handlebars.template(TEMPLATE); });
-define('scenes/userguide/userguide',['constant', 'i18n!/nls/lang.js', './userguideTpl'], function(constant, lang, template) {
-  return Backbone.View.extend({
-    className: 'user-guide',
-    tagName: 'section',
-    initialize: function() {
-      return this.render();
-    },
-    events: {
-      'click .guide-card': 'playVideo',
-      'click .guide-video': 'closeVideo',
-      'click .guide-close': 'closeGuide',
-      'click .guide-view': 'switchView',
-      'mousewheel .guide-list': 'scrollHorizontally'
-    },
-    render: function() {
-      var that, video;
-      that = this;
-      this.$el.html(template());
-      $('body').append(this.$el);
-      video = this.$el.find('.guide-video video')[0];
-      video.addEventListener('ended', function() {
-        return that.closeVideo();
-      });
-      video.addEventListener('loadeddata', function() {
-        return that.$el.find('.box-loading').hide();
-      });
-      return this.$el.fadeIn();
-    },
-    playVideo: function(event) {
-      var $target, video, videoSrc;
-      this.$el.find('.guide-ui').hide();
-      $target = $(event.currentTarget);
-      videoSrc = $target.data('src');
-      this.$el.find('.guide-video source').attr('src', videoSrc);
-      this.$el.find('.guide-video .guide-video-title').text($target.find('.intro').text());
-      this.$el.find('.guide-video').fadeIn();
-      video = this.$el.find('.guide-video video')[0];
-      video.height = $(document).height();
-      this.$el.find('.box-loading').show();
-      video.load();
-      video.play();
-      this.$el.find('.guide-card').removeClass('active');
-      return $target.addClass('active');
-    },
-    closeVideo: function() {
-      var video;
-      this.$el.find('.guide-ui').show();
-      this.$el.find('.guide-video').fadeOut();
-      video = this.$el.find('.guide-video video')[0];
-      video.pause();
-      return video.currentTime = 0;
-    },
-    closeGuide: function() {
-      var that;
-      that = this;
-      this.$el.fadeOut('normal', function() {
-        return that.remove();
-      });
-    },
-    switchView: function(event) {
-      var $target;
-      $target = $(event.currentTarget);
-      if ($target.hasClass('icon-menu')) {
-        $target.removeClass('icon-menu').addClass('icon-resources');
-        return this.$el.find('.guide-cards').addClass('cube');
-      } else {
-        $target.removeClass('icon-resources').addClass('icon-menu');
-        return this.$el.find('.guide-cards').removeClass('cube');
-      }
-    },
-    scrollHorizontally: function(event) {
-      var delta;
-      delta = Math.max(-1, Math.min(1, event.originalEvent.wheelDelta || -event.originalEvent.detail));
-      return event.currentTarget.scrollLeft -= delta * 100;
-    }
-  });
-});
-
-define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modalplus", "./userguide/userguide", "i18n!/nls/lang.js", "constant", "backbone", "jquerysort", "UI.parsley", "UI.errortip", "MC.validate"], function(ApiRequest, ProjectTpl, OpsModel, Modal, UserGuide, lang, constant) {
+define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modalplus", "i18n!/nls/lang.js", "constant", "backbone", "jquerysort", "UI.parsley", "UI.errortip", "MC.validate"], function(ApiRequest, ProjectTpl, OpsModel, Modal, lang, constant) {
   var AssetListPopup, HeaderPopup, NotificationPopup, ProjectCreation, ProjectListPopup, UserPopup;
   ProjectCreation = Backbone.View.extend({
     events: {
@@ -785,9 +699,6 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
     },
     popupNotify: function() {
       return new NotificationPopup();
-    },
-    popupGuide: function() {
-      return new UserGuide();
     },
     updateNotify: function() {
       var data, idx, n, unread, ws, _i, _len;

@@ -5482,7 +5482,18 @@ define('rds_snapshot',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdo
   return snapshotRes;
 });
 
-define('component/awscomps/EipManageTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+define('component/awscomps/TagManagerTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"tag-manager-wrap\">\n    <div class=\"tag-resource-list\">\n        <input type=\"text\" class=\"input filter-bar\" placeholder=\"Filter Bar\"/>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\">\n            <ul>\n                <li data-id=\"checked\" class=\"active\">Checked (<span>0</span>)</li>\n                <li data-id=\"selected\">Selected</li>\n            </ul>\n        </div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n        </div>\n    </div>\n</div>";
+  };
+TEMPLATE.modalTemplate=Handlebars.template(__TEMPLATE__);
+
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -5492,565 +5503,1319 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <tr class=\"item\" data-id=\"\">\n        <td style=\"width: 5%;\">\n            <div class=\"checkbox\">\n                <input id=\"eip-select-"
-    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"checkbox\" value=\"None\" data-name=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" class=\"one-cb\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.canRelease), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                <label for=\"eip-select-"
-    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></label>\n            </div>\n        </td>\n        <td style=\"width: 35px;\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
-    + escapeExpression(((stack1 = (depth0 && depth0.instanceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
-    + escapeExpression(((stack1 = (depth0 && depth0.privateIpAddress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
-    + escapeExpression(((stack1 = (depth0 && depth0.domain)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n        <td>"
-    + escapeExpression(((stack1 = (depth0 && depth0.networkInterfaceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n    </tr>\n";
+  buffer += "\n<tr class=\"item\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n    <td>\n        <div class=\"checkbox\">\n            <input id=\"check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" value=\"None\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"one-cb\">\n            <label for=\"check-"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n        </div>\n    </td>\n    <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    <td>("
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + ")</td>\n</tr>\n";
   return buffer;
   }
-function program2(depth0,data) {
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.models), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.filterResource=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n    <div class=\"tag-empty\">Please select or check resource in left sidebar for tag details.</div>\n";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"table-head-fix tag-resource-table\">\n        <table class=\"table-head\">\n            <thead>\n            <tr>\n                <th class=\"\" width=\"35%\" data-row-type=\"string\">Key</th>\n                <th class=\"\" width=\"35%\" data-row-type=\"string\">Value</th>\n                <th class=\"\" width=\"15%\" data-row-type=\"string\">Inherit</th>\n                <th class=\"\" width=\"15%\" data-row-type=\"string\"></th>\n            </tr>\n            </thead>\n        </table>\n    </div>\n    <ul class=\"tags-list\">\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    </ul>\n";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <li data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-asg=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.asg)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n                <div class=\"edit\">\n                    <input class=\"tag-key input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" maxlength=\"127\" data-ignore=\"true\" data-required-rollback=\"true\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n                    <input class=\"tag-value input\" type=\"text\" value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "/>\n                    <div class=\"checkbox\">\n                        <input id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" value=\"None\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"one-cb\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                        <label for=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n                    </div>\n                    <div class=\"action\">\n                        <button class=\"btn btn-red edit-delete\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "><i class=\"icon-delete\"></i></button>\n                    </div>\n                </div>\n            </li>\n        ";
+  return buffer;
+  }
+function program5(depth0,data) {
   
   
   return "disabled";
   }
 
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+function program7(depth0,data) {
+  
+  
+  return "disabled=\"disabled\"";
+  }
+
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.empty), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   };
-TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
+TEMPLATE.tagResource=Handlebars.template(__TEMPLATE__);
 
+
+return TEMPLATE; });
+define('component/awscomps/FilterInputTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <p class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_TO_CREATE", {hash:{},data:data}))
-    + "</p>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
-  return buffer;
+  return "<div class=\"fake-input\">\n    <ul class=\"tags\"></ul>\n    <i class=\"icon-search placeholder\">Filter</i>\n    <input type=\"text\"/>\n    <span class=\"line-tip\"></span>\n</div>\n<ul class=\"dropdown\"></ul>";
   };
-TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
+TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_3", (depth0 && depth0.selecteEip), {hash:{},data:data}));
-  }
-
-function program3(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_2", (depth0 && depth0.selectedCount), {hash:{},data:data}));
-  }
-
-  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_1", {hash:{},data:data}))
-    + " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteEip), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n    <p>"
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_RELEASE_EIP_NOTE", {hash:{},data:data}))
-    + "</p>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_BTN", {hash:{},data:data}))
-    + "</button>\n        <button class=\"btn btn-silver cancel\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
-    + "</button>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"eip-selector-wrapper\">\n    <div class=\"modal-control-group clearfix\">\n        <label for=\"\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_SELECT_IP_LABEL", {hash:{},data:data}))
-    + "</label>\n        <div id=\"eip-selector\" style=\"display:inline-block;\"></div>\n        <div class=\"runtime-error hide\" id=\"need-select-eip\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_NEED_SELECT", {hash:{},data:data}))
-    + "</div>\n    </div>\n</div>";
-  return buffer;
-  };
-TEMPLATE.selector=Handlebars.template(__TEMPLATE__);
-
-
-__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <li class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.selected), "old", {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  buffer += "\n<li data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-vtext=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.vtext)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "label", {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\"old\" tabindex=\"-1\">\n        <div class=\"manager-content-main\" data-id=\"old\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_OLD_ELASTIC_IP", {hash:{},data:data}))
-    + "<i class=\"icon-info tooltip\" data-tooltip=\"Keep use current Elastic IP.\"></i></div>\n        <div class=\"manager-content-sub\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_OLD_ELASTIC_IP_DESC", {hash:{},data:data}))
-    + "</div>\n    </li>\n";
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n";
+  stack1 = ((stack1 = (depth0 && depth0.text)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</li>\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   
-  return "selected";
+  return "label";
   }
 
 function program4(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "<li class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.selected), "new", {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\"new\" tabindex=\"-1\">\n    <div class=\"manager-content-main\" data-id=\"new\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_NEW_ELASTIC_IP", {hash:{},data:data}))
-    + "<i class=\"icon-info tooltip\" data-tooltip=\"Assign a new Elastic IP\"></i></div>\n    <div class=\"manager-content-sub\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_NEW_ELASTIC_IP_DESC", {hash:{},data:data}))
-    + "</div>\n</li>";
-  return buffer;
+  
+  return "option";
   }
 
 function program6(depth0,data) {
   
-  var buffer = "", stack1;
-  buffer += "\n    <li class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.selected), (depth0 && depth0.id), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" tabindex=\"-1\">\n        <div class=\"manager-content-main\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n        <div class=\"manager-content-sub\">"
-    + escapeExpression(((stack1 = (depth0 && depth0.allocationId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n    </li>\n";
-  return buffer;
+  
+  return "selected";
   }
 
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.currentEip), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideNewEip), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  return buffer;
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
   };
 TEMPLATE.dropdown=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n<li data-key=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\n    <span class=\"key\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.vtext), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "=<span class=\"value\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.vtext)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>";
+  return buffer;
+  }
+
+  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.tag=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
-define('eip_manager',['toolbar_modal', 'UI.modalplus', 'component/awscomps/EipManageTpl', 'constant', 'backbone', 'CloudResources', 'i18n!/nls/lang.js', 'UI.notification'], function(toolbar_modal, modalplus, template, constant, Backbone, CloudResources, lang) {
-  return Backbone.View.extend({
-    initialize: function(options) {
-      var that;
-      _.extend(this, options);
-      this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.EIP, Design.instance().get("region"));
-      this.initModal();
-      this.modal.render();
-      if (Design.instance().credential() && !Design.instance().credential().isDemo()) {
-        that = this;
-        this.collection.fetch().then(function() {
-          return that.renderKeys();
-        });
+define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl'], function(constant, Design, template) {
+  var DefaultValues, RefRegx, ResNameToType, ResTypeToShort, filterInput, getResNameByType, getResShortNameByType, getResTypeByShortName, hasTag, isResAttributeMatch, isResMatchResource, isResMatchTag, seperate;
+  ResNameToType = _.invert(constant.RESNAME);
+  ResTypeToShort = _.invert(constant.RESTYPE);
+  DefaultValues = {
+    Empty: '(empty)',
+    NotTagged: 'Not tagged',
+    AllValues: 'All values',
+    AllAttributes: 'All Attributes'
+  };
+  RefRegx = /@\{.+\}/;
+  getResNameByType = function(type) {
+    return constant.RESNAME[type];
+  };
+  getResShortNameByType = function(type) {
+    var _ref;
+    return (_ref = ResTypeToShort[type]) != null ? _ref.toLowerCase() : void 0;
+  };
+  getResTypeByShortName = function(short) {
+    return constant.RESTYPE[short.toUpperCase()];
+  };
+  seperate = function(str, sep) {
+    var after, before, pos, tmp;
+    pos = str.indexOf(sep);
+    if (pos === -1) {
+      return false;
+    }
+    tmp = str.split(sep);
+    before = tmp[0];
+    after = tmp[1];
+    return {
+      before: before,
+      after: after,
+      pos: pos
+    };
+  };
+  isResAttributeMatch = function(resource, attr, value) {
+    var serialized;
+    if (!attr) {
+      return true;
+    }
+    if (attr === 'name') {
+      return resource.get('name') === value;
+    }
+    serialized = resource.serialize();
+    if (!_.isArray(serialized)) {
+      serialized = [serialized];
+    }
+    return _.some(serialized, function(serializedItem) {
+      var v, _ref, _ref1;
+      v = serializedItem != null ? (_ref = serializedItem.component) != null ? (_ref1 = _ref.resource) != null ? _ref1[attr] : void 0 : void 0 : void 0;
+      if (value === DefaultValues.AllValues) {
+        return v !== void 0;
       } else {
-        this.modal.render('nocredential');
+        return v === value;
       }
-      this.collection.on('update', this.renderKeys, this);
-      this.listenTo(Design.instance().credential(), "update", this.credChanged);
-      return this.listenTo(Design.instance().credential(), "change", this.credChanged);
+    });
+  };
+  hasTag = function(tags, key, value) {
+    var args;
+    args = arguments;
+    return _.some(tags, function(tag) {
+      return tag.get('key') === key && (args.length !== 3 || tag.get('value') === value);
+    });
+  };
+  isResMatchTag = function(resource, selTags) {
+    var tags;
+    if (!_.size(selTags)) {
+      return true;
+    }
+    tags = resource.tags();
+    return _.every(selTags, function(tagValues, tagKey) {
+      return _.some(tagValues, function(tagValue) {
+        switch (tagValue) {
+          case DefaultValues.AllValues:
+            return hasTag(tags, tagKey);
+          case DefaultValues.NotTagged:
+            return !hasTag(tags, tagKey);
+          case DefaultValues.Empty:
+            return hasTag(tags, tagKey, '');
+          default:
+            return hasTag(tags, tagKey, tagValue);
+        }
+      });
+    });
+  };
+  isResMatchResource = function(res, selectResources) {
+    if (!_.size(selectResources)) {
+      return true;
+    }
+    return _.some(selectResources, function(selRes) {
+      var attr, resShortName, splitDot, type, value;
+      splitDot = seperate(selRes.key, '.');
+      resShortName = (splitDot != null ? splitDot.before : void 0) || selRes.key;
+      attr = splitDot.after || '';
+      value = selRes.value;
+      type = getResTypeByShortName(resShortName);
+      return res.type === type && isResAttributeMatch(res, attr, value);
+    });
+  };
+  filterInput = Backbone.View.extend({
+    className: "filter-input",
+    tplDropdown: template.dropdown,
+    tplTag: template.tag,
+    unFilterTypeInVisualMode: [constant.RESTYPE.SG],
+    events: {
+      "click .tags li": "clickTagHandler",
+      "blur input": "blurInputHandler",
+      "focus input": "focusInputHandler",
+      "click input": "clickInputHandler",
+      "click .fake-input": "clickFakeInputHandler",
+      "keydown input": "keydownHandler",
+      "keyup input": "keyupHandler",
+      "click .dropdown li.option": "selectHandler",
+      "mouseover .dropdown": "overDrop",
+      "mouseleave .dropdown": "leaveDrop",
+      "mouseover .dropdown li": "overDropItem"
     },
-    initModal: function() {
-      new toolbar_modal(this.getModalOptions());
-      this.modal.on('close', function() {
-        return this.remove();
-      }, this);
-      this.modal.on('slidedown', this.renderSlides, this);
-      this.modal.on('action', this.doAction, this);
-      return this.modal.on('refresh', this.refresh, this);
+    getFilterableResource: function() {
+      var allComp;
+      allComp = Design.instance().getAllComponents();
+      return _.filter(allComp, (function(_this) {
+        return function(comp) {
+          var basic;
+          basic = !comp.port && _.contains(constant.HASTAG, comp.type);
+          if (_this.isVisual) {
+            return basic && comp.isVisual() && !_.contains(_this.unFilterTypeInVisualMode, comp.type);
+          } else {
+            return basic;
+          }
+        };
+      })(this));
     },
-    credChanged: function() {
-      this.collection.fetchForce();
-      this.modal.renderLoading();
-      return this.modal && this.refresh();
-    },
-    renderKeys: function() {
-      var data;
-      if (!this.collection.isReady()) {
-        return false;
+    getMatchedResource: function(hightlight) {
+      var filterable, matched, selection, _ref;
+      selection = this.classifySelection(this.selection);
+      filterable = this.getFilterableResource();
+      matched = _.filter(filterable, function(resource) {
+        if (isResMatchTag(resource, selection.tags) && isResMatchResource(resource, selection.resources)) {
+          return true;
+        }
+      });
+      if (hightlight) {
+        return {
+          matched: matched,
+          effect: (0 < (_ref = matched.length) && _ref < filterable.length)
+        };
+      } else {
+        return matched;
       }
-      data = {
-        keys: _.filter(this.collection.toJSON(), function(eip) {
-          return eip.category === Design.instance().region();
-        })
+    },
+    triggerChange: function() {
+      var matched;
+      matched = this.getMatchedResource(true);
+      return this.trigger('change:filter', matched.matched, matched.effect);
+    },
+    classifySelection: function() {
+      var classified, sel, _i, _len, _ref;
+      classified = {
+        tags: {},
+        resources: []
       };
-      this.modal.setContent(template.keys(data));
+      _ref = this.selection;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        sel = _ref[_i];
+        if (sel.type === 'tag') {
+          classified.tags[sel.key] || (classified.tags[sel.key] = []);
+          classified.tags[sel.key].push(sel.value);
+        } else {
+          classified.resources.push(sel);
+        }
+      }
+      return classified;
+    },
+    getState: function(value) {
+      var cursorPos, dotSplit, effect, equalSplit, input, key, mode, state, subKey, tagSplit, text;
+      input = this.$("input").get(0);
+      text = input.value;
+      subKey = null;
+      state = 'value';
+      equalSplit = seperate(text, '=');
+      key = ((equalSplit != null ? equalSplit.before : void 0) || text).trim();
+      value = (equalSplit != null ? equalSplit.after : void 0) || '';
+      tagSplit = seperate(key, 'tag:');
+      dotSplit = seperate(key, '.');
+      if (tagSplit) {
+        mode = 'tag';
+        key = tagSplit.after;
+      } else if (dotSplit) {
+        mode = 'resource_attribute';
+        key = dotSplit.before;
+        subKey = dotSplit.after;
+      } else {
+        mode = 'resource';
+        subKey = '';
+      }
+      cursorPos = input.selectionStart;
+      if (equalSplit && cursorPos > equalSplit.pos) {
+        state = 'value';
+        effect = value;
+      } else {
+        state = mode;
+        effect = mode === 'resource_attribute' ? subKey : key;
+      }
+      return {
+        mode: mode,
+        state: state,
+        key: key,
+        subKey: subKey,
+        value: value,
+        effect: effect
+      };
+    },
+    initialize: function(options) {
+      var comp, name, s, _i, _len, _ref;
+      this.selection = [];
+      if (options) {
+        this.isVisual = options.isVisual;
+        if (options.selection) {
+          _ref = options.selection;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            s = _ref[_i];
+            this.addSelection(s, true);
+          }
+        }
+        if (options.uid) {
+          comp = Design.instance().component(options.uid);
+          name = comp != null ? comp.get('name') : void 0;
+          if (name) {
+            this.addSelection({
+              key: "" + (getResShortNameByType(comp.type)) + ".name",
+              value: name,
+              type: 'resource_attribute'
+            }, true);
+          }
+        }
+      }
+      return null;
+    },
+    render: function() {
+      var tpl;
+      tpl = template.frame;
+      this.$el.html(tpl);
+      this.renderSelection();
       return this;
     },
-    doAction: function(action, checked) {
-      return this[action] && this[action](this.validate(action), checked);
+    renderDropdown: function() {
+      var data, filter, state;
+      state = this.getState();
+      filter = state.effect;
+      data = this.getDropdownData(state.state, state.key, state.subKey);
+      data = this.filterByInput(data, filter);
+      this.$(".dropdown").html(this.tplDropdown(data));
+      this.$(".dropdown").scrollTop(0);
+      return this;
     },
-    validate: function(action) {
-      switch (action) {
-        case 'create':
+    removeDropdown: function() {
+      return this.$(".dropdown").html("");
+    },
+    renderSelection: function() {
+      this.$(".tags").html(this.tplTag(this.selection));
+      return this;
+    },
+    renderLineTip: function($fakeInput) {
+      var $li, $lis, $ul, cs, hideLineNum, idx, li, lineWidth, ulWidth, _i, _len;
+      $fakeInput = $fakeInput || this.$(".fake-input");
+      $ul = this.$('.tags');
+      $lis = $ul.find('li');
+      if (!$lis.size()) {
+        this.$(".line-tip").text("");
+        return;
+      }
+      ulWidth = $ul.width();
+      lineWidth = 0;
+      hideLineNum = 0;
+      for (idx = _i = 0, _len = $lis.length; _i < _len; idx = ++_i) {
+        li = $lis[idx];
+        $li = $(li);
+        cs = window.getComputedStyle(li);
+        lineWidth += parseInt(cs.width) + parseInt(cs.paddingLeft) + parseInt(cs.paddingRight) + parseInt(cs.marginLeft) + parseInt(cs.marginRight);
+        if (lineWidth > ulWidth) {
+          hideLineNum = $lis.size() - idx;
+          break;
+        }
+      }
+      if (hideLineNum < 1) {
+        return this.$(".line-tip").text("");
+      } else {
+        return this.$(".line-tip").text("(+" + hideLineNum + ")");
+      }
+    },
+    stringKeyValue: function(sel) {
+      var key, value;
+      key = sel.key;
+      value = sel.value;
+      if (_.isNumber(key)) {
+        sel.key = key.toString();
+      }
+      if (_.isNumber(value)) {
+        return sel.value = value.toString();
+      }
+    },
+    addSelection: function(sel, silent) {
+      var state, _ref;
+      if (!sel) {
+        state = this.getState();
+        if (!state.value) {
+          return;
+        }
+        sel = {
+          key: state.key + (state.subKey ? "." + state.subKey : ''),
+          value: state.value,
+          type: state.mode
+        };
+      }
+      if (!sel.type) {
+        sel.type = this.getState().type;
+      }
+      if (!sel.vtext) {
+        sel.vtext = sel.value;
+      }
+      this.stringKeyValue(sel);
+      if (!sel.value && ((_ref = sel.type) !== 'resource' && _ref !== 'resource_attribute')) {
+        return;
+      }
+      this.clearInput();
+      if (_.some(this.selection, function(t) {
+        return _.isEqual(t, sel);
+      })) {
+        return this;
+      }
+      this.selection.push(sel);
+      if (!silent) {
+        this.triggerChange();
+      }
+      this.renderSelection();
+      return this;
+    },
+    removeSelection: function($sel) {
+      var selection;
+      if (!$sel.size()) {
+        return;
+      }
+      selection = {
+        key: $sel.data("key"),
+        value: $sel.data("value")
+      };
+      this.stringKeyValue(selection);
+      this.selection = _.filter(this.selection, function(s) {
+        return s.key !== selection.key || s.value !== selection.value && !(!s.value && !selection.value);
+      });
+      this.triggerChange();
+      if (this.selection.length) {
+        return $sel.remove();
+      } else {
+        return this.$(".tags").empty();
+      }
+    },
+    removeLastSelection: function() {
+      var $last;
+      $last = this.$(".tags li").last();
+      return this.removeSelection($last);
+    },
+    getDropdownData: function(state, key, subKey) {
+      if (state === 'value') {
+        if (subKey) {
+          return this.getAttributeValueDd(key, subKey);
+        } else {
+          return this.getTagValueDd(key);
+        }
+      } else {
+        if (state === 'resource_attribute') {
+          return this.getAttributeDd(key);
+        } else {
+          return this.getTagKeyDd().concat(this.getResourceDd());
+        }
+      }
+    },
+    uniqSortDd: function(dd) {
+      return _.sortBy(_.uniq(dd, function(d) {
+        return d.value;
+      }), 'value');
+    },
+    getAttributeDd: function(resShortName) {
+      var attrs, dd, resource, serialized, type;
+      type = getResTypeByShortName(resShortName);
+      if (!type) {
+        return;
+      }
+      attrs = [];
+      resource = Design.modelClassForType(type).first();
+      if (!type) {
+        return;
+      }
+      serialized = resource.serialize();
+      if (!_.isArray(serialized)) {
+        serialized = [serialized];
+      }
+      _.each(serialized, function(serializedItem) {
+        var _ref;
+        if (serializedItem != null ? (_ref = serializedItem.component) != null ? _ref.resource : void 0 : void 0) {
+          return _.each(serializedItem.component.resource, function(v, k) {
+            if (!_.isObject(v)) {
+              return attrs.push(k);
+            }
+          });
+        }
+      });
+      attrs.push('name');
+      dd = _.map(attrs, function(a) {
+        return {
+          type: 'attribute',
+          value: a
+        };
+      });
+      dd = this.uniqSortDd(dd);
+      dd.unshift({
+        type: 'attribute',
+        value: DefaultValues.AllAttributes,
+        "default": true
+      });
+      dd.unshift({
+        type: 'label',
+        value: 'Attributes',
+        "for": 'attribute'
+      });
+      return dd;
+    },
+    getResourceDd: function() {
+      var dd, resources;
+      resources = this.getFilterableResource();
+      dd = _.map(resources, function(r) {
+        return {
+          id: r.id,
+          type: 'resource',
+          value: getResShortNameByType(r.type),
+          text: getResNameByType(r.type)
+        };
+      });
+      dd = this.uniqSortDd(dd);
+      dd.unshift({
+        type: 'label',
+        value: 'Resources',
+        "for": 'resource'
+      });
+      return dd;
+    },
+    getTagKeyDd: function() {
+      var dd, tags;
+      tags = Design.modelClassForType(constant.RESTYPE.TAG).all();
+      dd = _.map(tags, function(tag) {
+        return {
+          id: tag.id,
+          type: 'tag.key',
+          value: tag.get('key')
+        };
+      });
+      dd = this.uniqSortDd(dd);
+      dd.unshift({
+        type: 'label',
+        value: 'Tag Keys',
+        "for": 'tag.key'
+      });
+      return dd;
+    },
+    getTagValueDd: function(tagKey) {
+      var dd, defaultTag, matchTags, tags, _i, _len, _ref;
+      tags = Design.modelClassForType(constant.RESTYPE.TAG).all();
+      matchTags = _.filter(tags, function(tag) {
+        return tag.get('key') === tagKey;
+      });
+      dd = _.map(matchTags, function(tag) {
+        return {
+          id: tag.id,
+          type: 'tag.value',
+          value: tag.get('value')
+        };
+      });
+      dd = this.uniqSortDd(dd);
+      _ref = [DefaultValues.AllValues, DefaultValues.NotTagged, DefaultValues.Empty];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        defaultTag = _ref[_i];
+        dd.unshift({
+          type: 'tag.value',
+          value: defaultTag,
+          "default": true
+        });
+      }
+      return dd;
+    },
+    getAttributeValueDd: function(resShortName, attr) {
+      var dd, r, resources, serialized, type, _i, _len;
+      type = getResTypeByShortName(resShortName);
+      if (!type) {
+        return;
+      }
+      resources = Design.modelClassForType(type).allObjects();
+      dd = [];
+      for (_i = 0, _len = resources.length; _i < _len; _i++) {
+        r = resources[_i];
+        if (attr === 'name') {
+          dd.push({
+            type: 'attribute_value',
+            value: r.get('name')
+          });
+          break;
+        }
+        serialized = r.serialize();
+        if (!_.isArray(serialized)) {
+          serialized = [serialized];
+        }
+        _.each(serialized, (function(_this) {
+          return function(serializedItem) {
+            var v, _ref, _ref1;
+            v = serializedItem != null ? (_ref = serializedItem.component) != null ? (_ref1 = _ref.resource) != null ? _ref1[attr] : void 0 : void 0 : void 0;
+            if (v) {
+              return dd.push({
+                type: 'attribute_value',
+                value: v,
+                text: _this.getReadableText(v),
+                vtext: _this.getReadableText(v)
+              });
+            }
+          };
+        })(this));
+      }
+      dd = this.uniqSortDd(dd);
+      dd.unshift({
+        type: 'attribute_value',
+        value: DefaultValues.AllValues,
+        "default": true
+      });
+      return dd;
+    },
+    getReadableText: function(value) {
+      var id, res;
+      if (RefRegx.test(value)) {
+        id = MC.extractID(value);
+        res = Design.instance().component(id);
+        if (res) {
+          return res.get('appId') || res.get('name');
+        }
+      }
+      return value;
+    },
+    focusInput: function($input) {
+      ($input || this.$("input")).focus();
+      return this.renderDropdown();
+    },
+    clearInput: function($input) {
+      return ($input || this.$("input")).val("");
+    },
+    getMatchText: function(data, filter) {
+      var matchIdx, text, value;
+      value = data.value.toString();
+      text = data.text.toString();
+      if ((matchIdx = value.toLowerCase().indexOf(filter)) !== -1) {
+        return value.slice(matchIdx, matchIdx + filter.length);
+      } else if ((matchIdx = text.toLowerCase().indexOf(filter)) !== -1) {
+        return text.slice(matchIdx, matchIdx + filter.length);
+      }
+    },
+    filterByInput: function(data, filter) {
+      var filtered, setSelected;
+      filter = filter && filter.trim().toLowerCase();
+      setSelected = false;
+      filtered = [];
+      _.each(data, (function(_this) {
+        return function(d) {
+          var match;
+          if (!d.text) {
+            d.text = d.value.toString();
+          }
+          if (!d.text) {
+            return;
+          }
+          if (d.type === 'label') {
+            return filtered.push(d);
+          } else if (!filter || (match = _this.getMatchText(d, filter))) {
+            if (!setSelected) {
+              d.selected = setSelected = true;
+            }
+            d.text = d.text.toString().replace(match, "<span class=\"match\">" + match + "</span>");
+            return filtered.push(d);
+          }
+        };
+      })(this));
+      return _.filter(filtered, function(f) {
+        if (f.type === 'label') {
+          return _.some(filtered, function(ff) {
+            return ff.type === f["for"];
+          });
+        }
+        return true;
+      });
+    },
+    fold: function(force) {
+      var that;
+      that = this;
+      if (!this.hoverDrop) {
+        return that.$(".dropdown").empty();
+      } else if (force === true) {
+        this.hoverDrop = false;
+        return this.fold();
+      }
+    },
+    setKeydowning: function() {
+      clearTimeout(this.__timeoutResetKeydowning);
+      return this.__keydowning = true;
+    },
+    unsetKeydowning: function() {
+      return this.__timeoutResetKeydowning = setTimeout((function(_this) {
+        return function() {
+          return _this.__keydowning = false;
+        };
+      })(this), 300);
+    },
+    overDrop: function() {
+      this.hoverDrop = true;
+      return null;
+    },
+    leaveDrop: function() {
+      this.hoverDrop = false;
+      return null;
+    },
+    overDropItem: function(e) {
+      var $tgt;
+      if (this.__keydowning) {
+        return;
+      }
+      $tgt = $(e.currentTarget);
+      this.$(".dropdown li").removeClass("selected");
+      if ($tgt.hasClass('option')) {
+        return $tgt.addClass("selected");
+      }
+    },
+    clickTagHandler: function(e) {
+      var $tgt;
+      $tgt = $(e.currentTarget);
+      this.removeSelection($tgt);
+      return false;
+    },
+    keyupHandler: function(e) {
+      var $input, code;
+      this.unsetKeydowning();
+      code = e.which;
+      $input = $(e.currentTarget);
+      if (!(_.contains([27, 38, 40], code))) {
+        return this.renderDropdown();
+      }
+    },
+    keydownHandler: function(e) {
+      var $dropdown, $input, $next, $prev, $selected, code, ddHeight, dropdown, nextHeight, nextTop, prevHeight, prevTop;
+      code = e.which;
+      $input = $(e.currentTarget);
+      switch (code) {
+        case 8:
+          if ($input[0].selectionStart === 0) {
+            this.removeLastSelection();
+            return this.focusInput();
+          }
+          break;
+        case 13:
+          dropdown = this.$(".dropdown");
+          if (dropdown.children().size()) {
+            return this.selectHandler({
+              currentTarget: dropdown.find(".selected")
+            });
+          } else {
+            return this.addSelection();
+          }
+          break;
+        case 27:
+          return this.fold();
+        case 38:
+          this.setKeydowning();
+          $selected = this.$(".dropdown .selected");
+          $prev = $selected.prevAll('.option').first();
+          $dropdown = this.$(".dropdown");
+          if ($prev.size()) {
+            prevHeight = $prev.outerHeight();
+            prevTop = $prev.position().top;
+            ddHeight = $dropdown.outerHeight();
+            if (prevTop < 0) {
+              $dropdown[0].scrollTop += prevTop;
+            }
+            $selected.removeClass("selected");
+            $prev.addClass("selected");
+          } else {
+            this.gotoLastDdItem($dropdown, $selected);
+          }
+          return false;
+        case 40:
+          this.setKeydowning();
+          $selected = this.$(".dropdown .selected");
+          $next = $selected.nextAll('.option').first();
+          $dropdown = this.$(".dropdown");
+          if ($next.size()) {
+            nextHeight = $next.outerHeight();
+            nextTop = $next.position().top;
+            ddHeight = $dropdown.outerHeight();
+            if (nextTop + nextHeight > ddHeight) {
+              $dropdown[0].scrollTop += nextTop + nextHeight - ddHeight;
+            }
+            $selected.removeClass("selected");
+            $next.addClass("selected");
+          } else {
+            this.gotoFirstDdItem($dropdown, $selected);
+          }
           return false;
       }
     },
-    switchAction: function(state) {
-      if (!state) {
-        state = 'init';
+    gotoFirstDdItem: function($dropdown, $selected) {
+      var $target;
+      $target = $dropdown.find('li.option').first();
+      if ($target && $target !== $selected) {
+        $selected.removeClass('selected');
+        $target.addClass('selected');
+        return $dropdown[0].scrollTop = 0;
       }
-      return this.M$('.slidebox .action').each(function() {
-        if ($(this).hasClass(state)) {
-          return $(this).show();
-        } else {
-          return $(this).hide();
-        }
-      });
     },
-    genDeleteFinish: function(times) {
-      var error, finHandler, success, that;
-      success = [];
-      error = [];
+    gotoLastDdItem: function($dropdown, $selected) {
+      var $target;
+      $target = $dropdown.find('li.option').last();
+      if ($target && $target !== $selected) {
+        $selected.removeClass('selected');
+        $target.addClass('selected');
+        return $dropdown[0].scrollTop = $dropdown.height();
+      }
+    },
+    focusInputHandler: function() {
+      clearTimeout(this.__timeoutRemoveFocus);
+      this.$(".fake-input").addClass("focus");
+      return this.trigger('focus');
+    },
+    blurInputHandler: function() {
+      var that;
       that = this;
-      finHandler = _.after(times, function() {
-        that.cancel();
-        if (success.length === 1) {
-          console.debug(success);
-          notification('info', sprintf(lang.NOTIFY.EIP_XXX_IS_RELEASED, success[0].attributes.id));
-          return;
-        } else if (success.length > 1) {
-          notification('info', sprintf(lang.NOTIFY.SELECTED_EIP_ARE_DELETED, success.length));
-          return;
-        }
-        if (!that.collection.toJSON().length) {
-          that.M$('#t-m-select-all').get(0).checked = false;
-        }
-        _.each(error, function(s) {
-          return console.log(s);
+      this.__timeoutRemoveFocus = setTimeout(function() {
+        var $fakeInput;
+        that.fold();
+        that.removeDropdown();
+        $fakeInput = that.$(".fake-input");
+        $fakeInput.removeClass("focus");
+        return that.renderLineTip($fakeInput);
+      }, 180);
+      return null;
+    },
+    clickInputHandler: function(e) {
+      e.stopPropagation();
+      this.renderDropdown();
+      return false;
+    },
+    clickFakeInputHandler: function(e) {
+      $(e.currentTarget).addClass("focus");
+      this.focusInput();
+      return false;
+    },
+    selectHandler: function(e) {
+      var $input, $tgt, key, state, type;
+      this.focusInput();
+      $tgt = $(e.currentTarget);
+      $input = this.$("input");
+      type = $tgt.data('type');
+      state = this.getState();
+      if (state.state === 'value') {
+        key = state.key + (state.subKey ? "." + state.subKey : '');
+        this.addSelection({
+          key: key,
+          value: $tgt.data('value'),
+          type: state.mode,
+          vtext: $tgt.data('vtext')
         });
-        if (error.length > 0) {
-          return notification('error', lang.NOTIFY.FAILED_TO_RELEASE_EIP);
-        }
-      });
-      return function(res) {
-        console.debug(res);
-        if (!(res.reason || res.msg)) {
-          success.push(res);
-        } else {
-          error.push(res);
-        }
-        return finHandler();
-      };
-    },
-    create: function(invalid) {
-      var domain, region, that;
-      that = this;
-      if (!invalid) {
-        domain = "vpc";
-        region = Design.instance().region();
-        this.switchAction('processing');
-        return this.collection.create({
-          domain: domain,
-          region: region
-        }).save().then(function(res) {
-          notification("info", sprintf(lang.NOTIFY.EIP_XXX_IS_CREATED, res.attributes.id));
-          return that.cancel();
-        }, function(err) {
-          that.modal.error(err.awsResult || err.reason || err.msg);
-          return that.switchAction();
-        });
-      }
-    },
-    "delete": function(invalid, checked) {
-      var count, onDeleteFinish, that;
-      count = checked.length;
-      onDeleteFinish = this.genDeleteFinish(count);
-      this.switchAction('processing');
-      that = this;
-      return _.each(checked, (function(_this) {
-        return function(c) {
-          return _this.collection.findWhere({
-            publicIp: c.data.name.toString()
-          }).destroy().then(onDeleteFinish, onDeleteFinish);
-        };
-      })(this));
-    },
-    cancel: function() {
-      return this.modal.cancel();
-    },
-    refresh: function() {
-      var _ref;
-      if ((_ref = this.modal) != null) {
-        _ref.render("loading");
-      }
-      return this.collection.fetchForce().then((function(_this) {
-        return function() {
-          return _this.renderKeys();
-        };
-      })(this));
-    },
-    renderSlides: function(which, checked) {
-      var slides, tpl, _ref;
-      tpl = template["slide_" + which];
-      slides = this.getSlides();
-      return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
-    },
-    getSlides: function() {
-      var modal, that;
-      that = this;
-      modal = this.modal;
-      return {
-        create: function(tpl) {
-          return modal.setSlide(tpl);
-        },
-        "delete": function(tpl, checked) {
-          var checkedAmount, data;
-          checkedAmount = checked.length;
-          if (!checkedAmount) {
-            return;
-          }
-          data = {};
-          if (checkedAmount === 1) {
-            data.selecteEip = checked[0].data.name;
+      } else {
+        key = $tgt.data('value');
+        if (type === 'attribute') {
+          if (key === DefaultValues.AllAttributes) {
+            this.addSelection({
+              key: state.key,
+              type: state.mode
+            });
+            return this.renderDropdown();
           } else {
-            data.selectedCount = checkedAmount;
+            key = "" + state.key + "." + key + " = ";
           }
-          return modal.setSlide(tpl(data));
+        } else if (type === 'resource') {
+          key = "" + key + ".";
+        } else {
+          key = "tag:" + key + " = ";
         }
-      };
-    },
-    getModalOptions: function() {
-      var region, regionName, that;
-      that = this;
-      region = Design.instance().get('region');
-      regionName = constant.REGION_SHORT_LABEL[region];
-      return {
-        title: sprintf(lang.IDE.MANAGE_EIP_IN_AREA, regionName),
-        resourceName: lang.PROP.RESOURCE_NAME_EIP,
-        context: that,
-        buttons: [
-          {
-            icon: 'new-stack',
-            type: 'create',
-            name: lang.IDE.COMPONENT_CREATE_EIP
-          }, {
-            icon: 'del',
-            type: 'delete',
-            disabled: true,
-            name: lang.IDE.COMPONENT_DELETE_EIP
-          }, {
-            icon: 'refresh',
-            type: 'refresh',
-            name: ''
-          }
-        ],
-        columns: [
-          {
-            sortable: true,
-            width: "35%",
-            name: "Elastic IP"
-          }, {
-            width: "15%",
-            sortable: true,
-            name: "Instance"
-          }, {
-            width: "15%",
-            sortable: true,
-            name: "Private IP"
-          }, {
-            width: "15%",
-            sortable: true,
-            name: "Domain"
-          }, {
-            width: "15%",
-            sortable: true,
-            name: "Network Interface"
-          }
-        ]
-      };
+        $input.val(key);
+      }
+      return this.renderDropdown();
     }
   });
+  return filterInput;
 });
 
-var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-define('eip_selector',['combo_dropdown', 'UI.modalplus', 'component/awscomps/EipManageTpl', 'constant', 'backbone', 'CloudResources', 'eip_manager', 'i18n!/nls/lang.js', 'UI.notification'], function(comboDropdown, Modal, template, constant, Backbone, CloudResources, EipManager, lang) {
+define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/awscomps/TagManagerTpl", "FilterInput", "backbone", 'i18n!/nls/lang.js', 'event'], function(constant, CloudResources, Modal, template, FilterInput, Backbone, lang, ide_event) {
   return Backbone.View.extend({
+    events: {
+      "click tbody tr.item": "selectTableRow",
+      "click .tag-resource-detail .tabs-navs li": "switchTab",
+      "click .create-tag": "addTag",
+      "change #t-m-select-all": "selectAllInput",
+      "click .edit-delete": "removeTagUsage",
+      "click .edit-done": "changeTags",
+      "click .save-tags": "saveAllTags",
+      "click .edit-remove-row": "removeRow",
+      "keyup .tag-key.input": "changeTagInput",
+      "keyup .tag-value.input": "changeTagInput"
+    },
     initialize: function(model) {
+      this.instance = Design.instance();
       this.model = model;
-      this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.EIP, Design.instance().get("region"));
-      this.listenTo(this.collection, 'change', this.renderDropdown);
-      this.listenTo(this.collection, 'update', this.renderDropdown);
-      this.listenTo(Design.instance().credential(), "update", this.credChanged);
-      this.listenTo(Design.instance().credential(), "change", this.credChanged);
-      return this.renderModal();
+      this.setElement(this.renderModal().tpl);
+      this.renderFilter();
+      return this;
     },
     renderModal: function() {
-      var self;
-      self = this;
       this.modal = new Modal({
-        title: lang.PROP.EIP_SELECTOR_CONFIRM_TITLE,
-        template: template.selector,
-        confirm: lang.PROP.EIP_SELECTOR_CONFIRM_LABEL
+        title: "Tag Management",
+        width: 900,
+        height: 500,
+        template: template.modalTemplate,
+        disableFooter: true
       });
-      this.modal.on("shown", function() {
-        return self.renderDropdown();
-      });
-      return this.modal.on("confirm", function() {
-        if (self.selected) {
-          self.model.setPrimaryEip(true, self.selectedEip);
-          self.trigger("assign");
-          return self.modal.close();
-        } else {
-          return self.modal.find("#need-select-eip").removeClass("hide");
+      return this.modal;
+    },
+    renderFilter: function() {
+      var data;
+      data = this.model ? {
+        uid: this.model.id
+      } : null;
+      this.filter = new FilterInput(data);
+      this.listenTo(this.filter, 'change:filter', this.filterResourceList);
+      this.modal.tpl.find(".filter-bar").replaceWith(this.filter.render().el);
+      if (data) {
+        this.filterResourceList(this.filter.getMatchedResource());
+        return this.$el.find(".t-m-content tr.item").eq(0).click();
+      } else {
+        return this.filterResourceList(this.filter.getFilterableResource());
+      }
+    },
+    selectTableRow: function(evt) {
+      var $row;
+      $row = $(evt.currentTarget);
+      this.$el.find("tr.item").removeClass("selected");
+      $row.addClass("selected");
+      this.$el.find(".tabs-navs ul li[data-id='selected']").click();
+      this.renderTagsContent($row.data("id"));
+      return evt.stopPropagation();
+    },
+    selectAllInput: function(e) {
+      var isChecked;
+      isChecked = $(e.currentTarget).is(":checked");
+      this.$el.find(".table-head-fix .item .checkbox input").prop("checked", isChecked);
+      return this.renderTagsContent();
+    },
+    changeTags: function(elem) {
+      var $tagKey, $tagLi, $tagValue, error, inherit, key, resource, tagAsgComp, tagComp, value;
+      $tagLi = $(elem).parents("li");
+      $tagKey = $tagLi.find(".tag-key");
+      $tagValue = $tagLi.find(".tag-value");
+      tagComp = this.instance.component($tagLi.data("id"));
+      tagAsgComp = this.instance.component($tagLi.data("asg"));
+      if ($tagKey.val()) {
+        key = $tagKey.val();
+        value = $tagValue.val();
+        inherit = $tagLi.find(".checkbox input").is("checked");
+        if (key.indexOf("aws:") === 0) {
+          return false;
+        }
+        resource = this.getAffectedResources();
+        if (tagComp) {
+          tagComp.update(resource.common, key, value);
+        }
+        if (tagAsgComp) {
+          tagAsgComp.update(resource.asg, key, value, inherit);
+        }
+        if (!tagComp && !tagAsgComp) {
+          error = null;
+          _.each(_.union(resource.common, resource.asg), function(res) {
+            var err;
+            err = res.addTag(key, value, inherit);
+            if (err) {
+              return error = err;
+            }
+          });
+          if (error) {
+            return notification("error", error.error);
+          }
+        }
+      } else {
+        return notification("error", "Sorry, both key and value are required.");
+      }
+    },
+    saveAllTags: function() {
+      var that;
+      that = this;
+      this.$el.find(".tab-content:visible").find("input.tag-key").not(":disabled").each(function(index, value) {
+        if (value.value) {
+          return that.changeTags(value);
         }
       });
+      this.renderTagsContent();
+      return ide_event.trigger(ide_event.REFRESH_PROPERTY);
     },
-    credChanged: function() {
-      var _ref;
-      if ((_ref = this.dropdown) != null) {
-        _ref.render("loading");
+    getAffectedResources: function() {
+      var comp, isSelected, resources, self;
+      self = this;
+      isSelected = "selected" === this.$el.find(".tabs-navs li.active").data("id");
+      resources = {
+        common: [],
+        asg: []
+      };
+      if (isSelected) {
+        comp = this.instance.component(this.$el.find(".t-m-content .item.selected").data("id"));
+        if (comp.type === "AWS.AutoScaling.Group") {
+          resources.asg.push(comp);
+        } else {
+          resources.common.push(comp);
+        }
+      } else {
+        this.$el.find(".t-m-content .one-cb").each(function(key, value) {
+          if ($(value).is(":checked")) {
+            comp = self.instance.component($(value).parents("tr").data("id"));
+            if (comp.type === "AWS.AutoScaling.Group") {
+              return resources.asg.push(comp);
+            } else {
+              return resources.common.push(comp);
+            }
+          }
+        });
       }
-      return this.collection.fetchForce().then((function(_this) {
+      return resources;
+    },
+    removeTagUsage: function(e) {
+      var $tagLi, asgTagComp, resources, tagComp;
+      $tagLi = $(e.currentTarget).parents("li");
+      tagComp = this.instance.component($tagLi.data("id"));
+      asgTagComp = this.instance.component($tagLi.data("asg"));
+      resources = this.getAffectedResources();
+      if (!tagComp && !asgTagComp) {
+        $tagLi.remove();
+        return;
+      }
+      if (tagComp) {
+        _.each(resources.common, function(res) {
+          return res.removeTag(tagComp);
+        });
+      }
+      if (asgTagComp) {
+        _.each(resources.asg, function(asg) {
+          return asg.removeTag(asgTagComp);
+        });
+      }
+      return this.renderTagsContent();
+    },
+    renderTagsContent: function(uid) {
+      var checkedAllAsg, checkedAsgComps, checkedAsgData, checkedAsgTagArray, checkedAsgTagIdsArray, checkedComps, checkedData, checkedTagArray, checkedTagIdsArray, selectedComp, selectedIsAsg, self, tags, tagsData, unitedData;
+      self = this;
+      if (!uid) {
+        uid = this.$el.find(".t-m-content .item.selected").data("id");
+      }
+      selectedIsAsg = false;
+      checkedAllAsg = true;
+      selectedComp = this.instance.component(uid);
+      selectedIsAsg = (selectedComp != null ? selectedComp.type : void 0) === "AWS.AutoScaling.Group";
+      tags = selectedComp ? selectedComp.tags() : [];
+      tagsData = _.map(tags, function(tag) {
+        return {
+          key: tag.get("key"),
+          value: tag.get("value"),
+          id: tag.id,
+          disableEdit: tag.get("retain"),
+          allowCheck: selectedIsAsg
+        };
+      });
+      this.$el.find(".tab-content[data-id='selected']").html(template.tagResource({
+        data: tagsData,
+        empty: !selectedComp
+      }));
+      checkedComps = [];
+      checkedTagArray = [];
+      checkedAsgComps = [];
+      checkedAsgTagArray = [];
+      this.$el.find(".t-m-content .one-cb").each(function(key, value) {
+        var checkedComp;
+        checkedComp = self.instance.component($(value).parents("tr").data("id"));
+        if (checkedComp.type !== "AWS.AutoScaling.Group") {
+          checkedAllAsg = false;
+          if ($(value).is(":checked")) {
+            checkedComps.push(checkedComp);
+            return checkedTagArray.push(checkedComp.tags());
+          }
+        } else {
+          if ($(value).is(":checked")) {
+            checkedAsgComps.push(checkedComp);
+            return checkedAsgTagArray.push(checkedComp.tags());
+          }
+        }
+      });
+      checkedTagIdsArray = _.map(checkedTagArray, function(tagArray) {
+        return _.map(tagArray, function(tag) {
+          return tag.id;
+        });
+      });
+      checkedData = _.map(_.intersection.apply(_, checkedTagIdsArray), function(tagId) {
+        var tag;
+        tag = self.instance.component(tagId);
+        return {
+          key: tag.get("key"),
+          value: tag.get("value"),
+          id: tag.id,
+          disableEdit: tag.get("retain"),
+          allowCheck: checkedAllAsg
+        };
+      });
+      checkedAsgTagIdsArray = _.map(checkedAsgTagArray, function(tagArray) {
+        return _.map(tagArray, function(tag) {
+          return tag.id;
+        });
+      });
+      checkedAsgData = _.map(_.intersection.apply(_, checkedAsgTagIdsArray), function(tagId) {
+        var tag;
+        tag = self.instance.component(tagId);
+        return {
+          key: tag.get("key"),
+          value: tag.get("value"),
+          asg: tag.id,
+          disableEdit: tag.get("retain"),
+          allowCheck: checkedAllAsg
+        };
+      });
+      unitedData = [];
+      if (checkedAsgComps.length) {
+        if (checkedComps.length) {
+          unitedData = _.compact(_.map(checkedData, function(data) {
+            var commonData;
+            commonData = _.findWhere(checkedAsgData, {
+              key: data.key,
+              value: data.value
+            });
+            if (commonData) {
+              commonData.id = data.id;
+            }
+            return commonData;
+          }));
+        } else {
+          unitedData = checkedAsgData;
+        }
+      } else {
+        unitedData = checkedData;
+      }
+      this.$el.find(".tab-content[data-id='checked']").html(template.tagResource({
+        data: unitedData,
+        empty: !checkedComps.length
+      }));
+      this.$el.find(".tabs-navs li[data-id='checked'] span").text(checkedComps.length + checkedAsgComps.length);
+      return this.changeTagInput();
+    },
+    filterResourceList: function(resModels) {
+      var models;
+      models = _.map(resModels, function(model) {
+        return {
+          name: model.get("name"),
+          appId: model.get("appId"),
+          type: model.type,
+          id: model.id
+        };
+      });
+      this.modal.tpl.find(".t-m-content").html(template.filterResource({
+        models: models
+      }));
+      return _.delay((function(_this) {
         return function() {
-          return _this.renderDropdown();
+          return _this.renderTagsContent();
         };
       })(this));
     },
-    renderDropdown: function() {
-      var option, selection;
-      option = {
-        manageBtnValue: lang.PROP.EIP_DROPDOWN_MANAGE,
-        filterPlaceHolder: lang.PROP.EIP_DROPDOWN_FILTER,
-        resourceName: lang.PROP.EIP_RESOURCE_NAME
-      };
-      this.dropdown = new comboDropdown(option);
-      selection = lang.PROP.SELECT_EIP_SELECTION;
-      this.dropdown.setSelection(selection);
-      this.dropdown.on('open', this.renderEip, this);
-      this.dropdown.on('manage', this.manageEip, this);
-      this.dropdown.on('change', this.assignEip, this);
-      this.dropdown.on('filter', this.filter, this);
-      if (!Design.instance().credential() || Design.instance().credential().isDemo()) {
-        this.dropdown.render('nocredential').toggleControls(false);
-      }
-      return this.modal.tpl.find("#eip-selector").html(this.dropdown.$el);
-    },
-    renderEip: function(keySet) {
-      var self;
-      self = this;
-      this.collection.fetch().then(function() {
-        var content, currentEip, currentRegion, data, dataSet, enisWithEip, selected, usedEips;
-        data = self.collection.toJSON();
-        currentRegion = Design.instance().region();
-        if (keySet) {
-          data = keySet;
-        }
-        enisWithEip = _.filter(Design.instance().componentsOfType(constant.RESTYPE.ENI), function(eni) {
-          return eni.hasPrimaryEip();
-        });
-        usedEips = _.map(enisWithEip, function(eni) {
-          return eni.get("ips")[0].eipData.publicIp;
-        });
-        data = _.filter(data, function(eip) {
-          var _ref;
-          if (_ref = eip.publicIp, __indexOf.call(usedEips, _ref) >= 0) {
-            return false;
-          }
-          return eip.category === currentRegion && eip.canRelease;
-        });
-        dataSet = {
-          data: data
-        };
-        if (keySet) {
-          dataSet.hideNewEip = true;
-        }
-        if (self.selected) {
-          selected = null;
-          if (self.selectedEip && self.selectedEip.id) {
-            selected = self.selectedEip.id;
-          } else {
-            selected = self.selectedEip;
-          }
-          dataSet.selected = selected;
-        }
-        currentEip = null;
-        if (self.model.getEmbedEni) {
-          currentEip = self.model.getEmbedEni().getCurrentEip();
+    changeTagInput: function() {
+      this.$el.find(".tags-list li").each(function(idx, elem) {
+        if (!$(elem).find('.input.tag-key').val() && !$(elem).find('.input.tag-value').val()) {
+          return $(this).remove();
         } else {
-          currentEip = self.model.getCurrentEip();
+          return $(elem).find('.edit-remove-row').show();
         }
-        if (currentEip) {
-          dataSet.currentEip = {
-            id: currentEip.resource.PublicIp
-          };
-        }
-        content = template.dropdown(dataSet);
-        self.dropdown.toggleControls(true, "manage");
-        self.dropdown.toggleControls(true, "filter");
-        return self.dropdown.setContent(content);
       });
-      return console.log("Render Eip List");
+      return this.addTag();
     },
-    manageEip: function() {
-      console.log("Show Eip Manager");
-      return new EipManager({
-        workspace: this.workspace
-      }).render();
-    },
-    assignEip: function(id) {
-      var eip;
-      eip = this.collection.find({
-        id: id
-      });
-      eip || (eip = id);
-      this.selected = true;
-      this.selectedEip = eip;
-      this.modal.find("#need-select-eip").addClass("hide");
-      console.log("Assign Elastic Ip to Model");
-      return console.log(eip);
-    },
-    filter: function(keyword) {
-      var hitKeys;
-      console.log("Filter Elastic Ip");
-      hitKeys = _.filter(this.collection.toJSON(), function(eip) {
-        return eip.id.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
-      });
-      if (keyword) {
-        return this.renderEip(hitKeys);
-      } else {
-        return this.renderEip();
+    addTag: function(e) {
+      var $tagLi, hasNoneAsg, tagId, tagTemplate;
+      tagId = this.$el.find(".tags-list li").size() + 1;
+      tagTemplate = "<li class=\"edit\">\n    <div class=\"edit\">\n        <input class=\"tag-key input\" type=\"text\" value=\"\" maxlength=\"127\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n        <input class=\"tag-value input\" type=\"text\" value=\"\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\"/>\n        <div class=\"checkbox\">\n            <input id='" + tagId + "' type=\"checkbox\" value=\"None\" class=\"one-cb\">\n            <label for=\"" + tagId + "\"></label>\n        </div>\n        <div class=\"action\">\n          <button class=\"btn btn-red edit-remove-row\"><i class=\"icon-del\"></i></button>\n        </div>\n    </div>\n</li>";
+      $tagLi = $(tagTemplate);
+      $tagLi.appendTo(this.$el.find("ul.tags-list"));
+      hasNoneAsg = this.getAffectedResources().common.length > 0;
+      if (hasNoneAsg) {
+        return $tagLi.find(".checkbox input").prop("disabled", hasNoneAsg);
       }
+    },
+    removeRow: function(e) {
+      return $(e.currentTarget).parents("li").remove();
+    },
+    switchTab: function(evt) {
+      var $li, target;
+      $li = $(evt.currentTarget);
+      if ($li.hasClass("active")) {
+        return false;
+      }
+      this.$el.find(".tabs-navs li").removeClass("active");
+      target = $li.addClass("active").data("id");
+      this.$el.find(".tabs-content .tab-content").hide();
+      return this.$el.find(".tabs-content .tab-content[data-id='" + target + "']").show();
     }
   });
 });
@@ -8302,20 +9067,24 @@ define('component/awscomps/SGRulePopupView',['./SGRulePppTpl', 'i18n!/nls/lang.j
       isShown = $sidebar.hasClass("shown");
       if (ruleCount === 0) {
         if (isShown) {
-          $sidebar.removeClass("shown").animate({
-            left: "0"
-          });
-          return $modal.animate({
-            left: '-=100px'
+          return _.delay(function() {
+            $sidebar.removeClass("shown").animate({
+              left: "0"
+            });
+            return $modal.animate({
+              left: '-=100px'
+            }, 300);
           }, 300);
         }
       } else {
         if (!isShown) {
-          $sidebar.addClass("shown").animate({
-            left: "-200px"
-          });
-          return $modal.animate({
-            left: '+=100px'
+          return _.delay(function() {
+            $sidebar.addClass("shown").animate({
+              left: "-200px"
+            });
+            return $modal.animate({
+              left: '+=100px'
+            }, 300);
           }, 300);
         }
       }

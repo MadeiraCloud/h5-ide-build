@@ -101,29 +101,38 @@ function program12(depth0,data) {
   var buffer = "", stack1;
   buffer += "\n  <div class=\"option-group-head\">\n      "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
-    + "\n  </div>\n  <div class=\"option-group\">\n      <table class=\"table cost-estimation-table\">\n          <tbody>\n          ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+    + "\n  </div>\n  <div class=\"option-group\">\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.program(16, program16, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n          </tbody>\n      </table>\n  </div>\n  ";
+  buffer += "\n  </div>\n  ";
   return buffer;
   }
 function program13(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n          <tr> <td style=\"min-width:70px;\">"
+  buffer += "\n    <table class=\"table cost-estimation-table\">\n      <tbody>\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tagSet), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </tbody>\n    </table>\n    ";
+  return buffer;
+  }
+function program14(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n      <tr> <td style=\"min-width:70px;\">"
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</td><td>"
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
-    + "</td> </tr>\n          ";
+    + "</td> </tr>\n      ";
   return buffer;
   }
 
-function program15(depth0,data) {
+function program16(depth0,data) {
   
   var buffer = "";
-  buffer += "\n          <tr>"
+  buffer += "\n    <div class=\"empty-tag\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
-    + "</tr>\n          ";
+    + "</div>\n    ";
   return buffer;
   }
 

@@ -16,17 +16,20 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff?v=fe27504d") format("woff"); }
+  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff") format("woff"); }
+
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 700;
-  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff?v=66c8242c") format("woff"); }
+  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff") format("woff"); }
+
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff?v=0dfaf006") format("woff"); }
+  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff") format("woff"); }
+
 /* Hack custom fonts loading */
 @media (min-width: 1px) {
   body {
@@ -50,7 +53,7 @@ body {
   font-size: 14px; }
 
 a {
-  color: #4A90E2;
+  color: #4a90e2;
   text-decoration: none;
   cursor: pointer; }
   a:hover {
@@ -321,7 +324,7 @@ body {
 
 #body {
   color: #222;
-  background: #000 url("../images/login/bg.jpeg?v=5e70e91c");
+  background: black url("../images/login/bg.jpeg");
   background-size: cover; }
 
 a {
@@ -336,7 +339,7 @@ header {
   padding: 10px 0 9px 0; }
 
 #logo-link {
-  background: url("../images/login/logo.svg?v=cc0eff8d") center no-repeat;
+  background: url("../images/login/logo.svg") center no-repeat;
   background-size: 240px auto;
   height: 80px;
   width: 240px;
@@ -586,7 +589,7 @@ footer {
   font-size: 12px; }
 
 #arn {
-  background-image: url("../images/login/arn-dark.png?v=a9e27585");
+  background-image: url("../images/login/arn-dark.png");
   background-size: 261px 85px;
   width: 261px;
   height: 85px;
@@ -600,12 +603,12 @@ footer {
   padding: 200px 0; }
 
 #body-500 h1 {
-  background: #363B76;
+  background: #363b76;
   position: absolute;
   z-index: 100;
   width: 100%;
   top: 0;
-  border-top: 4px solid #25254C;
+  border-top: 4px solid #25254c;
   border-bottom: 1px solid #181818;
   padding: 5px 0 9px 0; }
 
