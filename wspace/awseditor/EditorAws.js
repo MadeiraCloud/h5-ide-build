@@ -26626,8 +26626,15 @@ define('wspace/awseditor/model/connection/VPNConnection',["constant", "Connectio
     tags: function() {
       return this.__resource.tags.apply(this.__resource, arguments);
     },
+    get: function(attr) {
+      if (attr === 'name') {
+        return "vpn:" + this.getTarget(constant.RESTYPE.CGW).get("name");
+      } else {
+        return ConnectionModel.prototype.get.call(this, attr);
+      }
+    },
     serialize: function(component_data) {
-      var cgw, routes, vgw;
+      var cgw, component, routes, vgw;
       vgw = this.getTarget(constant.RESTYPE.VGW);
       cgw = this.getTarget(constant.RESTYPE.CGW);
       if (cgw.isDynamic()) {
@@ -26638,23 +26645,23 @@ define('wspace/awseditor/model/connection/VPNConnection',["constant", "Connectio
             DestinationCidrBlock: r
           };
         });
+        component = {
+          name: this.get('name'),
+          type: this.type,
+          uid: this.id,
+          resource: {
+            CustomerGatewayId: cgw.createRef("CustomerGatewayId"),
+            Options: {
+              StaticRoutesOnly: !cgw.isDynamic()
+            },
+            Type: "ipsec.1",
+            Routes: routes,
+            VpnConnectionId: this.get("appId"),
+            VpnGatewayId: vgw.createRef("VpnGatewayId")
+          }
+        };
       }
-      component_data[this.id] = {
-        name: "vpn:" + cgw.get("name"),
-        type: this.type,
-        uid: this.id,
-        resource: {
-          CustomerGatewayId: cgw.createRef("CustomerGatewayId"),
-          Options: {
-            StaticRoutesOnly: !cgw.isDynamic()
-          },
-          Type: "ipsec.1",
-          Routes: routes,
-          VpnConnectionId: this.get("appId"),
-          VpnGatewayId: vgw.createRef("VpnGatewayId")
-        }
-      };
-      return null;
+      return component_data && (component_data[this.id] = component) || component;
     },
     remove: function() {
       this.getResourceModel().remove();

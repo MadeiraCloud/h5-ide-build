@@ -5613,6 +5613,9 @@ function program13(depth0,data) {
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.inherit), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                            <label for=\"cb"
@@ -6486,7 +6489,7 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
       if ($target && $target !== $selected) {
         $selected.removeClass('selected');
         $target.addClass('selected');
-        return $dropdown[0].scrollTop = $dropdown.height();
+        return $dropdown[0].scrollTop = $dropdown[0].scrollHeight;
       }
     },
     focusInputHandler: function() {
@@ -6661,7 +6664,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
           }
         }
       } else {
-        return notification("error", "Sorry, both key and value are required.");
+        return notification("error", "Sorry, but tag should have a key name.");
       }
     },
     saveAllTags: function() {
@@ -6698,7 +6701,11 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
     },
     removeTagUsage: function(e) {
       var $tagLi, asgTagComp, resources, tagComp;
-      $tagLi = $(e.currentTarget).parents("li");
+      if (e.currentTarget) {
+        $tagLi = $(e.currentTarget).parents("li");
+      } else {
+        $tagLi = $(e);
+      }
       tagComp = this.instance.component($tagLi.data("id"));
       asgTagComp = this.instance.component($tagLi.data("asg"));
       resources = this.getAffectedResources();
@@ -6716,7 +6723,9 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
           return asg.removeTag(asgTagComp);
         });
       }
-      return this.renderTagsContent();
+      if (e.currentTarget) {
+        return this.renderTagsContent();
+      }
     },
     renderTagsContent: function(uid) {
       var allComps, checkedAllAsg, checkedAsgComps, checkedAsgData, checkedAsgTagArray, checkedAsgTagIdsArray, checkedComps, checkedData, checkedTagArray, checkedTagIdsArray, info, self, unitedData;
@@ -6830,14 +6839,16 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       })(this));
     },
     changeTagInput: function() {
-      var focusToLast;
+      var focusToLast, that;
+      that = this;
       focusToLast = false;
       this.$el.find(".tags-list li").each(function(idx, elem) {
         if (!$(elem).find('.input.tag-key').val() && !$(elem).find('.input.tag-value').val()) {
-          if ($(this).next('li').length) {
+          if ($(elem).next('li').length) {
             focusToLast = true;
           }
-          return $(this).remove();
+          that.removeTagUsage(elem);
+          return $(elem).remove();
         } else {
           return $(elem).find('.edit-remove-row').show();
         }
