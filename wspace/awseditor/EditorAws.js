@@ -905,7 +905,11 @@ function program29(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_AWS_EC2_PRICING", {hash:{},data:data}))
-    + "</a>\n		</div>\n	</div>\n\n</article>";
+    + "</a>\n		</div>\n	</div>\n\n    <div class=\"option-group-head expand\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <div class=\"tags-action\">\n            <button class=\"btn open-tag-manager modal-confirm btn-blue tag-manager-global\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
+    + "</button>\n        </div>\n    </div>\n\n</article>";
   return buffer;
   };
 TEMPLATE.main=Handlebars.template(__TEMPLATE__);
@@ -35414,9 +35418,8 @@ define('wspace/awseditor/model/connection/TagUsage',["ConnectionModel", "constan
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define('wspace/awseditor/model/TagModel',["constant", "ComplexResModel", "GroupModel", "Design", "./connection/TagUsage"], function(constant, ComplexResModel, GroupModel, Design, TagUsage) {
-  var CustomTagName, RetainTagKeys, TagItem, TagModel;
+  var RetainTagKeys, TagItem, TagModel;
   RetainTagKeys = ['visualops', 'Name'];
-  CustomTagName = 'EC2CustomTags';
   TagItem = ComplexResModel.extend({
     type: "TagItem",
     isVisual: function() {
@@ -35465,7 +35468,7 @@ define('wspace/awseditor/model/TagModel',["constant", "ComplexResModel", "GroupM
         value: data.Value,
         inherit: data.PropagateAtLaunch
       };
-      if (parent.get('name') !== CustomTagName) {
+      if (parent.get('name') !== parent.constructor.customTagName) {
         attr.retain = true;
       }
       tagItem = new TagItem(attr);
@@ -35579,6 +35582,8 @@ define('wspace/awseditor/model/TagModel',["constant", "ComplexResModel", "GroupM
       return this.children();
     }
   }, {
+    handleTypes: [constant.RESTYPE.TAG],
+    customTagName: 'EC2CustomTags',
     all: function() {
       var AsgTagModel, allTags;
       allTags = [];
@@ -35593,14 +35598,15 @@ define('wspace/awseditor/model/TagModel',["constant", "ComplexResModel", "GroupM
     },
     getCustom: function() {
       var customTag;
-      customTag = this.find(function(tag) {
-        return tag.get('name') === CustomTagName;
-      });
+      customTag = this.find((function(_this) {
+        return function(tag) {
+          return tag.get('name') === _this.customTagName;
+        };
+      })(this));
       return customTag || new this({
-        name: CustomTagName
+        name: this.customTagName
       });
     },
-    handleTypes: [constant.RESTYPE.TAG],
     deserialize: function(data, layout_data, resolve) {
       var attr, item, r, tagModel, _i, _len, _ref;
       attr = {
@@ -35624,7 +35630,8 @@ define('wspace/awseditor/model/AsgTagModel',["constant", "./TagModel", "Design",
   AsgTagModel = TagModel.extend({
     type: constant.RESTYPE.ASGTAG
   }, {
-    handleTypes: [constant.RESTYPE.ASGTAG]
+    handleTypes: [constant.RESTYPE.ASGTAG],
+    customTagName: 'AutoScalingCustomTags'
   });
   return AsgTagModel;
 });
