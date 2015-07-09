@@ -5492,7 +5492,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"tag-manager-wrap\">\n    <div class=\"tag-resource-list\">\n        <input type=\"text\" class=\"input filter-bar\" placeholder=\"Filter Bar\"/>\n        <button class=\"btn edit-tags btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
-    + "</button>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\">\n            <ul>\n                <li data-id=\"checked\" class=\"active\">Checked (<span>0</span>)</li>\n                <li data-id=\"selected\">Selected <span></span></li>\n            </ul>\n        </div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n           <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n    </div>\n</div>";
+    + "</button>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\">\n            <ul>\n                <li data-id=\"checked\" class=\"active\">Checked <span>()</span></li>\n            </ul>\n        </div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n           <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.modalTemplate=Handlebars.template(__TEMPLATE__);
@@ -5537,7 +5537,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  return "\n    <div class=\"tag-empty\">Please select or check resource in resource list for tag details.</div>\n";
+  return "\n    <div class=\"tag-empty\">Please select resources in resource list for tag details.</div>\n";
   }
 
 function program3(depth0,data) {
@@ -5566,15 +5566,18 @@ function program4(depth0,data) {
     + "\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/>\n                    <div class=\"checkbox\">\n                        <input id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+  buffer += "/>\n                    <div class=\"checkbox\">\n                        <input id=\"cb"
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
     + "\" type=\"checkbox\" value=\"None\" data-id=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
     + "\" class=\"one-cb\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                        <label for=\""
-    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.inherit), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                        <label for=\"cb"
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
     + "\"></label>\n                    </div>\n                    <div class=\"action\">\n                        <button class=\"btn btn-red edit-delete\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -5591,6 +5594,12 @@ function program7(depth0,data) {
   
   
   return "disabled=\"disabled\"";
+  }
+
+function program9(depth0,data) {
+  
+  
+  return "checked";
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.empty), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
@@ -5830,7 +5839,7 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
           if (_this.isVisual) {
             return !comp.port && comp.isVisual() && !_.contains(_this.unFilterTypeInVisualMode, comp.type);
           } else {
-            return !comp.port && _.contains(constant.HASTAG, comp.type);
+            return _.contains(constant.HASTAG, comp.type);
           }
         };
       })(this));
@@ -5935,6 +5944,11 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
               key: "" + (getResShortNameByType(comp.type)) + ".name",
               value: name,
               type: 'resource_attribute'
+            }, true);
+          } else if (comp.type === constant.RESTYPE.VPN) {
+            this.addSelection({
+              key: getResShortNameByType(comp.type),
+              type: 'resource'
             }, true);
           }
         }
@@ -6503,7 +6517,6 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
 define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/awscomps/TagManagerTpl", "FilterInput", "backbone", 'i18n!/nls/lang.js', 'event'], function(constant, CloudResources, Modal, template, FilterInput, Backbone, lang, ide_event) {
   return Backbone.View.extend({
     events: {
-      "click tbody tr.item": "selectTableRow",
       "click .create-tag": "addTag",
       "click .edit-delete": "removeTagUsage",
       "click .edit-done": "changeTags",
@@ -6514,7 +6527,8 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       "click .tabs-navs li": "switchTab",
       "keyup .tag-key.input": "changeTagInput",
       "keyup .tag-value.input": "changeTagInput",
-      "change #t-m-select-all": "selectAllInput"
+      "change #t-m-select-all": "selectAllInput",
+      "change .tag-resource-list .checkbox input": "selectInput"
     },
     initialize: function(model) {
       this.instance = Design.instance();
@@ -6529,7 +6543,8 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
         width: 900,
         height: 500,
         template: template.modalTemplate,
-        disableFooter: true
+        disableFooter: true,
+        disableClose: true
       });
       return this.modal;
     },
@@ -6543,7 +6558,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       this.modal.tpl.find(".filter-bar").replaceWith(this.filter.render().el);
       if (data) {
         this.filterResourceList(this.filter.getMatchedResource());
-        return this.$el.find(".t-m-content tr.item").eq(0).click();
+        return this.$el.find(".t-m-content tr.item:first-child").find('input').prop('checked', true);
       } else {
         return this.filterResourceList(this.filter.getFilterableResource());
       }
@@ -6565,6 +6580,9 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       this.$el.find(".table-head-fix .item .checkbox input").prop("checked", isChecked);
       return this.renderTagsContent();
     },
+    selectInput: function() {
+      return this.renderTagsContent();
+    },
     editTags: function(e) {
       return this.$('.tag-resource-detail').addClass('show');
     },
@@ -6581,7 +6599,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       if ($tagKey.val()) {
         key = $tagKey.val();
         value = $tagValue.val();
-        inherit = $tagLi.find(".checkbox input").is("checked");
+        inherit = $tagLi.find(".checkbox input").is(":checked");
         if (key.indexOf("aws:") === 0) {
           return false;
         }
@@ -6673,7 +6691,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       return this.renderTagsContent();
     },
     renderTagsContent: function(uid) {
-      var checkedAllAsg, checkedAsgComps, checkedAsgData, checkedAsgTagArray, checkedAsgTagIdsArray, checkedComps, checkedData, checkedTagArray, checkedTagIdsArray, selectedComp, selectedIsAsg, self, tags, tagsData, unitedData;
+      var allComps, checkedAllAsg, checkedAsgComps, checkedAsgData, checkedAsgTagArray, checkedAsgTagIdsArray, checkedComps, checkedData, checkedTagArray, checkedTagIdsArray, info, selectedComp, selectedIsAsg, self, tags, tagsData, unitedData;
       self = this;
       if (!uid) {
         uid = this.$el.find(".t-m-content .item.selected").data("id");
@@ -6743,6 +6761,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
         return {
           key: tag.get("key"),
           value: tag.get("value"),
+          inherit: tag.get("inherit"),
           asg: tag.id,
           disableEdit: tag.get("retain"),
           allowCheck: checkedAllAsg
@@ -6768,18 +6787,20 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       } else {
         unitedData = checkedData;
       }
+      allComps = checkedComps.concat(checkedAsgComps);
       this.$el.find(".tab-content[data-id='checked']").html(template.tagResource({
         data: unitedData,
-        empty: !checkedComps.length
+        empty: !allComps.length
       }));
-      this.$el.find(".tabs-navs li[data-id='checked'] span").text(checkedComps.length + checkedAsgComps.length);
-      if (selectedComp && selectedComp.get('name')) {
-        this.$el.find(".tabs-navs li[data-id='selected'] span").text("" + (selectedComp.get('name')));
+      info = allComps.length;
+      if (allComps.length === 1) {
+        info = allComps[0].get('name');
       }
+      this.$el.find(".tabs-navs li[data-id='checked'] span").text("(" + info + ")");
       return this.changeTagInput();
     },
     filterResourceList: function(resModels) {
-      var firstItem, models;
+      var models;
       models = _.map(resModels, function(model) {
         return {
           name: model.get("name"),
@@ -6791,11 +6812,8 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       this.modal.tpl.find(".t-m-content").html(template.filterResource({
         models: models
       }));
-      firstItem = this.$el.find('tbody tr.item')[0];
-      if (firstItem) {
-        this.selectTableRow({
-          currentTarget: firstItem
-        });
+      if (models.length === 1) {
+        this.$el.find(".t-m-content tr.item:first-child").find('input').prop('checked', true);
       }
       return _.delay((function(_this) {
         return function() {
@@ -6804,14 +6822,22 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       })(this));
     },
     changeTagInput: function() {
+      var focusToLast;
+      focusToLast = false;
       this.$el.find(".tags-list li").each(function(idx, elem) {
         if (!$(elem).find('.input.tag-key').val() && !$(elem).find('.input.tag-value').val()) {
+          if ($(this).next('li').length) {
+            focusToLast = true;
+          }
           return $(this).remove();
         } else {
           return $(elem).find('.edit-remove-row').show();
         }
       });
-      return this.addTag();
+      this.addTag();
+      if (focusToLast) {
+        return this.$el.find(".tags-list li:last-child .input.tag-key").focus();
+      }
     },
     addTag: function(e) {
       var $tagLi, hasNoneAsg, tagId, tagTemplate;

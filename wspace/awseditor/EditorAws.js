@@ -11728,7 +11728,8 @@ define('wspace/awseditor/property/vpn/model',['../base/model', "Design", "consta
         uid: uid,
         name: "vpn:" + (cgw.get('name')),
         ips: vpn.get("routes"),
-        dynamic: cgw.isDynamic()
+        dynamic: cgw.isDynamic(),
+        tags: vpn.tags()
       });
       return null;
     },
@@ -12053,13 +12054,49 @@ function program35(depth0,data) {
   return " </div> ";
   }
 
+function program37(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <table class=\"table cost-estimation-table\">\n      <tbody>\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.tags), {hash:{},inverse:self.noop,fn:self.program(38, program38, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </tbody>\n    </table>\n    ";
+  return buffer;
+  }
+function program38(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n      <tr> <td style=\"min-width:70px;\">"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>"
+    + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.attributes)),stack1 == null || stack1 === false ? stack1 : stack1.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td> </tr>\n      ";
+  return buffer;
+  }
+
+function program40(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <div class=\"empty-tag\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_NO_TAGS", {hash:{},data:data}))
+    + "</div>\n    ";
+  return buffer;
+  }
+
   buffer += "<article>\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.vpnConnectionId), {hash:{},inverse:self.program(24, program24, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n</article>";
+  buffer += "\n  <div class=\"option-group-head expand\">\n    "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n  </div>\n  <div class=\"option-group\">\n    ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(40, program40, data),fn:self.program(37, program37, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <div class=\"tags-action\">\n\n      <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
+    + "</button>\n    </div>\n  </div>\n\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/vpn/view',['../base/view', './template/stack', 'i18n!/nls/lang.js', "UI.modalplus"], function(PropertyView, template, lang, modalPlus) {
@@ -35556,7 +35593,7 @@ define('wspace/awseditor/model/TagModel',["constant", "ComplexResModel", "GroupM
     },
     getCustom: function() {
       var customTag;
-      customTag = TagModel.find(function(tag) {
+      customTag = this.find(function(tag) {
         return tag.get('name') === CustomTagName;
       });
       return customTag || new this({

@@ -17,17 +17,17 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff?v=fe27504d") format("woff"); }
+  src: local("Lato Regular"), local("Lato-Regular"), url("../fonts/LatoRegular.woff") format("woff"); }
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 700;
-  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff?v=66c8242c") format("woff"); }
+  src: local("Lato Bold"), local("Lato-Bold"), url("../fonts/LatoBold.woff") format("woff"); }
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff?v=0dfaf006") format("woff"); }
+  src: local("Lato Light"), local("Lato-Light"), url("../fonts/LatoLight.woff") format("woff"); }
 /* Hack custom fonts loading */
 @media (min-width: 1px) {
   body {
@@ -2029,48 +2029,48 @@ html[dir="rtl"] .select2-search-choice-close {
   cursor: pointer;
   width: 14px;
   height: 17px;
-  background: url("../images/ide/icon/icn-eipoff.png?v=859550ab") no-repeat; }
+  background: url("../images/ide/icon/icn-eipoff.png") no-repeat; }
 
 .toggle-eip.associated {
-  background: url("../images/ide/icon/icn-eipon.png?v=f52b7ea4") no-repeat; }
+  background: url("../images/ide/icon/icn-eipon.png") no-repeat; }
 
 /* Tabbar Icon */
 .icon-dashboard {
-  background: url("../images/ide/icon-dashboard.png?v=2164b17b") center center no-repeat; }
+  background: url("../images/ide/icon-dashboard.png") center center no-repeat; }
 
 .icon-stack {
-  background: url("../images/ide/icon-stack.png?v=910f026c") center center no-repeat; }
+  background: url("../images/ide/icon-stack.png") center center no-repeat; }
 
 .icon-app-running,
 .icon-app-Running {
-  background: url("../images/ide/icon-app-running.png?v=62eb7120") center center no-repeat; }
+  background: url("../images/ide/icon-app-running.png") center center no-repeat; }
 
 .icon-app-stopped,
 .icon-app-Stopped {
-  background: url("../images/ide/icon-app-stopped.png?v=8c2fe0f1") center center no-repeat; }
+  background: url("../images/ide/icon-app-stopped.png") center center no-repeat; }
 
 .icon-app-pending {
-  background: url("../images/ide/icon-app-pending.png?v=913b368e") center center no-repeat; }
+  background: url("../images/ide/icon-app-pending.png") center center no-repeat; }
 
 /* Nav Icon */
 .icon-stack-nav,
 .icon-stack-tabbar {
-  background: url("../images/ide/icon-stack.png?v=910f026c") center center no-repeat; }
+  background: url("../images/ide/icon-stack.png") center center no-repeat; }
 
 /* Payment */
 .payment-credit-card {
   width: 100%;
   height: 100px;
-  background: url("../images/ide/creditcard-normal.png?v=470139a0") center center no-repeat; }
+  background: url("../images/ide/creditcard-normal.png") center center no-repeat; }
   @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
     .payment-credit-card {
-      background-image: url("../images/ide/creditcard-normal@2x.png?v=b4360b29");
+      background-image: url("../images/ide/creditcard-normal@2x.png");
       background-size: 110px auto; } }
   .payment-credit-card.payment-failed {
-    background: url("../images/ide/creditcard-failed.png?v=ce197016") center center no-repeat; }
+    background: url("../images/ide/creditcard-failed.png") center center no-repeat; }
     @media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2 / 1), (min-device-pixel-ratio: 2) {
       .payment-credit-card.payment-failed {
-        background-image: url("../images/ide/creditcard-failed@2x.png?v=ad09bf19");
+        background-image: url("../images/ide/creditcard-failed@2x.png");
         background-size: 121px auto; } }
 
 /* jQuery time-picker */
@@ -2465,7 +2465,7 @@ li.ui-timepicker-selected .ui-timepicker-duration,
     overflow: hidden;
     background: #25252b; }
     .filter-input .fake-input:hover {
-      background: #2d2d38; }
+      background: #2c2c33; }
     .filter-input .fake-input .tags:empty + .placeholder {
       display: inline; }
     .filter-input .fake-input .tags li {
@@ -2550,10 +2550,10 @@ li.ui-timepicker-selected .ui-timepicker-duration,
     list-style: none;
     border: 1px solid #0f0f0f;
     box-sizing: border-box;
-    border-radius: 4px;
+    border-radius: 0 0 4px 4px;
     position: absolute;
     left: 0;
-    background: #353535;
+    background: #25252b;
     color: #D0D0D0;
     z-index: 1;
     font-size: 12px; }
@@ -2590,8 +2590,6 @@ li.ui-timepicker-selected .ui-timepicker-duration,
     border-top: 0;
     border-bottom: 0;
     border-radius: 0; }
-    .OEPanelTop .filter-input .fake-input:hover {
-      background: #36343C; }
     .OEPanelTop .filter-input .fake-input input {
       margin-top: -4px; }
 
@@ -4138,7 +4136,7 @@ input.parsley-error {
     left: 50%;
     margin: -40px 0 0 -40px;
     opacity: .8;
-    background: url("../images/ide/gearbig.svg?v=3d55f265");
+    background: url("../images/ide/gearbig.svg");
     background-size: 100% 100%;
     -webkit-animation: gear 2s linear infinite;
     -moz-animation: gear 2s linear infinite;
@@ -4149,7 +4147,7 @@ input.parsley-error {
     height: 30px;
     opacity: .6;
     margin: -11px 0 0 -11px;
-    background-image: url("../images/ide/gearsmall.svg?v=d0a553c0");
+    background-image: url("../images/ide/gearsmall.svg");
     -webkit-animation: smallgear 1.5s linear infinite;
     -moz-animation: smallgear 1.5s linear infinite;
     -o-animation: smallgear 1.5s linear infinite;
