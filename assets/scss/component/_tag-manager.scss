@@ -97,28 +97,12 @@
   }
 
   .tabs-navs{
-    width: 100%;
-    height: 35px;
-    // padding: 5px;
-    ul{
-      li{
-        display: inline-block;
-        padding: 7px 20px 10px;
-        font-size: 14px;
-        cursor: pointer;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        &.active{
-          border-bottom: 2px solid #148BE6;
-        }
-      }
-    }
+    padding: 10px;
+    font-size: 14px;
   }
   .tabs-content{
     overflow: auto;
-    height: 349px;
+    height: 345px;
     .tab-content{
       padding: 0;
       .table-head {
@@ -144,10 +128,11 @@
           margin-left: 5px;
         }
         .tag-key,.tag-value{
-          width: 269px;
+          width: 272px;
         }
         .checkbox{
           margin-left: 84px;
+          margin-right: 72px;
           input[disabled='disabled'] + label, input[disabled] + label{
             opacity: 0.3;
           }
@@ -168,9 +153,12 @@
         }
         .action{
           display: inline-block;
-          width: 87px;
+          width: 80px;
           text-align: center;
           vertical-align: top;
+          &.wide{
+            width: 180px;
+          }
           .btn{
             min-width: 50px;
             padding: 5px 10px;

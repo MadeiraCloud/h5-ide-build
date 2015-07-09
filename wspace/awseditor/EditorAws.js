@@ -881,6 +881,17 @@ function program29(depth0,data) {
   return buffer;
   }
 
+function program31(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <div class=\"option-group-head expand\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        <div class=\"tags-action\">\n            <button class=\"btn open-tag-manager modal-confirm btn-blue tag-manager-global\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
+    + "</button>\n        </div>\n    </div>\n    ";
+  return buffer;
+  }
+
   buffer += "<article>\n\n  ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(21, program21, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -905,11 +916,10 @@ function program29(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_AWS_EC2_PRICING", {hash:{},data:data}))
-    + "</a>\n		</div>\n	</div>\n\n    <div class=\"option-group-head expand\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
-    + "\n    </div>\n    <div class=\"option-group\">\n        <div class=\"tags-action\">\n            <button class=\"btn open-tag-manager modal-confirm btn-blue tag-manager-global\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n\n</article>";
+    + "</a>\n		</div>\n	</div>\n\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n</article>";
   return buffer;
   };
 TEMPLATE.main=Handlebars.template(__TEMPLATE__);

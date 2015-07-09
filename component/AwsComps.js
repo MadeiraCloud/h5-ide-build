@@ -5492,7 +5492,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"tag-manager-wrap\">\n    <div class=\"tag-resource-list\">\n        <input type=\"text\" class=\"input filter-bar\" placeholder=\"Filter Bar\"/>\n        <button class=\"btn edit-tags btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
-    + "</button>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\">\n            <ul>\n                <li data-id=\"checked\" class=\"active\">Selected <span>()</span></li>\n            </ul>\n        </div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n           <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n    </div>\n</div>";
+    + "</button>\n        <div class=\"resource-list\">\n            <div class=\"table-head-fix tag-resource-table\">\n                <table class=\"table-head\">\n                    <thead>\n                    <tr>\n                        <th>\n                            <div class=\"checkbox\">\n                                <input id=\"t-m-select-all\" type=\"checkbox\" value=\"None\">\n                                <label for=\"t-m-select-all\"></label>\n                            </div>\n                        </th>\n                        <th class=\"sortable active\" data-row-type=\"string\">Name</th>\n                        <th class=\"\" data-row-type=\"string\">Type</th>\n                    </tr>\n                    </thead>\n                </table>\n                <div>\n                    <table class=\"table\">\n                        <thead>\n                        <tr>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                            <th><div class=\"th-inner\"></div></th>\n                        </tr>\n                        </thead>\n                        <tbody class=\"t-m-content\"></tbody>\n                    </table>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"tag-resource-detail\">\n        <div class=\"tabs-navs\" data-id=\"checked\">Selected <span>()</span></div>\n        <div class=\"tabs-content\">\n            <div class=\"tab-content\" data-id=\"checked\">\n\n            </div>\n            <div class=\"tab-content\" data-id=\"selected\" style=\"display: none\">\n\n            </div>\n        </div>\n        <div class=\"tabs-footer pull-right\">\n           <button class=\"btn save-tags btn-primary\">Save</button>\n           <button class=\"btn btn-silver cancel\">Cancel</button>\n        </div>\n    </div>\n</div>";
   return buffer;
   };
 TEMPLATE.modalTemplate=Handlebars.template(__TEMPLATE__);
@@ -5532,7 +5532,7 @@ TEMPLATE.filterResource=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
   
@@ -5543,13 +5543,37 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <div class=\"table-head-fix tag-resource-table\">\n        <table class=\"table-head\">\n            <thead>\n            <tr>\n                <th class=\"\" width=\"35%\" data-row-type=\"string\">Key</th>\n                <th class=\"\" width=\"35%\" data-row-type=\"string\">Value</th>\n                <th class=\"\" width=\"20%\" data-row-type=\"string\">Tag New Instances</th>\n                <th class=\"\" width=\"10%\" data-row-type=\"string\"></th>\n            </tr>\n            </thead>\n        </table>\n    </div>\n    <ul class=\"tags-list\">\n        ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  buffer += "\n    <div class=\"table-head-fix tag-resource-table\">\n        <table class=\"table-head\">\n            <thead>\n            <tr>\n                <th class=\"\" width=\"35%\" data-row-type=\"string\">Key</th>\n                <th class=\"\" width=\"35%\" data-row-type=\"string\">Value</th>\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.allAsg), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </tr>\n            </thead>\n        </table>\n    </div>\n    <ul class=\"tags-list ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.allAsg), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n        ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </ul>\n";
   return buffer;
   }
 function program4(depth0,data) {
+  
+  
+  return "\n                    <th class=\"\" width=\"20%\" data-row-type=\"string\">Tag New Instances</th>\n                    <th class=\"\" width=\"10%\" data-row-type=\"string\"></th>\n                ";
+  }
+
+function program6(depth0,data) {
+  
+  
+  return "\n                    <th class=\"\" width=\"30%\" data-row-type=\"string\"></th>\n                ";
+  }
+
+function program8(depth0,data) {
+  
+  
+  return "no-inherit";
+  }
+
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <li data-id=\""
@@ -5559,47 +5583,66 @@ function program4(depth0,data) {
     + "\">\n                <div class=\"edit\">\n                    <input class=\"tag-key input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" maxlength=\"127\" data-ignore=\"true\" data-required-rollback=\"true\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>\n                    <input class=\"tag-value input\" type=\"text\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" maxlength=\"255\" data-ignore=\"true\" data-required-rollback=\"true\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/>\n                    <div class=\"checkbox\">\n                        <input id=\"cb"
-    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
-    + "\" type=\"checkbox\" value=\"None\" data-id=\""
-    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
-    + "\" class=\"one-cb\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  buffer += "/>\n                    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.program(18, program18, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.inherit), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += ">\n                        <label for=\"cb"
-    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
-    + "\"></label>\n                    </div>\n                    <div class=\"action\">\n                        <button class=\"btn btn-red edit-delete\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "><i class=\"icon-delete\"></i></button>\n                    </div>\n                </div>\n            </li>\n        ";
+  buffer += "\n\n                </div>\n            </li>\n        ";
   return buffer;
   }
-function program5(depth0,data) {
+function program11(depth0,data) {
   
   
   return "disabled";
   }
 
-function program7(depth0,data) {
+function program13(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                        <div class=\"checkbox\">\n                            <input id=\"cb"
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
+    + "\" type=\"checkbox\" value=\"None\" data-id=\""
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
+    + "\" class=\"one-cb\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.inherit), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                            <label for=\"cb"
+    + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
+    + "\"></label>\n                        </div>\n                        <div class=\"action\">\n                            <button class=\"btn btn-red edit-delete\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "><i class=\"icon-delete\"></i></button>\n                        </div>\n                    ";
+  return buffer;
+  }
+function program14(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program9(depth0,data) {
+function program16(depth0,data) {
   
   
   return "checked";
+  }
+
+function program18(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                        <div class=\"action wide\">\n                            <button class=\"btn btn-red edit-delete\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "><i class=\"icon-delete\"></i></button>\n                        </div>\n                    ";
+  return buffer;
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.empty), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
@@ -5817,7 +5860,7 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
     className: "filter-input",
     tplDropdown: template.dropdown,
     tplTag: template.tag,
-    unFilterTypeInVisualMode: [constant.RESTYPE.SG, 'ExpandedAsg'],
+    unFilterTypeInVisualMode: [constant.RESTYPE.SG, 'ExpandedAsg', constant.RESTYPE.DHCP],
     events: {
       "click .tags li": "clickTagHandler",
       "blur input": "blurInputHandler",
@@ -6563,17 +6606,6 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
         return this.filterResourceList(this.filter.getFilterableResource());
       }
     },
-    selectTableRow: function(evt) {
-      var $row;
-      $row = $(evt.currentTarget);
-      this.$el.find("tr.item").removeClass("selected");
-      $row.addClass("selected");
-      this.$el.find(".tabs-navs ul li[data-id='selected']").click();
-      this.renderTagsContent($row.data("id"));
-      if (evt.stopPropagation) {
-        return evt.stopPropagation();
-      }
-    },
     selectAllInput: function(e) {
       var isChecked;
       isChecked = $(e.currentTarget).is(":checked");
@@ -6584,7 +6616,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       return this.renderTagsContent();
     },
     clickItem: function(e) {
-      if (!($(e.target).parents(".checkbox").size() > 0)) {
+      if ($(e.target).parents(".checkbox").size() <= 0) {
         return $(e.currentTarget).find('.checkbox input').click();
       }
     },
@@ -6645,32 +6677,23 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       return ide_event.trigger(ide_event.REFRESH_PROPERTY);
     },
     getAffectedResources: function() {
-      var comp, isSelected, resources, self;
+      var resources, self;
       self = this;
-      isSelected = "selected" === this.$el.find(".tabs-navs li.active").data("id");
       resources = {
         common: [],
         asg: []
       };
-      if (isSelected) {
-        comp = this.instance.component(this.$el.find(".t-m-content .item.selected").data("id"));
-        if (comp.type === "AWS.AutoScaling.Group") {
-          resources.asg.push(comp);
-        } else {
-          resources.common.push(comp);
-        }
-      } else {
-        this.$el.find(".t-m-content .one-cb").each(function(key, value) {
-          if ($(value).is(":checked")) {
-            comp = self.instance.component($(value).parents("tr").data("id"));
-            if (comp.type === "AWS.AutoScaling.Group") {
-              return resources.asg.push(comp);
-            } else {
-              return resources.common.push(comp);
-            }
+      this.$el.find(".t-m-content .one-cb").each(function(key, value) {
+        var comp;
+        if ($(value).is(":checked")) {
+          comp = self.instance.component($(value).parents("tr").data("id"));
+          if (comp.type === "AWS.AutoScaling.Group") {
+            return resources.asg.push(comp);
+          } else {
+            return resources.common.push(comp);
           }
-        });
-      }
+        }
+      });
       return resources;
     },
     removeTagUsage: function(e) {
@@ -6706,20 +6729,16 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       checkedTagArray = [];
       checkedAsgComps = [];
       checkedAsgTagArray = [];
-      this.$el.find(".t-m-content .one-cb").each(function(key, value) {
+      this.$el.find(".t-m-content .one-cb:checked").each(function(key, value) {
         var checkedComp;
         checkedComp = self.instance.component($(value).parents("tr").data("id"));
         if (checkedComp.type !== "AWS.AutoScaling.Group") {
           checkedAllAsg = false;
-          if ($(value).is(":checked")) {
-            checkedComps.push(checkedComp);
-            return checkedTagArray.push(checkedComp.tags());
-          }
+          checkedComps.push(checkedComp);
+          return checkedTagArray.push(checkedComp.tags());
         } else {
-          if ($(value).is(":checked")) {
-            checkedAsgComps.push(checkedComp);
-            return checkedAsgTagArray.push(checkedComp.tags());
-          }
+          checkedAsgComps.push(checkedComp);
+          return checkedAsgTagArray.push(checkedComp.tags());
         }
       });
       checkedTagIdsArray = _.map(checkedTagArray, function(tagArray) {
@@ -6778,13 +6797,14 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       allComps = checkedComps.concat(checkedAsgComps);
       this.$el.find(".tab-content[data-id='checked']").html(template.tagResource({
         data: unitedData,
-        empty: !allComps.length
+        empty: !allComps.length,
+        allAsg: checkedAllAsg
       }));
       info = allComps.length;
       if (allComps.length === 1) {
         info = allComps[0].get('name');
       }
-      this.$el.find(".tabs-navs li[data-id='checked'] span").text("(" + info + ")");
+      this.$el.find(".tabs-navs span").text("(" + info + ")");
       return this.changeTagInput();
     },
     filterResourceList: function(resModels) {
@@ -6835,7 +6855,7 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
       $tagLi.appendTo(this.$el.find("ul.tags-list"));
       hasNoneAsg = this.getAffectedResources().common.length > 0;
       if (hasNoneAsg) {
-        return $tagLi.find(".checkbox input").prop("disabled", hasNoneAsg);
+        return $tagLi.find(".checkbox").remove().end().find(".action").addClass("wide");
       }
     },
     removeRow: function(e) {
