@@ -1036,8 +1036,8 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         throw err;
       });
     },
-    update: function(newJson, fastUpdate) {
-      var errorHandler, oldState, self;
+    update: function(newJson, fastUpdate, attr) {
+      var errorHandler, oldState, self, updateOption;
       if (!this.isApp()) {
         return this.__returnErrorPromise();
       }
@@ -1058,13 +1058,14 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       this.set("state", OpsModelState.Updating);
       this.__updateAppDefer = Q.defer();
       self = this;
-      ApiRequest("app_update", {
+      updateOption = $.extend({
         region_name: this.get("region"),
         spec: newJson,
         app_id: this.get("id"),
         fast_update: fastUpdate,
         key_id: this.credentialId()
-      }).fail(function(error) {
+      }, attr || {});
+      ApiRequest("app_update", updateOption).fail(function(error) {
         self.__userTriggerAppProgress = false;
         return self.__updateAppDefer.reject(error);
       });

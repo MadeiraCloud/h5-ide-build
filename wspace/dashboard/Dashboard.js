@@ -830,6 +830,44 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n    <p><b style=\"color:#ec3c38;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " "
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_PROD_APP_WARNING_MSG", {hash:{},data:data}))
+    + "</b>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.FORGET_CONFIRM_INSTRUCTION", {hash:{},data:data}))
+    + "</p>\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "POP_CONFIRM_FORGET_PROD_APP_INPUT_LBL", {hash:{},data:data}))
+    + "</p>\n    <div><input class=\"input\" style=\"width:390px;\" id=\"appNameConfirmIpt\"/></div>\n";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n    <div class=\"modal-center-align-helper\"> <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.FORGET_APP_CONFIRM", {hash:{},data:data}))
+    + "</div></div>\n";
+  return buffer;
+  }
+
+  buffer += "<div class=\"confirm-padding\">\n";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.production), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>";
+  return buffer;
+  };
+TEMPLATE.forgetApp=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
   
   return "class=\"hide\"";
   }
@@ -1091,12 +1129,15 @@ function program12(depth0,data,depth2) {
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    <i class=\"icon-terminate terminate-app tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_TERMINATE_APP", {hash:{},data:data}))
-    + "\"></i>\n                    ";
+  buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                    <span class=\"";
+  buffer += "\n                    <i class=\"icon-terminate terminate-app tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_TERMINATE_APP", {hash:{},data:data}))
+    + "\"></i>\n                    <i class=\"icon-forget-app forget-app tooltip\" data-tooltip=\"";
+  stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_FORGET_APP", {hash:{},data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\"></i>\n                    <span class=\"";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " truncate\" title=\""
@@ -2806,6 +2847,7 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
       "click .region-resource-list .start-app": "startApp",
       'click .region-resource-list .stop-app': 'stopApp',
       'click .region-resource-list .terminate-app': 'terminateApp',
+      'click .region-resource-list .forget-app': 'forgetApp',
       "click .show-credential": "showCredential",
       "click .icon-detail": "showResourceDetail",
       'click .refreshResource': 'reloadResource',
@@ -3232,6 +3274,45 @@ define('wspace/dashboard/DashboardView',["./DashboardTpl", "./ImportDialog", "./
       (new AppAction({
         model: this.model.scene.project.getOpsModel(id)
       })).terminateApp();
+      return false;
+    },
+    forgetApp: function(event) {
+      var id, m, model, name, production;
+      event.preventDefault();
+      id = $(event.currentTarget).closest("li").attr("data-id");
+      model = this.model.scene.project.getOpsModel(id);
+      production = model.get("usage") === 'production';
+      name = model.get("name");
+      m = new Modal({
+        title: lang.IDE.TITLE_CONFIRM_TO_FORGET,
+        template: dataTemplate.forgetApp({
+          production: production,
+          name: name
+        }),
+        confirm: {
+          text: lang.TOOLBAR.BTN_FORGET_CONFIRM,
+          color: "red"
+        },
+        disableClose: true
+      });
+      m.tpl.find("#appNameConfirmIpt").on("keyup change", function() {
+        if (m.tpl.find("#appNameConfirmIpt").val() === name) {
+          m.tpl.find('.modal-confirm').removeAttr("disabled");
+        } else {
+          m.tpl.find('.modal-confirm').attr("disabled", "disabled");
+        }
+      });
+      if (production) {
+        m.tpl.find('.modal-confirm').attr("disabled", "disabled");
+      }
+      m.on("confirm", function() {
+        m.close();
+        model.terminate(true, false).then(function() {
+          return notification("info", "Your app \"" + name + "\" has been removed from our database.");
+        }, function(err) {
+          return notification("error", "Failed to remove your app \"" + name + "\" from our database. (ErrorCode: " + err.error + ")");
+        });
+      });
       return false;
     },
     reloadResource: function() {

@@ -5482,6 +5482,579 @@ define('rds_snapshot',['CloudResources', 'ApiRequest', 'constant', 'combo_dropdo
   return snapshotRes;
 });
 
+define('component/awscomps/EipManageTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <tr class=\"item\" data-id=\"\">\n        <td style=\"width: 5%;\">\n            <div class=\"checkbox\">\n                <input id=\"eip-select-"
+    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" type=\"checkbox\" value=\"None\" data-name=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" class=\"one-cb\" ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.canRelease), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n                <label for=\"eip-select-"
+    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></label>\n            </div>\n        </td>\n        <td style=\"width: 35px;\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.publicIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.instanceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.privateIpAddress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.domain)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n        <td>"
+    + escapeExpression(((stack1 = (depth0 && depth0.networkInterfaceId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n    </tr>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "disabled";
+  }
+
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.keys), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { return stack1; }
+  else { return ''; }
+  };
+TEMPLATE.keys=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"slide-create\" data-bind=\"true\">\n    <div class=\"before-create\">\n        <p class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_TO_CREATE", {hash:{},data:data}))
+    + "</p>\n    </div>\n    <div class=\"init action\">\n        <button class=\"btn btn-blue do-action\" data-action=\"create\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATE", {hash:{},data:data}))
+    + "</button>\n        <button class=\"btn btn-silver cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
+    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CREATING", {hash:{},data:data}))
+    + "</button>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_create=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_3", (depth0 && depth0.selecteEip), {hash:{},data:data}));
+  }
+
+function program3(depth0,data) {
+  
+  
+  return escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_2", (depth0 && depth0.selectedCount), {hash:{},data:data}));
+  }
+
+  buffer += "<div class=\"slide-delete\">\n    <div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_1", {hash:{},data:data}))
+    + " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selecteEip), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n    <p>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.POP_RELEASE_EIP_NOTE", {hash:{},data:data}))
+    + "</p>\n    <div class=\"init action\">\n        <button class=\"btn btn-red do-action\" data-action=\"delete\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_CONFIRM_RELEASE_BTN", {hash:{},data:data}))
+    + "</button>\n        <button class=\"btn btn-silver cancel\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
+    + "</button>\n    </div>\n    <div class=\"processing action\" style=\"display:none;\">\n        <button class=\"btn\" disabled>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DELETING", {hash:{},data:data}))
+    + "</button>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.slide_delete=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"eip-selector-wrapper\">\n    <div class=\"modal-control-group clearfix\">\n        <label for=\"\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_SELECT_IP_LABEL", {hash:{},data:data}))
+    + "</label>\n        <div id=\"eip-selector\" style=\"display:inline-block;\"></div>\n        <div class=\"runtime-error hide\" id=\"need-select-eip\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.EIP_NEED_SELECT", {hash:{},data:data}))
+    + "</div>\n    </div>\n</div>";
+  return buffer;
+  };
+TEMPLATE.selector=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.selected), "old", {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\"old\" tabindex=\"-1\">\n        <div class=\"manager-content-main\" data-id=\"old\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_OLD_ELASTIC_IP", {hash:{},data:data}))
+    + "<i class=\"icon-info tooltip\" data-tooltip=\"Keep use current Elastic IP.\"></i></div>\n        <div class=\"manager-content-sub\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_OLD_ELASTIC_IP_DESC", {hash:{},data:data}))
+    + "</div>\n    </li>\n";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "selected";
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "<li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.selected), "new", {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\"new\" tabindex=\"-1\">\n    <div class=\"manager-content-main\" data-id=\"new\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_NEW_ELASTIC_IP", {hash:{},data:data}))
+    + "<i class=\"icon-info tooltip\" data-tooltip=\"Assign a new Elastic IP\"></i></div>\n    <div class=\"manager-content-sub\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.ASSIGN_NEW_ELASTIC_IP_DESC", {hash:{},data:data}))
+    + "</div>\n</li>";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.selected), (depth0 && depth0.id), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" tabindex=\"-1\">\n        <div class=\"manager-content-main\" data-id=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n        <div class=\"manager-content-sub\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.allocationId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>\n    </li>\n";
+  return buffer;
+  }
+
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.currentEip), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.hideNewEip), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.data), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  return buffer;
+  };
+TEMPLATE.dropdown=Handlebars.template(__TEMPLATE__);
+
+
+return TEMPLATE; });
+define('eip_manager',['toolbar_modal', 'UI.modalplus', 'component/awscomps/EipManageTpl', 'constant', 'backbone', 'CloudResources', 'i18n!/nls/lang.js', 'UI.notification'], function(toolbar_modal, modalplus, template, constant, Backbone, CloudResources, lang) {
+  return Backbone.View.extend({
+    initialize: function(options) {
+      var that;
+      _.extend(this, options);
+      this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.EIP, Design.instance().get("region"));
+      this.initModal();
+      this.modal.render();
+      if (Design.instance().credential() && !Design.instance().credential().isDemo()) {
+        that = this;
+        this.collection.fetch().then(function() {
+          return that.renderKeys();
+        });
+      } else {
+        this.modal.render('nocredential');
+      }
+      this.collection.on('update', this.renderKeys, this);
+      this.listenTo(Design.instance().credential(), "update", this.credChanged);
+      return this.listenTo(Design.instance().credential(), "change", this.credChanged);
+    },
+    initModal: function() {
+      new toolbar_modal(this.getModalOptions());
+      this.modal.on('close', function() {
+        return this.remove();
+      }, this);
+      this.modal.on('slidedown', this.renderSlides, this);
+      this.modal.on('action', this.doAction, this);
+      return this.modal.on('refresh', this.refresh, this);
+    },
+    credChanged: function() {
+      this.collection.fetchForce();
+      this.modal.renderLoading();
+      return this.modal && this.refresh();
+    },
+    renderKeys: function() {
+      var data;
+      if (!this.collection.isReady()) {
+        return false;
+      }
+      data = {
+        keys: _.filter(this.collection.toJSON(), function(eip) {
+          return eip.category === Design.instance().region();
+        })
+      };
+      this.modal.setContent(template.keys(data));
+      return this;
+    },
+    doAction: function(action, checked) {
+      return this[action] && this[action](this.validate(action), checked);
+    },
+    validate: function(action) {
+      switch (action) {
+        case 'create':
+          return false;
+      }
+    },
+    switchAction: function(state) {
+      if (!state) {
+        state = 'init';
+      }
+      return this.M$('.slidebox .action').each(function() {
+        if ($(this).hasClass(state)) {
+          return $(this).show();
+        } else {
+          return $(this).hide();
+        }
+      });
+    },
+    genDeleteFinish: function(times) {
+      var error, finHandler, success, that;
+      success = [];
+      error = [];
+      that = this;
+      finHandler = _.after(times, function() {
+        that.cancel();
+        if (success.length === 1) {
+          console.debug(success);
+          notification('info', sprintf(lang.NOTIFY.EIP_XXX_IS_RELEASED, success[0].attributes.id));
+          return;
+        } else if (success.length > 1) {
+          notification('info', sprintf(lang.NOTIFY.SELECTED_EIP_ARE_DELETED, success.length));
+          return;
+        }
+        if (!that.collection.toJSON().length) {
+          that.M$('#t-m-select-all').get(0).checked = false;
+        }
+        _.each(error, function(s) {
+          return console.log(s);
+        });
+        if (error.length > 0) {
+          return notification('error', lang.NOTIFY.FAILED_TO_RELEASE_EIP);
+        }
+      });
+      return function(res) {
+        console.debug(res);
+        if (!(res.reason || res.msg)) {
+          success.push(res);
+        } else {
+          error.push(res);
+        }
+        return finHandler();
+      };
+    },
+    create: function(invalid) {
+      var domain, region, that;
+      that = this;
+      if (!invalid) {
+        domain = "vpc";
+        region = Design.instance().region();
+        this.switchAction('processing');
+        return this.collection.create({
+          domain: domain,
+          region: region
+        }).save().then(function(res) {
+          notification("info", sprintf(lang.NOTIFY.EIP_XXX_IS_CREATED, res.attributes.id));
+          return that.cancel();
+        }, function(err) {
+          that.modal.error(err.awsResult || err.reason || err.msg);
+          return that.switchAction();
+        });
+      }
+    },
+    "delete": function(invalid, checked) {
+      var count, onDeleteFinish, that;
+      count = checked.length;
+      onDeleteFinish = this.genDeleteFinish(count);
+      this.switchAction('processing');
+      that = this;
+      return _.each(checked, (function(_this) {
+        return function(c) {
+          return _this.collection.findWhere({
+            publicIp: c.data.name.toString()
+          }).destroy().then(onDeleteFinish, onDeleteFinish);
+        };
+      })(this));
+    },
+    cancel: function() {
+      return this.modal.cancel();
+    },
+    refresh: function() {
+      var _ref;
+      if ((_ref = this.modal) != null) {
+        _ref.render("loading");
+      }
+      return this.collection.fetchForce().then((function(_this) {
+        return function() {
+          return _this.renderKeys();
+        };
+      })(this));
+    },
+    renderSlides: function(which, checked) {
+      var slides, tpl, _ref;
+      tpl = template["slide_" + which];
+      slides = this.getSlides();
+      return (_ref = slides[which]) != null ? _ref.call(this, tpl, checked) : void 0;
+    },
+    getSlides: function() {
+      var modal, that;
+      that = this;
+      modal = this.modal;
+      return {
+        create: function(tpl) {
+          return modal.setSlide(tpl);
+        },
+        "delete": function(tpl, checked) {
+          var checkedAmount, data;
+          checkedAmount = checked.length;
+          if (!checkedAmount) {
+            return;
+          }
+          data = {};
+          if (checkedAmount === 1) {
+            data.selecteEip = checked[0].data.name;
+          } else {
+            data.selectedCount = checkedAmount;
+          }
+          return modal.setSlide(tpl(data));
+        }
+      };
+    },
+    getModalOptions: function() {
+      var region, regionName, that;
+      that = this;
+      region = Design.instance().get('region');
+      regionName = constant.REGION_SHORT_LABEL[region];
+      return {
+        title: sprintf(lang.IDE.MANAGE_EIP_IN_AREA, regionName),
+        resourceName: lang.PROP.RESOURCE_NAME_EIP,
+        context: that,
+        buttons: [
+          {
+            icon: 'new-stack',
+            type: 'create',
+            name: lang.IDE.COMPONENT_CREATE_EIP
+          }, {
+            icon: 'del',
+            type: 'delete',
+            disabled: true,
+            name: lang.IDE.COMPONENT_DELETE_EIP
+          }, {
+            icon: 'refresh',
+            type: 'refresh',
+            name: ''
+          }
+        ],
+        columns: [
+          {
+            sortable: true,
+            width: "35%",
+            name: "Elastic IP"
+          }, {
+            width: "15%",
+            sortable: true,
+            name: "Instance"
+          }, {
+            width: "15%",
+            sortable: true,
+            name: "Private IP"
+          }, {
+            width: "15%",
+            sortable: true,
+            name: "Domain"
+          }, {
+            width: "15%",
+            sortable: true,
+            name: "Network Interface"
+          }
+        ]
+      };
+    }
+  });
+});
+
+var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+define('eip_selector',['combo_dropdown', 'UI.modalplus', 'component/awscomps/EipManageTpl', 'constant', 'backbone', 'CloudResources', 'eip_manager', 'i18n!/nls/lang.js', 'UI.notification'], function(comboDropdown, Modal, template, constant, Backbone, CloudResources, EipManager, lang) {
+  return Backbone.View.extend({
+    initialize: function(model) {
+      this.model = model;
+      this.collection = CloudResources(Design.instance().credentialId(), constant.RESTYPE.EIP, Design.instance().get("region"));
+      this.listenTo(this.collection, 'change', this.renderDropdown);
+      this.listenTo(this.collection, 'update', this.renderDropdown);
+      this.listenTo(Design.instance().credential(), "update", this.credChanged);
+      this.listenTo(Design.instance().credential(), "change", this.credChanged);
+      return this.renderModal();
+    },
+    renderModal: function() {
+      var self;
+      self = this;
+      this.modal = new Modal({
+        title: lang.PROP.EIP_SELECTOR_CONFIRM_TITLE,
+        template: template.selector,
+        confirm: lang.PROP.EIP_SELECTOR_CONFIRM_LABEL
+      });
+      this.modal.on("shown", function() {
+        return self.renderDropdown();
+      });
+      return this.modal.on("confirm", function() {
+        if (self.selected) {
+          self.model.setPrimaryEip(true, self.selectedEip);
+          self.trigger("assign");
+          return self.modal.close();
+        } else {
+          return self.modal.find("#need-select-eip").removeClass("hide");
+        }
+      });
+    },
+    credChanged: function() {
+      var _ref;
+      if ((_ref = this.dropdown) != null) {
+        _ref.render("loading");
+      }
+      return this.collection.fetchForce().then((function(_this) {
+        return function() {
+          return _this.renderDropdown();
+        };
+      })(this));
+    },
+    renderDropdown: function() {
+      var option, selection;
+      option = {
+        manageBtnValue: lang.PROP.EIP_DROPDOWN_MANAGE,
+        filterPlaceHolder: lang.PROP.EIP_DROPDOWN_FILTER,
+        resourceName: lang.PROP.EIP_RESOURCE_NAME
+      };
+      this.dropdown = new comboDropdown(option);
+      selection = lang.PROP.SELECT_EIP_SELECTION;
+      this.dropdown.setSelection(selection);
+      this.dropdown.on('open', this.renderEip, this);
+      this.dropdown.on('manage', this.manageEip, this);
+      this.dropdown.on('change', this.assignEip, this);
+      this.dropdown.on('filter', this.filter, this);
+      if (!Design.instance().credential() || Design.instance().credential().isDemo()) {
+        this.dropdown.render('nocredential').toggleControls(false);
+      }
+      return this.modal.tpl.find("#eip-selector").html(this.dropdown.$el);
+    },
+    renderEip: function(keySet) {
+      var self;
+      self = this;
+      this.collection.fetch().then(function() {
+        var content, currentEip, currentRegion, data, dataSet, enisWithEip, selected, usedEips;
+        data = self.collection.toJSON();
+        currentRegion = Design.instance().region();
+        if (keySet) {
+          data = keySet;
+        }
+        enisWithEip = _.filter(Design.instance().componentsOfType(constant.RESTYPE.ENI), function(eni) {
+          return eni.hasPrimaryEip();
+        });
+        usedEips = _.map(enisWithEip, function(eni) {
+          return eni.get("ips")[0].eipData.publicIp;
+        });
+        data = _.filter(data, function(eip) {
+          var _ref;
+          if (_ref = eip.publicIp, __indexOf.call(usedEips, _ref) >= 0) {
+            return false;
+          }
+          return eip.category === currentRegion && eip.canRelease;
+        });
+        dataSet = {
+          data: data
+        };
+        if (keySet) {
+          dataSet.hideNewEip = true;
+        }
+        if (self.selected) {
+          selected = null;
+          if (self.selectedEip && self.selectedEip.id) {
+            selected = self.selectedEip.id;
+          } else {
+            selected = self.selectedEip;
+          }
+          dataSet.selected = selected;
+        }
+        currentEip = null;
+        if (self.model.getEmbedEni) {
+          currentEip = self.model.getEmbedEni().getCurrentEip();
+        } else {
+          currentEip = self.model.getCurrentEip();
+        }
+        if (currentEip) {
+          dataSet.currentEip = {
+            id: currentEip.resource.PublicIp
+          };
+        }
+        content = template.dropdown(dataSet);
+        self.dropdown.toggleControls(true, "manage");
+        self.dropdown.toggleControls(true, "filter");
+        return self.dropdown.setContent(content);
+      });
+      return console.log("Render Eip List");
+    },
+    manageEip: function() {
+      console.log("Show Eip Manager");
+      return new EipManager({
+        workspace: this.workspace
+      }).render();
+    },
+    assignEip: function(id) {
+      var eip;
+      eip = this.collection.find({
+        id: id
+      });
+      eip || (eip = id);
+      this.selected = true;
+      this.selectedEip = eip;
+      this.modal.find("#need-select-eip").addClass("hide");
+      console.log("Assign Elastic Ip to Model");
+      return console.log(eip);
+    },
+    filter: function(keyword) {
+      var hitKeys;
+      console.log("Filter Elastic Ip");
+      hitKeys = _.filter(this.collection.toJSON(), function(eip) {
+        return eip.id.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+      });
+      if (keyword) {
+        return this.renderEip(hitKeys);
+      } else {
+        return this.renderEip();
+      }
+    }
+  });
+});
+
 define('component/awscomps/TagManagerTpl',['handlebars'], function(Handlebars){ var __TEMPLATE__, TEMPLATE={};
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {

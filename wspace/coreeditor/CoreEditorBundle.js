@@ -320,7 +320,9 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
       newData = this.serialize();
       if (_.isEqual(backing.component, newData.component)) {
         if (_.isEqual(backing.layout, newData.layout)) {
-          return false;
+          if (_.isEqual(backing.usage, newData.usage) && _.isEqual(backing.description, newData.description)) {
+            return false;
+          }
         }
       }
       return true;
@@ -2052,10 +2054,10 @@ define('CoreEditorView',["wspace/coreeditor/TplOpsEditor", "UI.modalplus", "i18n
         console.log("hide highlight.");
         self.canvas.removeHighLight();
         self.resourcePanel.removeHighlight();
-        return $("body")[0].removeEventListener("mousedown", oneTimeClicked, true);
+        return $("#OpsEditor .canvas-view")[0].removeEventListener("mousedown", oneTimeClicked, true);
       };
       if (!hold) {
-        $("body")[0].addEventListener("mousedown", oneTimeClicked, true);
+        $("#OpsEditor .canvas-view")[0].addEventListener("mousedown", oneTimeClicked, true);
       }
       this.canvas.highLightModels(models);
     },
@@ -2145,7 +2147,7 @@ define('CanvasManager',['CloudResources', 'constant', 'i18n!/nls/lang.js'], func
       return this;
     },
     updateEip: function(node, targetModel) {
-      var imgUrl, ip, toggle, tootipStr, _ref;
+      var detach, imgUrl, ip, tootipStr, _ref;
       if (node.length) {
         node = node[0];
       }
@@ -2157,8 +2159,8 @@ define('CanvasManager',['CloudResources', 'constant', 'i18n!/nls/lang.js'], func
           $(node).show();
         }
       }
-      toggle = targetModel.hasPrimaryEip();
-      if (toggle) {
+      detach = targetModel.hasPrimaryEip();
+      if (detach) {
         tootipStr = lang.CANVAS.DETACH_ELASTIC_IP_FROM_PRIMARY_IP;
         imgUrl = 'ide/icon/icn-eipon.png';
       } else {
@@ -6314,7 +6316,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       }
       return true;
     },
-    applyAppEdit: function(newJson, fastUpdate) {
+    applyAppEdit: function(newJson, fastUpdate, attributes) {
       var self;
       console.assert(this.isAppEditMode(), "Cannot apply app update while it's not in app edit mode.");
       if (!newJson) {
@@ -6324,7 +6326,7 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
       self = this;
-      this.opsModel.update(newJson, fastUpdate).then(function() {
+      this.opsModel.update(newJson, fastUpdate, attributes).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
         } else {

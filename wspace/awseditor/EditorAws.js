@@ -642,129 +642,134 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <dl class=\"dl-horizontal dl-region-type property-control-group\">\n      <dt>"
+  buffer += "\n        <dl class=\"dl-horizontal dl-region-type property-control-group\">\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_REGION", {hash:{},data:data}))
-    + "</dt>\n      <dd>"
+    + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      <dt>"
+    + "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_TYPE", {hash:{},data:data}))
-    + "</dt>\n      <dd>"
+    + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      <dt>"
+    + "</dd>\n            <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_ID", {hash:{},data:data}))
-    + "</dt>\n      <dd>"
+    + "</dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+    + "</dd>\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
-    + "</dt>\n      <dd>"
-    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    </dl>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  buffer += "\n        </dl>\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n    ";
+  buffer += "\n\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n  ";
+  buffer += "\n\n\n    ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <section class=\"property-control-group\" data-bind=\"true\">\n        <label class=\"left\" for=\"property-app-name\">"
+  buffer += "\n            <section class=\"property-control-group\" data-bind=\"true\">\n                <label class=\"left\" for=\"property-app-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_NAME", {hash:{},data:data}))
-    + "</label>\n        <input class=\"input\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\" value=\""
+    + "</label>\n                <input class=\"input\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-app-name\">\n    </section>\n    ";
+    + "\"\n                       id=\"property-app-name\">\n            </section>\n        ";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n          ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  buffer += "\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      ";
+  buffer += "\n                <dt>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</dt>\n                <dd>"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</dd>\n            ";
   return buffer;
   }
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n              <dt>"
+  buffer += "\n                    <dt>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_USAGE", {hash:{},data:data}))
-    + "</dt>\n              <dd><input class=\"input\" maxlength=\"32\" data-required-rollback=\"true\" value=\""
+    + "</dt>\n                    <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" type=\"text\" id=\"property-app-usage\"/></dd>\n          ";
+    + "</dd>\n                ";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n              <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_USAGE", {hash:{},data:data}))
-    + "</dt>\n              <dd>"
-    + escapeExpression(((stack1 = (depth0 && depth0.usage)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n          ";
+  buffer += "\n            <dl class=\"dl-vertical\">\n                <dt><label>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_INSTANCE_STATE", {hash:{},data:data}))
+    + "</label></dt>\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.opsEnable), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                <dt><label>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF_VIEW", {hash:{},data:data}))
+    + "</label></dt>\n                ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </dl>\n\n        ";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  var buffer = "";
+  buffer += "\n                    <dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ENABLED", {hash:{},data:data}))
+    + "</dd>\n                ";
   return buffer;
   }
 
-function program9(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <dl class=\"dl-vertical\">\n      <dt><label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_INSTANCE_STATE", {hash:{},data:data}))
-    + "</label></dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.opsEnable), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n      <dt><label>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF_VIEW", {hash:{},data:data}))
-    + "</label></dt>\n      ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    </dl>\n\n    ";
-  return buffer;
-  }
 function program10(depth0,data) {
   
   var buffer = "";
-  buffer += "\n      <dd>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_ENABLED", {hash:{},data:data}))
-    + "</dd>\n      ";
+  buffer += "\n                    <dd>"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DISABLED", {hash:{},data:data}))
+    + "</dd>\n                ";
   return buffer;
   }
 
 function program12(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n            ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.usage), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            <section class=\"property-control-group\" data-bind=\"true\">\n                <label for=\"property-stack-description\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.DESCRIPTION", {hash:{},data:data}))
+    + "</label>\n                <textarea name=\"\" id=\"property-stack-description\" cols=\"30\" rows=\"7\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</textarea>\n            </section>\n            <section class=\"property-control-group resdiff-switch\">\n                <div class=\"checkbox\">\n                    <input id=\"property-app-resdiff\" type=\"checkbox\" name=\"resdiff\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " >\n                    <label for=\"property-app-resdiff\"></label>\n                </div>\n                <label for=\"property-app-resdiff\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF", {hash:{},data:data}))
+    + "</label>\n                <i class=\"icon-info tooltip\" data-tooltip=\""
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_TIP_RESDIFF", {hash:{},data:data}))
+    + "\"></i>\n            </section>\n        ";
+  return buffer;
+  }
+function program13(depth0,data) {
+  
   var buffer = "";
-  buffer += "\n      <dd>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_DISABLED", {hash:{},data:data}))
-    + "</dd>\n      ";
+  buffer += "\n                <section class=\"property-control-group\" data-bind=\"true\">\n                    <label for=\"property-app-usage\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_USAGE", {hash:{},data:data}))
+    + "</label>\n                    <div class=\"clear\">\n                        <div id=\"property-app-usage\" class=\"selectbox\">\n                            <div class=\"selection\"><i class=\"icon-app-type-testing\"></i>Testing</div>\n                            <ul class=\"dropdown\" tabindex=\"-1\">\n                                <li class=\"selected item\" data-value=\"testing\"><i class=\"icon-app-type-testing\"></i>Testing</li>\n                                <li class=\"item\" data-value=\"development\"><i class=\"icon-app-type-development\"></i>Development</li>\n                                <li class=\"item\" data-value=\"production\"><i class=\"icon-app-type-production\"></i>Production</li>\n                                <li class=\"item\" data-value=\"others\"><i class=\"icon-app-type-others\" data-value=\"testing\"></i>Others</li>\n                                <li class=\"item\" data-value=\"custom\"><i class=\"icon-app-type-custom\" data-value=\"custom\"></i>Custom</li>\n                            </ul>\n                        </div>\n                        <input type=\"text\" class=\"input custom-app-usage\" placeholder=\"custom\" maxlength=\"32\" data-required-rollback=\"true\" />\n                    </div>\n                </section>\n            ";
   return buffer;
   }
 
-function program14(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <section class=\"property-control-group resdiff-switch\">\n      <div class=\"checkbox\">\n        <input id=\"property-app-resdiff\" type=\"checkbox\" name=\"resdiff\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isResDiff), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " >\n        <label for=\"property-app-resdiff\"></label>\n      </div>\n      <label for=\"property-app-resdiff\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_LBL_RESDIFF", {hash:{},data:data}))
-    + "</label><i class=\"icon-info tooltip\" data-tooltip=\""
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.APP_TIP_RESDIFF", {hash:{},data:data}))
-    + "\"></i>\n    </section>\n    ";
-  return buffer;
-  }
 function program15(depth0,data) {
   
   
@@ -774,19 +779,19 @@ function program15(depth0,data) {
 function program17(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n<!--       ";
+  buffer += "\n            <div class=\"option-group-head expand\">Mesos Settings</div>\n            <div class=\"option-group\">\n                <!--";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n -->      <section id=\"mesos-data-area\">\n      </section>\n    </div>\n    ";
+  buffer += "-->\n                <section id=\"mesos-data-area\">\n                </section>\n            </div>\n        ";
   return buffer;
   }
 function program18(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n      <section class=\"property-control-group\" data-bind=\"true\">\n        <div class=\"mesos-marathon-switch\">\n          <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n          <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
+  buffer += "\n                    <section class=\"property-control-group\" data-bind=\"true\">\n                        <div class=\"mesos-marathon-switch\">\n                            <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\">\n                            <span>Marathon</span>\n                            <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n            <span class=\"switch-handle\"></span>\n          </label>\n        </div>\n      </section>\n      ";
+  buffer += "\">\n                                <span class=\"switch-handle\"></span>\n                            </label>\n                        </div>\n                    </section>\n                ";
   return buffer;
   }
 function program19(depth0,data) {
@@ -798,59 +803,59 @@ function program19(depth0,data) {
 function program21(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	<section class=\"property-control-group\" data-bind=\"true\">\n		<label class=\"left\" for=\"property-stack-name\">"
+  buffer += "\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label class=\"left\" for=\"property-stack-name\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_NAME", {hash:{},data:data}))
-    + "</label>\n		<input class=\"input\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\" value=\""
+    + "</label>\n            <input class=\"input\" type=\"text\" data-ignore=\"true\" data-required-rollback=\"true\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\" id=\"property-stack-name\">\n	</section>\n    <section class=\"property-control-group\" data-bind=\"true\">\n        <label for=\"property-stack-description\">"
+    + "\"\n                   id=\"property-stack-name\">\n        </section>\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label for=\"property-stack-description\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_DESCRIPTION", {hash:{},data:data}))
-    + "</label>\n        <textarea name=\"\" id=\"property-stack-description\" cols=\"30\" rows=\"7\">"
+    + "</label>\n            <textarea name=\"\" id=\"property-stack-description\" cols=\"30\" rows=\"7\">"
     + escapeExpression(((stack1 = (depth0 && depth0.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</textarea>\n    </section>\n	<dl class=\"dl-horizontal dl-region-type property-control-group\">\n		<dt><label>"
+    + "</textarea>\n        </section>\n        <dl class=\"dl-horizontal dl-region-type property-control-group\">\n            <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_REGION", {hash:{},data:data}))
-    + "</label></dt><dd>"
+    + "</label></dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.region)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n		<dt><label>"
+    + "</dd>\n            <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_TYPE", {hash:{},data:data}))
-    + "</label></dt><dd>"
+    + "</label></dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n    <dt><label>"
+    + "</dd>\n            <dt><label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_ID", {hash:{},data:data}))
-    + "</label></dt><dd>"
+    + "</label></dt>\n            <dd>"
     + escapeExpression(((stack1 = (depth0 && depth0.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</dd>\n	</dl>\n\n  <!-- Mesos Settings -->\n  ";
+    + "</dd>\n        </dl>\n\n        <!-- Mesos Settings -->\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  ";
+  buffer += "\n\n    ";
   return buffer;
   }
 function program22(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <section class=\"property-control-group\" data-bind=\"true\">\n    <div class=\"mesos-marathon-switch\">\n      <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n      <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
+  buffer += "\n            <section class=\"property-control-group\" data-bind=\"true\">\n                <div class=\"mesos-marathon-switch\">\n                    <img class=\"marathon-mark-img\" src=\"/assets/images/ide/marathon.png\" alt=\"\"> <span>Marathon</span>\n                    <label class=\"switch toolbar-visual-ops-switch marathon-switch narrow ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.marathonOn), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\">\n        <span class=\"switch-handle\"></span>\n      </label>\n    </div>\n  </section>\n  ";
+  buffer += "\">\n                        <span class=\"switch-handle\"></span>\n                    </label>\n                </div>\n            </section>\n        ";
   return buffer;
   }
 
 function program24(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	<div class=\"option-group-head pos-r\">"
+  buffer += "\n        <div class=\"option-group-head pos-r\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_ACL", {hash:{},data:data}))
-    + "<span class=\"acl-info-list-num property-head-num-wrap\">("
+    + "<span\n                class=\"acl-info-list-num property-head-num-wrap\">("
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.networkAcls)),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</span>\n	</div>\n	<div class=\"option-group\">\n    <ul class=\"acl-sg-info-list acl-info-list mega-list-wraper\" id=\"stack-property-acl-list\"></ul>\n    ";
+    + ")</span>\n        </div>\n        <div class=\"option-group\">\n            <ul class=\"acl-sg-info-list acl-info-list mega-list-wraper\" id=\"stack-property-acl-list\"></ul>\n            ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  </div>\n	";
+  buffer += "\n        </div>\n    ";
   return buffer;
   }
 function program25(depth0,data) {
   
   var buffer = "";
-  buffer += "<a href=\"#\" class=\"add-to-list\" id=\"stack-property-new-acl\">"
+  buffer += "<a href=\"#\" class=\"add-to-list\"\n                                id=\"stack-property-new-acl\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_BTN_CREATE_NEW_ACL", {hash:{},data:data}))
     + "</a>";
   return buffer;
@@ -861,7 +866,7 @@ function program27(depth0,data) {
   var buffer = "", stack1;
   buffer += escapeExpression(((stack1 = (depth0 && depth0.currency)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + escapeExpression(((stack1 = (depth0 && depth0.totalFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "/";
+    + "\n            /";
   stack1 = helpers.i18n.call(depth0, "PROP.STACK_LBL_COST_CYCLE", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
@@ -871,13 +876,13 @@ function program27(depth0,data) {
 function program29(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        <tr> <td>"
+  buffer += "\n                <tr>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.resource)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td> <td>"
+    + "</td>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td> <td>"
+    + "</td>\n                    <td>"
     + escapeExpression(((stack1 = (depth0 && depth0.formatedFee)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td> </tr>\n      ";
+    + "</td>\n                </tr>\n            ";
   return buffer;
   }
 
@@ -892,31 +897,31 @@ function program31(depth0,data) {
   return buffer;
   }
 
-  buffer += "<article>\n\n  ";
+  buffer += "<article>\n\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isStack), {hash:{},inverse:self.program(21, program21, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n\n\n	<!-- SG, ACL, COST -->\n	<div class=\"option-group-head\">"
+  buffer += "\n\n\n\n\n    <!-- SG, ACL, COST -->\n    <div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_SG", {hash:{},data:data}))
-    + "<span class=\"property-head-num-wrap\">(<span id=\"property-head-sg-num\"></span>)</span></div>\n  <div class=\"option-group sg-group\"></div>\n\n\n	";
+    + "<span class=\"property-head-num-wrap\">(<span\n            id=\"property-head-sg-num\"></span>)</span></div>\n    <div class=\"option-group sg-group\"></div>\n\n\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.networkAcls), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n	<div class=\"option-group-head\">\n		"
+  buffer += "\n\n\n    <div class=\"option-group-head\">\n        "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_TIT_COST_ESTIMATION", {hash:{},data:data}))
-    + "\n		<span class=\"cost-counter right\">";
+    + "\n        <span class=\"cost-counter right\">";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.totalFee), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</span>\n	</div>\n	<div class=\"option-group\">\n		<table class=\"table cost-estimation-table\">\n			<thead> <tr>\n					<th>"
+  buffer += "</span>\n    </div>\n    <div class=\"option-group\">\n        <table class=\"table cost-estimation-table\">\n            <thead>\n            <tr>\n                <th>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_RESOURCE", {hash:{},data:data}))
-    + "</th>\n          <th style=\"min-width:70px;\">"
+    + "</th>\n                <th style=\"min-width:70px;\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_SIZE_TYPE", {hash:{},data:data}))
-    + "</th>\n          <th style=\"min-width:60px;\">"
+    + "</th>\n                <th style=\"min-width:60px;\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_COST_COL_FEE", {hash:{},data:data}))
-    + "</th>\n			</tr> </thead>\n			<tbody> ";
+    + "</th>\n            </tr>\n            </thead>\n            <tbody> ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.costList), {hash:{},inverse:self.noop,fn:self.program(29, program29, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " </tbody>\n\n		</table>\n		<div class=\"property-control-group tac\">\n			<a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\" target=\"_blank\">"
+  buffer += " </tbody>\n\n        </table>\n        <div class=\"property-control-group tac\">\n            <a target=\"_blank\" href=\"http://aws.amazon.com/ec2/pricing/\" class=\"goto-outsite tac\"\n               target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STACK_LBL_AWS_EC2_PRICING", {hash:{},data:data}))
-    + "</a>\n		</div>\n	</div>\n\n    ";
+    + "</a>\n        </div>\n    </div>\n\n    ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.noop,fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</article>";
@@ -933,9 +938,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n<dl class=\"dl-vertical\">\n  <dt>Framework</dt><dd>"
+  buffer += "\n    <dl class=\"dl-vertical\">\n        <dt>Framework</dt>\n        <dd>"
     + escapeExpression(helpers.emptyStr.call(depth0, (depth0 && depth0.framework), {hash:{},data:data}))
-    + "</dd>\n  <dt>Mesos Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
+    + "</dd>\n        <dt>Mesos Leader UI</dt>\n        <dd><a target=\"_blank\" href=\"http://"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -943,16 +948,16 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.leaderIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.leaderPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></dd>\n  ";
+    + "</a></dd>\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.framework), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</dl>\n";
+  buffer += "\n    </dl>\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "<dt>Marathon Leader UI</dt><dd><a target=\"_blank\" href=\"http://"
+  buffer += "\n            <dt>Marathon Leader UI</dt>\n            <dd><a target=\"_blank\" href=\"http://"
     + escapeExpression(((stack1 = (depth0 && depth0.marathonIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.marathonPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -960,14 +965,14 @@ function program2(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.marathonIp)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + ":"
     + escapeExpression(((stack1 = (depth0 && depth0.marathonPort)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></dd>";
+    + "</a>\n            </dd>\n        ";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   
-  return "\n<dl class=\"dl-vertical\"><dt>Mesos Data is not ready yet...</dt></dl>\n";
+  return "\n    <dl class=\"dl-vertical\">\n        <dt>Mesos Data is not ready yet...</dt>\n    </dl>\n";
   }
 
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.leaderIp), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
@@ -1071,7 +1076,7 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
       'change #property-stack-name': 'stackNameChanged',
       'change #property-stack-description': 'stackDescriptionChanged',
       'change #property-app-name': 'changeAppName',
-      'change #property-app-usage': 'changeUsage',
+      'change .custom-app-usage': 'changeUsage',
       'click #stack-property-new-acl': 'createAcl',
       'click #stack-property-acl-list .edit': 'openAcl',
       'click .acl-info-list .sg-list-delete-btn': 'deleteAcl',
@@ -1090,6 +1095,7 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
         this.setTitle(title);
       }
       this.refreshACLList();
+      this.bindAppUsage();
       if (this.model.isAppEdit) {
         this.$('#property-app-name').parsley('custom', this.checkAppName);
       }
@@ -1103,6 +1109,26 @@ define('wspace/awseditor/property/stack/view',['../base/view', './template/stack
       return this.$('#mesos-data-area').html(template.mesosData(_.extend({
         isAppEdit: this.model.isAppEdit
       }, dataModel.toJSON())));
+    },
+    bindAppUsage: function() {
+      var $selectbox, usage;
+      $selectbox = this.$el.find("#property-app-usage.selectbox");
+      if ($selectbox.size() < 1) {
+        return false;
+      }
+      $selectbox.on("OPTION_CHANGE", function(evt, _, result) {
+        $selectbox.toggleClass("custom", result.value === "custom").parent().find("input.custom-app-usage").toggleClass("show", result.value === "custom");
+        if (result.value !== "custom") {
+          return Design.instance().set("usage", result.value);
+        }
+      });
+      usage = Design.instance().get("usage");
+      if (usage === "testing" || usage === "development" || usage === "production" || usage === "others") {
+        return $selectbox.find(".dropdown li.item[data-value='" + usage + "']").click();
+      } else {
+        $selectbox.find(".dropdown li.item[data-value='custom']").click();
+        return $selectbox.parent().find("input.custom-app-usage").val(usage);
+      }
     },
     toggleMarathon: function(e) {
       var $switch, marathonOn;
@@ -2340,7 +2366,7 @@ function program62(depth0,data) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_KEY_PAIR", {hash:{},data:data}))
     + "</label>\n			<i class=\"icon-info tooltip default-kp-info\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "POP_INSTANCE_KEYPAIR_INFO_TIP", {hash:{},data:data}))
-    + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n\n	<div class=\"option-group-head\">"
+    + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n	</div>\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.program(27, program27, data),fn:self.program(25, program25, data),data:data});
@@ -2386,7 +2412,7 @@ function program1(depth0,data) {
   buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label>Default Attributes</label>\n            <table class=\"table\">\n                <tr>\n                    <th>Key</th><th>Value</th>\n                </tr>\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.defaultMesosAttr), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </table>\n        </section>\n\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label>Custom Attributes <a href=\"#\" class=\"icon-add\" id=\"add-ma-item-outside\"></a></label>\n            <div id=\"mesos-attribute\" class=\"multi-input\">\n                <div class=\"multi-ipt-row template\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"key\" required/>\n                        <label>value</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"value\" required/>\n                    </span>\n                </div>\n                ";
+  buffer += "\n            </table>\n        </section>\n\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label>Custom Attributes <a href=\"#\" class=\"icon-add\" id=\"add-ma-item-outside\"></a></label>\n            <div id=\"mesos-attribute\" class=\"multi-input\">\n                <div class=\"multi-ipt-row template\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"key\" placeholder=\"key\" required/>\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"value\" placeholder=\"value\" required/>\n                    </span>\n                </div>\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.mesosAttr), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </section>\n    </div>\n    ";
@@ -2406,17 +2432,17 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"key\" value=\""
+  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"key\" value=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " required/>\n                        <label>value</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"value\" value=\""
+  buffer += " placeholder=\"key\" required/>\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"value\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " required/>\n                    </span>\n                </div>\n                ";
+  buffer += " placeholder=\"value\" required/>\n                    </span>\n                </div>\n                ";
   return buffer;
   }
 function program5(depth0,data) {
@@ -10213,17 +10239,17 @@ function program3(depth0,data) {
     + "</textarea>\n    </section>\n\n    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isAppEdit), {hash:{},inverse:self.program(7, program7, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n\n    <div class=\"option-group-head expand\">"
+  buffer += "\n\n	<div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LBL_ROUTE", {hash:{},data:data}))
-    + "</div>\n    <div class=\"option-group\" data-bind=\"true\">\n        <ul class=\"mega-list-wrapper route-list\">\n            <li>\n                <table class=\"table-no-style\">\n                    <tr class=\"route-target\">\n                        <td class=\"route-label\">"
+    + "</div>\n	<div class=\"option-group\" data-bind=\"true\">\n		<ul class=\"mega-list-wrapper route-list\">\n			<li><table class=\"table-no-style\">\n			  <tr class=\"route-target\">\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_TARGET", {hash:{},data:data}))
-    + "</td>\n                        <td class=\"route-target-resource\">"
+    + "</td>\n			    <td class=\"route-target-resource\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_LOCAL", {hash:{},data:data}))
-    + "</td>\n                    </tr>\n                    <tr>\n                        <td class=\"route-label\">"
+    + "</td>\n			  </tr>\n			  <tr>\n			    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
-    + "</td>\n                        <td class=\"route-destination-input\">\n                            <div class=\"route-readonly\">"
+    + "</td>\n			    <td class=\"route-destination-input\"> <input class=\"input route-readonly\" value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.local_route)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</div>\n                        </td>\n                    </tr>\n                </table>\n            </li>\n\n            ";
+    + "\" disabled /> </td>\n			  </tr>\n			</table></li>\n\n            ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.routes), {hash:{},inverse:self.noop,fn:self.programWithDepth(12, program12, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </ul>\n    </div>\n        ";
@@ -10305,7 +10331,7 @@ function program12(depth0,data,depth1) {
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_TARGET", {hash:{},data:data}))
     + "</td>\n                    <td class=\"route-target-resource\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</td>\n                </tr>\n\n                <tr>\n                    <td class=\"route-label\">"
+    + "</td>\n                </tr>\n                <tr>\n                    <td class=\"route-label\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RT_DESTINATION", {hash:{},data:data}))
     + "</td>\n                    <td class=\"route-destination-input\">\n                        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.program(22, program22, data),fn:self.program(19, program19, data),data:data});
@@ -10422,7 +10448,7 @@ function program30(depth0,data) {
     + "\n        </div>\n        <div class=\"option-group\">\n            ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(34, program34, data),fn:self.program(31, program31, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            <div class=\"tags-action\">\n                \n                <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+  buffer += "\n            <div class=\"tags-action\">\n\n                <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
     + "</button>\n            </div>\n        </div>\n        ";
   return buffer;
@@ -10580,14 +10606,9 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
       } else {
         for (idx = _i = 0, _len = allCidrAry.length; _i < _len; idx = ++_i) {
           cidr = allCidrAry[idx];
-          if (inputValue === cidr) {
+          if (inputValue === cidr || (cidr !== "0.0.0.0/0" && this.model.isCidrConflict(inputValue, cidr))) {
             mainContent = sprintf(lang.PROP.RTB_CIDR_BLOCK_CONFLICTS, inputValue);
             descContent = lang.PROP.RTB_CIDR_BLOCK_CONFLICTS_DESC;
-            break;
-          }
-          if (idx === 0 && cidr !== "0.0.0.0/0" && this.model.isCidrConflict(inputValue, cidr)) {
-            mainContent = sprintf(lang.PROP.RTB_CIDR_BLOCK_CONFLICTS_LOCAL, inputValue);
-            descContent = lang.PROP.RTB_CIDR_BLOCK_CONFLICTS_LOCAL_DESC;
             break;
           }
         }
@@ -10623,12 +10644,15 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
         modal = this.modal;
         $("<a id=\"cidr-removed\" class=\"link-red left link-modal-danger\">" + lang.PROP.REMOVE_ROUTE + "</a>").appendTo(modal.find(".modal-footer"));
         modal.on("confirm", function() {
+          that.disabledAllOperabilityArea(false);
           return modal.close();
         });
         modal.on("close", function() {
+          that.disabledAllOperabilityArea(false);
           return inputElem.focus();
         });
         modal.on("closed", function() {
+          that.disabledAllOperabilityArea(false);
           return inputElem.focus();
         });
         return modal.find("#cidr-removed").on("click", function() {
@@ -10637,7 +10661,8 @@ define('wspace/awseditor/property/rtb/view',['../base/view', './template/stack',
             _ref1.remove();
           }
           that.disabledAllOperabilityArea(false);
-          return modal.close();
+          modal.close();
+          return that.render();
         });
       }
     },
@@ -14549,7 +14574,7 @@ function program1(depth0,data) {
   buffer += "\n    <div class=\"option-group-head expand\">Mesos Settings</div>\n    <div class=\"option-group\">\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label>Default Attributes</label>\n            <table class=\"table\">\n                <tr>\n                    <th>Key</th><th>Value</th>\n                </tr>\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.defaultMesosAttr), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n            </table>\n        </section>\n\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label>Custom Attributes <a href=\"#\" class=\"icon-add\" id=\"add-ma-item-outside\"></a></label>\n            <div id=\"mesos-attribute\" class=\"multi-input\">\n                <div class=\"multi-ipt-row template\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"key\" required/>\n                        <label>value</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"value\" required/>\n                    </span>\n                </div>\n                ";
+  buffer += "\n            </table>\n        </section>\n\n        <section class=\"property-control-group\" data-bind=\"true\">\n            <label>Custom Attributes <a href=\"#\" class=\"icon-add\" id=\"add-ma-item-outside\"></a></label>\n            <div id=\"mesos-attribute\" class=\"multi-input\">\n                <div class=\"multi-ipt-row template\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"key\" placeholder=\"key\" required/>\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"value\" placeholder=\"value\" required/>\n                    </span>\n                </div>\n                ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.mesosAttr), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n        </section>\n    </div>\n    ";
@@ -14569,17 +14594,17 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <label>key</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"key\" value=\""
+  buffer += "\n                <div class=\"multi-ipt-row\">\n                    <span class=\"ipt-controls\"><a href=\"#\" class=\"icon-del\"></a><a href=\"#\" class=\"icon-add\"></a></span>\n                    <span class=\"ipt-wrapper\">\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"key\" value=\""
     + escapeExpression(((stack1 = (data == null || data === false ? data : data.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " required/>\n                        <label>value</label><input class=\"input mesos-attr\" type=\"text\" data-name=\"value\" value=\""
+  buffer += " placeholder=\"key\" required/>\n                        <input class=\"input mesos-attr ipt-half\" type=\"text\" data-name=\"value\" value=\""
     + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
     + "\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.readonly), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " required/>\n                    </span>\n                </div>\n                ";
+  buffer += " placeholder=\"value\" required/>\n                    </span>\n                </div>\n                ";
   return buffer;
   }
 function program5(depth0,data) {
@@ -23443,7 +23468,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
       return checkDB.promise;
     },
     applyAppEdit: function() {
-      var DBInstances, components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, taPassed, that, usageChanged;
+      var components, dbInstanceList, differ, newJson, oldDBInstanceList, oldJson, removes, result, taPassed, that, usageChanged;
       that = this;
       taPassed = false;
       oldJson = this.workspace.opsModel.getJsonData();
@@ -23468,7 +23493,6 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           return dbInstanceList.push(e.resource.DBInstanceIdentifier);
         }
       });
-      DBInstances = CloudResources(that.workspace.opsModel.credentialId(), constant.RESTYPE.DBINSTANCE, Design.instance().get("region"));
       this.updateModal = new Modal({
         title: lang.IDE.HEAD_INFO_LOADING,
         template: MC.template.loadingSpinner,
@@ -23483,7 +23507,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         }
       });
       return this.checkDBinstance(oldDBInstanceList).then(function(DBInstances) {
-        var $diffTree, $selectbox, cost, currency, notAvailableDB, removeList, removeListNotReady, _ref;
+        var $diffTree, $selectbox, cost, currency, eipsToRelease, notAvailableDB, removeList, removeListNotReady, _ref;
         notAvailableDB = DBInstances.filter(function(e) {
           var _ref;
           return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(dbInstanceList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
@@ -23516,6 +23540,15 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           notReadyDB: removeListNotReady,
           removeList: removeList
         }));
+        eipsToRelease = _.filter(removes, function(e) {
+          return e.type === constant.RESTYPE.EIP;
+        });
+        console.log(eipsToRelease);
+        if (eipsToRelease.length) {
+          that.updateModal.tpl.find("#release-eips-placeholder").html(MC.template.releaseEipCheck({
+            eipsToRelease: eipsToRelease
+          }));
+        }
         that.updateModal.tpl.find(".modal-header").find("h3").text(lang.IDE.UPDATE_APP_MODAL_TITLE);
         that.updateModal.tpl.find('.modal-confirm').prop("disabled", true).text((Design.instance().credential() ? lang.IDE.UPDATE_APP_CONFIRM_BTN : lang.IDE.UPDATE_APP_MODAL_NEED_CREDENTIAL));
         that.updateModal.resize();
@@ -23542,7 +23575,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           $selectbox.parent().find("input.custom-app-usage").val(newJson.usage);
         }
         that.updateModal.on('confirm', function() {
-          var usage, _ref1;
+          var release_eip, usage, _ref1;
           if (!taPassed) {
             return;
           }
@@ -23561,7 +23594,10 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
             usage = $.trim($selectbox.parent().find("input.custom-app-usage").val()) || "custom";
           }
           newJson.usage = usage;
-          that.workspace.applyAppEdit(newJson, !result.compChange);
+          release_eip = that.updateModal.tpl.find("#release-eip-checkbox").is(":checked");
+          that.workspace.applyAppEdit(newJson, !result.compChange, {
+            release_eip: release_eip
+          });
           return (_ref1 = that.updateModal) != null ? _ref1.close() : void 0;
         });
         if (result.compChange) {
@@ -23783,6 +23819,8 @@ function program17(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"><span>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_DB_SNAPSHOT", {hash:{},data:data}))
+    + "</span></li>\n          <li data-action=\"eip\" class=\"icon-eip\"><span>"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.CLOUD_RESOURCE_EIP", {hash:{},data:data}))
     + "</span></li>\n        </ul>\n    </button>\n  </div>\n  <div class=\"fixedaccordion\">\n\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isMesos), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -24636,7 +24674,7 @@ define('wspace/awseditor/subviews/AmiBrowser',['../template/TplAmiBrowser', 'i18
   });
 });
 
-define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "UI.modalplus", "../template/TplLeftPanel", "constant", 'dhcp_manage', 'snapshotManager', 'rds_snapshot', 'sslcert_manage', 'sns_manage', 'kp_manage', 'rds_pg', 'rds_snapshot', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', 'OpsModel', "backbone", "UI.dnd"], function(CloudResources, Design, Modal, LeftPanelTpl, constant, dhcpManager, EbsSnapshotManager, RdsSnapshotManager, sslCertManager, snsManager, keypairManager, rdsPgManager, rdsSnapshot, AmiBrowser, lang, ApiRequest, OpsModel) {
+define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "UI.modalplus", "../template/TplLeftPanel", "constant", 'dhcp_manage', 'snapshotManager', 'rds_snapshot', 'sslcert_manage', 'sns_manage', 'kp_manage', 'rds_pg', 'rds_snapshot', 'eip_manager', './AmiBrowser', 'i18n!/nls/lang.js', 'ApiRequest', 'OpsModel', "backbone", "UI.dnd"], function(CloudResources, Design, Modal, LeftPanelTpl, constant, dhcpManager, EbsSnapshotManager, RdsSnapshotManager, sslCertManager, snsManager, keypairManager, rdsPgManager, rdsSnapshot, eipManager, AmiBrowser, lang, ApiRequest, OpsModel) {
   var LcItemView, __resizeAccdTO;
   __resizeAccdTO = null;
   $(window).on("resize", function() {
@@ -25258,6 +25296,9 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
           break;
         case 'rdssnapshot':
           manager = rdsSnapshot;
+          break;
+        case 'eip':
+          manager = eipManager;
       }
       return new manager({
         workspace: this.workspace
@@ -26933,11 +26974,11 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
         }
       }
     },
-    setPrimaryEip: function(toggle) {
+    setPrimaryEip: function(toggle, eipData) {
       var eni;
       eni = this.getEmbedEni();
       if (eni) {
-        eni.setPrimaryEip(toggle);
+        eni.setPrimaryEip(toggle, eipData);
       } else {
         this.set("hasEip", toggle);
         if (toggle) {
@@ -27454,6 +27495,9 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
     isDefaultKey: function() {
       var kp;
       kp = this.connectionTargets("KeypairUsage")[0];
+      if (!kp) {
+        return true;
+      }
       return kp && kp.isDefault();
     },
     isNoKey: function() {
@@ -27734,7 +27778,13 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       if (KP) {
         KP.assignTo(model);
       } else {
-        model.set('keyName', data.resource.KeyName);
+        if (data.resource.KeyName || data.resource.KeyName === "") {
+          model.set('keyName', data.resource.KeyName);
+        } else {
+          _.defer(function() {
+            return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
+          });
+        }
       }
       return null;
     }
@@ -27974,12 +28024,55 @@ define('wspace/awseditor/model/EniModel',["ComplexResModel", "Design", "./connec
       }
       return null;
     },
-    setPrimaryEip: function(toggle) {
+    getCurrentEip: function() {
+      var self;
+      if (!Design.instance().modeIsAppEdit()) {
+        return false;
+      }
+      self = this;
+      return _.find(Design.instance().opsModel().getJsonData().component, function(comp) {
+        var eniUid;
+        if (comp.type === "AWS.EC2.EIP") {
+          eniUid = comp.resource.NetworkInterfaceId.match(/^@{([^\.]+)\..*/)[1];
+          return eniUid === self.id;
+        }
+        return false;
+      });
+    },
+    setPrimaryEip: function(toggle, eipData) {
+      var eip, self;
       if (!this.attachedInstance()) {
         return;
       }
+      self = this;
       this.get("ips")[0].hasEip = toggle;
+      if (eipData && typeof eipData !== "string" && eipData.get("publicIp")) {
+        this.get("ips")[0].eipData = {
+          id: MC.guid(),
+          publicIp: eipData.get("publicIp"),
+          allocationId: eipData.get("allocationId")
+        };
+      } else if (eipData === "old") {
+        eip = self.getCurrentEip();
+        this.attributes.ips[0].eipData = {
+          id: eip.uid,
+          publicIp: eip.resource.PublicIp,
+          allocationId: eip.resource.AllocationId
+        };
+        return null;
+      } else if (eipData === "new") {
+        eip = self.getCurrentEip();
+        if (eip) {
+          this.get("ips")[0].eipData = {
+            id: MC.guid()
+          };
+        }
+      }
       return null;
+    },
+    getPrimaryEip: function() {
+      var _ref, _ref1;
+      return (_ref = this.get("ips")) != null ? (_ref1 = _ref[0]) != null ? _ref1.eipData : void 0 : void 0;
     },
     hasPrimaryEip: function() {
       return this.get("ips")[0].hasEip;
@@ -32106,7 +32199,13 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       if (KP) {
         KP.assignTo(model);
       } else {
-        model.set('keyName', data.resource.KeyName);
+        if (data.resource.KeyName || data.resource.KeyName === "") {
+          model.set('keyName', data.resource.KeyName);
+        } else {
+          _.defer(function() {
+            return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
+          });
+        }
       }
       return null;
     }
@@ -36062,10 +36161,18 @@ define('wspace/awseditor/model/serializeVisitor/AppToStack',["../DesignAws"], fu
           }
           break;
         case 'AWS.EC2.Tag':
-          _results.push(delete components[comp]);
+          if (compo.name === "EC2InternalTags") {
+            _results.push(delete components[comp]);
+          } else {
+            _results.push(void 0);
+          }
           break;
         case 'AWS.AutoScaling.Tag':
-          _results.push(delete components[comp]);
+          if (compo.name === "AutoScalingInternalTags") {
+            _results.push(delete components[comp]);
+          } else {
+            _results.push(void 0);
+          }
           break;
         case 'AWS.ELB':
           compo.resource.DNSName = "";
@@ -37105,7 +37212,7 @@ define('wspace/awseditor/canvas/CpEni',["./CpInstance", "./TplPopup", "constant"
   });
 });
 
-define('wspace/awseditor/canvas/CeEni',["CanvasElement", "constant", "CanvasManager", "i18n!/nls/lang.js", "CloudResources", "./CpEni", "event"], function(CanvasElement, constant, CanvasManager, lang, CloudResources, EniPopup, ide_event) {
+define('wspace/awseditor/canvas/CeEni',["CanvasElement", "constant", "CanvasManager", "eip_selector", "i18n!/nls/lang.js", "CloudResources", "./CpEni", "event"], function(CanvasElement, constant, CanvasManager, EipSelector, lang, CloudResources, EniPopup, ide_event) {
   return CanvasElement.extend({
 
     /* env:dev                                     env:dev:end */
@@ -37151,6 +37258,10 @@ define('wspace/awseditor/canvas/CeEni',["CanvasElement", "constant", "CanvasMana
         return false;
       }
       toggle = !this.model.hasPrimaryEip();
+      if (this.canvas.design.modeIsAppEdit() && toggle) {
+        this.selectEip();
+        return false;
+      }
       this.model.setPrimaryEip(toggle);
       if (toggle) {
         Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
@@ -37158,6 +37269,21 @@ define('wspace/awseditor/canvas/CeEni',["CanvasElement", "constant", "CanvasMana
       CanvasManager.updateEip(this.$el.children(".eip-status"), this.model);
       ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
       return false;
+    },
+    selectEip: function() {
+      var selector, self;
+      self = this;
+      if (!this.canvas.design.modeIsAppEdit || this.model.hasPrimaryEip()) {
+        return false;
+      }
+      selector = new EipSelector(self.model);
+      return selector.on("assign", function() {
+        Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
+        CanvasManager.updateEip(self.$el.children(".eip-status"), self.model);
+        ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
+        selector.off("assign");
+        return false;
+      });
     },
     create: function() {
       var m, svg, svgEl;
@@ -37247,7 +37373,7 @@ define('wspace/awseditor/canvas/CeEni',["CanvasElement", "constant", "CanvasMana
   });
 });
 
-define('wspace/awseditor/canvas/CeInstance',["CanvasElement", "constant", "CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "event", "UI.notification"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, ide_event) {
+define('wspace/awseditor/canvas/CeInstance',["CanvasElement", "constant", "CanvasManager", "./CpVolume", "./CpInstance", "i18n!/nls/lang.js", "CloudResources", "eip_selector", "event", "UI.notification"], function(CanvasElement, constant, CanvasManager, VolumePopup, InstancePopup, lang, CloudResources, EipSelector, ide_event) {
   return CanvasElement.extend({
 
     /* env:dev                                          env:dev:end */
@@ -37326,6 +37452,10 @@ define('wspace/awseditor/canvas/CeInstance',["CanvasElement", "constant", "Canva
         return false;
       }
       toggle = !this.model.hasPrimaryEip();
+      if (this.canvas.design.modeIsAppEdit() && toggle) {
+        this.selectEip();
+        return false;
+      }
       this.model.setPrimaryEip(toggle);
       if (toggle) {
         Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
@@ -37333,6 +37463,21 @@ define('wspace/awseditor/canvas/CeInstance',["CanvasElement", "constant", "Canva
       CanvasManager.updateEip(this.$el.children(".eip-status"), this.model);
       ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
       return false;
+    },
+    selectEip: function() {
+      var selector, self;
+      self = this;
+      if (!this.canvas.design.modeIsAppEdit || this.model.hasPrimaryEip()) {
+        return false;
+      }
+      selector = new EipSelector(self.model);
+      return selector.on("assign", function() {
+        Design.modelClassForType(constant.RESTYPE.IGW).tryCreateIgw();
+        CanvasManager.updateEip(self.$el.children(".eip-status"), self.model);
+        ide_event.trigger(ide_event.PROPERTY_REFRESH_ENI_IP_LIST);
+        selector.off("assign");
+        return false;
+      });
     },
     select: function(selectedDomElement) {
       var type;

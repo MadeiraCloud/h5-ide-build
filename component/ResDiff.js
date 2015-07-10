@@ -478,6 +478,9 @@ define('component/resdiff/prepare',['constant'], function(constant) {
             break;
           case 'Options':
             data.key = 'Option';
+            break;
+          case 'ResourceIds':
+            data.key = 'Id';
         }
         if (__indexOf.call(pluralKeys, parentKey) >= 0) {
           data.key = this.pluralToSingular(parentKey);
