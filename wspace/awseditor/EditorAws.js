@@ -26686,22 +26686,22 @@ define('wspace/awseditor/model/connection/VPNConnection',["constant", "Connectio
             DestinationCidrBlock: r
           };
         });
-        component = {
-          name: this.get('name'),
-          type: this.type,
-          uid: this.id,
-          resource: {
-            CustomerGatewayId: cgw.createRef("CustomerGatewayId"),
-            Options: {
-              StaticRoutesOnly: !cgw.isDynamic()
-            },
-            Type: "ipsec.1",
-            Routes: routes,
-            VpnConnectionId: this.get("appId"),
-            VpnGatewayId: vgw.createRef("VpnGatewayId")
-          }
-        };
       }
+      component = {
+        name: this.get('name'),
+        type: this.type,
+        uid: this.id,
+        resource: {
+          CustomerGatewayId: cgw.createRef("CustomerGatewayId"),
+          Options: {
+            StaticRoutesOnly: !cgw.isDynamic()
+          },
+          Type: "ipsec.1",
+          Routes: routes,
+          VpnConnectionId: this.get("appId"),
+          VpnGatewayId: vgw.createRef("VpnGatewayId")
+        }
+      };
       return component_data && (component_data[this.id] = component) || component;
     },
     remove: function() {

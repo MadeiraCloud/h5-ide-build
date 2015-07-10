@@ -87,7 +87,7 @@ define('DiffTree',['constant'], function(constant) {
           _results2 = [];
           for (j = _k = 0, _len1 = _ref3.length; _k < _len1; j = ++_k) {
             v = _ref3[j];
-            if (!_compare.call(this, a[i], b[j], '', null, [])) {
+            if (!_compare.call(this, a, b, a[i], b[j], '', null, [])) {
               tmp = b[i];
               b[i] = b[j];
               _results2.push(b[j] = tmp);
@@ -100,7 +100,7 @@ define('DiffTree',['constant'], function(constant) {
       }
       return _results;
     };
-    _compare = function(a, b, key, path, resultJSON) {
+    _compare = function(pA, pB, a, b, key, path, resultJSON) {
       var aAry, aString, attrPath1, attrPath2, attrPathAry, attrPathStr, bAry, bString, changeType, diffAryResult, hasDiff, haveDiff, i, isEqual, keys, resShortType, resType, typeA, typeB, v, value1, value2, _i, _len;
       if (key === 'VPCZoneIdentifier') {
         aAry = a.split(',');
@@ -139,6 +139,11 @@ define('DiffTree',['constant'], function(constant) {
           attrPath2 = '*.' + attrPathStr;
           if (option.filterAttrMap[attrPath1] || option.filterAttrMap[attrPath2]) {
             return;
+          }
+          if (attrPath1 === "TAG.resource.n.Value" || attrPath1 === "ASGTAG.resource.n.Value" || attrPath2 === "TAG.resource.n.Value" || attrPath2 === "ASGTAG.resource.n.Value") {
+            if ((pA && pA.Key === 'visualops') && (pB && pB.Key === 'visualops')) {
+              return;
+            }
           }
         }
       }
@@ -196,7 +201,7 @@ define('DiffTree',['constant'], function(constant) {
           if (keys[i] === keys[i - 1]) {
             continue;
           }
-          hasDiff = _compare.call(this, a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
+          hasDiff = _compare.call(this, a, b, a && a[keys[i]], b && b[keys[i]], keys[i], path, resultJSON[key]);
           if (hasDiff) {
             isEqual = false;
           }
@@ -237,7 +242,7 @@ define('DiffTree',['constant'], function(constant) {
     this.compare = function(json1, json2) {
       var resultJSON;
       resultJSON = {};
-      _compare.call(this, json1, json2, 'result', [], resultJSON);
+      _compare.call(this, json1, json2, json1, json2, 'result', [], resultJSON);
       return resultJSON.result;
     };
     return null;

@@ -6105,7 +6105,7 @@ TEMPLATE.filterResource=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+  var stack1, self=this, escapeExpression=this.escapeExpression, functionType="function";
 
 function program1(depth0,data) {
   
@@ -6183,41 +6183,42 @@ function program13(depth0,data) {
     + "\" type=\"checkbox\" value=\"None\" data-id=\""
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
     + "\" class=\"one-cb\" ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.allowCheck), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.inherit), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.inherit), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n                            <label for=\"cb"
     + escapeExpression(helpers.or.call(depth0, (depth0 && depth0.id), (depth0 && depth0.asg), {hash:{},data:data}))
-    + "\"></label>\n                        </div>\n                        <div class=\"action\">\n                            <button class=\"btn btn-red edit-delete\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+    + "\"></label>\n                        </div>\n                        <div class=\"action\">\n                            ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "><i class=\"icon-delete\"></i></button>\n                        </div>\n                    ";
+  buffer += "\n                        </div>\n                    ";
   return buffer;
   }
 function program14(depth0,data) {
   
   
-  return "disabled=\"disabled\"";
+  return "checked";
   }
 
 function program16(depth0,data) {
   
-  
-  return "checked";
+  var buffer = "", stack1;
+  buffer += "<button class=\"btn btn-red edit-delete\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "><i class=\"icon-delete\"></i></button>";
+  return buffer;
   }
 
 function program18(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                        <div class=\"action wide\">\n                            <button class=\"btn btn-red edit-delete\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(11, program11, data),data:data});
+  buffer += "\n                        <div class=\"action wide\">\n                            ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.disableEdit), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "><i class=\"icon-delete\"></i></button>\n                        </div>\n                    ";
+  buffer += "\n                        </div>\n                    ";
   return buffer;
   }
 
@@ -7342,6 +7343,13 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
           allowCheck: checkedAllAsg
         };
       });
+      checkedData = _.sortBy(checkedData, function(data) {
+        if (data.disableEdit) {
+          return -1;
+        } else {
+          return data.key.toString().charCodeAt(0);
+        }
+      });
       checkedAsgTagIdsArray = _.map(checkedAsgTagArray, function(tagArray) {
         return _.map(tagArray, function(tag) {
           return tag.id;
@@ -7385,11 +7393,12 @@ define('tag_manager',['constant', 'CloudResources', "UI.modalplus", "component/a
         empty: !allComps.length,
         allAsg: checkedAllAsg
       }));
-      info = allComps.length;
       if (allComps.length === 1) {
         info = allComps[0].get('name');
+        this.$el.find(".tabs-navs").text("Selected Resource (" + info + ")");
+      } else {
+        this.$el.find(".tabs-navs").text("Intersectional Tags - Selected Resources (" + allComps.length + ")");
       }
-      this.$el.find(".tabs-navs span").text("(" + info + ")");
       return this.changeTagInput();
     },
     filterResourceList: function(resModels) {
