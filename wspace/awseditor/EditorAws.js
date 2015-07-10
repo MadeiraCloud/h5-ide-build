@@ -35713,7 +35713,9 @@ define('wspace/awseditor/model/TagModel',["constant", "ComplexResModel", "GroupM
       return _results;
     },
     all: function() {
-      return this.children();
+      return _.filter(this.children(), function(tag) {
+        return !!tag.connections().length;
+      });
     }
   }, {
     handleTypes: [constant.RESTYPE.TAG],

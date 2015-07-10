@@ -6374,6 +6374,9 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
       return true;
     }
     if (attr === 'name') {
+      if (value === DefaultValues.AllValues) {
+        return true;
+      }
       return resource.get('name') === value;
     }
     serialized = resource.serialize();
@@ -6840,7 +6843,7 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
             type: 'attribute_value',
             value: r.get('name')
           });
-          break;
+          continue;
         }
         serialized = r.serialize();
         if (!_.isArray(serialized)) {
