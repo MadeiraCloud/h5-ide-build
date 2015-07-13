@@ -6306,6 +6306,8 @@ function program1(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.key)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" data-value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" data-type=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" class=\""
     + escapeExpression(((stack1 = (depth0 && depth0.type)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n    <span class=\"key\">"
@@ -6452,7 +6454,9 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
       "click .dropdown li.option": "selectHandler",
       "mouseover .dropdown": "overDrop",
       "mouseleave .dropdown": "leaveDrop",
-      "mouseover .dropdown li": "overDropItem"
+      "mouseover .dropdown li": "overDropItem",
+      "mouseover .tags li": "overSelectionHandler",
+      "mouseleave .tags li": "leaveSelectionHandler"
     },
     getFilterableResource: function() {
       var allComp;
@@ -6467,9 +6471,9 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
         };
       })(this));
     },
-    getMatchedResource: function(hightlight) {
+    getMatchedResource: function(hightlight, sel) {
       var filterable, matched, selection, _ref;
-      selection = this.classifySelection(this.selection);
+      selection = this.classifySelection(sel || this.selection);
       filterable = this.getFilterableResource();
       matched = _.filter(filterable, function(resource) {
         if (isResMatchTag(resource, selection.tags) && isResMatchResource(resource, selection.resources)) {
@@ -6490,15 +6494,14 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
       matched = this.getMatchedResource(true);
       return this.trigger('change:filter', matched.matched, matched.effect);
     },
-    classifySelection: function() {
-      var classified, sel, _i, _len, _ref;
+    classifySelection: function(sels) {
+      var classified, sel, _i, _len;
       classified = {
         tags: {},
         resources: []
       };
-      _ref = this.selection;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        sel = _ref[_i];
+      for (_i = 0, _len = sels.length; _i < _len; _i++) {
+        sel = sels[_i];
         if (sel.type === 'tag') {
           classified.tags[sel.key] || (classified.tags[sel.key] = []);
           classified.tags[sel.key].push(sel.value);
@@ -7132,6 +7135,35 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
         $input.val(key);
       }
       return this.renderDropdown();
+    },
+    triggerHover: function($sel) {
+      var matched, sel, selData;
+      if ($sel && this.__justHovered === $sel.get(0)) {
+        return;
+      }
+      this.__justHovered = $sel && $sel.get(0) || null;
+      if ($sel) {
+        selData = $sel.data();
+        sel = [
+          {
+            key: selData.key,
+            value: selData.value,
+            type: selData.type
+          }
+        ];
+      } else {
+        sel = null;
+      }
+      matched = this.getMatchedResource(true, sel);
+      return this.trigger('hover', matched.matched, matched.effect);
+    },
+    overSelectionHandler: function(e) {
+      console.log('over selection');
+      return this.triggerHover($(e.currentTarget));
+    },
+    leaveSelectionHandler: function(e) {
+      console.log('leave selection');
+      return this.triggerHover();
     }
   });
   return filterInput;

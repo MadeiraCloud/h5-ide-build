@@ -36,7 +36,8 @@ define('DiffTree',['constant'], function(constant) {
         '*.resource.Tags': true,
         '*.resource.adminPass': true,
         '*.resource.key_name': true,
-        '*.resource.bootable': true
+        '*.resource.bootable': true,
+        "TAG.resource.n.PropagateAtLaunch": true
       };
     }
     if (!option.noDiffArrayAttrMap) {

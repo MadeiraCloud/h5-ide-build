@@ -23017,6 +23017,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
       /* env:dev                                                                                       env:dev:end */
       this.listenTo(this.filter, 'change:filter', this.highlightCanvas);
       this.listenTo(this.filter, 'focus', this.highlightCanvas);
+      this.listenTo(this.filter, 'hover', this.highlightCanvas);
       return this.$('.btn-toolbar').last().after(this.filter.render().el);
     },
     highlightCanvas: function(models, effect) {
