@@ -1003,6 +1003,24 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         throw err;
       });
     },
+    checkTerminateProtection: function(instanceIds) {
+      var options;
+      if (instanceIds == null) {
+        instanceIds = [];
+      }
+      if (!this.isApp()) {
+        return this.__returnErrorPromise();
+      }
+      if (this.get("state") !== OpsModelState.Stopped && this.get("state") !== OpsModelState.Running) {
+        return this.__returnErrorPromise();
+      }
+      options = {
+        app_id: this.get("id"),
+        key_id: this.credentialId(),
+        filter: instanceIds
+      };
+      return ApiRequest("app_check_disableApiTermination", options);
+    },
     terminate: function(force, extraOption) {
       var oldState, options, self;
       if (force == null) {

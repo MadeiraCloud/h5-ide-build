@@ -2401,7 +2401,8 @@ define({
         "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack 至少需要一个 Slave 节点。",
         "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master 节点 <span class='validation-tag tag-mesos-master'>%s</span> 必须放在公开的subnet中。",
         "MASTER_NUMBER_MUST_BE_ODD": "Master node 的数量必须是奇数。",
-        "SUBNET_CONNECTIVITY": "%s 必须连接到一个能够路由到互联网网关的路由表，才能使这些 Subnet 中的弹性 IP 和 公网 IP 正常工作。"
+        "SUBNET_CONNECTIVITY": "%s 必须连接到一个能够路由到互联网网关的路由表，才能使这些 Subnet 中的弹性 IP 和 公网 IP 正常工作。",
+        "TERMINATED_PROTECTION_CANNOT_TERMINATE": "实例 %s 无法终结，请先到 AWS Console上面关闭这些实例的终结保护。"
     },
     "TOOLBAR": {
         "LOADING_DATA": "加载数据中...",
@@ -2594,6 +2595,7 @@ define({
         "TOOK_XXX_SEC": "花费 %s 秒",
         "TOOK_XXX_MIN": "花费 %s 分钟",
         "FIX_THE_ERROR_TO_LAUNCH_APP": "启动 App 之前请先修复所有错误",
-        "FIX_THE_ERROR_TO_UPDATE": "Update 之前请先修复所有错误"
+        "FIX_THE_ERROR_TO_UPDATE": "Update 之前请先修复所有错误",
+        "TERMINATE_PROTECTION_CANNOT_TERMINITE": "警告：App 中的某些实例开启了终结保护功能，此 App 无法终结。"
     }
 })

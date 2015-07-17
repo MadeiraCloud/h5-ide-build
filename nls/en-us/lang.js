@@ -2401,7 +2401,8 @@ define({
         "MESOS_STACK_NEED_A_SLAVE_NODE_AT_LEAST": "Mesos Stack need a Slave node at least.",
         "MASTER_NODE_MUST_BE_PLACED_IN_A_PUBLIC_SUBNET": "Master node <span class='validation-tag tag-mesos-master'>%s</span> must be placed in a public subnet.",
         "MASTER_NUMBER_MUST_BE_ODD": "The total number of Master node must be odd.",
-        "SUBNET_CONNECTIVITY": "%s must associate with a Route Table which routes to Internet Gateway so that EIP and Public IP within the subnets can work."
+        "SUBNET_CONNECTIVITY": "%s must associate with a Route Table which routes to Internet Gateway so that EIP and Public IP within the subnets can work.",
+        "TERMINATED_PROTECTION_CANNOT_TERMINATE": "Instance %s can't be terminated, please disable termination protection in AWS console for these instances."
     },
     "TOOLBAR": {
         "LOADING_DATA": "Loading data...",
@@ -2594,6 +2595,7 @@ define({
         "TOOK_XXX_SEC": "Took %s sec.",
         "TOOK_XXX_MIN": "Took %s min.",
         "FIX_THE_ERROR_TO_LAUNCH_APP": "Fix the error to launch app",
-        "FIX_THE_ERROR_TO_UPDATE": "Fix the error to update"
+        "FIX_THE_ERROR_TO_UPDATE": "Fix the error to update",
+        "TERMINATE_PROTECTION_CANNOT_TERMINITE": "Warnning: This app can't be terminated, because some instance in the app has enabled Termination Protection:"
     }
 })

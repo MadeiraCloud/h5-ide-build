@@ -414,6 +414,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 TEMPLATE.disconnectedMsg=Handlebars.template(__TEMPLATE__);
 
 
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "<div class=\"modal-text-major\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TERMINATE_PROTECTION_CANNOT_TERMINITE", {hash:{},data:data}))
+    + "</div>\n<div class=\"modal-text-minor\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.instanceList)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</div>";
+  return buffer;
+  };
+TEMPLATE.hasTerminationProtection=Handlebars.template(__TEMPLATE__);
+
+
 return TEMPLATE; });
 
 /*
@@ -933,7 +949,25 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       terminateConfirm.tpl.find('.modal-footer').hide();
       resourceList = CloudResources(self.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
       return resourceList.fetchForce().then(function() {
-        return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
+        return self.__checkTerminateProtection().then(function(res) {
+          var instanceList, instanceListStr;
+          if (_.size(res)) {
+            instanceList = [];
+            for (id in res) {
+              name = res[id];
+              instanceList.push("" + name + "(" + id + ")");
+            }
+            instanceListStr = instanceList.join(', ');
+            terminateConfirm.tpl.find('.modal-body').html(AppTpl.hasTerminationProtection({
+              instanceList: instanceListStr
+            }));
+            terminateConfirm.tpl.find('.modal-confirm').remove();
+            terminateConfirm.tpl.find('.modal-footer .modal-close').text(lang.IDE.PROC_CLOSE_TAB);
+            return terminateConfirm.tpl.find('.modal-footer').show();
+          } else {
+            return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
+          }
+        });
       }, function(error) {
         if (error.awsError === 403) {
           return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
@@ -942,6 +976,23 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           notification('error', lang.NOTIFY.ERROR_FAILED_LOAD_AWS_DATA);
           return false;
         }
+      });
+    },
+    __checkTerminateProtection: function() {
+      var hasInstance;
+      hasInstance = false;
+      this.workspace.design.eachComponent(function(comp) {
+        if (comp.type === constant.RESTYPE.INSTANCE) {
+          hasInstance = true;
+          return false;
+        }
+      });
+      if (!hasInstance) {
+        return Promise.resolve({});
+      }
+      return this.workspace.opsModel.checkTerminateProtection().fail(function(err) {
+        console.error(err);
+        return Promise.resolve({});
       });
     },
     __terminateApp: function(id, resourceList, terminateConfirm, hasJsonData) {

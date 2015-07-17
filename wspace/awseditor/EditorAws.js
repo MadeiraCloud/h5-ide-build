@@ -23606,7 +23606,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           $('#app-update-summary-table').html($diffTree);
         }
         that.appAction.renderKpDropdown(that.updateModal);
-        TA.loadModule('stack').then(function() {
+        TA.loadModule('stack', null, differ).then(function() {
           return taPassed = true;
         })["catch"](function(err) {
           var _ref1, _ref2;

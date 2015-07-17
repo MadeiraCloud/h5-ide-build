@@ -6641,8 +6641,9 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
         sel.key = key.toString();
       }
       if (_.isNumber(value)) {
-        return sel.value = value.toString();
+        sel.value = value.toString();
       }
+      return sel;
     },
     addSelection: function(sel, silent) {
       var state, _ref;
@@ -7145,11 +7146,11 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
       if ($sel) {
         selData = $sel.data();
         sel = [
-          {
+          this.stringKeyValue({
             key: selData.key,
             value: selData.value,
             type: selData.type
-          }
+          })
         ];
       } else {
         sel = null;
