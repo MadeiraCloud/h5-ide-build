@@ -984,11 +984,13 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       });
     },
     __checkTerminateProtection: function() {
-      var hasInstance;
+      var design, hasInstance, opsModel, _ref, _ref1;
       hasInstance = false;
-      this.workspace.design.eachComponent(function(comp) {
-        var _ref;
-        if ((_ref = comp.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.ASG) {
+      design = ((_ref = this.workspace) != null ? _ref.design : void 0) || Design.instance();
+      opsModel = ((_ref1 = this.workspace) != null ? _ref1.opsModel : void 0) || Design.instance().opsModel();
+      design.eachComponent(function(comp) {
+        var _ref2;
+        if ((_ref2 = comp.type) === constant.RESTYPE.INSTANCE || _ref2 === constant.RESTYPE.ASG) {
           hasInstance = true;
           return false;
         }
@@ -996,7 +998,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       if (!hasInstance) {
         return Promise.resolve({});
       }
-      return this.workspace.opsModel.checkTerminateProtection().fail(function(err) {
+      return opsModel.checkTerminateProtection().fail(function(err) {
         console.error(err);
         return Promise.resolve({});
       });
