@@ -29309,7 +29309,7 @@ define('wspace/awseditor/model/connection/LcUsage',["ConnectionModel", "constant
   });
 });
 
-define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "Design", "constant", "i18n!/nls/lang.js", "./connection/LcUsage", "CanvasElement"], function(ResourceModel, ComplexResModel, Design, constant, lang, LcUsage, CanvasElement) {
+define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "Design", "constant", "i18n!/nls/lang.js", "./connection/LcUsage", "CanvasElement", "CloudResources"], function(ResourceModel, ComplexResModel, Design, constant, lang, LcUsage, CanvasElement, CloudResources) {
   var ExpandedAsgModel, Model, NotificationModel;
   NotificationModel = ComplexResModel.extend({
     type: constant.RESTYPE.NC,
@@ -29751,6 +29751,27 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
         }
       }
       return null;
+    },
+    members: function(appId) {
+      var amis, i, resource, resource_list, _i, _len, _ref, _ref1;
+      resource_list = CloudResources(Design.instance().credentialId(), constant.RESTYPE.ASG, Design.instance().region());
+      if (!resource_list) {
+        return [];
+      }
+      resource = (_ref = resource_list.get(appId)) != null ? _ref.toJSON() : void 0;
+      if (resource && resource.Instances && resource.Instances.length) {
+        amis = [];
+        _ref1 = resource.Instances;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          i = _ref1[_i];
+          amis.push({
+            id: i.InstanceId,
+            appId: i.InstanceId,
+            state: i.HealthStatus
+          });
+        }
+      }
+      return amis || [];
     }
   });
   return Model;
@@ -32006,26 +32027,14 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     isDefaultTenancy: function() {
       return true;
     },
-    groupMembers: function() {
-      var amis, i, resource, resource_list, _i, _len, _ref, _ref1;
-      resource_list = CloudResources(this.design().credentialId(), constant.RESTYPE.ASG, this.design().region());
-      if (!resource_list) {
-        return [];
+    groupMembers: function(asg) {
+      var asgAppId;
+      if (asg) {
+        asgAppId = asg.get('appId');
+      } else {
+        asgAppId = this.connectionTargets("LcUsage")[0].get("appId");
       }
-      resource = (_ref = resource_list.get(this.connectionTargets("LcUsage")[0].get("appId"))) != null ? _ref.toJSON() : void 0;
-      if (resource && resource.Instances && resource.Instances.length) {
-        amis = [];
-        _ref1 = resource.Instances;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          i = _ref1[_i];
-          amis.push({
-            id: i.InstanceId,
-            appId: i.InstanceId,
-            state: i.HealthStatus
-          });
-        }
-      }
-      return amis || [];
+      return Design.modelClassForType(constant.RESTYPE.ASG).members(asgAppId);
     },
     getAsgs: function() {
       return this.connectionTargets("LcUsage");
@@ -38043,12 +38052,14 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
       return false;
     },
     showGroup: function(evt) {
-      var bdm, gm, icon, idx, ins, insCln, m, name, volume, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var asg, bdm, el, gm, icon, idx, ins, insCln, m, name, volume, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       insCln = CloudResources(this.model.design().credentialId(), constant.RESTYPE.INSTANCE, this.model.design().region());
       name = this.model.get("name");
       gm = [];
       icon = this.iconUrl();
-      _ref = this.model.groupMembers();
+      el = evt.currentTarget.parentNode.parentNode;
+      asg = this.canvas.getItem(el.getAttribute("data-id")).model;
+      _ref = this.model.groupMembers(asg);
       for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
         m = _ref[idx];
         ins = insCln.get(m.appId);

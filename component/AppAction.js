@@ -950,12 +950,17 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       resourceList = CloudResources(self.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
       return resourceList.fetchForce().then(function() {
         return self.__checkTerminateProtection().then(function(res) {
-          var instanceList, instanceListStr;
+          var iname, instanceList, instanceListStr;
           if (_.size(res)) {
             instanceList = [];
             for (id in res) {
               name = res[id];
-              instanceList.push("" + name + "(" + id + ")");
+              if (_.isString(name)) {
+                iname = "" + name + "(" + id + ")";
+              } else {
+                iname = id;
+              }
+              instanceList.push(iname);
             }
             instanceListStr = instanceList.join(', ');
             terminateConfirm.tpl.find('.modal-body').html(AppTpl.hasTerminationProtection({
@@ -982,7 +987,8 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       var hasInstance;
       hasInstance = false;
       this.workspace.design.eachComponent(function(comp) {
-        if (comp.type === constant.RESTYPE.INSTANCE) {
+        var _ref;
+        if ((_ref = comp.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.ASG) {
           hasInstance = true;
           return false;
         }

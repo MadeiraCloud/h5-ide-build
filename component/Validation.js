@@ -486,8 +486,14 @@ define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquer
     }
     removedInstanceIds = [];
     _.each(differ.removedComps, function(comp) {
+      var AsgModel, asgMembers;
       if (comp.type === constant.RESTYPE.INSTANCE) {
-        return removedInstanceIds.push(comp.resource.InstanceId);
+        removedInstanceIds.push(comp.resource.InstanceId);
+      }
+      if (comp.type === constant.RESTYPE.ASG) {
+        AsgModel = Design.modelClassForType(constant.RESTYPE.ASG);
+        asgMembers = AsgModel.members(comp.resource.AutoScalingGroupARN);
+        return removedInstanceIds = removedInstanceIds.concat(_.pluck(asgMembers, 'appId'));
       }
     });
     if (!removedInstanceIds.length) {
@@ -495,12 +501,17 @@ define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquer
       return;
     }
     return design.opsModel().checkTerminateProtection(removedInstanceIds).then(function(res) {
-      var id, name, tipvarArray, tipvarStr;
+      var id, iname, name, tipvarArray, tipvarStr;
       if (_.size(res)) {
         tipvarArray = [];
         for (id in res) {
           name = res[id];
-          tipvarArray.push("" + name + "(" + id + ")");
+          if (_.isString(name)) {
+            iname = "" + name + "(" + id + ")";
+          } else {
+            iname = id;
+          }
+          tipvarArray.push(iname);
         }
         tipvarStr = tipvarArray.join(', ');
         return callback(Helper.message.error(null, i18n.TERMINATED_PROTECTION_CANNOT_TERMINATE, tipvarStr));
