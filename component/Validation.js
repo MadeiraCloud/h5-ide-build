@@ -507,9 +507,9 @@ define('component/trustedadvisor/validation/aws/stack/stack',['constant', 'jquer
         for (id in res) {
           name = res[id];
           if (_.isString(name)) {
-            iname = "" + name + "(" + id + ")";
+            iname = "<span class='validation-tag tag-instance'>" + name + "(" + id + ")</span>";
           } else {
-            iname = id;
+            iname = "<span class='validation-tag tag-instance'>" + id + "</span>";
           }
           tipvarArray.push(iname);
         }

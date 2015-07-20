@@ -949,29 +949,8 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
       terminateConfirm.tpl.find('.modal-footer').hide();
       resourceList = CloudResources(self.credentialId(), constant.RESTYPE.DBINSTANCE, app.get("region"));
       return resourceList.fetchForce().then(function() {
-        return self.__checkTerminateProtection().then(function(res) {
-          var iname, instanceList, instanceListStr;
-          if (_.size(res)) {
-            instanceList = [];
-            for (id in res) {
-              name = res[id];
-              if (_.isString(name)) {
-                iname = "" + name + "(" + id + ")";
-              } else {
-                iname = id;
-              }
-              instanceList.push(iname);
-            }
-            instanceListStr = instanceList.join(', ');
-            terminateConfirm.tpl.find('.modal-body').html(AppTpl.hasTerminationProtection({
-              instanceList: instanceListStr
-            }));
-            terminateConfirm.tpl.find('.modal-confirm').remove();
-            terminateConfirm.tpl.find('.modal-footer .modal-close').text(lang.IDE.PROC_CLOSE_TAB);
-            return terminateConfirm.tpl.find('.modal-footer').show();
-          } else {
-            return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
-          }
+        return self.__checkTerminateProtection(terminateConfirm).then(function() {
+          return self.__terminateApp(id, resourceList, terminateConfirm, hasJson);
         });
       }, function(error) {
         if (error.awsError === 403) {
@@ -983,24 +962,52 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
         }
       });
     },
-    __checkTerminateProtection: function() {
-      var design, hasInstance, opsModel, _ref, _ref1;
-      hasInstance = false;
-      design = ((_ref = this.workspace) != null ? _ref.design : void 0) || Design.instance();
-      opsModel = ((_ref1 = this.workspace) != null ? _ref1.opsModel : void 0) || Design.instance().opsModel();
-      design.eachComponent(function(comp) {
-        var _ref2;
-        if ((_ref2 = comp.type) === constant.RESTYPE.INSTANCE || _ref2 === constant.RESTYPE.ASG) {
-          hasInstance = true;
-          return false;
-        }
-      });
-      if (!hasInstance) {
+    __checkTerminateProtection: function(modal) {
+      var design, needCheckProtection, opsModel, _ref, _ref1;
+      needCheckProtection = false;
+      opsModel = ((_ref = this.workspace) != null ? _ref.opsModel : void 0) || this.model;
+      design = (_ref1 = this.workspace) != null ? _ref1.design : void 0;
+      if (design) {
+        design.eachComponent(function(comp) {
+          var _ref2;
+          if ((_ref2 = comp.type) === constant.RESTYPE.INSTANCE || _ref2 === constant.RESTYPE.ASG) {
+            needCheckProtection = true;
+            return false;
+          }
+        });
+      } else {
+        needCheckProtection = true;
+      }
+      if (!needCheckProtection) {
         return Promise.resolve({});
       }
-      return opsModel.checkTerminateProtection().fail(function(err) {
+      return opsModel.checkTerminateProtection().then(function(res) {
+        var id, iname, instanceList, instanceListStr, name;
+        if (_.size(res)) {
+          instanceList = [];
+          for (id in res) {
+            name = res[id];
+            if (_.isString(name)) {
+              iname = "" + name + "(" + id + ")";
+            } else {
+              iname = id;
+            }
+            instanceList.push(iname);
+          }
+          instanceListStr = instanceList.join(', ');
+          modal.tpl.find('.modal-body').html(AppTpl.hasTerminationProtection({
+            instanceList: instanceListStr
+          }));
+          modal.tpl.find('.modal-confirm').remove();
+          modal.tpl.find('.modal-footer .modal-close').text(lang.IDE.PROC_CLOSE_TAB);
+          modal.tpl.find('.modal-footer').show();
+          return Promise.reject({});
+        } else {
+          return Promise.resolve({});
+        }
+      }, function(err) {
         console.error(err);
-        return Promise.resolve({});
+        return Promise.resolve();
       });
     },
     __terminateApp: function(id, resourceList, terminateConfirm, hasJsonData) {
