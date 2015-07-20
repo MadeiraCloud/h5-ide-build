@@ -5543,7 +5543,7 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
       return !isIncest(m, models);
     });
   };
-  CanvasViewProto.highLightModels = function(models) {
+  CanvasViewProto.highLightModels = function(models, tips) {
     var items, self;
     this.removeHighLight();
     models = getIndividualModel(models);
@@ -5554,10 +5554,10 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
     items = _.map(models, function(m) {
       return self.getItem(m.id);
     });
-    this.highLightItems(items);
+    this.highLightItems(items, tips);
   };
-  CanvasViewProto.highLightItems = function(items) {
-    var canvasSize, filler, h, path, polygons, rects, w;
+  CanvasViewProto.highLightItems = function(items, tips) {
+    var canvasSize, el, filler, h, idx, item, path, polygons, rect, rects, tip, w, _i, _j, _len, _len1, _ref;
     rects = getNonOverlapRects(_.uniq(items));
     polygons = getPolygonsFromRect(rects);
     path = getPathFromPolygons(polygons);
@@ -5575,6 +5575,31 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
         id: "hlAreaBorder"
       })
     ]).clipWith(this.__highLightCliper);
+    if (tips) {
+      this.__highLightTips = $("<div id='hlTips'></div>").appendTo(this.__getCanvasView());
+      for (idx = _i = 0, _len = items.length; _i < _len; idx = ++_i) {
+        item = items[idx];
+        tip = tips[idx];
+        if (!tip) {
+          continue;
+        }
+        if (item.isGroup()) {
+          rect = item.effectiveRect();
+          rect.x1 *= 10;
+          rect.y1 *= 10;
+          this.__highLightTips.append("<div class='hlTip' style='left:" + rect.x1 + "px;top:" + rect.y1 + "px;'>" + tip + "</div>");
+        } else {
+          _ref = it.$el;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            el = _ref[_j];
+            rect = item.rect(el);
+            rect.x1 *= 10;
+            rect.y1 *= 10;
+            this.__highLightTips.append("<div class='hlTip' style='left:" + rect.x1 + "px;top:" + rect.y1 + "px;'>" + tip + "</div>");
+          }
+        }
+      }
+    }
   };
   CanvasViewProto.removeHighLight = function(items) {
     if (this.__highLightRect) {
@@ -5583,7 +5608,10 @@ define('wspace/coreeditor/CanvasViewEffect',["CanvasView", "CanvasElement", "Can
     if (this.__highLightCliper) {
       this.__highLightCliper.remove();
     }
-    this.__highLightRect = this.__highLightCliper = null;
+    if (this.__highLightTips) {
+      this.__highLightTips.remove();
+    }
+    this.__highLightRect = this.__highLightCliper = this.__highLightTips = null;
   };
   trackMMoveForHint = function(evt) {
     var $hint, type;

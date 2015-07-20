@@ -390,7 +390,8 @@ define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subview
     },
     initialize: function() {
       $(window).on("beforeunload", this.checkUnload);
-      return $(window).on('keydown', this.globalKeyEvent);
+      $(window).on('keydown', this.globalKeyEvent);
+      window.onerror = this.onWindowError;
     },
     init: function() {
       if (App.user.fullnameNotSet()) {
@@ -472,6 +473,10 @@ define('ide/ApplicationView',["backbone", "./subviews/SessionDialog", "./subview
     },
     notifyUnpay: function() {
       notification("error", "Failed to charge your account. Please update your billing info.");
+    },
+    onWindowError: function(error, url, line, column) {
+      App.reportError("Message: " + error + "\n Url: " + url + "\n Line: " + line + "\n column: " + column);
+      return false;
     }
   });
 });
@@ -6808,6 +6813,16 @@ define('ide/Application',["./Websocket", "./ApplicationView", "./ApplicationMode
     return window.Router.navigate(url, {
       replace: true,
       trigger: true
+    });
+  };
+  VisualOps.prototype.reportError = function(error) {
+    return ApiRequest("account_save_errlog", {
+      error_log: {
+        usercode: App.user.get("usercode"),
+        userAgent: window.navigator.userAgent,
+        ideVersion: window.version,
+        errors: error
+      }
     });
   };
   return VisualOps;
