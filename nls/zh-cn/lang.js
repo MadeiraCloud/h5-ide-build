@@ -2263,7 +2263,8 @@ define({
         "RESOURCE_NAME_SNS": " SNS 订阅",
         "RESOURCE_NAME_SSL": "SSL",
         "RESOURCE_NAME_DHCP": "DHCP",
-        "RESOURCE_NAME_OPTION_GROUP": " RDS 选项组"
+        "RESOURCE_NAME_OPTION_GROUP": " RDS 选项组",
+        "LC_WILL_BE_REPLECED": "一旦修改启动配置，此启动配置相关的 AutoScaling 组都将被更新。"
     },
     "SERVICE": {
         "NETWORK_ERROR": "服务暂时不可用, 请稍后重试",

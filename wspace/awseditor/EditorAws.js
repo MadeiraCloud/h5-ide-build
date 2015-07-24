@@ -14497,7 +14497,9 @@ function program34(depth0,data) {
   return "No";
   }
 
-  buffer += "<article>\n\n	<div class=\"option-group-head expand\">"
+  buffer += "<div class=\"property-warning-block hide\">\n    "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_WILL_BE_REPLECED", {hash:{},data:data}))
+    + "\n</div>\n<article>\n	<div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_TITLE", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\" data-bind=\"true\">\n			<label class=\"left\" for=\"property-instance-name\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_NAME", {hash:{},data:data}))
@@ -14880,6 +14882,13 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
       'REMOVE_ROW .multi-input': 'setMesosAttribute',
       'click #add-ma-item-outside': 'addMesosAttrItem'
     },
+    watchChangedInAppEdit: function() {
+      if (this.resModel.changedInAppEdit()) {
+        return this.$('.property-warning-block').show();
+      } else {
+        return this.$('.property-warning-block').hide();
+      }
+    },
     render: function() {
       var kpDropdown, me, tpl;
       tpl = this.resModel.isMesos() ? TplMesos : TplLc;
@@ -14906,6 +14915,7 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
           return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
         }
       });
+      this.watchChangedInAppEdit();
       return this.model.attributes.name;
     },
     addMesosAttrItem: function(e) {
@@ -15285,11 +15295,15 @@ define('wspace/awseditor/property/launchconfig/main',["../base/main", "./model",
       this.view = app_view;
       return null;
     },
-    initAppEdit: function() {
+    initAppEdit: function(uid) {
       this.model = model;
       this.model.isApp = true;
       this.model.isAppEdit = true;
-      this.view = app_view;
+      this.view = view;
+      this.view.resModel = Design.instance().component(uid);
+      if (this.view.resModel.get('appId')) {
+        this.view.listenTo(this.view.resModel, 'change', view.watchChangedInAppEdit);
+      }
       return null;
     },
     afterLoadApp: function() {
@@ -26311,10 +26325,6 @@ define('wspace/awseditor/canvas/CanvasViewAws',["CanvasView", "constant", "i18n!
         }
         return;
       }
-      if (owner.type === constant.RESTYPE.LC && owner.get("appId")) {
-        notification("error", lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET);
-        return;
-      }
       attr.owner = owner;
       if (_.isString(attr.encrypted)) {
         attr.encrypted = attr.encrypted === 'true';
@@ -27496,9 +27506,6 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
     isDefaultKey: function() {
       var kp;
       kp = this.connectionTargets("KeypairUsage")[0];
-      if (!kp) {
-        return true;
-      }
       return kp && kp.isDefault();
     },
     isNoKey: function() {
@@ -28768,14 +28775,6 @@ define('wspace/awseditor/model/VolumeModel',["i18n!/nls/lang.js", "ComplexResMod
       }
       return this.__groupMembers;
     },
-    isRemovable: function() {
-      if (this.design().modeIsAppEdit()) {
-        if ((this.get("owner") || {}).type === constant.RESTYPE.LC) {
-          return lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET;
-        }
-      }
-      return true;
-    },
     remove: function() {
       var vl;
       vl = this.attributes.owner.get("volumeList");
@@ -28869,6 +28868,7 @@ define('wspace/awseditor/model/VolumeModel',["i18n!/nls/lang.js", "ComplexResMod
         owner.set('volumeList', [this]);
       }
       owner.trigger("change:volumeList");
+      owner.trigger("change");
       return true;
     },
     isSupportEncrypted: function() {
@@ -29673,7 +29673,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       }
       return _.uniq(az);
     },
-    serialize: function() {
+    serialize: function(options) {
       var azs, component, elbArray, elbs, healthCheckType, lc, subnets;
       subnets = this.getExpandSubnets();
       azs = _.uniq(_.map(subnets, function(sb) {
@@ -29710,7 +29710,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
           TerminationPolicies: this.get("terminationPolicies"),
           AutoScalingGroupName: this.get("groupName") || this.get("name"),
           DesiredCapacity: this.get("capacity"),
-          LaunchConfigurationName: (lc != null ? lc.createRef("LaunchConfigurationName") : void 0) || ""
+          LaunchConfigurationName: (lc != null ? lc.createRef(null, null, null, options) : void 0) || ""
         }
       };
       return {
@@ -31928,9 +31928,10 @@ define('wspace/awseditor/model/ElbModel',["Design", "constant", "ResourceModel",
   return Model;
 });
 
-define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", "i18n!/nls/lang.js", "CloudResources"], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources) {
-  var Model, emptyArray;
+define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", "i18n!/nls/lang.js", "CloudResources", "DiffTree"], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources, DiffTree) {
+  var Model, changeDetectExcepts, emptyArray;
   emptyArray = [];
+  changeDetectExcepts = ['name', 'description', 'state'];
   Model = ComplexResModel.extend({
     defaults: function() {
       return {
@@ -31948,6 +31949,25 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     },
     type: constant.RESTYPE.LC,
     newNameTmpl: "launch-config-",
+    getId: function(options) {
+      if (!options || options.usage !== 'updateApp') {
+        return this.id;
+      }
+      if (!this.changedInAppEdit()) {
+        return this.id;
+      }
+      if (!this.__newId) {
+        this.__newId = this.design().guid();
+      }
+      return this.__newId;
+    },
+    createRef: function(refName, isResourceNS, id) {
+      if (refName == null) {
+        refName = 'LaunchConfigurationName';
+      }
+      id = this.getId();
+      return ComplexResModel.prototype.createRef.call(this, refName, isResourceNS, id);
+    },
     constructor: function(attributes, options) {
       if (!options || !options.createBySubClass) {
         if (Model.isMesosSlave(attributes)) {
@@ -31969,7 +31989,18 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       if (!this.get("rdSize")) {
         this.set("rdSize", this.getAmiRootDeviceVolumeSize());
       }
+      if (this.get('appId')) {
+        this.on('change', this.watchChanged, this);
+      }
       return null;
+    },
+    changedInAppEdit: function() {
+      var diffTree;
+      if (!this.design().modeIsAppEdit() || !this.get('appId')) {
+        return false;
+      }
+      diffTree = new DiffTree();
+      return _.size(diffTree.compare(this.genResource(), this.design().opsModel().getJsonData().component[this.id].resource));
     },
     getNewName: function(base) {
       var id, nameMap, newName, resource_list, rl;
@@ -32080,8 +32111,8 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     isMesos: InstanceModel.prototype.isMesos,
     isMesosMaster: InstanceModel.prototype.isMesosMaster,
     isMesosSlave: InstanceModel.prototype.isMesosSlave,
-    serialize: function() {
-      var ami, blockDevice, component, layout, vd, volume, _i, _len, _ref;
+    serialize: function(options) {
+      var ami, component, layout;
       ami = this.getAmi() || this.get("cachedAmi");
       layout = this.generateLayout();
       if (ami) {
@@ -32089,6 +32120,24 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         layout.architecture = ami.architecture;
         layout.rootDeviceType = ami.rootDeviceType;
       }
+      if (InstanceModel.isMesosMaster(this.attributes) || InstanceModel.isMesosSlave(this.attributes)) {
+        this.setMesosState();
+      }
+      component = {
+        type: this.type,
+        uid: this.getId(options),
+        name: this.get("name"),
+        description: this.get("description") || "",
+        state: this.get("state"),
+        resource: this.genResource()
+      };
+      return {
+        component: component,
+        layout: layout
+      };
+    },
+    genResource: function() {
+      var blockDevice, vd, volume, _i, _len, _ref;
       blockDevice = this.getBlockDeviceMapping();
       _ref = this.get("volumeList") || emptyArray;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -32108,34 +32157,20 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         }
         blockDevice.push(vd);
       }
-      if (InstanceModel.isMesosMaster(this.attributes) || InstanceModel.isMesosSlave(this.attributes)) {
-        this.setMesosState();
-      }
-      component = {
-        type: this.type,
-        uid: this.id,
-        name: this.get("name"),
-        description: this.get("description") || "",
-        state: this.get("state"),
-        resource: {
-          UserData: this.get("userData"),
-          LaunchConfigurationARN: this.get("appId"),
-          InstanceMonitoring: this.get("monitoring"),
-          ImageId: this.get("imageId"),
-          KeyName: this.get("keyName"),
-          EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
-          BlockDeviceMapping: blockDevice,
-          SecurityGroups: _.map(this.connectionTargets("SgAsso"), function(sg) {
-            return sg.createRef("GroupId");
-          }),
-          LaunchConfigurationName: this.get("configName") || this.get("name"),
-          InstanceType: this.get("instanceType"),
-          AssociatePublicIpAddress: this.get("publicIp")
-        }
-      };
       return {
-        component: component,
-        layout: layout
+        UserData: this.get("userData"),
+        LaunchConfigurationARN: this.get("appId"),
+        InstanceMonitoring: this.get("monitoring"),
+        ImageId: this.get("imageId"),
+        KeyName: this.get("keyName"),
+        EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
+        BlockDeviceMapping: blockDevice,
+        SecurityGroups: _.map(this.connectionTargets("SgAsso"), function(sg) {
+          return sg.createRef("GroupId");
+        }),
+        LaunchConfigurationName: this.get("configName") || this.get("name"),
+        InstanceType: this.get("instanceType"),
+        AssociatePublicIpAddress: this.get("publicIp")
       };
     }
   }, {
@@ -32173,7 +32208,7 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       return null;
     },
     deserialize: function(data, layout_data, resolve) {
-      var KP, SgAsso, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var KP, SgAsso, appData, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       model = resolve(data.uid);
       rd = model.getAmiRootDevice();
       _ref = data.resource.BlockDeviceMapping || [];
@@ -32205,17 +32240,24 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         sg = _ref2[_j];
         new SgAsso(model, resolve(MC.extractID(sg)));
       }
-      KP = resolve(MC.extractID(data.resource.KeyName));
-      if (KP) {
-        KP.assignTo(model);
-      } else {
-        if (data.resource.KeyName || data.resource.KeyName === "") {
-          model.set('keyName', data.resource.KeyName);
+      if (model.get('appId')) {
+        appData = (_ref3 = CloudResources(model.design().credentialId(), constant.RESTYPE.LC, model.design().region()).get(model.get('appId'))) != null ? _ref3.toJSON() : void 0;
+      }
+      if (!appData) {
+        KP = resolve(MC.extractID(data.resource.KeyName));
+        if (KP) {
+          KP.assignTo(model);
         } else {
-          _.defer(function() {
-            return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
-          });
+          if (data.resource.KeyName || data.resource.KeyName === "") {
+            model.set('keyName', data.resource.KeyName);
+          } else {
+            _.defer(function() {
+              return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
+            });
+          }
         }
+      } else {
+        model.set('keyName', appData.KeyName);
       }
       return null;
     }

@@ -2263,7 +2263,8 @@ define({
         "RESOURCE_NAME_SNS": "SNS Subscription",
         "RESOURCE_NAME_SSL": "SSL",
         "RESOURCE_NAME_DHCP": "DHCP",
-        "RESOURCE_NAME_OPTION_GROUP": "RDS Option Group"
+        "RESOURCE_NAME_OPTION_GROUP": "RDS Option Group",
+        "LC_WILL_BE_REPLECED": "Launch Configuration will be replace for all associated AutoScaling Group when modify configuration."
     },
     "SERVICE": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",
