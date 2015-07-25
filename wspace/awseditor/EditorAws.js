@@ -5101,8 +5101,9 @@ define('wspace/awseditor/property/staticsub/model',['../base/model', 'constant',
   var StaticSubModel;
   StaticSubModel = PropertyModel.extend({
     init: function(uid) {
-      var InstanceModel, ami, item;
-      this.set("isApp", this.isApp);
+      var InstanceModel, ami, instance, item;
+      instance = this.getInstance();
+      this.set("amiChangeable", !this.isApp || instance.type === constant.RESTYPE.LC);
       InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
       ami = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, Design.instance().region()).get(uid);
       if (ami) {
@@ -5175,7 +5176,10 @@ define('wspace/awseditor/property/staticsub/model',['../base/model', 'constant',
       return null;
     },
     getInstanceName: function() {
-      return Design.instance().component(PropertyModule.activeModule().uid).get("name");
+      return this.getInstance().get("name");
+    },
+    getInstance: function() {
+      return Design.instance().component(PropertyModule.activeModule().uid);
     }
   });
   return new StaticSubModel();
@@ -5189,8 +5193,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n\n";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
+  buffer += "\n\n    ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.amiChangeable), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
@@ -5201,46 +5205,46 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\n        ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n";
+  buffer += "\n    ";
   return buffer;
   }
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <p>"
+  buffer += "\n        <div class=\"property-control-group property-ami-info\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.AMI_APP_NOT_AVAILABLE", {hash:{},data:data}))
-    + "</p>\n    </div>\n    ";
+    + "</p>\n        </div>\n        ";
   return buffer;
   }
 
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\n        ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <div class=\"property-control-group tac\">\n            <button id=\"changeAmi\" class=\"btn btn-blue\"><i class=\"icon-edit icon-label\"></i>"
+  buffer += "\n        <div class=\"property-control-group property-ami-info\">\n            <div class=\"property-control-group tac\">\n                <button id=\"changeAmi\" class=\"btn btn-blue\"><i class=\"icon-edit icon-label\"></i>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STATIC_SUB_CHANGE_AMI", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n    <div class=\"property-control-group hide\" id=\"changeAmiPanel\">\n        <p>"
+    + "</button>\n            </div>\n        </div>\n        <div class=\"property-control-group hide\" id=\"changeAmiPanel\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DRAG_IMAGE_DROP_TO_CHANGE", {hash:{},data:data}))
-    + "</p>\n        <div id=\"changeAmiDropZone\">\n            <p>"
+    + "</p>\n            <div id=\"changeAmiDropZone\">\n                <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DRAG_IMAGE_DROP_HERE", {hash:{},data:data}))
-    + "</p>\n            <div class=\"resource-icon resource-icon-instance\">\n                <img src=\"/assets/images/ide/ami/amazon.i386.ebs.png\" width=\"39\" height=\"27\">\n                <div class=\"resource-label\"></div>\n            </div>\n        </div>\n        <div class=\"hide\" id=\"confirmChangeAmiWrap\">\n            <p id=\"changeAmiWarning\"></p>\n            <button id=\"confirmChangeAmi\" class=\"btn btn-blue\">"
+    + "</p>\n                <div class=\"resource-icon resource-icon-instance\">\n                    <img src=\"/assets/images/ide/ami/amazon.i386.ebs.png\" width=\"39\" height=\"27\">\n                    <div class=\"resource-label\"></div>\n                </div>\n            </div>\n            <div class=\"hide\" id=\"confirmChangeAmiWrap\">\n                <p id=\"changeAmiWarning\"></p>\n                <button id=\"confirmChangeAmi\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CONFIRM_CHANGE_AMI", {hash:{},data:data}))
-    + "</button>\n        </div>\n        <button id=\"cancelChangeAmi\" class=\"btn-link\">"
+    + "</button>\n            </div>\n            <button id=\"cancelChangeAmi\" class=\"btn-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n    </div>\n";
+    + "</button>\n        </div>\n    ";
   return buffer;
   }
 function program6(depth0,data) {
   
   var buffer = "";
-  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        "
+  buffer += "\n        <div class=\"property-control-group property-ami-info\">\n            "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.AMI_STACK_NOT_AVAILABLE", {hash:{},data:data}))
-    + "\n    </div>\n    ";
+    + "\n        </div>\n        ";
   return buffer;
   }
 
@@ -6935,11 +6939,6 @@ define('wspace/awseditor/property/volume/main',["../base/main", "./model", "./vi
       owner = volume.get('owner');
       this.model = model;
       this.view = view;
-      if (owner.type === constant.RESTYPE.LC && owner.get('appId')) {
-        this.model.isAppEdit = true;
-      } else {
-        this.model.isAppEdit = false;
-      }
       return null;
     },
     initApp: function() {
@@ -14129,7 +14128,7 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
       design = Design.instance();
       agentData = design.get('agent');
       this.set("stackAgentEnable", agentData.enabled);
-      if (this.isApp) {
+      if (this.isApp && !this.isAppEdit) {
         this.getAppLaunch(uid);
         kp = this.lc.connectionTargets('KeypairUsage')[0];
         this.set('keyName', kp && kp.get("appId") || this.lc.get('keyName'));
@@ -14263,9 +14262,7 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
       return null;
     },
     isSGListReadOnly: function() {
-      if (this.get('appId')) {
-        return true;
-      }
+      return false;
     },
     getAppLaunch: function(uid) {
       var lc_data, _ref;
@@ -14421,7 +14418,7 @@ function program23(depth0,data) {
 function program25(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	<div class=\"option-group-head\">Root Device</div>\n	<div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>"
+  buffer += "\n	<div class=\"option-group-head expand\">Root Device</div>\n	<div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_DEVICE_NAME", {hash:{},data:data}))
     + "</label>\n      <div>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -24982,12 +24979,10 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       _ref = this.workspace.design.componentsOfType(constant.RESTYPE.LC);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         lc = _ref[_i];
-        if (!lc.get('appId')) {
-          new LcItemView({
-            model: lc,
-            parent: this
-          });
-        }
+        new LcItemView({
+          model: lc,
+          parent: this
+        });
       }
       return this;
     },
@@ -27078,9 +27073,12 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       }
       return null;
     },
-    getAmi: function() {
+    getAmi: function(imageId) {
       var ami;
-      ami = CloudResources(this.design().credentialId(), constant.RESTYPE.AMI, this.design().region()).get(this.get("imageId"));
+      if (imageId == null) {
+        imageId = this.get("imageId");
+      }
+      ami = CloudResources(this.design().credentialId(), constant.RESTYPE.AMI, this.design().region()).get(imageId);
       if (ami) {
         return ami.toJSON();
       } else {
@@ -31949,25 +31947,6 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     },
     type: constant.RESTYPE.LC,
     newNameTmpl: "launch-config-",
-    getId: function(options) {
-      if (!options || options.usage !== 'updateApp') {
-        return this.id;
-      }
-      if (!this.changedInAppEdit()) {
-        return this.id;
-      }
-      if (!this.__newId) {
-        this.__newId = this.design().guid();
-      }
-      return this.__newId;
-    },
-    createRef: function(refName, isResourceNS, id) {
-      if (refName == null) {
-        refName = 'LaunchConfigurationName';
-      }
-      id = this.getId();
-      return ComplexResModel.prototype.createRef.call(this, refName, isResourceNS, id);
-    },
     constructor: function(attributes, options) {
       if (!options || !options.createBySubClass) {
         if (Model.isMesosSlave(attributes)) {
@@ -31989,18 +31968,7 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       if (!this.get("rdSize")) {
         this.set("rdSize", this.getAmiRootDeviceVolumeSize());
       }
-      if (this.get('appId')) {
-        this.on('change', this.watchChanged, this);
-      }
       return null;
-    },
-    changedInAppEdit: function() {
-      var diffTree;
-      if (!this.design().modeIsAppEdit() || !this.get('appId')) {
-        return false;
-      }
-      diffTree = new DiffTree();
-      return _.size(diffTree.compare(this.genResource(), this.design().opsModel().getJsonData().component[this.id].resource));
     },
     getNewName: function(base) {
       var id, nameMap, newName, resource_list, rl;
@@ -32039,11 +32007,6 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     },
     isRemovable: function() {
       var state;
-      if (this.design().modeIsAppEdit() && this.get("appId")) {
-        return {
-          error: lang.CANVAS.ERR_DEL_LC
-        };
-      }
       state = this.get("state");
       if (state && state.length > 0) {
         return MC.template.NodeStateRemoveConfirmation({
@@ -32111,8 +32074,36 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     isMesos: InstanceModel.prototype.isMesos,
     isMesosMaster: InstanceModel.prototype.isMesosMaster,
     isMesosSlave: InstanceModel.prototype.isMesosSlave,
+    getId: function(options, changed) {
+      if (!options || options.usage !== 'updateApp') {
+        return this.id;
+      }
+      if (!changed && !this.changedInAppEdit()) {
+        return this.id;
+      }
+      if (!this.__newId) {
+        this.__newId = this.design().guid();
+      }
+      return this.__newId;
+    },
+    changedInAppEdit: function() {
+      var diffTree;
+      if (!this.design().modeIsAppEdit() || !this.get('appId')) {
+        return false;
+      }
+      diffTree = new DiffTree();
+      return !_.isEmpty(diffTree.compare(this.genResource(), this.design().opsModel().getJsonData().component[this.id].resource));
+    },
+    createRef: function(refName, isResourceNS, id, options) {
+      if (refName == null) {
+        refName = 'LaunchConfigurationName';
+      }
+      id = this.getId(options);
+      return ComplexResModel.prototype.createRef.call(this, refName, isResourceNS, id);
+    },
     serialize: function(options) {
-      var ami, component, layout;
+      var ami, changed, component, layout;
+      changed = options && options.usage === 'updateApp' && this.changedInAppEdit();
       ami = this.getAmi() || this.get("cachedAmi");
       layout = this.generateLayout();
       if (ami) {
@@ -32125,18 +32116,18 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       }
       component = {
         type: this.type,
-        uid: this.getId(options),
-        name: this.get("name"),
+        uid: this.getId(options, changed),
+        name: changed ? this.getNewName() : this.get("name"),
         description: this.get("description") || "",
         state: this.get("state"),
-        resource: this.genResource()
+        resource: this.genResource(changed)
       };
       return {
         component: component,
         layout: layout
       };
     },
-    genResource: function() {
+    genResource: function(changed) {
       var blockDevice, vd, volume, _i, _len, _ref;
       blockDevice = this.getBlockDeviceMapping();
       _ref = this.get("volumeList") || emptyArray;
@@ -32159,7 +32150,7 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       }
       return {
         UserData: this.get("userData"),
-        LaunchConfigurationARN: this.get("appId"),
+        LaunchConfigurationARN: changed ? '' : this.get("appId"),
         InstanceMonitoring: this.get("monitoring"),
         ImageId: this.get("imageId"),
         KeyName: this.get("keyName"),
@@ -37913,12 +37904,12 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
         }, 0);
       });
     },
-    iconUrl: function() {
+    iconUrl: function(imageId) {
       var ami;
       if (this.model.isMesos()) {
         return 'ide/ami/mesos-slave.png';
       }
-      ami = this.model.getAmi() || this.model.get("cachedAmi");
+      ami = this.model.getAmi(imageId) || this.model.get("cachedAmi");
       if (!ami) {
         return "ide/ami/ami-not-available.png";
       } else {
@@ -38098,13 +38089,13 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
       insCln = CloudResources(this.model.design().credentialId(), constant.RESTYPE.INSTANCE, this.model.design().region());
       name = this.model.get("name");
       gm = [];
-      icon = this.iconUrl();
       el = evt.currentTarget.parentNode.parentNode;
       asg = this.canvas.getItem(el.getAttribute("data-id")).model;
       _ref = this.model.groupMembers(asg);
       for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
         m = _ref[idx];
         ins = insCln.get(m.appId);
+        icon = this.iconUrl(ins != null ? ins.get('imageId') : void 0);
         if (!ins) {
           console.warn("Cannot find instance of `" + m.appId + "`");
           continue;

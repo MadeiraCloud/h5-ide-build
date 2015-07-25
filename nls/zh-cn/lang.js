@@ -2264,7 +2264,7 @@ define({
         "RESOURCE_NAME_SSL": "SSL",
         "RESOURCE_NAME_DHCP": "DHCP",
         "RESOURCE_NAME_OPTION_GROUP": " RDS 选项组",
-        "LC_WILL_BE_REPLECED": "一旦修改启动配置，此启动配置相关的 AutoScaling 组都将被更新。"
+        "LC_WILL_BE_REPLECED": "关联的AutoScaling组的启动配置都将被替换，并且AutoScaling组会根据设置的策略自动扩展。"
     },
     "SERVICE": {
         "NETWORK_ERROR": "服务暂时不可用, 请稍后重试",

@@ -2264,7 +2264,7 @@ define({
         "RESOURCE_NAME_SSL": "SSL",
         "RESOURCE_NAME_DHCP": "DHCP",
         "RESOURCE_NAME_OPTION_GROUP": "RDS Option Group",
-        "LC_WILL_BE_REPLECED": "Launch Configuration will be replace for all associated AutoScaling Group when modify configuration."
+        "LC_WILL_BE_REPLECED": "Launch Configuration will be replaced for all associated AutoScaling Group, and AutoScaling Group will scale base on the policy."
     },
     "SERVICE": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",
