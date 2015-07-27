@@ -547,13 +547,7 @@ define('AppAction',["backbone", "component/appactions/template", "ThumbnailUtil"
           }
           _this.json.usage = usage;
           _this.json.name = appNameDom.val();
-          if (_this.modal.tpl.find("#ipt-dryrun").is(":checked")) {
-            MC.Analytics.increase("drs");
-          }
-          return _this.workspace.opsModel.run(_this.json, {
-            name: appNameDom.val(),
-            dryrun: _this.modal.tpl.find("#ipt-dryrun").is(":checked")
-          }).then(function(ops) {
+          return _this.workspace.opsModel.run(_this.json, appNameDom.val()).then(function(ops) {
             self.modal.close();
             return App.loadUrl(ops.url());
           }, function(err) {

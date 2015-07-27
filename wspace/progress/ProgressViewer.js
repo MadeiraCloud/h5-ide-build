@@ -23,18 +23,6 @@ function program5(depth0,data) {
   return escapeExpression(helpers.i18n.call(depth0, "PROC_TITLE", {hash:{},data:data}));
   }
 
-function program7(depth0,data) {
-  
-  
-  return "The app will automatically close because of Dry Run mode.";
-  }
-
-function program9(depth0,data) {
-  
-  
-  return escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}));
-  }
-
   buffer += "<div class='ops-process ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.progress), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -49,10 +37,9 @@ function program9(depth0,data) {
     + escapeExpression(((stack1 = (depth0 && depth0.progress)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "%;\"></div>\n    </section>\n  </section>\n\n  <section class=\"success hide\">\n    <p class=\"title\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_TITLE", {hash:{},data:data}))
-    + "</p>\n    <p class=\"sub-title\">";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dryrun), {hash:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
+    + "</p>\n    <p class=\"sub-title\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROC_RLT_DONE_SUB_TITLE", {hash:{},data:data}))
+    + "</p>\n  </section>\n\n  <section class=\"fail hide error-info-block\">\n    <header>"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_FAILED_TITLE", {hash:{},data:data}))
     + " <button class=\"btn btn-silver btn-close-process\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROC_CLOSE_TAB", {hash:{},data:data}))
@@ -97,22 +84,15 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
       this.listenTo(this.model, "change:state", this.updateState);
       this.listenTo(this.model, "change:progress", this.updateProgress);
       data = {
-        progress: this.model.get("progress"),
-        dryrun: this.model.get("dryrun")
+        progress: this.model.get("progress")
       };
       if (!this.model.testState(OpsModel.State.Initializing)) {
-        data.title = this.model.getStateDesc() + " your app";
-      } else {
-        data.title = "Launching your app";
-      }
-      if (this.model.get("dryrun")) {
-        data.title += " in Dry Run mode";
+        data.title = this.model.getStateDesc() + " your app...";
       }
       this.setElement($(ProgressTpl.frame(data)).appendTo(attr.workspace.scene.spaceParentElement()));
     },
     switchToDone: function() {
       var self;
-      this.__switchToDone = true;
       this.$el.find(".success").show();
       this.$el.find(".process-detail").hide();
       self = this;
@@ -138,10 +118,8 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
           this.$el.toggleClass("rolling-back", true);
           break;
         case OpsModel.State.Destroyed:
-          if (this.done || this.__switchToDone) {
-            if (!this.model.get("dryrun")) {
-              this.close();
-            }
+          if (this.done) {
+            this.close();
             return;
           }
           this.$el.children().hide();
@@ -257,9 +235,7 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
       });
       this.view.on("done", function() {
         self.remove();
-        if (!self.opsModel().get("dryrun")) {
-          App.loadUrl(self.opsModel().url());
-        }
+        App.loadUrl(self.opsModel().url());
       });
     },
     opsModel: function() {
