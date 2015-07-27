@@ -6389,6 +6389,9 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       this.__dryRunUpdate = !!attributes.dry_run;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
+      if (attributes.dry_run) {
+        MC.Analytics.increase("dru");
+      }
       self = this;
       this.opsModel.update(newJson, fastUpdate, attributes).then(function() {
         if (fastUpdate) {
