@@ -1763,6 +1763,20 @@ TEMPLATE.appUpdateStatus=Handlebars.template(__TEMPLATE__);
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"ops-process\">\n  <header class=\"processing\">App has updated successfully in Dry Run mode.</header>\n  <button class=\"btn btn-silver\" id=\"processDoneBtn\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_DONE", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.dryRunDone=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, self=this;
 
 function program1(depth0,data) {
@@ -6152,6 +6166,14 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
         return self.$el.find(".ops-process").remove();
       });
     },
+    showDryRunDone: function() {
+      var self;
+      this.$el.find(".ops-process").remove();
+      self = this;
+      $(OpsEditorTpl.dryRunDone()).appendTo(this.$el).find("#processDoneBtn").click(function() {
+        return self.$el.find(".ops-process").remove();
+      });
+    },
     showUnpayUI: function() {
       this.statusbar.remove();
       this.propertyPanel.remove();
@@ -6371,6 +6393,10 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.opsModel.update(newJson, fastUpdate, attributes).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
+        } else if (self.__dryRunUpdate) {
+          self.__dryRunUpdate = false;
+          self.__applyingUpdate = false;
+          return self.view.showDryRunDone();
         } else {
           return self.__onAppEditDone();
         }

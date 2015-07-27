@@ -23539,7 +23539,8 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         that.updateModal.setContent(MC.template.updateApp({
           isRunning: that.workspace.opsModel.testState(OpsModel.State.Running),
           notReadyDB: removeListNotReady,
-          removeList: removeList
+          removeList: removeList,
+          fastUpdate: !result.compChange
         }));
         eipsToRelease = _.filter(removes, function(e) {
           return e.type === constant.RESTYPE.EIP;

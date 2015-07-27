@@ -1177,7 +1177,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       return this.__userTriggerAppProgress;
     },
     updateWithWSEvent: function(wsRequest) {
-      var OMS, i, progress, step, toState, toStateIndex, totalSteps, _i, _len, _ref, _ref1;
+      var OMS, i, progress, self, step, toState, toStateIndex, totalSteps, _i, _len, _ref, _ref1;
       if (wsRequest.state === constant.OPS_STATE.INPROCESS && this.isProcessing()) {
         step = 0;
         totalSteps = 1;
@@ -1265,7 +1265,10 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         });
       }
       if (this.get("dryrun") && wsRequest.code === constant.OPS_CODE_NAME.LAUNCH && toState !== OMS.Initializing) {
-        this.__destroy();
+        self = this;
+        setTimeout((function() {
+          return self.__destroy();
+        }), 0);
       }
     },
 

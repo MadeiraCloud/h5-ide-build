@@ -112,6 +112,7 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
     },
     switchToDone: function() {
       var self;
+      this.__switchToDone = true;
       this.$el.find(".success").show();
       this.$el.find(".process-detail").hide();
       self = this;
@@ -137,10 +138,8 @@ define('wspace/progress/ProgressViewer',["OpsModel", "Workspace", "./PVTpl"], fu
           this.$el.toggleClass("rolling-back", true);
           break;
         case OpsModel.State.Destroyed:
-          if (this.done) {
-            if (this.model.get("dryrun")) {
-              this.switchToDone();
-            } else {
+          if (this.done || this.__switchToDone) {
+            if (!this.model.get("dryrun")) {
               this.close();
             }
             return;
