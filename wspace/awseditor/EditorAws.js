@@ -5101,9 +5101,8 @@ define('wspace/awseditor/property/staticsub/model',['../base/model', 'constant',
   var StaticSubModel;
   StaticSubModel = PropertyModel.extend({
     init: function(uid) {
-      var InstanceModel, ami, instance, item;
-      instance = this.getInstance();
-      this.set("amiChangeable", !this.isApp || instance.type === constant.RESTYPE.LC);
+      var InstanceModel, ami, item;
+      this.set("isApp", this.isApp);
       InstanceModel = Design.modelClassForType(constant.RESTYPE.INSTANCE);
       ami = CloudResources(Design.instance().credentialId(), constant.RESTYPE.AMI, Design.instance().region()).get(uid);
       if (ami) {
@@ -5176,10 +5175,7 @@ define('wspace/awseditor/property/staticsub/model',['../base/model', 'constant',
       return null;
     },
     getInstanceName: function() {
-      return this.getInstance().get("name");
-    },
-    getInstance: function() {
-      return Design.instance().component(PropertyModule.activeModule().uid);
+      return Design.instance().component(PropertyModule.activeModule().uid).get("name");
     }
   });
   return new StaticSubModel();
@@ -5193,8 +5189,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n\n    ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.amiChangeable), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
+  buffer += "\n\n";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isApp), {hash:{},inverse:self.program(5, program5, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n    ";
   stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
@@ -5205,46 +5201,46 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        ";
+  buffer += "\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
+  buffer += "\n";
   return buffer;
   }
 function program3(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <div class=\"property-control-group property-ami-info\">\n            <p>"
+  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.AMI_APP_NOT_AVAILABLE", {hash:{},data:data}))
-    + "</p>\n        </div>\n        ";
+    + "</p>\n    </div>\n    ";
   return buffer;
   }
 
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n        ";
+  buffer += "\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"property-control-group property-ami-info\">\n            <div class=\"property-control-group tac\">\n                <button id=\"changeAmi\" class=\"btn btn-blue\"><i class=\"icon-edit icon-label\"></i>"
+  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        <div class=\"property-control-group tac\">\n            <button id=\"changeAmi\" class=\"btn btn-blue\"><i class=\"icon-edit icon-label\"></i>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.STATIC_SUB_CHANGE_AMI", {hash:{},data:data}))
-    + "</button>\n            </div>\n        </div>\n        <div class=\"property-control-group hide\" id=\"changeAmiPanel\">\n            <p>"
+    + "</button>\n        </div>\n    </div>\n    <div class=\"property-control-group hide\" id=\"changeAmiPanel\">\n        <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DRAG_IMAGE_DROP_TO_CHANGE", {hash:{},data:data}))
-    + "</p>\n            <div id=\"changeAmiDropZone\">\n                <p>"
+    + "</p>\n        <div id=\"changeAmiDropZone\">\n            <p>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.DRAG_IMAGE_DROP_HERE", {hash:{},data:data}))
-    + "</p>\n                <div class=\"resource-icon resource-icon-instance\">\n                    <img src=\"/assets/images/ide/ami/amazon.i386.ebs.png\" width=\"39\" height=\"27\">\n                    <div class=\"resource-label\"></div>\n                </div>\n            </div>\n            <div class=\"hide\" id=\"confirmChangeAmiWrap\">\n                <p id=\"changeAmiWarning\"></p>\n                <button id=\"confirmChangeAmi\" class=\"btn btn-blue\">"
+    + "</p>\n            <div class=\"resource-icon resource-icon-instance\">\n                <img src=\"/assets/images/ide/ami/amazon.i386.ebs.png\" width=\"39\" height=\"27\">\n                <div class=\"resource-label\"></div>\n            </div>\n        </div>\n        <div class=\"hide\" id=\"confirmChangeAmiWrap\">\n            <p id=\"changeAmiWarning\"></p>\n            <button id=\"confirmChangeAmi\" class=\"btn btn-blue\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.CONFIRM_CHANGE_AMI", {hash:{},data:data}))
-    + "</button>\n            </div>\n            <button id=\"cancelChangeAmi\" class=\"btn-link\">"
+    + "</button>\n        </div>\n        <button id=\"cancelChangeAmi\" class=\"btn-link\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LBL_CANCEL", {hash:{},data:data}))
-    + "</button>\n        </div>\n    ";
+    + "</button>\n    </div>\n";
   return buffer;
   }
 function program6(depth0,data) {
   
   var buffer = "";
-  buffer += "\n        <div class=\"property-control-group property-ami-info\">\n            "
+  buffer += "\n    <div class=\"property-control-group property-ami-info\">\n        "
     + escapeExpression(helpers.i18n.call(depth0, "PROP.AMI_STACK_NOT_AVAILABLE", {hash:{},data:data}))
-    + "\n        </div>\n        ";
+    + "\n    </div>\n    ";
   return buffer;
   }
 
@@ -6184,7 +6180,7 @@ define('wspace/awseditor/property/volume/model',['../base/model', 'constant', 'D
   var VolumeModel;
   VolumeModel = PropertyModel.extend({
     init: function(uid) {
-      var component, displayEncrypted, isEncrypted, res, snapshot, supportEncrypted, supportTags, volume_detail, _ref;
+      var component, displayEncrypted, isEncrypted, res, snapshot, supportEncrypted, volume_detail, _ref;
       component = Design.instance().component(uid);
       res = component.attributes;
       if (!res.owner) {
@@ -6192,7 +6188,6 @@ define('wspace/awseditor/property/volume/model',['../base/model', 'constant', 'D
         return false;
       }
       supportEncrypted = component.isSupportEncrypted();
-      supportTags = true;
       displayEncrypted = true;
       if (!supportEncrypted) {
         displayEncrypted = false;
@@ -6202,7 +6197,6 @@ define('wspace/awseditor/property/volume/model',['../base/model', 'constant', 'D
       }
       if (component.get('owner').type === constant.RESTYPE.LC) {
         displayEncrypted = false;
-        supportTags = false;
       }
       isEncrypted = false;
       if (supportEncrypted) {
@@ -6221,7 +6215,6 @@ define('wspace/awseditor/property/volume/model',['../base/model', 'constant', 'D
         support_encrypted: supportEncrypted,
         encrypted: isEncrypted,
         owner: res.owner,
-        supportTags: supportTags,
         tags: component.tags()
       };
       if (volume_detail.snapshot_id) {
@@ -6457,26 +6450,13 @@ function program20(depth0,data) {
 function program22(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <div class=\"option-group-head expand\">\n        "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
-    + "\n    </div>\n    <div class=\"option-group\">\n        ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(26, program26, data),fn:self.program(23, program23, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n        <div class=\"tags-action\">\n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
-    + "</button>\n        </div>\n    </div>\n    ";
-  return buffer;
-  }
-function program23(depth0,data) {
-  
-  var buffer = "", stack1;
   buffer += "\n        <table class=\"table cost-estimation-table\">\n            <tbody>\n            ";
-  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.tags), {hash:{},inverse:self.noop,fn:self.program(24, program24, data),data:data});
+  stack1 = helpers.each.call(depth0, ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.tags), {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </tbody>\n        </table>\n        ";
   return buffer;
   }
-function program24(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            <tr> <td style=\"min-width:70px;\">"
@@ -6487,7 +6467,7 @@ function program24(depth0,data) {
   return buffer;
   }
 
-function program26(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "";
   buffer += "\n        <div class=\"empty-tag\">"
@@ -6554,10 +6534,14 @@ function program26(depth0,data) {
   buffer += "\n        <label for=\"volume-property-ranged-number\" ></label>\n        </div>\n    </section>\n\n    ";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.displayEncrypted), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.supportTags), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
+  buffer += "\n    <div class=\"option-group-head expand\">\n        "
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_TAGS", {hash:{},data:data}))
+    + "\n    </div>\n    <div class=\"option-group\">\n        ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = ((stack1 = (depth0 && depth0.volume_detail)),stack1 == null || stack1 === false ? stack1 : stack1.tags)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(25, program25, data),fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</article>";
+  buffer += "\n        <div class=\"tags-action\">\n            \n            <button class=\"btn open-tag-manager modal-confirm btn-blue\">"
+    + escapeExpression(helpers.i18n.call(depth0, "PROP.RESOURCE_EDIT_TAG", {hash:{},data:data}))
+    + "</button>\n        </div>\n    </div>\n</article>";
   return buffer;
   }; return Handlebars.template(TEMPLATE); });
 define('wspace/awseditor/property/volume/view',['../base/view', './template/stack', 'event', 'i18n!/nls/lang.js'], function(PropertyView, template, ide_event, lang) {
@@ -6732,9 +6716,9 @@ define('wspace/awseditor/property/volume/app_model',['../base/model', 'Design', 
         volume = getVolRes(myVolumeComponent);
       } else {
         volume = CloudResources(Design.instance().credentialId(), constant.RESTYPE.VOL, Design.instance().region()).get(appId);
-        volume = volume.toJSON();
+        volume = volume.attributes;
       }
-      volume.tags = myVolumeComponent != null ? myVolumeComponent.tags() : void 0;
+      volume.tags = myVolumeComponent.tags();
       volume.isAppEdit = this.isAppEdit;
       if (volume) {
         if (volume.attachmentSet) {
@@ -6951,6 +6935,11 @@ define('wspace/awseditor/property/volume/main',["../base/main", "./model", "./vi
       owner = volume.get('owner');
       this.model = model;
       this.view = view;
+      if (owner.type === constant.RESTYPE.LC && owner.get('appId')) {
+        this.model.isAppEdit = true;
+      } else {
+        this.model.isAppEdit = false;
+      }
       return null;
     },
     initApp: function() {
@@ -14142,15 +14131,13 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
       this.set("stackAgentEnable", agentData.enabled);
       if (this.isApp) {
         this.getAppLaunch(uid);
-        if (!this.isAppEdit) {
-          kp = this.lc.connectionTargets('KeypairUsage')[0];
-          this.set('keyName', kp && kp.get("appId") || this.lc.get('keyName'));
-          rootDevice = this.lc.getBlockDeviceMapping();
-          if (rootDevice.length === 1) {
-            this.set("rootDevice", rootDevice[0]);
-          }
-          return;
+        kp = this.lc.connectionTargets('KeypairUsage')[0];
+        this.set('keyName', kp && kp.get("appId") || this.lc.get('keyName'));
+        rootDevice = this.lc.getBlockDeviceMapping();
+        if (rootDevice.length === 1) {
+          this.set("rootDevice", rootDevice[0]);
         }
+        return;
       }
       return null;
     },
@@ -14276,7 +14263,9 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
       return null;
     },
     isSGListReadOnly: function() {
-      return false;
+      if (this.get('appId')) {
+        return true;
+      }
     },
     getAppLaunch: function(uid) {
       var lc_data, _ref;
@@ -14309,41 +14298,30 @@ define('wspace/awseditor/property/launchconfig/model',['../base/model', 'constan
 define('wspace/awseditor/property/launchconfig/template/stack',['handlebars'], function(Handlebars){ var TEMPLATE = function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, escapeExpression=this.escapeExpression, self=this, functionType="function";
+  var buffer = "", stack1, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <dl class=\"dl-vertical\">\n        <dt>"
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_CREATE_TIME", {hash:{},data:data}))
-    + "</dt>\n        <dd>"
-    + escapeExpression(helpers.timeStr.call(depth0, ((stack1 = (depth0 && depth0.lc)),stack1 == null || stack1 === false ? stack1 : stack1.CreatedTime), {hash:{},data:data}))
-    + "</dd>\n    </dl>\n    ";
-  return buffer;
-  }
-
-function program3(depth0,data) {
   
   
   return "style=\"color:red;\"";
   }
 
-function program5(depth0,data) {
+function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n		<section class=\"property-control-group\">\n			<label class=\"left\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_TYPE", {hash:{},data:data}))
     + "</label>\n			<div class=\"selectbox selectbox-mega\" id=\"instance-type-select\">\n				<div class=\"selection\"></div>\n				<ul class=\"dropdown\">\n					";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_type), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.instance_type), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				</ul>\n			</div>\n		</section>\n		";
   return buffer;
   }
-function program6(depth0,data) {
+function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n					<li class=\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "tooltip item\" data-tooltip=\""
     + escapeExpression(((stack1 = (depth0 && depth0.main)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -14360,67 +14338,67 @@ function program6(depth0,data) {
     + "</span></div>\n					</li>\n					";
   return buffer;
   }
-function program7(depth0,data) {
+function program5(depth0,data) {
   
   
   return "selected ";
   }
 
-function program9(depth0,data) {
+function program7(depth0,data) {
   
   
   return "hide";
   }
 
-function program11(depth0,data) {
+function program9(depth0,data) {
   
   
   return "\n				<input id=\"property-instance-ebs-optimized\" type=\"checkbox\" value=\"None\" checked=\"true\" name=\"ebs-optimized\" />\n				";
   }
 
-function program13(depth0,data) {
+function program11(depth0,data) {
   
   
   return "\n				<input id=\"property-instance-ebs-optimized\" type=\"checkbox\" value=\"None\" name=\"ebs-optimized\" />\n				";
   }
 
-function program15(depth0,data) {
+function program13(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n			<section class=\"property-control-group\">\n				<div class=\"checkbox\">\n					<input id=\"property-instance-public-ip\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.publicIp), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.publicIp), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-instance-public-ip\" />\n					<label for=\"property-instance-public-ip\"></label>\n				</div>\n				<label for=\"property-instance-public-ip\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ENI_AUTO_PUBLIC_IP", {hash:{},data:data}))
     + "</label>\n			</section>\n		";
   return buffer;
   }
-function program16(depth0,data) {
+function program14(depth0,data) {
   
   
   return "checked=\"checked\"";
   }
 
-function program18(depth0,data) {
+function program16(depth0,data) {
   
   var stack1;
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(19, program19, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
   if(stack1 || stack1 === 0) { return stack1; }
   else { return ''; }
   }
-function program19(depth0,data) {
+function program17(depth0,data) {
   
   
   return "checked=\"true\"";
   }
 
-function program21(depth0,data) {
+function program19(depth0,data) {
   
   
   return "disabled=\"disabled\"";
   }
 
-function program23(depth0,data) {
+function program21(depth0,data) {
   
   var buffer = "";
   buffer += "\n			<div class=\"property-info\">"
@@ -14429,7 +14407,7 @@ function program23(depth0,data) {
   return buffer;
   }
 
-function program25(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n				<label for=\"property-instance-user-data\">"
@@ -14440,10 +14418,10 @@ function program25(depth0,data) {
   return buffer;
   }
 
-function program27(depth0,data) {
+function program25(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	<div class=\"option-group-head expand\">Root Device</div>\n	<div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>"
+  buffer += "\n	<div class=\"option-group-head\">Root Device</div>\n	<div class=\"option-group\">\n    <section class=\"property-control-group\">\n      <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_DEVICE_NAME", {hash:{},data:data}))
     + "</label>\n      <div>"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -14454,77 +14432,72 @@ function program27(depth0,data) {
     + "\" name=\"volume-size-ranged\" data-ignore=\"true\" maxlength=\"5\" data-required=\"true\" data-required=\"true\" data-type=\"number\"/>\n      <label for=\"volume-size-ranged\" >GB</label>\n      </div>\n    </section>\n\n    <section class=\"property-control-group\">\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE", {hash:{},data:data}))
     + "</label>\n        <div id=\"volume-type-radios\">\n          <div>\n             <div class=\"radio\">\n                  <input id=\"radio-standard\" type=\"radio\" name=\"volume-type\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isStandard), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isStandard), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"standard\" />\n                  <label for=\"radio-standard\"></label>\n              </div>\n              <label for=\"radio-standard\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE_STANDARD", {hash:{},data:data}))
     + "</label>\n          </div>\n          <div>\n             <div class=\"radio\">\n                  <input id=\"radio-gp2\" type=\"radio\" name=\"volume-type\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isGp2), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isGp2), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"gp2\" />\n                  <label for=\"radio-gp2\"></label>\n              </div>\n              <label for=\"radio-gp2\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE_GP2", {hash:{},data:data}))
     + "</label>\n          </div>\n          <div ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(26, program26, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_MSG_WARN", {hash:{},data:data}))
     + "\">\n            <div class=\"radio\">\n              <input id=\"radio-io1\" type=\"radio\" name=\"volume-type\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isIo1), {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isIo1), {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iopsDisabled), {hash:{},inverse:self.noop,fn:self.program(28, program28, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"io1\" />\n              <label for=\"radio-io1\"></label>\n            </div>\n            <label for=\"radio-io1\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_TYPE_IO1", {hash:{},data:data}))
     + "</label>\n          </div>\n        </div>\n    </section>\n\n    <section class=\"property-control-group\" id=\"iops-group\" ";
-  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isIo1), {hash:{},inverse:self.noop,fn:self.program(32, program32, data),data:data});
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.isIo1), {hash:{},inverse:self.noop,fn:self.program(30, program30, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n        <label>IOPS</label>\n        <div class=\"ranged-number-input\">\n          <label for=\"iops-ranged\"></label>\n          <input id=\"iops-ranged\" type=\"text\" class=\"input\" min=\"100\" max=\"2000\" value=\""
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.iops)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">\n        </div>\n    </section>\n\n<!--     <section class=\"property-control-group\">\n        <label>"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.VOLUME_ENCRYPTED", {hash:{},data:data}))
     + "</label>\n        <div>";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(36, program36, data),fn:self.program(34, program34, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.rootDevice)),stack1 == null || stack1 === false ? stack1 : stack1.encrypted), {hash:{},inverse:self.program(34, program34, data),fn:self.program(32, program32, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</div>\n    </section> -->\n\n	</div>\n  ";
   return buffer;
   }
-function program28(depth0,data) {
+function program26(depth0,data) {
   
   
   return "class=\"tooltip\"";
   }
 
-function program30(depth0,data) {
+function program28(depth0,data) {
   
   
   return "disabled";
   }
 
-function program32(depth0,data) {
+function program30(depth0,data) {
   
   
   return "style=\"display:none\"";
   }
 
-function program34(depth0,data) {
+function program32(depth0,data) {
   
   
   return "Yes";
   }
 
-function program36(depth0,data) {
+function program34(depth0,data) {
   
   
   return "No";
   }
 
-  buffer += "<div class=\"property-warning-block hide\">\n    "
-    + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_WILL_BE_REPLECED", {hash:{},data:data}))
-    + "\n</div>\n<article>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isEditable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	<div class=\"option-group-head expand\">"
+  buffer += "<article>\n\n	<div class=\"option-group-head expand\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_TITLE", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\" data-bind=\"true\">\n			<label class=\"left\" for=\"property-instance-name\" >"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.LC_NAME", {hash:{},data:data}))
@@ -14543,18 +14516,18 @@ function program36(depth0,data) {
     + "\">\n				<img class=\"property-ami-icon left\" src=\"/assets/images/ide/ami/"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.icon)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\" / >\n				<div class=\"property-ami-label\" ";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.unavailable), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.instance_ami)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>\n			</div>\n		</section>\n		";
-  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_type)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.instance_type)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		<section class=\"property-control-group ";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_set_ebs), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.can_set_ebs), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n			<div class=\"checkbox\">\n				";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ebsOptimized), {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.ebsOptimized), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				<label for=\"property-instance-ebs-optimized\"></label>\n			</div>\n			<label for=\"property-instance-ebs-optimized\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_EBS_OPTIMIZED", {hash:{},data:data}))
@@ -14563,27 +14536,27 @@ function program36(depth0,data) {
     + "</label>\n			<i class=\"icon-info tooltip default-kp-info\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "POP_INSTANCE_KEYPAIR_INFO_TIP", {hash:{},data:data}))
     + "\"></i>\n            <div id=\"kp-placeholder\"></div>\n		</section>\n		";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayAssociatePublicIp), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.displayAssociatePublicIp), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_ADVANCED_DETAIL", {hash:{},data:data}))
     + "</div>\n	<div class=\"option-group\">\n		<section class=\"property-control-group\">\n			<div class=\"checkbox\">\n				<input id=\"property-instance-enable-cloudwatch\" type=\"checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitorEnabled), {hash:{},inverse:self.program(21, program21, data),fn:self.program(18, program18, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.monitorEnabled), {hash:{},inverse:self.program(19, program19, data),fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " value=\"None\" name=\"property-instance-enable-cloudwatch\" />\n				<label for=\"property-instance-enable-cloudwatch\"></label>\n			</div>\n			<label for=\"property-instance-enable-cloudwatch\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_CW_ENABLED", {hash:{},data:data}))
     + "</label>\n\n			<p class=\"";
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.monitoring), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += " property-info\" id=\"property-cloudwatch-warn\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_CW_WARN", {hash:{},data:data}))
     + "<a target=\"_blank\" href=\"http://aws.amazon.com/cloudwatch\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_WATCH_LINK_TEXT", {hash:{},data:data}))
     + "</a></p>\n		</section>\n		<section class=\"property-control-group\">\n			";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stackAgentEnable), {hash:{},inverse:self.program(25, program25, data),fn:self.program(23, program23, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.stackAgentEnable), {hash:{},inverse:self.program(23, program23, data),fn:self.program(21, program21, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</section>\n	</div>\n\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(27, program27, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.rootDevice), {hash:{},inverse:self.noop,fn:self.program(25, program25, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n	<div class=\"option-group-head\">"
     + escapeExpression(helpers.i18n.call(depth0, "PROP.INSTANCE_SG_DETAIL", {hash:{},data:data}))
@@ -14907,13 +14880,6 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
       'REMOVE_ROW .multi-input': 'setMesosAttribute',
       'click #add-ma-item-outside': 'addMesosAttrItem'
     },
-    watchChangedInAppEdit: function() {
-      if (this.resModel.changedInAppEdit()) {
-        return this.$('.property-warning-block').show();
-      } else {
-        return this.$('.property-warning-block').hide();
-      }
-    },
     render: function() {
       var kpDropdown, me, tpl;
       tpl = this.resModel.isMesos() ? TplMesos : TplLc;
@@ -14940,7 +14906,6 @@ define('wspace/awseditor/property/launchconfig/view',['../base/view', './templat
           return lang.PARSLEY.IOPS_MUST_BE_LESS_THAN_10_TIMES_OF_VOLUME_SIZE;
         }
       });
-      this.watchChangedInAppEdit();
       return this.model.attributes.name;
     },
     addMesosAttrItem: function(e) {
@@ -15320,15 +15285,11 @@ define('wspace/awseditor/property/launchconfig/main',["../base/main", "./model",
       this.view = app_view;
       return null;
     },
-    initAppEdit: function(uid) {
+    initAppEdit: function() {
       this.model = model;
       this.model.isApp = true;
       this.model.isAppEdit = true;
-      this.view = view;
-      this.view.resModel = Design.instance().component(uid);
-      if (this.view.resModel.get('appId')) {
-        this.view.listenTo(this.view.resModel, 'change', view.watchChangedInAppEdit);
-      }
+      this.view = app_view;
       return null;
     },
     afterLoadApp: function() {
@@ -23615,7 +23576,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           $selectbox.parent().find("input.custom-app-usage").val(newJson.usage);
         }
         that.updateModal.on('confirm', function() {
-          var release_eip, usage, _ref1;
+          var usage, _ref1;
           if (!taPassed) {
             return;
           }
@@ -23634,9 +23595,9 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
             usage = $.trim($selectbox.parent().find("input.custom-app-usage").val()) || "custom";
           }
           newJson.usage = usage;
-          release_eip = that.updateModal.tpl.find("#release-eip-checkbox").is(":checked");
           that.workspace.applyAppEdit(newJson, !result.compChange, {
-            release_eip: release_eip
+            release_eip: that.updateModal.tpl.find("#release-eip-checkbox").is(":checked"),
+            dry_run: that.updateModal.tpl.find("#ipt-dryrun").is(":checked")
           });
           return (_ref1 = that.updateModal) != null ? _ref1.close() : void 0;
         });
@@ -25007,10 +24968,12 @@ define('wspace/awseditor/subviews/ResourcePanel',["CloudResources", "Design", "U
       _ref = this.workspace.design.componentsOfType(constant.RESTYPE.LC);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         lc = _ref[_i];
-        new LcItemView({
-          model: lc,
-          parent: this
-        });
+        if (!lc.get('appId')) {
+          new LcItemView({
+            model: lc,
+            parent: this
+          });
+        }
       }
       return this;
     },
@@ -26348,6 +26311,10 @@ define('wspace/awseditor/canvas/CanvasViewAws',["CanvasView", "constant", "i18n!
         }
         return;
       }
+      if (owner.type === constant.RESTYPE.LC && owner.get("appId")) {
+        notification("error", lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET);
+        return;
+      }
       attr.owner = owner;
       if (_.isString(attr.encrypted)) {
         attr.encrypted = attr.encrypted === 'true';
@@ -27101,12 +27068,9 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
       }
       return null;
     },
-    getAmi: function(imageId) {
+    getAmi: function() {
       var ami;
-      if (imageId == null) {
-        imageId = this.get("imageId");
-      }
-      ami = CloudResources(this.design().credentialId(), constant.RESTYPE.AMI, this.design().region()).get(imageId);
+      ami = CloudResources(this.design().credentialId(), constant.RESTYPE.AMI, this.design().region()).get(this.get("imageId"));
       if (ami) {
         return ami.toJSON();
       } else {
@@ -27532,6 +27496,9 @@ define('wspace/awseditor/model/InstanceModel',["ComplexResModel", "Design", "con
     isDefaultKey: function() {
       var kp;
       kp = this.connectionTargets("KeypairUsage")[0];
+      if (!kp) {
+        return true;
+      }
       return kp && kp.isDefault();
     },
     isNoKey: function() {
@@ -28801,6 +28768,14 @@ define('wspace/awseditor/model/VolumeModel',["i18n!/nls/lang.js", "ComplexResMod
       }
       return this.__groupMembers;
     },
+    isRemovable: function() {
+      if (this.design().modeIsAppEdit()) {
+        if ((this.get("owner") || {}).type === constant.RESTYPE.LC) {
+          return lang.NOTIFY.WARN_OPERATE_NOT_SUPPORT_YET;
+        }
+      }
+      return true;
+    },
     remove: function() {
       var vl;
       vl = this.attributes.owner.get("volumeList");
@@ -28894,7 +28869,6 @@ define('wspace/awseditor/model/VolumeModel',["i18n!/nls/lang.js", "ComplexResMod
         owner.set('volumeList', [this]);
       }
       owner.trigger("change:volumeList");
-      owner.trigger("change");
       return true;
     },
     isSupportEncrypted: function() {
@@ -29699,7 +29673,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
       }
       return _.uniq(az);
     },
-    serialize: function(options) {
+    serialize: function() {
       var azs, component, elbArray, elbs, healthCheckType, lc, subnets;
       subnets = this.getExpandSubnets();
       azs = _.uniq(_.map(subnets, function(sb) {
@@ -29736,7 +29710,7 @@ define('wspace/awseditor/model/AsgModel',["ResourceModel", "ComplexResModel", "D
           TerminationPolicies: this.get("terminationPolicies"),
           AutoScalingGroupName: this.get("groupName") || this.get("name"),
           DesiredCapacity: this.get("capacity"),
-          LaunchConfigurationName: (lc != null ? lc.createRef(null, null, null, options) : void 0) || ""
+          LaunchConfigurationName: (lc != null ? lc.createRef("LaunchConfigurationName") : void 0) || ""
         }
       };
       return {
@@ -31954,10 +31928,9 @@ define('wspace/awseditor/model/ElbModel',["Design", "constant", "ResourceModel",
   return Model;
 });
 
-define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", "i18n!/nls/lang.js", "CloudResources", "DiffTree"], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources, DiffTree) {
-  var Model, changeDetectExcepts, emptyArray;
+define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "Design", "constant", "./VolumeModel", "i18n!/nls/lang.js", "CloudResources"], function(ComplexResModel, InstanceModel, Design, constant, VolumeModel, lang, CloudResources) {
+  var Model, emptyArray;
   emptyArray = [];
-  changeDetectExcepts = ['name', 'description', 'state'];
   Model = ComplexResModel.extend({
     defaults: function() {
       return {
@@ -32035,6 +32008,11 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     },
     isRemovable: function() {
       var state;
+      if (this.design().modeIsAppEdit() && this.get("appId")) {
+        return {
+          error: lang.CANVAS.ERR_DEL_LC
+        };
+      }
       state = this.get("state");
       if (state && state.length > 0) {
         return MC.template.NodeStateRemoveConfirmation({
@@ -32102,36 +32080,8 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
     isMesos: InstanceModel.prototype.isMesos,
     isMesosMaster: InstanceModel.prototype.isMesosMaster,
     isMesosSlave: InstanceModel.prototype.isMesosSlave,
-    getId: function(options, changed) {
-      if (!options || options.usage !== 'updateApp') {
-        return this.id;
-      }
-      if (!changed && !this.changedInAppEdit()) {
-        return this.id;
-      }
-      if (!this.__newId) {
-        this.__newId = this.design().guid();
-      }
-      return this.__newId;
-    },
-    changedInAppEdit: function() {
-      var diffTree;
-      if (!this.design().modeIsAppEdit() || !this.get('appId')) {
-        return false;
-      }
-      diffTree = new DiffTree();
-      return !_.isEmpty(diffTree.compare(this.genResource(), this.design().opsModel().getJsonData().component[this.id].resource));
-    },
-    createRef: function(refName, isResourceNS, id, options) {
-      if (refName == null) {
-        refName = 'LaunchConfigurationName';
-      }
-      id = this.getId(options);
-      return ComplexResModel.prototype.createRef.call(this, refName, isResourceNS, id);
-    },
-    serialize: function(options) {
-      var ami, changed, component, layout;
-      changed = options && options.usage === 'updateApp' && this.changedInAppEdit();
+    serialize: function() {
+      var ami, blockDevice, component, layout, vd, volume, _i, _len, _ref;
       ami = this.getAmi() || this.get("cachedAmi");
       layout = this.generateLayout();
       if (ami) {
@@ -32139,24 +32089,6 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         layout.architecture = ami.architecture;
         layout.rootDeviceType = ami.rootDeviceType;
       }
-      if (InstanceModel.isMesosMaster(this.attributes) || InstanceModel.isMesosSlave(this.attributes)) {
-        this.setMesosState();
-      }
-      component = {
-        type: this.type,
-        uid: this.getId(options, changed),
-        name: changed ? this.getNewName() : this.get("name"),
-        description: this.get("description") || "",
-        state: this.get("state"),
-        resource: this.genResource(changed)
-      };
-      return {
-        component: component,
-        layout: layout
-      };
-    },
-    genResource: function(changed) {
-      var blockDevice, vd, volume, _i, _len, _ref;
       blockDevice = this.getBlockDeviceMapping();
       _ref = this.get("volumeList") || emptyArray;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -32176,20 +32108,34 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         }
         blockDevice.push(vd);
       }
+      if (InstanceModel.isMesosMaster(this.attributes) || InstanceModel.isMesosSlave(this.attributes)) {
+        this.setMesosState();
+      }
+      component = {
+        type: this.type,
+        uid: this.id,
+        name: this.get("name"),
+        description: this.get("description") || "",
+        state: this.get("state"),
+        resource: {
+          UserData: this.get("userData"),
+          LaunchConfigurationARN: this.get("appId"),
+          InstanceMonitoring: this.get("monitoring"),
+          ImageId: this.get("imageId"),
+          KeyName: this.get("keyName"),
+          EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
+          BlockDeviceMapping: blockDevice,
+          SecurityGroups: _.map(this.connectionTargets("SgAsso"), function(sg) {
+            return sg.createRef("GroupId");
+          }),
+          LaunchConfigurationName: this.get("configName") || this.get("name"),
+          InstanceType: this.get("instanceType"),
+          AssociatePublicIpAddress: this.get("publicIp")
+        }
+      };
       return {
-        UserData: this.get("userData"),
-        LaunchConfigurationARN: changed ? '' : this.get("appId"),
-        InstanceMonitoring: this.get("monitoring"),
-        ImageId: this.get("imageId"),
-        KeyName: this.get("keyName"),
-        EbsOptimized: this.isEbsOptimizedEnabled() ? this.get("ebsOptimized") : false,
-        BlockDeviceMapping: blockDevice,
-        SecurityGroups: _.map(this.connectionTargets("SgAsso"), function(sg) {
-          return sg.createRef("GroupId");
-        }),
-        LaunchConfigurationName: this.get("configName") || this.get("name"),
-        InstanceType: this.get("instanceType"),
-        AssociatePublicIpAddress: this.get("publicIp")
+        component: component,
+        layout: layout
       };
     }
   }, {
@@ -32227,7 +32173,7 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       return null;
     },
     deserialize: function(data, layout_data, resolve) {
-      var KP, SgAsso, appData, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var KP, SgAsso, model, rd, sg, volume, _attr, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       model = resolve(data.uid);
       rd = model.getAmiRootDevice();
       _ref = data.resource.BlockDeviceMapping || [];
@@ -32259,24 +32205,17 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
         sg = _ref2[_j];
         new SgAsso(model, resolve(MC.extractID(sg)));
       }
-      if (model.get('appId')) {
-        appData = (_ref3 = CloudResources(model.design().credentialId(), constant.RESTYPE.LC, model.design().region()).get(model.get('appId'))) != null ? _ref3.toJSON() : void 0;
-      }
-      if (!appData) {
-        KP = resolve(MC.extractID(data.resource.KeyName));
-        if (KP) {
-          KP.assignTo(model);
-        } else {
-          if (data.resource.KeyName || data.resource.KeyName === "") {
-            model.set('keyName', data.resource.KeyName);
-          } else {
-            _.defer(function() {
-              return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
-            });
-          }
-        }
+      KP = resolve(MC.extractID(data.resource.KeyName));
+      if (KP) {
+        KP.assignTo(model);
       } else {
-        model.set('keyName', appData.KeyName);
+        if (data.resource.KeyName || data.resource.KeyName === "") {
+          model.set('keyName', data.resource.KeyName);
+        } else {
+          _.defer(function() {
+            return Design.modelClassForType(constant.RESTYPE.KP).getDefaultKP().assignTo(model);
+          });
+        }
       }
       return null;
     }
@@ -37932,12 +37871,12 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
         }, 0);
       });
     },
-    iconUrl: function(imageId) {
+    iconUrl: function() {
       var ami;
       if (this.model.isMesos()) {
         return 'ide/ami/mesos-slave.png';
       }
-      ami = this.model.getAmi(imageId) || this.model.get("cachedAmi");
+      ami = this.model.getAmi() || this.model.get("cachedAmi");
       if (!ami) {
         return "ide/ami/ami-not-available.png";
       } else {
@@ -38062,8 +38001,10 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
             continue;
           }
           asg = asg.attributes;
-          numberGroup = $(el).children(".server-number-group").show();
-          CanvasManager.update(numberGroup.children("text"), ((_ref1 = asg.Instances) != null ? _ref1.length : void 0) || 0);
+          if ((_ref1 = asg.Instances) != null ? _ref1.length : void 0) {
+            numberGroup = $(el).children(".server-number-group").show();
+            CanvasManager.update(numberGroup.children("text"), asg.Instances.length);
+          }
         }
       }
     },
@@ -38115,13 +38056,13 @@ define('wspace/awseditor/canvas/CeLc',["CanvasElement", "constant", "CanvasManag
       insCln = CloudResources(this.model.design().credentialId(), constant.RESTYPE.INSTANCE, this.model.design().region());
       name = this.model.get("name");
       gm = [];
+      icon = this.iconUrl();
       el = evt.currentTarget.parentNode.parentNode;
       asg = this.canvas.getItem(el.getAttribute("data-id")).model;
       _ref = this.model.groupMembers(asg);
       for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
         m = _ref[idx];
         ins = insCln.get(m.appId);
-        icon = this.iconUrl(ins != null ? ins.get('imageId') : void 0);
         if (!ins) {
           console.warn("Cannot find instance of `" + m.appId + "`");
           continue;

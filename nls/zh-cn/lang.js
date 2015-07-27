@@ -886,7 +886,7 @@ define({
         "STARTING_YOUR_APP": "正在启动 App ...",
         "TERMINATING_YOUR_APP": "正在终止 App ...",
         "STOPPING_YOUR_APP": "正在停止 App ...",
-        "APPLYING_CHANGES_TO_YOUR_APP": "正在应用 App 的修改...",
+        "APPLYING_CHANGES_TO_YOUR_APP": "正在应用 App 的修改",
         "REMOVING_YOUR_APP": "正在从数据库中删除你的 App...",
         "PROCESSING_YOUR_REQUEST": "正在处理请求 ...",
         "YOU_CAN_LATER_UPDATE_PROFILE": "您可稍后在 <em> 设置 &gt; 账号</em> 里修改此信息。",
@@ -2263,8 +2263,7 @@ define({
         "RESOURCE_NAME_SNS": " SNS 订阅",
         "RESOURCE_NAME_SSL": "SSL",
         "RESOURCE_NAME_DHCP": "DHCP",
-        "RESOURCE_NAME_OPTION_GROUP": " RDS 选项组",
-        "LC_WILL_BE_REPLECED": "关联的AutoScaling组的启动配置都将被替换，并且AutoScaling组会根据设置的策略自动扩展。"
+        "RESOURCE_NAME_OPTION_GROUP": " RDS 选项组"
     },
     "SERVICE": {
         "NETWORK_ERROR": "服务暂时不可用, 请稍后重试",

@@ -935,7 +935,7 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
         return collection.add(self);
       });
     },
-    run: function(toRunJson, appName) {
+    run: function(toRunJson, config) {
       var project;
       toRunJson.id = "";
       toRunJson.stack_id = this.get("id");
@@ -943,18 +943,20 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
       return ApiRequest("stack_run", {
         region_name: toRunJson.region,
         stack: toRunJson,
-        app_name: appName,
-        key_id: this.credentialId()
+        app_name: config.name,
+        key_id: this.credentialId(),
+        dry_run: config.dryrun
       }).then(function(res) {
         return project.apps().add(new OpsModel({
-          name: appName,
+          name: config.name,
           requestId: res[0],
           state: OpsModelState.Initializing,
           region: toRunJson.region,
           provider: toRunJson.provider,
           usage: toRunJson.usage,
           updateTime: +(new Date()),
-          type: toRunJson.type
+          type: toRunJson.type,
+          dryrun: config.dryrun
         }));
       });
     },
@@ -1261,6 +1263,9 @@ define('OpsModel',["ApiRequest", "constant", "CloudResources", "ThumbnailUtil", 
           state: toState,
           progress: 0
         });
+      }
+      if (this.get("dryrun") && wsRequest.code === constant.OPS_CODE_NAME.LAUNCH && toState !== OMS.Initializing) {
+        this.__destroy();
       }
     },
 

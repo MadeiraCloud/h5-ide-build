@@ -886,7 +886,7 @@ define({
         "STARTING_YOUR_APP": "Starting your app...",
         "TERMINATING_YOUR_APP": "Terminating your app...",
         "STOPPING_YOUR_APP": "Stopping your app...",
-        "APPLYING_CHANGES_TO_YOUR_APP": "Applying changes to your app...",
+        "APPLYING_CHANGES_TO_YOUR_APP": "Applying changes to your app",
         "REMOVING_YOUR_APP": "Removing your app from our server...",
         "PROCESSING_YOUR_REQUEST": "Processing your request...",
         "YOU_CAN_LATER_UPDATE_PROFILE": "You can later update this information in <em>Settings &gt; Account</em>",
@@ -2263,8 +2263,7 @@ define({
         "RESOURCE_NAME_SNS": "SNS Subscription",
         "RESOURCE_NAME_SSL": "SSL",
         "RESOURCE_NAME_DHCP": "DHCP",
-        "RESOURCE_NAME_OPTION_GROUP": "RDS Option Group",
-        "LC_WILL_BE_REPLECED": "Launch Configuration will be replaced for all associated AutoScaling Group, and AutoScaling Group will scale base on the policy."
+        "RESOURCE_NAME_OPTION_GROUP": "RDS Option Group"
     },
     "SERVICE": {
         "NETWORK_ERROR": "Service is temporarily unavailable. Please try again later.",
@@ -2409,8 +2408,8 @@ define({
         "LOADING_DATA": "Loading data...",
         "ROLLING_BACK": "Rolling back...",
         "RELOADING_DATA": "Reloading data...",
-        "APP_UPDATE_SUCCESSFULLY_TITLE": "App has updated successfully.",
-        "APP_UPDATE_FAILED_TITLE": "The app failed to update.",
+        "APP_UPDATE_SUCCESSFULLY_TITLE": "App has updated successfully",
+        "APP_UPDATE_FAILED_TITLE": "The app failed to update",
         "APP_ROllBACK_DESC": "The state of your app has been rolled back, except for the already deleted resources.",
         "LBL_DONE": "Done",
         "CONFIRM_ENABLE_STATE": "Enable VisualOps will override your custom User Data. Are you sure to continue?",
