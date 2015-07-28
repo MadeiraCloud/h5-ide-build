@@ -23579,7 +23579,8 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         that.updateModal.setContent(MC.template.updateApp({
           isRunning: that.workspace.opsModel.testState(OpsModel.State.Running),
           notReadyDB: removeListNotReady,
-          removeList: removeList
+          removeList: removeList,
+          fastUpdate: !result.compChange
         }));
         eipsToRelease = _.filter(removes, function(e) {
           return e.type === constant.RESTYPE.EIP;
@@ -23616,7 +23617,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           $selectbox.parent().find("input.custom-app-usage").val(newJson.usage);
         }
         that.updateModal.on('confirm', function() {
-          var release_eip, usage, _ref1;
+          var usage, _ref1;
           if (!taPassed) {
             return;
           }
@@ -23635,9 +23636,9 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
             usage = $.trim($selectbox.parent().find("input.custom-app-usage").val()) || "custom";
           }
           newJson.usage = usage;
-          release_eip = that.updateModal.tpl.find("#release-eip-checkbox").is(":checked");
           that.workspace.applyAppEdit(newJson, !result.compChange, {
-            release_eip: release_eip
+            release_eip: that.updateModal.tpl.find("#release-eip-checkbox").is(":checked"),
+            dry_run: that.updateModal.tpl.find("#ipt-dryrun").is(":checked")
           });
           return (_ref1 = that.updateModal) != null ? _ref1.close() : void 0;
         });
@@ -36238,7 +36239,11 @@ define('wspace/awseditor/model/serializeVisitor/AppToStack',["../DesignAws"], fu
           if (compo.name === "EC2InternalTags") {
             _results.push(delete components[comp]);
           } else {
-            _results.push(void 0);
+            _results.push(_.each(compo.resource, function(item, index) {
+              if (item.Key.indexOf("aws:") === 0) {
+                return compo.resource.splice(index, 1);
+              }
+            }));
           }
           break;
         case 'AWS.AutoScaling.Tag':

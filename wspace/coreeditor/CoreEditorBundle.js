@@ -1706,8 +1706,11 @@ function program3(depth0,data) {
   buffer += "\n  <header class=\"processing\">";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.error), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dry_run), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</header>\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.error), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.error), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n  <button class=\"btn btn-silver\" id=\"processDoneBtn\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_DONE", {hash:{},data:data}))
@@ -1727,6 +1730,12 @@ function program6(depth0,data) {
   }
 
 function program8(depth0,data) {
+  
+  
+  return "in Dry Run mode";
+  }
+
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n  <div class=\"error-info-block\">\n    <div class=\"result-sub-title\">"
@@ -1749,6 +1758,20 @@ function program8(depth0,data) {
   return buffer;
   };
 TEMPLATE.appUpdateStatus=Handlebars.template(__TEMPLATE__);
+
+
+__TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"ops-process\">\n  <header class=\"processing\">App has updated successfully in Dry Run mode.</header>\n  <button class=\"btn btn-silver\" id=\"processDoneBtn\">"
+    + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.LBL_DONE", {hash:{},data:data}))
+    + "</button>\n</div>";
+  return buffer;
+  };
+TEMPLATE.dryRunDone=Handlebars.template(__TEMPLATE__);
 
 
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
@@ -6048,6 +6071,9 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
           break;
         case OpsModel.State.Updating:
           text = lang.IDE.APPLYING_CHANGES_TO_YOUR_APP;
+          if (this.workspace.__dryRunUpdate) {
+            text += " in Dry Run mode";
+          }
           break;
         case OpsModel.State.Removing:
           text = lang.IDE.REMOVING_YOUR_APP;
@@ -6134,8 +6160,17 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
       self = this;
       $(OpsEditorTpl.appUpdateStatus({
         error: error,
-        loading: loading
+        loading: loading,
+        dry_run: this.workspace.__dryRunUpdate
       })).appendTo(this.$el).find("#processDoneBtn").click(function() {
+        return self.$el.find(".ops-process").remove();
+      });
+    },
+    showDryRunDone: function() {
+      var self;
+      this.$el.find(".ops-process").remove();
+      self = this;
+      $(OpsEditorTpl.dryRunDone()).appendTo(this.$el).find("#processDoneBtn").click(function() {
         return self.$el.find(".ops-process").remove();
       });
     },
@@ -6352,11 +6387,16 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
         return;
       }
       this.__applyingUpdate = true;
+      this.__dryRunUpdate = !!attributes.dry_run;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
       self = this;
       this.opsModel.update(newJson, fastUpdate, attributes).then(function() {
         if (fastUpdate) {
           return self.__onAppEditDidDone();
+        } else if (self.__dryRunUpdate) {
+          self.__dryRunUpdate = false;
+          self.__applyingUpdate = false;
+          return self.view.showDryRunDone();
         } else {
           return self.__onAppEditDone();
         }
