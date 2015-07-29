@@ -6027,11 +6027,12 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
         json.resource_diff = $("#MonitorImportApp").is(":checked");
         _.each(json.component, function(comp) {
           if (comp.type === constant.RESTYPE.TAG || comp.type === constant.RESTYPE.ASGTAG) {
-            return _.each(comp.resource, function(item, index) {
+            _.each(comp.resource, function(item, index) {
               if (item.Key.indexOf("aws:") === 0) {
-                return comp.resource.splice(index, 1);
+                return delete comp.resource[index];
               }
             });
+            return comp.resource = _.compact(comp.resource);
           }
         });
         return self.workspace.opsModel.importApp(json).then(function() {
