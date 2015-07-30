@@ -6389,6 +6389,9 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
     return _.some(serialized, function(serializedItem) {
       var v, _ref, _ref1;
       v = serializedItem != null ? (_ref = serializedItem.component) != null ? (_ref1 = _ref.resource) != null ? _ref1[attr] : void 0 : void 0 : void 0;
+      if (v === +v) {
+        v = String(v);
+      }
       if (value === DefaultValues.AllValues) {
         return v !== void 0;
       } else {
@@ -6442,7 +6445,7 @@ define('FilterInput',['constant', 'Design', 'component/awscomps/FilterInputTpl']
     className: "filter-input",
     tplDropdown: template.dropdown,
     tplTag: template.tag,
-    unFilterTypeInVisualMode: [constant.RESTYPE.SG, 'ExpandedAsg', constant.RESTYPE.DHCP],
+    unFilterTypeInVisualMode: [constant.RESTYPE.SG, 'ExpandedAsg', constant.RESTYPE.DHCP, 'ExternalVpcRouteTarget'],
     events: {
       "click .tags li": "clickTagHandler",
       "blur input": "blurInputHandler",
