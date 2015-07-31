@@ -6025,6 +6025,16 @@ define('CoreEditorViewApp',["CoreEditorView", "OpsModel", "wspace/coreeditor/Tpl
         }
         json.usage = usage;
         json.resource_diff = $("#MonitorImportApp").is(":checked");
+        _.each(json.component, function(comp) {
+          if (comp.type === constant.RESTYPE.TAG || comp.type === constant.RESTYPE.ASGTAG) {
+            _.each(comp.resource, function(item, index) {
+              if (item.Key.indexOf("aws:") === 0) {
+                return delete comp.resource[index];
+              }
+            });
+            return comp.resource = _.compact(comp.resource);
+          }
+        });
         return self.workspace.opsModel.importApp(json).then(function() {
           var design;
           design = self.workspace.design;

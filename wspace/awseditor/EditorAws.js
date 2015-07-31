@@ -36239,7 +36239,12 @@ define('wspace/awseditor/model/serializeVisitor/AppToStack',["../DesignAws"], fu
           if (compo.name === "EC2InternalTags") {
             _results.push(delete components[comp]);
           } else {
-            _results.push(void 0);
+            _.each(compo.resource, function(item, index) {
+              if (item.Key.indexOf("aws:") === 0) {
+                return delete compo.resource[index];
+              }
+            });
+            _results.push(compo.resource = _.compact(compo.resource));
           }
           break;
         case 'AWS.AutoScaling.Tag':

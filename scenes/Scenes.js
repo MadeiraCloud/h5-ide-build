@@ -8,7 +8,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn cloudfielder-btn\" href=\"http://cloudfielder.com/\" target=\"_blank\"><img src=\"/assets/images/ide/cf-favicon.ico\" /> CloudFielder<span>NEW</span></a>\n      <button class=\"ph-nav-btn user-guide-btn popuptrigger truncate\" data-popup=\"popupGuide\">Guide</button>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
-    + "</a>\n      <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button>\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
+    + "</a>\n      <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button>\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate tooltip\" data-tooltip-type=\"html\" data-tooltip=\"\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
   return buffer;
   };
 TEMPLATE.frame=Handlebars.template(__TEMPLATE__);
@@ -748,8 +748,12 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       this.listenTo(this.scene, "switchWorkspace", this.updateNotify);
     },
     render: function() {
+      var emailText, tooltipHtml, usernameText;
       this.$el.find(".project-list").text(this.scene.project.get("name"));
-      this.$el.find(".user-menu").text(App.user.get("username"));
+      usernameText = App.user.get("username");
+      emailText = App.user.get("email");
+      tooltipHtml = "<span class='tip-for-username'>" + usernameText + "</span> <br/> <span class='tip-for-email'>" + emailText + "<span/>";
+      this.$el.find(".user-menu").text(App.user.get("username")).attr("data-tooltip", tooltipHtml);
     },
 
     /* -----------------
