@@ -1834,7 +1834,7 @@ define('kp_dropdown',['Design', 'kp_manage', 'combo_dropdown', 'component/awscom
       Design.instance().eachComponent(function(comp) {
         var _ref;
         if ((_ref = comp.type) === constant.RESTYPE.INSTANCE || _ref === constant.RESTYPE.LC) {
-          if (comp.isDefaultKey() && (!comp.get('appId') || comp.type === constant.RESTYPE.LC)) {
+          if (comp.isDefaultKey() && !comp.get('appId')) {
             has = true;
             return false;
           }

@@ -15329,7 +15329,6 @@ define('wspace/awseditor/property/launchconfig/main',["../base/main", "./model",
       this.view.resModel = Design.instance().component(uid);
       if (this.view.resModel.get('appId')) {
         this.view.listenTo(this.view.resModel, 'change', view.watchChangedInAppEdit);
-        this.view.listenTo(this.view.resModel, 'change:connections', view.watchChangedInAppEdit);
       }
       return null;
     },
@@ -32118,19 +32117,12 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       return this.__newId;
     },
     changedInAppEdit: function() {
-      var appData, diffTree, oldResource, _ref;
+      var diffTree;
       if (!this.design().modeIsAppEdit() || !this.get('appId')) {
         return false;
       }
-      oldResource = this.design().opsModel().getJsonData().component[this.id].resource;
-      appData = (_ref = CloudResources(this.design().credentialId(), constant.RESTYPE.LC, this.design().region()).get(this.get('appId'))) != null ? _ref.toJSON() : void 0;
-      if (appData) {
-        oldResource = _.extend({
-          KeyName: appData.KeyName
-        }, oldResource);
-      }
       diffTree = new DiffTree();
-      return !_.isEmpty(diffTree.compare(this.genResource(), oldResource)) || this.isDefaultKey();
+      return !_.isEmpty(diffTree.compare(this.genResource(), this.design().opsModel().getJsonData().component[this.id].resource));
     },
     createRef: function(refName, isResourceNS, id, options) {
       if (refName == null) {
@@ -32299,13 +32291,12 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
   KeypairUsage = ConnectionModel.extend({
     type: "KeypairUsage",
     oneToMany: constant.RESTYPE.KP,
-    serialize: function(components, layout_data, options) {
-      var groupMembers, kp, member, otherId, otherTarget, otherTargetComp, ref, _i, _len;
+    serialize: function(components) {
+      var groupMembers, kp, member, otherTarget, otherTargetComp, ref, _i, _len;
       kp = this.getTarget(constant.RESTYPE.KP);
       if (kp) {
         otherTarget = this.getOtherTarget(kp);
-        otherId = otherTarget.type === constant.RESTYPE.LC ? otherTarget.getId(options) : otherTarget.id;
-        otherTargetComp = components[otherId];
+        otherTargetComp = components[otherTarget.id];
         if (!otherTargetComp) {
           return;
         }
