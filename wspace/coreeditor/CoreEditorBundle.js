@@ -384,7 +384,7 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
         p2 = c.port2Comp();
         if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
           try {
-            c.serialize(component_data, layout_data);
+            c.serialize(component_data, layout_data, options);
 
             /* env:prod */
           } catch (_error) {
