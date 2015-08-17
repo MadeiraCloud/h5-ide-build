@@ -72,7 +72,7 @@ function program5(depth0,data) {
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/></div>\n  <div class=\"region-resource-info\">\n    <i class=\"icon-terminate terminate-app\"></i>\n    ";
+  buffer += "/></div>\n  <div class=\"region-resource-info\">\n    <i class=\"icon-terminate terminate-app role-observer-hidden\"></i>\n    ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.stateDesc), "Running", {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    <span class=\"";
@@ -101,13 +101,13 @@ function program8(depth0,data) {
 function program10(depth0,data) {
   
   
-  return "<i class=\"icon-stop stop-app\"></i>";
+  return "<i class=\"icon-stop stop-app role-observer-hidden\"></i>";
   }
 
 function program12(depth0,data) {
   
   
-  return "<i class=\"icon-play start-app\"></i>";
+  return "<i class=\"icon-play start-app role-observer-hidden\"></i>";
   }
 
 function program14(depth0,data) {
@@ -153,7 +153,7 @@ function program1(depth0,data) {
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack\"></i>\n      <i class=\"icon-duplicate duplicate-stack\"></i>\n      <span class=\"truncate\">"
+  buffer += "/></div>\n    <div class=\"region-resource-info\">\n      <i class=\"icon-delete delete-stack role-observer-hidden\"></i>\n      <i class=\"icon-duplicate duplicate-stack role-observer-hidden\"></i>\n      <span class=\"truncate\">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n    </div>\n  </li>\n";
   return buffer;

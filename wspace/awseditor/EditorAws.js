@@ -15329,6 +15329,7 @@ define('wspace/awseditor/property/launchconfig/main',["../base/main", "./model",
       this.view.resModel = Design.instance().component(uid);
       if (this.view.resModel.get('appId')) {
         this.view.listenTo(this.view.resModel, 'change', view.watchChangedInAppEdit);
+        this.view.listenTo(this.view.resModel, 'change:connections', view.watchChangedInAppEdit);
       }
       return null;
     },
@@ -22642,7 +22643,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary runApp\" data-tooltip='"
+  buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary runApp role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_BTN_RUN_STACK", {hash:{},data:data}))
     + "'>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.BTN_RUN_STACK", {hash:{},data:data}))
@@ -22658,13 +22659,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"btn-toolbar tooltip icon-save\" data-tooltip='"
+  buffer += "<button class=\"btn-toolbar tooltip icon-save role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_STACK", {hash:{},data:data}))
-    + "'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator\" data-tooltip='"
+    + "'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
-    + "'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate\" data-tooltip='"
+    + "'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
-    + "'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator\" data-tooltip='"
+    + "'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CREATE_STACK", {hash:{},data:data}))
     + "'></button>";
   return buffer;
@@ -22698,15 +22699,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"tooltip btn-toolbar icon-update-app toolbar-btn-primary\" data-tooltip=\""
+  buffer += "<button class=\"tooltip btn-toolbar icon-update-app toolbar-btn-primary role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_UPDATE_APP", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EDIT_APP", {hash:{},data:data}))
-    + "</button>\n<button class=\"tooltip btn-toolbar icon-apply-app toolbar-btn-primary\" data-tooltip=\""
+    + "</button>\n<button class=\"tooltip btn-toolbar icon-apply-app toolbar-btn-primary role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_UPDATE_APP", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APPLY_EDIT", {hash:{},data:data}))
-    + "</button>\n<button class=\"tooltip btn-toolbar icon-cancel-update-app seperator\" data-tooltip=\""
+    + "</button>\n<button class=\"tooltip btn-toolbar icon-cancel-update-app seperator role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CANCEL_UPDATE_APP", {hash:{},data:data}))
     + "\"></button>";
   return buffer;
@@ -22720,19 +22721,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"tooltip btn-toolbar icon-stop\" data-tooltip=\""
+  buffer += "<button class=\"tooltip btn-toolbar icon-stop role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_STOP_APP", {hash:{},data:data}))
-    + "\"></button>\n<button class=\"tooltip btn-toolbar icon-play startApp\" data-tooltip=\""
+    + "\"></button>\n<button class=\"tooltip btn-toolbar icon-play startApp role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_START_APP", {hash:{},data:data}))
     + "\"><span style=\"display: none\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.START_APP", {hash:{},data:data}))
-    + "</span></button>\n<button class=\"btn-toolbar tooltip icon-terminate seperator\" data-tooltip=\"";
+    + "</span></button>\n<button class=\"btn-toolbar tooltip icon-terminate seperator role-observer-hidden\" data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_TERMINATE_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-forget-app seperator\" data-tooltip=\"";
+  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-forget-app seperator role-observer-hidden\" data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_FORGET_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator\" data-tooltip='"
+  buffer += "\"></button>\n<button class=\"btn-toolbar tooltip icon-save-app seperator role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_APP_TO_STACK", {hash:{},data:data}))
     + "'></button>";
   return buffer;
@@ -22782,7 +22783,7 @@ function program1(depth0,data) {
   buffer += "<label class=\"switch toolbar-visual-ops-switch tooltip";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stateOn), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" data-tooltip=\""
+  buffer += " role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CUSTOM_USER_DATA", {hash:{},data:data}))
     + "\">\n    <span class=\"switch-label\" data-on=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOGGLE_VISUALOPS_ON", {hash:{},data:data}))
@@ -22800,7 +22801,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states\" data-original=\""
+  buffer += "<button class=\"icon-reload tooltip btn btn-blue reload-states role-observer-hidden\" data-original=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.RELOAD_STATES", {hash:{},data:data}))
     + "\" data-disabled=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.INITIATING", {hash:{},data:data}))
@@ -23548,7 +23549,7 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
         }
       });
       return this.checkDBinstance(oldDBInstanceList).then(function(DBInstances) {
-        var $diffTree, $selectbox, cost, currency, eipsToRelease, notAvailableDB, removeList, removeListNotReady, _ref;
+        var $diffTree, $selectbox, cost, currency, eipsToRelease, notAvailableDB, removeList, removeListNotReady, _ref, _ref1, _ref2, _ref3;
         notAvailableDB = DBInstances.filter(function(e) {
           var _ref;
           return (_ref = e.attributes.DBInstanceIdentifier, __indexOf.call(dbInstanceList, _ref) >= 0) && e.attributes.DBInstanceStatus !== "available";
@@ -23647,22 +23648,34 @@ define('wspace/awseditor/subviews/Toolbar',["OpsModel", "../template/TplOpsEdito
           $('#app-update-summary-table').html($diffTree);
         }
         that.appAction.renderKpDropdown(that.updateModal);
-        TA.loadModule('stack', null, differ).then(function() {
-          return taPassed = true;
-        })["catch"](function(err) {
-          var _ref1, _ref2;
-          console.log(err);
+        if (result.compChange || result.stateChange) {
+          TA.loadModule('stack', null, differ).then(function() {
+            return taPassed = true;
+          })["catch"](function(err) {
+            var _ref1, _ref2;
+            if ((_ref1 = that.updateModal) != null) {
+              _ref1.tpl.find("#take-rds-snapshot").off('change');
+            }
+            return (_ref2 = that.updateModal) != null ? _ref2.find('.modal-confirm').addClass('disabled').addClass('tooltip').attr('data-tooltip', lang.TOOLBAR.FIX_THE_ERROR_TO_UPDATE) : void 0;
+          }).fin(function() {
+            var _ref1, _ref2;
+            if ((_ref1 = that.updateModal) != null) {
+              _ref1.resize();
+            }
+            return (_ref2 = that.updateModal) != null ? _ref2.toggleConfirm(false) : void 0;
+          });
+        } else {
+          taPassed = true;
           if ((_ref1 = that.updateModal) != null) {
-            _ref1.tpl.find("#take-rds-snapshot").off('change');
+            _ref1.find('#app-apply-update').addClass('nota');
           }
-          return (_ref2 = that.updateModal) != null ? _ref2.find('.modal-confirm').addClass('disabled').addClass('tooltip').attr('data-tooltip', lang.TOOLBAR.FIX_THE_ERROR_TO_UPDATE) : void 0;
-        }).fin(function() {
-          var _ref1, _ref2;
-          if ((_ref1 = that.updateModal) != null) {
-            _ref1.resize();
+          if ((_ref2 = that.updateModal) != null) {
+            _ref2.resize();
           }
-          return (_ref2 = that.updateModal) != null ? _ref2.toggleConfirm(false) : void 0;
-        });
+          if ((_ref3 = that.updateModal) != null) {
+            _ref3.toggleConfirm(false);
+          }
+        }
       });
     },
     opsOptionChanged: function() {
@@ -32117,12 +32130,19 @@ define('wspace/awseditor/model/LcModel',["ComplexResModel", "./InstanceModel", "
       return this.__newId;
     },
     changedInAppEdit: function() {
-      var diffTree;
+      var appData, diffTree, oldResource, _ref;
       if (!this.design().modeIsAppEdit() || !this.get('appId')) {
         return false;
       }
+      oldResource = this.design().opsModel().getJsonData().component[this.id].resource;
+      appData = (_ref = CloudResources(this.design().credentialId(), constant.RESTYPE.LC, this.design().region()).get(this.get('appId'))) != null ? _ref.toJSON() : void 0;
+      if (appData) {
+        oldResource = _.extend({
+          KeyName: appData.KeyName
+        }, oldResource);
+      }
       diffTree = new DiffTree();
-      return !_.isEmpty(diffTree.compare(this.genResource(), this.design().opsModel().getJsonData().component[this.id].resource));
+      return !_.isEmpty(diffTree.compare(this.genResource(), oldResource)) || this.isDefaultKey();
     },
     createRef: function(refName, isResourceNS, id, options) {
       if (refName == null) {
@@ -32291,12 +32311,13 @@ define('wspace/awseditor/model/KeypairModel',["constant", "ComplexResModel", "Co
   KeypairUsage = ConnectionModel.extend({
     type: "KeypairUsage",
     oneToMany: constant.RESTYPE.KP,
-    serialize: function(components) {
-      var groupMembers, kp, member, otherTarget, otherTargetComp, ref, _i, _len;
+    serialize: function(components, layout_data, options) {
+      var groupMembers, kp, member, otherId, otherTarget, otherTargetComp, ref, _i, _len;
       kp = this.getTarget(constant.RESTYPE.KP);
       if (kp) {
         otherTarget = this.getOtherTarget(kp);
-        otherTargetComp = components[otherTarget.id];
+        otherId = otherTarget.type === constant.RESTYPE.LC ? otherTarget.getId(options) : otherTarget.id;
+        otherTargetComp = components[otherId];
         if (!otherTargetComp) {
           return;
         }

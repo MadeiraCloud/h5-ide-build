@@ -384,7 +384,7 @@ define('Design',["constant", "OpsModel", 'CloudResources'], function(constant, O
         p2 = c.port2Comp();
         if (p1 && p2 && !p1.isRemoved() && !p2.isRemoved()) {
           try {
-            c.serialize(component_data, layout_data);
+            c.serialize(component_data, layout_data, options);
 
             /* env:prod */
           } catch (_error) {
@@ -6399,6 +6399,9 @@ define('CoreEditorApp',["CoreEditor", "CoreEditorViewApp", "ResDiff", "OpsModel"
       this.__applyingUpdate = true;
       this.__dryRunUpdate = !!attributes.dry_run;
       fastUpdate = fastUpdate && !this.opsModel.testState(OpsModel.State.Stopped);
+      if (attributes.dry_run) {
+        MC.Analytics.increase("dru");
+      }
       self = this;
       this.opsModel.update(newJson, fastUpdate, attributes).then(function() {
         if (fastUpdate) {

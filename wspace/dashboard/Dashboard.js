@@ -58,7 +58,7 @@ function program10(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div>\n\n  <header class=\"dashboard-header\">\n    <button class=\"icon-refresh refreshResource\">"
+  buffer += "<div>\n\n  <header class=\"dashboard-header role-observer-hidden\">\n    <button class=\"icon-refresh refreshResource\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TPL_JUST_NOW", {hash:{},data:data}))
     + "</button>\n\n      <button class=\"btn btn-primary icon-new-stack\">"
     + escapeExpression(helpers.i18n.call(depth0, "DASH_CREATE_NEW_STACK", {hash:{},data:data}))
@@ -1132,9 +1132,9 @@ function program12(depth0,data,depth2) {
   buffer += "/></div>\n                <div class=\"region-resource-info\">\n                    ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.stoppable), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n                    <i class=\"icon-terminate terminate-app tooltip\" data-tooltip=\""
+  buffer += "\n                    <i class=\"icon-terminate terminate-app tooltip role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_TERMINATE_APP", {hash:{},data:data}))
-    + "\"></i>\n                    <i class=\"icon-forget-app forget-app tooltip\" data-tooltip=\"";
+    + "\"></i>\n                    <i class=\"icon-forget-app forget-app tooltip role-observer-hidden\" data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_FORGET_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"></i>\n                    <span class=\"";
@@ -1190,7 +1190,7 @@ function program20(depth0,data) {
 function program21(depth0,data) {
   
   var buffer = "";
-  buffer += "<i class=\"icon-stop stop-app tooltip\"  data-tooltip=\""
+  buffer += "<i class=\"icon-stop stop-app tooltip role-observer-hidden\"  data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TOOLBAR_HANDLE_STOP_APP", {hash:{},data:data}))
     + "\"></i>";
   return buffer;
@@ -1199,7 +1199,7 @@ function program21(depth0,data) {
 function program23(depth0,data) {
   
   
-  return "<i class=\"icon-play start-app\"></i>";
+  return "<i class=\"icon-play start-app role-observer-hidden\"></i>";
   }
 
 function program25(depth0,data) {
@@ -1302,9 +1302,9 @@ function program9(depth0,data,depth1) {
     + "\" ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.thumbnail), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "/></div>\n                    <div class=\"region-resource-info\">\n                        <i class=\"icon-delete delete-stack tooltip\" data-tooltip=\""
+  buffer += "/></div>\n                    <div class=\"region-resource-info\">\n                        <i class=\"icon-delete delete-stack tooltip role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DEL_STACK", {hash:{},data:data}))
-    + "\"></i>\n                        <i class=\"icon-duplicate duplicate-stack tooltip\" data-tooltip=\""
+    + "\"></i>\n                        <i class=\"icon-duplicate duplicate-stack tooltip role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "DASH_TIP_DUPLICATE_STACK", {hash:{},data:data}))
     + "\"></i>\n                        <span class=\"";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.type), "mesos", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});

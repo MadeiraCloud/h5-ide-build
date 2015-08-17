@@ -3,10 +3,18 @@ define('scenes/ProjectTpl',['handlebars'], function(Handlebars){ var __TEMPLATE_
 __TEMPLATE__ =function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, self=this, escapeExpression=this.escapeExpression;
 
+function program1(depth0,data) {
+  
+  
+  return "role-observer";
+  }
 
-  buffer += "<div class=\"project-scene\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn cloudfielder-btn\" href=\"http://cloudfielder.com/\" target=\"_blank\"><img src=\"/assets/images/ide/cf-favicon.ico\" /> CloudFielder<span>NEW</span></a>\n      <button class=\"ph-nav-btn user-guide-btn popuptrigger truncate\" data-popup=\"popupGuide\">Guide</button>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
+  buffer += "<div class=\"project-scene ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.observer), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n  <header class=\"project-header\">\n    <button class=\"ph-nav-btn project-list popuptrigger truncate icon-caret-down\" data-popup=\"popupProject\"></button>\n    <button class=\"ph-nav-btn icon-menu asset-list popuptrigger\" data-popup=\"popupAsset\"></button>\n    <div class=\"ws-tabbar\"><ul class=\"ws-fixed-tabs\"></ul><ul class=\"ws-tabs\"></ul></div>\n    <nav>\n      <a class=\"ph-nav-btn cloudfielder-btn\" href=\"http://cloudfielder.com/\" target=\"_blank\"><img src=\"/assets/images/ide/cf-favicon.ico\" /> CloudFielder<span>NEW</span></a>\n      <button class=\"ph-nav-btn user-guide-btn popuptrigger truncate\" data-popup=\"popupGuide\">Guide</button>\n      <a class=\"ph-nav-btn icon-support\" href=\"mailto:3rp02j1w@incoming.intercom.io\" target=\"_blank\">"
     + escapeExpression(helpers.i18n.call(depth0, "IDE.DASH_LBL_SUPPORT", {hash:{},data:data}))
     + "</a>\n      <button class=\"ph-nav-btn icon-notification popuptrigger\" data-popup=\"popupNotify\"></button>\n      <button class=\"ph-nav-btn user-menu popuptrigger truncate tooltip\" data-tooltip-type=\"html\" data-tooltip=\"\" data-popup=\"popupUser\"></button>\n    </nav>\n  </header>\n\n  <section class=\"ws-content\"></section>\n</div>";
   return buffer;
@@ -712,7 +720,7 @@ define('scenes/ProjectView',["ApiRequest", "./ProjectTpl", "OpsModel", "UI.modal
       var $header, nfs, self;
       this.scene = attr.scene;
       this.tabsWidth = 0;
-      this.setElement($(ProjectTpl.frame()).appendTo("#scenes"));
+      this.setElement($(ProjectTpl.frame(attr)).appendTo("#scenes"));
       this.render();
       this.$tabbar = this.$el.find(".ws-tabbar");
       this.$wsparent = this.$el.find(".ws-content");
@@ -1123,7 +1131,8 @@ define('scenes/ProjectScene',["Scene", "./ProjectView", "./ProjectTpl", "Workspa
       }
       this.project = App.model.projects().get(attr.pid) || App.model.getPrivateProject();
       this.view = new ProjectView({
-        scene: this
+        scene: this,
+        observer: this.project.amIObserver()
       });
       this.listenTo(this.view, "wsOrderChanged", function() {
         return this.__updateSpaceOrder();
@@ -2925,33 +2934,42 @@ function program1(depth0,data,depth1) {
   buffer += "\n            ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "observer", {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </span>\n        <div class=\"selectbox memlist-edit-mode memtype\">\n            <div class=\"selection\">\n                ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "admin", {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n                ";
   stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "observer", {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n            </div>\n            <ul class=\"dropdown\">\n                <li data-id=\"admin\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "admin", {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "admin", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n                    <div class=\"name\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ADMIN", {hash:{},data:data}))
-    + "</div>\n                   \n                </li>\n                <li data-id=\"collaborator\" class=\"item ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+    + "</div>\n\n                </li>\n                <li data-id=\"collaborator\" class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "collaborator", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n                    <div class=\"name\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_COLLABORATOR", {hash:{},data:data}))
-    + "</div>\n                    \n                </li>\n            </ul>\n        </div>\n    </td>\n    <td class=\"memlist-status ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+    + "</div>\n                </li>\n                <li data-id=\"observer\" class=\"item ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.role), "observer", {hash:{},inverse:self.noop,fn:self.program(14, program14, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\">\n                    <div class=\"name\">OBSERVER</div>\n                </li>\n            </ul>\n        </div>\n    </td>\n    <td class=\"memlist-status ";
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">\n        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "normal", {hash:{},inverse:self.noop,fn:self.program(16, program16, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "normal", {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        ";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(18, program18, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    </td>\n    ";
-  stack1 = helpers['if'].call(depth0, (depth1 && depth1.admin), {hash:{},inverse:self.noop,fn:self.program(20, program20, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth1 && depth1.admin), {hash:{},inverse:self.noop,fn:self.program(22, program22, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</tr>\n";
   return buffer;
@@ -3010,39 +3028,45 @@ function program10(depth0,data) {
 function program12(depth0,data) {
   
   
-  return "selected";
+  return "OBSERVER";
   }
 
 function program14(depth0,data) {
   
   
-  return "memlist-pending";
+  return "selected";
   }
 
 function program16(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ACTIVE", {hash:{},data:data}));
+  return "memlist-pending";
   }
 
 function program18(depth0,data) {
   
   
-  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_PENDING", {hash:{},data:data}));
+  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_ACTIVE", {hash:{},data:data}));
   }
 
 function program20(depth0,data) {
   
+  
+  return escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_PENDING", {hash:{},data:data}));
+  }
+
+function program22(depth0,data) {
+  
   var buffer = "", stack1;
   buffer += "\n    <td>";
-  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(21, program21, data),data:data});
+  stack1 = helpers.ifCond.call(depth0, (depth0 && depth0.state), "inactive", {hash:{},inverse:self.noop,fn:self.program(23, program23, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "</td>\n    <td>\n        <button class=\"btn btn-blue memlist-edit-mode done\">"
     + escapeExpression(helpers.i18n.call(depth0, "SETTINGS_MEMBER_LABEL_DONE", {hash:{},data:data}))
     + "</button>\n        <button class=\"icon-edit memlist-view-mode edit\"></button>\n    </td>\n    ";
   return buffer;
   }
-function program21(depth0,data) {
+function program23(depth0,data) {
   
   var buffer = "";
   buffer += "<button class=\"cancel link-style\">"
@@ -3354,7 +3378,7 @@ define('scenes/settings/views/TeamView',['backbone', '../template/TplTeam', 'i18
         newRole = $memItem.find('.memtype li.selected').data('id');
         memberModel = that.memberCol.get(memId);
         currentMember = that.memberCol.getCurrentMember();
-        if (memberModel === currentMember && currentMember.isAdmin() && newRole === 'collaborator' && currentMember.isOnlyAdmin()) {
+        if (memberModel === currentMember && currentMember.isAdmin() && newRole !== 'admin' && currentMember.isOnlyAdmin()) {
           notification('error', lang.IDE.SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN);
           $memItem.removeClass('edit');
           return;

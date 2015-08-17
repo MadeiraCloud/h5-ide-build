@@ -940,7 +940,7 @@ define({
         "SETTINGS_MEMBER_LABEL_INVITE_TIP": "Invite by email address or username...",
         "SETTINGS_MEMBER_LABEL_INVITE_CONFIRM": "Invite",
         "SETTINGS_MEMBER_LABEL_LIMIT": "Your workspace has reached the limit of %s. If you'd like invite more members to collaborate, contact us at",
-        "SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN": "You are the only admin in this workspace. Cannot change your role to member.",
+        "SETTINGS_MEMBER_LABEL_ONLY_ONE_ADMIN": "You are the only admin in this workspace. The role can not be changed.",
         "SETTING_MEMBER_LABEL_NO_USER": "There is no user \"%s\"",
         "SETTING_MEMBER_USER_INVITED": "Invitation Email has been sent to \"%s\"",
         "WORKSPACE_DEMO_TIP": "This workspace is currently in Demo mode. Set up your own cloud credential to run stack into live resources, or import existing infrastructures.",

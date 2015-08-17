@@ -58,15 +58,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"tooltip btn-toolbar icon-update-app toolbar-btn-primary\" data-tooltip=\""
+  buffer += "<button class=\"tooltip btn-toolbar icon-update-app toolbar-btn-primary role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_UPDATE_APP", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.EDIT_APP", {hash:{},data:data}))
-    + "</button>\n<button class=\"tooltip btn-toolbar icon-apply-app toolbar-btn-primary\" data-tooltip=\""
+    + "</button>\n<button class=\"tooltip btn-toolbar icon-apply-app toolbar-btn-primary role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_UPDATE_APP", {hash:{},data:data}))
     + "\">"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.APPLY_EDIT", {hash:{},data:data}))
-    + "</button>\n<button class=\"tooltip btn-toolbar icon-cancel-update-app seperator\" data-tooltip=\""
+    + "</button>\n<button class=\"tooltip btn-toolbar icon-cancel-update-app seperator role-observer-hidden\" data-tooltip=\""
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CANCEL_UPDATE_APP", {hash:{},data:data}))
     + "\"></button>";
   return buffer;
@@ -80,7 +80,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary runApp\" data-tooltip='"
+  buffer += "<button class=\"btn-toolbar icon-play tooltip toolbar-btn-primary runApp role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_BTN_RUN_STACK", {hash:{},data:data}))
     + "'>"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.BTN_RUN_STACK", {hash:{},data:data}))
@@ -96,13 +96,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"btn-toolbar tooltip icon-save\" data-tooltip='"
+  buffer += "<button class=\"btn-toolbar tooltip icon-save role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_SAVE_STACK", {hash:{},data:data}))
-    + "'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator\" data-tooltip='"
+    + "'></button>\n<button class=\"btn-toolbar icon-delete tooltip seperator role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DELETE_STACK", {hash:{},data:data}))
-    + "'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate\" data-tooltip='"
+    + "'></button>\n<button class=\"btn-toolbar tooltip icon-duplicate role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_DUPLICATE_STACK", {hash:{},data:data}))
-    + "'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator\" data-tooltip='"
+    + "'></button>\n<button class=\"btn-toolbar icon-new-stack tooltip seperator role-observer-hidden\" data-tooltip='"
     + escapeExpression(helpers.i18n.call(depth0, "TOOLBAR.TIP_CREATE_STACK", {hash:{},data:data}))
     + "'></button>";
   return buffer;
@@ -134,7 +134,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1;
 
 
-  buffer += "<button class=\"btn-toolbar tooltip icon-terminate seperator\" data-tooltip=\"";
+  buffer += "<button class=\"btn-toolbar tooltip icon-terminate seperator role-observer-hidden\" data-tooltip=\"";
   stack1 = helpers.i18n.call(depth0, "TOOLBAR.TIP_TERMINATE_APP", {hash:{},data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"></button>";
