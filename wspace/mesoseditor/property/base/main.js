@@ -144,7 +144,7 @@ define(['event'], function(ide_event) {
   };
   PropertyModule.extend = function(protoProps, staticProps) {
 
-    /* env:dev                                                                                                                                                                                                                                            env:dev:end */
+    /* env:dev                                                                                                                                                                                                                                                env:dev:end */
     var handleTypes, newProperty, newPropertyClass, type, types, _i, _len;
     newPropertyClass = Backbone.Model.extend.call(PropertyModule, protoProps, staticProps);
     newProperty = new newPropertyClass();
@@ -162,7 +162,7 @@ define(['event'], function(ide_event) {
     for (_i = 0, _len = handleTypes.length; _i < _len; _i++) {
       type = handleTypes[_i];
 
-      /* env:dev                                                                                                                                 env:dev:end */
+      /* env:dev                                                                                                                                    env:dev:end */
       if (!type.hasOwnProperty("length")) {
         propertyTypeRegExpArr.push({
           regexp: type,

@@ -950,7 +950,7 @@ define({
         "DEMO_CREDENTIAL_ERROR_NOTE": "Note: Some stack you build in demo mode may report error due to resource inconsistency between different cloud accounts.",
         "SET_UP_PROVIDER_CREDENTIAL": "Set up Cloud Access Credential",
         "CREDENTIAL_ALIAS": "Credential Alias",
-        "CREDENTIAL_AUTHORIZE_NOTE": "Note: This credential must be linked to an account has at least read access to AWS EC2 resources, otherwise there will be issues using VisualOps.",
+        "CREDENTIAL_AUTHORIZE_NOTE": "Note: This credential must be linked to an account at least read access to AWS EC2 resources, otherwise there will be issues using VisualOps.",
         "ARE_YOU_SURE_YOU_WANT_TO_REMOVE_XXX": "Are you sure you want to remove %s?",
         "REMOVE_CREDENTIAL_CONFIRM_TIPS": "Apps managed under this credential will be forgotten. You will not be able to run stack or import VPC. If you provide a credential later with access to different AWS resources, previous stacks may not work properly.",
         "REMOVE_CREDENTIAL_CONFIRM_BTN": "Remove Credential",
