@@ -575,11 +575,7 @@ $bp-2: 1280px;
 
 .region-app-stack-wrap {
   height: $dashWrapHeight;
-  @include displayflex;
-  @include vo-flex-wrap(wrap);
-
-  align-items         : stretch;
-  -webkit-align-items : stretch;
+  padding : 0 1vw;
 
   margin-top : 10px;
 
@@ -591,8 +587,9 @@ $bp-2: 1280px;
   }
 
   > div {
-    width         : 38vw;
-    margin        : 0 1vw;
+    float         : left;
+    width         : 49.5%;
+    margin        : 0;
     position      : relative;
     background    : #fff;
     border-radius : 2px;
@@ -600,8 +597,7 @@ $bp-2: 1280px;
     box-sizing    : border-box;
     box-shadow    : 0 2px 0 $base-grey;
 
-    &:first-of-type { margin-right: 1vw; }
-    &:last-of-type { margin-left: .2vw; }
+    &:first-of-type { margin-right: 1%; }
   }
 
   .region-resource-list {
@@ -698,14 +694,9 @@ $bp-2: 1280px;
     }
 
     .region-resource-info {
-      display       : inline-block;
       font-size     : 16px;
-      // font-weight   : 300;
       position      : relative;
-      padding-right : 80px;
       margin-left   : 60px;
-      width         : 100%;
-      box-sizing    : border-box;
 
       span {
         width : 20vw;
@@ -713,11 +704,9 @@ $bp-2: 1280px;
       }
 
       i {
-        position : absolute;
-        color    : lighten($dark-grey, 20%);
-
-        &:first-of-type { right: 90px; }
-        &:last-of-type { right: 60px; }
+        color : lighten($dark-grey, 20%);
+        float : right;
+        margin-left : 10px;
 
         &:hover { color: $base-b; }
 
@@ -856,7 +845,7 @@ $bp-2: 1280px;
   // padding       : 5px;
   box-sizing    : border-box;
   box-shadow    : 0 2px 0 #eeeef0;
-  width         : 77.2vw;
+  width         : 77.7vw;
   margin-left   : 1vw;
 
   .dash-region-header {
